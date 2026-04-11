@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Cormorant_Garamond, Manrope, Geist } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-heading",
@@ -34,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="sr-Latn"
-      className={`${cormorant.variable} ${manrope.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", cormorant.variable, manrope.variable, "font-sans", geist.variable)}
     >
       <body className="min-h-full flex flex-col bg-ivory text-coal font-body">
         {children}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,8 +9,8 @@ import {
   Calculator,
   Camera,
   Check,
-  ChevronLeft,
-  ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Eraser,
   FileImage,
   Home,
@@ -42,14 +42,8 @@ const ICON_MAP: Record<ServiceIcon, LucideIcon> = {
   eraser: Eraser,
 };
 
-/** Number of services shown per slider page. All 11 services fit in 3 pages (4 + 4 + 3). */
-const SERVICES_PER_PAGE = 4;
-
-function chunk<T>(arr: T[], size: number): T[][] {
-  return Array.from({ length: Math.ceil(arr.length / size) }, (_, i) =>
-    arr.slice(i * size, (i + 1) * size),
-  );
-}
+/** How far the up/down chevrons scroll the services list per click (px). */
+const SCROLL_STEP_PX = 220;
 
 export function QuickOrderHero() {
   const [selectedServiceSlug, setSelectedServiceSlug] = useState<string>(
@@ -59,10 +53,7 @@ export function QuickOrderHero() {
     SERVICES[0].variants[0].id,
   );
 
-  // Page of services shown in the right-panel slider.
-  const servicePages = useMemo(() => chunk(SERVICES, SERVICES_PER_PAGE), []);
-  const totalServicePages = servicePages.length;
-  const [servicesPage, setServicesPage] = useState(0);
+  const servicesScrollRef = useRef<HTMLDivElement>(null);
 
   const selectedService = useMemo(
     () => SERVICES.find((s) => s.slug === selectedServiceSlug) ?? SERVICES[0],
@@ -85,10 +76,19 @@ export function QuickOrderHero() {
     setSelectedVariantId(service.variants[0].id);
   };
 
-  const prevPage = () =>
-    setServicesPage((p) => (p === 0 ? totalServicePages - 1 : p - 1));
-  const nextPage = () =>
-    setServicesPage((p) => (p === totalServicePages - 1 ? 0 : p + 1));
+  const scrollServicesUp = () => {
+    servicesScrollRef.current?.scrollBy({
+      top: -SCROLL_STEP_PX,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollServicesDown = () => {
+    servicesScrollRef.current?.scrollBy({
+      top: SCROLL_STEP_PX,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <section id="naruci" className="relative py-10 md:py-16 lg:py-20">
@@ -110,24 +110,24 @@ export function QuickOrderHero() {
               </p>
             </div>
 
-            {/* "Minimalni ulaz za start" — full column width, text + asset landscape */}
+            {/* "Minimalni ulaz za start" — full column width, image > text on desktop */}
             <div className="grain-soft relative overflow-hidden rounded-3xl border border-border bg-card/80 p-6 shadow-[0_24px_60px_rgba(28,26,25,0.07)] sm:p-8 lg:p-10">
               <div
                 aria-hidden
                 className="absolute inset-0 bg-[linear-gradient(135deg,rgba(184,131,99,0.1),transparent_55%,rgba(143,154,138,0.1))]"
               />
-              <div className="relative grid gap-6 md:grid-cols-[1fr_0.85fr] md:items-center md:gap-8">
+              <div className="relative grid gap-6 md:grid-cols-[2fr_3fr] md:items-center md:gap-10">
                 <div>
                   <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
                     Minimalni ulaz za start
                   </p>
-                  <h2 className="mt-3 text-3xl leading-tight text-foreground md:text-4xl">
+                  <h2 className="mt-3 text-2xl leading-tight text-foreground md:text-3xl">
                     Šta šaljete odmah za{" "}
                     <span className="text-accent">
                       {selectedService.shortName.toLowerCase()}
                     </span>
                   </h2>
-                  <p className="mt-4 text-base leading-7 text-muted-foreground">
+                  <p className="mt-4 text-sm leading-7 text-muted-foreground md:text-base">
                     {selectedService.materials}
                   </p>
                   <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/70 px-3 py-1.5">
@@ -141,12 +141,12 @@ export function QuickOrderHero() {
                   </div>
                 </div>
                 {selectedService.asset && (
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-secondary md:aspect-[5/4]">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-secondary md:aspect-[3/2]">
                     <Image
                       src={selectedService.asset}
                       alt={selectedService.name}
                       fill
-                      sizes="(max-width: 768px) 100vw, 40vw"
+                      sizes="(max-width: 768px) 100vw, 55vw"
                       className="object-cover"
                       priority={false}
                     />
@@ -230,110 +230,85 @@ export function QuickOrderHero() {
                 </h2>
               </div>
 
-              {/* SERVICE PICKER — carousel with all 11 services */}
+              {/* SERVICE PICKER — vertical scrollable list, all 11 services */}
               <div>
                 <div className="mb-2.5 flex items-center justify-between">
                   <p className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted-foreground">
                     1. Usluga
+                    <span className="ml-1.5 text-muted-foreground/60">
+                      · {SERVICES.length}
+                    </span>
                   </p>
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
-                      onClick={prevPage}
-                      aria-label="Prethodna stranica usluga"
+                      onClick={scrollServicesUp}
+                      aria-label="Skroluj naviše"
                       className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-background/60 text-foreground/70 transition hover:bg-muted hover:text-foreground"
                     >
-                      <ChevronLeft className="h-3.5 w-3.5" />
+                      <ChevronUp className="h-3.5 w-3.5" />
                     </button>
-                    <span className="min-w-[2rem] text-center text-[0.65rem] font-medium tabular-nums text-muted-foreground">
-                      {servicesPage + 1}/{totalServicePages}
-                    </span>
                     <button
                       type="button"
-                      onClick={nextPage}
-                      aria-label="Sledeća stranica usluga"
+                      onClick={scrollServicesDown}
+                      aria-label="Skroluj naniže"
                       className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-background/60 text-foreground/70 transition hover:bg-muted hover:text-foreground"
                     >
-                      <ChevronRight className="h-3.5 w-3.5" />
+                      <ChevronDown className="h-3.5 w-3.5" />
                     </button>
                   </div>
                 </div>
 
-                <div className="relative overflow-hidden">
+                <div className="relative">
                   <div
-                    className="flex transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
-                    style={{
-                      transform: `translateX(-${servicesPage * 100}%)`,
-                    }}
+                    ref={servicesScrollRef}
+                    className="scrollbar-warm max-h-[264px] space-y-2 overflow-y-auto overscroll-contain py-1 pr-2"
                   >
-                    {servicePages.map((pageServices, pageIdx) => (
-                      <div
-                        key={pageIdx}
-                        className="w-full flex-shrink-0 space-y-2"
-                        aria-hidden={pageIdx !== servicesPage}
-                      >
-                        {pageServices.map((service) => {
-                          const isActive =
-                            service.slug === selectedService.slug;
-                          const ServiceIconEl = ICON_MAP[service.icon];
-                          return (
-                            <button
-                              key={service.slug}
-                              type="button"
-                              onClick={() => handleServiceChange(service.slug)}
-                              tabIndex={pageIdx === servicesPage ? 0 : -1}
-                              className={cn(
-                                "flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition",
-                                isActive
-                                  ? "border-accent bg-accent/10 shadow-[0_12px_26px_rgba(184,131,99,0.14)]"
-                                  : "border-border bg-background/60 hover:border-[color:var(--color-border-warm)] hover:bg-background",
-                              )}
-                            >
-                              <div
-                                className={cn(
-                                  "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border",
-                                  isActive
-                                    ? "border-accent/40 bg-accent/15 text-accent"
-                                    : "border-border bg-card text-foreground",
-                                )}
-                              >
-                                <ServiceIconEl className="h-3.5 w-3.5" />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="truncate text-[0.82rem] font-semibold leading-tight text-foreground">
-                                  {service.shortName}
-                                </p>
-                                <p className="mt-0.5 truncate text-[0.65rem] text-muted-foreground">
-                                  od {service.variants[0].priceLabel}
-                                </p>
-                              </div>
-                              {isActive && (
-                                <Check className="h-3.5 w-3.5 flex-shrink-0 text-accent" />
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ))}
+                    {SERVICES.map((service) => {
+                      const isActive = service.slug === selectedService.slug;
+                      const ServiceIconEl = ICON_MAP[service.icon];
+                      return (
+                        <button
+                          key={service.slug}
+                          type="button"
+                          onClick={() => handleServiceChange(service.slug)}
+                          className={cn(
+                            "flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition",
+                            isActive
+                              ? "border-accent bg-accent/10 shadow-[0_12px_26px_rgba(184,131,99,0.14)]"
+                              : "border-border bg-background/60 hover:border-[color:var(--color-border-warm)] hover:bg-background",
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border",
+                              isActive
+                                ? "border-accent/40 bg-accent/15 text-accent"
+                                : "border-border bg-card text-foreground",
+                            )}
+                          >
+                            <ServiceIconEl className="h-3.5 w-3.5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-[0.82rem] font-semibold leading-tight text-foreground">
+                              {service.shortName}
+                            </p>
+                            <p className="mt-0.5 truncate text-[0.65rem] text-muted-foreground">
+                              od {service.variants[0].priceLabel}
+                            </p>
+                          </div>
+                          {isActive && (
+                            <Check className="h-3.5 w-3.5 flex-shrink-0 text-accent" />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
-                </div>
-
-                {/* Page dots */}
-                <div className="mt-3 flex items-center justify-center gap-1.5">
-                  {servicePages.map((_, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => setServicesPage(idx)}
-                      aria-label={`Stranica ${idx + 1}`}
-                      className={cn(
-                        "h-1.5 rounded-full transition-all",
-                        idx === servicesPage
-                          ? "w-6 bg-accent"
-                          : "w-1.5 bg-border hover:bg-muted-foreground/50",
-                      )}
-                    />
-                  ))}
+                  {/* Bottom fade mask — hints that more services exist below the fold */}
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-10 rounded-b-xl bg-gradient-to-t from-card via-card/85 to-transparent"
+                  />
                 </div>
               </div>
 
@@ -408,9 +383,7 @@ export function QuickOrderHero() {
                 </div>
 
                 <div className="mt-3 text-[0.72rem] leading-5 text-background/80">
-                  <p className="font-semibold text-background">
-                    Uključeno
-                  </p>
+                  <p className="font-semibold text-background">Uključeno</p>
                   <p className="mt-1 line-clamp-2 text-background/72">
                     {selectedVariant.included}
                   </p>

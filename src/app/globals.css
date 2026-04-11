@@ -160,6 +160,36 @@
   }
 }
 
+@layer utilities {
+  /*
+    .scrollbar-warm — slim, warm-toned custom scrollbar for internal
+    scroll containers (services list in quick order panel, etc.).
+    Uses brand border color by default; thumb darkens to clay on hover.
+  */
+  .scrollbar-warm {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-warm) transparent;
+  }
+
+  .scrollbar-warm::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-warm::-webkit-scrollbar-track {
+    background: transparent;
+    margin-block: 4px;
+  }
+
+  .scrollbar-warm::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-warm);
+    border-radius: 999px;
+  }
+
+  .scrollbar-warm::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-accent);
+  }
+}
+
 @layer components {
   /*
     .section-kicker — small uppercase label with a warm gradient line before it.

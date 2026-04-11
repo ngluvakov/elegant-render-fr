@@ -3,7 +3,7 @@ import { Clock3, HelpCircle } from "lucide-react";
 export function NextIteration() {
   return (
     <section className="py-10 md:py-14 lg:py-20">
-      <div className="mx-auto w-full max-w-6xl px-6">
+      <div className="mx-auto w-full max-w-[1440px] px-6">
         <div className="rounded-3xl border border-[color:var(--color-border-warm)] bg-card/90 p-6 shadow-[0_30px_80px_rgba(28,26,25,0.08)] sm:p-8">
           <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
             <div>

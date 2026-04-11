@@ -48,7 +48,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-6 px-6">
+      <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between gap-6 px-6">
         <BrandLogo />
 
         {/* Desktop nav */}

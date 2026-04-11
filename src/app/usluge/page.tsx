@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function UslugePage() {
   return (
     <>
-      <div className="mx-auto w-full max-w-6xl px-6 pt-20 md:pt-28">
+      <div className="mx-auto w-full max-w-[1440px] px-6 pt-20 md:pt-28">
         <SectionKicker>Usluge</SectionKicker>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
           Sve što vam treba za jasan prikaz prostora

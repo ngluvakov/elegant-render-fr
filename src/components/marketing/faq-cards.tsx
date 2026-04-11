@@ -5,7 +5,7 @@ import { FAQ_ITEMS } from "@/lib/content/site";
 export function FaqCards() {
   return (
     <section id="faq" className="pb-16 pt-10 md:pb-20 md:pt-14 lg:pb-24 lg:pt-20">
-      <div className="mx-auto w-full max-w-6xl px-6">
+      <div className="mx-auto w-full max-w-[1440px] px-6">
         <div className="mb-10 max-w-2xl space-y-3">
           <SectionKicker>Česta pitanja</SectionKicker>
           <h2 className="text-4xl leading-tight text-foreground md:text-5xl">

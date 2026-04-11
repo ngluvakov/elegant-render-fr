@@ -76,7 +76,7 @@ export function QuickOrderHero() {
 
   return (
     <section id="naruci" className="relative py-10 md:py-16 lg:py-20">
-      <div className="mx-auto w-full max-w-6xl px-6">
+      <div className="mx-auto w-full max-w-[1440px] px-6">
         <div className="grid gap-8 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,460px)]">
           {/* LEFT — Hero card */}
           <div className="grain-soft relative overflow-hidden rounded-3xl border border-border/60 bg-card/75 p-6 shadow-[0_30px_80px_rgba(28,26,25,0.08)] sm:p-8 lg:p-10">

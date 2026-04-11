@@ -4,7 +4,7 @@ import { PLATFORM_PRINCIPLES } from "@/lib/content/site";
 export function PlatformPrinciples() {
   return (
     <section id="principi" className="py-10 md:py-14 lg:py-20">
-      <div className="mx-auto w-full max-w-6xl px-6">
+      <div className="mx-auto w-full max-w-[1440px] px-6">
         <div className="mb-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl space-y-3">
             <SectionKicker>Cenovni interfejs</SectionKicker>

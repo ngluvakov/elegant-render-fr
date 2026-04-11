@@ -3,7 +3,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 export function FinalCta() {
   return (
     <section className="py-24">
-      <div className="mx-auto w-full max-w-[1440px] px-6">
+      <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="rounded-2xl bg-foreground px-8 py-20 text-center text-background md:px-16">
           <h2 className="mx-auto max-w-2xl text-4xl leading-tight md:text-5xl">
             Pošaljite nam prostor — vratimo vam jasan prikaz.

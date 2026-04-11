@@ -13,7 +13,7 @@ const PLACEHOLDERS = Array.from({ length: 9 }, (_, i) => i + 1);
 export default function PortfolioPage() {
   return (
     <>
-      <div className="mx-auto w-full max-w-[1440px] px-6 pt-20 md:pt-28">
+      <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
         <SectionKicker>Portfolio</SectionKicker>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
           Izbor projekata koji pokazuju šta radimo
@@ -26,7 +26,7 @@ export default function PortfolioPage() {
       </div>
 
       <section className="py-16">
-        <div className="mx-auto w-full max-w-[1440px] px-6">
+        <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {PLACEHOLDERS.map((n) => (
               <div

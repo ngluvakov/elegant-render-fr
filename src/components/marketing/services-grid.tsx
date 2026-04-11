@@ -19,7 +19,7 @@ export function ServicesGrid({ preview = false }: ServicesGridProps) {
 
   return (
     <section className="py-24">
-      <div className="mx-auto w-full max-w-[1440px] px-6">
+      <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         {!preview && (
           <div className="mx-auto max-w-2xl text-center">
             <SectionKicker align="center">Usluge</SectionKicker>

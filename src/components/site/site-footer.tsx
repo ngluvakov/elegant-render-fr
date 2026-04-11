@@ -23,7 +23,7 @@ export function SiteFooter() {
         className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.34),transparent)]"
       />
 
-      <div className="relative mx-auto w-full max-w-[1440px] px-6 py-14 md:py-20">
+      <div className="relative mx-auto w-full max-w-[min(96vw,1720px)] px-6 py-14 md:py-20">
         <div className="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[1.25fr_0.75fr_0.75fr_0.95fr]">
           <div className="max-w-md">
             <Link

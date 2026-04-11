@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function KontaktPage() {
   return (
-    <div className="mx-auto w-full max-w-[1440px] px-6 pb-24 pt-20 md:pt-28">
+    <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pb-24 pt-20 md:pt-28">
       <SectionKicker>Kontakt</SectionKicker>
       <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
         Javite nam se

@@ -3,7 +3,7 @@ import { ORDERING_STEPS } from "@/lib/content/site";
 export function ModelFirst() {
   return (
     <section id="model-first" className="py-10 md:py-14 lg:py-20">
-      <div className="mx-auto w-full max-w-[1440px] px-6">
+      <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <article className="rounded-3xl border border-foreground/10 bg-foreground p-6 text-background shadow-[0_30px_70px_rgba(28,26,25,0.18)] sm:p-8">
             <p className="text-[0.7rem] uppercase tracking-[0.28em] text-background/45">

@@ -1,0 +1,98 @@
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  CATEGORY_DESCRIPTIONS,
+  CATEGORY_LABELS,
+  CATEGORY_ORDER,
+  getServicesByCategory,
+} from "@/lib/catalog/services";
+
+type ServicesGridProps = {
+  /** When true, only show a compact preview (first 2 categories). */
+  preview?: boolean;
+};
+
+export function ServicesGrid({ preview = false }: ServicesGridProps) {
+  const categories = preview ? CATEGORY_ORDER.slice(0, 2) : CATEGORY_ORDER;
+
+  return (
+    <section className="py-24">
+      <div className="mx-auto w-full max-w-6xl px-6">
+        {!preview && (
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs font-medium uppercase tracking-[0.22em] text-foreground/55">
+              Usluge
+            </p>
+            <h2 className="mt-4 text-4xl leading-tight text-foreground md:text-5xl">
+              Sve što vam treba za jasan prikaz prostora
+            </h2>
+            <p className="mt-6 text-base leading-relaxed text-foreground/70">
+              Od pojedinačnih kadrova do kompletnih virtuelnih tura. Svaka
+              usluga je definisana jasno — unapred znate šta dobijate i koliko
+              to košta.
+            </p>
+          </div>
+        )}
+
+        <div className={preview ? "mt-12 space-y-16" : "mt-20 space-y-20"}>
+          {categories.map((category) => {
+            const services = getServicesByCategory(category);
+            if (services.length === 0) return null;
+            return (
+              <div key={category}>
+                <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <h3 className="text-2xl text-foreground md:text-3xl">
+                      {CATEGORY_LABELS[category]}
+                    </h3>
+                    <p className="mt-2 max-w-xl text-sm text-foreground/65">
+                      {CATEGORY_DESCRIPTIONS[category]}
+                    </p>
+                  </div>
+                  <span className="text-xs uppercase tracking-[0.18em] text-foreground/50">
+                    {services.length} uslug{services.length === 1 ? "a" : "e"}
+                  </span>
+                </div>
+
+                <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {services.map((service) => (
+                    <Link
+                      key={service.slug}
+                      href={`/usluge/${service.slug}`}
+                      className="group flex flex-col gap-3 rounded-lg border border-border/60 bg-background p-6 transition-colors hover:border-accent/60"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <h4 className="text-lg text-foreground">
+                          {service.name}
+                        </h4>
+                        <ArrowUpRight className="h-4 w-4 text-foreground/40 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+                      </div>
+                      <p className="text-sm leading-relaxed text-foreground/65">
+                        {service.tagline}
+                      </p>
+                      <div className="mt-auto flex items-center justify-between pt-4">
+                        <span className="text-sm font-medium text-foreground">
+                          od €{service.startingFromEur}
+                          {service.unit === "po sekundi" && "/s"}
+                        </span>
+                        {service.outsourced && (
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] uppercase tracking-wider"
+                          >
+                            Partner mreža
+                          </Badge>
+                        )}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}

@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Manrope, Geist } from "next/font/google";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+import { SiteHeader } from "@/components/site/site-header";
+import { SiteFooter } from "@/components/site/site-footer";
+import { SITE } from "@/lib/content/site";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-heading",
@@ -13,20 +14,27 @@ const cormorant = Cormorant_Garamond({
 });
 
 const manrope = Manrope({
-  variable: "--font-body",
+  variable: "--font-sans",
   subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "Elegant Render — Arhitektonska vizuelizacija",
-    template: "%s · Elegant Render",
+    default: `${SITE.name} — Arhitektonska vizuelizacija`,
+    template: `%s · ${SITE.name}`,
   },
-  description:
-    "Ručno izrađeni renderi, virtuelno opremanje i adaptacije prostora sa jasnim cenama i brzim procesom. Elegant Render je deo White Rook DOO.",
-  metadataBase: new URL("https://elegantrender.rs"),
+  description: SITE.description,
+  metadataBase: new URL(SITE.url),
   robots: { index: false, follow: false },
+  openGraph: {
+    title: `${SITE.name} — ${SITE.tagline}`,
+    description: SITE.description,
+    url: SITE.url,
+    siteName: SITE.name,
+    locale: "sr_Latn_RS",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -37,10 +45,12 @@ export default function RootLayout({
   return (
     <html
       lang="sr-Latn"
-      className={cn("h-full", "antialiased", cormorant.variable, manrope.variable, "font-sans", geist.variable)}
+      className={cn("h-full antialiased", cormorant.variable, manrope.variable)}
     >
-      <body className="min-h-full flex flex-col bg-ivory text-coal font-body">
-        {children}
+      <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <SiteHeader />
+        <div className="flex flex-1 flex-col">{children}</div>
+        <SiteFooter />
       </body>
     </html>
   );

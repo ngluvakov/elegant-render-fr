@@ -580,7 +580,7 @@ export const SERVICES: Service[] = [
         id: "item-removal-main",
         title: "Item Removal",
         basePrice: 12,
-        priceLabel: "od €12",
+        priceLabel: "€12",
         unitLabel: "po slici",
         description:
           "Simple removal od €12, complex od €25 — bira se prema složenosti.",

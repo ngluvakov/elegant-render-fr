@@ -262,7 +262,7 @@ export function QuickOrderHero() {
                 <div className="relative">
                   <div
                     ref={servicesScrollRef}
-                    className="scrollbar-warm max-h-[264px] space-y-2 overflow-y-auto overscroll-contain py-1 pr-2"
+                    className="scrollbar-warm max-h-[264px] space-y-2 overflow-y-auto overscroll-contain pt-1 pr-2 pb-12"
                   >
                     {SERVICES.map((service) => {
                       const isActive = service.slug === selectedService.slug;

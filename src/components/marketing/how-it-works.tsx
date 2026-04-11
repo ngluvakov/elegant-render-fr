@@ -1,3 +1,4 @@
+import { SectionKicker } from "@/components/brand/section-kicker";
 import { HOW_IT_WORKS } from "@/lib/content/site";
 
 export function HowItWorks() {
@@ -5,9 +6,7 @@ export function HowItWorks() {
     <section className="border-y border-border/50 bg-secondary/30 py-24">
       <div className="mx-auto w-full max-w-6xl px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.22em] text-foreground/55">
-            Kako funkcioniše
-          </p>
+          <SectionKicker align="center">Kako funkcioniše</SectionKicker>
           <h2 className="mt-4 text-4xl leading-tight text-foreground md:text-5xl">
             Četiri jasna koraka od ideje do prikaza
           </h2>

@@ -13,7 +13,7 @@ export function FinalCta() {
             javljamo istog radnog dana.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <ButtonLink href="/kontakt" size="xl" variant="secondary">
+            <ButtonLink href="/kontakt" size="xl" variant="accent">
               Pošaljite projekat
             </ButtonLink>
             <ButtonLink

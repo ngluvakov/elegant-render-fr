@@ -1,15 +1,16 @@
 import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
+import { SectionKicker } from "@/components/brand/section-kicker";
 import { SITE } from "@/lib/content/site";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative overflow-hidden grain-soft">
       <div className="mx-auto w-full max-w-6xl px-6 pb-16 pt-20 sm:pt-28 md:pb-24 md:pt-36">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="mb-6 text-xs font-medium uppercase tracking-[0.22em] text-foreground/55">
+          <SectionKicker align="center" className="mb-6">
             Arhitektonska vizuelizacija · {SITE.parentCompany}
-          </p>
+          </SectionKicker>
           <h1 className="text-5xl leading-[1.02] tracking-tight text-foreground sm:text-6xl md:text-7xl">
             Lep prikaz.
             <br />
@@ -21,7 +22,12 @@ export function Hero() {
             {SITE.description}
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <ButtonLink href="/cene" size="xl" className="w-full sm:w-auto">
+            <ButtonLink
+              href="/cene"
+              size="xl"
+              variant="accent"
+              className="w-full sm:w-auto"
+            >
               Pogledajte cene
               <ArrowRight className="ml-1 h-4 w-4" />
             </ButtonLink>

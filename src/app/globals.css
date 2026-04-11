@@ -4,14 +4,25 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+  Elegant Render design system
+  Philosophy: topli editorial modernizam — warm neutral palette, serif-led hierarchy,
+  tactile surfaces, subtle depth. Light mode only (no dark theme per brand book).
+*/
+
 @theme inline {
-  /* Elegant Render brand palette (docs/brand-book.md §11.2) */
+  /* Brand palette (docs/brand-book.md §11.2) */
   --color-coal: #1c1a19;
   --color-ivory: #f6f1ea;
   --color-sand: #dccfc2;
+  --color-sand-soft: #efe4d8;
   --color-clay: #b88363;
+  --color-clay-deep: #9f6a4b;
   --color-sage: #8f9a8a;
+  --color-sage-deep: #6d7968;
   --color-border-warm: #b9b0a7;
+  --color-border-soft: #d8cec4;
+  --color-warm-white: #fffcf8;
 
   /* Fonts — wired through next/font CSS variables */
   --font-sans: var(--font-sans);
@@ -50,37 +61,37 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-xl: calc(var(--radius) * 1.3);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-3xl: calc(var(--radius) * 2);
+  --radius-4xl: calc(var(--radius) * 2.5);
 }
 
 :root {
   color-scheme: light;
-  --radius: 0.5rem;
+  --radius: 1rem;
 
   /* shadcn semantic vars mapped to Elegant Render brand */
   --background: #f6f1ea;              /* ivory */
   --foreground: #1c1a19;              /* coal */
-  --card: #ffffff;
+  --card: #fffcf8;                    /* warm white (slightly brighter than ivory) */
   --card-foreground: #1c1a19;
-  --popover: #ffffff;
+  --popover: #fffcf8;
   --popover-foreground: #1c1a19;
   --primary: #1c1a19;                 /* coal — primary CTAs */
   --primary-foreground: #f6f1ea;
-  --secondary: #dccfc2;               /* sand — secondary surfaces */
+  --secondary: #efe4d8;               /* sand-soft — secondary surfaces */
   --secondary-foreground: #1c1a19;
   --muted: #ece3d6;                   /* slightly tinted ivory */
-  --muted-foreground: #6b625a;
-  --accent: #b88363;                  /* clay — warm accent */
+  --muted-foreground: #6e655d;        /* warm muted text */
+  --accent: #b88363;                  /* clay — warm accent / main CTA */
   --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #b9b0a7;                  /* border-warm */
-  --input: #b9b0a7;
+  --border: #d8cec4;                  /* soft warm border */
+  --input: #d8cec4;
   --ring: #b88363;                    /* clay focus ring */
   --chart-1: #b88363;
   --chart-2: #8f9a8a;
@@ -91,34 +102,126 @@
   --sidebar-foreground: #1c1a19;
   --sidebar-primary: #1c1a19;
   --sidebar-primary-foreground: #f6f1ea;
-  --sidebar-accent: #dccfc2;
+  --sidebar-accent: #efe4d8;
   --sidebar-accent-foreground: #1c1a19;
-  --sidebar-border: #b9b0a7;
+  --sidebar-border: #d8cec4;
   --sidebar-ring: #b88363;
-}
-
-body {
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  font-feature-settings:
-    "ss01",
-    "ss02";
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-heading), ui-serif, Georgia, serif;
-  letter-spacing: -0.01em;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "ss01", "ss02";
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at top left, rgba(184, 131, 99, 0.08), transparent 28%),
+      radial-gradient(circle at bottom right, rgba(143, 154, 138, 0.08), transparent 24%),
+      linear-gradient(180deg, #faf6f0 0%, #f6f1ea 100%);
+    background-attachment: fixed;
+    min-height: 100dvh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading), ui-serif, Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  /*
+    .section-kicker — small uppercase label with a warm gradient line before it.
+    Used as eyebrow copy above section headings. Works inside centered or
+    left-aligned parents (inline-flex respects parent text-align).
+  */
+  .section-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-muted-foreground);
+  }
+
+  .section-kicker::before {
+    content: "";
+    width: 2.5rem;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      var(--color-accent),
+      transparent
+    );
+    opacity: 0.9;
+  }
+
+  /*
+    .grain-soft — subtle grain overlay for tactile "editorial paper" feel.
+    Apply to a relatively-positioned parent. Decorative only, pointer-events: none.
+  */
+  .grain-soft {
+    position: relative;
+  }
+
+  .grain-soft::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.045;
+    background-image:
+      radial-gradient(
+        circle at 20% 20%,
+        rgba(28, 26, 25, 0.4) 0.4px,
+        transparent 0.6px
+      ),
+      radial-gradient(
+        circle at 70% 40%,
+        rgba(28, 26, 25, 0.28) 0.4px,
+        transparent 0.6px
+      ),
+      radial-gradient(
+        circle at 40% 80%,
+        rgba(28, 26, 25, 0.2) 0.5px,
+        transparent 0.7px
+      );
+    background-size:
+      24px 24px,
+      30px 30px,
+      36px 36px;
   }
 }

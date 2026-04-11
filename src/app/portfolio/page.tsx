@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FinalCta } from "@/components/marketing/final-cta";
+import { SectionKicker } from "@/components/brand/section-kicker";
 
 export const metadata: Metadata = {
   title: "Portfolio",
@@ -13,9 +14,7 @@ export default function PortfolioPage() {
   return (
     <>
       <div className="mx-auto w-full max-w-6xl px-6 pt-20 md:pt-28">
-        <p className="text-xs font-medium uppercase tracking-[0.22em] text-foreground/55">
-          Portfolio
-        </p>
+        <SectionKicker>Portfolio</SectionKicker>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
           Izbor projekata koji pokazuju šta radimo
         </h1>

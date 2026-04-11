@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { FinalCta } from "@/components/marketing/final-cta";
+import { SectionKicker } from "@/components/brand/section-kicker";
 import { SITE } from "@/lib/content/site";
 
 export const metadata: Metadata = {
@@ -11,9 +12,7 @@ export default function ONamaPage() {
   return (
     <>
       <article className="mx-auto w-full max-w-3xl px-6 pb-20 pt-20 md:pt-28">
-        <p className="text-xs font-medium uppercase tracking-[0.22em] text-foreground/55">
-          O nama
-        </p>
+        <SectionKicker>O nama</SectionKicker>
         <h1 className="mt-4 text-5xl leading-[1.05] text-foreground md:text-6xl">
           Arhitektonska vizuelizacija sa ljudskim licem
         </h1>

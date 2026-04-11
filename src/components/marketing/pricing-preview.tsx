@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
+import { SectionKicker } from "@/components/brand/section-kicker";
 import { PRICING_HIGHLIGHTS } from "@/lib/content/site";
 
 export function PricingPreview() {
@@ -9,9 +10,7 @@ export function PricingPreview() {
       <div className="mx-auto w-full max-w-6xl px-6">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-foreground/55">
-              Cene
-            </p>
+            <SectionKicker>Cene</SectionKicker>
             <h2 className="mt-4 text-4xl leading-tight text-foreground md:text-5xl">
               Cena bez nagađanja
             </h2>

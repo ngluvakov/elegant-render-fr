@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SectionKicker } from "@/components/brand/section-kicker";
 import { SITE } from "@/lib/content/site";
 
 export const metadata: Metadata = {
@@ -9,9 +10,7 @@ export const metadata: Metadata = {
 export default function KolaciciPage() {
   return (
     <article className="mx-auto w-full max-w-3xl px-6 pb-24 pt-20 md:pt-28">
-      <p className="text-xs font-medium uppercase tracking-[0.22em] text-foreground/55">
-        Pravno
-      </p>
+      <SectionKicker>Pravno</SectionKicker>
       <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">
         Politika kolačića
       </h1>

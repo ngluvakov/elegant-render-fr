@@ -1,3 +1,4 @@
+import { SectionKicker } from "@/components/brand/section-kicker";
 import { WHY_US } from "@/lib/content/site";
 
 export function WhyUs() {
@@ -5,9 +6,7 @@ export function WhyUs() {
     <section className="border-y border-border/50 bg-secondary/30 py-24">
       <div className="mx-auto w-full max-w-6xl px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-xs font-medium uppercase tracking-[0.22em] text-foreground/55">
-            Zašto Elegant Render
-          </p>
+          <SectionKicker align="center">Zašto Elegant Render</SectionKicker>
           <h2 className="mt-4 text-4xl leading-tight text-foreground md:text-5xl">
             Tri razloga zbog kojih klijenti biraju nas
           </h2>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button-link";
 import { FinalCta } from "@/components/marketing/final-cta";
+import { SectionKicker } from "@/components/brand/section-kicker";
 import {
   CATEGORY_DESCRIPTIONS,
   CATEGORY_LABELS,
@@ -19,9 +20,7 @@ export default function CenePage() {
   return (
     <>
       <div className="mx-auto w-full max-w-6xl px-6 pt-20 md:pt-28">
-        <p className="text-xs font-medium uppercase tracking-[0.22em] text-foreground/55">
-          Cene
-        </p>
+        <SectionKicker>Cene</SectionKicker>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
           Cena bez nagađanja
         </h1>
@@ -122,7 +121,7 @@ export default function CenePage() {
               </li>
             </ul>
             <div className="mt-6">
-              <ButtonLink href="/kontakt" size="lg">
+              <ButtonLink href="/kontakt" size="lg" variant="accent">
                 Zatražite procenu
               </ButtonLink>
             </div>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { SectionKicker } from "@/components/brand/section-kicker";
 import { SITE } from "@/lib/content/site";
 
 export const metadata: Metadata = {
@@ -15,9 +16,7 @@ export const metadata: Metadata = {
 export default function KontaktPage() {
   return (
     <div className="mx-auto w-full max-w-6xl px-6 pb-24 pt-20 md:pt-28">
-      <p className="text-xs font-medium uppercase tracking-[0.22em] text-foreground/55">
-        Kontakt
-      </p>
+      <SectionKicker>Kontakt</SectionKicker>
       <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
         Javite nam se
       </h1>

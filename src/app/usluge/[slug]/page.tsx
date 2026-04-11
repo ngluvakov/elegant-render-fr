@@ -89,7 +89,7 @@ export default async function ServiceDetailPage({ params }: { params: Params }) 
         </div>
 
         <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-          <ButtonLink href="/kontakt" size="xl">
+          <ButtonLink href="/kontakt" size="xl" variant="accent">
             Pošaljite projekat
           </ButtonLink>
           <ButtonLink href="/cene" size="xl" variant="outline">

@@ -41,7 +41,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden md:block">
-          <ButtonLink href="/kontakt" size="sm">
+          <ButtonLink href="/kontakt" size="sm" variant="accent">
             Pošaljite projekat
           </ButtonLink>
         </div>
@@ -74,6 +74,7 @@ export function SiteHeader() {
             <ButtonLink
               href="/kontakt"
               onClick={() => setOpen(false)}
+              variant="accent"
               className="mt-auto"
             >
               Pošaljite projekat

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { SectionKicker } from "@/components/brand/section-kicker";
 import {
   CATEGORY_DESCRIPTIONS,
   CATEGORY_LABELS,
@@ -21,9 +22,7 @@ export function ServicesGrid({ preview = false }: ServicesGridProps) {
       <div className="mx-auto w-full max-w-6xl px-6">
         {!preview && (
           <div className="mx-auto max-w-2xl text-center">
-            <p className="text-xs font-medium uppercase tracking-[0.22em] text-foreground/55">
-              Usluge
-            </p>
+            <SectionKicker align="center">Usluge</SectionKicker>
             <h2 className="mt-4 text-4xl leading-tight text-foreground md:text-5xl">
               Sve što vam treba za jasan prikaz prostora
             </h2>

@@ -1,21 +1,17 @@
-import { Hero } from "@/components/marketing/hero";
-import { HowItWorks } from "@/components/marketing/how-it-works";
-import { ServicesGrid } from "@/components/marketing/services-grid";
-import { PricingPreview } from "@/components/marketing/pricing-preview";
-import { WhyUs } from "@/components/marketing/why-us";
-import { Faq } from "@/components/marketing/faq";
-import { FinalCta } from "@/components/marketing/final-cta";
+import { QuickOrderHero } from "@/components/marketing/quick-order-hero";
+import { PlatformPrinciples } from "@/components/marketing/platform-principles";
+import { ModelFirst } from "@/components/marketing/model-first";
+import { NextIteration } from "@/components/marketing/next-iteration";
+import { FaqCards } from "@/components/marketing/faq-cards";
 
 export default function Home() {
   return (
     <>
-      <Hero />
-      <PricingPreview />
-      <HowItWorks />
-      <ServicesGrid preview />
-      <WhyUs />
-      <Faq />
-      <FinalCta />
+      <QuickOrderHero />
+      <PlatformPrinciples />
+      <ModelFirst />
+      <NextIteration />
+      <FaqCards />
     </>
   );
 }

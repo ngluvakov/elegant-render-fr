@@ -4,11 +4,36 @@ export const SITE = {
   parentCompany: "White Rook DOO",
   tagline: "Lep prikaz. Jasna cena. Lakša odluka.",
   description:
-    "Ručno izrađeni renderi, virtuelno opremanje i vizuelne adaptacije prostora za domove, stanove i nekretnine koje želite da prikažete bolje.",
+    "Ručno izrađeni renderi, virtuelno opremanje i vizuelne adaptacije prostora. Biraš uslugu, odmah vidiš baznu cenu iz cenovnika i kako se cena širi — bez izmišljenih paketa.",
   url: "https://elegantrender.rs",
   email: "kontakt@elegantrender.rs",
   instagram: "https://www.instagram.com/elegantrender",
 } as const;
+
+export const TRUST_SIGNALS = [
+  "Bez paketa van cenovnika — svaka cena je iz zvaničnog Model-First cenovnika.",
+  "Model-first logika je vidljiva već iznad prevoja, bez skrivenih pravila.",
+  "Tri runde revizija uključene u svaki projekat po našem standardu.",
+] as const;
+
+export const PLATFORM_PRINCIPLES = [
+  {
+    title: "Šta kupujem",
+    text: "Biraš konkretnu uslugu i odmah vidiš da li cena polazi od prve slike, prvog rendera, sprata, sekunde animacije ili dodatka na postojeći model.",
+  },
+  {
+    title: "Koliko košta",
+    text: "Vidiš zvaničnu baznu cenu iz cenovnika, a odmah ispod stoje tačne doplate za dodatni obim umesto izmišljenih paketa.",
+  },
+  {
+    title: "Kako se cena širi",
+    text: "Kada postoji model-first logika, interfejs je objašnjava: prvi izlaz pokriva glavni posao, sledeći izlazi su jeftiniji iz istog modela.",
+  },
+  {
+    title: "Šta šaljem",
+    text: "Svaka usluga ima jasno naveden minimalni ulaz: osnove, fotografije, reference ili postojeći model.",
+  },
+] as const;
 
 export type NavItem = { href: string; label: string };
 
@@ -26,50 +51,35 @@ export const NAV_LEGAL: NavItem[] = [
   { href: "/pravno/kolacici", label: "Politika kolačića" },
 ];
 
-export const HOW_IT_WORKS = [
+export const ORDERING_STEPS = [
   {
     step: "01",
-    title: "Izaberite uslugu",
+    title: "Izaberi tip usluge",
     description:
-      "Odaberite tip prikaza koji vam je potreban i definišite obim projekta kroz jednostavan formular.",
+      "Prvo biraš da li kupuješ enterijer, eksterijer, staging, renovaciju, osnovu ili 360 / animaciju.",
   },
   {
     step: "02",
-    title: "Pošaljite materijale",
+    title: "Izaberi tačan obračun",
     description:
-      "Uploadujte fotografije, crteže ili reference direktno kroz formu porudžbine. Format i veličinu ostavite nama.",
+      "Zatim biraš zvaničnu cenovnu logiku iz cenovnika: prvi render, prvi hotspot, sprat, sekundu animacije ili tour add-on.",
   },
   {
     step: "03",
-    title: "Platite unapred poznatu cenu",
+    title: "Dodaj obim projekta",
     description:
-      "Cena se formira po jasnim pravilima — bez nagađanja. Plaćanje je sigurno, karticom ili putem PayPala.",
+      "Interfejs prikazuje tačne doplate iz cenovnika za dodatne sobe, kamere, hotspotove, nivoe ili sekunde.",
   },
   {
     step: "04",
-    title: "Pratite i preuzmite",
+    title: "Pošalji materijale",
     description:
-      "Kroz klijentsku sekciju pratite status, razmenjujete komentare i preuzimate finalne materijale.",
+      "Šalješ ono što je minimalno potrebno za start, bez dugog pregovaranja pre prve procene.",
   },
 ] as const;
 
-export const WHY_US = [
-  {
-    title: "Jasne i transparentne cene",
-    description:
-      "Cena se formira po jasnim pravilima. Prva isporuka iz modela je puni iznos, a svaki sledeći prikaz košta manje jer je osnovni rad već urađen.",
-  },
-  {
-    title: "Ručno izrađeni prikazi",
-    description:
-      "Bez generičkih šablona. Svaka scena se kadar po kadar prilagođava vašem prostoru, svetlu i atmosferi.",
-  },
-  {
-    title: "Podrška White Rook tima",
-    description:
-      "Elegant Render je deo White Rook DOO — iza svakog projekta stoji iskusan tim sa višegodišnjim portfolijom u arhitektonskoj vizuelizaciji.",
-  },
-] as const;
+/** Alias kept for legacy imports in /kontakt and other places. */
+export const HOW_IT_WORKS = ORDERING_STEPS;
 
 export const FAQ_ITEMS = [
   {
@@ -99,33 +109,3 @@ export const FAQ_ITEMS = [
   },
 ] as const;
 
-export const PRICING_HIGHLIGHTS = [
-  {
-    title: "Unutrašnji render",
-    price: 170,
-    unit: "od",
-    description: "Do 10 opremljenih prostorija, neograničen broj kadrova.",
-    href: "/usluge/unutrasnji-renderi",
-  },
-  {
-    title: "Spoljašnji render",
-    price: 250,
-    unit: "od",
-    description: "Kompletan 3D model + prvi kadar.",
-    href: "/usluge/spoljasnji-renderi",
-  },
-  {
-    title: "Virtuelno opremanje",
-    price: 18,
-    unit: "od",
-    description: "Prva opremljena slika iz prazne fotografije.",
-    href: "/usluge/virtuelno-opremanje",
-  },
-  {
-    title: "Virtuelna renovacija",
-    price: 66,
-    unit: "od",
-    description: "Vizuelni prikaz adaptacije pre radova.",
-    href: "/usluge/virtuelna-renovacija",
-  },
-] as const;

@@ -26,7 +26,7 @@ export function ServicesGrid({ preview = false }: ServicesGridProps) {
             <h2 className="mt-4 text-4xl leading-tight text-foreground md:text-5xl">
               Sve što vam treba za jasan prikaz prostora
             </h2>
-            <p className="mt-6 text-base leading-relaxed text-foreground/70">
+            <p className="mt-6 text-base leading-relaxed text-muted-foreground">
               Od pojedinačnih kadrova do kompletnih virtuelnih tura. Svaka
               usluga je definisana jasno — unapred znate šta dobijate i koliko
               to košta.
@@ -45,47 +45,49 @@ export function ServicesGrid({ preview = false }: ServicesGridProps) {
                     <h3 className="text-2xl text-foreground md:text-3xl">
                       {CATEGORY_LABELS[category]}
                     </h3>
-                    <p className="mt-2 max-w-xl text-sm text-foreground/65">
+                    <p className="mt-2 max-w-xl text-sm text-muted-foreground">
                       {CATEGORY_DESCRIPTIONS[category]}
                     </p>
                   </div>
-                  <span className="text-xs uppercase tracking-[0.18em] text-foreground/50">
+                  <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
                     {services.length} uslug{services.length === 1 ? "a" : "e"}
                   </span>
                 </div>
 
                 <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {services.map((service) => (
-                    <Link
-                      key={service.slug}
-                      href={`/usluge/${service.slug}`}
-                      className="group flex flex-col gap-3 rounded-lg border border-border/60 bg-background p-6 transition-colors hover:border-accent/60"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <h4 className="text-lg text-foreground">
-                          {service.name}
-                        </h4>
-                        <ArrowUpRight className="h-4 w-4 text-foreground/40 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
-                      </div>
-                      <p className="text-sm leading-relaxed text-foreground/65">
-                        {service.tagline}
-                      </p>
-                      <div className="mt-auto flex items-center justify-between pt-4">
-                        <span className="text-sm font-medium text-foreground">
-                          od €{service.startingFromEur}
-                          {service.unit === "po sekundi" && "/s"}
-                        </span>
-                        {service.outsourced && (
-                          <Badge
-                            variant="outline"
-                            className="text-[10px] uppercase tracking-wider"
-                          >
-                            Partner mreža
-                          </Badge>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
+                  {services.map((service) => {
+                    const firstVariant = service.variants[0];
+                    return (
+                      <Link
+                        key={service.slug}
+                        href={`/usluge/${service.slug}`}
+                        className="group flex flex-col gap-3 rounded-2xl border border-border/70 bg-card/80 p-6 transition-colors hover:border-accent/60"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <h4 className="text-lg text-foreground">
+                            {service.name}
+                          </h4>
+                          <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+                        </div>
+                        <p className="text-sm leading-relaxed text-muted-foreground">
+                          {service.tagline}
+                        </p>
+                        <div className="mt-auto flex items-center justify-between pt-4">
+                          <span className="text-sm font-medium text-foreground">
+                            od {firstVariant.priceLabel}
+                          </span>
+                          {service.outsourced && (
+                            <Badge
+                              variant="outline"
+                              className="text-[10px] uppercase tracking-wider"
+                            >
+                              Partner mreža
+                            </Badge>
+                          )}
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             );

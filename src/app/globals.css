@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Brand palette (docs/brand-book.md §11.2) */
+  --color-coal: #1c1a19;
+  --color-ivory: #f6f1ea;
+  --color-sand: #dccfc2;
+  --color-clay: #b88363;
+  --color-sage: #8f9a8a;
+  --color-border-warm: #b9b0a7;
+
+  /* Semantic tokens */
+  --color-background: var(--color-ivory);
+  --color-foreground: var(--color-coal);
+  --color-accent: var(--color-clay);
+  --color-muted: var(--color-sand);
+
+  /* Fonts wired through next/font CSS variables */
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings:
+    "ss01",
+    "ss02";
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading), ui-serif, Georgia, serif;
+  letter-spacing: -0.01em;
+}

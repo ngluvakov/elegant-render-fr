@@ -11,6 +11,12 @@ export const metadata: Metadata = {
   title: "Kontakt",
   description:
     "Javite nam se. Pošaljite kratak opis projekta i vratićemo se obično istog radnog dana.",
+  openGraph: {
+    title: "Kontakt — Elegant Render",
+    description:
+      "Javite nam se. Pošaljite kratak opis projekta i vratićemo se obično istog radnog dana.",
+    url: "/kontakt",
+  },
 };
 
 export default function KontaktPage() {

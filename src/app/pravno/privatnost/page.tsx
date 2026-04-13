@@ -5,6 +5,11 @@ import { SITE } from "@/lib/content/site";
 export const metadata: Metadata = {
   title: "Politika privatnosti",
   description: `Politika privatnosti ${SITE.name} — kako obrađujemo vaše podatke i u koje svrhe.`,
+  openGraph: {
+    title: "Politika privatnosti — Elegant Render",
+    description: `Politika privatnosti ${SITE.name} — kako obrađujemo vaše podatke i u koje svrhe.`,
+    url: "/pravno/privatnost",
+  },
 };
 
 export default function PrivatnostPage() {

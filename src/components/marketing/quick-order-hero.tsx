@@ -174,7 +174,7 @@ export function QuickOrderHero() {
             <div className="overflow-hidden rounded-3xl border border-foreground/10 bg-foreground p-6 text-background shadow-[0_30px_80px_rgba(28,26,25,0.22)] sm:p-8 lg:p-10">
               <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                 <div className="lg:max-w-2xl">
-                  <p className="text-[0.68rem] uppercase tracking-[0.28em] text-background/45">
+                  <p className="text-[0.68rem] uppercase tracking-[0.28em] text-background/65">
                     Izabrana usluga
                   </p>
                   <h2 className="mt-2 text-3xl text-background md:text-4xl">
@@ -191,7 +191,7 @@ export function QuickOrderHero() {
 
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl border border-background/10 bg-background/5 p-4">
-                  <p className="text-[0.64rem] uppercase tracking-[0.22em] text-background/45">
+                  <p className="text-[0.64rem] uppercase tracking-[0.22em] text-background/65">
                     Javni start
                   </p>
                   <p className="mt-2 text-2xl font-semibold text-background">
@@ -199,7 +199,7 @@ export function QuickOrderHero() {
                   </p>
                 </div>
                 <div className="rounded-2xl border border-background/10 bg-background/5 p-4">
-                  <p className="text-[0.64rem] uppercase tracking-[0.22em] text-background/45">
+                  <p className="text-[0.64rem] uppercase tracking-[0.22em] text-background/65">
                     Obračun
                   </p>
                   <p className="mt-2 text-sm leading-6 text-background/85">
@@ -207,7 +207,7 @@ export function QuickOrderHero() {
                   </p>
                 </div>
                 <div className="rounded-2xl border border-background/10 bg-background/5 p-4">
-                  <p className="text-[0.64rem] uppercase tracking-[0.22em] text-background/45">
+                  <p className="text-[0.64rem] uppercase tracking-[0.22em] text-background/65">
                     Revizije
                   </p>
                   <p className="mt-2 text-sm leading-6 text-background/85">
@@ -360,7 +360,7 @@ export function QuickOrderHero() {
               <div className="rounded-2xl border border-foreground/10 bg-foreground p-4 text-background shadow-[0_24px_60px_rgba(28,26,25,0.22)]">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[0.65rem] uppercase tracking-[0.22em] text-background/45">
+                    <p className="text-[0.65rem] uppercase tracking-[0.22em] text-background/65">
                       Order summary
                     </p>
                     <h3 className="mt-1 truncate text-lg text-background">
@@ -371,7 +371,7 @@ export function QuickOrderHero() {
                 </div>
 
                 <div className="mt-3 rounded-xl border border-background/10 bg-background/5 p-3">
-                  <p className="text-[0.62rem] uppercase tracking-[0.2em] text-background/45">
+                  <p className="text-[0.62rem] uppercase tracking-[0.2em] text-background/65">
                     Bazna javna cena
                   </p>
                   <p className="mt-1 text-3xl font-semibold text-background">

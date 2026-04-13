@@ -5,6 +5,11 @@ import { SITE } from "@/lib/content/site";
 export const metadata: Metadata = {
   title: "Politika kolačića",
   description: `Kako ${SITE.name} koristi kolačiće na sajtu.`,
+  openGraph: {
+    title: "Politika kolačića — Elegant Render",
+    description: `Kako ${SITE.name} koristi kolačiće na sajtu.`,
+    url: "/pravno/kolacici",
+  },
 };
 
 export default function KolaciciPage() {

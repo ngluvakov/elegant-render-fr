@@ -6,6 +6,12 @@ export const metadata: Metadata = {
   title: "Portfolio",
   description:
     "Izbor naših projekata — enterijera, eksterijera, virtuelnog opremanja i adaptacija prostora.",
+  openGraph: {
+    title: "Portfolio — Elegant Render",
+    description:
+      "Izbor naših projekata — enterijera, eksterijera, virtuelnog opremanja i adaptacija prostora.",
+    url: "/portfolio",
+  },
 };
 
 const PLACEHOLDERS = Array.from({ length: 9 }, (_, i) => i + 1);

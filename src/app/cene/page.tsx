@@ -13,6 +13,12 @@ export const metadata: Metadata = {
   title: "Cene",
   description:
     "Transparentan cenovnik usluga arhitektonske vizuelizacije po Model-First Pricing pravilima. Prva isporuka iz modela nosi pun iznos, svaki sledeći prikaz je znatno povoljniji.",
+  openGraph: {
+    title: "Cene — Elegant Render",
+    description:
+      "Transparentan cenovnik usluga arhitektonske vizuelizacije po Model-First Pricing pravilima.",
+    url: "/cene",
+  },
 };
 
 export default function CenePage() {

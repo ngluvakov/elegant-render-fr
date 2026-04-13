@@ -5,6 +5,11 @@ import { SITE } from "@/lib/content/site";
 export const metadata: Metadata = {
   title: "Uslovi korišćenja",
   description: `Uslovi korišćenja usluga ${SITE.name} — prava, obaveze i način saradnje.`,
+  openGraph: {
+    title: "Uslovi korišćenja — Elegant Render",
+    description: `Uslovi korišćenja usluga ${SITE.name} — prava, obaveze i način saradnje.`,
+    url: "/pravno/uslovi",
+  },
 };
 
 export default function UsloviPage() {

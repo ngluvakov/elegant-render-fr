@@ -6,6 +6,11 @@ import { SITE } from "@/lib/content/site";
 export const metadata: Metadata = {
   title: "O nama",
   description: `${SITE.name} je B2C podbrend kompanije ${SITE.parentCompany} za arhitektonsku vizuelizaciju — sa transparentnim cenama i brzim procesom.`,
+  openGraph: {
+    title: "O nama — Elegant Render",
+    description: `${SITE.name} je B2C podbrend kompanije ${SITE.parentCompany} za arhitektonsku vizuelizaciju — sa transparentnim cenama i brzim procesom.`,
+    url: "/o-nama",
+  },
 };
 
 export default function ONamaPage() {

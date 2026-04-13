@@ -27,6 +27,11 @@ export async function generateMetadata({
   return {
     title: service.name,
     description: service.description,
+    openGraph: {
+      title: `${service.name} — Elegant Render`,
+      description: service.description,
+      url: `/usluge/${slug}`,
+    },
   };
 }
 

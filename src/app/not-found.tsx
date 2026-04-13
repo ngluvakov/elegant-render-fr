@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionKicker } from "@/components/brand/section-kicker";
+
+export const metadata: Metadata = {
+  title: "404 — Stranica nije pronađena",
+  robots: { index: false, follow: false },
+};
 
 export default function NotFound() {
   return (

@@ -7,6 +7,12 @@ export const metadata: Metadata = {
   title: "Usluge",
   description:
     "Kompletna ponuda arhitektonske vizuelizacije — renderi, animacije, 360 ture, virtuelno opremanje i adaptacije prostora.",
+  openGraph: {
+    title: "Usluge — Elegant Render",
+    description:
+      "Kompletna ponuda arhitektonske vizuelizacije — renderi, animacije, 360 ture, virtuelno opremanje i adaptacije prostora.",
+    url: "/usluge",
+  },
 };
 
 export default function UslugePage() {

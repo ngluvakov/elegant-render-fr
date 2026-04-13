@@ -49,7 +49,32 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-[min(96vw,1720px)] items-center justify-between gap-6 px-6">
-        <BrandLogo />
+        <div className="flex items-center gap-3">
+          <BrandLogo />
+          <a
+            href="https://www.thewhiterook.com"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Powered by White Rook"
+            className="hidden items-center gap-1.5 rounded-full border border-border/80 bg-card/80 px-2.5 py-1.5 shadow-[0_12px_30px_rgba(28,26,25,0.06)] transition hover:border-[color:var(--color-clay)] hover:bg-background sm:inline-flex"
+          >
+            <span className="inline-flex h-5 w-5 items-center justify-center overflow-hidden rounded-[0.45rem] bg-black ring-1 ring-black/10 sm:h-6 sm:w-6">
+              <img
+                src="/branding/white-rook-symbol.png"
+                alt="White Rook logo"
+                className="h-full w-full object-cover"
+                loading="eager"
+                decoding="async"
+              />
+            </span>
+            <span className="hidden text-[0.54rem] uppercase tracking-[0.22em] text-muted-foreground md:inline">
+              Powered by
+            </span>
+            <span className="truncate text-[0.72rem] font-medium text-foreground sm:text-[0.76rem]">
+              White Rook
+            </span>
+          </a>
+        </div>
 
         {/* Desktop nav */}
         <NavigationMenu className="hidden max-w-none flex-1 justify-center md:flex">

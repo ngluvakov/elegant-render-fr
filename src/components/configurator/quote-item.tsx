@@ -1,0 +1,194 @@
+"use client";
+
+import { useState } from "react";
+import { Check, ChevronDown, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { getConfiguratorProduct } from "@/lib/catalog/configurator";
+import { formatEur, type LineItemBreakdown } from "@/lib/catalog/calculate";
+import { useQuote } from "./quote-context";
+import { AddOnStepper } from "./addon-stepper";
+
+type QuoteItemProps = {
+  breakdown: LineItemBreakdown;
+};
+
+export function QuoteItemCard({ breakdown }: QuoteItemProps) {
+  const [expanded, setExpanded] = useState(true);
+  const { items, setAddOnQty, setDuration, removeProduct } = useQuote();
+  const item = items.find((i) => i.instanceId === breakdown.instanceId);
+  const result = getConfiguratorProduct(breakdown.productId);
+
+  if (!item || !result) return null;
+  const { product } = result;
+
+  const hasIncludedAddOns = breakdown.addOns.some(
+    (ao) => ao.includedQty > 0 && ao.quantity > 0,
+  );
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border/60 bg-card/95 transition-shadow">
+      {/* Header */}
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="flex w-full items-center justify-between gap-3 bg-secondary/40 px-5 py-4 text-left transition-colors hover:bg-secondary/60"
+      >
+        <div className="min-w-0 flex-1">
+          <p className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            {breakdown.categoryLabel}
+          </p>
+          <p className="mt-1 text-base font-semibold text-foreground">
+            {breakdown.productLabel}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <p className="text-lg font-semibold text-foreground">
+            {formatEur(breakdown.totalEur)}
+          </p>
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 text-muted-foreground transition-transform",
+              expanded && "rotate-180",
+            )}
+          />
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              removeProduct(breakdown.instanceId);
+            }}
+            aria-label="Ukloni"
+            className="flex h-7 w-7 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors hover:bg-destructive/20"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </button>
+
+      {expanded && (
+        <div>
+          {/* Included items badges */}
+          {hasIncludedAddOns && (
+            <div className="border-t border-border/40 bg-[color:var(--color-sage)]/5 px-5 py-3">
+              <p className="mb-2 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-[color:var(--color-sage-deep)]">
+                Uključeno u baznu cenu
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {breakdown.addOns
+                  .filter((ao) => ao.includedQty > 0 && ao.quantity > 0)
+                  .map((ao) => (
+                    <span
+                      key={ao.addOnId}
+                      className="inline-flex items-center gap-1 rounded-md bg-[color:var(--color-sage)]/12 px-2.5 py-1 text-xs font-medium text-[color:var(--color-sage-deep)]"
+                    >
+                      <Check className="h-3 w-3" />
+                      {ao.includedQty} {ao.label.toLowerCase()}
+                    </span>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {/* Duration slider for animation products */}
+          {product.durationConfig && item.durationSeconds !== undefined && (
+            <div className="border-t border-border/40 px-5 py-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-foreground">Trajanje</p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={product.durationConfig.minSeconds}
+                    max={product.durationConfig.maxSeconds}
+                    value={item.durationSeconds}
+                    onChange={(e) =>
+                      setDuration(
+                        item.instanceId,
+                        parseInt(e.target.value) || product.durationConfig!.minSeconds,
+                      )
+                    }
+                    className="w-16 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm font-semibold text-foreground"
+                  />
+                  <span className="text-sm text-muted-foreground">sekundi</span>
+                </div>
+              </div>
+              <input
+                type="range"
+                min={product.durationConfig.minSeconds}
+                max={180}
+                value={Math.min(item.durationSeconds, 180)}
+                onChange={(e) =>
+                  setDuration(item.instanceId, parseInt(e.target.value))
+                }
+                className="mt-3 w-full accent-accent"
+              />
+              <div className="mt-1 flex justify-between">
+                {["15s", "30s", "60s", "120s", "180s"].map((l) => (
+                  <span key={l} className="text-[0.6rem] text-muted-foreground/50">
+                    {l}
+                  </span>
+                ))}
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Baza: €{product.durationConfig.perSecondEur}/sek ×{" "}
+                {item.durationSeconds}s
+                {breakdown.durationDiscount && breakdown.durationDiscount > 0 && (
+                  <span className="font-semibold text-[color:var(--color-sage-deep)]">
+                    {" "}
+                    — {Math.round(breakdown.durationDiscount * 100)}% popust na
+                    trajanje
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
+
+          {/* Add-on steppers */}
+          {product.addOns.length > 0 && (
+            <div className="border-t border-border/40 px-5 py-4">
+              <p className="mb-3 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Prilagodi
+              </p>
+              <div className="space-y-1">
+                {product.addOns.map((def) => {
+                  const aoBreakdown = breakdown.addOns.find(
+                    (ao) => ao.addOnId === def.id,
+                  );
+                  return (
+                    <AddOnStepper
+                      key={def.id}
+                      label={def.label}
+                      description={def.description}
+                      quantity={item.addOnQuantities[def.id] ?? def.includedQty}
+                      includedQty={def.includedQty}
+                      maxQty={def.maxQty}
+                      priceEur={aoBreakdown?.unitPriceEur ?? def.priceEur}
+                      priceType={def.priceType}
+                      isVolumeRate={aoBreakdown?.isVolumeRate ?? false}
+                      onChange={(qty) =>
+                        setAddOnQty(item.instanceId, def.id, qty)
+                      }
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Disclaimers */}
+          {product.disclaimers && product.disclaimers.length > 0 && (
+            <div className="border-t border-border/40 px-5 py-3">
+              {product.disclaimers.map((d) => (
+                <p
+                  key={d}
+                  className="text-[0.68rem] leading-5 text-muted-foreground"
+                >
+                  {d}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

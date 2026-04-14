@@ -14,9 +14,14 @@ import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { signOutAction } from "@/server/actions/sign-out";
 
-const NAV_ITEMS = [
+const CLIENT_NAV = [
   { href: "/portal", label: "Pregled", icon: LayoutDashboard, exact: true },
   { href: "/portal/porudzbine", label: "Porudžbine", icon: ShoppingBag, exact: false },
+  { href: "/portal/profil", label: "Profil", icon: User, exact: true },
+];
+
+const ADMIN_NAV = [
+  { href: "/portal/admin", label: "Admin", icon: Shield, exact: false },
   { href: "/portal/profil", label: "Profil", icon: User, exact: true },
 ];
 
@@ -41,21 +46,7 @@ export function PortalSidebar({ userName, userEmail, isAdmin }: PortalSidebarPro
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {isAdmin && (
-          <Link
-            href="/portal/admin"
-            className={cn(
-              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-              isActive("/portal/admin", false)
-                ? "bg-accent/10 text-accent shadow-[0_2px_8px_rgba(184,131,99,0.08)]"
-                : "text-accent/70 hover:bg-accent/5 hover:text-accent",
-            )}
-          >
-            <Shield className="h-4 w-4 flex-shrink-0" />
-            Admin
-          </Link>
-        )}
-        {NAV_ITEMS.map((item) => {
+        {(isAdmin ? ADMIN_NAV : CLIENT_NAV).map((item) => {
           const active = isActive(item.href, item.exact);
           return (
             <Link

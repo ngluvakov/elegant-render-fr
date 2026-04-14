@@ -10,6 +10,7 @@ import { RevisionUploadCard } from "@/components/portal/revision-upload-card";
 import { DeliverablesCard } from "@/components/portal/deliverables-card";
 import { OrderSummaryCard } from "@/components/portal/order-summary-card";
 import { ReworkRequestCard } from "@/components/portal/rework-request-card";
+import { PendingPaymentCard } from "@/components/portal/pending-payment-card";
 
 export const metadata: Metadata = {
   title: "Detalji porudžbine",
@@ -77,6 +78,9 @@ export default async function OrderDetailPage({
 
         {/* Right: utility panel */}
         <div className="space-y-6">
+          {(order.status === "draft" || order.status === "awaiting_payment") && (
+            <PendingPaymentCard orderId={order.id} totalEur={order.totalEur} />
+          )}
           <DeliverablesCard files={deliverableFiles} orderId={order.id} />
           <OrderSummaryCard
             items={order.items}

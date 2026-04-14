@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/db";
 import { calculateQuote, type QuoteItem } from "@/lib/catalog/calculate";
 import { generateOrderNumber } from "@/lib/order/generate-number";
+import { syncNewDeal } from "@/server/bitrix/sync-deal";
+import { syncFileToDeal } from "@/server/bitrix/sync-file";
 
 export type OrderResult = {
   error?: string;
@@ -56,6 +58,11 @@ export async function createOrder(
     },
   });
 
+  // Sync to Bitrix24
+  syncNewDeal(order.id).catch((err) => {
+    console.error("[Bitrix24] Deal creation failed:", err);
+  });
+
   return { orderId: order.id, orderNumber: order.orderNumber };
 }
 
@@ -66,7 +73,7 @@ export async function confirmFileUpload(
   mimeType: string,
   storagePath: string,
 ) {
-  await prisma.orderFile.create({
+  const file = await prisma.orderFile.create({
     data: {
       orderId,
       fileName,
@@ -75,5 +82,9 @@ export async function confirmFileUpload(
       storagePath,
       kind: "source",
     },
+  });
+
+  syncFileToDeal(file.id).catch((err) => {
+    console.error("[Bitrix24] File sync failed:", err);
   });
 }

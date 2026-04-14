@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { syncCommentToDeal } from "@/server/bitrix/sync-comment";
 
 export type CommentResult = {
   error?: string;
@@ -23,13 +24,17 @@ export async function createCommentAction(
     return { error: "Porudžbina nije pronađena." };
   }
 
-  await prisma.orderComment.create({
+  const comment = await prisma.orderComment.create({
     data: {
       orderId,
       authorId: session.user.id,
       role: "client",
       body: body.trim(),
     },
+  });
+
+  syncCommentToDeal(comment.id).catch((err) => {
+    console.error("[Bitrix24] Comment sync failed:", err);
   });
 
   return { success: true };

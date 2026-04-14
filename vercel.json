@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/bitrix-reconcile",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}

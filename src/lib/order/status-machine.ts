@@ -1,5 +1,6 @@
 import type { OrderStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { syncDealStatus } from "@/server/bitrix/sync-status";
 
 const VALID_TRANSITIONS: Record<string, string[]> = {
   draft: ["awaiting_payment", "cancelled"],
@@ -23,6 +24,7 @@ export async function transitionOrder(
   toStatus: OrderStatus,
   actorId?: string,
   note?: string,
+  source?: "app" | "bitrix24",
 ) {
   const order = await prisma.order.findUniqueOrThrow({ where: { id: orderId } });
 
@@ -47,6 +49,13 @@ export async function transitionOrder(
       },
     }),
   ]);
+
+  // Sync to Bitrix24 (skip if change came from Bitrix24 to prevent loops)
+  if (source !== "bitrix24") {
+    syncDealStatus(orderId, toStatus).catch((err) => {
+      console.error("[Bitrix24] Status sync failed:", err);
+    });
+  }
 
   return updated;
 }

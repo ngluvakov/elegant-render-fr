@@ -17,8 +17,9 @@ model User {
   image         String?
   passwordHash  String?
   phone         String?
-  isAdmin       Boolean   @default(false)
-  createdAt     DateTime  @default(now())
+  isAdmin         Boolean   @default(false)
+  bitrixContactId String?   @unique
+  createdAt       DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   accounts Account[]
@@ -104,6 +105,7 @@ model Order {
   paymentStatus   PaymentStatus   @default(pending)
   paymentProvider PaymentProvider?
   paymentId       String?
+  bitrix24DealId  String?   @unique
   totalEur        Int
   customerNote    String?         @db.Text
   createdAt       DateTime        @default(now())
@@ -143,8 +145,9 @@ model OrderFile {
   fileName    String
   fileSize    Int
   mimeType    String
-  storagePath String
-  uploadedAt  DateTime @default(now())
+  storagePath    String
+  bitrix24FileId String?
+  uploadedAt     DateTime @default(now())
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
@@ -170,13 +173,33 @@ model OrderComment {
   id        String   @id @default(cuid())
   orderId   String
   authorId  String
-  role      String   @default("client")
-  body      String   @db.Text
-  createdAt DateTime @default(now())
+  role               String   @default("client")
+  body               String   @db.Text
+  bitrix24CommentId  String?  @unique
+  createdAt          DateTime @default(now())
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
   author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([orderId, createdAt])
   @@map("order_comments")
+}
+
+// ─── Bitrix24 sync log ───────────────────────────────────
+
+model BitrixSyncLog {
+  id          String   @id @default(cuid())
+  entityType  String
+  entityId    String
+  direction   String
+  method      String
+  payloadHash String?
+  bitrixId    String?
+  success     Boolean  @default(true)
+  error       String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([direction, createdAt])
+  @@map("bitrix_sync_logs")
 }

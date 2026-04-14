@@ -1,0 +1,47 @@
+import { prisma } from "@/lib/db";
+import { bitrixCall } from "@/lib/bitrix24/client";
+import { orderStatusToStage } from "@/lib/bitrix24/stage-map";
+import { syncContact } from "./sync-contact";
+import type { OrderStatus } from "@/generated/prisma/client";
+
+export async function syncNewDeal(orderId: string) {
+  const order = await prisma.order.findUniqueOrThrow({
+    where: { id: orderId },
+    include: {
+      user: true,
+      items: { select: { productLabel: true, categoryLabel: true, totalEur: true } },
+    },
+  });
+
+  // Skip if already synced
+  if (order.bitrix24DealId) return order.bitrix24DealId;
+
+  // Ensure contact exists
+  const contactId = await syncContact(order.userId);
+
+  const firstItem = order.items[0];
+  const itemsDescription = order.items
+    .map((i) => `${i.productLabel} (${i.categoryLabel}) — €${i.totalEur}`)
+    .join("\n");
+
+  const stageId = orderStatusToStage(order.status as OrderStatus);
+
+  const dealId = await bitrixCall<number>("crm.deal.add", {
+    fields: {
+      TITLE: `${order.orderNumber} — ${firstItem?.productLabel ?? "Porudžbina"}`,
+      CATEGORY_ID: process.env.BITRIX24_PIPELINE_ID,
+      STAGE_ID: stageId,
+      CONTACT_ID: contactId,
+      OPPORTUNITY: order.totalEur,
+      CURRENCY_ID: "EUR",
+      COMMENTS: `Portal: ${process.env.AUTH_URL}/portal/admin/porudzbine/${order.id}\n\nStavke:\n${itemsDescription}${order.customerNote ? `\n\nNapomena: ${order.customerNote}` : ""}`,
+    },
+  }, { entityType: "deal", entityId: orderId, direction: "outbound" });
+
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { bitrix24DealId: String(dealId) },
+  });
+
+  return String(dealId);
+}

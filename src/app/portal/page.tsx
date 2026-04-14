@@ -1,137 +1,141 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import {
+  AlertCircle,
+  Briefcase,
+  Download,
+  MessageSquare,
+  ShoppingBag,
+} from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { Badge } from "@/components/ui/badge";
-import { ButtonLink } from "@/components/ui/button-link";
-import { SectionKicker } from "@/components/brand/section-kicker";
-import { formatEur } from "@/lib/catalog/calculate";
-import { SignOutButton } from "./sign-out-button";
+import { SummaryStatCard } from "@/components/portal/summary-stat-card";
+import { OrderOverviewCard } from "@/components/portal/order-overview-card";
+import { ActivityFeed } from "@/components/portal/activity-feed";
+import { EmptyState } from "@/components/portal/empty-state";
+import { statusLabel } from "@/components/portal/status-utils";
 
 export const metadata: Metadata = {
   title: "Portal",
   robots: { index: false, follow: false },
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  draft: "Nacrt",
-  awaiting_payment: "Čeka plaćanje",
-  paid: "Plaćeno",
-  in_progress: "U izradi",
-  in_review: "Na pregledu",
-  revision_requested: "Revizija",
-  delivered: "Isporučeno",
-  closed: "Zatvoreno",
-  cancelled: "Otkazano",
-  refunded: "Refundirano",
-};
-
 export default async function PortalPage() {
   const session = await auth();
-  const user = session?.user;
+  const userId = session?.user?.id;
+  if (!userId) return null;
 
-  const recentOrders = user?.id
-    ? await prisma.order.findMany({
-        where: { userId: user.id },
+  const user = session.user;
+
+  // Queries
+  const [activeCount, needsAttentionCount, deliveredCount, activeOrders, recentEvents] =
+    await Promise.all([
+      prisma.order.count({
+        where: {
+          userId,
+          status: { in: ["paid", "in_progress", "in_review", "revision_requested"] },
+        },
+      }),
+      prisma.order.count({
+        where: { userId, status: "in_review" },
+      }),
+      prisma.order.count({
+        where: { userId, status: "delivered" },
+      }),
+      prisma.order.findMany({
+        where: {
+          userId,
+          status: {
+            notIn: ["closed", "cancelled", "refunded"],
+          },
+        },
+        include: { items: { select: { productLabel: true, categoryLabel: true } } },
+        orderBy: { updatedAt: "desc" },
+        take: 6,
+      }),
+      prisma.orderStatusEvent.findMany({
+        where: { order: { userId } },
+        include: { order: { select: { orderNumber: true, id: true } } },
         orderBy: { createdAt: "desc" },
-        take: 5,
-      })
-    : [];
+        take: 8,
+      }),
+    ]);
+
+  const activityEvents = recentEvents.map((e) => ({
+    id: e.id,
+    orderNumber: e.order.orderNumber,
+    orderId: e.order.id,
+    description: `Status promenjen → ${statusLabel(e.toStatus)}`,
+    createdAt: e.createdAt,
+  }));
 
   return (
-    <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 py-20 md:py-28">
-      <SectionKicker>Portal</SectionKicker>
-      <h1 className="mt-4 text-4xl text-foreground md:text-5xl">
-        Dobrodošli, {user?.name?.split(" ")[0] || "korisniče"}
-      </h1>
-      <p className="mt-4 text-lg text-muted-foreground">
-        Pratite porudžbine, komunicirajte sa timom i preuzmite gotove fajlove.
-      </p>
-
-      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Orders card */}
-        <div className="rounded-2xl border border-border/60 bg-card/80 p-6 sm:col-span-2 lg:col-span-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-foreground">
-              Porudžbine
-            </h2>
-            {recentOrders.length > 0 && (
-              <Link
-                href="/portal/porudzbine"
-                className="text-xs font-medium text-accent hover:underline"
-              >
-                Sve porudžbine
-              </Link>
-            )}
-          </div>
-
-          {recentOrders.length === 0 ? (
-            <div className="mt-4">
-              <p className="text-sm text-muted-foreground">
-                Nemate porudžbina. Posetite cenovnik da napravite prvu.
-              </p>
-              <div className="mt-4">
-                <ButtonLink href="/cene" size="sm" variant="accent">
-                  Pogledajte cene
-                </ButtonLink>
-              </div>
-            </div>
-          ) : (
-            <div className="mt-4 space-y-2">
-              {recentOrders.map((order) => (
-                <Link
-                  key={order.id}
-                  href={`/portal/porudzbine/${order.id}`}
-                  className="flex items-center justify-between rounded-xl border border-border/40 bg-background/60 px-4 py-3 transition-colors hover:bg-muted/50"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-foreground">
-                      {order.orderNumber}
-                    </p>
-                    <p className="text-[0.65rem] text-muted-foreground">
-                      {order.createdAt.toLocaleDateString("sr-Latn-RS", {
-                        day: "numeric",
-                        month: "short",
-                      })}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="text-[0.6rem]">
-                      {STATUS_LABELS[order.status] ?? order.status}
-                    </Badge>
-                    <span className="text-sm font-semibold text-foreground">
-                      {formatEur(order.totalEur)}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Profile + Account */}
-        <div className="space-y-6">
-          <div className="rounded-2xl border border-border/60 bg-card/80 p-6">
-            <h2 className="text-lg font-semibold text-foreground">Profil</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Ime, telefon, lozinka.
-            </p>
-            <div className="mt-4">
-              <ButtonLink href="/portal/profil" size="sm" variant="outline">
-                Izmeni profil
-              </ButtonLink>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-border/60 bg-card/80 p-6">
-            <h2 className="text-lg font-semibold text-foreground">Nalog</h2>
-            <p className="mt-2 text-sm text-muted-foreground">{user?.email}</p>
-            <div className="mt-4">
-              <SignOutButton />
-            </div>
-          </div>
-        </div>
+    <div className="space-y-8">
+      {/* Welcome header */}
+      <div>
+        <h1 className="font-heading text-3xl text-foreground md:text-4xl">
+          Dobrodošli, {user?.name?.split(" ")[0] || "korisniče"}
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {activeCount > 0
+            ? `${activeCount} aktivn${activeCount === 1 ? "i" : "ih"} projek${activeCount === 1 ? "at" : "ata"}`
+            : "Nemate aktivnih projekata"}
+        </p>
       </div>
+
+      {/* Stat cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <SummaryStatCard
+          icon={Briefcase}
+          label="Aktivni projekti"
+          value={activeCount}
+        />
+        <SummaryStatCard
+          icon={AlertCircle}
+          label="Treba pažnju"
+          value={needsAttentionCount}
+          accent="clay"
+        />
+        <SummaryStatCard
+          icon={MessageSquare}
+          label="Nove poruke"
+          value={0}
+        />
+        <SummaryStatCard
+          icon={Download}
+          label="Spremno za preuzimanje"
+          value={deliveredCount}
+          accent="sage"
+        />
+      </div>
+
+      {/* Active orders */}
+      <section>
+        <h2 className="mb-4 text-lg font-semibold text-foreground">
+          Aktivni projekti
+        </h2>
+        {activeOrders.length === 0 ? (
+          <EmptyState
+            icon={ShoppingBag}
+            heading="Nemate aktivnih projekata"
+            description="Posetite cenovnik da napravite prvu porudžbinu."
+            action={{ label: "Pogledajte cene", href: "/cene" }}
+          />
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {activeOrders.map((order) => (
+              <OrderOverviewCard key={order.id} order={order} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Recent activity */}
+      <section>
+        <h2 className="mb-4 text-lg font-semibold text-foreground">
+          Nedavna aktivnost
+        </h2>
+        <ActivityFeed events={activityEvents} />
+      </section>
     </div>
   );
 }

@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { SiteHeader } from "@/components/site/site-header";
-import { SiteFooter } from "@/components/site/site-footer";
 import { SITE } from "@/lib/content/site";
 
 const cormorant = Cormorant_Garamond({
@@ -48,9 +46,7 @@ export default function RootLayout({
       className={cn("h-full antialiased", cormorant.variable, manrope.variable)}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        <SiteHeader />
-        <main className="flex flex-1 flex-col">{children}</main>
-        <SiteFooter />
+        {children}
       </body>
     </html>
   );

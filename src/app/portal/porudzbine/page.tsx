@@ -1,92 +1,155 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight, Search } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { SectionKicker } from "@/components/brand/section-kicker";
 import { Badge } from "@/components/ui/badge";
 import { formatEur } from "@/lib/catalog/calculate";
+import { statusLabel, statusAccent } from "@/components/portal/status-utils";
+import { OrdersFilterBar } from "@/components/portal/orders-filter-bar";
+import { EmptyState } from "@/components/portal/empty-state";
 
 export const metadata: Metadata = {
   title: "Porudžbine",
   robots: { index: false, follow: false },
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  draft: "Nacrt",
-  awaiting_payment: "Čeka plaćanje",
-  paid: "Plaćeno",
-  in_progress: "U izradi",
-  in_review: "Na pregledu",
-  revision_requested: "Revizija",
-  delivered: "Isporučeno",
-  closed: "Zatvoreno",
-  cancelled: "Otkazano",
-  refunded: "Refundirano",
-};
+type SearchParams = Promise<{ status?: string; q?: string }>;
 
-export default async function PorudzbinePage() {
+export default async function PorudzbinePage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const session = await auth();
   if (!session?.user?.id) return null;
 
+  const { status, q } = await searchParams;
+
+  const where: Record<string, unknown> = { userId: session.user.id };
+  if (status) where.status = status;
+  if (q) where.orderNumber = { contains: q, mode: "insensitive" };
+
   const orders = await prisma.order.findMany({
-    where: { userId: session.user.id },
+    where,
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { items: true, files: true } } },
+    include: {
+      items: { select: { productLabel: true, categoryLabel: true }, take: 1 },
+    },
   });
 
   return (
-    <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 py-20 md:py-28">
-      <SectionKicker>Portal</SectionKicker>
-      <h1 className="mt-4 text-3xl text-foreground md:text-4xl">
-        Vaše porudžbine
-      </h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="font-heading text-2xl text-foreground md:text-3xl">
+          Porudžbine
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {orders.length} porudžbin{orders.length === 1 ? "a" : "a"}
+        </p>
+      </div>
+
+      <OrdersFilterBar />
 
       {orders.length === 0 ? (
-        <div className="mt-12 rounded-2xl border border-border/60 bg-card/80 p-8 text-center">
-          <p className="text-muted-foreground">
-            Još nemate porudžbina. Posetite{" "}
-            <Link href="/cene" className="font-medium text-accent hover:underline">
-              cenovnik
-            </Link>{" "}
-            da napravite prvu.
-          </p>
-        </div>
+        <EmptyState
+          icon={Search}
+          heading="Nema rezultata"
+          description="Pokušajte sa drugim filterima ili pretragom."
+        />
       ) : (
-        <div className="mt-8 space-y-4">
-          {orders.map((order) => (
-            <Link
-              key={order.id}
-              href={`/portal/porudzbine/${order.id}`}
-              className="block rounded-2xl border border-border/60 bg-card/80 p-5 transition-shadow hover:shadow-[0_14px_40px_rgba(28,26,25,0.05)]"
-            >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-base font-semibold text-foreground">
-                    {order.orderNumber}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {order.createdAt.toLocaleDateString("sr-Latn-RS", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                    {" · "}
-                    {order._count.items} stavk{order._count.items === 1 ? "a" : "i"}
-                    {order._count.files > 0 && ` · ${order._count.files} fajl${order._count.files === 1 ? "" : "ova"}`}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Badge variant="secondary">
-                    {STATUS_LABELS[order.status] ?? order.status}
-                  </Badge>
-                  <p className="text-lg font-semibold text-foreground">
-                    {formatEur(order.totalEur)}
-                  </p>
-                </div>
+        <>
+          {/* Desktop: soft table */}
+          <div className="hidden md:block">
+            <div className="space-y-1.5">
+              {/* Header row */}
+              <div className="grid grid-cols-[2fr_1fr_1fr_auto_auto] gap-4 px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
+                <span>Projekat</span>
+                <span>Usluga</span>
+                <span>Aktivnost</span>
+                <span className="w-28 text-center">Status</span>
+                <span className="w-20 text-right">Iznos</span>
               </div>
-            </Link>
-          ))}
-        </div>
+
+              {/* Rows */}
+              {orders.map((order) => {
+                const firstItem = order.items[0];
+                return (
+                  <Link
+                    key={order.id}
+                    href={`/portal/porudzbine/${order.id}`}
+                    className="grid grid-cols-[2fr_1fr_1fr_auto_auto] items-center gap-4 rounded-xl border border-border/30 bg-card/80 px-4 py-3.5 transition-all hover:border-border hover:shadow-[0_4px_16px_rgba(28,26,25,0.04)]"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {firstItem?.productLabel ?? "Porudžbina"}
+                      </p>
+                      <p className="text-[0.65rem] text-muted-foreground">
+                        {order.orderNumber}
+                      </p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {firstItem?.categoryLabel ?? "—"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {order.updatedAt.toLocaleDateString("sr-Latn-RS", {
+                        day: "numeric",
+                        month: "short",
+                      })}
+                    </p>
+                    <div className="w-28 text-center">
+                      <Badge className={statusAccent(order.status)}>
+                        {statusLabel(order.status)}
+                      </Badge>
+                    </div>
+                    <p className="w-20 text-right text-sm font-semibold text-foreground">
+                      {formatEur(order.totalEur)}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Mobile: card stack */}
+          <div className="space-y-3 md:hidden">
+            {orders.map((order) => {
+              const firstItem = order.items[0];
+              return (
+                <Link
+                  key={order.id}
+                  href={`/portal/porudzbine/${order.id}`}
+                  className="block rounded-2xl border border-border/40 bg-card/80 p-4 transition-shadow hover:shadow-[0_8px_24px_rgba(28,26,25,0.05)]"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">
+                        {firstItem?.productLabel ?? "Porudžbina"}
+                      </p>
+                      <p className="mt-0.5 text-[0.65rem] text-muted-foreground">
+                        {order.orderNumber} · {firstItem?.categoryLabel ?? "—"}
+                      </p>
+                    </div>
+                    <Badge className={statusAccent(order.status)}>
+                      {statusLabel(order.status)}
+                    </Badge>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between">
+                    <p className="text-xs text-muted-foreground">
+                      {order.updatedAt.toLocaleDateString("sr-Latn-RS", {
+                        day: "numeric",
+                        month: "short",
+                      })}
+                    </p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {formatEur(order.totalEur)}
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );

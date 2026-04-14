@@ -23,6 +23,7 @@ model User {
   accounts Account[]
   sessions Session[]
   orders   Order[]
+  comments OrderComment[]
 
   @@map("users")
 }
@@ -111,6 +112,7 @@ model Order {
   items        OrderItem[]
   files        OrderFile[]
   statusEvents OrderStatusEvent[]
+  comments     OrderComment[]
 
   @@map("orders")
 }
@@ -161,4 +163,19 @@ model OrderStatusEvent {
 
   @@index([orderId, createdAt])
   @@map("order_status_events")
+}
+
+model OrderComment {
+  id        String   @id @default(cuid())
+  orderId   String
+  authorId  String
+  role      String   @default("client")
+  body      String   @db.Text
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+  @@map("order_comments")
 }

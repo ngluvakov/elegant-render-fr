@@ -1,3 +1,12 @@
+/**
+ * inbound.ts — Handles inbound Bitrix24 webhook events (deal updates).
+ *
+ * Exports handleDealUpdate() which fetches the Deal, maps stage to
+ * OrderStatus, and transitions the order with source="bitrix24" to
+ * prevent outbound echo loops.
+ *
+ * Used by: api/webhooks/bitrix24/route
+ */
 import { prisma } from "@/lib/db";
 import { bitrixCall } from "@/lib/bitrix24/client";
 import { stageToOrderStatus } from "@/lib/bitrix24/stage-map";

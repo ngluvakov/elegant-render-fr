@@ -1,3 +1,9 @@
+/**
+ * DeliverablesCard — Panel listing final deliverable files with download links.
+ * Shows an empty state when no files are ready yet.
+ *
+ * Used on: /portal/porudzbine/[orderId] (order detail page).
+ */
 import { Download, FileDown } from "lucide-react";
 import { EmptyState } from "./empty-state";
 

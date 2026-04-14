@@ -1,3 +1,9 @@
+/**
+ * AddOnStepper — Reusable +/- quantity control for product add-ons.
+ * Shows included vs. extra quantities, volume pricing, and per-unit cost.
+ *
+ * Used on: QuoteItemCard (within PricingConfigurator, /cene page).
+ */
 "use client";
 
 import { Minus, Plus } from "lucide-react";

@@ -1,3 +1,9 @@
+/**
+ * ServiceAdder — Category tab bar with browsable product cards and "Dodaj" buttons.
+ * Groups services by section and lets users add items to the quote.
+ *
+ * Used on: PricingConfigurator (main column, /cene page).
+ */
 "use client";
 
 import { useState } from "react";

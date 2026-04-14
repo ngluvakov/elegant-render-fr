@@ -1,3 +1,9 @@
+/**
+ * SiteFooter — Dark charcoal marketing site footer with a 4-column layout:
+ * brand info, services links, company links, and a "next step" CTA card.
+ *
+ * Used on: marketing layout (all public pages).
+ */
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { NAV_LEGAL, NAV_MAIN, SITE } from "@/lib/content/site";

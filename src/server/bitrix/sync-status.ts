@@ -1,3 +1,11 @@
+/**
+ * sync-status.ts — Pushes order status changes to the Bitrix24 Deal stage.
+ *
+ * Exports syncDealStatus() which maps OrderStatus to a pipeline stage
+ * and calls crm.deal.update. Skipped if the order has no linked Deal.
+ *
+ * Used by: lib/order/status-machine (called on every status transition)
+ */
 import { prisma } from "@/lib/db";
 import { bitrixCall } from "@/lib/bitrix24/client";
 import { orderStatusToStage } from "@/lib/bitrix24/stage-map";

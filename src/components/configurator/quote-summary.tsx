@@ -1,3 +1,9 @@
+/**
+ * QuoteSummary — Sticky dark sidebar showing line items, estimated total,
+ * and the "Naruci" (order) CTA that saves the quote to sessionStorage.
+ *
+ * Used on: PricingConfigurator (sidebar column, /cene page).
+ */
 "use client";
 
 import { useRouter } from "next/navigation";

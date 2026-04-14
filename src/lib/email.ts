@@ -1,3 +1,12 @@
+/**
+ * email.ts — Nodemailer transactional email sender for the platform.
+ *
+ * Exports sendVerificationEmail, sendPasswordResetEmail, and
+ * sendOrderConfirmationEmail — all branded HTML templates in Serbian.
+ *
+ * Used by: server/actions/auth, server/actions/checkout,
+ *          server/actions/payment
+ */
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({

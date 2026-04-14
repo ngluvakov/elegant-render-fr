@@ -1,3 +1,11 @@
+/**
+ * comment.ts — Order comment CRUD server actions (client-facing).
+ *
+ * Exports createCommentAction() and getCommentsAction() for the order
+ * detail page message thread. Syncs new comments to Bitrix24 timeline.
+ *
+ * Used by: portal/message-composer, portal/comment-thread
+ */
 "use server";
 
 import { auth } from "@/lib/auth";

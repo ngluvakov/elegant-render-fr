@@ -1,3 +1,10 @@
+/**
+ * ServicesGrid — Categorized grid of service cards with pricing and links.
+ * Supports a `preview` mode that limits to the first 2 categories.
+ *
+ * Used on: /usluge (services listing page).
+ * @prop preview — show only a compact subset of categories
+ */
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

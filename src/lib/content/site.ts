@@ -1,3 +1,12 @@
+/**
+ * site.ts — Site-wide content constants (branding, navigation, copy).
+ *
+ * Exports SITE, NAV_MAIN, NAV_LEGAL, TRUST_SIGNALS, PLATFORM_PRINCIPLES,
+ * ORDERING_STEPS, FAQ_ITEMS — all static Serbian-language content.
+ *
+ * Used by: layout.tsx, site-header, site-footer, marketing pages,
+ *          legal pages, robots.ts, sitemap.ts
+ */
 export const SITE = {
   name: "Elegant Render",
   longName: "Elegant Render Platform",

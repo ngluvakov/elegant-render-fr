@@ -1,3 +1,9 @@
+/**
+ * SectionKicker — Small eyebrow label with a gradient accent line.
+ *
+ * Used on: multiple marketing pages (usluge, cene, portfolio, FAQ, etc.).
+ * @prop align — "left" | "center"
+ */
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 

@@ -1,3 +1,8 @@
+/**
+ * FaqCards — FAQ section with question/answer cards in a two-column grid.
+ *
+ * Used on: / (home page).
+ */
 import { HelpCircle } from "lucide-react";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { FAQ_ITEMS } from "@/lib/content/site";

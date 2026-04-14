@@ -1,3 +1,12 @@
+/**
+ * admin.ts — Admin-only server actions (team comments, status changes, deliverables).
+ *
+ * Exports adminCreateComment, adminTransitionOrder, adminUploadDeliverable.
+ * All gated behind requireAdmin() check. Syncs to Bitrix24 on every action.
+ *
+ * Used by: admin/porudzbine/[orderId] (comment-composer, status-changer,
+ *          deliverable-upload)
+ */
 "use server";
 
 import { auth } from "@/lib/auth";

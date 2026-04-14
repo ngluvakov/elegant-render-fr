@@ -1,3 +1,12 @@
+/**
+ * paypal.ts — PayPal REST API v2 client (sandbox + live).
+ *
+ * Exports createPayPalOrder() and capturePayPalOrder() for the checkout
+ * payment flow. Handles OAuth2 token acquisition internally.
+ *
+ * Used by: server/actions/payment
+ */
+
 // PayPal REST API v2 client
 
 const PAYPAL_BASE =

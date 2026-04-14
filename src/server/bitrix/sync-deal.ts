@@ -1,3 +1,11 @@
+/**
+ * sync-deal.ts — Creates a Bitrix24 CRM Deal from a platform Order.
+ *
+ * Exports syncNewDeal() which ensures a Contact exists, then creates the
+ * Deal with line items, price, and portal link. Stores bitrix24DealId.
+ *
+ * Used by: server/actions/order, server/bitrix/reconcile
+ */
 import { prisma } from "@/lib/db";
 import { bitrixCall } from "@/lib/bitrix24/client";
 import { orderStatusToStage } from "@/lib/bitrix24/stage-map";

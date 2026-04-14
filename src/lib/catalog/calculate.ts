@@ -1,4 +1,13 @@
-// Pure price calculation engine for the configurator
+/**
+ * calculate.ts — Pure price calculation engine for the configurator.
+ *
+ * Exports calculateQuote() which resolves QuoteItem[] into line-item
+ * breakdowns with volume rules, percent surcharges, and duration discounts.
+ *
+ * Used by: server/actions/order (server-side verification), quote-summary,
+ *          quote-item, quote-context, checkout-wizard, portal pages
+ */
+
 // Handles: threshold pricing, volume rules, percent surcharges, duration discounts
 
 import {

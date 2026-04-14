@@ -1,3 +1,11 @@
+/**
+ * sync-comment.ts — Pushes order comments to the Bitrix24 Deal timeline.
+ *
+ * Exports syncCommentToDeal() which posts a [Tim]/[Klijent]-prefixed
+ * timeline comment via crm.timeline.comment.add and caches the ID.
+ *
+ * Used by: server/actions/comment, server/actions/admin
+ */
 import { prisma } from "@/lib/db";
 import { bitrixCall } from "@/lib/bitrix24/client";
 

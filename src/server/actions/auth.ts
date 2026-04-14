@@ -1,3 +1,12 @@
+/**
+ * auth.ts — Auth server actions (signup, signin, forgot/reset password, verify email).
+ *
+ * Exports form actions consumed by auth pages: signUpAction, signInAction,
+ * forgotPasswordAction, resetPasswordAction, verifyEmailAction.
+ *
+ * Used by: sign-in-form, sign-up-form, forgot-password-form,
+ *          reset-password-form, verifikacija page
+ */
 "use server";
 
 import crypto from "node:crypto";

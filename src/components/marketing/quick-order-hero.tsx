@@ -1,3 +1,9 @@
+/**
+ * QuickOrderHero — Home page hero section with a vertical service picker,
+ * variant selector, order summary card, and "minimalni ulaz" material preview.
+ *
+ * Used on: / (home page).
+ */
 "use client";
 
 import { useMemo, useRef, useState } from "react";

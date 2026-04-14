@@ -1,3 +1,8 @@
+/**
+ * SessionProvider — Thin wrapper around NextAuth's SessionProvider.
+ *
+ * Used on: marketing layout (wraps all public pages for session access).
+ */
 "use client";
 
 import { SessionProvider as NextAuthSessionProvider } from "next-auth/react";

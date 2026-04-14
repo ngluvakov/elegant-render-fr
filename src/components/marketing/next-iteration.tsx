@@ -1,3 +1,9 @@
+/**
+ * NextIteration — Teaser section describing upcoming configurator features
+ * (volume-based pricing, upload & confirmation flow).
+ *
+ * Used on: / (home page).
+ */
 import { Clock3, HelpCircle } from "lucide-react";
 
 export function NextIteration() {

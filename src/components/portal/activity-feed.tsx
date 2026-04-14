@@ -1,3 +1,9 @@
+/**
+ * ActivityFeed — Chronological list of recent order events (status changes,
+ * comments, uploads) shown on the portal dashboard.
+ *
+ * Used on: /portal (dashboard page).
+ */
 type ActivityEvent = {
   id: string;
   orderNumber: string;

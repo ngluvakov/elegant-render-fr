@@ -1,3 +1,8 @@
+/**
+ * GoogleSignInButton — Renders a Google OAuth sign-in button via NextAuth.
+ *
+ * Used on: /prijava (sign-in) and /registracija (sign-up) pages.
+ */
 "use client";
 
 import { Button } from "@/components/ui/button";

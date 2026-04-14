@@ -1,3 +1,11 @@
+/**
+ * BrandLogo — Displays the Elegant Render logo as a home link or plain image.
+ *
+ * Used on: SiteHeader, SiteFooter, PortalSidebar, and various layouts.
+ * @prop size — "sm" | "md" | "lg"
+ * @prop surface — "light" | "dark" (controls drop shadow)
+ * @prop asChild — renders without the home link wrapper
+ */
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";

@@ -1,3 +1,11 @@
+/**
+ * status-machine.ts — Order status finite state machine.
+ *
+ * Exports canTransition() and transitionOrder() which enforce valid status
+ * changes, persist StatusEvents, and trigger Bitrix24 stage sync.
+ *
+ * Used by: server/actions/payment, rework, admin, server/bitrix/inbound
+ */
 import type { OrderStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { syncDealStatus } from "@/server/bitrix/sync-status";

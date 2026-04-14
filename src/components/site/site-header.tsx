@@ -1,3 +1,9 @@
+/**
+ * SiteHeader — Sticky marketing site header with mega-menu services dropdown,
+ * main navigation links, auth/portal button, and a mobile drawer.
+ *
+ * Used on: marketing layout (all public pages).
+ */
 "use client";
 
 import Link from "next/link";

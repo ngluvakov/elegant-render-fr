@@ -1,3 +1,9 @@
+/**
+ * PayPalPortalButtons — Loads the PayPal JS SDK and renders PayPal payment
+ * buttons for portal order payments. Handles createOrder and onApprove flows.
+ *
+ * Used on: PendingPaymentCard (/portal/porudzbine/[orderId]).
+ */
 "use client";
 
 import { useEffect, useRef, useState } from "react";

@@ -1,3 +1,9 @@
+/**
+ * MessageComposer — Textarea + send button for posting new messages
+ * to an order's comment thread via server action.
+ *
+ * Used on: /portal/porudzbine/[orderId] (order detail page).
+ */
 "use client";
 
 import { useRef, useState } from "react";

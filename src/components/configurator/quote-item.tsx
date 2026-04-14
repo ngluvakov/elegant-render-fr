@@ -1,3 +1,9 @@
+/**
+ * QuoteItemCard — Expandable card for a product in the quote, showing included
+ * add-ons, duration slider, add-on steppers, and disclaimers.
+ *
+ * Used on: PricingConfigurator (main column, /cene page).
+ */
 "use client";
 
 import { useState } from "react";

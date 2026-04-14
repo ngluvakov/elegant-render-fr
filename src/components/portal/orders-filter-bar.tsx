@@ -1,3 +1,9 @@
+/**
+ * OrdersFilterBar — Search input + status dropdown filter for the orders list.
+ * Updates URL search params to filter orders.
+ *
+ * Used on: /portal/porudzbine (orders listing page).
+ */
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";

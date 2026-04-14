@@ -1,3 +1,8 @@
+/**
+ * FinalCta — Dark bottom CTA banner prompting visitors to submit a project.
+ *
+ * Used on: /usluge, /o-nama, /portfolio pages.
+ */
 import { ButtonLink } from "@/components/ui/button-link";
 
 export function FinalCta() {

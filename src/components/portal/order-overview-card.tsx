@@ -1,3 +1,9 @@
+/**
+ * OrderOverviewCard — Clickable project card for the dashboard, displaying
+ * order number, first item, status badge, total, and last update date.
+ *
+ * Used on: /portal (dashboard page).
+ */
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

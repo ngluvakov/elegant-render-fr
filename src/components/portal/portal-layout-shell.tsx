@@ -1,3 +1,9 @@
+/**
+ * PortalLayoutShell — Main portal layout with a fixed sidebar on desktop,
+ * a mobile drawer, and a topbar. Wraps all /portal/* page content.
+ *
+ * Used on: /portal layout (all portal pages).
+ */
 "use client";
 
 import { useState } from "react";

@@ -1,3 +1,9 @@
+/**
+ * ReworkRequestCard — Button card to request a revision round on a delivered order.
+ * Triggers the requestReworkAction server action.
+ *
+ * Used on: /portal/porudzbine/[orderId] (order detail page, when delivered).
+ */
 "use client";
 
 import { useState } from "react";

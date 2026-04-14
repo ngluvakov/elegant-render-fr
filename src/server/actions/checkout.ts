@@ -1,3 +1,11 @@
+/**
+ * checkout.ts — Guest user creation for anonymous checkout flow.
+ *
+ * Exports ensureCheckoutUser() which finds or creates a passwordless
+ * guest user and sends a password-setup email for later account claim.
+ *
+ * Used by: poruci/steps/step-details
+ */
 "use server";
 
 import crypto from "node:crypto";

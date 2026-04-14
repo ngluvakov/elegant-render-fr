@@ -1,3 +1,11 @@
+/**
+ * sync-file.ts — Pushes file upload links to the Bitrix24 Deal timeline.
+ *
+ * Exports syncFileToDeal() which posts a timeline comment with file
+ * metadata and a portal download link. Labels by kind (source/deliverable).
+ *
+ * Used by: server/actions/order, server/actions/admin
+ */
 import { prisma } from "@/lib/db";
 import { bitrixCall } from "@/lib/bitrix24/client";
 

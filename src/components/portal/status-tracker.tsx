@@ -1,3 +1,9 @@
+/**
+ * StatusTracker — Horizontal (desktop) / vertical (mobile) 7-step timeline
+ * showing order progress from draft to closed.
+ *
+ * Used on: /portal/porudzbine/[orderId] (order detail page).
+ */
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { STATUS_STEPS } from "./status-utils";

@@ -1,4 +1,12 @@
-// Bitrix24 REST API client via inbound webhook
+/**
+ * client.ts — Bitrix24 REST API client via inbound webhook.
+ *
+ * Exports bitrixCall() — a rate-limited (2 req/s), auto-retrying fetch
+ * wrapper that logs every call to BitrixSyncLog for auditability.
+ *
+ * Used by: all server/bitrix/sync-* modules, inbound, reconcile
+ */
+
 // Rate limited to 2 req/sec, with retry and sync logging
 
 import { prisma } from "@/lib/db";

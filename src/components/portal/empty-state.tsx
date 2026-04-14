@@ -1,3 +1,9 @@
+/**
+ * EmptyState — Reusable empty-state placeholder with icon, heading,
+ * optional description, and optional action link.
+ *
+ * Used on: /portal dashboard, /portal/porudzbine, CommentThread, and others.
+ */
 import type { LucideIcon } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
 

@@ -1,3 +1,10 @@
+/**
+ * SummaryStatCard — Dashboard stat widget showing an icon, numeric value,
+ * and label with optional accent color.
+ *
+ * Used on: /portal (dashboard page).
+ * @prop accent — "default" | "clay" | "sage"
+ */
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 

@@ -1,3 +1,9 @@
+/**
+ * PendingPaymentCard — Payment card for unpaid orders, supporting PayPal
+ * and a mock card method. Shows total and switches to success state on completion.
+ *
+ * Used on: /portal/porudzbine/[orderId] (order detail page, when unpaid).
+ */
 "use client";
 
 import { useState } from "react";

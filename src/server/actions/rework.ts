@@ -1,3 +1,11 @@
+/**
+ * rework.ts — Rework/revision request server action.
+ *
+ * Exports requestReworkAction() which transitions an in_review order
+ * to revision_requested status via the status machine.
+ *
+ * Used by: portal/rework-request-card
+ */
 "use server";
 
 import { auth } from "@/lib/auth";

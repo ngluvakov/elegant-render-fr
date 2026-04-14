@@ -1,5 +1,14 @@
+/**
+ * services.ts — Display-facing service catalog with pricing variants.
+ *
+ * Exports SERVICES[], type definitions, category labels, and lookup helpers
+ * (getServiceBySlug, getFeaturedServices, etc.). Sourced from pillar-1 PDF.
+ *
+ * Used by: site-header, quick-order-hero, services-grid, usluge/[slug],
+ *          sitemap.ts, catalog/configurator
+ */
+
 /*
-  Elegant Render service catalog.
   Pricing sourced from docs/pricing/pillar-1-extracted.md (White Rook Model-First Pricing, Pillar 1, EUR).
   Do not invent tier names, bundle prices, or math that does not appear in the PDF.
   Some services have multiple variants (e.g. Static vs 360 Interior); others have a single variant.

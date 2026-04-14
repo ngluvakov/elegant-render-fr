@@ -1,3 +1,9 @@
+/**
+ * QuoteContext — React Context + useReducer for quote/cart state management.
+ * Exposes addProduct, removeProduct, setAddOnQty, setDuration, and clearAll actions.
+ *
+ * Used on: PricingConfigurator (wraps all configurator children).
+ */
 "use client";
 
 import {

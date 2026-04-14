@@ -1,3 +1,9 @@
+/**
+ * OrderDetailHero — Header block for a single order showing order number,
+ * title, status badge, total amount, and creation/update dates.
+ *
+ * Used on: /portal/porudzbine/[orderId] (order detail page).
+ */
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";

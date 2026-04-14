@@ -1,3 +1,9 @@
+/**
+ * PlatformPrinciples — "How it works" section displaying the four core
+ * pricing-interface principles in a card grid.
+ *
+ * Used on: / (home page).
+ */
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { PLATFORM_PRINCIPLES } from "@/lib/content/site";
 

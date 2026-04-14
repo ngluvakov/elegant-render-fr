@@ -1,4 +1,12 @@
-// Interactive Pricing Configurator — structured data model
+/**
+ * configurator.ts — Machine-readable pricing catalog for the order configurator.
+ *
+ * Exports ConfiguratorCategory[], ConfiguratorProduct, add-on types, and
+ * getConfiguratorProduct() lookup. Drives the interactive pricing UI.
+ *
+ * Used by: catalog/calculate, quote-item, service-adder, quote-context
+ */
+
 // Source of truth: docs/pricing/pillar-1-extracted.md
 // All prices in EUR, excluding VAT/PDV
 

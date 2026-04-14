@@ -1,3 +1,9 @@
+/**
+ * ModelFirst — Explains the "model-first pricing" philosophy: first output
+ * builds the 3D model, subsequent outputs cost less. Includes ordering steps.
+ *
+ * Used on: / (home page).
+ */
 import { ORDERING_STEPS } from "@/lib/content/site";
 
 export function ModelFirst() {

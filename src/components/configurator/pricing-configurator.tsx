@@ -1,3 +1,9 @@
+/**
+ * PricingConfigurator — Root shell for the interactive pricing configurator.
+ * Wraps QuoteProvider context and renders ServiceAdder, QuoteItemCards, and QuoteSummary.
+ *
+ * Used on: /cene (pricing page).
+ */
 "use client";
 
 import { QuoteProvider, useQuote } from "./quote-context";

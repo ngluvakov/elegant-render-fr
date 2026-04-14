@@ -1,3 +1,11 @@
+/**
+ * profile.ts — Server action for updating the authenticated user's profile.
+ *
+ * Exports updateProfileAction() handling name, phone, and optional
+ * password change with bcrypt hashing.
+ *
+ * Used by: portal/profil/profile-form
+ */
 "use server";
 
 import bcrypt from "bcryptjs";

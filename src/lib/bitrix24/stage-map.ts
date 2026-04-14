@@ -1,3 +1,11 @@
+/**
+ * stage-map.ts — Bidirectional mapping between OrderStatus and Bitrix24 Deal stages.
+ *
+ * Exports orderStatusToStage() and stageToOrderStatus() for translating
+ * between our status enum and Bitrix24 pipeline stage IDs (from env vars).
+ *
+ * Used by: server/bitrix/sync-deal, sync-status, inbound, reconcile
+ */
 import type { OrderStatus } from "@/generated/prisma/client";
 
 const ORDER_STATUS_TO_STAGE: Record<string, string> = {

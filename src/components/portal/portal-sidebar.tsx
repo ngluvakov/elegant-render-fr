@@ -1,3 +1,9 @@
+/**
+ * PortalSidebar — Navigation sidebar with admin vs. client link variants,
+ * brand logo, user info, and sign-out button.
+ *
+ * Used on: PortalLayoutShell (all /portal/* pages).
+ */
 "use client";
 
 import Link from "next/link";

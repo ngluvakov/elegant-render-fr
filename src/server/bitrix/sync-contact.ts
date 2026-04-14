@@ -1,3 +1,11 @@
+/**
+ * sync-contact.ts — Creates or finds a Bitrix24 Contact from a platform User.
+ *
+ * Exports syncContact() which checks for a cached bitrixContactId before
+ * calling crm.contact.add. Caches the ID on the User record.
+ *
+ * Used by: server/bitrix/sync-deal (called during deal creation)
+ */
 import { prisma } from "@/lib/db";
 import { bitrixCall } from "@/lib/bitrix24/client";
 

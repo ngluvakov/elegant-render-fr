@@ -1,3 +1,9 @@
+/**
+ * PortalTopbar — Top bar showing the current section title, breadcrumb for
+ * order detail pages, and a mobile menu trigger button.
+ *
+ * Used on: PortalLayoutShell (all /portal/* pages).
+ */
 "use client";
 
 import { usePathname } from "next/navigation";

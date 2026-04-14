@@ -1,3 +1,9 @@
+/**
+ * CommentThread — Scrollable message list with 30-second polling for new
+ * comments. Distinguishes client vs. admin messages with styled bubbles.
+ *
+ * Used on: /portal/porudzbine/[orderId] (order detail page).
+ */
 "use client";
 
 import { useEffect, useRef, useState } from "react";

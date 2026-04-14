@@ -1,3 +1,9 @@
+/**
+ * OrderSummaryCard — Right-panel summary showing line items with prices,
+ * attached source files, and the customer note.
+ *
+ * Used on: /portal/porudzbine/[orderId] (order detail page).
+ */
 import { formatEur } from "@/lib/catalog/calculate";
 
 type OrderSummaryCardProps = {

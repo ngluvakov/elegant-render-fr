@@ -1,3 +1,9 @@
+/**
+ * StatusUtils — Shared status label map, badge color helper, and ordered
+ * step definitions used by StatusTracker and all order-related components.
+ *
+ * Used on: StatusTracker, OrderDetailHero, OrderOverviewCard, OrdersFilterBar.
+ */
 export const STATUS_LABELS: Record<string, string> = {
   draft: "Nacrt",
   awaiting_payment: "Čeka uplatu",

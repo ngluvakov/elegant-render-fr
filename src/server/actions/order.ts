@@ -1,3 +1,11 @@
+/**
+ * order.ts — Order creation and file upload confirmation server actions.
+ *
+ * Exports createOrder() (server-side quote verification + Prisma insert +
+ * Bitrix24 deal sync) and confirmFileUpload() for source material uploads.
+ *
+ * Used by: poruci/steps/step-review, step-upload, revision-upload-card
+ */
 "use server";
 
 import { prisma } from "@/lib/db";

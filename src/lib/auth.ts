@@ -1,3 +1,12 @@
+/**
+ * auth.ts — Auth.js v5 configuration with Credentials + Google providers.
+ *
+ * Exports { handlers, auth, signIn, signOut } used across all protected
+ * routes, server actions, and the [...nextauth] API route.
+ *
+ * Used by: server/actions/auth, sign-out, profile, comment, rework, admin,
+ *          portal layouts, order pages, api/auth/[...nextauth]
+ */
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";

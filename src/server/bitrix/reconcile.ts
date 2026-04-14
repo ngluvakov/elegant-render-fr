@@ -1,3 +1,11 @@
+/**
+ * reconcile.ts — Nightly reconciliation between platform orders and Bitrix24.
+ *
+ * Exports reconcileAllOrders() which detects stage drift on synced orders
+ * and retries sync for orders that failed initial deal creation.
+ *
+ * Used by: api/cron/bitrix-reconcile/route
+ */
 import { prisma } from "@/lib/db";
 import { bitrixCall } from "@/lib/bitrix24/client";
 import { orderStatusToStage } from "@/lib/bitrix24/stage-map";

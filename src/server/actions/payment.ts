@@ -1,3 +1,13 @@
+/**
+ * payment.ts — PayPal and mock card payment server actions.
+ *
+ * Exports createPayPalOrderAction, capturePayPalOrderAction, and
+ * mockCardPaymentAction. Each transitions order status and sends
+ * confirmation email on successful capture.
+ *
+ * Used by: poruci/steps/step-payment, paypal-buttons,
+ *          portal/pending-payment-card, paypal-portal-buttons
+ */
 "use server";
 
 import { prisma } from "@/lib/db";

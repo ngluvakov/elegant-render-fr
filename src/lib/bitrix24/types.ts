@@ -1,3 +1,11 @@
+/**
+ * types.ts — TypeScript types for Bitrix24 REST API entities.
+ *
+ * Exports BitrixDeal, BitrixContact, and BitrixTimelineComment types
+ * matching the Bitrix24 CRM entity shapes.
+ *
+ * Used by: server/bitrix/inbound, server/bitrix/reconcile
+ */
 export type BitrixDeal = {
   ID: string;
   TITLE: string;

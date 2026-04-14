@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { ArrowRight, ShoppingCart, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -7,8 +8,14 @@ import { formatEur } from "@/lib/catalog/calculate";
 import { useQuote } from "./quote-context";
 
 export function QuoteSummary() {
-  const { calculation, clearAll } = useQuote();
+  const { items, calculation, clearAll } = useQuote();
   const hasItems = calculation.items.length > 0;
+  const router = useRouter();
+
+  const handleOrder = () => {
+    sessionStorage.setItem("er-checkout-quote", JSON.stringify(items));
+    router.push("/poruci");
+  };
 
   return (
     <div className="overflow-hidden rounded-3xl border border-foreground/10 bg-foreground text-background shadow-[0_30px_80px_rgba(28,26,25,0.22)]">
@@ -95,6 +102,7 @@ export function QuoteSummary() {
           </div>
           <button
             type="button"
+            onClick={handleOrder}
             className={cn(
               buttonVariants({ variant: "accent", size: "lg" }),
               "w-full justify-center rounded-xl",

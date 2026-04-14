@@ -73,3 +73,39 @@ export async function sendPasswordResetEmail(
     `,
   });
 }
+
+export async function sendOrderConfirmationEmail(
+  to: string,
+  orderNumber: string,
+  totalEur: number,
+) {
+  const portalUrl = `${process.env.AUTH_URL}/portal`;
+
+  await transporter.sendMail({
+    from: FROM,
+    to,
+    subject: `Potvrda porudžbine ${orderNumber} — Elegant Render`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Porudžbina primljena</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Vaša porudžbina <strong>${orderNumber}</strong> je uspešno primljena i plaćena.
+        </p>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0; color: #1C1A19; font-size: 14px;">
+            <strong>Broj porudžbine:</strong> ${orderNumber}<br/>
+            <strong>Ukupno:</strong> €${totalEur}
+          </p>
+        </div>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Možete pratiti status vaše porudžbine u portalu.
+        </p>
+        <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Otvorite portal
+        </a>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}

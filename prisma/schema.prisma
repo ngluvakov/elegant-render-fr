@@ -22,6 +22,7 @@ model User {
 
   accounts Account[]
   sessions Session[]
+  orders   Order[]
 
   @@map("users")
 }
@@ -64,4 +65,100 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+// ─── Order models ────────────────────────────────────────
+
+enum OrderStatus {
+  draft
+  awaiting_payment
+  paid
+  in_progress
+  in_review
+  revision_requested
+  delivered
+  closed
+  cancelled
+  refunded
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+  refunded
+}
+
+enum PaymentProvider {
+  paypal
+  card_mock
+}
+
+model Order {
+  id              String          @id @default(cuid())
+  orderNumber     String          @unique
+  userId          String
+  status          OrderStatus     @default(draft)
+  paymentStatus   PaymentStatus   @default(pending)
+  paymentProvider PaymentProvider?
+  paymentId       String?
+  totalEur        Int
+  customerNote    String?         @db.Text
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items        OrderItem[]
+  files        OrderFile[]
+  statusEvents OrderStatusEvent[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id               String  @id @default(cuid())
+  orderId          String
+  productId        String
+  categoryId       String
+  productLabel     String
+  categoryLabel    String
+  basePriceEur     Int
+  totalEur         Int
+  addOnsJson       Json
+  durationSeconds  Int?
+  durationDiscount Float?
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+model OrderFile {
+  id          String   @id @default(cuid())
+  orderId     String
+  kind        String   @default("source")
+  fileName    String
+  fileSize    Int
+  mimeType    String
+  storagePath String
+  uploadedAt  DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_files")
+}
+
+model OrderStatusEvent {
+  id         String       @id @default(cuid())
+  orderId    String
+  fromStatus OrderStatus?
+  toStatus   OrderStatus
+  note       String?      @db.Text
+  actorId    String?
+  createdAt  DateTime     @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+  @@map("order_status_events")
 }

@@ -1,0 +1,24 @@
+import type { Metadata } from "next";
+import { SignInForm } from "./sign-in-form";
+
+export const metadata: Metadata = {
+  title: "Prijava",
+  description: "Prijavite se na svoj Elegant Render nalog.",
+};
+
+export default function PrijavaPage() {
+  return (
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
+      <div className="w-full max-w-md">
+        <div className="text-center">
+          <h1 className="text-3xl text-foreground md:text-4xl">Prijava</h1>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Prijavite se na svoj nalog da pratite porudžbine i komunicirate sa
+            timom.
+          </p>
+        </div>
+        <SignInForm />
+      </div>
+    </div>
+  );
+}

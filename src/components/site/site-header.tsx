@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { ArrowRight, ChevronDown, Menu } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { ArrowRight, ChevronDown, Menu, User } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -38,8 +39,10 @@ const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const { data: session } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const isLoggedIn = !!session?.user;
 
   const isActive = (pattern: string) =>
     pathname === pattern || pathname.startsWith(`${pattern}/`);
@@ -161,7 +164,15 @@ export function SiteHeader() {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-2 md:flex">
+          <ButtonLink
+            href={isLoggedIn ? "/portal" : "/prijava"}
+            size="sm"
+            variant="outline"
+          >
+            <User className="mr-1.5 h-3.5 w-3.5" />
+            {isLoggedIn ? "Portal" : "Prijavite se"}
+          </ButtonLink>
           <ButtonLink href="/kontakt" size="sm" variant="accent">
             Pošaljite projekat
           </ButtonLink>
@@ -245,14 +256,25 @@ export function SiteHeader() {
               ))}
             </nav>
 
-            <ButtonLink
-              href="/kontakt"
-              onClick={() => setMobileOpen(false)}
-              variant="accent"
-              className="mt-auto"
-            >
-              Pošaljite projekat
-            </ButtonLink>
+            <div className="mt-auto space-y-2">
+              <ButtonLink
+                href={isLoggedIn ? "/portal" : "/prijava"}
+                onClick={() => setMobileOpen(false)}
+                variant="outline"
+                className="w-full"
+              >
+                <User className="mr-1.5 h-3.5 w-3.5" />
+                {isLoggedIn ? "Portal" : "Prijavite se"}
+              </ButtonLink>
+              <ButtonLink
+                href="/kontakt"
+                onClick={() => setMobileOpen(false)}
+                variant="accent"
+                className="w-full"
+              >
+                Pošaljite projekat
+              </ButtonLink>
+            </div>
           </SheetContent>
         </Sheet>
       </div>

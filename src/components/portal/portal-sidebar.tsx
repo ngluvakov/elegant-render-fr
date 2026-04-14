@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ExternalLink,
-  HelpCircle,
   LayoutDashboard,
   LogOut,
+  Shield,
   ShoppingBag,
   User,
 } from "lucide-react";
@@ -23,9 +23,10 @@ const NAV_ITEMS = [
 type PortalSidebarProps = {
   userName: string;
   userEmail: string;
+  isAdmin?: boolean;
 };
 
-export function PortalSidebar({ userName, userEmail }: PortalSidebarProps) {
+export function PortalSidebar({ userName, userEmail, isAdmin }: PortalSidebarProps) {
   const pathname = usePathname();
 
   const isActive = (href: string, exact: boolean) =>
@@ -40,6 +41,20 @@ export function PortalSidebar({ userName, userEmail }: PortalSidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-4">
+        {isAdmin && (
+          <Link
+            href="/portal/admin"
+            className={cn(
+              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+              isActive("/portal/admin", false)
+                ? "bg-accent/10 text-accent shadow-[0_2px_8px_rgba(184,131,99,0.08)]"
+                : "text-accent/70 hover:bg-accent/5 hover:text-accent",
+            )}
+          >
+            <Shield className="h-4 w-4 flex-shrink-0" />
+            Admin
+          </Link>
+        )}
         {NAV_ITEMS.map((item) => {
           const active = isActive(item.href, item.exact);
           return (

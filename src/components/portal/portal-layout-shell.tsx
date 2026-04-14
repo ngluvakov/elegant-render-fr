@@ -8,12 +8,14 @@ import { PortalTopbar } from "./portal-topbar";
 type PortalLayoutShellProps = {
   userName: string;
   userEmail: string;
+  isAdmin?: boolean;
   children: React.ReactNode;
 };
 
 export function PortalLayoutShell({
   userName,
   userEmail,
+  isAdmin,
   children,
 }: PortalLayoutShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -22,14 +24,14 @@ export function PortalLayoutShell({
     <div className="flex min-h-screen">
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-sidebar-border bg-sidebar md:block">
-        <PortalSidebar userName={userName} userEmail={userEmail} />
+        <PortalSidebar userName={userName} userEmail={userEmail} isAdmin={isAdmin} />
       </aside>
 
       {/* Mobile drawer */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent side="left" className="w-64 p-0">
           <SheetTitle className="sr-only">Navigacija</SheetTitle>
-          <PortalSidebar userName={userName} userEmail={userEmail} />
+          <PortalSidebar userName={userName} userEmail={userEmail} isAdmin={isAdmin} />
         </SheetContent>
       </Sheet>
 

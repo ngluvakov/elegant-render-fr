@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { PortalLayoutShell } from "@/components/portal/portal-layout-shell";
 
-export default async function PortalLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -16,13 +15,7 @@ export default async function PortalLayout({
     select: { isAdmin: true },
   });
 
-  return (
-    <PortalLayoutShell
-      userName={session.user.name ?? "Korisnik"}
-      userEmail={session.user.email ?? ""}
-      isAdmin={user?.isAdmin ?? false}
-    >
-      {children}
-    </PortalLayoutShell>
-  );
+  if (!user?.isAdmin) redirect("/portal");
+
+  return <>{children}</>;
 }

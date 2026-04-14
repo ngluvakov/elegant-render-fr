@@ -131,16 +131,16 @@ export function PendingPaymentCard({ orderId, totalEur }: PendingPaymentCardProp
           </p>
           <div className="space-y-2">
             <Label className="text-xs">Broj kartice</Label>
-            <Input placeholder="4111 1111 1111 1111" className="h-8 text-xs" />
+            <Input defaultValue="4111 1111 1111 1111" className="h-8 text-xs" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label className="text-xs">Ističe</Label>
-              <Input placeholder="12/28" className="h-8 text-xs" />
+              <Input defaultValue="12/28" className="h-8 text-xs" />
             </div>
             <div className="space-y-2">
               <Label className="text-xs">CVV</Label>
-              <Input placeholder="123" className="h-8 text-xs" />
+              <Input defaultValue="123" className="h-8 text-xs" />
             </div>
           </div>
           <Button

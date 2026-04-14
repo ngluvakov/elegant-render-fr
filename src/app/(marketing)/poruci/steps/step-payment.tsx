@@ -124,16 +124,16 @@ export function StepPayment() {
             </p>
             <div className="space-y-2">
               <Label>Broj kartice</Label>
-              <Input placeholder="4111 1111 1111 1111" />
+              <Input defaultValue="4111 1111 1111 1111" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Ističe</Label>
-                <Input placeholder="12/28" />
+                <Input defaultValue="12/28" />
               </div>
               <div className="space-y-2">
                 <Label>CVV</Label>
-                <Input placeholder="123" />
+                <Input defaultValue="123" />
               </div>
             </div>
             <Button

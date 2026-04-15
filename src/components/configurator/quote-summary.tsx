@@ -7,14 +7,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowRight, ShoppingCart, Trash2 } from "lucide-react";
+import { ArrowRight, ShoppingCart, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { formatEur } from "@/lib/catalog/calculate";
 import { useQuote } from "./quote-context";
 
 export function QuoteSummary() {
-  const { items, calculation, clearAll } = useQuote();
+  const { items, calculation, clearAll, removeProduct } = useQuote();
   const hasItems = calculation.items.length > 0;
   const router = useRouter();
 
@@ -92,6 +92,14 @@ export function QuoteSummary() {
               <p className="ml-3 flex-shrink-0 text-sm font-semibold text-background">
                 {formatEur(item.totalEur)}
               </p>
+              <button
+                type="button"
+                onClick={() => removeProduct(item.instanceId)}
+                aria-label="Ukloni stavku"
+                className="ml-2 flex-shrink-0 rounded p-0.5 text-background/30 transition-colors hover:text-background/70"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
             </div>
           );
         })}

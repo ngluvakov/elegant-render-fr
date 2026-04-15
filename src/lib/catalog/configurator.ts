@@ -862,6 +862,89 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
   },
 
   // ═══════════════════════════════════════════
+  // 1.3 — VR EXPERIENCES (OUTSOURCED)
+  // ═══════════════════════════════════════════
+  {
+    id: "vr-experiences",
+    label: "VR iskustva",
+    sectionLabel: "1.3 — Animacija i imerzija",
+    icon: "camera",
+    description:
+      "Immersivna VR iskustva za Meta Quest i slične headset uređaje — partner mreža",
+    products: [
+      {
+        id: "vr-existing",
+        label: "VR Walkthrough (postojeći model)",
+        basePriceEur: 1500,
+        unitLabel: "50% popusta — model već izgrađen",
+        includes: [
+          "VR optimizacija",
+          "Headset-ready izlaz",
+          "Sistem navigacije",
+        ],
+        disclaimers: ["Isporučuje se kroz partnersku mrežu"],
+        addOns: [
+          {
+            id: "vr-existing-floor",
+            label: "Dodatni sprat/područje",
+            description: "Inkrementalno dodavanje postojećem VR",
+            priceEur: 500,
+            priceType: "fixed",
+            includedQty: 0,
+            maxQty: Infinity,
+            volumeRules: [],
+          },
+          {
+            id: "vr-existing-interactive",
+            label: "Interaktivni element",
+            description: "Po funkcionalnosti (vrata, svetla, materijali)",
+            priceEur: 200,
+            priceType: "fixed",
+            includedQty: 0,
+            maxQty: Infinity,
+            volumeRules: [],
+          },
+        ],
+      },
+      {
+        id: "vr-standalone",
+        label: "VR Walkthrough (samostalno)",
+        basePriceEur: 3000,
+        unitLabel: "puna izgradnja + VR optimizacija",
+        includes: [
+          "Kompletan 3D model",
+          "VR optimizacija",
+          "Headset-ready izlaz",
+          "Sistem navigacije",
+        ],
+        disclaimers: ["Isporučuje se kroz partnersku mrežu"],
+        addOns: [
+          {
+            id: "vr-standalone-floor",
+            label: "Dodatni sprat/područje",
+            description: "Inkrementalno dodavanje",
+            priceEur: 500,
+            priceType: "fixed",
+            includedQty: 0,
+            maxQty: Infinity,
+            volumeRules: [],
+          },
+          {
+            id: "vr-standalone-interactive",
+            label: "Interaktivni element",
+            description: "Po funkcionalnosti (vrata, svetla, materijali)",
+            priceEur: 200,
+            priceType: "fixed",
+            includedQty: 0,
+            maxQty: Infinity,
+            volumeRules: [],
+          },
+        ],
+      },
+    ],
+  },
+
+  // ═══════════════════════════════════════════
   // 1.4 — VIRTUAL STAGING
   // ═══════════════════════════════════════════
   {

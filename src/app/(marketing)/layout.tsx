@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SessionProvider } from "@/components/auth/session-provider";
+import { ChatWidget } from "@/components/chat/chat-widget";
 
 export default function MarketingLayout({
   children,
@@ -12,6 +13,7 @@ export default function MarketingLayout({
       <SiteHeader />
       <main className="flex flex-1 flex-col">{children}</main>
       <SiteFooter />
+      <ChatWidget />
     </SessionProvider>
   );
 }

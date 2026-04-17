@@ -20,7 +20,7 @@ export function QuoteSummary() {
 
   const handleOrder = () => {
     sessionStorage.setItem("er-checkout-quote", JSON.stringify(items));
-    router.push("/poruci");
+    router.push("/portal/nova-porudzbina");
   };
 
   return (

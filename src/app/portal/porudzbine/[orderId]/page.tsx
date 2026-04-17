@@ -11,6 +11,7 @@ import { DeliverablesCard } from "@/components/portal/deliverables-card";
 import { OrderSummaryCard } from "@/components/portal/order-summary-card";
 import { ReworkRequestCard } from "@/components/portal/rework-request-card";
 import { PendingPaymentCard } from "@/components/portal/pending-payment-card";
+import { ItemConfigPanel } from "@/components/portal/item-config-panel";
 
 export const metadata: Metadata = {
   title: "Detalji porudžbine",
@@ -31,7 +32,11 @@ export default async function OrderDetailPage({
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: {
-      items: true,
+      items: {
+        include: {
+          files: { select: { id: true, fileName: true, fileSize: true, kind: true } },
+        },
+      },
       files: true,
       statusEvents: { orderBy: { createdAt: "asc" } },
       comments: {
@@ -65,8 +70,37 @@ export default async function OrderDetailPage({
 
       {/* Two-column layout */}
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
-        {/* Left: main column — communication */}
+        {/* Left: main column */}
         <div className="space-y-6">
+          {/* Item configuration — for draft/unpaid orders */}
+          {(order.status === "draft" || order.status === "awaiting_payment" || order.status === "paid") && (
+            <section>
+              <h2 className="mb-4 text-sm font-semibold text-foreground">
+                Podešavanje stavki ({order.items.length})
+              </h2>
+              <p className="mb-4 text-xs text-muted-foreground">
+                Za svaku stavku dodajte opis, osnove i reference stila. Za detaljnije opcije koristite „Napredno podešavanje".
+              </p>
+              <div className="space-y-3">
+                {order.items.map((item) => (
+                  <ItemConfigPanel
+                    key={item.id}
+                    item={{
+                      id: item.id,
+                      orderId: order.id,
+                      productLabel: item.productLabel,
+                      categoryLabel: item.categoryLabel,
+                      totalEur: item.totalEur,
+                      clientNote: item.clientNote,
+                      configJson: item.configJson as Record<string, unknown> | null,
+                      files: item.files,
+                    }}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
           <CommentThread
             orderId={order.id}
             initialComments={order.comments}

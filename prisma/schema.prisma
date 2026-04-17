@@ -132,24 +132,29 @@ model OrderItem {
   addOnsJson       Json
   durationSeconds  Int?
   durationDiscount Float?
+  clientNote       String? @db.Text
+  configJson       Json?
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  files OrderFile[]
 
   @@map("order_items")
 }
 
 model OrderFile {
-  id          String   @id @default(cuid())
-  orderId     String
-  kind        String   @default("source")
-  fileName    String
-  fileSize    Int
-  mimeType    String
+  id             String   @id @default(cuid())
+  orderId        String
+  orderItemId    String?
+  kind           String   @default("source")
+  fileName       String
+  fileSize       Int
+  mimeType       String
   storagePath    String
   bitrix24FileId String?
   uploadedAt     DateTime @default(now())
 
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItem OrderItem? @relation(fields: [orderItemId], references: [id])
 
   @@map("order_files")
 }

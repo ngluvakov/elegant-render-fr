@@ -1,22 +1,25 @@
 /**
  * ChatMessages — Scrollable message list for the AI assistant chat.
  * Renders user and assistant messages with markdown link support.
+ * Parses :::predlog blocks into actionable "add to configurator" buttons.
  *
  * Used on: ChatWidget
  */
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { ArrowRight, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 
 export type ChatMessage = {
   role: "user" | "assistant";
   content: string;
 };
 
-function renderContent(content: string) {
-  // Convert markdown links [text](/path) to clickable links
-  const parts = content.split(/(\[[^\]]+\]\([^)]+\))/g);
+function renderLinks(text: string) {
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
   return parts.map((part, i) => {
     const match = part.match(/\[([^\]]+)\]\(([^)]+)\)/);
     if (match) {
@@ -32,6 +35,79 @@ function renderContent(content: string) {
     }
     return <span key={i}>{part}</span>;
   });
+}
+
+function ProposalCard({ productIds }: { productIds: string[] }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const isOnCene = pathname === "/cene";
+
+  const products = productIds
+    .map((id) => getConfiguratorProduct(id.trim()))
+    .filter(Boolean);
+
+  if (products.length === 0) return null;
+
+  const handleAccept = () => {
+    sessionStorage.setItem(
+      "er-chat-proposal",
+      JSON.stringify(productIds.map((id) => id.trim())),
+    );
+
+    if (isOnCene) {
+      window.dispatchEvent(new CustomEvent("er-chat-proposal"));
+    } else {
+      router.push("/cene");
+    }
+  };
+
+  return (
+    <div className="mt-3 rounded-xl border border-accent/20 bg-accent/5 p-3">
+      <p className="mb-2 text-[0.6rem] font-semibold uppercase tracking-wider text-accent">
+        Predlog usluga
+      </p>
+      <div className="space-y-1.5">
+        {products.map((p) => (
+          <div
+            key={p!.product.id}
+            className="flex items-center justify-between text-xs"
+          >
+            <span className="text-foreground">{p!.product.label}</span>
+            <span className="font-semibold text-foreground">
+              €{p!.product.basePriceEur}
+              {p!.product.durationConfig ? "/sek" : ""}
+            </span>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={handleAccept}
+        className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-accent/90"
+      >
+        <ShoppingCart className="h-3.5 w-3.5" />
+        {isOnCene ? "Dodaj u konfigurator" : "Pogledaj na cenovniku"}
+        <ArrowRight className="h-3 w-3" />
+      </button>
+    </div>
+  );
+}
+
+function MessageContent({ content }: { content: string }) {
+  const proposalMatch = content.match(/:::predlog\n([\s\S]*?)\n:::/);
+  const textBefore = proposalMatch
+    ? content.slice(0, proposalMatch.index).trim()
+    : content;
+  const productIds = proposalMatch
+    ? proposalMatch[1].split(",").map((id) => id.trim()).filter(Boolean)
+    : [];
+
+  return (
+    <>
+      {renderLinks(textBefore)}
+      {productIds.length > 0 && <ProposalCard productIds={productIds} />}
+    </>
+  );
 }
 
 export function ChatMessages({ messages }: { messages: ChatMessage[] }) {
@@ -53,7 +129,7 @@ export function ChatMessages({ messages }: { messages: ChatMessage[] }) {
               : "mr-auto bg-secondary/60 text-foreground/85",
           )}
         >
-          {renderContent(msg.content)}
+          <MessageContent content={msg.content} />
           {msg.role === "assistant" && msg.content === "" && (
             <span className="inline-block h-4 w-1 animate-pulse bg-accent/60" />
           )}

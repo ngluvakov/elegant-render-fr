@@ -1,18 +1,48 @@
 /**
  * PricingConfigurator — Root shell for the interactive pricing configurator.
  * Wraps QuoteProvider context and renders ServiceAdder, QuoteItemCards, and QuoteSummary.
+ * Listens for chat proposals (er-chat-proposal event + sessionStorage) to auto-add products.
  *
  * Used on: /cene (pricing page).
  */
 "use client";
 
+import { useEffect } from "react";
 import { QuoteProvider, useQuote } from "./quote-context";
 import { ServiceAdder } from "./service-adder";
 import { QuoteItemCard } from "./quote-item";
 import { QuoteSummary } from "./quote-summary";
+import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 
 function ConfiguratorInner() {
-  const { calculation } = useQuote();
+  const { calculation, addProduct } = useQuote();
+
+  // Listen for chat proposal events (when user is already on /cene)
+  // and check sessionStorage on mount (when navigated from another page)
+  useEffect(() => {
+    const applyProposal = () => {
+      const raw = sessionStorage.getItem("er-chat-proposal");
+      if (!raw) return;
+
+      try {
+        const ids: string[] = JSON.parse(raw);
+        for (const productId of ids) {
+          const result = getConfiguratorProduct(productId);
+          if (result) {
+            addProduct(productId, result.category.id);
+          }
+        }
+        sessionStorage.removeItem("er-chat-proposal");
+      } catch {}
+    };
+
+    // Check on mount (navigated from another page with proposal)
+    applyProposal();
+
+    // Listen for live events (user clicks "Dodaj" while already on /cene)
+    window.addEventListener("er-chat-proposal", applyProposal);
+    return () => window.removeEventListener("er-chat-proposal", applyProposal);
+  }, [addProduct]);
 
   return (
     <div className="grid items-start gap-8 xl:grid-cols-[1fr_400px]">

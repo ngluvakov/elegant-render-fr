@@ -1,16 +1,20 @@
 /**
  * ChatWidget — Floating AI assistant button + chat drawer.
- * Appears on all marketing pages (bottom-right corner).
+ * Persists conversation and open/closed state across page navigations
+ * via sessionStorage. Appears on all marketing pages (bottom-right corner).
  *
  * Used on: (marketing)/layout.tsx
  */
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MessageCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ChatMessages, type ChatMessage } from "./chat-messages";
 import { ChatInput } from "./chat-input";
+
+const STORAGE_KEY_MESSAGES = "er-chat-messages";
+const STORAGE_KEY_OPEN = "er-chat-open";
 
 const WELCOME_MESSAGE: ChatMessage = {
   role: "assistant",
@@ -18,11 +22,51 @@ const WELCOME_MESSAGE: ChatMessage = {
     "Zdravo! Ja sam Elegant Render asistent. Opišite mi vaš projekat ili pitajte šta vas zanima — pomoći ću vam da izaberete pravu uslugu.",
 };
 
+function loadMessages(): ChatMessage[] {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY_MESSAGES);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return [WELCOME_MESSAGE];
+}
+
+function loadOpen(): boolean {
+  try {
+    return sessionStorage.getItem(STORAGE_KEY_OPEN) === "1";
+  } catch {}
+  return false;
+}
+
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MESSAGE]);
   const [streaming, setStreaming] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Load persisted state after hydration
+  useEffect(() => {
+    setMessages(loadMessages());
+    setOpen(loadOpen());
+    setHydrated(true);
+  }, []);
+
+  // Persist messages to sessionStorage
+  useEffect(() => {
+    if (!hydrated) return;
+    sessionStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(messages));
+  }, [messages, hydrated]);
+
+  // Persist open state
+  useEffect(() => {
+    if (!hydrated) return;
+    sessionStorage.setItem(STORAGE_KEY_OPEN, open ? "1" : "0");
+  }, [open, hydrated]);
+
+  const toggleOpen = () => setOpen((v) => !v);
 
   const sendMessage = useCallback(
     async (text: string) => {
@@ -94,7 +138,7 @@ export function ChatWidget() {
       {/* Floating button */}
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggleOpen}
         className={cn(
           "fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-[0_8px_30px_rgba(28,26,25,0.15)] transition-all hover:scale-105",
           open

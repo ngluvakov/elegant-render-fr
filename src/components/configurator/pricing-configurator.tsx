@@ -25,11 +25,15 @@ function ConfiguratorInner() {
       if (!raw) return;
 
       try {
-        const ids: string[] = JSON.parse(raw);
-        for (const productId of ids) {
+        const entries: Array<{ id: string; qty: number } | string> = JSON.parse(raw);
+        for (const entry of entries) {
+          const productId = typeof entry === "string" ? entry : entry.id;
+          const qty = typeof entry === "string" ? 1 : (entry.qty || 1);
           const result = getConfiguratorProduct(productId);
           if (result) {
-            addProduct(productId, result.category.id);
+            for (let i = 0; i < qty; i++) {
+              addProduct(productId, result.category.id);
+            }
           }
         }
         sessionStorage.removeItem("er-chat-proposal");

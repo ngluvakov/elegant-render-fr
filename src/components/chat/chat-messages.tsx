@@ -37,22 +37,28 @@ function renderLinks(text: string) {
   });
 }
 
-function ProposalCard({ productIds }: { productIds: string[] }) {
+type ProposalItem = { id: string; qty: number };
+
+function parseProposalItems(raw: string[]): ProposalItem[] {
+  return raw.map((entry) => {
+    const [id, qtyStr] = entry.split(":");
+    return { id: id.trim(), qty: parseInt(qtyStr) || 1 };
+  });
+}
+
+function ProposalCard({ entries }: { entries: ProposalItem[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const isOnCene = pathname === "/cene";
 
-  const products = productIds
-    .map((id) => getConfiguratorProduct(id.trim()))
-    .filter(Boolean);
+  const items = entries
+    .map((e) => ({ ...e, product: getConfiguratorProduct(e.id) }))
+    .filter((e) => e.product);
 
-  if (products.length === 0) return null;
+  if (items.length === 0) return null;
 
   const handleAccept = () => {
-    sessionStorage.setItem(
-      "er-chat-proposal",
-      JSON.stringify(productIds.map((id) => id.trim())),
-    );
+    sessionStorage.setItem("er-chat-proposal", JSON.stringify(entries));
 
     if (isOnCene) {
       window.dispatchEvent(new CustomEvent("er-chat-proposal"));
@@ -67,15 +73,19 @@ function ProposalCard({ productIds }: { productIds: string[] }) {
         Predlog usluga
       </p>
       <div className="space-y-1.5">
-        {products.map((p) => (
+        {items.map((item) => (
           <div
-            key={p!.product.id}
+            key={item.id}
             className="flex items-center justify-between text-xs"
           >
-            <span className="text-foreground">{p!.product.label}</span>
+            <span className="text-foreground">
+              {item.qty > 1 && (
+                <span className="mr-1 font-semibold text-accent">{item.qty}×</span>
+              )}
+              {item.product!.product.label}
+            </span>
             <span className="font-semibold text-foreground">
-              €{p!.product.basePriceEur}
-              {p!.product.durationConfig ? "/sek" : ""}
+              €{item.product!.product.basePriceEur * item.qty}
             </span>
           </div>
         ))}
@@ -98,14 +108,14 @@ function MessageContent({ content }: { content: string }) {
   const textBefore = proposalMatch
     ? content.slice(0, proposalMatch.index).trim()
     : content;
-  const productIds = proposalMatch
-    ? proposalMatch[1].split(",").map((id) => id.trim()).filter(Boolean)
+  const entries = proposalMatch
+    ? parseProposalItems(proposalMatch[1].split(",").filter(Boolean))
     : [];
 
   return (
     <>
       {renderLinks(textBefore)}
-      {productIds.length > 0 && <ProposalCard productIds={productIds} />}
+      {entries.length > 0 && <ProposalCard entries={entries} />}
     </>
   );
 }

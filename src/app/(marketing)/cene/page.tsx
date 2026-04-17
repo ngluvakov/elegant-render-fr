@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Layers, TrendingDown, Zap } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { PricingConfigurator } from "@/components/configurator/pricing-configurator";
@@ -30,7 +31,49 @@ export default function CenePage() {
         </p>
       </div>
 
-      <section className="pb-20 pt-12">
+      {/* Model-First philosophy strip */}
+      <section className="pt-12 pb-2">
+        <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              {
+                icon: Layers,
+                title: "Gradimo jednom",
+                desc: "Prva isporuka nosi pun iznos izrade 3D modela — geometrija, teksture, osvetljenje, okruženje.",
+              },
+              {
+                icon: TrendingDown,
+                title: "Svaki sledeći košta manje",
+                desc: "Svaki dodatni izlaz iz istog modela zahteva manji deo posla. Novi uglovi i varijacije idu po nižoj ceni.",
+              },
+              {
+                icon: Zap,
+                title: "Više naručite — više uštedite",
+                desc: "Što više naručite iz istog modela, to je ušteda veća. Volumen popusti se primenjuju na već snižene cene.",
+              },
+            ].map((point) => (
+              <div
+                key={point.title}
+                className="flex items-start gap-4 rounded-2xl border border-border/40 bg-card/80 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]"
+              >
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-accent/10">
+                  <point.icon className="h-5 w-5 text-accent" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">
+                    {point.title}
+                  </h3>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    {point.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="pb-20 pt-10">
         <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
           <PricingConfigurator />
         </div>

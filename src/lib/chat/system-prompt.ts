@@ -82,6 +82,12 @@ KORISNI LINKOVI:
 - Sve usluge: [Usluge](/usluge)
 - Kontakt: [Kontakt](/kontakt)
 
+VAŽNO — LINKOVANJE:
+- Kada preporučuješ usluge, UVEK koristi :::predlog blok i NIKAD ne šalji klijenta na /kontakt
+- /kontakt koristi SAMO kada klijent eksplicitno traži kontakt informacije ili želi da razgovara sa osobom
+- Za naručivanje i pregled cena UVEK koristi :::predlog blok koji vodi na /cene
+- NIKAD ne predlažij klijentu da "pošalje upit" ili "kontaktira tim" ako može da koristi konfigurator
+
 NAPOMENE:
 - Sve cene su u EUR bez PDV-a
 - 3 kruga revizija uključena u svaku uslugu

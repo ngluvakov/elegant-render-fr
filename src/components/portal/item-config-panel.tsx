@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Collapsible } from "@/components/ui/collapsible";
 import { formatEur } from "@/lib/catalog/calculate";
 import {
   confirmItemFileUpload,
@@ -150,10 +151,18 @@ export function ItemConfigPanel({
   const formatSize = (b: number) =>
     b < 1024 * 1024 ? `${(b / 1024).toFixed(0)} KB` : `${(b / (1024 * 1024)).toFixed(1)} MB`;
 
-  const hasConfig = !!(item.clientNote || (item.configJson && Object.keys(item.configJson).length > 0) || item.files.length > 0);
+  // Universal "minimum for project kickoff" rule: needs a description OR at least one file.
+  const isConfigured = !!(item.clientNote?.trim()) || item.files.length > 0;
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/80 transition-all hover:shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
+    <div
+      className={cn(
+        "rounded-2xl border bg-card/80 transition-all hover:shadow-[0_4px_16px_rgba(28,26,25,0.03)]",
+        isConfigured
+          ? "border-border/40"
+          : "border-accent/30 bg-gradient-to-br from-accent/[0.03] to-transparent",
+      )}
+    >
       {/* Header — always visible */}
       <div className="flex items-center gap-2 p-5">
         <button
@@ -162,13 +171,22 @@ export function ItemConfigPanel({
           className="flex min-w-0 flex-1 items-center gap-3 text-left"
         >
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-sm font-semibold text-foreground">
                 {item.productLabel}
               </h3>
-              {hasConfig && (
-                <span className="rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.55rem] font-semibold text-[color:var(--color-sage-deep)]">
+              {isConfigured ? (
+                <span className="inline-flex items-center gap-1 rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.55rem] font-semibold text-[color:var(--color-sage-deep)]">
+                  <span className="h-1 w-1 rounded-full bg-[color:var(--color-sage-deep)]" />
                   Podešeno
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.55rem] font-semibold text-accent">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/60" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                  </span>
+                  Potrebni podaci
                 </span>
               )}
             </div>
@@ -178,7 +196,7 @@ export function ItemConfigPanel({
           </div>
           <ChevronDown
             className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform",
+              "h-4 w-4 text-muted-foreground transition-transform duration-300",
               expanded && "rotate-180",
             )}
           />
@@ -221,8 +239,8 @@ export function ItemConfigPanel({
       </div>
 
       {/* Expanded content */}
-      {expanded && (
-        <div className="border-t border-border/30 p-5 space-y-5 animate-in fade-in duration-150">
+      <Collapsible open={expanded}>
+        <div className="border-t border-border/30 p-5 space-y-5">
           {/* Interior rooms + cameras */}
           {isInterior && (
             <InteriorConfigSection
@@ -312,8 +330,8 @@ export function ItemConfigPanel({
           </button>
 
           {/* Advanced mode */}
-          {advanced && (
-            <div className="space-y-4 rounded-xl border border-border/30 bg-secondary/20 p-4 animate-in fade-in duration-150">
+          <Collapsible open={advanced}>
+            <div className="space-y-4 rounded-xl border border-border/30 bg-secondary/20 p-4">
               <div className="space-y-2">
                 <Label htmlFor={`style-${item.id}`} className="text-xs">
                   Reference stila i atmosfera
@@ -378,7 +396,7 @@ export function ItemConfigPanel({
                 />
               </div>
             </div>
-          )}
+          </Collapsible>
 
           {/* Save button */}
           <div className="flex items-center justify-between">
@@ -403,7 +421,7 @@ export function ItemConfigPanel({
             </Button>
           </div>
         </div>
-      )}
+      </Collapsible>
     </div>
   );
 }

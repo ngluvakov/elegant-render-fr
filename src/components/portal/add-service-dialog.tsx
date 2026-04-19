@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
 import { addOrderItem } from "@/server/actions/item-config";
 import { formatEur } from "@/lib/catalog/calculate";
+import { Collapsible } from "@/components/ui/collapsible";
 
 export function AddServiceDialog({
   orderId,
@@ -77,8 +78,8 @@ export function AddServiceDialog({
         {open ? "Zatvori" : "Dodaj uslugu u ovaj nacrt"}
       </button>
 
-      {open && (
-        <div className="w-full animate-in fade-in slide-in-from-top-2 duration-200 rounded-2xl border border-border/40 bg-card/80 p-4 shadow-[0_8px_24px_rgba(28,26,25,0.04)]">
+      <Collapsible open={open} className="w-full">
+        <div className="rounded-2xl border border-border/40 bg-card/80 p-4 shadow-[0_8px_24px_rgba(28,26,25,0.04)]">
           {error && (
             <div className="mb-3 rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">
               {error}
@@ -158,7 +159,7 @@ export function AddServiceDialog({
             </p>
           )}
         </div>
-      )}
+      </Collapsible>
     </div>
   );
 }

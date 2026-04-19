@@ -28,6 +28,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Collapsible } from "@/components/ui/collapsible";
 import {
   CATEGORY_LABELS,
   CATEGORY_ORDER,
@@ -215,13 +216,13 @@ export function SiteHeader() {
                 Usluge
                 <ChevronDown
                   className={cn(
-                    "h-4 w-4 transition-transform",
+                    "h-4 w-4 transition-transform duration-300",
                     mobileServicesOpen && "rotate-180",
                   )}
                 />
               </button>
 
-              {mobileServicesOpen && (
+              <Collapsible open={mobileServicesOpen}>
                 <div className="ml-2 border-l border-border/60 pl-3">
                   <Link
                     href="/usluge"
@@ -245,7 +246,7 @@ export function SiteHeader() {
                     </Link>
                   ))}
                 </div>
-              )}
+              </Collapsible>
 
               {MAIN_NAV.map((item) => (
                 <Link

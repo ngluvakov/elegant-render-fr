@@ -11,6 +11,7 @@ import { Check, ChevronDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { formatEur, type LineItemBreakdown } from "@/lib/catalog/calculate";
+import { Collapsible } from "@/components/ui/collapsible";
 import { useQuote } from "./quote-context";
 import { AddOnStepper } from "./addon-stepper";
 
@@ -53,7 +54,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           </p>
           <ChevronDown
             className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform",
+              "h-4 w-4 text-muted-foreground transition-transform duration-300",
               expanded && "rotate-180",
             )}
           />
@@ -71,7 +72,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
         </div>
       </button>
 
-      {expanded && (
+      <Collapsible open={expanded}>
         <div>
           {/* Included items badges */}
           {hasIncludedAddOns && (
@@ -194,7 +195,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
             </div>
           )}
         </div>
-      )}
+      </Collapsible>
     </div>
   );
 }

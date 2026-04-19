@@ -1,1 +1,59 @@
 @AGENTS.md
+
+# Elegant Render Platform
+
+B2C architectural visualization service (Elegant Render, sub-brand of White Rook DOO). Serbian site (`sr-Latn-RS`), EUR pricing excluding VAT/PDV, all prices stored as **integers**.
+
+## Stack deviations from defaults
+
+- **Prisma 7 client generated to `src/generated/prisma`** — import from `@/generated/prisma/client`, not `@prisma/client`. Uses `PrismaPg` adapter (Supabase).
+- **shadcn/ui built on base-ui, not radix.** `Button` etc. import from `@base-ui/react/*`.
+- **Next.js 16 renamed `middleware.ts` → `proxy.ts`.** Route protection lives there.
+- **Tailwind 4** with CSS variables for brand palette (`--color-sage`, `--color-sage-deep`, accent = clay/warm terracotta).
+- **Auth.js v5** (credentials + Google OAuth).
+
+## Scripts and env
+
+Scripts in `scripts/` run with `npx tsx`. DB-touching scripts MUST bootstrap dotenv + PrismaPg explicitly (the runtime client won't work):
+
+```ts
+import { config } from "dotenv";
+config({ path: ".env.local" });
+import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+const adapter = new PrismaPg(process.env.DIRECT_URL!);
+const prisma = new PrismaClient({ adapter });
+```
+
+Use `DIRECT_URL` for scripts/migrations, `DATABASE_URL` (pooled) for runtime.
+
+## Domain vocabulary (Serbian)
+
+Routes and labels are Serbian — not typos:
+`porudžbine` orders · `nacrt` draft · `cene` pricing · `poruci` checkout · `predlog` proposal · `usluga` service · `prostorija/soba` room · `kadar` render/shot · `naručilac` customer · `napredno podešavanje` advanced settings.
+
+## Source of truth for pricing
+
+- Catalog: `src/lib/catalog/configurator.ts` (derived from `docs/pricing/pillar-1-extracted.md`).
+- Calculation: `src/lib/catalog/calculate.ts` — always call `calculateQuote`, never duplicate the math.
+- Per-product custom config (e.g. interior rooms): `src/lib/catalog/interior-config.ts`, stored in `OrderItem.configJson`.
+
+## Mutation pattern
+
+Server actions in `src/server/actions/` (`"use server"`). After a write:
+1. `revalidatePath('/affected/route')` on the server action.
+2. `router.refresh()` in the client after the action resolves.
+
+Destructive UI uses inline confirm (see `DeleteOrderButton`, item trash icon) — no `window.confirm()`. Editable fields autosave with 600ms debounce (see `ProjectNameEditor`, `InteriorConfigSection`).
+
+## Order status gates
+
+Structural edits (add/remove items, rename project, edit rooms) only allowed when `status === 'draft'`. `awaiting_payment` and `paid` allow per-item notes/files. Post-delivery states lock everything.
+
+## Deploy
+
+`git push origin main` triggers Vercel production. Claude Code's default-branch guardrail blocks Claude from running that push — the user runs `! git push origin main` in chat, or Claude opens a PR from a feature branch.
+
+## Chatbot
+
+OpenAI-backed chat emits service proposals as `:::predlog` blocks (see `src/components/chat/chat-messages.tsx`). Parsing + "add to configurator" flow is wired through `sessionStorage("er-chat-proposal")` and the `er-chat-proposal` custom event.

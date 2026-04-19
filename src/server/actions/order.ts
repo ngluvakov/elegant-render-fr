@@ -8,7 +8,9 @@
  */
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { calculateQuote, type QuoteItem } from "@/lib/catalog/calculate";
 import { generateOrderNumber } from "@/lib/order/generate-number";
 import { syncNewDeal } from "@/server/bitrix/sync-deal";
@@ -72,6 +74,53 @@ export async function createOrder(
   });
 
   return { orderId: order.id, orderNumber: order.orderNumber };
+}
+
+export async function deleteDraftOrder(
+  orderId: string,
+): Promise<{ error?: string; success?: boolean }> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { userId: true, status: true },
+  });
+  if (!order) return { error: "Porudžbina ne postoji." };
+  if (order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (order.status !== "draft" && order.status !== "cancelled")
+    return { error: "Samo nacrti i otkazane porudžbine se mogu obrisati." };
+
+  await prisma.order.delete({ where: { id: orderId } });
+  revalidatePath("/portal/porudzbine");
+  revalidatePath("/portal");
+  return { success: true };
+}
+
+export async function updateProjectName(
+  orderId: string,
+  name: string,
+): Promise<{ error?: string; success?: boolean }> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const trimmed = name.trim().slice(0, 100);
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { userId: true },
+  });
+  if (!order) return { error: "Porudžbina ne postoji." };
+  if (order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { projectName: trimmed.length > 0 ? trimmed : null },
+  });
+  revalidatePath(`/portal/porudzbine/${orderId}`);
+  return { success: true };
 }
 
 export async function confirmFileUpload(

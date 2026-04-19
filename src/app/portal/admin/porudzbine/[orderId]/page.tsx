@@ -61,7 +61,7 @@ export default async function AdminOrderDetailPage({
             {order.orderNumber}
           </p>
           <h1 className="mt-1 font-heading text-2xl text-foreground md:text-3xl">
-            {order.items[0]?.productLabel ?? "Porudžbina"}
+            {order.projectName ?? order.items[0]?.productLabel ?? "Porudžbina"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Klijent: <strong className="text-foreground">{order.user.name}</strong>{" "}

@@ -14,6 +14,7 @@ type OrderOverviewCardProps = {
   order: {
     id: string;
     orderNumber: string;
+    projectName: string | null;
     status: string;
     totalEur: number;
     createdAt: Date;
@@ -26,6 +27,7 @@ type OrderOverviewCardProps = {
 export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
   const firstItem = order.items[0];
   const accent = statusAccent(order.status);
+  const title = order.projectName ?? firstItem?.productLabel ?? "Porudžbina";
 
   return (
     <Link
@@ -38,11 +40,11 @@ export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
             {order.orderNumber}
           </p>
           <h3 className="mt-1 text-base font-semibold text-foreground">
-            {firstItem?.productLabel ?? "Porudžbina"}
+            {title}
           </h3>
           {firstItem && (
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {firstItem.categoryLabel}
+              {firstItem.productLabel} · {firstItem.categoryLabel}
               {order.items.length > 1 && ` + ${order.items.length - 1} stavk${order.items.length - 1 === 1 ? "a" : "i"}`}
             </p>
           )}

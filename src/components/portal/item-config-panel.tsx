@@ -1,12 +1,13 @@
 /**
  * ItemConfigPanel — Expandable per-item configuration with simple/advanced modes.
  * Simple: description + file upload. Advanced: detailed config, references, technical docs.
+ * For int-static product it also shows the InteriorConfigSection (rooms + cameras).
  *
  * Used on: /portal/porudzbine/[orderId] (order detail, draft orders).
  */
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   Check,
@@ -15,13 +16,20 @@ import {
   Settings2,
   Trash2,
   Upload,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { formatEur } from "@/lib/catalog/calculate";
-import { updateItemConfig, confirmItemFileUpload } from "@/server/actions/item-config";
+import {
+  confirmItemFileUpload,
+  deleteOrderItem,
+  updateItemConfig,
+} from "@/server/actions/item-config";
+import { InteriorConfigSection } from "./interior-config-section";
+import type { InteriorRoom } from "@/lib/catalog/interior-config";
 
 type ItemFile = {
   id: string;
@@ -33,6 +41,7 @@ type ItemFile = {
 type ItemData = {
   id: string;
   orderId: string;
+  productId: string;
   productLabel: string;
   categoryLabel: string;
   totalEur: number;
@@ -41,7 +50,13 @@ type ItemData = {
   files: ItemFile[];
 };
 
-export function ItemConfigPanel({ item }: { item: ItemData }) {
+export function ItemConfigPanel({
+  item,
+  canDelete,
+}: {
+  item: ItemData;
+  canDelete: boolean;
+}) {
   const [expanded, setExpanded] = useState(false);
   const [advanced, setAdvanced] = useState(false);
   const [note, setNote] = useState(item.clientNote ?? "");
@@ -57,9 +72,15 @@ export function ItemConfigPanel({ item }: { item: ItemData }) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploading, setUploading] = useState<string[]>([]);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deletePending, startDelete] = useTransition();
   const inputRef = useRef<HTMLInputElement>(null);
   const refInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  const isInterior = item.productId === "int-static";
+  const interiorRooms =
+    (item.configJson?.rooms as InteriorRoom[] | undefined) ?? null;
 
   const handleSave = async () => {
     setSaving(true);
@@ -73,6 +94,20 @@ export function ItemConfigPanel({ item }: { item: ItemData }) {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
     router.refresh();
+  };
+
+  const handleDeleteItem = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    startDelete(async () => {
+      const res = await deleteOrderItem(item.id);
+      if (res.error) {
+        alert(res.error);
+        setConfirmDelete(false);
+        return;
+      }
+      router.refresh();
+    });
   };
 
   const uploadFile = useCallback(
@@ -118,39 +153,85 @@ export function ItemConfigPanel({ item }: { item: ItemData }) {
   const hasConfig = !!(item.clientNote || (item.configJson && Object.keys(item.configJson).length > 0) || item.files.length > 0);
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/80 transition-shadow hover:shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
+    <div className="rounded-2xl border border-border/40 bg-card/80 transition-all hover:shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
       {/* Header — always visible */}
-      <button
-        type="button"
-        onClick={() => setExpanded((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 p-5 text-left"
-      >
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-foreground">
-              {item.productLabel}
-            </h3>
-            {hasConfig && (
-              <span className="rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.55rem] font-semibold text-[color:var(--color-sage-deep)]">
-                Podešeno
-              </span>
-            )}
+      <div className="flex items-center gap-2 p-5">
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left"
+        >
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-foreground">
+                {item.productLabel}
+              </h3>
+              {hasConfig && (
+                <span className="rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.55rem] font-semibold text-[color:var(--color-sage-deep)]">
+                  Podešeno
+                </span>
+              )}
+            </div>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {item.categoryLabel} · {formatEur(item.totalEur)}
+            </p>
           </div>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {item.categoryLabel} · {formatEur(item.totalEur)}
-          </p>
-        </div>
-        <ChevronDown
-          className={cn(
-            "h-4 w-4 text-muted-foreground transition-transform",
-            expanded && "rotate-180",
-          )}
-        />
-      </button>
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 text-muted-foreground transition-transform",
+              expanded && "rotate-180",
+            )}
+          />
+        </button>
+
+        {canDelete && !confirmDelete && (
+          <button
+            type="button"
+            aria-label="Ukloni stavku"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setConfirmDelete(true);
+            }}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground/50 transition-all hover:bg-destructive/10 hover:text-destructive"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        )}
+        {canDelete && confirmDelete && (
+          <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in slide-in-from-right-1 duration-150">
+            <span className="px-1.5 text-[0.6rem] font-semibold">Ukloniti?</span>
+            <button
+              type="button"
+              disabled={deletePending}
+              onClick={handleDeleteItem}
+              className="inline-flex h-6 w-6 items-center justify-center rounded-sm transition-colors hover:bg-destructive hover:text-white disabled:opacity-50"
+            >
+              <Check className="h-3 w-3" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(false)}
+              className="inline-flex h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Expanded content */}
       {expanded && (
-        <div className="border-t border-border/30 p-5 space-y-5">
+        <div className="border-t border-border/30 p-5 space-y-5 animate-in fade-in duration-150">
+          {/* Interior rooms + cameras */}
+          {isInterior && (
+            <InteriorConfigSection
+              itemId={item.id}
+              initialRooms={interiorRooms}
+              editable={canDelete}
+            />
+          )}
+
           {/* Simple mode: description */}
           <div className="space-y-2">
             <Label htmlFor={`note-${item.id}`} className="text-xs">
@@ -232,7 +313,7 @@ export function ItemConfigPanel({ item }: { item: ItemData }) {
 
           {/* Advanced mode */}
           {advanced && (
-            <div className="space-y-4 rounded-xl border border-border/30 bg-secondary/20 p-4">
+            <div className="space-y-4 rounded-xl border border-border/30 bg-secondary/20 p-4 animate-in fade-in duration-150">
               <div className="space-y-2">
                 <Label htmlFor={`style-${item.id}`} className="text-xs">
                   Reference stila i atmosfera

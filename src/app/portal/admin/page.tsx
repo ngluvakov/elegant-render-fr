@@ -193,10 +193,10 @@ export default async function AdminPage({
               {/* Project / service */}
               <div className="mt-2 lg:mt-0">
                 <p className="text-xs font-medium text-foreground">
-                  {firstItem?.productLabel ?? "—"}
+                  {order.projectName ?? firstItem?.productLabel ?? "—"}
                 </p>
                 <p className="text-[0.6rem] text-muted-foreground">
-                  {firstItem?.categoryLabel ?? "—"} · {order.orderNumber}
+                  {firstItem?.productLabel ?? "—"} · {order.orderNumber}
                 </p>
               </div>
 

@@ -101,6 +101,7 @@ model Order {
   id              String          @id @default(cuid())
   orderNumber     String          @unique
   userId          String
+  projectName     String?
   status          OrderStatus     @default(draft)
   paymentStatus   PaymentStatus   @default(pending)
   paymentProvider PaymentProvider?

@@ -1,6 +1,7 @@
 /**
  * OrderDetailHero — Header block for a single order showing order number,
- * title, status badge, total amount, and creation/update dates.
+ * inline project-name editor (for drafts), status badge, total amount, and
+ * creation/update dates.
  *
  * Used on: /portal/porudzbine/[orderId] (order detail page).
  */
@@ -9,26 +10,34 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { formatEur } from "@/lib/catalog/calculate";
 import { statusLabel, statusAccent } from "./status-utils";
+import { ProjectNameEditor } from "./project-name-editor";
 
 type OrderDetailHeroProps = {
+  orderId: string;
   orderNumber: string;
   status: string;
   totalEur: number;
   createdAt: Date;
   updatedAt: Date;
+  projectName: string | null;
   firstItemLabel?: string;
   firstItemCategory?: string;
 };
 
 export function OrderDetailHero({
+  orderId,
   orderNumber,
   status,
   totalEur,
   createdAt,
   updatedAt,
+  projectName,
   firstItemLabel,
   firstItemCategory,
 }: OrderDetailHeroProps) {
+  const editable = status === "draft";
+  const fallback = firstItemLabel ?? orderNumber;
+
   return (
     <div>
       <Link
@@ -40,13 +49,16 @@ export function OrderDetailHero({
       </Link>
 
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
             {orderNumber}
           </p>
-          <h1 className="mt-1 font-heading text-2xl text-foreground md:text-3xl">
-            {firstItemLabel ?? "Porudžbina"}
-          </h1>
+          <ProjectNameEditor
+            orderId={orderId}
+            initialName={projectName}
+            fallbackLabel={fallback}
+            editable={editable}
+          />
           {firstItemCategory && (
             <p className="mt-1 text-sm text-muted-foreground">
               {firstItemCategory}

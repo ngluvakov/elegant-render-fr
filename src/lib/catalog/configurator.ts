@@ -203,10 +203,10 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         id: "int-static",
         label: "Statički enterijer (po spratu)",
         basePriceEur: 170,
-        unitLabel: "osnovni paket po spratu",
+        unitLabel: "10 prostorija + 10 rendera",
         includes: [
-          "10 opremljenih soba",
-          "Neograničen broj kadrova",
+          "10 opremljenih prostorija",
+          "10 rendera uključeno",
           "3D osnova sprata",
         ],
         addOns: [

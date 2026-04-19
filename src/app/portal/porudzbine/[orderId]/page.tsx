@@ -12,6 +12,7 @@ import { OrderSummaryCard } from "@/components/portal/order-summary-card";
 import { ReworkRequestCard } from "@/components/portal/rework-request-card";
 import { PendingPaymentCard } from "@/components/portal/pending-payment-card";
 import { ItemConfigPanel } from "@/components/portal/item-config-panel";
+import { AddServiceDialog } from "@/components/portal/add-service-dialog";
 
 export const metadata: Metadata = {
   title: "Detalji porudžbine",
@@ -51,16 +52,23 @@ export default async function OrderDetailPage({
   const firstItem = order.items[0];
   const sourceFiles = order.files.filter((f) => f.kind === "source" || f.kind === "revision");
   const deliverableFiles = order.files.filter((f) => f.kind === "deliverable");
+  const isDraft = order.status === "draft";
+  const canEditItems =
+    order.status === "draft" ||
+    order.status === "awaiting_payment" ||
+    order.status === "paid";
 
   return (
     <div className="space-y-6">
       {/* Hero */}
       <OrderDetailHero
+        orderId={order.id}
         orderNumber={order.orderNumber}
         status={order.status}
         totalEur={order.totalEur}
         createdAt={order.createdAt}
         updatedAt={order.updatedAt}
+        projectName={order.projectName}
         firstItemLabel={firstItem?.productLabel}
         firstItemCategory={firstItem?.categoryLabel}
       />
@@ -73,7 +81,7 @@ export default async function OrderDetailPage({
         {/* Left: main column */}
         <div className="space-y-6">
           {/* Item configuration — for draft/unpaid orders */}
-          {(order.status === "draft" || order.status === "awaiting_payment" || order.status === "paid") && (
+          {canEditItems && (
             <section>
               <h2 className="mb-4 text-sm font-semibold text-foreground">
                 Podešavanje stavki ({order.items.length})
@@ -85,9 +93,11 @@ export default async function OrderDetailPage({
                 {order.items.map((item) => (
                   <ItemConfigPanel
                     key={item.id}
+                    canDelete={isDraft}
                     item={{
                       id: item.id,
                       orderId: order.id,
+                      productId: item.productId,
                       productLabel: item.productLabel,
                       categoryLabel: item.categoryLabel,
                       totalEur: item.totalEur,
@@ -97,6 +107,13 @@ export default async function OrderDetailPage({
                     }}
                   />
                 ))}
+
+                {isDraft && (
+                  <AddServiceDialog
+                    orderId={order.id}
+                    existingProductIds={order.items.map((i) => i.productId)}
+                  />
+                )}
               </div>
             </section>
           )}

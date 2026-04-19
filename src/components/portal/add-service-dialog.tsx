@@ -57,26 +57,28 @@ export function AddServiceDialog({
   }
 
   return (
-    <div className="rounded-2xl border border-dashed border-accent/30 bg-accent/[0.03]">
+    <div className="flex flex-col items-center gap-4 pt-3">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "flex w-full items-center justify-center gap-2 px-5 py-4 text-sm font-medium text-accent transition-all hover:bg-accent/5",
-          open && "bg-accent/5",
+          "group inline-flex items-center justify-center gap-2.5 rounded-full px-8 py-4 text-base font-semibold transition-all duration-200",
+          open
+            ? "bg-card/80 text-foreground ring-1 ring-border/40 hover:bg-muted"
+            : "bg-accent text-accent-foreground shadow-[0_14px_34px_-12px_rgba(159,106,75,0.5)] hover:bg-accent/90 hover:shadow-[0_20px_44px_-10px_rgba(159,106,75,0.6)] hover:-translate-y-0.5 active:translate-y-0",
         )}
       >
         <Plus
           className={cn(
-            "h-4 w-4 transition-transform duration-200",
-            open && "rotate-45",
+            "h-5 w-5 transition-transform duration-300",
+            open ? "rotate-45" : "group-hover:rotate-90",
           )}
         />
         {open ? "Zatvori" : "Dodaj uslugu u ovaj nacrt"}
       </button>
 
       {open && (
-        <div className="animate-in fade-in slide-in-from-top-1 duration-200 border-t border-border/30 p-4">
+        <div className="w-full animate-in fade-in slide-in-from-top-2 duration-200 rounded-2xl border border-border/40 bg-card/80 p-4 shadow-[0_8px_24px_rgba(28,26,25,0.04)]">
           {error && (
             <div className="mb-3 rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">
               {error}

@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Collapsible } from "@/components/ui/collapsible";
+import { Switch } from "@/components/ui/switch";
 import { formatEur } from "@/lib/catalog/calculate";
 import {
   confirmItemFileUpload,
@@ -244,6 +245,27 @@ export function ItemConfigPanel({
       {/* Expanded content */}
       <Collapsible open={expanded}>
         <div className="border-t border-border/30 p-5 space-y-5">
+          {/* Advanced toggle — at top */}
+          <label
+            htmlFor={`advanced-${item.id}`}
+            className="flex cursor-pointer items-center justify-between gap-3 rounded-xl bg-secondary/30 px-4 py-3"
+          >
+            <div className="flex items-center gap-2">
+              <Settings2 className="h-3.5 w-3.5 text-accent" />
+              <span className="text-xs font-medium text-foreground">
+                Napredno podešavanje
+              </span>
+              <span className="text-[0.6rem] text-muted-foreground">
+                · reference, detalji po sobi, tehničke napomene
+              </span>
+            </div>
+            <Switch
+              id={`advanced-${item.id}`}
+              checked={advanced}
+              onCheckedChange={setAdvanced}
+            />
+          </label>
+
           {/* Interior rooms + cameras */}
           {isInterior && (
             <InteriorConfigSection
@@ -321,16 +343,6 @@ export function ItemConfigPanel({
               ))}
             </div>
           )}
-
-          {/* Advanced toggle */}
-          <button
-            type="button"
-            onClick={() => setAdvanced((v) => !v)}
-            className="flex items-center gap-2 text-xs font-medium text-accent transition-colors hover:text-accent/80"
-          >
-            <Settings2 className="h-3.5 w-3.5" />
-            {advanced ? "Sakrij napredno podešavanje" : "Napredno podešavanje"}
-          </button>
 
           {/* Advanced mode */}
           <Collapsible open={advanced}>

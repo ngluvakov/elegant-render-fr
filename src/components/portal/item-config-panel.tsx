@@ -164,11 +164,11 @@ export function ItemConfigPanel({
       )}
     >
       {/* Header — always visible */}
-      <div className="flex items-center gap-2 p-5">
+      <div className="flex items-stretch">
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="flex min-w-0 flex-1 items-center gap-3 text-left"
+          className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl p-5 text-left transition-colors hover:bg-foreground/[0.015]"
         >
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -202,38 +202,41 @@ export function ItemConfigPanel({
           />
         </button>
 
-        {canDelete && !confirmDelete && (
-          <button
-            type="button"
-            aria-label="Ukloni stavku"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setConfirmDelete(true);
-            }}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground/50 transition-all hover:bg-destructive/10 hover:text-destructive"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
-        )}
-        {canDelete && confirmDelete && (
-          <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in slide-in-from-right-1 duration-150">
-            <span className="px-1.5 text-[0.6rem] font-semibold">Ukloniti?</span>
-            <button
-              type="button"
-              disabled={deletePending}
-              onClick={handleDeleteItem}
-              className="inline-flex h-6 w-6 items-center justify-center rounded-sm transition-colors hover:bg-destructive hover:text-white disabled:opacity-50"
-            >
-              <Check className="h-3 w-3" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfirmDelete(false)}
-              className="inline-flex h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              <X className="h-3 w-3" />
-            </button>
+        {canDelete && (
+          <div className="flex items-center gap-2 pr-5">
+            {!confirmDelete ? (
+              <button
+                type="button"
+                aria-label="Ukloni stavku"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setConfirmDelete(true);
+                }}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground/50 transition-all hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            ) : (
+              <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in slide-in-from-right-1 duration-150">
+                <span className="px-1.5 text-[0.6rem] font-semibold">Ukloniti?</span>
+                <button
+                  type="button"
+                  disabled={deletePending}
+                  onClick={handleDeleteItem}
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-sm transition-colors hover:bg-destructive hover:text-white disabled:opacity-50"
+                >
+                  <Check className="h-3 w-3" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(false)}
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

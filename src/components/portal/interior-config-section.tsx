@@ -286,6 +286,78 @@ function FloorPanel({
             />
           </div>
 
+          {/* Advanced toggle — at top of floor body.
+             Values live in floor.* (parent state) and the Collapsible only
+             hides via CSS, so toggling off + on preserves what the user
+             typed. */}
+          <label
+            htmlFor={`adv-${floor.id}`}
+            className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-secondary/30 px-3 py-2"
+          >
+            <div className="flex items-center gap-2">
+              <Settings2 className="h-3 w-3 text-accent" />
+              <span className="text-[0.7rem] font-medium text-foreground">
+                Napredno podešavanje
+              </span>
+              <span className="hidden text-[0.6rem] text-muted-foreground sm:inline">
+                · reference, detalji po sobi, tehničke napomene
+              </span>
+            </div>
+            <Switch
+              id={`adv-${floor.id}`}
+              checked={advanced}
+              onCheckedChange={setAdvanced}
+              disabled={!editable}
+            />
+          </label>
+
+          <Collapsible open={advanced}>
+            <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
+              <div className="space-y-1.5">
+                <Label htmlFor={`style-${floor.id}`} className="text-[0.7rem]">
+                  Reference stila i atmosfera
+                </Label>
+                <Textarea
+                  id={`style-${floor.id}`}
+                  value={floor.styleDescription ?? ""}
+                  onChange={(e) => onPatch({ styleDescription: e.target.value })}
+                  disabled={!editable}
+                  placeholder="Moderna, skandinavska, minimalistička, topla…"
+                  rows={2}
+                  className="resize-none text-xs"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`rooms-${floor.id}`} className="text-[0.7rem]">
+                  Detalji po prostoriji
+                </Label>
+                <Textarea
+                  id={`rooms-${floor.id}`}
+                  value={floor.roomDetails ?? ""}
+                  onChange={(e) => onPatch({ roomDetails: e.target.value })}
+                  disabled={!editable}
+                  placeholder="Dnevna soba: svetli tonovi&#10;Spavaća: tamni zidovi"
+                  rows={3}
+                  className="resize-none text-xs"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor={`tech-${floor.id}`} className="text-[0.7rem]">
+                  Tehničke napomene
+                </Label>
+                <Textarea
+                  id={`tech-${floor.id}`}
+                  value={floor.technicalNotes ?? ""}
+                  onChange={(e) => onPatch({ technicalNotes: e.target.value })}
+                  disabled={!editable}
+                  placeholder="Format isporuke, rezolucija…"
+                  rows={2}
+                  className="resize-none text-xs"
+                />
+              </div>
+            </div>
+          </Collapsible>
+
           {/* Rooms & cameras */}
           <div className="space-y-3 rounded-xl border border-accent/20 bg-gradient-to-br from-accent/[0.02] to-transparent p-3">
             <div className="flex items-center justify-between gap-2">
@@ -496,74 +568,6 @@ function FloorPanel({
             )}
           </div>
 
-          {/* Advanced toggle per floor */}
-          <label
-            htmlFor={`adv-${floor.id}`}
-            className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-secondary/30 px-3 py-2"
-          >
-            <div className="flex items-center gap-2">
-              <Settings2 className="h-3 w-3 text-accent" />
-              <span className="text-[0.7rem] font-medium text-foreground">
-                Napredno podešavanje
-              </span>
-              <span className="hidden text-[0.6rem] text-muted-foreground sm:inline">
-                · reference, detalji po sobi, tehničke napomene
-              </span>
-            </div>
-            <Switch
-              id={`adv-${floor.id}`}
-              checked={advanced}
-              onCheckedChange={setAdvanced}
-              disabled={!editable}
-            />
-          </label>
-
-          <Collapsible open={advanced}>
-            <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
-              <div className="space-y-1.5">
-                <Label htmlFor={`style-${floor.id}`} className="text-[0.7rem]">
-                  Reference stila i atmosfera
-                </Label>
-                <Textarea
-                  id={`style-${floor.id}`}
-                  value={floor.styleDescription ?? ""}
-                  onChange={(e) => onPatch({ styleDescription: e.target.value })}
-                  disabled={!editable}
-                  placeholder="Moderna, skandinavska, minimalistička, topla…"
-                  rows={2}
-                  className="resize-none text-xs"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`rooms-${floor.id}`} className="text-[0.7rem]">
-                  Detalji po prostoriji
-                </Label>
-                <Textarea
-                  id={`rooms-${floor.id}`}
-                  value={floor.roomDetails ?? ""}
-                  onChange={(e) => onPatch({ roomDetails: e.target.value })}
-                  disabled={!editable}
-                  placeholder="Dnevna soba: svetli tonovi&#10;Spavaća: tamni zidovi"
-                  rows={3}
-                  className="resize-none text-xs"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`tech-${floor.id}`} className="text-[0.7rem]">
-                  Tehničke napomene
-                </Label>
-                <Textarea
-                  id={`tech-${floor.id}`}
-                  value={floor.technicalNotes ?? ""}
-                  onChange={(e) => onPatch({ technicalNotes: e.target.value })}
-                  disabled={!editable}
-                  placeholder="Format isporuke, rezolucija…"
-                  rows={2}
-                  className="resize-none text-xs"
-                />
-              </div>
-            </div>
-          </Collapsible>
         </div>
       </Collapsible>
     </div>

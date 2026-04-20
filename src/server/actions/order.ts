@@ -76,6 +76,28 @@ export async function createOrder(
   return { orderId: order.id, orderNumber: order.orderNumber };
 }
 
+export async function createEmptyDraft(): Promise<OrderResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const order = await prisma.order.create({
+    data: {
+      orderNumber: generateOrderNumber(),
+      userId: session.user.id,
+      totalEur: 0,
+      items: { create: [] },
+      statusEvents: {
+        create: { toStatus: "draft", note: "Nacrt kreiran iz portala" },
+      },
+    },
+  });
+
+  revalidatePath("/portal/porudzbine");
+  revalidatePath("/portal");
+
+  return { orderId: order.id, orderNumber: order.orderNumber };
+}
+
 export async function deleteDraftOrder(
   orderId: string,
 ): Promise<{ error?: string; success?: boolean }> {

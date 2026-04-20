@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Plus, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { statusLabel, statusAccent } from "@/components/portal/status-utils";
 import { OrdersFilterBar } from "@/components/portal/orders-filter-bar";
 import { EmptyState } from "@/components/portal/empty-state";
 import { DeleteOrderButton } from "@/components/portal/delete-order-button";
+import { NewDraftButton } from "@/components/portal/new-draft-button";
 
 export const metadata: Metadata = {
   title: "Porudžbine",
@@ -50,13 +51,7 @@ export default async function PorudzbinePage({
             {orders.length} porudžbin{orders.length === 1 ? "a" : "a"}
           </p>
         </div>
-        <Link
-          href="/cene"
-          className="group inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground shadow-[0_14px_34px_-12px_rgba(159,106,75,0.45)] transition-all hover:bg-accent/90 hover:shadow-[0_18px_40px_-10px_rgba(159,106,75,0.55)]"
-        >
-          <Plus className="h-4 w-4 transition-transform group-hover:rotate-90" />
-          Novi nacrt
-        </Link>
+        <NewDraftButton />
       </div>
 
       <OrdersFilterBar />

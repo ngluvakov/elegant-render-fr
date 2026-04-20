@@ -25,8 +25,14 @@ import {
   newFloor,
   makeFloorId,
   INT_STATIC_FIRST_FLOOR_EUR,
+  ROOM_STYLE_IDS,
+  TIME_OF_DAY_IDS,
+  SEASON_IDS,
   type InteriorFloor,
   type InteriorRoom,
+  type RoomStyleId,
+  type TimeOfDayId,
+  type SeasonId,
 } from "@/lib/catalog/interior-config";
 
 export type ItemConfigResult = {
@@ -225,21 +231,33 @@ export async function addOrderItem(
 }
 
 function sanitizeRoom(r: InteriorRoom): InteriorRoom {
+  const styleId = (r.styleId ?? "") as string;
+  const validStyle = (ROOM_STYLE_IDS as readonly string[]).includes(styleId)
+    ? (styleId as RoomStyleId)
+    : undefined;
   return {
     name: String(r.name ?? "").trim().slice(0, 80) || "Prostorija",
     cameras: Math.max(1, Math.min(20, Number(r.cameras) || 1)),
+    ...(validStyle ? { styleId: validStyle } : {}),
   };
 }
 
 function sanitizeFloor(f: InteriorFloor, idx: number): InteriorFloor {
+  const timeOfDay = (f.timeOfDay ?? "") as string;
+  const validTime = (TIME_OF_DAY_IDS as readonly string[]).includes(timeOfDay)
+    ? (timeOfDay as TimeOfDayId)
+    : undefined;
+  const season = (f.season ?? "") as string;
+  const validSeason = (SEASON_IDS as readonly string[]).includes(season)
+    ? (season as SeasonId)
+    : undefined;
   return {
     id: String(f.id || makeFloorId()),
     name: String(f.name || `Sprat ${idx + 1}`).trim().slice(0, 80),
     rooms: (f.rooms ?? []).map(sanitizeRoom).slice(0, 40),
     description: String(f.description ?? "").slice(0, 2000),
-    styleDescription: String(f.styleDescription ?? "").slice(0, 2000),
-    roomDetails: String(f.roomDetails ?? "").slice(0, 2000),
-    technicalNotes: String(f.technicalNotes ?? "").slice(0, 2000),
+    ...(validTime ? { timeOfDay: validTime } : {}),
+    ...(validSeason ? { season: validSeason } : {}),
   };
 }
 

@@ -49,9 +49,15 @@ import {
   INT_STATIC_INCLUDED_CAMERAS,
   makeFloorId,
   newFloor,
+  ROOM_STYLES,
+  SEASONS,
+  TIMES_OF_DAY,
   type InteriorFloor,
   type InteriorFloorCalc,
   type InteriorRoom,
+  type RoomStyleId,
+  type SeasonId,
+  type TimeOfDayId,
 } from "@/lib/catalog/interior-config";
 import {
   confirmItemFileUpload,
@@ -111,7 +117,11 @@ function FloorPanel({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [uploading, setUploading] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const viewInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  const sourceFiles = files.filter((f) => f.kind !== "window-view");
+  const viewFiles = files.filter((f) => f.kind === "window-view");
 
   const updateRoom = (rIdx: number, patch: Partial<InteriorRoom>) => {
     onPatch({
@@ -140,7 +150,7 @@ function FloorPanel({
   };
 
   const uploadFile = useCallback(
-    async (file: File) => {
+    async (file: File, kind: "source" | "window-view") => {
       setUploading((prev) => [...prev, file.name]);
       try {
         const urlRes = await fetch("/api/checkout/upload-url", {
@@ -167,7 +177,7 @@ function FloorPanel({
           file.size,
           file.type,
           storagePath,
-          "source",
+          kind,
           floor.id,
         );
         router.refresh();
@@ -288,10 +298,7 @@ function FloorPanel({
             />
           </div>
 
-          {/* Advanced toggle — at top of floor body.
-             Values live in floor.* (parent state) and the Collapsible only
-             hides via CSS, so toggling off + on preserves what the user
-             typed. */}
+          {/* Advanced toggle — switch stays at top; body renders at bottom. */}
           <label
             htmlFor={`adv-${floor.id}`}
             className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-secondary/30 px-3 py-2"
@@ -302,7 +309,7 @@ function FloorPanel({
                 Napredno podešavanje
               </span>
               <span className="hidden text-[0.6rem] text-muted-foreground sm:inline">
-                · reference, detalji po sobi, tehničke napomene
+                · doba dana, godišnje doba, pogled kroz prozor
               </span>
             </div>
             <Switch
@@ -312,56 +319,6 @@ function FloorPanel({
               disabled={!editable}
             />
           </label>
-
-          <Collapsible open={advanced}>
-            <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
-              <div className="space-y-1.5">
-                <Label htmlFor={`style-${floor.id}`} className="text-[0.7rem]">
-                  <Pencil className="h-2.5 w-2.5 text-accent/60" />
-                  Reference stila i atmosfera
-                </Label>
-                <Textarea
-                  id={`style-${floor.id}`}
-                  value={floor.styleDescription ?? ""}
-                  onChange={(e) => onPatch({ styleDescription: e.target.value })}
-                  disabled={!editable}
-                  placeholder="Moderna, skandinavska, minimalistička, topla…"
-                  rows={2}
-                  className="resize-none text-xs"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`rooms-${floor.id}`} className="text-[0.7rem]">
-                  <Pencil className="h-2.5 w-2.5 text-accent/60" />
-                  Detalji po prostoriji
-                </Label>
-                <Textarea
-                  id={`rooms-${floor.id}`}
-                  value={floor.roomDetails ?? ""}
-                  onChange={(e) => onPatch({ roomDetails: e.target.value })}
-                  disabled={!editable}
-                  placeholder="Dnevna soba: svetli tonovi&#10;Spavaća: tamni zidovi"
-                  rows={3}
-                  className="resize-none text-xs"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`tech-${floor.id}`} className="text-[0.7rem]">
-                  <Pencil className="h-2.5 w-2.5 text-accent/60" />
-                  Tehničke napomene
-                </Label>
-                <Textarea
-                  id={`tech-${floor.id}`}
-                  value={floor.technicalNotes ?? ""}
-                  onChange={(e) => onPatch({ technicalNotes: e.target.value })}
-                  disabled={!editable}
-                  placeholder="Format isporuke, rezolucija…"
-                  rows={2}
-                  className="resize-none text-xs"
-                />
-              </div>
-            </div>
-          </Collapsible>
 
           {/* Rooms & cameras */}
           <div className="space-y-3 rounded-xl border border-accent/20 bg-gradient-to-br from-accent/[0.02] to-transparent p-3">
@@ -412,7 +369,7 @@ function FloorPanel({
                     <div
                       key={rIdx}
                       className={cn(
-                        "flex items-center gap-2 rounded-md bg-card/90 px-2.5 py-1.5",
+                        "flex flex-wrap items-center gap-2 rounded-md bg-card/90 px-2.5 py-1.5",
                         isBeyondRooms && "ring-1 ring-accent/30",
                       )}
                     >
@@ -425,6 +382,24 @@ function FloorPanel({
                         className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground/50"
                         placeholder="Naziv prostorije"
                       />
+                      <select
+                        value={room.styleId ?? ""}
+                        onChange={(e) =>
+                          updateRoom(rIdx, {
+                            styleId: (e.target.value || undefined) as RoomStyleId | undefined,
+                          })
+                        }
+                        disabled={!editable}
+                        aria-label="Stil enterijera"
+                        className="rounded bg-secondary/60 px-2 py-1 text-[0.65rem] text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
+                      >
+                        <option value="">Stil — izaberite</option>
+                        {ROOM_STYLES.map((s) => (
+                          <option key={s.id} value={s.id}>
+                            {s.label}
+                          </option>
+                        ))}
+                      </select>
                       {isBeyondRooms && (
                         <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.5rem] font-semibold text-accent">
                           +€{INT_STATIC_EXTRA_ROOM_EUR}
@@ -476,12 +451,12 @@ function FloorPanel({
               <button
                 type="button"
                 onClick={addRoom}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-border/40 px-3 py-1.5 text-[0.7rem] font-medium text-muted-foreground hover:border-accent/40 hover:bg-accent/5 hover:text-accent"
+                className="inline-flex items-center gap-1.5 self-start rounded-lg border border-accent/50 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-accent transition-all hover:-translate-y-px hover:border-accent hover:bg-accent/15 hover:shadow-[0_4px_12px_-4px_rgba(184,131,99,0.3)]"
               >
-                <Plus className="h-3 w-3" />
+                <Plus className="h-3.5 w-3.5" />
                 Dodaj prostoriju
                 {calc.totalRooms >= 10 && (
-                  <span className="text-[0.55rem] text-accent">
+                  <span className="text-[0.55rem] text-accent/80">
                     (+€{INT_STATIC_EXTRA_ROOM_EUR})
                   </span>
                 )}
@@ -530,7 +505,7 @@ function FloorPanel({
                 disabled={!editable}
                 onChange={(e) => {
                   if (e.target.files) {
-                    Array.from(e.target.files).forEach((f) => uploadFile(f));
+                    Array.from(e.target.files).forEach((f) => uploadFile(f, "source"));
                     e.target.value = "";
                   }
                 }}
@@ -538,9 +513,9 @@ function FloorPanel({
               />
             </div>
 
-            {(files.length > 0 || uploading.length > 0) && (
+            {sourceFiles.length > 0 && (
               <div className="space-y-1">
-                {files.map((f) => (
+                {sourceFiles.map((f) => (
                   <div
                     key={f.id}
                     className="flex items-center gap-2 rounded bg-secondary/40 px-2.5 py-1.5 text-[0.7rem]"
@@ -560,6 +535,10 @@ function FloorPanel({
                     )}
                   </div>
                 ))}
+              </div>
+            )}
+            {uploading.length > 0 && (
+              <div className="space-y-1">
                 {uploading.map((name) => (
                   <div
                     key={name}
@@ -574,6 +553,132 @@ function FloorPanel({
             )}
           </div>
 
+          {/* Advanced settings — at bottom. Values persist across toggles
+             because Collapsible hides via CSS, not unmount. */}
+          <Collapsible open={advanced}>
+            <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
+              <p className="text-[0.6rem] font-semibold uppercase tracking-wider text-muted-foreground">
+                Napredno
+              </p>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1">
+                  <Label htmlFor={`tod-${floor.id}`} className="text-[0.7rem]">
+                    Doba dana
+                  </Label>
+                  <select
+                    id={`tod-${floor.id}`}
+                    value={floor.timeOfDay ?? ""}
+                    onChange={(e) =>
+                      onPatch({
+                        timeOfDay:
+                          (e.target.value || undefined) as TimeOfDayId | undefined,
+                      })
+                    }
+                    disabled={!editable}
+                    className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
+                  >
+                    <option value="">— izaberite —</option>
+                    {TIMES_OF_DAY.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <Label htmlFor={`season-${floor.id}`} className="text-[0.7rem]">
+                    Godišnje doba
+                  </Label>
+                  <select
+                    id={`season-${floor.id}`}
+                    value={floor.season ?? ""}
+                    onChange={(e) =>
+                      onPatch({
+                        season:
+                          (e.target.value || undefined) as SeasonId | undefined,
+                      })
+                    }
+                    disabled={!editable}
+                    className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
+                  >
+                    <option value="">— izaberite —</option>
+                    {SEASONS.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-[0.7rem]">
+                  Pogled kroz prozor (reference)
+                </Label>
+                <div
+                  onClick={() => editable && viewInputRef.current?.click()}
+                  className={cn(
+                    "flex items-center justify-center rounded-md border-2 border-dashed border-border/40 px-3 py-3 transition-colors",
+                    editable
+                      ? "cursor-pointer hover:border-accent/40"
+                      : "opacity-60",
+                  )}
+                >
+                  <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
+                  <span className="text-[0.7rem] text-muted-foreground">
+                    Fotografije pogleda kroz prozore ovog sprata
+                  </span>
+                  <input
+                    ref={viewInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    disabled={!editable}
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        Array.from(e.target.files).forEach((f) =>
+                          uploadFile(f, "window-view"),
+                        );
+                        e.target.value = "";
+                      }
+                    }}
+                    className="hidden"
+                  />
+                </div>
+
+                {viewFiles.length > 0 && (
+                  <div className="space-y-1">
+                    {viewFiles.map((f) => (
+                      <div
+                        key={f.id}
+                        className="flex items-center gap-2 rounded bg-secondary/40 px-2.5 py-1.5 text-[0.7rem]"
+                      >
+                        <FileUp className="h-3 w-3 text-muted-foreground" />
+                        <span className="flex-1 truncate text-foreground">
+                          {f.fileName}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {formatSize(f.fileSize)}
+                        </span>
+                        {editable && (
+                          <button
+                            type="button"
+                            aria-label="Ukloni fajl"
+                            onClick={() => handleFileDelete(f.id)}
+                            className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <X className="h-2.5 w-2.5" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </Collapsible>
         </div>
       </Collapsible>
     </div>

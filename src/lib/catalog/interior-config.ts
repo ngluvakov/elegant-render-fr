@@ -8,9 +8,41 @@
  * extra camera = €10. Every room has at least 1 camera.
  */
 
+export const ROOM_STYLES = [
+  { id: "industrial-urban", label: "Industrial / urban" },
+  { id: "scandinavian", label: "Scandinavian" },
+  { id: "farmhouse", label: "Farmhouse" },
+  { id: "modern", label: "Modern" },
+  { id: "contemporary", label: "Contemporary" },
+  { id: "mid-century", label: "Mid-century" },
+  { id: "primorski", label: "Primorski stil" },
+] as const;
+export type RoomStyleId = (typeof ROOM_STYLES)[number]["id"];
+export const ROOM_STYLE_IDS = ROOM_STYLES.map((s) => s.id) as RoomStyleId[];
+
+export const TIMES_OF_DAY = [
+  { id: "jutro", label: "Jutro" },
+  { id: "podne", label: "Podne" },
+  { id: "popodne", label: "Popodne" },
+  { id: "vece", label: "Veče" },
+  { id: "noc", label: "Noć" },
+] as const;
+export type TimeOfDayId = (typeof TIMES_OF_DAY)[number]["id"];
+export const TIME_OF_DAY_IDS = TIMES_OF_DAY.map((t) => t.id) as TimeOfDayId[];
+
+export const SEASONS = [
+  { id: "prolece", label: "Proleće" },
+  { id: "leto", label: "Leto" },
+  { id: "jesen", label: "Jesen" },
+  { id: "zima", label: "Zima" },
+] as const;
+export type SeasonId = (typeof SEASONS)[number]["id"];
+export const SEASON_IDS = SEASONS.map((s) => s.id) as SeasonId[];
+
 export type InteriorRoom = {
   name: string;
   cameras: number;
+  styleId?: RoomStyleId;
 };
 
 export type InteriorFloor = {
@@ -18,9 +50,8 @@ export type InteriorFloor = {
   name: string;
   rooms: InteriorRoom[];
   description?: string;
-  styleDescription?: string;
-  roomDetails?: string;
-  technicalNotes?: string;
+  timeOfDay?: TimeOfDayId;
+  season?: SeasonId;
 };
 
 export const INT_STATIC_FIRST_FLOOR_EUR = 170;
@@ -101,8 +132,5 @@ export function newFloor(index: number): InteriorFloor {
     name: index === 0 ? "Sprat 1" : `Sprat ${index + 1}`,
     rooms: [],
     description: "",
-    styleDescription: "",
-    roomDetails: "",
-    technicalNotes: "",
   };
 }

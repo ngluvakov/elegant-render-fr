@@ -31,13 +31,14 @@ import {
   updateItemConfig,
 } from "@/server/actions/item-config";
 import { InteriorConfigSection } from "./interior-config-section";
-import type { InteriorRoom } from "@/lib/catalog/interior-config";
+import type { InteriorFloor } from "@/lib/catalog/interior-config";
 
 type ItemFile = {
   id: string;
   fileName: string;
   fileSize: number;
   kind: string;
+  floorId: string | null;
 };
 
 type ItemData = {
@@ -81,8 +82,8 @@ export function ItemConfigPanel({
   const router = useRouter();
 
   const isInterior = item.productId === "int-static";
-  const interiorRooms =
-    (item.configJson?.rooms as InteriorRoom[] | undefined) ?? null;
+  const interiorFloors =
+    (item.configJson?.floors as InteriorFloor[] | undefined) ?? null;
 
   const handleSave = async () => {
     setSaving(true);
@@ -153,7 +154,14 @@ export function ItemConfigPanel({
     b < 1024 * 1024 ? `${(b / 1024).toFixed(0)} KB` : `${(b / (1024 * 1024)).toFixed(1)} MB`;
 
   // Universal "minimum for project kickoff" rule: needs a description OR at least one file.
-  const isConfigured = !!(item.clientNote?.trim()) || item.files.length > 0;
+  // For int-static, check across floors (per-floor description/files).
+  const isConfigured = isInterior
+    ? (interiorFloors ?? []).some(
+        (f) =>
+          (f.description?.trim().length ?? 0) > 0 ||
+          item.files.some((file) => file.floorId === f.id),
+      )
+    : !!item.clientNote?.trim() || item.files.length > 0;
 
   return (
     <div
@@ -245,12 +253,120 @@ export function ItemConfigPanel({
       {/* Expanded content */}
       <Collapsible open={expanded}>
         <div className="border-t border-border/30 p-5 space-y-5">
-          {/* Advanced toggle — at top */}
-          <label
-            htmlFor={`advanced-${item.id}`}
-            className="flex cursor-pointer items-center justify-between gap-3 rounded-xl bg-secondary/30 px-4 py-3"
-          >
-            <div className="flex items-center gap-2">
+          {isInterior ? (
+            <InteriorConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              initialFloors={interiorFloors}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : (
+            <NonInteriorBody
+              item={item}
+              files={item.files}
+              canDelete={canDelete}
+            />
+          )}
+        </div>
+      </Collapsible>
+    </div>
+  );
+}
+
+// ─── Non-interior body (simple + advanced, as before) ──────────────────
+
+function NonInteriorBody({
+  item,
+  files,
+  canDelete,
+}: {
+  item: ItemData;
+  files: ItemFile[];
+  canDelete: boolean;
+}) {
+  const [advanced, setAdvanced] = useState(false);
+  const [note, setNote] = useState(item.clientNote ?? "");
+  const [styleDesc, setStyleDesc] = useState(
+    (item.configJson?.styleDescription as string) ?? "",
+  );
+  const [roomDetails, setRoomDetails] = useState(
+    (item.configJson?.roomDetails as string) ?? "",
+  );
+  const [techNotes, setTechNotes] = useState(
+    (item.configJson?.technicalNotes as string) ?? "",
+  );
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [uploading, setUploading] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const refInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+
+  const handleSave = async () => {
+    setSaving(true);
+    await updateItemConfig(item.id, {
+      clientNote: note || undefined,
+      configJson: advanced
+        ? { styleDescription: styleDesc, roomDetails, technicalNotes: techNotes }
+        : undefined,
+    });
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+    router.refresh();
+  };
+
+  const uploadFile = useCallback(
+    async (file: File, kind: string) => {
+      setUploading((prev) => [...prev, file.name]);
+      try {
+        const urlRes = await fetch("/api/checkout/upload-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: item.orderId,
+            fileName: file.name,
+            mimeType: file.type,
+            fileSize: file.size,
+          }),
+        });
+        if (!urlRes.ok) throw new Error("Greška");
+        const { signedUrl, storagePath } = await urlRes.json();
+        await fetch(signedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type, "x-upsert": "true" },
+          body: file,
+        });
+        await confirmItemFileUpload(
+          item.orderId,
+          item.id,
+          file.name,
+          file.size,
+          file.type,
+          storagePath,
+          kind,
+        );
+        router.refresh();
+      } catch {}
+      setUploading((prev) => prev.filter((n) => n !== file.name));
+    },
+    [item.orderId, item.id, router],
+  );
+
+  const formatSize = (b: number) =>
+    b < 1024 * 1024
+      ? `${(b / 1024).toFixed(0)} KB`
+      : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+
+  return (
+    <>
+      {/* Advanced toggle — at top */}
+      <label
+        htmlFor={`advanced-${item.id}`}
+        className="flex cursor-pointer items-center justify-between gap-3 rounded-xl bg-secondary/30 px-4 py-3"
+      >
+        <div className="flex items-center gap-2">
               <Settings2 className="h-3.5 w-3.5 text-accent" />
               <span className="text-xs font-medium text-foreground">
                 Napredno podešavanje
@@ -265,15 +381,6 @@ export function ItemConfigPanel({
               onCheckedChange={setAdvanced}
             />
           </label>
-
-          {/* Interior rooms + cameras */}
-          {isInterior && (
-            <InteriorConfigSection
-              itemId={item.id}
-              initialRooms={interiorRooms}
-              editable={canDelete}
-            />
-          )}
 
           {/* Simple mode: description */}
           <div className="space-y-2">
@@ -316,9 +423,9 @@ export function ItemConfigPanel({
           </div>
 
           {/* Uploaded files for this item */}
-          {(item.files.length > 0 || uploading.length > 0) && (
+          {(files.length > 0 || uploading.length > 0) && (
             <div className="space-y-1.5">
-              {item.files.map((f) => (
+              {files.map((f) => (
                 <div
                   key={f.id}
                   className="flex items-center gap-2 rounded-lg bg-secondary/40 px-3 py-2 text-xs"
@@ -435,8 +542,6 @@ export function ItemConfigPanel({
               )}
             </Button>
           </div>
-        </div>
-      </Collapsible>
-    </div>
+    </>
   );
 }

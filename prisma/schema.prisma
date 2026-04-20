@@ -146,6 +146,7 @@ model OrderFile {
   id             String   @id @default(cuid())
   orderId        String
   orderItemId    String?
+  floorId        String?
   kind           String   @default("source")
   fileName       String
   fileSize       Int

@@ -2,15 +2,17 @@
  * item-config.ts — Server actions for per-item configuration in the portal.
  *
  * Exports updateItemConfig (save note + advanced config),
- * confirmItemFileUpload (attach file to specific order item),
- * addOrderItem / deleteOrderItem (draft-only item management), and
- * updateInteriorConfig (rooms/cameras for int-static).
+ * confirmItemFileUpload (attach file to specific order item / floor),
+ * addOrderItem / deleteOrderItem (draft-only item management),
+ * updateInteriorFloors (per-floor rooms+cameras+description+advanced for
+ * int-static), and deleteOrderFile (remove an uploaded file).
  *
  * Used by: portal/porudzbine/[orderId] item configuration UI
  */
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { Prisma } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
@@ -20,6 +22,10 @@ import {
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import {
   calcInteriorTotal,
+  newFloor,
+  makeFloorId,
+  INT_STATIC_FIRST_FLOOR_EUR,
+  type InteriorFloor,
   type InteriorRoom,
 } from "@/lib/catalog/interior-config";
 
@@ -67,6 +73,7 @@ export async function confirmItemFileUpload(
   mimeType: string,
   storagePath: string,
   kind: string = "source",
+  floorId?: string,
 ) {
   const session = await auth();
   if (!session?.user?.id) return { error: "Niste prijavljeni." };
@@ -75,6 +82,7 @@ export async function confirmItemFileUpload(
     data: {
       orderId,
       orderItemId: itemId,
+      floorId: floorId ?? null,
       kind,
       fileName,
       fileSize,
@@ -83,6 +91,28 @@ export async function confirmItemFileUpload(
     },
   });
 
+  revalidatePath(`/portal/porudzbine/${orderId}`);
+  return { success: true };
+}
+
+export async function deleteOrderFile(
+  fileId: string,
+): Promise<ItemConfigResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const file = await prisma.orderFile.findUnique({
+    where: { id: fileId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!file) return { error: "Fajl nije pronađen." };
+  if (file.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (file.order.status !== "draft")
+    return { error: "Fajlovi se mogu brisati samo u nacrtu." };
+
+  await prisma.orderFile.delete({ where: { id: fileId } });
+  revalidatePath(`/portal/porudzbine/${file.order.id}`);
   return { success: true };
 }
 
@@ -164,6 +194,15 @@ export async function addOrderItem(
   const breakdown = calc.items[0];
   if (!breakdown) return { error: "Greška u izračunu." };
 
+  // int-static items always start with one default floor so the price is
+  // stable (€170) and the UI has something to show.
+  const initialConfigJson: Prisma.InputJsonValue | undefined =
+    productId === "int-static" ? { floors: [newFloor(0)] } : undefined;
+  const initialTotal =
+    productId === "int-static"
+      ? INT_STATIC_FIRST_FLOOR_EUR
+      : breakdown.totalEur;
+
   await prisma.orderItem.create({
     data: {
       orderId,
@@ -172,10 +211,11 @@ export async function addOrderItem(
       productLabel: breakdown.productLabel,
       categoryLabel: breakdown.categoryLabel,
       basePriceEur: breakdown.basePriceEur,
-      totalEur: breakdown.totalEur,
+      totalEur: initialTotal,
       addOnsJson: breakdown.addOns,
       durationSeconds: breakdown.durationSeconds ?? null,
       durationDiscount: breakdown.durationDiscount ?? null,
+      ...(initialConfigJson ? { configJson: initialConfigJson } : {}),
     },
   });
 
@@ -184,9 +224,28 @@ export async function addOrderItem(
   return { success: true };
 }
 
-export async function updateInteriorConfig(
+function sanitizeRoom(r: InteriorRoom): InteriorRoom {
+  return {
+    name: String(r.name ?? "").trim().slice(0, 80) || "Prostorija",
+    cameras: Math.max(1, Math.min(20, Number(r.cameras) || 1)),
+  };
+}
+
+function sanitizeFloor(f: InteriorFloor, idx: number): InteriorFloor {
+  return {
+    id: String(f.id || makeFloorId()),
+    name: String(f.name || `Sprat ${idx + 1}`).trim().slice(0, 80),
+    rooms: (f.rooms ?? []).map(sanitizeRoom).slice(0, 40),
+    description: String(f.description ?? "").slice(0, 2000),
+    styleDescription: String(f.styleDescription ?? "").slice(0, 2000),
+    roomDetails: String(f.roomDetails ?? "").slice(0, 2000),
+    technicalNotes: String(f.technicalNotes ?? "").slice(0, 2000),
+  };
+}
+
+export async function updateInteriorFloors(
   itemId: string,
-  rooms: InteriorRoom[],
+  floors: InteriorFloor[],
 ): Promise<ItemConfigResult> {
   const session = await auth();
   if (!session?.user?.id) return { error: "Niste prijavljeni." };
@@ -203,22 +262,13 @@ export async function updateInteriorConfig(
   if (item.order.status !== "draft")
     return { error: "Izmene dozvoljene samo u nacrtu." };
 
-  const sanitized: InteriorRoom[] = rooms
-    .map((r) => ({
-      name: String(r.name ?? "").trim().slice(0, 80) || "Prostorija",
-      cameras: Math.max(1, Math.min(20, Number(r.cameras) || 1)),
-    }))
-    .slice(0, 40);
-
+  const sanitized = floors.slice(0, 20).map(sanitizeFloor);
   const { totalEur } = calcInteriorTotal(sanitized);
-
-  const existingConfig =
-    (item.configJson as Record<string, unknown> | null) ?? {};
 
   await prisma.orderItem.update({
     where: { id: itemId },
     data: {
-      configJson: { ...existingConfig, rooms: sanitized },
+      configJson: { floors: sanitized } as unknown as Prisma.InputJsonValue,
       totalEur,
     },
   });

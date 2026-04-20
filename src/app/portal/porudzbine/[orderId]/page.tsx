@@ -36,7 +36,15 @@ export default async function OrderDetailPage({
     include: {
       items: {
         include: {
-          files: { select: { id: true, fileName: true, fileSize: true, kind: true } },
+          files: {
+            select: {
+              id: true,
+              fileName: true,
+              fileSize: true,
+              kind: true,
+              floorId: true,
+            },
+          },
         },
       },
       files: true,

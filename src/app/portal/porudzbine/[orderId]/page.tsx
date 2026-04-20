@@ -58,6 +58,9 @@ export default async function OrderDetailPage({
     order.status === "draft" ||
     order.status === "awaiting_payment" ||
     order.status === "paid";
+  const projectStarted = !["draft", "awaiting_payment"].includes(order.status);
+  const inRevisionLoop =
+    order.status === "in_review" || order.status === "revision_requested";
 
   // Items missing the minimum: no description and no files.
   const unconfiguredCount = order.items.filter(
@@ -148,13 +151,17 @@ export default async function OrderDetailPage({
             </section>
           )}
 
-          <CommentThread
-            orderId={order.id}
-            initialComments={order.comments}
-            currentUserId={session.user.id}
-          />
-          <MessageComposer orderId={order.id} />
-          <RevisionUploadCard orderId={order.id} />
+          {projectStarted && (
+            <>
+              <CommentThread
+                orderId={order.id}
+                initialComments={order.comments}
+                currentUserId={session.user.id}
+              />
+              <MessageComposer orderId={order.id} />
+            </>
+          )}
+          {inRevisionLoop && <RevisionUploadCard orderId={order.id} />}
         </div>
 
         {/* Right: utility panel */}

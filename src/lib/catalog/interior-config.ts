@@ -17,18 +17,7 @@ export const INT_STATIC_INCLUDED_CAMERAS = 10;
 export const INT_STATIC_EXTRA_ROOM_EUR = 28;
 export const INT_STATIC_EXTRA_CAMERA_EUR = 10;
 
-export const DEFAULT_INTERIOR_ROOMS: InteriorRoom[] = [
-  { name: "Dnevna soba", cameras: 1 },
-  { name: "Trpezarija", cameras: 1 },
-  { name: "Kuhinja", cameras: 1 },
-  { name: "Hodnik", cameras: 1 },
-  { name: "Kupatilo", cameras: 1 },
-  { name: "Glavna spavaća", cameras: 1 },
-  { name: "Spavaća 2", cameras: 1 },
-  { name: "Dečija soba", cameras: 1 },
-  { name: "Radna soba", cameras: 1 },
-  { name: "Ostava", cameras: 1 },
-];
+export const DEFAULT_INTERIOR_ROOMS: InteriorRoom[] = [];
 
 export type InteriorCalc = {
   totalRooms: number;

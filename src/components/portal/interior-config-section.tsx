@@ -9,9 +9,19 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Minus, Trash2, Home, Camera, Check } from "lucide-react";
+import { Plus, Minus, Trash2, Home, Camera, Check, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatEur } from "@/lib/catalog/calculate";
+
+// Serbian pluralization for "kamera"
+// 1, 21, 31… → "kamera"; 2-4, 22-24… → "kamere"; 0, 5-20, 25+ → "kamera"
+function kameraNoun(n: number): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return "kamera";
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "kamere";
+  return "kamera";
+}
 import {
   calcInteriorTotal,
   DEFAULT_INTERIOR_ROOMS,
@@ -89,7 +99,6 @@ export function InteriorConfigSection({
   };
 
   const removeRoom = (idx: number) => {
-    if (rooms.length <= 1) return;
     setRooms((prev) => prev.filter((_, i) => i !== idx));
   };
 
@@ -121,6 +130,15 @@ export function InteriorConfigSection({
             Sačuvano
           </span>
         )}
+      </div>
+
+      <div className="flex items-start gap-2 rounded-md bg-secondary/30 px-3 py-2 text-[0.65rem] text-muted-foreground">
+        <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-accent/70" />
+        <p>
+          Broj pored prostorije predstavlja broj kamera (rendera) u toj
+          prostoriji. Bazni paket uključuje 10 rendera ukupno — dodatne kamere
+          se doplaćuju €{INT_STATIC_EXTRA_CAMERA_EUR} po kameri.
+        </p>
       </div>
 
       {/* Counters */}
@@ -165,71 +183,82 @@ export function InteriorConfigSection({
       </div>
 
       {/* Rooms list */}
-      <div className="space-y-1.5">
-        {rooms.map((room, idx) => {
-          const isBeyondRooms = idx >= 10;
-          return (
-            <div
-              key={idx}
-              className={cn(
-                "group flex items-center gap-2 rounded-lg bg-card/80 px-3 py-2 transition-all",
-                isBeyondRooms && "ring-1 ring-accent/30",
-              )}
-            >
-              <input
-                type="text"
-                value={room.name}
-                onChange={(e) => updateRoom(idx, { name: e.target.value })}
-                disabled={!editable}
-                maxLength={80}
-                className="flex-1 min-w-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground/50 focus:text-foreground"
-                placeholder="Naziv prostorije"
-              />
-              {isBeyondRooms && (
-                <span className="hidden sm:inline-flex rounded bg-accent/15 px-1.5 py-0.5 text-[0.55rem] font-semibold text-accent">
-                  +€{INT_STATIC_EXTRA_ROOM_EUR}
-                </span>
-              )}
+      {rooms.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-border/40 bg-card/40 px-4 py-6 text-center">
+          <p className="text-xs text-muted-foreground">
+            Nemate nijednu prostoriju. Dodajte prvu ispod.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-1.5">
+          {rooms.map((room, idx) => {
+            const isBeyondRooms = idx >= 10;
+            return (
+              <div
+                key={idx}
+                className={cn(
+                  "group flex items-center gap-2 rounded-lg bg-card/80 px-3 py-2 transition-all",
+                  isBeyondRooms && "ring-1 ring-accent/30",
+                )}
+              >
+                <input
+                  type="text"
+                  value={room.name}
+                  onChange={(e) => updateRoom(idx, { name: e.target.value })}
+                  disabled={!editable}
+                  maxLength={80}
+                  className="flex-1 min-w-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground/50 focus:text-foreground"
+                  placeholder="Naziv prostorije"
+                />
+                {isBeyondRooms && (
+                  <span className="hidden sm:inline-flex rounded bg-accent/15 px-1.5 py-0.5 text-[0.55rem] font-semibold text-accent">
+                    +€{INT_STATIC_EXTRA_ROOM_EUR}
+                  </span>
+                )}
 
-              {/* Camera stepper */}
-              <div className="inline-flex items-center rounded-md bg-secondary/60">
-                <button
-                  type="button"
-                  disabled={!editable || room.cameras <= 1}
-                  onClick={() => decCamera(idx)}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"
-                  aria-label="Smanji broj kadrova"
-                >
-                  <Minus className="h-3 w-3" />
-                </button>
-                <span className="min-w-[2rem] text-center text-xs font-semibold tabular-nums text-foreground">
-                  {room.cameras}
+                {/* Camera stepper */}
+                <div className="inline-flex items-center rounded-md bg-secondary/60">
+                  <button
+                    type="button"
+                    disabled={!editable || room.cameras <= 1}
+                    onClick={() => decCamera(idx)}
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"
+                    aria-label="Smanji broj kamera u ovoj sobi"
+                  >
+                    <Minus className="h-3 w-3" />
+                  </button>
+                  <span className="min-w-[2rem] text-center text-xs font-semibold tabular-nums text-foreground">
+                    {room.cameras}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={!editable || room.cameras >= 10}
+                    onClick={() => incCamera(idx)}
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"
+                    aria-label="Povećaj broj kamera u ovoj sobi"
+                  >
+                    <Plus className="h-3 w-3" />
+                  </button>
+                </div>
+                <span className="hidden w-14 text-[0.65rem] text-muted-foreground sm:inline">
+                  {kameraNoun(room.cameras)}
                 </span>
-                <button
-                  type="button"
-                  disabled={!editable || room.cameras >= 10}
-                  onClick={() => incCamera(idx)}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-30"
-                  aria-label="Povećaj broj kadrova"
-                >
-                  <Plus className="h-3 w-3" />
-                </button>
+
+                {editable && (
+                  <button
+                    type="button"
+                    onClick={() => removeRoom(idx)}
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 transition-colors hover:bg-destructive/10 hover:text-destructive"
+                    aria-label="Ukloni prostoriju"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                )}
               </div>
-
-              {editable && rooms.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeRoom(idx)}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 transition-colors hover:bg-destructive/10 hover:text-destructive"
-                  aria-label="Ukloni prostoriju"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {editable && (
         <button

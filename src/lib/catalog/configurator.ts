@@ -201,7 +201,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
     products: [
       {
         id: "int-static",
-        label: "Statički enterijer (po spratu)",
+        label: "Render enterijera (statički)",
         basePriceEur: 170,
         unitLabel: "10 prostorija + 10 rendera",
         includes: [

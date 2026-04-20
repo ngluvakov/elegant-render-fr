@@ -32,6 +32,7 @@ import {
   Upload,
   FileUp,
   Layers,
+  Pencil,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -273,6 +274,7 @@ function FloorPanel({
               htmlFor={`floor-name-${floor.id}`}
               className="text-[0.6rem] uppercase tracking-wider text-muted-foreground"
             >
+              <Pencil className="h-2.5 w-2.5 text-accent/60" />
               Naziv sprata
             </Label>
             <input
@@ -315,6 +317,7 @@ function FloorPanel({
             <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
               <div className="space-y-1.5">
                 <Label htmlFor={`style-${floor.id}`} className="text-[0.7rem]">
+                  <Pencil className="h-2.5 w-2.5 text-accent/60" />
                   Reference stila i atmosfera
                 </Label>
                 <Textarea
@@ -329,6 +332,7 @@ function FloorPanel({
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor={`rooms-${floor.id}`} className="text-[0.7rem]">
+                  <Pencil className="h-2.5 w-2.5 text-accent/60" />
                   Detalji po prostoriji
                 </Label>
                 <Textarea
@@ -343,6 +347,7 @@ function FloorPanel({
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor={`tech-${floor.id}`} className="text-[0.7rem]">
+                  <Pencil className="h-2.5 w-2.5 text-accent/60" />
                   Tehničke napomene
                 </Label>
                 <Textarea
@@ -487,6 +492,7 @@ function FloorPanel({
           {/* Description */}
           <div className="space-y-1.5">
             <Label htmlFor={`desc-${floor.id}`} className="text-xs">
+              <Pencil className="h-3 w-3 text-accent/60" />
               Opis projekta za ovaj sprat
             </Label>
             <Textarea

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,7 +42,10 @@ export function ProfileForm({
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="name">Ime i prezime</Label>
+        <Label htmlFor="name">
+          <Pencil className="h-3 w-3 text-accent/60" />
+          Ime i prezime
+        </Label>
         <Input
           id="name"
           name="name"
@@ -65,7 +69,10 @@ export function ProfileForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="phone">Telefon</Label>
+        <Label htmlFor="phone">
+          <Pencil className="h-3 w-3 text-accent/60" />
+          Telefon
+        </Label>
         <Input
           id="phone"
           name="phone"
@@ -76,7 +83,10 @@ export function ProfileForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="newPassword">Nova lozinka (opciono)</Label>
+        <Label htmlFor="newPassword">
+          <Pencil className="h-3 w-3 text-accent/60" />
+          Nova lozinka (opciono)
+        </Label>
         <Input
           id="newPassword"
           name="newPassword"

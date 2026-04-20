@@ -13,6 +13,7 @@ import {
   Check,
   ChevronDown,
   FileUp,
+  Pencil,
   Settings2,
   Trash2,
   Upload,
@@ -385,6 +386,7 @@ function NonInteriorBody({
           {/* Simple mode: description */}
           <div className="space-y-2">
             <Label htmlFor={`note-${item.id}`} className="text-xs">
+              <Pencil className="h-3 w-3 text-accent/60" />
               Opis projekta za ovu stavku
             </Label>
             <Textarea
@@ -456,6 +458,7 @@ function NonInteriorBody({
             <div className="space-y-4 rounded-xl border border-border/30 bg-secondary/20 p-4">
               <div className="space-y-2">
                 <Label htmlFor={`style-${item.id}`} className="text-xs">
+                  <Pencil className="h-3 w-3 text-accent/60" />
                   Reference stila i atmosfera
                 </Label>
                 <Textarea
@@ -492,6 +495,7 @@ function NonInteriorBody({
 
               <div className="space-y-2">
                 <Label htmlFor={`rooms-${item.id}`} className="text-xs">
+                  <Pencil className="h-3 w-3 text-accent/60" />
                   Detalji po prostoriji
                 </Label>
                 <Textarea
@@ -506,6 +510,7 @@ function NonInteriorBody({
 
               <div className="space-y-2">
                 <Label htmlFor={`tech-${item.id}`} className="text-xs">
+                  <Pencil className="h-3 w-3 text-accent/60" />
                   Tehničke napomene
                 </Label>
                 <Textarea

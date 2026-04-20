@@ -68,7 +68,7 @@ export function ProjectNameEditor({
 
   return (
     <div className="mt-1 space-y-1.5">
-      <p className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80">
+      <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80">
         Naziv projekta
       </p>
       <div
@@ -107,7 +107,7 @@ export function ProjectNameEditor({
           )}
         </div>
         {savedAt && Date.now() - savedAt < 2000 && (
-          <span className="inline-flex flex-shrink-0 items-center gap-1 text-[0.65rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
+          <span className="inline-flex flex-shrink-0 items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
             <Check className="h-3 w-3" />
             <span className="hidden sm:inline">Sačuvano</span>
           </span>

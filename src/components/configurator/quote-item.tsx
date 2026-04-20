@@ -41,7 +41,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
         className="flex w-full items-center justify-between gap-3 bg-secondary/40 px-5 py-4 text-left transition-colors hover:bg-secondary/60"
       >
         <div className="min-w-0 flex-1">
-          <p className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             {breakdown.categoryLabel}
           </p>
           <p className="mt-1 text-base font-semibold text-foreground">
@@ -77,7 +77,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {/* Included items badges */}
           {hasIncludedAddOns && (
             <div className="border-t border-border/40 bg-[color:var(--color-sage)]/5 px-5 py-3">
-              <p className="mb-2 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-[color:var(--color-sage-deep)]">
+              <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-[color:var(--color-sage-deep)]">
                 Uključeno u baznu cenu
               </p>
               <div className="flex flex-wrap gap-2">
@@ -130,7 +130,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
               />
               <div className="mt-1 flex justify-between">
                 {["15s", "30s", "60s", "120s", "180s"].map((l) => (
-                  <span key={l} className="text-[0.6rem] text-muted-foreground/50">
+                  <span key={l} className="text-[0.72rem] text-muted-foreground/50">
                     {l}
                   </span>
                 ))}
@@ -152,7 +152,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {/* Add-on steppers */}
           {product.addOns.length > 0 && (
             <div className="border-t border-border/40 px-5 py-4">
-              <p className="mb-3 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Prilagodi
               </p>
               <div className="space-y-1">

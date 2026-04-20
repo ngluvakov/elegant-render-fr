@@ -100,7 +100,7 @@ export default async function ServiceDetailPage({
                   </p>
                 </div>
                 <div className="md:text-right">
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                     Bazna cena
                   </p>
                   <p className="mt-1 text-3xl text-foreground md:text-4xl">
@@ -114,7 +114,7 @@ export default async function ServiceDetailPage({
 
               <div className="mt-6 space-y-4">
                 <div>
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                     Uključeno
                   </p>
                   <p className="mt-2 text-sm leading-6 text-foreground/85">
@@ -123,7 +123,7 @@ export default async function ServiceDetailPage({
                 </div>
 
                 <div>
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                     Doplate iz cenovnika
                   </p>
                   <ul className="mt-2 space-y-2">

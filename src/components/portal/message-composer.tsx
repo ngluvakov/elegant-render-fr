@@ -62,7 +62,7 @@ export function MessageComposer({ orderId }: MessageComposerProps) {
         className="resize-none"
       />
       <div className="mt-3 flex items-center justify-between">
-        <p className="text-[0.6rem] text-muted-foreground">
+        <p className="text-[0.72rem] text-muted-foreground">
           Tim obično odgovara u roku od jednog radnog dana.
         </p>
         <Button

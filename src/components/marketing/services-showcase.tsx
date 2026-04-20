@@ -422,7 +422,7 @@ export function ServicesShowcase() {
                     allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
                     loading="lazy"
                   />
-                  <div className="absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">
+                  <div className="absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">
                     {service.badge}
                   </div>
                 </div>
@@ -435,11 +435,11 @@ export function ServicesShowcase() {
                     style={{ objectPosition: service.imagePosition }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10" />
-                  <div className="absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.6rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">
+                  <div className="absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">
                     {service.badge}
                   </div>
                   {service.isCompare && (
-                    <div className="absolute bottom-3 left-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.6rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
+                    <div className="absolute bottom-3 left-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
                       <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">Pre</span>
                       <span className="bg-accent/12 px-2.5 py-1 text-accent">Posle</span>
                     </div>
@@ -450,7 +450,7 @@ export function ServicesShowcase() {
               {/* Price bar */}
               <div className="flex items-center justify-between border-b border-border/30 bg-secondary/30 px-5 py-3">
                 <span className="text-xl font-bold text-foreground">{service.price}</span>
-                <span className="text-[0.6rem] uppercase tracking-wider text-muted-foreground">
+                <span className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
                   Transparentna cena
                 </span>
               </div>
@@ -579,7 +579,7 @@ export function ServicesShowcase() {
                   style={{ objectPosition: item.position }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/15" />
-                <div className="absolute left-3 top-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.6rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
+                <div className="absolute left-3 top-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
                   <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">Pre</span>
                   <span className="bg-accent/12 px-2.5 py-1 text-accent">Posle</span>
                 </div>

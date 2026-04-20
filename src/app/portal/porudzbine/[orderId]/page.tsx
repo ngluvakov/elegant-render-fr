@@ -121,7 +121,7 @@ export default async function OrderDetailPage({
                     </p>
                     <p className="mt-1 text-xs text-foreground/70">
                       Dodajte opis ili prebacite fajlove (osnove, fotografije, skice) da bismo mogli da započnemo projekat. Stavke označene sa{" "}
-                      <span className="inline-flex translate-y-[1px] items-center gap-1 rounded bg-[color:var(--color-ember)]/20 px-1.5 py-0.5 text-[0.55rem] font-bold uppercase tracking-wider text-[color:var(--color-ember-deep)]">
+                      <span className="inline-flex translate-y-[1px] items-center gap-1 rounded bg-[color:var(--color-ember)]/20 px-1.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wider text-[color:var(--color-ember-deep)]">
                         Potrebni podaci
                       </span>{" "}
                       su u pitanju.

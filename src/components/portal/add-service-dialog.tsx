@@ -121,7 +121,7 @@ export function AddServiceDialog({
                       <p className="text-sm font-medium text-foreground">
                         {prod.label}
                       </p>
-                      <p className="mt-0.5 text-[0.65rem] text-muted-foreground">
+                      <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
                         {prod.unitLabel}
                       </p>
                     </div>

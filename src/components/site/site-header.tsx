@@ -102,7 +102,7 @@ export function SiteHeader() {
                 <div className="w-[min(92vw,640px)] p-5">
                   <div className="mb-5 flex items-end justify-between gap-4 border-b border-border/50 pb-3">
                     <div>
-                      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                      <p className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                         Usluge
                       </p>
                       <p className="mt-1 text-sm text-foreground">
@@ -128,7 +128,7 @@ export function SiteHeader() {
                       if (services.length === 0) return null;
                       return (
                         <div key={category} className="space-y-1">
-                          <p className="px-2 text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                          <p className="px-2 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                             {CATEGORY_LABELS[category]}
                           </p>
                           {services.map((service) => (
@@ -142,7 +142,7 @@ export function SiteHeader() {
                               <span className="text-sm text-foreground">
                                 {service.name}
                               </span>
-                              <span className="text-[0.65rem] font-medium text-muted-foreground">
+                              <span className="text-[0.72rem] font-medium text-muted-foreground">
                                 od {service.variants[0].priceLabel}
                               </span>
                             </NavigationMenuLink>
@@ -240,7 +240,7 @@ export function SiteHeader() {
                       className="flex items-center justify-between gap-3 rounded-md px-2 py-2 text-sm text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
                     >
                       <span>{service.name}</span>
-                      <span className="text-[0.65rem] text-muted-foreground">
+                      <span className="text-[0.72rem] text-muted-foreground">
                         od {service.variants[0].priceLabel}
                       </span>
                     </Link>

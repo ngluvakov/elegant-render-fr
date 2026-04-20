@@ -48,12 +48,12 @@ export function AddOnStepper({
         <div className="flex flex-wrap items-center gap-1.5">
           <p className="text-sm font-medium text-foreground">{label}</p>
           {isWithinIncluded && quantity > 0 && (
-            <span className="rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+            <span className="rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.72rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
               Uključeno
             </span>
           )}
           {billableQty > 0 && (
-            <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[0.6rem] font-semibold text-accent">
+            <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[0.72rem] font-semibold text-accent">
               +{billableQty} extra
             </span>
           )}

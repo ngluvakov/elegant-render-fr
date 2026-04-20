@@ -186,12 +186,12 @@ export function ItemConfigPanel({
                 {item.productLabel}
               </h3>
               {isConfigured ? (
-                <span className="inline-flex items-center gap-1 rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.55rem] font-semibold text-[color:var(--color-sage-deep)]">
+                <span className="inline-flex items-center gap-1 rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
                   <span className="h-1 w-1 rounded-full bg-[color:var(--color-sage-deep)]" />
                   Podešeno
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 rounded bg-[color:var(--color-ember)]/20 px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider text-[color:var(--color-ember-deep)]">
+                <span className="inline-flex items-center gap-1.5 rounded bg-[color:var(--color-ember)]/20 px-2 py-0.5 text-[0.72rem] font-bold uppercase tracking-wider text-[color:var(--color-ember-deep)]">
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--color-ember)]/70" />
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--color-ember-deep)]" />
@@ -229,7 +229,7 @@ export function ItemConfigPanel({
               </button>
             ) : (
               <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in slide-in-from-right-1 duration-150">
-                <span className="px-1.5 text-[0.6rem] font-semibold">Ukloniti?</span>
+                <span className="px-1.5 text-[0.72rem] font-semibold">Ukloniti?</span>
                 <button
                   type="button"
                   disabled={deletePending}
@@ -372,7 +372,7 @@ function NonInteriorBody({
               <span className="text-xs font-medium text-foreground">
                 Napredno podešavanje
               </span>
-              <span className="text-[0.6rem] text-muted-foreground">
+              <span className="text-[0.72rem] text-muted-foreground">
                 · reference, detalji po sobi, tehničke napomene
               </span>
             </div>
@@ -435,7 +435,7 @@ function NonInteriorBody({
                   <FileUp className="h-3 w-3 text-muted-foreground" />
                   <span className="flex-1 truncate text-foreground">{f.fileName}</span>
                   <span className="text-muted-foreground">{formatSize(f.fileSize)}</span>
-                  <span className="rounded bg-secondary px-1.5 py-0.5 text-[0.55rem] text-muted-foreground">
+                  <span className="rounded bg-secondary px-1.5 py-0.5 text-[0.62rem] text-muted-foreground">
                     {f.kind}
                   </span>
                 </div>
@@ -474,7 +474,7 @@ function NonInteriorBody({
                   className="flex cursor-pointer items-center justify-center rounded-lg border border-dashed border-border/40 px-3 py-3 transition-colors hover:border-accent/40"
                 >
                   <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/40" />
-                  <span className="text-[0.65rem] text-muted-foreground">
+                  <span className="text-[0.72rem] text-muted-foreground">
                     Upload slika inspiracije (mood board)
                   </span>
                   <input
@@ -527,7 +527,7 @@ function NonInteriorBody({
 
           {/* Save button */}
           <div className="flex items-center justify-between">
-            <p className="text-[0.6rem] text-muted-foreground">
+            <p className="text-[0.72rem] text-muted-foreground">
               Fajlovi se čuvaju automatski. Kliknite sačuvaj za opis i podešavanja.
             </p>
             <Button

@@ -36,7 +36,7 @@ export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
             {order.orderNumber}
           </p>
           <h3 className="mt-1 text-base font-semibold text-foreground">

@@ -91,7 +91,7 @@ export function PortalSidebar({ userName, userEmail, isAdmin }: PortalSidebarPro
             <p className="truncate text-xs font-medium text-foreground">
               {userName}
             </p>
-            <p className="truncate text-[0.65rem] text-muted-foreground">
+            <p className="truncate text-[0.72rem] text-muted-foreground">
               {userEmail}
             </p>
           </div>

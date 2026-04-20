@@ -91,7 +91,7 @@ export function PendingPaymentCard({ orderId, totalEur }: PendingPaymentCardProp
               : "border-border/40 hover:border-accent/40",
           )}
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0070ba] text-[0.5rem] font-bold text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#0070ba] text-[0.62rem] font-bold text-white">
             PP
           </div>
           <span className="font-medium text-foreground">PayPal</span>
@@ -132,7 +132,7 @@ export function PendingPaymentCard({ orderId, totalEur }: PendingPaymentCardProp
       {/* Mock card */}
       {method === "card" && (
         <div className="mt-4 space-y-3">
-          <p className="rounded-lg bg-secondary/60 px-3 py-2 text-[0.6rem] text-muted-foreground">
+          <p className="rounded-lg bg-secondary/60 px-3 py-2 text-[0.72rem] text-muted-foreground">
             Test režim — unesite bilo koje podatke.
           </p>
           <div className="space-y-2">

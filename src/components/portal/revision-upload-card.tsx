@@ -114,9 +114,9 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
                 {u.file.name}
               </span>
               {u.error ? (
-                <span className="text-[0.6rem] text-destructive">{u.error}</span>
+                <span className="text-[0.72rem] text-destructive">{u.error}</span>
               ) : (
-                <span className="text-[0.6rem] text-accent">Otpremanje…</span>
+                <span className="text-[0.72rem] text-accent">Otpremanje…</span>
               )}
             </div>
           ))}

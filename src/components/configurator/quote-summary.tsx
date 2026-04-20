@@ -33,7 +33,7 @@ export function QuoteSummary() {
             Vaša ponuda
           </h3>
           {hasItems && (
-            <span className="rounded-full bg-accent px-2 py-0.5 text-[0.6rem] font-bold text-white">
+            <span className="rounded-full bg-accent px-2 py-0.5 text-[0.72rem] font-bold text-white">
               {calculation.items.length}
             </span>
           )}
@@ -125,7 +125,7 @@ export function QuoteSummary() {
             Naruči
             <ArrowRight className="ml-1.5 h-4 w-4" />
           </button>
-          <p className="mt-3 text-center text-[0.6rem] text-background/30">
+          <p className="mt-3 text-center text-[0.72rem] text-background/30">
             Cene su procene. Konačna ponuda može varirati u zavisnosti od
             specifičnosti projekta. Sve cene su u EUR bez PDV-a.
           </p>

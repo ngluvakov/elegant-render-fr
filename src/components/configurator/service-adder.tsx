@@ -56,7 +56,7 @@ export function ServiceAdder() {
       <div className="space-y-3">
         {SECTION_GROUPS.map((group) => (
           <div key={group.label}>
-            <p className="mb-2 text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               {group.label}
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -113,7 +113,7 @@ export function ServiceAdder() {
                         {product.includes.map((inc) => (
                           <span
                             key={inc}
-                            className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/12 px-2 py-0.5 text-[0.6rem] font-medium text-[color:var(--color-sage-deep)]"
+                            className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/12 px-2 py-0.5 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)]"
                           >
                             <Check className="h-2.5 w-2.5" />
                             {inc}

@@ -43,7 +43,7 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
                 </div>
                 <span
                   className={cn(
-                    "text-[0.6rem] font-medium",
+                    "text-[0.72rem] font-medium",
                     isCompleted && "text-[color:var(--color-sage-deep)]",
                     isActive && "text-foreground",
                     isFuture && "text-muted-foreground/40",
@@ -78,7 +78,7 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
             <div key={step.key} className="flex items-center gap-3">
               <div
                 className={cn(
-                  "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[0.6rem] font-semibold",
+                  "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[0.72rem] font-semibold",
                   isCompleted && "bg-[color:var(--color-sage)] text-white",
                   isActive && "bg-accent text-white",
                   isFuture && "bg-secondary text-muted-foreground/40",

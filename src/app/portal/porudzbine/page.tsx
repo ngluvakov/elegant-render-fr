@@ -68,7 +68,7 @@ export default async function PorudzbinePage({
           <div className="hidden md:block">
             <div className="space-y-1.5">
               {/* Header row */}
-              <div className="grid grid-cols-[2fr_1fr_1fr_auto_auto_auto] gap-4 px-4 py-2 text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="grid grid-cols-[2fr_1fr_1fr_auto_auto_auto] gap-4 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
                 <span>Projekat</span>
                 <span>Usluga</span>
                 <span>Aktivnost</span>
@@ -100,7 +100,7 @@ export default async function PorudzbinePage({
                       <p className="text-sm font-medium text-foreground">
                         {displayName}
                       </p>
-                      <p className="text-[0.65rem] text-muted-foreground">
+                      <p className="text-[0.72rem] text-muted-foreground">
                         {order.orderNumber}
                       </p>
                     </div>
@@ -160,7 +160,7 @@ export default async function PorudzbinePage({
                       <p className="text-sm font-medium text-foreground">
                         {displayName}
                       </p>
-                      <p className="mt-0.5 text-[0.65rem] text-muted-foreground">
+                      <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
                         {order.orderNumber} · {firstItem?.categoryLabel ?? "—"}
                       </p>
                     </div>

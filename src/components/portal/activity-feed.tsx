@@ -30,11 +30,11 @@ export function ActivityFeed({ events }: { events: ActivityEvent[] }) {
         >
           <div>
             <p className="text-sm text-foreground">{event.description}</p>
-            <p className="text-[0.65rem] text-muted-foreground">
+            <p className="text-[0.72rem] text-muted-foreground">
               {event.orderNumber}
             </p>
           </div>
-          <p className="flex-shrink-0 text-[0.65rem] text-muted-foreground">
+          <p className="flex-shrink-0 text-[0.72rem] text-muted-foreground">
             {event.createdAt.toLocaleDateString("sr-Latn-RS", {
               day: "numeric",
               month: "short",

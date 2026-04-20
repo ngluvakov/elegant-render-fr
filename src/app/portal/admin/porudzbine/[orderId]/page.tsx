@@ -57,7 +57,7 @@ export default async function AdminOrderDetailPage({
       {/* Hero */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
             {order.orderNumber}
           </p>
           <h1 className="mt-1 font-heading text-2xl text-foreground md:text-3xl">
@@ -109,12 +109,12 @@ export default async function AdminOrderDetailPage({
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span className={`text-[0.6rem] font-semibold uppercase tracking-wider ${
+                  <span className={`text-[0.72rem] font-semibold uppercase tracking-wider ${
                     comment.role === "team" ? "text-[color:var(--color-sage-deep)]" : "text-accent"
                   }`}>
                     {comment.role === "team" ? "Tim" : comment.author?.name ?? "Klijent"}
                   </span>
-                  <span className="text-[0.55rem] text-muted-foreground/60">
+                  <span className="text-[0.62rem] text-muted-foreground/60">
                     {comment.createdAt.toLocaleDateString("sr-Latn-RS", {
                       day: "numeric",
                       month: "short",

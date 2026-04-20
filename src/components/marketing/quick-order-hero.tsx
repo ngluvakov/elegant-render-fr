@@ -141,7 +141,7 @@ export function QuickOrderHero() {
                     <span className="text-[0.72rem] font-medium text-foreground">
                       {selectedService.name}
                     </span>
-                    <span className="text-[0.65rem] text-muted-foreground">
+                    <span className="text-[0.72rem] text-muted-foreground">
                       od {selectedService.variants[0].priceLabel}
                     </span>
                   </div>
@@ -299,7 +299,7 @@ export function QuickOrderHero() {
                             <p className="truncate text-[0.82rem] font-semibold leading-tight text-foreground">
                               {service.shortName}
                             </p>
-                            <p className="mt-0.5 truncate text-[0.65rem] text-muted-foreground">
+                            <p className="mt-0.5 truncate text-[0.72rem] text-muted-foreground">
                               od {service.variants[0].priceLabel}
                             </p>
                           </div>
@@ -351,7 +351,7 @@ export function QuickOrderHero() {
                             <p className="text-[0.82rem] font-semibold text-[color:var(--color-clay-deep)]">
                               {variant.priceLabel}
                             </p>
-                            <p className="mt-0.5 text-[0.6rem] uppercase tracking-[0.14em] text-muted-foreground">
+                            <p className="mt-0.5 text-[0.72rem] uppercase tracking-[0.14em] text-muted-foreground">
                               {variant.unitLabel}
                             </p>
                           </div>
@@ -366,7 +366,7 @@ export function QuickOrderHero() {
               <div className="rounded-2xl border border-foreground/10 bg-foreground p-4 text-background shadow-[0_24px_60px_rgba(28,26,25,0.22)]">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[0.65rem] uppercase tracking-[0.22em] text-background/65">
+                    <p className="text-[0.72rem] uppercase tracking-[0.22em] text-background/65">
                       Order summary
                     </p>
                     <h3 className="mt-1 truncate text-lg text-background">

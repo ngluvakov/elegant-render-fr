@@ -166,7 +166,7 @@ export function ChatWidget() {
               <p className="text-sm font-semibold text-foreground">
                 Elegant Render asistent
               </p>
-              <p className="text-[0.6rem] text-muted-foreground">
+              <p className="text-[0.72rem] text-muted-foreground">
                 Pomoć pri izboru usluge
               </p>
             </div>

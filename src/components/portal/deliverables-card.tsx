@@ -60,7 +60,7 @@ export function DeliverablesCard({ files, orderId }: DeliverablesCardProps) {
               <p className="truncate text-xs font-medium text-foreground">
                 {file.fileName}
               </p>
-              <p className="text-[0.6rem] text-muted-foreground">
+              <p className="text-[0.72rem] text-muted-foreground">
                 {formatSize(file.fileSize)} ·{" "}
                 {file.uploadedAt.toLocaleDateString("sr-Latn-RS", {
                   day: "numeric",

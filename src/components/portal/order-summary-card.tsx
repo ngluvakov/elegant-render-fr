@@ -37,7 +37,7 @@ export function OrderSummaryCard({
           >
             <div>
               <p className="font-medium text-foreground">{item.productLabel}</p>
-              <p className="text-[0.6rem] text-muted-foreground">
+              <p className="text-[0.72rem] text-muted-foreground">
                 {item.categoryLabel}
               </p>
             </div>
@@ -51,12 +51,12 @@ export function OrderSummaryCard({
       {/* Source files */}
       {sourceFiles.length > 0 && (
         <div className="mt-4 border-t border-border/30 pt-3">
-          <p className="text-[0.6rem] font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
             Priloženi materijali ({sourceFiles.length})
           </p>
           <div className="mt-2 space-y-1">
             {sourceFiles.map((f) => (
-              <p key={f.id} className="truncate text-[0.65rem] text-muted-foreground">
+              <p key={f.id} className="truncate text-[0.72rem] text-muted-foreground">
                 {f.fileName}
               </p>
             ))}
@@ -67,7 +67,7 @@ export function OrderSummaryCard({
       {/* Customer note */}
       {customerNote && (
         <div className="mt-4 border-t border-border/30 pt-3">
-          <p className="text-[0.6rem] font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
             Napomena
           </p>
           <p className="mt-1 text-xs text-foreground/80">{customerNote}</p>

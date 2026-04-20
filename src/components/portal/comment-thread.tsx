@@ -91,13 +91,13 @@ export function CommentThread({
             <div className="flex items-center gap-2">
               <span
                 className={cn(
-                  "text-[0.6rem] font-semibold uppercase tracking-wider",
+                  "text-[0.72rem] font-semibold uppercase tracking-wider",
                   isClient ? "text-accent" : "text-[color:var(--color-sage-deep)]",
                 )}
               >
                 {authorName}
               </span>
-              <span className="text-[0.55rem] text-muted-foreground/60">
+              <span className="text-[0.62rem] text-muted-foreground/60">
                 {formatTime(comment.createdAt)}
               </span>
             </div>

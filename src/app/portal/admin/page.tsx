@@ -95,7 +95,7 @@ export default async function AdminPage({
             </div>
             <div>
               <p className="text-xl font-bold text-foreground">{formatEur(totalRevenue)}</p>
-              <p className="text-[0.65rem] text-muted-foreground">Ukupan prihod</p>
+              <p className="text-[0.72rem] text-muted-foreground">Ukupan prihod</p>
             </div>
           </div>
         </div>
@@ -106,7 +106,7 @@ export default async function AdminPage({
             </div>
             <div>
               <p className="text-xl font-bold text-foreground">{allOrders.length}</p>
-              <p className="text-[0.65rem] text-muted-foreground">Ukupno porudžbina</p>
+              <p className="text-[0.72rem] text-muted-foreground">Ukupno porudžbina</p>
             </div>
           </div>
         </div>
@@ -117,7 +117,7 @@ export default async function AdminPage({
             </div>
             <div>
               <p className="text-xl font-bold text-foreground">{activeCount}</p>
-              <p className="text-[0.65rem] text-muted-foreground">Aktivni projekti</p>
+              <p className="text-[0.72rem] text-muted-foreground">Aktivni projekti</p>
             </div>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default async function AdminPage({
             </div>
             <div>
               <p className="text-xl font-bold text-foreground">{completedCount}</p>
-              <p className="text-[0.65rem] text-muted-foreground">Završeni</p>
+              <p className="text-[0.72rem] text-muted-foreground">Završeni</p>
             </div>
           </div>
         </div>
@@ -139,7 +139,7 @@ export default async function AdminPage({
             </div>
             <div>
               <p className="text-xl font-bold text-foreground">{uniqueUsers}</p>
-              <p className="text-[0.65rem] text-muted-foreground">Klijenata</p>
+              <p className="text-[0.72rem] text-muted-foreground">Klijenata</p>
             </div>
           </div>
         </div>
@@ -156,7 +156,7 @@ export default async function AdminPage({
 
       {/* Orders table */}
       <div className="space-y-1.5">
-        <div className="hidden grid-cols-[1.5fr_1.5fr_1fr_0.8fr_auto_auto_auto] gap-3 px-4 py-2 text-[0.6rem] font-semibold uppercase tracking-wider text-muted-foreground lg:grid">
+        <div className="hidden grid-cols-[1.5fr_1.5fr_1fr_0.8fr_auto_auto_auto] gap-3 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground lg:grid">
           <span>Naručilac</span>
           <span>Projekat / usluga</span>
           <span>Datum</span>
@@ -185,7 +185,7 @@ export default async function AdminPage({
                 <p className="text-sm font-medium text-foreground">
                   {order.user.name ?? "—"}
                 </p>
-                <p className="text-[0.6rem] text-muted-foreground">
+                <p className="text-[0.72rem] text-muted-foreground">
                   {order.user.email}
                 </p>
               </div>
@@ -195,7 +195,7 @@ export default async function AdminPage({
                 <p className="text-xs font-medium text-foreground">
                   {order.projectName ?? firstItem?.productLabel ?? "—"}
                 </p>
-                <p className="text-[0.6rem] text-muted-foreground">
+                <p className="text-[0.72rem] text-muted-foreground">
                   {firstItem?.productLabel ?? "—"} · {order.orderNumber}
                 </p>
               </div>

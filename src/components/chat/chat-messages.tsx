@@ -69,7 +69,7 @@ function ProposalCard({ entries }: { entries: ProposalItem[] }) {
 
   return (
     <div className="mt-3 rounded-xl border border-accent/20 bg-accent/5 p-3">
-      <p className="mb-2 text-[0.6rem] font-semibold uppercase tracking-wider text-accent">
+      <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-wider text-accent">
         Predlog usluga
       </p>
       <div className="space-y-1.5">

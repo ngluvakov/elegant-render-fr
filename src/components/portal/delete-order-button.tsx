@@ -68,7 +68,7 @@ export function DeleteOrderButton({
         className,
       )}
     >
-      <span className="px-1.5 text-[0.6rem] font-semibold">Obrisati?</span>
+      <span className="px-1.5 text-[0.72rem] font-semibold">Obrisati?</span>
       <button
         type="button"
         aria-label="Potvrdi brisanje"

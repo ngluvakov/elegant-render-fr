@@ -50,7 +50,7 @@ export function OrderDetailHero({
 
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
-          <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
             {orderNumber}
           </p>
           <ProjectNameEditor

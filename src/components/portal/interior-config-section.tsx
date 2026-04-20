@@ -218,12 +218,12 @@ function FloorPanel({
                 {floor.name}
               </h5>
               {!calc.isFirstFloor && (
-                <span className="inline-flex items-center gap-1 rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.55rem] font-semibold text-[color:var(--color-sage-deep)]">
+                <span className="inline-flex items-center gap-1 rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
                   −30%
                 </span>
               )}
             </div>
-            <p className="mt-0.5 text-[0.65rem] text-muted-foreground">
+            <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
               {calc.totalRooms} prostor{calc.totalRooms === 1 ? "ija" : "ija"} ·{" "}
               {calc.totalCameras} {kameraNoun(calc.totalCameras)} ·{" "}
               {formatEur(calc.floorTotal)}
@@ -254,7 +254,7 @@ function FloorPanel({
               </button>
             ) : (
               <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in duration-150">
-                <span className="px-1 text-[0.55rem] font-semibold">Ukloniti?</span>
+                <span className="px-1 text-[0.62rem] font-semibold">Ukloniti?</span>
                 <button
                   type="button"
                   onClick={onRemove}
@@ -282,7 +282,7 @@ function FloorPanel({
           <div className="space-y-1">
             <Label
               htmlFor={`floor-name-${floor.id}`}
-              className="text-[0.6rem] uppercase tracking-wider text-muted-foreground"
+              className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
             >
               <Pencil className="h-2.5 w-2.5 text-accent/60" />
               Naziv sprata
@@ -308,7 +308,7 @@ function FloorPanel({
               <span className="text-[0.7rem] font-medium text-foreground">
                 Napredno podešavanje
               </span>
-              <span className="hidden text-[0.6rem] text-muted-foreground sm:inline">
+              <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
                 · doba dana, godišnje doba, pogled kroz prozor
               </span>
             </div>
@@ -327,13 +327,13 @@ function FloorPanel({
                 <h6 className="text-xs font-semibold text-foreground">
                   Sobe i kadrovi
                 </h6>
-                <p className="mt-0.5 text-[0.6rem] text-muted-foreground">
+                <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
                   10 prostorija + 10 rendera uključeno po spratu
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-2 rounded-md bg-secondary/30 px-2.5 py-1.5 text-[0.6rem] text-muted-foreground">
+            <div className="flex items-start gap-2 rounded-md bg-secondary/30 px-2.5 py-1.5 text-[0.72rem] text-muted-foreground">
               <Info className="mt-0.5 h-2.5 w-2.5 flex-shrink-0 text-accent/70" />
               <p>
                 Broj pored prostorije = kamere (renderi) u toj prostoriji. Preko
@@ -357,7 +357,7 @@ function FloorPanel({
             {/* Rooms list */}
             {floor.rooms.length === 0 ? (
               <div className="rounded-md border border-dashed border-border/40 px-3 py-4 text-center">
-                <p className="text-[0.65rem] text-muted-foreground">
+                <p className="text-[0.72rem] text-muted-foreground">
                   Nemate nijednu prostoriju. Dodajte prvu ispod.
                 </p>
               </div>
@@ -391,7 +391,7 @@ function FloorPanel({
                         }
                         disabled={!editable}
                         aria-label="Stil enterijera"
-                        className="rounded bg-secondary/60 px-2 py-1 text-[0.65rem] text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
+                        className="rounded bg-secondary/60 px-2 py-1 text-[0.72rem] text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
                       >
                         <option value="">Stil — izaberite</option>
                         {ROOM_STYLES.map((s) => (
@@ -401,7 +401,7 @@ function FloorPanel({
                         ))}
                       </select>
                       {isBeyondRooms && (
-                        <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.5rem] font-semibold text-accent">
+                        <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.62rem] font-semibold text-accent">
                           +€{INT_STATIC_EXTRA_ROOM_EUR}
                         </span>
                       )}
@@ -428,7 +428,7 @@ function FloorPanel({
                           <Plus className="h-3 w-3" />
                         </button>
                       </div>
-                      <span className="hidden w-12 text-[0.6rem] text-muted-foreground sm:inline">
+                      <span className="hidden w-12 text-[0.72rem] text-muted-foreground sm:inline">
                         {kameraNoun(room.cameras)}
                       </span>
                       {editable && (
@@ -456,7 +456,7 @@ function FloorPanel({
                 <Plus className="h-3.5 w-3.5" />
                 Dodaj prostoriju
                 {calc.totalRooms >= 10 && (
-                  <span className="text-[0.55rem] text-accent/80">
+                  <span className="text-[0.62rem] text-accent/80">
                     (+€{INT_STATIC_EXTRA_ROOM_EUR})
                   </span>
                 )}
@@ -557,7 +557,7 @@ function FloorPanel({
              because Collapsible hides via CSS, not unmount. */}
           <Collapsible open={advanced}>
             <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
-              <p className="text-[0.6rem] font-semibold uppercase tracking-wider text-muted-foreground">
+              <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
                 Napredno
               </p>
 
@@ -702,7 +702,7 @@ function CounterPill({
 }) {
   return (
     <div className="rounded bg-card/60 px-2 py-1.5">
-      <div className="flex items-center gap-1 text-[0.55rem] text-muted-foreground">
+      <div className="flex items-center gap-1 text-[0.62rem] text-muted-foreground">
         {icon}
         {label}
       </div>
@@ -717,12 +717,12 @@ function CounterPill({
       >
         {value}
         {slash !== undefined && (
-          <span className="ml-0.5 text-[0.55rem] font-normal text-muted-foreground">
+          <span className="ml-0.5 text-[0.62rem] font-normal text-muted-foreground">
             / {slash}
           </span>
         )}
         {extra !== undefined && extra > 0 && (
-          <span className="ml-1 text-[0.55rem] font-semibold text-accent">
+          <span className="ml-1 text-[0.62rem] font-semibold text-accent">
             +{extra}
           </span>
         )}
@@ -805,7 +805,7 @@ export function InteriorConfigSection({
             <p className="text-xs font-semibold text-foreground">
               {calc.floorCount} sprat{calc.floorCount === 1 ? "" : "a"}
             </p>
-            <p className="text-[0.6rem] text-muted-foreground">
+            <p className="text-[0.72rem] text-muted-foreground">
               {calc.floors.reduce((s, f) => s + f.totalRooms, 0)} prostorija ·{" "}
               {calc.floors.reduce((s, f) => s + f.totalCameras, 0)} rendera ukupno
             </p>
@@ -813,7 +813,7 @@ export function InteriorConfigSection({
         </div>
         <div className="flex items-center gap-3">
           {savedAt && Date.now() - savedAt < 2500 && (
-            <span className="inline-flex items-center gap-1 text-[0.6rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
+            <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
               Sačuvano
             </span>
@@ -867,13 +867,13 @@ export function InteriorConfigSection({
               <p className="text-sm font-semibold text-foreground">
                 {floors.length === 0 ? "Dodaj prvi sprat" : "Dodaj još jedan sprat"}
               </p>
-              <p className="text-[0.65rem] text-muted-foreground">
+              <p className="text-[0.72rem] text-muted-foreground">
                 Svaki sprat ima svoje sobe, fotografije i podešavanja.
               </p>
             </div>
           </div>
           {floors.length > 0 && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-1 text-[0.6rem] font-bold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-1 text-[0.72rem] font-bold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
               −30% · €{INT_STATIC_EXTRA_FLOOR_EUR}
             </span>
           )}

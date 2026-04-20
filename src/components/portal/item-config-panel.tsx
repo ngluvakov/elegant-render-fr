@@ -160,7 +160,7 @@ export function ItemConfigPanel({
         "rounded-2xl border bg-card/80 transition-all hover:shadow-[0_4px_16px_rgba(28,26,25,0.03)]",
         isConfigured
           ? "border-border/40"
-          : "border-accent/30 bg-gradient-to-br from-accent/[0.03] to-transparent",
+          : "border-[color:var(--color-ember)]/60 bg-gradient-to-br from-[color:var(--color-ember)]/[0.08] to-[color:var(--color-ember)]/[0.02] shadow-[0_4px_16px_-8px_rgba(200,154,60,0.25)]",
       )}
     >
       {/* Header — always visible */}
@@ -181,10 +181,10 @@ export function ItemConfigPanel({
                   Podešeno
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.55rem] font-semibold text-accent">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/60" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                <span className="inline-flex items-center gap-1.5 rounded bg-[color:var(--color-ember)]/20 px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-wider text-[color:var(--color-ember-deep)]">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--color-ember)]/70" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--color-ember-deep)]" />
                   </span>
                   Potrebni podaci
                 </span>

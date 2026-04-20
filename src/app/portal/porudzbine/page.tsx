@@ -74,7 +74,7 @@ export default async function PorudzbinePage({
                 <span>Aktivnost</span>
                 <span className="w-28 text-center">Status</span>
                 <span className="w-20 text-right">Iznos</span>
-                <span className="w-8" />
+                <span className="w-[120px]" />
               </div>
 
               {/* Rows */}
@@ -121,7 +121,7 @@ export default async function PorudzbinePage({
                     <p className="relative w-20 text-right text-sm font-semibold text-foreground">
                       {formatEur(order.totalEur)}
                     </p>
-                    <div className="relative w-8 flex justify-end">
+                    <div className="relative flex w-[120px] justify-end">
                       {canDelete && (
                         <DeleteOrderButton
                           orderId={order.id}

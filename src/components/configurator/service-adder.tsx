@@ -115,7 +115,7 @@ export function ServiceAdder() {
                             key={inc}
                             className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/12 px-2 py-0.5 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)]"
                           >
-                            <Check className="h-2.5 w-2.5" />
+                            <Check className="h-3 w-3" />
                             {inc}
                           </span>
                         ))}

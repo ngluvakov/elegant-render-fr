@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,7 +32,10 @@ export function SignInForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">
+          <Pencil className="h-3 w-3 text-accent/60" />
+          Email
+        </Label>
         <Input
           id="email"
           name="email"
@@ -43,7 +47,10 @@ export function SignInForm() {
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="password">Lozinka</Label>
+          <Label htmlFor="password">
+            <Pencil className="h-3 w-3 text-accent/60" />
+            Lozinka
+          </Label>
           <Link
             href="/zaboravljena-lozinka"
             className="text-xs text-muted-foreground hover:text-accent"

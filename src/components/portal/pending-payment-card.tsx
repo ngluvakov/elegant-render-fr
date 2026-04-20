@@ -8,7 +8,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Check, CreditCard } from "lucide-react";
+import { AlertCircle, Check, CreditCard, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -136,16 +136,25 @@ export function PendingPaymentCard({ orderId, totalEur }: PendingPaymentCardProp
             Test režim — unesite bilo koje podatke.
           </p>
           <div className="space-y-2">
-            <Label className="text-xs">Broj kartice</Label>
+            <Label className="text-xs">
+              <Pencil className="h-3 w-3 text-accent/60" />
+              Broj kartice
+            </Label>
             <Input defaultValue="4111 1111 1111 1111" className="h-8 text-xs" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label className="text-xs">Ističe</Label>
+              <Label className="text-xs">
+                <Pencil className="h-3 w-3 text-accent/60" />
+                Ističe
+              </Label>
               <Input defaultValue="12/28" className="h-8 text-xs" />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs">CVV</Label>
+              <Label className="text-xs">
+                <Pencil className="h-3 w-3 text-accent/60" />
+                CVV
+              </Label>
               <Input defaultValue="123" className="h-8 text-xs" />
             </div>
           </div>

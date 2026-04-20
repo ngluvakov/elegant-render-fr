@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,7 +26,10 @@ export function ResetPasswordForm({ token }: { token: string }) {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="password">Nova lozinka</Label>
+        <Label htmlFor="password">
+          <Pencil className="h-3 w-3 text-accent/60" />
+          Nova lozinka
+        </Label>
         <Input
           id="password"
           name="password"

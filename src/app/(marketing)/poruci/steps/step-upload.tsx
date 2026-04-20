@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { FileUp, Trash2, Upload } from "lucide-react";
+import { FileUp, Pencil, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -213,7 +213,10 @@ export function StepUpload() {
 
       {/* Customer note */}
       <div className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
-        <Label htmlFor="note">Napomena (opciono)</Label>
+        <Label htmlFor="note">
+          <Pencil className="h-3 w-3 text-accent/60" />
+          Napomena (opciono)
+        </Label>
         <Textarea
           id="note"
           value={customerNote}

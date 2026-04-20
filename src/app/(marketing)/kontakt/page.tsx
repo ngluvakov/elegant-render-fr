@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Mail, ExternalLink } from "lucide-react";
+import { Mail, ExternalLink, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,11 +35,17 @@ export default function KontaktPage() {
         <form className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="name">Ime i prezime</Label>
+              <Label htmlFor="name">
+                <Pencil className="h-3 w-3 text-accent/60" />
+                Ime i prezime
+              </Label>
               <Input id="name" name="name" required autoComplete="name" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">
+                <Pencil className="h-3 w-3 text-accent/60" />
+                Email
+              </Label>
               <Input
                 id="email"
                 name="email"
@@ -50,11 +56,17 @@ export default function KontaktPage() {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="phone">Telefon (opciono)</Label>
+            <Label htmlFor="phone">
+              <Pencil className="h-3 w-3 text-accent/60" />
+              Telefon (opciono)
+            </Label>
             <Input id="phone" name="phone" type="tel" autoComplete="tel" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="message">Opis projekta</Label>
+            <Label htmlFor="message">
+              <Pencil className="h-3 w-3 text-accent/60" />
+              Opis projekta
+            </Label>
             <Textarea
               id="message"
               name="message"

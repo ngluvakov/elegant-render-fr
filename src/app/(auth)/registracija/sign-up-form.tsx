@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,7 +32,10 @@ export function SignUpForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="name">Ime i prezime</Label>
+        <Label htmlFor="name">
+          <Pencil className="h-3 w-3 text-accent/60" />
+          Ime i prezime
+        </Label>
         <Input
           id="name"
           name="name"
@@ -41,7 +45,10 @@ export function SignUpForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">
+          <Pencil className="h-3 w-3 text-accent/60" />
+          Email
+        </Label>
         <Input
           id="email"
           name="email"
@@ -52,7 +59,10 @@ export function SignUpForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Lozinka</Label>
+        <Label htmlFor="password">
+          <Pencil className="h-3 w-3 text-accent/60" />
+          Lozinka
+        </Label>
         <Input
           id="password"
           name="password"

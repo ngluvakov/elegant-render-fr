@@ -74,17 +74,17 @@ export function DeleteOrderButton({
         aria-label="Potvrdi brisanje"
         disabled={pending}
         onClick={handleDelete}
-        className="inline-flex h-6 w-6 items-center justify-center rounded-sm transition-colors hover:bg-destructive hover:text-white disabled:opacity-50"
+        className="inline-flex h-7 w-7 items-center justify-center rounded-sm transition-colors hover:bg-destructive hover:text-white disabled:opacity-50"
       >
-        <Check className="h-3 w-3" />
+        <Check className="h-3.5 w-3.5" />
       </button>
       <button
         type="button"
         aria-label="Otkaži"
         onClick={() => setConfirming(false)}
-        className="inline-flex h-6 w-6 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        className="inline-flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       >
-        <X className="h-3 w-3" />
+        <X className="h-3.5 w-3.5" />
       </button>
     </div>
   );

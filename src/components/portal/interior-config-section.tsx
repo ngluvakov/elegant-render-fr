@@ -258,16 +258,16 @@ function FloorPanel({
                 <button
                   type="button"
                   onClick={onRemove}
-                  className="inline-flex h-5 w-5 items-center justify-center rounded-sm hover:bg-destructive hover:text-white"
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-sm hover:bg-destructive hover:text-white"
                 >
-                  <Check className="h-2.5 w-2.5" />
+                  <Check className="h-3 w-3" />
                 </button>
                 <button
                   type="button"
                   onClick={() => setConfirmDelete(false)}
-                  className="inline-flex h-5 w-5 items-center justify-center rounded-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-sm text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
-                  <X className="h-2.5 w-2.5" />
+                  <X className="h-3 w-3" />
                 </button>
               </div>
             )}
@@ -284,7 +284,7 @@ function FloorPanel({
               htmlFor={`floor-name-${floor.id}`}
               className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
             >
-              <Pencil className="h-2.5 w-2.5 text-accent/60" />
+              <Pencil className="h-3 w-3 text-accent/60" />
               Naziv sprata
             </Label>
             <input
@@ -334,7 +334,7 @@ function FloorPanel({
             </div>
 
             <div className="flex items-start gap-2 rounded-md bg-secondary/30 px-2.5 py-1.5 text-[0.72rem] text-muted-foreground">
-              <Info className="mt-0.5 h-2.5 w-2.5 flex-shrink-0 text-accent/70" />
+              <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-accent/70" />
               <p>
                 Broj pored prostorije = kamere (renderi) u toj prostoriji. Preko
                 10 rendera na spratu = €{INT_STATIC_EXTRA_CAMERA_EUR} po kameri.
@@ -411,7 +411,7 @@ function FloorPanel({
                           disabled={!editable || room.cameras <= 1}
                           onClick={() => decCamera(rIdx)}
                           aria-label="Smanji broj kamera u ovoj sobi"
-                          className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                         >
                           <Minus className="h-3 w-3" />
                         </button>
@@ -423,7 +423,7 @@ function FloorPanel({
                           disabled={!editable || room.cameras >= 10}
                           onClick={() => incCamera(rIdx)}
                           aria-label="Povećaj broj kamera u ovoj sobi"
-                          className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                         >
                           <Plus className="h-3 w-3" />
                         </button>
@@ -436,9 +436,9 @@ function FloorPanel({
                           type="button"
                           onClick={() => removeRoom(rIdx)}
                           aria-label="Ukloni prostoriju"
-                          className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                         >
-                          <Trash2 className="h-2.5 w-2.5" />
+                          <Trash2 className="h-3 w-3" />
                         </button>
                       )}
                     </div>
@@ -528,9 +528,9 @@ function FloorPanel({
                         type="button"
                         aria-label="Ukloni fajl"
                         onClick={() => handleFileDelete(f.id)}
-                        className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
+                        className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                       >
-                        <X className="h-2.5 w-2.5" />
+                        <X className="h-3 w-3" />
                       </button>
                     )}
                   </div>
@@ -667,9 +667,9 @@ function FloorPanel({
                             type="button"
                             aria-label="Ukloni fajl"
                             onClick={() => handleFileDelete(f.id)}
-                            className="inline-flex h-5 w-5 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
+                            className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                           >
-                            <X className="h-2.5 w-2.5" />
+                            <X className="h-3 w-3" />
                           </button>
                         )}
                       </div>

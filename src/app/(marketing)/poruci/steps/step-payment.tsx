@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, CreditCard } from "lucide-react";
+import { Check, CreditCard, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -123,16 +123,25 @@ export function StepPayment() {
               plaćanje.
             </p>
             <div className="space-y-2">
-              <Label>Broj kartice</Label>
+              <Label>
+                <Pencil className="h-3 w-3 text-accent/60" />
+                Broj kartice
+              </Label>
               <Input defaultValue="4111 1111 1111 1111" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Ističe</Label>
+                <Label>
+                  <Pencil className="h-3 w-3 text-accent/60" />
+                  Ističe
+                </Label>
                 <Input defaultValue="12/28" />
               </div>
               <div className="space-y-2">
-                <Label>CVV</Label>
+                <Label>
+                  <Pencil className="h-3 w-3 text-accent/60" />
+                  CVV
+                </Label>
                 <Input defaultValue="123" />
               </div>
             </div>

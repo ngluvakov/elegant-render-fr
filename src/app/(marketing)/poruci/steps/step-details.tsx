@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,7 +55,10 @@ export function StepDetails() {
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="checkout-name">Ime i prezime</Label>
+          <Label htmlFor="checkout-name">
+            <Pencil className="h-3 w-3 text-accent/60" />
+            Ime i prezime
+          </Label>
           <Input
             id="checkout-name"
             value={name}
@@ -65,7 +69,10 @@ export function StepDetails() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="checkout-email">Email</Label>
+          <Label htmlFor="checkout-email">
+            <Pencil className="h-3 w-3 text-accent/60" />
+            Email
+          </Label>
           <Input
             id="checkout-email"
             type="email"

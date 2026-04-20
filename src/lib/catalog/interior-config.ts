@@ -17,8 +17,6 @@ export const INT_STATIC_INCLUDED_CAMERAS = 10;
 export const INT_STATIC_EXTRA_ROOM_EUR = 28;
 export const INT_STATIC_EXTRA_CAMERA_EUR = 10;
 
-export const DEFAULT_INTERIOR_ROOMS: InteriorRoom[] = [];
-
 export type InteriorCalc = {
   totalRooms: number;
   totalCameras: number;

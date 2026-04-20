@@ -96,7 +96,7 @@ Kompletna checklist za end-to-end testiranje cele platforme.
 - [ ] Sidebar prikazuje stavku i total
 
 ### 3.2 Konfiguracija add-on-a
-- [ ] Dodaj uslugu sa included quantities (npr. Statički enterijer — 10 soba)
+- [ ] Dodaj uslugu sa included quantities (npr. Render enterijera (statički) — 10 prostorija)
 - [ ] Stepper počinje na 10, badge prikazuje "Uključeno"
 - [ ] Povećaj na 12 → prikazuje "+2 extra" i cenu za 2 dodatne
 - [ ] Smanji nazad na 10 → cena se vraća na baznu

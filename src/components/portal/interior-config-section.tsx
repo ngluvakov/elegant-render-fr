@@ -24,7 +24,6 @@ function kameraNoun(n: number): string {
 }
 import {
   calcInteriorTotal,
-  DEFAULT_INTERIOR_ROOMS,
   INT_STATIC_EXTRA_CAMERA_EUR,
   INT_STATIC_EXTRA_ROOM_EUR,
   INT_STATIC_INCLUDED_CAMERAS,
@@ -41,9 +40,7 @@ export function InteriorConfigSection({
   initialRooms: InteriorRoom[] | null;
   editable: boolean;
 }) {
-  const [rooms, setRooms] = useState<InteriorRoom[]>(
-    initialRooms && initialRooms.length > 0 ? initialRooms : DEFAULT_INTERIOR_ROOMS,
-  );
+  const [rooms, setRooms] = useState<InteriorRoom[]>(initialRooms ?? []);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [, start] = useTransition();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);

@@ -54,7 +54,7 @@ VAŽNO:
 KATALOG USLUGA (ID → naziv → cena):
 
 RENDERI:
-- int-static → Statički enterijer → od €170 po spratu (10 soba, 3D osnova)
+- int-static → Render enterijera (statički) → od €170 po spratu (10 prostorija, 10 rendera, 3D osnova)
 - int-360 → 360 enterijer → od €295 po spratu (10 hotspot soba)
 - ext-static → Statički eksterijer → od €250 (fasada + okruženje)
 - ext-360 → 360 eksterijer → od €335 (VR-ready)

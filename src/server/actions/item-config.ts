@@ -199,7 +199,7 @@ export async function updateInteriorConfig(
   if (item.order.userId !== session.user.id)
     return { error: "Nemate pristup." };
   if (item.productId !== "int-static")
-    return { error: "Samo za statički enterijer." };
+    return { error: "Samo za render enterijera (statički)." };
   if (item.order.status !== "draft")
     return { error: "Izmene dozvoljene samo u nacrtu." };
 

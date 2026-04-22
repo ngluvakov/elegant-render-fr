@@ -235,10 +235,12 @@ function sanitizeRoom(r: InteriorRoom): InteriorRoom {
   const validStyle = (ROOM_STYLE_IDS as readonly string[]).includes(styleId)
     ? (styleId as RoomStyleId)
     : undefined;
+  const notes = String(r.notes ?? "").slice(0, 2000);
   return {
     name: String(r.name ?? "").trim().slice(0, 80) || "Prostorija",
     cameras: Math.max(1, Math.min(20, Number(r.cameras) || 1)),
     ...(validStyle ? { styleId: validStyle } : {}),
+    ...(notes ? { notes } : {}),
   };
 }
 

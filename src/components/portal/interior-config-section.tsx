@@ -33,6 +33,7 @@ import {
   FileUp,
   Layers,
   Pencil,
+  Palette,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -116,6 +117,7 @@ function FloorPanel({
   const [advanced, setAdvanced] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [uploading, setUploading] = useState<string[]>([]);
+  const [styleGuideOpen, setStyleGuideOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const viewInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -322,7 +324,7 @@ function FloorPanel({
 
           {/* Rooms & cameras */}
           <div className="space-y-3 rounded-xl border border-accent/20 bg-gradient-to-br from-accent/[0.02] to-transparent p-3">
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h6 className="text-xs font-semibold text-foreground">
                   Sobe i kadrovi
@@ -331,6 +333,14 @@ function FloorPanel({
                   10 prostorija + 10 rendera uključeno po spratu
                 </p>
               </div>
+              <button
+                type="button"
+                onClick={() => setStyleGuideOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-[0.72rem] font-semibold text-accent transition-all hover:border-accent hover:bg-accent/15 hover:-translate-y-px"
+              >
+                <Palette className="h-3.5 w-3.5" />
+                Vodič kroz stilove
+              </button>
             </div>
 
             <div className="flex items-start gap-2 rounded-md bg-secondary/30 px-2.5 py-1.5 text-[0.72rem] text-muted-foreground">
@@ -362,85 +372,95 @@ function FloorPanel({
                 </p>
               </div>
             ) : (
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {floor.rooms.map((room, rIdx) => {
                   const isBeyondRooms = rIdx >= 10;
                   return (
                     <div
                       key={rIdx}
                       className={cn(
-                        "flex flex-wrap items-center gap-2 rounded-md bg-card/90 px-2.5 py-1.5",
+                        "space-y-2 rounded-md bg-card/90 px-2.5 py-2",
                         isBeyondRooms && "ring-1 ring-accent/30",
                       )}
                     >
-                      <input
-                        type="text"
-                        value={room.name}
-                        onChange={(e) => updateRoom(rIdx, { name: e.target.value })}
-                        disabled={!editable}
-                        maxLength={80}
-                        className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground/50"
-                        placeholder="Naziv prostorije"
-                      />
-                      <select
-                        value={room.styleId ?? ""}
-                        onChange={(e) =>
-                          updateRoom(rIdx, {
-                            styleId: (e.target.value || undefined) as RoomStyleId | undefined,
-                          })
-                        }
-                        disabled={!editable}
-                        aria-label="Stil enterijera"
-                        className="rounded bg-secondary/60 px-2 py-1 text-[0.72rem] text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
-                      >
-                        <option value="">Stil — izaberite</option>
-                        {ROOM_STYLES.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.label}
-                          </option>
-                        ))}
-                      </select>
-                      {isBeyondRooms && (
-                        <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.62rem] font-semibold text-accent">
-                          +€{INT_STATIC_EXTRA_ROOM_EUR}
-                        </span>
-                      )}
-                      <div className="inline-flex items-center rounded bg-secondary/60">
-                        <button
-                          type="button"
-                          disabled={!editable || room.cameras <= 1}
-                          onClick={() => decCamera(rIdx)}
-                          aria-label="Smanji broj kamera u ovoj sobi"
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
+                      <div className="flex flex-wrap items-center gap-2">
+                        <input
+                          type="text"
+                          value={room.name}
+                          onChange={(e) => updateRoom(rIdx, { name: e.target.value })}
+                          disabled={!editable}
+                          maxLength={80}
+                          className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground/50"
+                          placeholder="Naziv prostorije"
+                        />
+                        <select
+                          value={room.styleId ?? ""}
+                          onChange={(e) =>
+                            updateRoom(rIdx, {
+                              styleId: (e.target.value || undefined) as RoomStyleId | undefined,
+                            })
+                          }
+                          disabled={!editable}
+                          aria-label="Stil enterijera"
+                          className="rounded bg-secondary/60 px-2 py-1 text-[0.72rem] text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
                         >
-                          <Minus className="h-3 w-3" />
-                        </button>
-                        <span className="min-w-[1.5rem] text-center text-[0.7rem] font-semibold tabular-nums text-foreground">
-                          {room.cameras}
+                          <option value="">Stil — izaberite</option>
+                          {ROOM_STYLES.map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.label}
+                            </option>
+                          ))}
+                        </select>
+                        {isBeyondRooms && (
+                          <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.62rem] font-semibold text-accent">
+                            +€{INT_STATIC_EXTRA_ROOM_EUR}
+                          </span>
+                        )}
+                        <div className="inline-flex items-center rounded bg-secondary/60">
+                          <button
+                            type="button"
+                            disabled={!editable || room.cameras <= 1}
+                            onClick={() => decCamera(rIdx)}
+                            aria-label="Smanji broj kamera u ovoj sobi"
+                            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="min-w-[1.5rem] text-center text-[0.7rem] font-semibold tabular-nums text-foreground">
+                            {room.cameras}
+                          </span>
+                          <button
+                            type="button"
+                            disabled={!editable || room.cameras >= 10}
+                            onClick={() => incCamera(rIdx)}
+                            aria-label="Povećaj broj kamera u ovoj sobi"
+                            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
+                        <span className="hidden w-12 text-[0.72rem] text-muted-foreground sm:inline">
+                          {kameraNoun(room.cameras)}
                         </span>
-                        <button
-                          type="button"
-                          disabled={!editable || room.cameras >= 10}
-                          onClick={() => incCamera(rIdx)}
-                          aria-label="Povećaj broj kamera u ovoj sobi"
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
-                        >
-                          <Plus className="h-3 w-3" />
-                        </button>
+                        {editable && (
+                          <button
+                            type="button"
+                            onClick={() => removeRoom(rIdx)}
+                            aria-label="Ukloni prostoriju"
+                            className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </button>
+                        )}
                       </div>
-                      <span className="hidden w-12 text-[0.72rem] text-muted-foreground sm:inline">
-                        {kameraNoun(room.cameras)}
-                      </span>
-                      {editable && (
-                        <button
-                          type="button"
-                          onClick={() => removeRoom(rIdx)}
-                          aria-label="Ukloni prostoriju"
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      )}
+                      <Textarea
+                        value={room.notes ?? ""}
+                        onChange={(e) => updateRoom(rIdx, { notes: e.target.value })}
+                        disabled={!editable}
+                        placeholder="Detalji za ovu prostoriju — položaj kamere, atmosfera, posebni zahtevi…"
+                        rows={2}
+                        className="resize-none text-[0.78rem]"
+                      />
                     </div>
                   );
                 })}
@@ -681,6 +701,116 @@ function FloorPanel({
           </Collapsible>
         </div>
       </Collapsible>
+
+      {styleGuideOpen && (
+        <StyleGuideModal
+          onClose={() => setStyleGuideOpen(false)}
+          onApplyToAll={(styleId) => {
+            onPatch({
+              rooms: floor.rooms.map((r) => ({ ...r, styleId })),
+            });
+            setStyleGuideOpen(false);
+          }}
+          editable={editable && floor.rooms.length > 0}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─── StyleGuideModal ──────────────────────────────────────────────────
+
+function StyleGuideModal({
+  onClose,
+  onApplyToAll,
+  editable,
+}: {
+  onClose: () => void;
+  onApplyToAll: (styleId: RoomStyleId) => void;
+  editable: boolean;
+}) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-4 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-card shadow-[0_24px_64px_-16px_rgba(28,26,25,0.25)] animate-in fade-in zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-3 border-b border-border/40 p-5">
+          <div>
+            <h3 className="font-heading text-xl text-foreground">
+              Vodič kroz stilove
+            </h3>
+            <p className="mt-1 text-[0.78rem] text-muted-foreground">
+              Kliknite „Primeni na sve prostorije" da brzo postavite isti
+              stil za sve sobe ovog sprata. Pojedinačne sobe možete uvek
+              ručno promeniti posle.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Zatvori"
+            className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="grid gap-3 p-5 sm:grid-cols-2">
+          {ROOM_STYLES.map((style) => (
+            <div
+              key={style.id}
+              className="flex flex-col gap-2 rounded-xl border border-border/40 bg-background/60 p-3 transition-colors hover:border-accent/40"
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className="h-12 w-12 flex-shrink-0 rounded-lg ring-1 ring-foreground/10"
+                  style={{ backgroundImage: style.swatch }}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-foreground">
+                    {style.label}
+                  </p>
+                  <p className="mt-0.5 text-[0.72rem] leading-relaxed text-muted-foreground">
+                    {style.description}
+                  </p>
+                </div>
+              </div>
+              {editable && (
+                <button
+                  type="button"
+                  onClick={() => onApplyToAll(style.id)}
+                  className="mt-1 inline-flex items-center justify-center gap-1.5 self-end rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1 text-[0.7rem] font-semibold text-accent transition-all hover:border-accent hover:bg-accent/15"
+                >
+                  <Check className="h-3 w-3" />
+                  Primeni na sve prostorije
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-end border-t border-border/40 p-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg px-4 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            Zatvori
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

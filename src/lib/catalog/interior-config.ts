@@ -9,13 +9,55 @@
  */
 
 export const ROOM_STYLES = [
-  { id: "industrial-urban", label: "Industrial / urban" },
-  { id: "scandinavian", label: "Scandinavian" },
-  { id: "farmhouse", label: "Farmhouse" },
-  { id: "modern", label: "Modern" },
-  { id: "contemporary", label: "Contemporary" },
-  { id: "mid-century", label: "Mid-century" },
-  { id: "primorski", label: "Primorski stil" },
+  {
+    id: "industrial-urban",
+    label: "Industrial / urban",
+    description:
+      "Sirove teksture — cigla, čelik, beton. Visoki plafoni, otvorene instalacije.",
+    swatch: "linear-gradient(135deg, #5d5449 0%, #8a7c6e 50%, #3d3530 100%)",
+  },
+  {
+    id: "scandinavian",
+    label: "Scandinavian",
+    description:
+      "Svetle neutralne boje, belo drvo, minimalizam. Čisto i funkcionalno.",
+    swatch: "linear-gradient(135deg, #f5f0e6 0%, #d9cdbc 60%, #a89880 100%)",
+  },
+  {
+    id: "farmhouse",
+    label: "Farmhouse",
+    description:
+      "Rustični elementi, patinirano drvo, topli tekstil. Domaće i udobno.",
+    swatch: "linear-gradient(135deg, #d9b487 0%, #a88b68 60%, #735a3e 100%)",
+  },
+  {
+    id: "modern",
+    label: "Modern",
+    description:
+      "Čiste linije, neutralne boje, minimalna dekoracija. Strogo i uređeno.",
+    swatch: "linear-gradient(135deg, #2d2d2d 0%, #6b6b6b 60%, #c5c5c5 100%)",
+  },
+  {
+    id: "contemporary",
+    label: "Contemporary",
+    description:
+      "Aktualni trendovi, mešanje tekstura i materijala. Elegantno bez rigidnih pravila.",
+    swatch: "linear-gradient(135deg, #4a4852 0%, #9c8e80 60%, #e8dfd1 100%)",
+  },
+  {
+    id: "mid-century",
+    label: "Mid-century",
+    description:
+      "Retro 1950ih–60ih. Organsko drvo, geometrijski oblici, topli akcenti.",
+    swatch: "linear-gradient(135deg, #c26b3d 0%, #d4a259 50%, #5e7a6a 100%)",
+  },
+  {
+    id: "primorski",
+    label: "Primorski stil",
+    description:
+      "Mediteran — bela, peščana i plava, lagane tkanine, maksimalna svetlost.",
+    swatch: "linear-gradient(135deg, #f4f0e8 0%, #b9d5d9 55%, #4c7f96 100%)",
+  },
 ] as const;
 export type RoomStyleId = (typeof ROOM_STYLES)[number]["id"];
 export const ROOM_STYLE_IDS = ROOM_STYLES.map((s) => s.id) as RoomStyleId[];
@@ -43,6 +85,7 @@ export type InteriorRoom = {
   name: string;
   cameras: number;
   styleId?: RoomStyleId;
+  notes?: string;
 };
 
 export type InteriorFloor = {

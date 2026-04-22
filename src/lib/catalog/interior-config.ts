@@ -14,49 +14,49 @@ export const ROOM_STYLES = [
     label: "Industrial / urban",
     description:
       "Sirove teksture — cigla, čelik, beton. Visoki plafoni, otvorene instalacije.",
-    image: "/styles/industrial-urban.png",
+    image: "/styles/industrial-urban.webp",
   },
   {
     id: "scandinavian",
     label: "Scandinavian",
     description:
       "Svetle neutralne boje, belo drvo, minimalizam. Čisto i funkcionalno.",
-    image: "/styles/scandinavian.png",
+    image: "/styles/scandinavian.webp",
   },
   {
     id: "farmhouse",
     label: "Farmhouse",
     description:
       "Rustični elementi, patinirano drvo, topli tekstil. Domaće i udobno.",
-    image: "/styles/farmhouse.png",
+    image: "/styles/farmhouse.webp",
   },
   {
     id: "modern",
     label: "Modern",
     description:
       "Čiste linije, neutralne boje, minimalna dekoracija. Strogo i uređeno.",
-    image: "/styles/modern.png",
+    image: "/styles/modern.webp",
   },
   {
     id: "contemporary",
     label: "Contemporary",
     description:
       "Aktualni trendovi, mešanje tekstura i materijala. Elegantno bez rigidnih pravila.",
-    image: "/styles/contemporary.png",
+    image: "/styles/contemporary.webp",
   },
   {
     id: "mid-century",
     label: "Mid-century",
     description:
       "Retro 1950ih–60ih. Organsko drvo, geometrijski oblici, topli akcenti.",
-    image: "/styles/mid-century.png",
+    image: "/styles/mid-century.webp",
   },
   {
     id: "primorski",
     label: "Primorski stil",
     description:
       "Mediteran — bela, peščana i plava, lagane tkanine, maksimalna svetlost.",
-    image: "/styles/primorski.png",
+    image: "/styles/primorski.webp",
   },
 ] as const;
 export type RoomStyleId = (typeof ROOM_STYLES)[number]["id"];

@@ -18,6 +18,7 @@ import {
   useState,
   useTransition,
 } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Plus,
@@ -774,12 +775,12 @@ function StyleGuideModal({
               className="overflow-hidden rounded-xl border border-border/40 bg-background/60 transition-all hover:border-accent/40 hover:shadow-[0_8px_24px_-12px_rgba(28,26,25,0.12)]"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={style.image}
                   alt={`Primer enterijera: ${style.label}`}
-                  loading="lazy"
-                  className="absolute inset-0 h-full w-full object-cover"
+                  fill
+                  sizes="(min-width: 640px) 40vw, 90vw"
+                  className="object-cover"
                 />
               </div>
               <div className="space-y-2 p-3">

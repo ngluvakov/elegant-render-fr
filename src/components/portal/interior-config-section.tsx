@@ -767,36 +767,41 @@ function StyleGuideModal({
           </button>
         </div>
 
-        <div className="grid gap-3 p-5 sm:grid-cols-2">
+        <div className="grid gap-4 p-5 sm:grid-cols-2">
           {ROOM_STYLES.map((style) => (
             <div
               key={style.id}
-              className="flex flex-col gap-2 rounded-xl border border-border/40 bg-background/60 p-3 transition-colors hover:border-accent/40"
+              className="overflow-hidden rounded-xl border border-border/40 bg-background/60 transition-all hover:border-accent/40 hover:shadow-[0_8px_24px_-12px_rgba(28,26,25,0.12)]"
             >
-              <div className="flex items-center gap-3">
-                <div
-                  className="h-12 w-12 flex-shrink-0 rounded-lg ring-1 ring-foreground/10"
-                  style={{ backgroundImage: style.swatch }}
+              <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={style.image}
+                  alt={`Primer enterijera: ${style.label}`}
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
-                <div className="min-w-0 flex-1">
+              </div>
+              <div className="space-y-2 p-3">
+                <div>
                   <p className="text-sm font-semibold text-foreground">
                     {style.label}
                   </p>
-                  <p className="mt-0.5 text-[0.72rem] leading-relaxed text-muted-foreground">
+                  <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
                     {style.description}
                   </p>
                 </div>
+                {editable && (
+                  <button
+                    type="button"
+                    onClick={() => onApplyToAll(style.id)}
+                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-[0.72rem] font-semibold text-accent transition-all hover:border-accent hover:bg-accent/15"
+                  >
+                    <Check className="h-3 w-3" />
+                    Primeni na sve prostorije
+                  </button>
+                )}
               </div>
-              {editable && (
-                <button
-                  type="button"
-                  onClick={() => onApplyToAll(style.id)}
-                  className="mt-1 inline-flex items-center justify-center gap-1.5 self-end rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1 text-[0.7rem] font-semibold text-accent transition-all hover:border-accent hover:bg-accent/15"
-                >
-                  <Check className="h-3 w-3" />
-                  Primeni na sve prostorije
-                </button>
-              )}
             </div>
           ))}
         </div>

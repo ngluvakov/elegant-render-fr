@@ -280,6 +280,19 @@ const externalCases: ExternalCase[] = [
       perItem: [{ instanceId: "f", discountPct: 70 }],
     },
   },
+  // Regression: mimics the portal's repriceOrder flow where int-static
+  // items are filtered out of `items` (to go through the per-floor
+  // calcInteriorTotal path) but must stay visible to the discount
+  // resolver as external sources. Before the fix, int-360 next to
+  // int-static saw no interior-model creator and missed its −40%.
+  {
+    name: "Portal: int-360 + int-static-as-external → int-360 gets −40%",
+    items: [qi("t", "int-360", "interior")],
+    externalSources: [qi("ext-i", "int-static", "interior")],
+    expect: {
+      perItem: [{ instanceId: "t", discountPct: 40 }],
+    },
+  },
 ];
 
 console.log("\n🧪 Pricing dependencies — engine verification\n");

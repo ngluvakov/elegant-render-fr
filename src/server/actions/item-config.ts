@@ -184,9 +184,20 @@ export async function repriceOrder(orderId: string) {
     }));
   }
 
-  // Non-int-static items re-price through the full engine.
+  // Non-int-static items re-price through the full engine. int-static
+  // items are priced separately below via calcInteriorTotal, but they
+  // still need to appear in the resolver's asset inventory so the
+  // engine can discount sibling services that consume interior-model.
+  // Route them through externalSources (same semantics: contributes to
+  // inventory but doesn't get a breakdown in the engine output).
   const standardItems = quoteItems.filter((qi) => qi.productId !== "int-static");
-  const calc = calculateQuote(standardItems, externalSources);
+  const intStaticAsSources = quoteItems.filter(
+    (qi) => qi.productId === "int-static",
+  );
+  const calc = calculateQuote(standardItems, [
+    ...externalSources,
+    ...intStaticAsSources,
+  ]);
   const breakdownById = new Map(calc.items.map((b) => [b.instanceId, b]));
 
   let orderTotal = 0;

@@ -112,20 +112,7 @@ const cases: Case[] = [
     },
   },
   {
-    name: "Two ext-static items — no consumes rule on ext-static, both full",
-    items: [
-      qi("a", "ext-static", "exterior"),
-      qi("b", "ext-static", "exterior"),
-    ],
-    expect: {
-      perItem: [
-        { instanceId: "a", discountPct: 0 },
-        { instanceId: "b", discountPct: 0 },
-      ],
-    },
-  },
-  {
-    name: "vr-standalone + ext-static — VR −50% from exterior-shell, ext-static stays full",
+    name: "vr-standalone + ext-static — VR −50% from exterior-shell, ext-static −50% from complete-model",
     items: [
       qi("v", "vr-standalone", "vr-experiences"),
       qi("e", "ext-static", "exterior"),
@@ -133,7 +120,7 @@ const cases: Case[] = [
     expect: {
       perItem: [
         { instanceId: "v", discountPct: 50 }, // spec: Ext→VR is −50%
-        { instanceId: "e", discountPct: 0 },  // ext-static has no consumes rule
+        { instanceId: "e", discountPct: 50 }, // NEW (Phase A): ext-static consumes complete-model from vr-standalone
       ],
     },
   },
@@ -151,15 +138,75 @@ const cases: Case[] = [
     },
   },
   {
-    name: "Animation 30s + ext-static — anim −33% from exterior-shell",
+    name: "Animation 30s + ext-static — anim −33%, ext-static −50% (bidirectional)",
     items: [
       qi("e", "ext-static", "exterior"),
       qi("a", "anim-scratch", "animation", { durationSeconds: 30 }),
     ],
     expect: {
       perItem: [
-        { instanceId: "e", discountPct: 0 },
+        // anim-scratch creates complete-model → ext-static consumes it at −50%
+        { instanceId: "e", discountPct: 50 },
+        // ext-static creates exterior-shell → anim-scratch consumes it at −33%
         { instanceId: "a", discountPct: 33 },
+      ],
+    },
+  },
+  {
+    name: "apt-floor + ext-static — ext-static −30% (exterior-shell from apt, sourceProducts filter)",
+    items: [
+      qi("a", "apt-floor", "apartment"),
+      qi("e", "ext-static", "exterior"),
+    ],
+    expect: {
+      perItem: [
+        { instanceId: "a", discountPct: 0 },
+        { instanceId: "e", discountPct: 30 },
+      ],
+    },
+  },
+  {
+    name: "pm-first + ext-static — ext-static −25% (no pm-extended); pm also gets ext-shell rule",
+    items: [
+      qi("p", "pm-first", "photomontage"),
+      qi("e", "ext-static", "exterior"),
+    ],
+    expect: {
+      perItem: [
+        // pm-first (300) is more expensive than ext-static (250), so ext-static is
+        // canonical for exterior-shell → pm-first still qualifies for its own
+        // exterior-shell consume at −50%.
+        { instanceId: "p", discountPct: 50 },
+        // ext-static consumes exterior-shell from pm-first → −25% (no pm-extended add-on).
+        { instanceId: "e", discountPct: 25 },
+      ],
+    },
+  },
+  {
+    name: "land-static + ext-static — ext-static −15% (terrain from landscape)",
+    items: [
+      qi("l", "land-static", "landscape"),
+      qi("e", "ext-static", "exterior"),
+    ],
+    expect: {
+      perItem: [
+        // land-static consumes exterior-shell from ext-static at −25%
+        { instanceId: "l", discountPct: 25 },
+        // ext-static consumes terrain-model from land-static at −15%
+        { instanceId: "e", discountPct: 15 },
+      ],
+    },
+  },
+  {
+    name: "Two ext-static items — sourceProducts filter keeps both full",
+    items: [
+      qi("a", "ext-static", "exterior"),
+      qi("b", "ext-static", "exterior"),
+    ],
+    expect: {
+      perItem: [
+        { instanceId: "a", discountPct: 0 },
+        { instanceId: "b", discountPct: 0 },
       ],
     },
   },

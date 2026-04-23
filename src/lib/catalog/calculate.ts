@@ -224,7 +224,7 @@ function calculateItem(
 
 // ─── Cross-service discount resolver ─────────────────────
 
-type AssetSource = { instanceId: string; basePrice: number };
+type AssetSource = { instanceId: string; productId: string; basePrice: number };
 
 // Builds asset → sorted list of creator items (ascending basePrice, then
 // insertion order). Cheapest creator is the canonical source of that asset.
@@ -237,7 +237,11 @@ function buildAssetInventory(
     if (!result?.product.creates) return;
     for (const asset of result.product.creates) {
       const list = inv.get(asset) ?? [];
-      list.push({ instanceId: item.instanceId, basePrice: result.product.basePriceEur });
+      list.push({
+        instanceId: item.instanceId,
+        productId: item.productId,
+        basePrice: result.product.basePriceEur,
+      });
       inv.set(asset, list);
     }
     // Preserve insertion order via the outer loop; sort is stable by basePrice
@@ -283,8 +287,14 @@ export function resolveDiscount(
   let best: { pct: number; reason: string } | null = null;
   for (const rule of product.consumes) {
     if (!conditionSatisfied(rule, target)) continue;
-    const sources = inventory.get(rule.requires);
-    if (!sources || sources.length === 0) continue;
+    const allSources = inventory.get(rule.requires);
+    if (!allSources || allSources.length === 0) continue;
+    // Apply sourceProducts whitelist (if set) so e.g. ext-static doesn't
+    // match exterior-shell from another ext-static.
+    const sources = rule.sourceProducts
+      ? allSources.filter((s) => rule.sourceProducts!.includes(s.productId))
+      : allSources;
+    if (sources.length === 0) continue;
     const canonical = sources[0];
     // Target is canonical creator → no one else supplied the asset. Only
     // qualify if there's at least one other creator of the same asset.

@@ -28,6 +28,11 @@ export type ConsumeRule = {
   discountPct: number;
   reason: string;
   condition?: ConsumeCondition;
+  // Optional whitelist of source product IDs. If set, the rule only
+  // qualifies when a matching creator is in the order AND that creator's
+  // productId is in this list. Used to scope "exterior-shell from Apartment"
+  // differently from "exterior-shell from another ext-static render".
+  sourceProducts?: string[];
 };
 
 export type VolumeRule = {
@@ -106,6 +111,40 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
       {
         id: "ext-static",
         creates: ["exterior-shell"],
+        consumes: [
+          { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
+          {
+            requires: "exterior-shell",
+            discountPct: 30,
+            reason: "Shell postoji iz Apartman paketa",
+            sourceProducts: ["apt-floor"],
+          },
+          {
+            requires: "exterior-shell",
+            discountPct: 25,
+            reason: "Model postoji iz fotomontaže",
+            sourceProducts: ["pm-first"],
+            condition: { type: "addOnAbsent", addOnId: "pm-extended" },
+          },
+          {
+            requires: "exterior-shell",
+            discountPct: 15,
+            reason: "Model postoji iz fotomontaže (delimično)",
+            sourceProducts: ["pm-first"],
+          },
+          {
+            requires: "exterior-shell",
+            discountPct: 20,
+            reason: "Massing postoji iz situacionog plana",
+            sourceProducts: ["sp-first"],
+          },
+          {
+            requires: "terrain-model",
+            discountPct: 15,
+            reason: "Okruženje postoji iz pejzažnog prikaza",
+            sourceProducts: ["land-static"],
+          },
+        ],
         label: "Statički eksterijer",
         basePriceEur: 250,
         unitLabel: "kompletan model + prvi kadar",

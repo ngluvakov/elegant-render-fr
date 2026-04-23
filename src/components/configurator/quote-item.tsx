@@ -10,7 +10,10 @@ import { useState } from "react";
 import { Check, ChevronDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
-import { formatEur, type LineItemBreakdown } from "@/lib/catalog/calculate";
+import {
+  formatDiscountedPrice,
+  type LineItemBreakdown,
+} from "@/lib/catalog/calculate";
 import { Collapsible } from "@/components/ui/collapsible";
 import { useQuote } from "./quote-context";
 import { AddOnStepper } from "./addon-stepper";
@@ -47,11 +50,39 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           <p className="mt-1 text-base font-semibold text-foreground">
             {breakdown.productLabel}
           </p>
+          {breakdown.discountReason && (
+            <p className="mt-1 text-xs text-[color:var(--color-sage-deep)]">
+              {breakdown.discountReason}
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-3">
-          <p className="text-lg font-semibold text-foreground">
-            {formatEur(breakdown.totalEur)}
-          </p>
+          {(() => {
+            const { primary, struck, badge } = formatDiscountedPrice(
+              breakdown.totalEur,
+              breakdown.originalTotalEur,
+              breakdown.discountPct,
+            );
+            return (
+              <div className="flex flex-col items-end">
+                <div className="flex items-center gap-2">
+                  {struck && (
+                    <span className="text-sm text-muted-foreground/60 line-through">
+                      {struck}
+                    </span>
+                  )}
+                  <span className="text-lg font-semibold text-foreground">
+                    {primary}
+                  </span>
+                </div>
+                {badge && (
+                  <span className="mt-0.5 rounded-md bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.68rem] font-semibold text-[color:var(--color-sage-deep)]">
+                    {badge}
+                  </span>
+                )}
+              </div>
+            );
+          })()}
           <ChevronDown
             className={cn(
               "h-4 w-4 text-muted-foreground transition-transform duration-300",

@@ -4,7 +4,7 @@
  *
  * Used on: /portal/porudzbine/[orderId] (order detail page).
  */
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatDiscountedPrice } from "@/lib/catalog/calculate";
 
 type OrderSummaryCardProps = {
   items: Array<{
@@ -12,6 +12,9 @@ type OrderSummaryCardProps = {
     productLabel: string;
     categoryLabel: string;
     totalEur: number;
+    originalTotalEur: number | null;
+    discountPct: number | null;
+    discountReason: string | null;
   }>;
   customerNote: string | null;
   sourceFiles: Array<{ id: string; fileName: string; fileSize: number }>;
@@ -30,22 +33,39 @@ export function OrderSummaryCard({
 
       {/* Items */}
       <div className="mt-4 space-y-2">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="flex items-center justify-between text-xs"
-          >
-            <div>
-              <p className="font-medium text-foreground">{item.productLabel}</p>
-              <p className="text-[0.72rem] text-muted-foreground">
-                {item.categoryLabel}
-              </p>
+        {items.map((item) => {
+          const { primary, struck } = formatDiscountedPrice(
+            item.totalEur,
+            item.originalTotalEur ?? item.totalEur,
+            item.discountPct ?? 0,
+          );
+          return (
+            <div
+              key={item.id}
+              className="flex items-center justify-between text-xs"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-foreground">{item.productLabel}</p>
+                <p className="text-[0.72rem] text-muted-foreground">
+                  {item.categoryLabel}
+                </p>
+                {item.discountReason && (
+                  <p className="mt-0.5 text-[0.68rem] text-[color:var(--color-sage-deep)]">
+                    {item.discountReason}
+                  </p>
+                )}
+              </div>
+              <span className="ml-2 text-right font-semibold text-foreground">
+                {struck && (
+                  <span className="mr-1 text-[0.7rem] font-normal text-muted-foreground/60 line-through">
+                    {struck}
+                  </span>
+                )}
+                {primary}
+              </span>
             </div>
-            <span className="font-semibold text-foreground">
-              {formatEur(item.totalEur)}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Source files */}

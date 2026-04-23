@@ -61,6 +61,10 @@ export default async function OrderDetailPage({
   const firstItem = order.items[0];
   const sourceFiles = order.files.filter((f) => f.kind === "source" || f.kind === "revision");
   const deliverableFiles = order.files.filter((f) => f.kind === "deliverable");
+  const savingsEur = order.items.reduce(
+    (sum, i) => sum + Math.max(0, (i.originalTotalEur ?? i.totalEur) - i.totalEur),
+    0,
+  );
   const isDraft = order.status === "draft";
   const canEditItems =
     order.status === "draft" ||
@@ -83,6 +87,7 @@ export default async function OrderDetailPage({
         orderNumber={order.orderNumber}
         status={order.status}
         totalEur={order.totalEur}
+        savingsEur={savingsEur}
         createdAt={order.createdAt}
         updatedAt={order.updatedAt}
         projectName={order.projectName}
@@ -142,6 +147,9 @@ export default async function OrderDetailPage({
                       productLabel: item.productLabel,
                       categoryLabel: item.categoryLabel,
                       totalEur: item.totalEur,
+                      originalTotalEur: item.originalTotalEur,
+                      discountPct: item.discountPct,
+                      discountReason: item.discountReason,
                       clientNote: item.clientNote,
                       configJson: item.configJson as Record<string, unknown> | null,
                       files: item.files,

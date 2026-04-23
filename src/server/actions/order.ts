@@ -57,6 +57,9 @@ export async function createOrder(
           addOnsJson: item.addOns,
           durationSeconds: item.durationSeconds ?? null,
           durationDiscount: item.durationDiscount ?? null,
+          originalTotalEur: item.originalTotalEur,
+          discountPct: item.discountPct,
+          discountReason: item.discountReason,
         })),
       },
       statusEvents: {

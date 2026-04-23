@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, ShoppingCart, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatDiscountedPrice, formatEur } from "@/lib/catalog/calculate";
 import { useQuote } from "./quote-context";
 
 export function QuoteSummary() {
@@ -70,6 +70,11 @@ export function QuoteSummary() {
           const billableAddOns = item.addOns.filter(
             (a) => a.billableQty > 0,
           ).length;
+          const { primary, struck } = formatDiscountedPrice(
+            item.totalEur,
+            item.originalTotalEur,
+            item.discountPct,
+          );
           return (
             <div
               key={item.instanceId}
@@ -89,8 +94,13 @@ export function QuoteSummary() {
                   )}
                 </p>
               </div>
-              <p className="ml-3 flex-shrink-0 text-sm font-semibold text-background">
-                {formatEur(item.totalEur)}
+              <p className="ml-3 flex-shrink-0 text-right text-sm font-semibold text-background">
+                {struck && (
+                  <span className="mr-1.5 text-xs font-normal text-background/35 line-through">
+                    {struck}
+                  </span>
+                )}
+                {primary}
               </p>
               <button
                 type="button"
@@ -108,6 +118,14 @@ export function QuoteSummary() {
       {/* Total + CTA */}
       {hasItems && (
         <div className="border-t border-background/10 bg-background/5 px-5 py-4">
+          {calculation.originalTotal > calculation.total && (
+            <div className="mb-2 flex items-center justify-between text-xs">
+              <p className="text-background/50">Ušteda</p>
+              <p className="font-semibold text-[color:var(--color-sage)]">
+                −{formatEur(calculation.originalTotal - calculation.total)}
+              </p>
+            </div>
+          )}
           <div className="mb-4 flex items-center justify-between">
             <p className="text-sm text-background/60">Procenjena cena</p>
             <p className="text-2xl font-bold text-background">

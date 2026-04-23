@@ -135,6 +135,9 @@ model OrderItem {
   durationDiscount Float?
   clientNote       String? @db.Text
   configJson       Json?
+  originalTotalEur Int?
+  discountPct      Int?
+  discountReason   String? @db.Text
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
   files OrderFile[]

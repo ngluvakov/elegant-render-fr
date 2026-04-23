@@ -2,18 +2,20 @@
  * calculate.ts — Pure price calculation engine for the configurator.
  *
  * Exports calculateQuote() which resolves QuoteItem[] into line-item
- * breakdowns with volume rules, percent surcharges, and duration discounts.
+ * breakdowns with volume rules, percent surcharges, duration discounts,
+ * and cross-service "model-first" discounts (a second pass that applies
+ * the best consumes-rule on each item based on sibling items' creates).
  *
  * Used by: server/actions/order (server-side verification), quote-summary,
  *          quote-item, quote-context, checkout-wizard, portal pages
  */
 
-// Handles: threshold pricing, volume rules, percent surcharges, duration discounts
-
 import {
   type ConfiguratorAddOn,
   type ConfiguratorProduct,
+  type ConsumeRule,
   type DurationConfig,
+  type ModelAsset,
   getConfiguratorProduct,
 } from "./configurator";
 
@@ -48,11 +50,16 @@ export type LineItemBreakdown = {
   durationDiscount?: number;
   addOns: AddOnBreakdown[];
   totalEur: number;
+  originalBasePriceEur: number;
+  originalTotalEur: number;
+  discountPct: number;
+  discountReason: string | null;
 };
 
 export type QuoteCalculation = {
   items: LineItemBreakdown[];
   total: number;
+  originalTotal: number;
 };
 
 // ─── Duration discount helper ────────────────────────────
@@ -126,6 +133,34 @@ function calculateAddOn(
   };
 }
 
+// ─── Percent add-on pass ─────────────────────────────────
+
+// Applies percent add-ons on top of (baseTotal + fixedAddOnTotal). Mutates
+// the matching entries in `addOnBreakdowns` and returns the sum of percent
+// contributions. Used in both the initial calculation and after cross-service
+// discount has reduced baseTotal, so percent-based surcharges scale correctly.
+function applyPercentAddOns(
+  addOnBreakdowns: AddOnBreakdown[],
+  product: ConfiguratorProduct,
+  baseTotal: number,
+  fixedAddOnTotal: number,
+): number {
+  const subtotalBeforePercent = baseTotal + fixedAddOnTotal;
+  let percentTotal = 0;
+
+  for (const breakdown of addOnBreakdowns) {
+    const def = product.addOns.find((ao) => ao.id === breakdown.addOnId);
+    if (def?.priceType === "percent" && breakdown.billableQty > 0) {
+      const pctAmount =
+        subtotalBeforePercent * (def.priceEur / 100) * breakdown.billableQty;
+      breakdown.totalEur = Math.round(pctAmount);
+      percentTotal += breakdown.totalEur;
+    }
+  }
+
+  return percentTotal;
+}
+
 // ─── Single item calculation ─────────────────────────────
 
 function calculateItem(
@@ -160,18 +195,14 @@ function calculateItem(
   }
 
   // Calculate percent add-ons (applied on baseTotal + fixedAddOnTotal)
-  const subtotalBeforePercent = baseTotal + fixedAddOnTotal;
-  let percentTotal = 0;
+  const percentTotal = applyPercentAddOns(
+    addOnBreakdowns,
+    product,
+    baseTotal,
+    fixedAddOnTotal,
+  );
 
-  for (const breakdown of addOnBreakdowns) {
-    const def = product.addOns.find((ao) => ao.id === breakdown.addOnId);
-    if (def?.priceType === "percent" && breakdown.billableQty > 0) {
-      const pctAmount = subtotalBeforePercent * (def.priceEur / 100) * breakdown.billableQty;
-      breakdown.totalEur = Math.round(pctAmount);
-      percentTotal += breakdown.totalEur;
-    }
-  }
-
+  const basePriceRounded = Math.round(baseTotal);
   const totalEur = Math.round(baseTotal + fixedAddOnTotal + percentTotal);
 
   return {
@@ -179,12 +210,117 @@ function calculateItem(
     productId: item.productId,
     productLabel: product.label,
     categoryLabel,
-    basePriceEur: Math.round(baseTotal),
+    basePriceEur: basePriceRounded,
     durationSeconds: product.durationConfig ? seconds : undefined,
     durationDiscount,
     addOns: addOnBreakdowns,
     totalEur,
+    originalBasePriceEur: basePriceRounded,
+    originalTotalEur: totalEur,
+    discountPct: 0,
+    discountReason: null,
   };
+}
+
+// ─── Cross-service discount resolver ─────────────────────
+
+type AssetSource = { instanceId: string; basePrice: number };
+
+// Builds asset → sorted list of creator items (ascending basePrice, then
+// insertion order). Cheapest creator is the canonical source of that asset.
+function buildAssetInventory(
+  items: QuoteItem[],
+): Map<ModelAsset, AssetSource[]> {
+  const inv = new Map<ModelAsset, AssetSource[]>();
+  items.forEach((item, idx) => {
+    const result = getConfiguratorProduct(item.productId);
+    if (!result?.product.creates) return;
+    for (const asset of result.product.creates) {
+      const list = inv.get(asset) ?? [];
+      list.push({ instanceId: item.instanceId, basePrice: result.product.basePriceEur });
+      inv.set(asset, list);
+    }
+    // Preserve insertion order via the outer loop; sort is stable by basePrice
+    // with stable-sort falling back to insertion order when prices tie.
+    void idx;
+  });
+  for (const list of inv.values()) {
+    list.sort((a, b) => a.basePrice - b.basePrice);
+  }
+  return inv;
+}
+
+function conditionSatisfied(rule: ConsumeRule, target: QuoteItem): boolean {
+  if (!rule.condition) return true;
+  if (rule.condition.type === "addOnAbsent") {
+    const qty = target.addOnQuantities[rule.condition.addOnId] ?? 0;
+    return qty === 0;
+  }
+  return true;
+}
+
+/**
+ * Resolves the best cross-service discount for `target`, given all sibling
+ * items in the same order (which may include `target` itself).
+ *
+ * Rules (from pricing spec):
+ *  - A rule qualifies if some item OTHER than target creates the required
+ *    asset. If target itself creates the asset, it still qualifies as long
+ *    as target is NOT the canonical source (cheapest creator).
+ *  - Among qualifying rules, the highest discountPct wins (discounts don't
+ *    stack — Rule 5).
+ *  - Returns null when no rule qualifies.
+ */
+export function resolveDiscount(
+  target: QuoteItem,
+  siblings: QuoteItem[],
+): { pct: number; reason: string } | null {
+  const product = getConfiguratorProduct(target.productId)?.product;
+  if (!product?.consumes || product.consumes.length === 0) return null;
+
+  const inventory = buildAssetInventory(siblings);
+
+  let best: { pct: number; reason: string } | null = null;
+  for (const rule of product.consumes) {
+    if (!conditionSatisfied(rule, target)) continue;
+    const sources = inventory.get(rule.requires);
+    if (!sources || sources.length === 0) continue;
+    const canonical = sources[0];
+    // Target is canonical creator → no one else supplied the asset. Only
+    // qualify if there's at least one other creator of the same asset.
+    if (canonical.instanceId === target.instanceId && sources.length === 1) continue;
+    if (!best || rule.discountPct > best.pct) {
+      best = { pct: rule.discountPct, reason: rule.reason };
+    }
+  }
+  return best;
+}
+
+// ─── Apply a discount to an existing breakdown ───────────
+
+function applyDiscount(
+  breakdown: LineItemBreakdown,
+  product: ConfiguratorProduct,
+  pct: number,
+  reason: string,
+): void {
+  const discountedBase = Math.round(breakdown.originalBasePriceEur * (1 - pct / 100));
+  const fixedAddOnTotal = breakdown.addOns
+    .filter((ao) => {
+      const def = product.addOns.find((a) => a.id === ao.addOnId);
+      return def && def.priceType !== "percent";
+    })
+    .reduce((sum, ao) => sum + ao.totalEur, 0);
+  const percentTotal = applyPercentAddOns(
+    breakdown.addOns,
+    product,
+    discountedBase,
+    fixedAddOnTotal,
+  );
+  breakdown.basePriceEur = discountedBase;
+  breakdown.totalEur = Math.round(discountedBase + fixedAddOnTotal + percentTotal);
+  breakdown.discountPct = pct;
+  breakdown.discountReason = reason;
 }
 
 // ─── Full quote calculation ──────────────────────────────
@@ -192,6 +328,7 @@ function calculateItem(
 export function calculateQuote(items: QuoteItem[]): QuoteCalculation {
   const breakdowns: LineItemBreakdown[] = [];
 
+  // Pass 1: per-item breakdown with no cross-service awareness
   for (const item of items) {
     const result = getConfiguratorProduct(item.productId);
     if (!result) continue;
@@ -200,9 +337,21 @@ export function calculateQuote(items: QuoteItem[]): QuoteCalculation {
     );
   }
 
+  // Pass 2: apply cross-service "model-first" discounts
+  for (const breakdown of breakdowns) {
+    const target = items.find((i) => i.instanceId === breakdown.instanceId);
+    if (!target) continue;
+    const discount = resolveDiscount(target, items);
+    if (!discount) continue;
+    const product = getConfiguratorProduct(breakdown.productId)?.product;
+    if (!product) continue;
+    applyDiscount(breakdown, product, discount.pct, discount.reason);
+  }
+
   return {
     items: breakdowns,
     total: breakdowns.reduce((sum, b) => sum + b.totalEur, 0),
+    originalTotal: breakdowns.reduce((sum, b) => sum + b.originalTotalEur, 0),
   };
 }
 
@@ -210,4 +359,25 @@ export function calculateQuote(items: QuoteItem[]): QuoteCalculation {
 
 export function formatEur(amount: number): string {
   return `€${amount}`;
+}
+
+export type DiscountedPriceParts = {
+  primary: string;
+  struck: string | null;
+  badge: string | null;
+};
+
+export function formatDiscountedPrice(
+  total: number,
+  originalTotal: number,
+  pct: number,
+): DiscountedPriceParts {
+  if (pct <= 0 || total >= originalTotal) {
+    return { primary: formatEur(total), struck: null, badge: null };
+  }
+  return {
+    primary: formatEur(total),
+    struck: formatEur(originalTotal),
+    badge: `−${pct}%`,
+  };
 }

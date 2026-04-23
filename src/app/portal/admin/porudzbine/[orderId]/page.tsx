@@ -184,11 +184,26 @@ export default async function AdminOrderDetailPage({
             <div className="mt-3 space-y-2">
               {order.items.map((item) => (
                 <div key={item.id} className="flex justify-between text-xs">
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p className="font-medium text-foreground">{item.productLabel}</p>
                     <p className="text-muted-foreground">{item.categoryLabel}</p>
+                    {item.discountReason && (
+                      <p className="mt-0.5 text-[0.68rem] text-[color:var(--color-sage-deep)]">
+                        {item.discountReason}
+                      </p>
+                    )}
                   </div>
-                  <span className="font-semibold text-foreground">{formatEur(item.totalEur)}</span>
+                  <span className="ml-2 text-right font-semibold text-foreground">
+                    {item.originalTotalEur != null &&
+                      item.discountPct != null &&
+                      item.discountPct > 0 &&
+                      item.originalTotalEur > item.totalEur && (
+                        <span className="mr-1 text-[0.7rem] font-normal text-muted-foreground/60 line-through">
+                          {formatEur(item.originalTotalEur)}
+                        </span>
+                      )}
+                    {formatEur(item.totalEur)}
+                  </span>
                 </div>
               ))}
             </div>

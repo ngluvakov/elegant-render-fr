@@ -241,6 +241,45 @@ const externalCases: ExternalCase[] = [
       perItem: [{ instanceId: "e", discountPct: 50 }],
     },
   },
+  {
+    name: "Rule 4: active ref ext-static → ext-360 boosts 40 → 45",
+    items: [qi("t", "ext-360", "exterior")],
+    externalSources: [
+      {
+        ...qi("ref-e", "ext-static", "exterior"),
+        fromActiveExternalOrder: true,
+      },
+    ],
+    expect: {
+      perItem: [{ instanceId: "t", discountPct: 45 }],
+    },
+  },
+  {
+    name: "Rule 4 cap: active ref anim-scratch → ext-static 50 → 55 (capped)",
+    items: [qi("e", "ext-static", "exterior")],
+    externalSources: [
+      {
+        ...qi("ref-a", "anim-scratch", "animation", { durationSeconds: 30 }),
+        fromActiveExternalOrder: true,
+      },
+    ],
+    expect: {
+      perItem: [{ instanceId: "e", discountPct: 55 }],
+    },
+  },
+  {
+    name: "Rule 4 doesn't reduce: active ref int-static → fp3d stays 70",
+    items: [qi("f", "fp3d-single", "floorplans-3d")],
+    externalSources: [
+      {
+        ...qi("ref-i", "int-static", "interior"),
+        fromActiveExternalOrder: true,
+      },
+    ],
+    expect: {
+      perItem: [{ instanceId: "f", discountPct: 70 }],
+    },
+  },
 ];
 
 console.log("\n🧪 Pricing dependencies — engine verification\n");

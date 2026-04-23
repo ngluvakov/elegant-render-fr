@@ -156,15 +156,32 @@ export async function repriceOrder(orderId: string) {
   };
   const quoteItems: QuoteItem[] = items.map(toQuoteItem);
 
-  // Rule 3: pull assets from a referenced prior order so they feed the
-  // discount resolver without showing up in the current order's totals.
+  // Rule 3 + 4: pull assets from a referenced prior order so they feed
+  // the discount resolver without showing up in the current order's
+  // totals. If the referenced order is still active (paid through
+  // revision_requested), flag the items so the resolver can apply the
+  // +5pp active-project boost.
   let externalSources: QuoteItem[] = [];
   if (order?.referencedOrderId) {
+    const ref = await prisma.order.findUnique({
+      where: { id: order.referencedOrderId },
+      select: { status: true },
+    });
     const refItems = await prisma.orderItem.findMany({
       where: { orderId: order.referencedOrderId },
       orderBy: { id: "asc" },
     });
-    externalSources = refItems.map(toQuoteItem);
+    const ACTIVE_STATUSES = new Set([
+      "paid",
+      "in_progress",
+      "in_review",
+      "revision_requested",
+    ]);
+    const isActive = ref ? ACTIVE_STATUSES.has(ref.status) : false;
+    externalSources = refItems.map((i) => ({
+      ...toQuoteItem(i),
+      fromActiveExternalOrder: isActive,
+    }));
   }
 
   // Non-int-static items re-price through the full engine.

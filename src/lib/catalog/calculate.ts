@@ -27,6 +27,10 @@ export type QuoteItem = {
   categoryId: string;
   addOnQuantities: Record<string, number>;
   durationSeconds?: number;
+  // Rule 4 (active project tier): items from a referenced order whose
+  // status is still "in production" get a +5pp boost on the resolved
+  // discount (capped at 55 %). Only set on externalSources items.
+  fromActiveExternalOrder?: boolean;
 };
 
 export type AddOnBreakdown = {
@@ -224,7 +228,12 @@ function calculateItem(
 
 // ─── Cross-service discount resolver ─────────────────────
 
-type AssetSource = { instanceId: string; productId: string; basePrice: number };
+type AssetSource = {
+  instanceId: string;
+  productId: string;
+  basePrice: number;
+  fromActive: boolean;
+};
 
 // Builds asset → sorted list of creator items (ascending basePrice, then
 // insertion order). Cheapest creator is the canonical source of that asset.
@@ -241,6 +250,7 @@ function buildAssetInventory(
         instanceId: item.instanceId,
         productId: item.productId,
         basePrice: result.product.basePriceEur,
+        fromActive: item.fromActiveExternalOrder === true,
       });
       inv.set(asset, list);
     }
@@ -299,8 +309,17 @@ export function resolveDiscount(
     // Target is canonical creator → no one else supplied the asset. Only
     // qualify if there's at least one other creator of the same asset.
     if (canonical.instanceId === target.instanceId && sources.length === 1) continue;
-    if (!best || rule.discountPct > best.pct) {
-      best = { pct: rule.discountPct, reason: rule.reason };
+    // Rule 4: if any qualifying source is from an active external order,
+    // bump the discount by +5pp (capped at 55 %, never lowered).
+    const hasActive = sources.some((s) => s.fromActive);
+    const pct = hasActive
+      ? Math.max(rule.discountPct, Math.min(55, rule.discountPct + 5))
+      : rule.discountPct;
+    const reason = hasActive
+      ? `${rule.reason} (aktivan projekat — dodatni popust)`
+      : rule.reason;
+    if (!best || pct > best.pct) {
+      best = { pct, reason };
     }
   }
   return best;

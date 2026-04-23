@@ -6,15 +6,18 @@
  */
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, ShoppingCart, Trash2, X } from "lucide-react";
+import { ArrowRight, Info, ShoppingCart, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { Collapsible } from "@/components/ui/collapsible";
 import { formatDiscountedPrice, formatEur } from "@/lib/catalog/calculate";
 import { useQuote } from "./quote-context";
 
 export function QuoteSummary() {
   const { items, calculation, clearAll, removeProduct } = useQuote();
+  const [explainerOpen, setExplainerOpen] = useState(false);
   const hasItems = calculation.items.length > 0;
   const router = useRouter();
 
@@ -119,11 +122,59 @@ export function QuoteSummary() {
       {hasItems && (
         <div className="border-t border-background/10 bg-background/5 px-5 py-4">
           {calculation.originalTotal > calculation.total && (
-            <div className="mb-2 flex items-center justify-between text-xs">
-              <p className="text-background/50">Ušteda</p>
-              <p className="font-semibold text-[color:var(--color-sage)]">
-                −{formatEur(calculation.originalTotal - calculation.total)}
-              </p>
+            <div className="mb-2">
+              <div className="flex items-center justify-between text-xs">
+                <button
+                  type="button"
+                  onClick={() => setExplainerOpen((v) => !v)}
+                  className="inline-flex items-center gap-1 text-background/50 transition-colors hover:text-background/80"
+                  aria-expanded={explainerOpen}
+                >
+                  Ušteda
+                  <Info
+                    className={cn(
+                      "h-3 w-3 transition-colors",
+                      explainerOpen && "text-[color:var(--color-sage)]",
+                    )}
+                  />
+                </button>
+                <p className="font-semibold text-[color:var(--color-sage)]">
+                  −{formatEur(calculation.originalTotal - calculation.total)}
+                </p>
+              </div>
+              <Collapsible open={explainerOpen}>
+                <div className="mt-2 rounded-lg bg-background/5 p-3 text-[0.72rem] leading-relaxed text-background/60">
+                  <p>
+                    Kada naručite više usluga zajedno, 3D model koji se
+                    pravi za jednu uslugu se može ponovo iskoristiti za
+                    druge — pa te dodatne usluge dobijaju automatski
+                    popust.
+                  </p>
+                  <ul className="mt-2 space-y-1">
+                    <li>
+                      • Eksterijer + 360° eksterijer → 360° je{" "}
+                      <strong className="text-[color:var(--color-sage)]">
+                        −40%
+                      </strong>{" "}
+                      (model postoji)
+                    </li>
+                    <li>
+                      • Enterijer + 3D osnova sprata → osnova je{" "}
+                      <strong className="text-[color:var(--color-sage)]">
+                        −70%
+                      </strong>{" "}
+                      (geometrija postoji)
+                    </li>
+                    <li>
+                      • Animacija + eksterijer → oba dobijaju popust jer
+                      svaki deli model sa drugim
+                    </li>
+                  </ul>
+                  <p className="mt-2 text-background/40">
+                    Popusti se ne slažu — uvek važi najpovoljniji.
+                  </p>
+                </div>
+              </Collapsible>
             </div>
           )}
           <div className="mb-4 flex items-center justify-between">

@@ -128,7 +128,11 @@ export async function deleteOrderFile(
 // discount resolver across all siblings so adding/removing one item can update
 // sibling discounts. int-static items keep their calcInteriorTotal-based base
 // total and apply the resolved discount as a flat scalar on top.
-async function repriceOrder(orderId: string) {
+export async function repriceOrder(orderId: string) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { referencedOrderId: true },
+  });
   const items = await prisma.orderItem.findMany({
     where: { orderId },
     orderBy: { id: "asc" },
@@ -136,7 +140,7 @@ async function repriceOrder(orderId: string) {
 
   // Reconstruct QuoteItem[] from persisted items so the resolver sees every
   // sibling's productId and add-on quantities.
-  const quoteItems: QuoteItem[] = items.map((i) => {
+  const toQuoteItem = (i: (typeof items)[number]): QuoteItem => {
     const addOns = (Array.isArray(i.addOnsJson)
       ? (i.addOnsJson as unknown as AddOnBreakdown[])
       : []) as AddOnBreakdown[];
@@ -149,11 +153,23 @@ async function repriceOrder(orderId: string) {
       addOnQuantities,
       ...(i.durationSeconds != null ? { durationSeconds: i.durationSeconds } : {}),
     };
-  });
+  };
+  const quoteItems: QuoteItem[] = items.map(toQuoteItem);
+
+  // Rule 3: pull assets from a referenced prior order so they feed the
+  // discount resolver without showing up in the current order's totals.
+  let externalSources: QuoteItem[] = [];
+  if (order?.referencedOrderId) {
+    const refItems = await prisma.orderItem.findMany({
+      where: { orderId: order.referencedOrderId },
+      orderBy: { id: "asc" },
+    });
+    externalSources = refItems.map(toQuoteItem);
+  }
 
   // Non-int-static items re-price through the full engine.
   const standardItems = quoteItems.filter((qi) => qi.productId !== "int-static");
-  const calc = calculateQuote(standardItems);
+  const calc = calculateQuote(standardItems, externalSources);
   const breakdownById = new Map(calc.items.map((b) => [b.instanceId, b]));
 
   let orderTotal = 0;
@@ -167,7 +183,9 @@ async function repriceOrder(orderId: string) {
         : []) as InteriorFloor[];
       const preDiscount = calcInteriorTotal(floors).totalEur;
       const target = quoteItems.find((q) => q.instanceId === i.id);
-      const discount = target ? resolveDiscount(target, quoteItems) : null;
+      const discount = target
+        ? resolveDiscount(target, [...quoteItems, ...externalSources])
+        : null;
       const totalEur = discount
         ? Math.round(preDiscount * (1 - discount.pct / 100))
         : preDiscount;

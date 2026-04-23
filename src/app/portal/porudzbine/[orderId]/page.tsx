@@ -13,6 +13,7 @@ import { ReworkRequestCard } from "@/components/portal/rework-request-card";
 import { PendingPaymentCard } from "@/components/portal/pending-payment-card";
 import { ItemConfigPanel } from "@/components/portal/item-config-panel";
 import { AddServiceDialog } from "@/components/portal/add-service-dialog";
+import { ReferenceOrderPicker } from "@/components/portal/reference-order-picker";
 import { AlertCircle } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -57,6 +58,25 @@ export default async function OrderDetailPage({
   });
 
   if (!order || order.userId !== session.user.id) return notFound();
+
+  // Rule 3 picker — list user's paid-or-later orders as referencable.
+  const referencableOrders = await prisma.order.findMany({
+    where: {
+      userId: session.user.id,
+      id: { not: orderId },
+      status: {
+        in: ["paid", "in_progress", "in_review", "revision_requested", "delivered", "closed"],
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+    select: {
+      id: true,
+      orderNumber: true,
+      projectName: true,
+      status: true,
+    },
+  });
 
   const firstItem = order.items[0];
   const sourceFiles = order.files.filter((f) => f.kind === "source" || f.kind === "revision");
@@ -111,6 +131,16 @@ export default async function OrderDetailPage({
               <p className="mb-4 text-xs text-muted-foreground">
                 Za svaku stavku dodajte opis, osnove i reference stila. Za detaljnije opcije koristite „Napredno podešavanje".
               </p>
+
+              {isDraft && (
+                <div className="mb-4">
+                  <ReferenceOrderPicker
+                    orderId={order.id}
+                    initialReferenceId={order.referencedOrderId}
+                    availableOrders={referencableOrders}
+                  />
+                </div>
+              )}
 
               {unconfiguredCount > 0 && (
                 <div className="mb-4 flex items-start gap-3 rounded-2xl border-l-4 border-l-[color:var(--color-ember-deep)] border border-[color:var(--color-ember)]/50 bg-gradient-to-br from-[color:var(--color-ember)]/[0.12] to-[color:var(--color-ember)]/[0.04] p-4 shadow-[0_8px_24px_-12px_rgba(163,127,45,0.3)] animate-in fade-in slide-in-from-top-1 duration-300">

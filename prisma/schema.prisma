@@ -109,14 +109,20 @@ model Order {
   bitrix24DealId  String?   @unique
   totalEur        Int
   customerNote    String?         @db.Text
+  // Rule 3: reference a prior paid order so its model assets feed
+  // discount resolution on this order. Nullable; enforced same-user via
+  // server action.
+  referencedOrderId String?
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
-  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items        OrderItem[]
-  files        OrderFile[]
-  statusEvents OrderStatusEvent[]
-  comments     OrderComment[]
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items             OrderItem[]
+  files             OrderFile[]
+  statusEvents      OrderStatusEvent[]
+  comments          OrderComment[]
+  referencedOrder   Order?             @relation("OrderReference", fields: [referencedOrderId], references: [id])
+  referencingOrders Order[]            @relation("OrderReference")
 
   @@map("orders")
 }

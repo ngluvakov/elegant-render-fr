@@ -212,6 +212,37 @@ const cases: Case[] = [
   },
 ];
 
+// ─── Phase C.1: external-source (referenced prior order) cases ──────────
+
+type ExternalCase = Case & { externalSources: QuoteItem[] };
+
+const externalCases: ExternalCase[] = [
+  {
+    name: "Ref order has ext-static → new ext-360 gets −40% without its own sibling",
+    items: [qi("t", "ext-360", "exterior")],
+    externalSources: [qi("ref-e", "ext-static", "exterior")],
+    expect: {
+      perItem: [{ instanceId: "t", discountPct: 40 }],
+    },
+  },
+  {
+    name: "Ref order has int-static → new fp3d-single gets −70%",
+    items: [qi("f", "fp3d-single", "floorplans-3d")],
+    externalSources: [qi("ref-i", "int-static", "interior")],
+    expect: {
+      perItem: [{ instanceId: "f", total: 9, discountPct: 70 }],
+    },
+  },
+  {
+    name: "Ref order has anim-scratch → new ext-static gets −50% (complete-model)",
+    items: [qi("e", "ext-static", "exterior")],
+    externalSources: [qi("ref-a", "anim-scratch", "animation", { durationSeconds: 30 })],
+    expect: {
+      perItem: [{ instanceId: "e", discountPct: 50 }],
+    },
+  },
+];
+
 console.log("\n🧪 Pricing dependencies — engine verification\n");
 
 for (const c of cases) {
@@ -220,6 +251,25 @@ for (const c of cases) {
   if (c.expect?.total !== undefined) check("total", calc.total, c.expect.total);
   if (c.expect?.savings !== undefined)
     check("savings", calc.originalTotal - calc.total, c.expect.savings);
+  for (const exp of c.expect?.perItem ?? []) {
+    const b = calc.items.find((i) => i.instanceId === exp.instanceId);
+    if (!b) {
+      failures++;
+      console.log(`  ✗ no breakdown for ${exp.instanceId}`);
+      continue;
+    }
+    if (exp.total !== undefined)
+      check(`${exp.instanceId} total`, b.totalEur, exp.total);
+    if (exp.discountPct !== undefined)
+      check(`${exp.instanceId} discountPct`, b.discountPct, exp.discountPct);
+  }
+  console.log("");
+}
+
+console.log("🔗 External source cases (referenced prior order):\n");
+for (const c of externalCases) {
+  console.log(`• ${c.name}`);
+  const calc = calculateQuote(c.items, c.externalSources);
   for (const exp of c.expect?.perItem ?? []) {
     const b = calc.items.find((i) => i.instanceId === exp.instanceId);
     if (!b) {

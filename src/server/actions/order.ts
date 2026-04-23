@@ -13,6 +13,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { calculateQuote, type QuoteItem } from "@/lib/catalog/calculate";
 import { generateOrderNumber } from "@/lib/order/generate-number";
+import { repriceOrder } from "@/server/actions/item-config";
 import { syncNewDeal } from "@/server/bitrix/sync-deal";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
 
@@ -120,6 +121,52 @@ export async function deleteDraftOrder(
   await prisma.order.delete({ where: { id: orderId } });
   revalidatePath("/portal/porudzbine");
   revalidatePath("/portal");
+  return { success: true };
+}
+
+/**
+ * setOrderReference — link a draft order to a prior paid order so its
+ * model assets feed the cross-service discount resolver.
+ * Pass referencedOrderId = null to clear the link.
+ */
+export async function setOrderReference(
+  orderId: string,
+  referencedOrderId: string | null,
+): Promise<{ error?: string; success?: boolean }> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { userId: true, status: true },
+  });
+  if (!order) return { error: "Porudžbina ne postoji." };
+  if (order.userId !== session.user.id) return { error: "Nemate pristup." };
+  if (order.status !== "draft")
+    return { error: "Referenca se postavlja samo u nacrtu." };
+
+  if (referencedOrderId) {
+    if (referencedOrderId === orderId)
+      return { error: "Porudžbina ne može da referencira samu sebe." };
+    const ref = await prisma.order.findUnique({
+      where: { id: referencedOrderId },
+      select: { userId: true, status: true },
+    });
+    if (!ref) return { error: "Referencirana porudžbina ne postoji." };
+    if (ref.userId !== session.user.id)
+      return { error: "Nemate pristup referenciranoj porudžbini." };
+    if (ref.status === "draft" || ref.status === "awaiting_payment")
+      return { error: "Referenca mora da bude plaćena porudžbina." };
+  }
+
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { referencedOrderId },
+  });
+
+  // Discounts for the current order may change — re-run the engine.
+  await repriceOrder(orderId);
+  revalidatePath(`/portal/porudzbine/${orderId}`);
   return { success: true };
 }
 

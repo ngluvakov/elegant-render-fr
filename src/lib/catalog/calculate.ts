@@ -335,7 +335,21 @@ function applyDiscount(
 
 // ─── Full quote calculation ──────────────────────────────
 
-export function calculateQuote(items: QuoteItem[]): QuoteCalculation {
+/**
+ * calculateQuote — main entry point.
+ *
+ * `items` are the line items of the quote/order being priced and DO appear
+ * in the output breakdowns.
+ *
+ * `externalSources` are items from a referenced prior order whose model
+ * assets should feed discount resolution. They contribute to the asset
+ * inventory but do NOT appear in the breakdowns — their cost was already
+ * billed elsewhere.
+ */
+export function calculateQuote(
+  items: QuoteItem[],
+  externalSources: QuoteItem[] = [],
+): QuoteCalculation {
   const breakdowns: LineItemBreakdown[] = [];
 
   // Pass 1: per-item breakdown with no cross-service awareness
@@ -347,11 +361,13 @@ export function calculateQuote(items: QuoteItem[]): QuoteCalculation {
     );
   }
 
-  // Pass 2: apply cross-service "model-first" discounts
+  // Pass 2: apply cross-service "model-first" discounts. Asset inventory
+  // includes both the current items and any external references.
+  const siblings = [...items, ...externalSources];
   for (const breakdown of breakdowns) {
     const target = items.find((i) => i.instanceId === breakdown.instanceId);
     if (!target) continue;
-    const discount = resolveDiscount(target, items);
+    const discount = resolveDiscount(target, siblings);
     if (!discount) continue;
     const product = getConfiguratorProduct(breakdown.productId)?.product;
     if (!product) continue;

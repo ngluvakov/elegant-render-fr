@@ -36,7 +36,15 @@ export default async function PorudzbinePage({
     where,
     orderBy: { createdAt: "desc" },
     include: {
-      items: { select: { productLabel: true, categoryLabel: true }, take: 1 },
+      items: {
+        select: {
+          productLabel: true,
+          categoryLabel: true,
+          totalEur: true,
+          originalTotalEur: true,
+        },
+        orderBy: { id: "asc" },
+      },
     },
   });
 
@@ -86,6 +94,11 @@ export default async function PorudzbinePage({
                   order.projectName ??
                   firstItem?.productLabel ??
                   "Porudžbina";
+                const savingsEur = order.items.reduce(
+                  (s, i) =>
+                    s + Math.max(0, (i.originalTotalEur ?? i.totalEur) - i.totalEur),
+                  0,
+                );
                 return (
                   <div
                     key={order.id}
@@ -118,9 +131,16 @@ export default async function PorudzbinePage({
                         {statusLabel(order.status)}
                       </Badge>
                     </div>
-                    <p className="relative w-20 text-right text-sm font-semibold text-foreground">
-                      {formatEur(order.totalEur)}
-                    </p>
+                    <div className="relative w-20 text-right">
+                      <p className="text-sm font-semibold text-foreground">
+                        {formatEur(order.totalEur)}
+                      </p>
+                      {savingsEur > 0 && (
+                        <p className="mt-0.5 text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
+                          −{formatEur(savingsEur)} ušteda
+                        </p>
+                      )}
+                    </div>
                     <div className="relative flex w-[120px] justify-end">
                       {canDelete && (
                         <DeleteOrderButton
@@ -145,6 +165,11 @@ export default async function PorudzbinePage({
                 order.projectName ??
                 firstItem?.productLabel ??
                 "Porudžbina";
+              const savingsEur = order.items.reduce(
+                (s, i) =>
+                  s + Math.max(0, (i.originalTotalEur ?? i.totalEur) - i.totalEur),
+                0,
+              );
               return (
                 <div
                   key={order.id}
@@ -182,9 +207,16 @@ export default async function PorudzbinePage({
                           orderNumber={order.orderNumber}
                         />
                       )}
-                      <p className="text-sm font-semibold text-foreground">
-                        {formatEur(order.totalEur)}
-                      </p>
+                      <div className="text-right">
+                        <p className="text-sm font-semibold text-foreground">
+                          {formatEur(order.totalEur)}
+                        </p>
+                        {savingsEur > 0 && (
+                          <p className="text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
+                            −{formatEur(savingsEur)}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

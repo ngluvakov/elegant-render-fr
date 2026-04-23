@@ -25,7 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatDiscountedPrice } from "@/lib/catalog/calculate";
 import {
   confirmItemFileUpload,
   deleteOrderItem,
@@ -49,6 +49,9 @@ type ItemData = {
   productLabel: string;
   categoryLabel: string;
   totalEur: number;
+  originalTotalEur: number | null;
+  discountPct: number | null;
+  discountReason: string | null;
   clientNote: string | null;
   configJson: Record<string, unknown> | null;
   files: ItemFile[];
@@ -201,8 +204,32 @@ export function ItemConfigPanel({
               )}
             </div>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {item.categoryLabel} · {formatEur(item.totalEur)}
+              {item.categoryLabel} ·{" "}
+              {(() => {
+                const { primary, struck } = formatDiscountedPrice(
+                  item.totalEur,
+                  item.originalTotalEur ?? item.totalEur,
+                  item.discountPct ?? 0,
+                );
+                return struck ? (
+                  <>
+                    <span className="text-muted-foreground/60 line-through">
+                      {struck}
+                    </span>{" "}
+                    <span className="font-semibold text-foreground">
+                      {primary}
+                    </span>
+                  </>
+                ) : (
+                  <>{primary}</>
+                );
+              })()}
             </p>
+            {item.discountReason && (
+              <p className="mt-0.5 text-[0.68rem] text-[color:var(--color-sage-deep)]">
+                {item.discountReason}
+              </p>
+            )}
           </div>
           <ChevronDown
             className={cn(

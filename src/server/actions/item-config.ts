@@ -17,7 +17,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
   calculateQuote,
+  resolveDiscount,
   type QuoteItem,
+  type AddOnBreakdown,
 } from "@/lib/catalog/calculate";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import {
@@ -122,16 +124,126 @@ export async function deleteOrderFile(
   return { success: true };
 }
 
-// Recalculate order total from its items (in-memory sum of item totals).
-async function recalcOrderTotal(orderId: string) {
+// Re-price every item in an order. Applies the cross-service "model-first"
+// discount resolver across all siblings so adding/removing one item can update
+// sibling discounts. int-static items keep their calcInteriorTotal-based base
+// total and apply the resolved discount as a flat scalar on top.
+export async function repriceOrder(orderId: string) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { referencedOrderId: true },
+  });
   const items = await prisma.orderItem.findMany({
     where: { orderId },
-    select: { totalEur: true },
+    orderBy: { id: "asc" },
   });
-  const totalEur = items.reduce((sum, i) => sum + i.totalEur, 0);
+
+  // Reconstruct QuoteItem[] from persisted items so the resolver sees every
+  // sibling's productId and add-on quantities.
+  const toQuoteItem = (i: (typeof items)[number]): QuoteItem => {
+    const addOns = (Array.isArray(i.addOnsJson)
+      ? (i.addOnsJson as unknown as AddOnBreakdown[])
+      : []) as AddOnBreakdown[];
+    const addOnQuantities: Record<string, number> = {};
+    for (const ao of addOns) addOnQuantities[ao.addOnId] = ao.quantity;
+    return {
+      instanceId: i.id,
+      productId: i.productId,
+      categoryId: i.categoryId,
+      addOnQuantities,
+      ...(i.durationSeconds != null ? { durationSeconds: i.durationSeconds } : {}),
+    };
+  };
+  const quoteItems: QuoteItem[] = items.map(toQuoteItem);
+
+  // Rule 3 + 4: pull assets from a referenced prior order so they feed
+  // the discount resolver without showing up in the current order's
+  // totals. If the referenced order is still active (paid through
+  // revision_requested), flag the items so the resolver can apply the
+  // +5pp active-project boost.
+  let externalSources: QuoteItem[] = [];
+  if (order?.referencedOrderId) {
+    const ref = await prisma.order.findUnique({
+      where: { id: order.referencedOrderId },
+      select: { status: true },
+    });
+    const refItems = await prisma.orderItem.findMany({
+      where: { orderId: order.referencedOrderId },
+      orderBy: { id: "asc" },
+    });
+    const ACTIVE_STATUSES = new Set([
+      "paid",
+      "in_progress",
+      "in_review",
+      "revision_requested",
+    ]);
+    const isActive = ref ? ACTIVE_STATUSES.has(ref.status) : false;
+    externalSources = refItems.map((i) => ({
+      ...toQuoteItem(i),
+      fromActiveExternalOrder: isActive,
+    }));
+  }
+
+  // Non-int-static items re-price through the full engine.
+  const standardItems = quoteItems.filter((qi) => qi.productId !== "int-static");
+  const calc = calculateQuote(standardItems, externalSources);
+  const breakdownById = new Map(calc.items.map((b) => [b.instanceId, b]));
+
+  let orderTotal = 0;
+
+  for (const i of items) {
+    if (i.productId === "int-static") {
+      // int-static pricing derives from configJson.floors; apply discount on top.
+      const floors = (i.configJson && typeof i.configJson === "object" &&
+        "floors" in (i.configJson as Record<string, unknown>)
+        ? (i.configJson as { floors: InteriorFloor[] }).floors
+        : []) as InteriorFloor[];
+      const preDiscount = calcInteriorTotal(floors).totalEur;
+      const target = quoteItems.find((q) => q.instanceId === i.id);
+      const discount = target
+        ? resolveDiscount(target, [...quoteItems, ...externalSources])
+        : null;
+      const totalEur = discount
+        ? Math.round(preDiscount * (1 - discount.pct / 100))
+        : preDiscount;
+      await prisma.orderItem.update({
+        where: { id: i.id },
+        data: {
+          totalEur,
+          originalTotalEur: preDiscount,
+          discountPct: discount?.pct ?? 0,
+          discountReason: discount?.reason ?? null,
+        },
+      });
+      orderTotal += totalEur;
+      continue;
+    }
+
+    const bd = breakdownById.get(i.id);
+    if (!bd) {
+      // Unknown product id (shouldn't happen) — leave the row as-is.
+      orderTotal += i.totalEur;
+      continue;
+    }
+    await prisma.orderItem.update({
+      where: { id: i.id },
+      data: {
+        basePriceEur: bd.basePriceEur,
+        totalEur: bd.totalEur,
+        addOnsJson: bd.addOns,
+        durationSeconds: bd.durationSeconds ?? null,
+        durationDiscount: bd.durationDiscount ?? null,
+        originalTotalEur: bd.originalTotalEur,
+        discountPct: bd.discountPct,
+        discountReason: bd.discountReason,
+      },
+    });
+    orderTotal += bd.totalEur;
+  }
+
   await prisma.order.update({
     where: { id: orderId },
-    data: { totalEur },
+    data: { totalEur: orderTotal },
   });
 }
 
@@ -154,7 +266,7 @@ export async function deleteOrderItem(
   const orderId = item.order.id;
 
   await prisma.orderItem.delete({ where: { id: itemId } });
-  await recalcOrderTotal(orderId);
+  await repriceOrder(orderId);
 
   revalidatePath(`/portal/porudzbine/${orderId}`);
   return { success: true };
@@ -225,7 +337,7 @@ export async function addOrderItem(
     },
   });
 
-  await recalcOrderTotal(orderId);
+  await repriceOrder(orderId);
   revalidatePath(`/portal/porudzbine/${orderId}`);
   return { success: true };
 }
@@ -293,7 +405,7 @@ export async function updateInteriorFloors(
     },
   });
 
-  await recalcOrderTotal(item.order.id);
+  await repriceOrder(item.order.id);
   revalidatePath(`/portal/porudzbine/${item.order.id}`);
   return { success: true };
 }

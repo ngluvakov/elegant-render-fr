@@ -27,6 +27,7 @@ export type CheckoutState = {
   calculation: QuoteCalculation;
   orderId: string | null;
   userId: string | null;
+  initiallySignedIn: boolean;
   customerName: string;
   customerEmail: string;
   customerNote: string;
@@ -63,6 +64,7 @@ export function CheckoutProvider({
   const [step, setStep] = useState(initialUserId ? 1 : 0);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(initialUserId);
+  const initiallySignedIn = Boolean(initialUserId);
   const [customerName, setCustomerName] = useState(initialName);
   const [customerEmail, setCustomerEmail] = useState(initialEmail);
   const [customerNote, setCustomerNote] = useState("");
@@ -94,6 +96,7 @@ export function CheckoutProvider({
       calculation,
       orderId,
       userId,
+      initiallySignedIn,
       customerName,
       customerEmail,
       customerNote,
@@ -109,7 +112,7 @@ export function CheckoutProvider({
       setPaymentComplete: () => setPaymentCompleteState(true),
     }),
     [
-      step, initialItems, calculation, orderId, userId,
+      step, initialItems, calculation, orderId, userId, initiallySignedIn,
       customerName, customerEmail, customerNote,
       uploadedFiles, paymentComplete,
       setCustomer, addFile, removeFile,

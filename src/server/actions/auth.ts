@@ -14,7 +14,11 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { signIn } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { sendVerificationEmail, sendPasswordResetEmail } from "@/lib/email";
+import {
+  sendVerificationEmail,
+  sendPasswordResetEmail,
+  sendPortalAccessEmail,
+} from "@/lib/email";
 
 export type AuthState = {
   error?: string;
@@ -198,6 +202,74 @@ export async function resetPasswordAction(
   });
 
   redirect("/prijava");
+}
+
+// ─── Portal Access (post-checkout magic link) ──────────
+
+export async function requestPortalAccessAction(
+  orderId: string,
+): Promise<AuthState> {
+  if (!orderId) {
+    return { error: "Porudžbina nije pronađena." };
+  }
+
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { user: true },
+  });
+
+  if (!order || !order.user.email) {
+    return { error: "Porudžbina nije pronađena." };
+  }
+
+  const token = generateToken();
+  await prisma.verificationToken.create({
+    data: {
+      identifier: order.user.email,
+      token,
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  try {
+    await sendPortalAccessEmail(
+      order.user.email,
+      token,
+      order.orderNumber,
+      order.id,
+    );
+  } catch (e) {
+    console.error("[requestPortalAccessAction] send failed", e);
+    const detail = e instanceof Error ? e.message : "unknown error";
+    return { error: `Greška pri slanju emaila: ${detail}` };
+  }
+
+  return {
+    success: true,
+    message: "Poslali smo vam link za pristup portalu na email.",
+  };
+}
+
+export async function magicLinkSignInAction(
+  formData: FormData,
+): Promise<void> {
+  const token = formData.get("token") as string;
+  const next = (formData.get("next") as string) || "/portal";
+
+  if (!token) {
+    redirect("/prijava?error=link_invalid");
+  }
+
+  try {
+    await signIn("magic-link", {
+      token,
+      redirect: false,
+    });
+  } catch {
+    redirect("/prijava?error=link_expired");
+  }
+
+  redirect(next);
 }
 
 // ─── Verify Email ────────────────────────────────────────

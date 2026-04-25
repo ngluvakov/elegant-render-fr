@@ -1,25 +1,41 @@
 /**
- * email.ts — Nodemailer transactional email sender for the platform.
+ * email.ts — Resend transactional email sender for the platform.
  *
- * Exports sendVerificationEmail, sendPasswordResetEmail, and
- * sendOrderConfirmationEmail — all branded HTML templates in Serbian.
+ * Exports sendVerificationEmail, sendPasswordResetEmail,
+ * sendOrderConfirmationEmail, and sendPortalAccessEmail — all branded
+ * HTML templates in Serbian.
  *
  * Used by: server/actions/auth, server/actions/checkout,
  *          server/actions/payment
  */
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT) || 587,
-  secure: false, // STARTTLS on port 587
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+import { Resend } from "resend";
 
 const FROM = process.env.EMAIL_FROM ?? "Elegant Render <noreply@elegantrender.rs>";
+
+// Lazy-init so the module can be imported (and pages can render) even when
+// RESEND_API_KEY isn't set — only an actual send call surfaces the error.
+let _resend: Resend | null = null;
+function getResend(): Resend {
+  if (_resend) return _resend;
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not set");
+  }
+  _resend = new Resend(apiKey);
+  return _resend;
+}
+
+async function send(args: { to: string; subject: string; html: string }) {
+  const { error } = await getResend().emails.send({
+    from: FROM,
+    to: args.to,
+    subject: args.subject,
+    html: args.html,
+  });
+  if (error) {
+    throw new Error(`Resend: ${error.name ?? "send_failed"} — ${error.message}`);
+  }
+}
 
 // ─── Email templates ─────────────────────────────────────
 
@@ -29,8 +45,7 @@ export async function sendVerificationEmail(
 ) {
   const url = `${process.env.AUTH_URL}/verifikacija?token=${token}`;
 
-  await transporter.sendMail({
-    from: FROM,
+  await send({
     to,
     subject: "Potvrdite vašu email adresu — Elegant Render",
     html: `
@@ -58,8 +73,7 @@ export async function sendPasswordResetEmail(
 ) {
   const url = `${process.env.AUTH_URL}/nova-lozinka?token=${token}`;
 
-  await transporter.sendMail({
-    from: FROM,
+  await send({
     to,
     subject: "Resetovanje lozinke — Elegant Render",
     html: `
@@ -83,6 +97,41 @@ export async function sendPasswordResetEmail(
   });
 }
 
+export async function sendPortalAccessEmail(
+  to: string,
+  token: string,
+  orderNumber: string,
+  orderId: string,
+) {
+  const url = `${process.env.AUTH_URL}/portal-pristup?token=${token}&next=${encodeURIComponent(
+    `/portal/porudzbine/${orderId}`,
+  )}`;
+
+  await send({
+    to,
+    subject: `Pristup vašoj porudžbini ${orderNumber} — Elegant Render`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Hvala vam na poverenju</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Vaša porudžbina <strong>${orderNumber}</strong> je primljena.
+          Kliknite na dugme ispod da pristupite portalu i pratite napredak —
+          nije potrebna lozinka.
+        </p>
+        <a href="${url}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Pristupi porudžbini
+        </a>
+        <p style="color: #9ca3af; font-size: 13px;">
+          Link važi 7 dana. Možete ga koristiti samo jednom — nakon toga
+          ćete biti prijavljeni i možete postaviti lozinku u portalu.
+        </p>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendOrderConfirmationEmail(
   to: string,
   orderNumber: string,
@@ -90,8 +139,7 @@ export async function sendOrderConfirmationEmail(
 ) {
   const portalUrl = `${process.env.AUTH_URL}/portal`;
 
-  await transporter.sendMail({
-    from: FROM,
+  await send({
     to,
     subject: `Potvrda porudžbine ${orderNumber} — Elegant Render`,
     html: `

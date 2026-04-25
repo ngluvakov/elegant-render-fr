@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { Check, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type QuoteItem } from "@/lib/catalog/calculate";
 import { ButtonLink } from "@/components/ui/button-link";
+import { requestPortalAccessAction } from "@/server/actions/auth";
 import { CheckoutProvider, useCheckout } from "./checkout-context";
 import { StepDetails } from "./steps/step-details";
 import { StepUpload } from "./steps/step-upload";
@@ -20,28 +21,16 @@ const STEPS = [
 ];
 
 function WizardInner() {
-  const { step, paymentComplete, orderId } = useCheckout();
+  const { step, paymentComplete, orderId, initiallySignedIn, customerEmail } =
+    useCheckout();
 
   if (paymentComplete) {
     return (
-      <div className="mx-auto max-w-lg py-12 text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--color-sage)]/15">
-          <Check className="h-8 w-8 text-[color:var(--color-sage-deep)]" />
-        </div>
-        <h2 className="text-3xl text-foreground">Porudžbina primljena!</h2>
-        <p className="mt-4 text-muted-foreground">
-          Hvala vam na poverenju. Poslali smo potvrdu na vašu email adresu.
-          Možete pratiti status porudžbine u portalu.
-        </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <ButtonLink href="/portal" variant="accent" size="lg">
-            Otvorite portal
-          </ButtonLink>
-          <ButtonLink href="/cene" variant="outline" size="lg">
-            Nova porudžbina
-          </ButtonLink>
-        </div>
-      </div>
+      <SuccessScreen
+        orderId={orderId}
+        initiallySignedIn={initiallySignedIn}
+        customerEmail={customerEmail}
+      />
     );
   }
 
@@ -83,6 +72,126 @@ function WizardInner() {
       {step === 1 && <StepUpload />}
       {step === 2 && <StepReview />}
       {step === 3 && <StepPayment />}
+    </div>
+  );
+}
+
+function SuccessScreen({
+  orderId,
+  initiallySignedIn,
+  customerEmail,
+}: {
+  orderId: string | null;
+  initiallySignedIn: boolean;
+  customerEmail: string;
+}) {
+  const [linkState, setLinkState] = useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    if (initiallySignedIn || !orderId || linkState !== "idle") return;
+    setLinkState("sending");
+    requestPortalAccessAction(orderId).then((result) => {
+      if (result.error) {
+        setLinkState("error");
+        setErrorMsg(result.error);
+      } else {
+        setLinkState("sent");
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const resend = async () => {
+    if (!orderId) return;
+    setLinkState("sending");
+    setErrorMsg("");
+    const result = await requestPortalAccessAction(orderId);
+    if (result.error) {
+      setLinkState("error");
+      setErrorMsg(result.error);
+    } else {
+      setLinkState("sent");
+    }
+  };
+
+  const orderHref = orderId ? `/portal/porudzbine/${orderId}` : "/portal";
+
+  return (
+    <div className="mx-auto max-w-lg py-12 text-center">
+      <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--color-sage)]/15">
+        <Check className="h-8 w-8 text-[color:var(--color-sage-deep)]" />
+      </div>
+      <h2 className="text-3xl text-foreground">Porudžbina primljena!</h2>
+      <p className="mt-4 text-muted-foreground">
+        Hvala vam na poverenju. Poslali smo potvrdu na{" "}
+        <strong className="text-foreground">{customerEmail}</strong>.
+      </p>
+
+      {!initiallySignedIn && (
+        <div className="mt-6 rounded-2xl border border-border/60 bg-card/60 p-5 text-left">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10">
+              <Mail className="h-4 w-4 text-accent" />
+            </div>
+            <div className="flex-1">
+              {linkState === "sending" && (
+                <p className="text-sm text-muted-foreground">
+                  Šaljemo vam link za pristup portalu…
+                </p>
+              )}
+              {linkState === "sent" && (
+                <>
+                  <p className="text-sm font-semibold text-foreground">
+                    Pristupite portalu jednim klikom
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Poslali smo vam link na{" "}
+                    <strong className="text-foreground">{customerEmail}</strong>.
+                    Klik na link iz email-a vas automatski prijavljuje — bez
+                    lozinke.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={resend}
+                    className="mt-3 text-xs text-accent underline-offset-4 hover:underline"
+                  >
+                    Pošaljite ponovo
+                  </button>
+                </>
+              )}
+              {linkState === "error" && (
+                <>
+                  <p className="text-sm font-semibold text-destructive">
+                    Email nije poslat
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {errorMsg || "Pokušajte ponovo za nekoliko sekundi."}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={resend}
+                    className="mt-3 text-xs text-accent underline-offset-4 hover:underline"
+                  >
+                    Pokušajte ponovo
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <ButtonLink href={orderHref} variant="accent" size="lg">
+          {initiallySignedIn ? "Otvorite porudžbinu" : "Otvorite portal"}
+        </ButtonLink>
+        <ButtonLink href="/cene" variant="outline" size="lg">
+          Nova porudžbina
+        </ButtonLink>
+      </div>
     </div>
   );
 }

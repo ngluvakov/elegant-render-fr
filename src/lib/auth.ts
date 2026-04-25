@@ -25,6 +25,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Google,
     Credentials({
+      id: "credentials",
       name: "Email",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -41,6 +42,53 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const valid = await bcrypt.compare(password, user.passwordHash);
         if (!valid) return null;
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        };
+      },
+    }),
+    Credentials({
+      id: "magic-link",
+      name: "MagicLink",
+      credentials: {
+        token: { label: "Token", type: "text" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.token) return null;
+        const token = credentials.token as string;
+
+        const vt = await prisma.verificationToken.findUnique({
+          where: { token },
+        });
+        if (!vt || vt.expires < new Date()) return null;
+
+        const user = await prisma.user.findUnique({
+          where: { email: vt.identifier },
+        });
+        if (!user) return null;
+
+        // Single-use: consume the token now.
+        await prisma.verificationToken.delete({
+          where: {
+            identifier_token: {
+              identifier: vt.identifier,
+              token: vt.token,
+            },
+          },
+        });
+
+        // Mark email as verified — clicking the link from the inbox proves
+        // ownership of the email address.
+        if (!user.emailVerified) {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { emailVerified: new Date() },
+          });
+        }
 
         return {
           id: user.id,

@@ -56,15 +56,14 @@ import {
   ROOM_STYLES,
   SEASONS,
   TIMES_OF_DAY,
-  TOUR360_ADDITIONAL_HOTSPOT_EUR,
   TOUR360_ASSEMBLY_BASE_EUR,
   TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD,
   TOUR360_EXTRA_CAMERA_EUR,
   TOUR360_EXTRA_FLOOR_EUR,
-  TOUR360_EXTRA_HOTSPOT_ROOM_EUR,
+  TOUR360_EXTRA_HOTSPOT_EUR,
   TOUR360_FLOOR_PLAN_NAV_EUR,
   TOUR360_INCLUDED_CAMERAS,
-  TOUR360_INCLUDED_HOTSPOT_ROOMS,
+  TOUR360_INCLUDED_HOTSPOTS,
   TOUR360_WHITE_LABEL_EUR,
   type RoomStyleId,
   type SeasonId,
@@ -375,10 +374,10 @@ function Tour360FloorPanel({
             <div className="flex items-start gap-2 rounded-md bg-secondary/30 px-2.5 py-1.5 text-[0.72rem] text-muted-foreground">
               <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-accent/70" />
               <p>
-                11. soba sa hotspotom = €{TOUR360_EXTRA_HOTSPOT_ROOM_EUR}.
-                Dodatni hotspotovi u istoj sobi (2., 3., …) ={" "}
-                €{TOUR360_ADDITIONAL_HOTSPOT_EUR} svaki. Preko 10 statičkih
-                kamera = €{TOUR360_EXTRA_CAMERA_EUR} po kameri.
+                Po spratu je uključeno {TOUR360_INCLUDED_HOTSPOTS} hotspotova
+                + {TOUR360_INCLUDED_CAMERAS} statičkih kamera. Preko toga:
+                €{TOUR360_EXTRA_HOTSPOT_EUR} po dodatnom hotspot-u i
+                €{TOUR360_EXTRA_CAMERA_EUR} po dodatnoj kameri.
               </p>
             </div>
 
@@ -391,10 +390,10 @@ function Tour360FloorPanel({
               />
               <CounterPill
                 icon={<Compass className="h-3 w-3" />}
-                label="Hotspot sobe"
-                value={calc.hotspotRooms}
-                slash={TOUR360_INCLUDED_HOTSPOT_ROOMS}
-                extra={calc.extraHotspotRooms}
+                label="Hotspotovi"
+                value={calc.totalHotspots}
+                slash={TOUR360_INCLUDED_HOTSPOTS}
+                extra={calc.extraHotspots}
               />
               <CounterPill
                 icon={<Camera className="h-3 w-3" />}
@@ -404,10 +403,19 @@ function Tour360FloorPanel({
                 extra={calc.extraCameras}
               />
               <CounterPill
-                icon={<Wand2 className="h-3 w-3" />}
-                label="Dodatni hotspot"
-                value={calc.additionalHotspots}
-                variant={calc.additionalHotspots > 0 ? "warn" : undefined}
+                label="Preostalo"
+                value={
+                  calc.remainingHotspots >= 0 && calc.remainingCameras >= 0
+                    ? Math.min(calc.remainingHotspots, calc.remainingCameras)
+                    : `+${Math.abs(Math.min(calc.remainingHotspots, calc.remainingCameras))}`
+                }
+                variant={
+                  calc.remainingHotspots >= 3 && calc.remainingCameras >= 3
+                    ? "good"
+                    : calc.remainingHotspots >= 0 && calc.remainingCameras >= 0
+                      ? "warn"
+                      : "bad"
+                }
               />
             </div>
 
@@ -481,24 +489,10 @@ function Tour360FloorPanel({
             ) : (
               <div className="space-y-2">
                 {floor.rooms.map((room, rIdx) => {
-                  const hotspotRoomPos = floor.rooms
-                    .slice(0, rIdx + 1)
-                    .filter((r) => (r.hotspots || 0) >= 1).length;
-                  const isHotspotRoom = (room.hotspots || 0) >= 1;
-                  const isExtraHotspotRoom =
-                    isHotspotRoom &&
-                    hotspotRoomPos > TOUR360_INCLUDED_HOTSPOT_ROOMS;
-                  const additionalHotspotsHere = Math.max(
-                    0,
-                    (room.hotspots || 0) - 1,
-                  );
                   return (
                     <div
                       key={rIdx}
-                      className={cn(
-                        "space-y-2 rounded-md bg-card/90 px-2.5 py-2",
-                        isExtraHotspotRoom && "ring-1 ring-accent/30",
-                      )}
+                      className="space-y-2 rounded-md bg-card/90 px-2.5 py-2"
                     >
                       <div className="flex flex-wrap items-center gap-2">
                         <input
@@ -529,19 +523,6 @@ function Tour360FloorPanel({
                               </option>
                             ))}
                           </select>
-                        )}
-                        {isExtraHotspotRoom && (
-                          <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.62rem] font-semibold text-accent">
-                            +€{TOUR360_EXTRA_HOTSPOT_ROOM_EUR}
-                          </span>
-                        )}
-                        {additionalHotspotsHere > 0 && (
-                          <span
-                            className="hidden sm:inline-flex rounded bg-accent/10 px-1 py-0.5 text-[0.62rem] font-semibold text-accent"
-                            title={`${additionalHotspotsHere} dodatn${additionalHotspotsHere === 1 ? "i" : "ih"} hotspot u ovoj sobi × €${TOUR360_ADDITIONAL_HOTSPOT_EUR}`}
-                          >
-                            +€{additionalHotspotsHere * TOUR360_ADDITIONAL_HOTSPOT_EUR}
-                          </span>
                         )}
                         {/* Hotspots stepper */}
                         <div
@@ -632,11 +613,6 @@ function Tour360FloorPanel({
               >
                 <Plus className="h-3.5 w-3.5" />
                 Dodaj prostoriju
-                {calc.hotspotRooms >= TOUR360_INCLUDED_HOTSPOT_ROOMS && (
-                  <span className="text-[0.62rem] text-accent/80">
-                    (+€{TOUR360_EXTRA_HOTSPOT_ROOM_EUR} ako ima hotspot)
-                  </span>
-                )}
               </button>
             )}
           </div>

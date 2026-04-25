@@ -74,10 +74,9 @@ export type Tour360Config = {
 
 export const TOUR360_FIRST_FLOOR_EUR = 295;
 export const TOUR360_EXTRA_FLOOR_EUR = 205;          // -30% multi-floor
-export const TOUR360_INCLUDED_HOTSPOT_ROOMS = 10;    // rooms with ≥1 hotspot
+export const TOUR360_INCLUDED_HOTSPOTS = 10;         // total hotspots / floor
 export const TOUR360_INCLUDED_CAMERAS = 10;          // static cameras / floor
-export const TOUR360_EXTRA_HOTSPOT_ROOM_EUR = 45;    // 11th+ hotspot room
-export const TOUR360_ADDITIONAL_HOTSPOT_EUR = 27;    // 2nd+ hotspot in same room
+export const TOUR360_EXTRA_HOTSPOT_EUR = 27;         // 11th+ hotspot per floor
 export const TOUR360_EXTRA_CAMERA_EUR = 10;          // 11th+ static camera
 export const TOUR360_ASSEMBLY_BASE_EUR = 20;         // free if order has ≥5 hotspots
 export const TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD = 5;
@@ -86,18 +85,15 @@ export const TOUR360_WHITE_LABEL_EUR = 35;
 
 export type Tour360FloorCalc = {
   totalRooms: number;
-  hotspotRooms: number;        // rooms where hotspots ≥ 1
   totalHotspots: number;
   totalCameras: number;
-  extraHotspotRooms: number;
-  additionalHotspots: number;  // sum over rooms of max(0, hotspots - 1)
+  extraHotspots: number;       // hotspots beyond the 10 included on this floor
   extraCameras: number;
-  extraHotspotRoomsCost: number;
-  additionalHotspotsCost: number;
+  extraHotspotsCost: number;
   extraCamerasCost: number;
   baseCost: number;
   floorTotal: number;
-  remainingHotspotRooms: number;
+  remainingHotspots: number;
   remainingCameras: number;
   isFirstFloor: boolean;
 };
@@ -124,7 +120,6 @@ export function calcTour360Floor(
   isFirstFloor: boolean,
 ): Tour360FloorCalc {
   const totalRooms = floor.rooms.length;
-  const hotspotRooms = floor.rooms.filter((r) => (r.hotspots || 0) >= 1).length;
   const totalHotspots = floor.rooms.reduce(
     (s, r) => s + Math.max(0, r.hotspots || 0),
     0,
@@ -133,21 +128,11 @@ export function calcTour360Floor(
     (s, r) => s + Math.max(0, r.staticCameras || 0),
     0,
   );
-  const additionalHotspots = floor.rooms.reduce(
-    (s, r) => s + Math.max(0, (r.hotspots || 0) - 1),
-    0,
-  );
 
-  const extraHotspotRooms = Math.max(
-    0,
-    hotspotRooms - TOUR360_INCLUDED_HOTSPOT_ROOMS,
-  );
+  const extraHotspots = Math.max(0, totalHotspots - TOUR360_INCLUDED_HOTSPOTS);
   const extraCameras = Math.max(0, totalCameras - TOUR360_INCLUDED_CAMERAS);
 
-  const extraHotspotRoomsCost =
-    extraHotspotRooms * TOUR360_EXTRA_HOTSPOT_ROOM_EUR;
-  const additionalHotspotsCost =
-    additionalHotspots * TOUR360_ADDITIONAL_HOTSPOT_EUR;
+  const extraHotspotsCost = extraHotspots * TOUR360_EXTRA_HOTSPOT_EUR;
   const extraCamerasCost = extraCameras * TOUR360_EXTRA_CAMERA_EUR;
 
   const baseCost = isFirstFloor
@@ -156,22 +141,15 @@ export function calcTour360Floor(
 
   return {
     totalRooms,
-    hotspotRooms,
     totalHotspots,
     totalCameras,
-    extraHotspotRooms,
-    additionalHotspots,
+    extraHotspots,
     extraCameras,
-    extraHotspotRoomsCost,
-    additionalHotspotsCost,
+    extraHotspotsCost,
     extraCamerasCost,
     baseCost,
-    floorTotal:
-      baseCost +
-      extraHotspotRoomsCost +
-      additionalHotspotsCost +
-      extraCamerasCost,
-    remainingHotspotRooms: TOUR360_INCLUDED_HOTSPOT_ROOMS - hotspotRooms,
+    floorTotal: baseCost + extraHotspotsCost + extraCamerasCost,
+    remainingHotspots: TOUR360_INCLUDED_HOTSPOTS - totalHotspots,
     remainingCameras: TOUR360_INCLUDED_CAMERAS - totalCameras,
     isFirstFloor,
   };

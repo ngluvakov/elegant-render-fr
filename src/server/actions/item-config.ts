@@ -71,6 +71,13 @@ import {
   sanitizeSiteplanConfig,
   type SiteplanConfig,
 } from "@/lib/catalog/siteplan-config";
+import {
+  addOnQuantitiesFor as vsAddOnQuantitiesFor,
+  defaultStagingConfig,
+  sanitizeStagingConfig,
+  type StagingConfig,
+  type StagingProductId,
+} from "@/lib/catalog/staging-config";
 
 export type ItemConfigResult = {
   error?: string;
@@ -421,7 +428,9 @@ export async function addOrderItem(
               ? (defaultFloorplan2dConfig() as unknown as Prisma.InputJsonValue)
               : productId === "sp-first"
                 ? (defaultSiteplanConfig() as unknown as Prisma.InputJsonValue)
-                : undefined;
+                : productId === "vs-static" || productId === "vs-360"
+                  ? (defaultStagingConfig() as unknown as Prisma.InputJsonValue)
+                  : undefined;
   const initialTotal =
     productId === "int-static"
       ? INT_STATIC_FIRST_FLOOR_EUR
@@ -790,6 +799,51 @@ export async function updateSiteplanConfig(
     productId: "sp-first",
     categoryId: "siteplans",
     addOnQuantities: spAddOnQuantitiesFor(sanitized),
+  };
+  const calc = calculateQuote([qi]);
+  const addOns = calc.items[0]?.addOns ?? [];
+
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+    },
+  });
+
+  await repriceOrder(item.order.id);
+  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true };
+}
+
+// ─── Virtual staging (vs-static + vs-360) ──────────────────────────────
+
+export async function updateStagingConfig(
+  itemId: string,
+  config: StagingConfig,
+): Promise<ItemConfigResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!item) return { error: "Stavka nije pronađena." };
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (item.productId !== "vs-static" && item.productId !== "vs-360")
+    return { error: "Samo za virtuelno opremanje." };
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." };
+
+  const productId = item.productId as StagingProductId;
+  const sanitized = sanitizeStagingConfig(config);
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId,
+    categoryId: "staging",
+    addOnQuantities: vsAddOnQuantitiesFor(sanitized, productId),
   };
   const calc = calculateQuote([qi]);
   const addOns = calc.items[0]?.addOns ?? [];

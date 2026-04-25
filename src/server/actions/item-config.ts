@@ -42,6 +42,7 @@ import {
   calcTour360Total,
   defaultTourAssembly,
   newTour360Floor,
+  sanitizeTourAssembly,
   TOUR360_FIRST_FLOOR_EUR,
   type Tour360Config,
   type Tour360Floor,
@@ -111,6 +112,21 @@ import {
   type VrConfig,
   type VrProductId,
 } from "@/lib/catalog/vr-config";
+import {
+  defaultExt360Config,
+  defaultExtAerialConfig,
+  defaultExtStaticConfig,
+  ext360AddOnQuantitiesFor,
+  extAerialAddOnQuantitiesFor,
+  extStaticAddOnQuantitiesFor,
+  sanitizeExt360Config,
+  sanitizeExtAerialConfig,
+  sanitizeExtStaticConfig,
+  type Ext360Config,
+  type ExtAerialConfig,
+  type ExtStaticConfig,
+} from "@/lib/catalog/exterior-config";
+import { calcTourAssemblyCost } from "@/lib/catalog/tour-assembly";
 
 export type ItemConfigResult = {
   error?: string;
@@ -273,9 +289,25 @@ export async function repriceOrder(orderId: string) {
       )
       .map((i) => i.id),
   );
+  // ext-360 items with a config get the same special-case treatment as
+  // int-360 because their per-item Tour Assembly cost (€20/€15/€35) is
+  // not modeled as a catalog add-on — we add it on top in the loop.
+  const ext360IdsWithConfig = new Set(
+    items
+      .filter(
+        (i) =>
+          i.productId === "ext-360" &&
+          !!i.configJson &&
+          typeof i.configJson === "object" &&
+          "hotspotCount" in (i.configJson as Record<string, unknown>),
+      )
+      .map((i) => i.id),
+  );
   const standardItems = quoteItems.filter(
     (qi) =>
-      qi.productId !== "int-static" && !tour360IdsWithFloors.has(qi.instanceId),
+      qi.productId !== "int-static" &&
+      !tour360IdsWithFloors.has(qi.instanceId) &&
+      !ext360IdsWithConfig.has(qi.instanceId),
   );
   const intStaticAsSources = quoteItems.filter(
     (qi) => qi.productId === "int-static",
@@ -283,10 +315,14 @@ export async function repriceOrder(orderId: string) {
   const tour360AsSources = quoteItems.filter((qi) =>
     tour360IdsWithFloors.has(qi.instanceId),
   );
+  const ext360AsSources = quoteItems.filter((qi) =>
+    ext360IdsWithConfig.has(qi.instanceId),
+  );
   const calc = calculateQuote(standardItems, [
     ...externalSources,
     ...intStaticAsSources,
     ...tour360AsSources,
+    ...ext360AsSources,
   ]);
   const breakdownById = new Map(calc.items.map((b) => [b.instanceId, b]));
 
@@ -340,6 +376,52 @@ export async function repriceOrder(orderId: string) {
         data: {
           totalEur,
           originalTotalEur: preDiscount,
+          discountPct: discount?.pct ?? 0,
+          discountReason: discount?.reason ?? null,
+        },
+      });
+      orderTotal += totalEur;
+      continue;
+    }
+
+    if (ext360IdsWithConfig.has(i.id)) {
+      // ext-360 pricing: catalog rendering (basePrice + per-hotspot
+      // add-on, computed via single-item calculateQuote) + tour
+      // assembly cost on top; resolver discount applied to combined.
+      const cfg =
+        i.configJson && typeof i.configJson === "object"
+          ? (i.configJson as unknown as Ext360Config)
+          : defaultExt360Config();
+      const renderingQI: QuoteItem = {
+        instanceId: i.id,
+        productId: "ext-360",
+        categoryId: "exterior",
+        addOnQuantities: ext360AddOnQuantitiesFor(cfg),
+      };
+      const renderingBreakdown = calculateQuote([renderingQI]).items[0];
+      const renderingCost = renderingBreakdown?.totalEur ?? i.totalEur;
+      const assemblyCost = calcTourAssemblyCost(
+        cfg.tourAssembly ?? {
+          webTourEnabled: false,
+          floorPlanNavEnabled: false,
+          whiteLabelEnabled: false,
+        },
+        cfg.hotspotCount ?? 1,
+      ).totalCost;
+      const preDiscount = renderingCost + assemblyCost;
+      const target = quoteItems.find((q) => q.instanceId === i.id);
+      const discount = target
+        ? resolveDiscount(target, [...quoteItems, ...externalSources])
+        : null;
+      const totalEur = discount
+        ? Math.round(preDiscount * (1 - discount.pct / 100))
+        : preDiscount;
+      await prisma.orderItem.update({
+        where: { id: i.id },
+        data: {
+          totalEur,
+          originalTotalEur: preDiscount,
+          addOnsJson: renderingBreakdown?.addOns ?? [],
           discountPct: discount?.pct ?? 0,
           discountReason: discount?.reason ?? null,
         },
@@ -476,7 +558,13 @@ export async function addOrderItem(
                           : productId === "vr-existing" ||
                               productId === "vr-standalone"
                             ? (defaultVrConfig() as unknown as Prisma.InputJsonValue)
-                            : undefined;
+                            : productId === "ext-static"
+                              ? (defaultExtStaticConfig() as unknown as Prisma.InputJsonValue)
+                              : productId === "ext-360"
+                                ? (defaultExt360Config() as unknown as Prisma.InputJsonValue)
+                                : productId === "ext-aerial"
+                                  ? (defaultExtAerialConfig() as unknown as Prisma.InputJsonValue)
+                                  : undefined;
   const initialTotal =
     productId === "int-static"
       ? INT_STATIC_FIRST_FLOOR_EUR
@@ -623,16 +711,6 @@ function sanitizeTour360Floor(f: Tour360Floor, idx: number): Tour360Floor {
   };
 }
 
-function sanitizeTourAssembly(a: TourAssembly | undefined): TourAssembly {
-  const base = defaultTourAssembly();
-  if (!a) return base;
-  const web = Boolean(a.webTourEnabled);
-  return {
-    webTourEnabled: web,
-    floorPlanNavEnabled: web && Boolean(a.floorPlanNavEnabled),
-    whiteLabelEnabled: web && Boolean(a.whiteLabelEnabled),
-  };
-}
 
 export async function updateTour360Config(
   itemId: string,
@@ -1135,6 +1213,106 @@ export async function updateVrConfig(
 
   await repriceOrder(item.order.id);
   revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true };
+}
+
+// ─── Exterior products (ext-static / ext-360 / ext-aerial) ────────────
+
+async function authorizeExteriorEdit(itemId: string, productId: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." } as const;
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!item) return { error: "Stavka nije pronađena." } as const;
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." } as const;
+  if (item.productId !== productId)
+    return { error: `Samo za ${productId}.` } as const;
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." } as const;
+  return { item } as const;
+}
+
+export async function updateExtStaticConfig(
+  itemId: string,
+  config: ExtStaticConfig,
+): Promise<ItemConfigResult> {
+  const auth = await authorizeExteriorEdit(itemId, "ext-static");
+  if ("error" in auth) return auth;
+  const sanitized = sanitizeExtStaticConfig(config);
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId: "ext-static",
+    categoryId: "exterior",
+    addOnQuantities: extStaticAddOnQuantitiesFor(sanitized),
+  };
+  const calc = calculateQuote([qi]);
+  const addOns = calc.items[0]?.addOns ?? [];
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+    },
+  });
+  await repriceOrder(auth.item.order.id);
+  revalidatePath(`/portal/porudzbine/${auth.item.order.id}`);
+  return { success: true };
+}
+
+export async function updateExt360Config(
+  itemId: string,
+  config: Ext360Config,
+): Promise<ItemConfigResult> {
+  const auth = await authorizeExteriorEdit(itemId, "ext-360");
+  if ("error" in auth) return auth;
+  const sanitized = sanitizeExt360Config(config);
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId: "ext-360",
+    categoryId: "exterior",
+    addOnQuantities: ext360AddOnQuantitiesFor(sanitized),
+  };
+  const calc = calculateQuote([qi]);
+  const addOns = calc.items[0]?.addOns ?? [];
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+    },
+  });
+  await repriceOrder(auth.item.order.id);
+  revalidatePath(`/portal/porudzbine/${auth.item.order.id}`);
+  return { success: true };
+}
+
+export async function updateExtAerialConfig(
+  itemId: string,
+  config: ExtAerialConfig,
+): Promise<ItemConfigResult> {
+  const auth = await authorizeExteriorEdit(itemId, "ext-aerial");
+  if ("error" in auth) return auth;
+  const sanitized = sanitizeExtAerialConfig(config);
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId: "ext-aerial",
+    categoryId: "exterior",
+    addOnQuantities: extAerialAddOnQuantitiesFor(sanitized),
+  };
+  const calc = calculateQuote([qi]);
+  const addOns = calc.items[0]?.addOns ?? [];
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+    },
+  });
+  await repriceOrder(auth.item.order.id);
+  revalidatePath(`/portal/porudzbine/${auth.item.order.id}`);
   return { success: true };
 }
 

@@ -43,6 +43,9 @@ import { DtdConfigSection } from "./dtd-config-section";
 import { ItemRemovalConfigSection } from "./item-removal-config-section";
 import { AnimationConfigSection } from "./animation-config-section";
 import { VrConfigSection } from "./vr-config-section";
+import { ExtStaticConfigSection } from "./exterior-static-config-section";
+import { Ext360ConfigSection } from "./exterior-360-config-section";
+import { ExtAerialConfigSection } from "./exterior-aerial-config-section";
 import type { InteriorFloor } from "@/lib/catalog/interior-config";
 import {
   defaultTourAssembly,
@@ -60,6 +63,11 @@ import { readDtdConfig } from "@/lib/catalog/dtd-config";
 import { readItemRemovalConfig } from "@/lib/catalog/item-removal-config";
 import { readAnimationConfig } from "@/lib/catalog/animation-config";
 import { readVrConfig } from "@/lib/catalog/vr-config";
+import {
+  readExt360Config,
+  readExtAerialConfig,
+  readExtStaticConfig,
+} from "@/lib/catalog/exterior-config";
 
 type ItemFile = {
   id: string;
@@ -130,6 +138,9 @@ export function ItemConfigPanel({
     item.productId === "anim-active";
   const isVr =
     item.productId === "vr-existing" || item.productId === "vr-standalone";
+  const isExtStatic = item.productId === "ext-static";
+  const isExt360 = item.productId === "ext-360";
+  const isExtAerial = item.productId === "ext-aerial";
   const interiorFloors =
     (item.configJson?.floors as InteriorFloor[] | undefined) ?? null;
   const tour360Config: Tour360Config | null = isTour360
@@ -167,6 +178,13 @@ export function ItemConfigPanel({
     ? readAnimationConfig(item.configJson)
     : null;
   const vrConfig = isVr ? readVrConfig(item.configJson) : null;
+  const extStaticConfig = isExtStatic
+    ? readExtStaticConfig(item.configJson)
+    : null;
+  const ext360Config = isExt360 ? readExt360Config(item.configJson) : null;
+  const extAerialConfig = isExtAerial
+    ? readExtAerialConfig(item.configJson)
+    : null;
 
   const handleSave = async () => {
     setSaving(true);
@@ -462,6 +480,30 @@ export function ItemConfigPanel({
               orderId={item.orderId}
               productId={item.productId as "vr-existing" | "vr-standalone"}
               initialConfig={vrConfig}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isExtStatic && extStaticConfig ? (
+            <ExtStaticConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              initialConfig={extStaticConfig}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isExt360 && ext360Config ? (
+            <Ext360ConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              initialConfig={ext360Config}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isExtAerial && extAerialConfig ? (
+            <ExtAerialConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              initialConfig={extAerialConfig}
               files={item.files}
               editable={canDelete}
             />

@@ -59,13 +59,28 @@ export type Tour360Floor = {
   globalStyleId?: RoomStyleId;
 };
 
-export type TourAssembly = {
-  webTourEnabled: boolean;          // default false
-  floorPlanNavEnabled: boolean;     // gated by webTour at UI level
-  whiteLabelEnabled: boolean;       // gated by webTour at UI level
-  // The white-label logo lives as an OrderFile with kind="logo" on this
-  // item — no need to track its ID here. The UI filters files by kind.
-};
+// TourAssembly + pricing now live in tour-assembly.ts so ext-360 can
+// reuse without coupling. Re-exported here for backwards-compat with
+// callers that imported these names from tour360-config.
+export {
+  defaultTourAssembly,
+  calcTourAssemblyCost,
+  sanitizeTourAssembly,
+  TOUR_ASSEMBLY_BASE_EUR as TOUR360_ASSEMBLY_BASE_EUR,
+  TOUR_ASSEMBLY_FREE_HOTSPOT_THRESHOLD as TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD,
+  TOUR_FLOOR_PLAN_NAV_EUR as TOUR360_FLOOR_PLAN_NAV_EUR,
+  TOUR_WHITE_LABEL_EUR as TOUR360_WHITE_LABEL_EUR,
+} from "./tour-assembly";
+export type {
+  TourAssembly,
+  TourAssemblyCalc as Tour360AssemblyCalc,
+} from "./tour-assembly";
+
+import {
+  calcTourAssemblyCost,
+  type TourAssembly,
+  type TourAssemblyCalc,
+} from "./tour-assembly";
 
 export type Tour360Config = {
   floors: Tour360Floor[];
@@ -78,10 +93,6 @@ export const TOUR360_INCLUDED_HOTSPOTS = 10;         // total hotspots / floor
 export const TOUR360_INCLUDED_CAMERAS = 10;          // static cameras / floor
 export const TOUR360_EXTRA_HOTSPOT_EUR = 27;         // 11th+ hotspot per floor
 export const TOUR360_EXTRA_CAMERA_EUR = 10;          // 11th+ static camera
-export const TOUR360_ASSEMBLY_BASE_EUR = 20;         // free if order has ≥5 hotspots
-export const TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD = 5;
-export const TOUR360_FLOOR_PLAN_NAV_EUR = 15;
-export const TOUR360_WHITE_LABEL_EUR = 35;
 
 export type Tour360FloorCalc = {
   totalRooms: number;
@@ -98,21 +109,12 @@ export type Tour360FloorCalc = {
   isFirstFloor: boolean;
 };
 
-export type Tour360AssemblyCalc = {
-  enabled: boolean;
-  baseCost: number;            // 0 if disabled, 0 if free-by-threshold, else 20
-  floorPlanNavCost: number;
-  whiteLabelCost: number;
-  totalCost: number;
-  freeByHotspotThreshold: boolean;
-};
-
 export type Tour360Calc = {
   floors: Tour360FloorCalc[];
   totalEur: number;
   floorCount: number;
   totalHotspots: number;
-  assembly: Tour360AssemblyCalc;
+  assembly: TourAssemblyCalc;
 };
 
 export function calcTour360Floor(
@@ -152,49 +154,6 @@ export function calcTour360Floor(
     remainingHotspots: TOUR360_INCLUDED_HOTSPOTS - totalHotspots,
     remainingCameras: TOUR360_INCLUDED_CAMERAS - totalCameras,
     isFirstFloor,
-  };
-}
-
-export function defaultTourAssembly(): TourAssembly {
-  return {
-    webTourEnabled: false,
-    floorPlanNavEnabled: false,
-    whiteLabelEnabled: false,
-  };
-}
-
-// Tour Assembly: €20 base (FREE if total hotspots ≥ 5), +€15 floor plan
-// nav, +€35 white-label. Per cenovnik (Pillar 1, "Tour Assembly &
-// Hosting"). The free threshold is per the user's own int-360 item,
-// which is also the per-order total since each product can only appear
-// once per order (see addOrderItem).
-export function calcTourAssemblyCost(
-  assembly: TourAssembly,
-  totalHotspots: number,
-): Tour360AssemblyCalc {
-  if (!assembly.webTourEnabled) {
-    return {
-      enabled: false,
-      baseCost: 0,
-      floorPlanNavCost: 0,
-      whiteLabelCost: 0,
-      totalCost: 0,
-      freeByHotspotThreshold: false,
-    };
-  }
-  const free = totalHotspots >= TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD;
-  const baseCost = free ? 0 : TOUR360_ASSEMBLY_BASE_EUR;
-  const floorPlanNavCost = assembly.floorPlanNavEnabled
-    ? TOUR360_FLOOR_PLAN_NAV_EUR
-    : 0;
-  const whiteLabelCost = assembly.whiteLabelEnabled ? TOUR360_WHITE_LABEL_EUR : 0;
-  return {
-    enabled: true,
-    baseCost,
-    floorPlanNavCost,
-    whiteLabelCost,
-    totalCost: baseCost + floorPlanNavCost + whiteLabelCost,
-    freeByHotspotThreshold: free,
   };
 }
 

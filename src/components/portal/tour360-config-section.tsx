@@ -856,7 +856,7 @@ function Tour360FloorPanel({
 
 // ─── TourAssemblyCard ──────────────────────────────────────────────────
 
-function TourAssemblyCard({
+export function TourAssemblyCard({
   assembly,
   assemblyCalc,
   totalHotspots,

@@ -84,6 +84,12 @@ import {
   sanitizeRenovationConfig,
   type RenovationConfig,
 } from "@/lib/catalog/renovation-config";
+import {
+  addOnQuantitiesFor as dtdAddOnQuantitiesFor,
+  defaultDtdConfig,
+  sanitizeDtdConfig,
+  type DtdConfig,
+} from "@/lib/catalog/dtd-config";
 
 export type ItemConfigResult = {
   error?: string;
@@ -438,7 +444,9 @@ export async function addOrderItem(
                   ? (defaultStagingConfig() as unknown as Prisma.InputJsonValue)
                   : productId === "reno-image"
                     ? (defaultRenovationConfig() as unknown as Prisma.InputJsonValue)
-                    : undefined;
+                    : productId === "dtd-image"
+                      ? (defaultDtdConfig() as unknown as Prisma.InputJsonValue)
+                      : undefined;
   const initialTotal =
     productId === "int-static"
       ? INT_STATIC_FIRST_FLOOR_EUR
@@ -896,6 +904,50 @@ export async function updateRenovationConfig(
     productId: "reno-image",
     categoryId: "renovation",
     addOnQuantities: renoAddOnQuantitiesFor(sanitized),
+  };
+  const calc = calculateQuote([qi]);
+  const addOns = calc.items[0]?.addOns ?? [];
+
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+    },
+  });
+
+  await repriceOrder(item.order.id);
+  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true };
+}
+
+// ─── Day-to-Dusk (dtd-image) ──────────────────────────────────────────
+
+export async function updateDtdConfig(
+  itemId: string,
+  config: DtdConfig,
+): Promise<ItemConfigResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!item) return { error: "Stavka nije pronađena." };
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (item.productId !== "dtd-image")
+    return { error: "Samo za Dan u noć konverziju." };
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." };
+
+  const sanitized = sanitizeDtdConfig(config);
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId: "dtd-image",
+    categoryId: "day-to-dusk",
+    addOnQuantities: dtdAddOnQuantitiesFor(sanitized),
   };
   const calc = calculateQuote([qi]);
   const addOns = calc.items[0]?.addOns ?? [];

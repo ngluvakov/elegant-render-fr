@@ -39,6 +39,7 @@ import { Floorplan2dConfigSection } from "./floorplan-2d-config-section";
 import { SiteplanConfigSection } from "./siteplan-config-section";
 import { StagingConfigSection } from "./staging-config-section";
 import { RenovationConfigSection } from "./renovation-config-section";
+import { DtdConfigSection } from "./dtd-config-section";
 import type { InteriorFloor } from "@/lib/catalog/interior-config";
 import {
   defaultTourAssembly,
@@ -52,6 +53,7 @@ import { readFloorplan2dConfig } from "@/lib/catalog/floorplan-2d-config";
 import { readSiteplanConfig } from "@/lib/catalog/siteplan-config";
 import { readStagingConfig } from "@/lib/catalog/staging-config";
 import { readRenovationConfig } from "@/lib/catalog/renovation-config";
+import { readDtdConfig } from "@/lib/catalog/dtd-config";
 
 type ItemFile = {
   id: string;
@@ -113,6 +115,7 @@ export function ItemConfigPanel({
   const isStaging =
     item.productId === "vs-static" || item.productId === "vs-360";
   const isRenovation = item.productId === "reno-image";
+  const isDtd = item.productId === "dtd-image";
   const interiorFloors =
     (item.configJson?.floors as InteriorFloor[] | undefined) ?? null;
   const tour360Config: Tour360Config | null = isTour360
@@ -142,6 +145,7 @@ export function ItemConfigPanel({
   const renovationConfig = isRenovation
     ? readRenovationConfig(item.configJson)
     : null;
+  const dtdConfig = isDtd ? readDtdConfig(item.configJson) : null;
 
   const handleSave = async () => {
     setSaving(true);
@@ -397,6 +401,14 @@ export function ItemConfigPanel({
               itemId={item.id}
               orderId={item.orderId}
               initialConfig={renovationConfig}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isDtd && dtdConfig ? (
+            <DtdConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              initialConfig={dtdConfig}
               files={item.files}
               editable={canDelete}
             />

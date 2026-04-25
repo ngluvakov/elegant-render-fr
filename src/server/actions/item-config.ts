@@ -48,6 +48,11 @@ import {
   type Tour360Room,
   type TourAssembly,
 } from "@/lib/catalog/tour360-config";
+import {
+  defaultLandscapeConfig,
+  sanitizeLandscapeConfig,
+  type LandscapeConfig,
+} from "@/lib/catalog/landscape-config";
 
 export type ItemConfigResult = {
   error?: string;
@@ -378,8 +383,10 @@ export async function addOrderItem(
   const breakdown = calc.items[0];
   if (!breakdown) return { error: "Greška u izračunu." };
 
-  // int-static and int-360 items always start with one default floor so
-  // the price is stable (€170 / €295) and the UI has something to show.
+  // int-static and int-360 always start with one default floor so the
+  // price is stable (€170 / €295) and the UI has something to show.
+  // land-static seeds its default landscape config so the configurator
+  // opens with name/stepper pre-filled.
   const initialConfigJson: Prisma.InputJsonValue | undefined =
     productId === "int-static"
       ? { floors: [newFloor(0)] }
@@ -388,7 +395,9 @@ export async function addOrderItem(
             floors: [newTour360Floor(0)],
             tourAssembly: defaultTourAssembly(),
           } as unknown as Prisma.InputJsonValue)
-        : undefined;
+        : productId === "land-static"
+          ? (defaultLandscapeConfig() as unknown as Prisma.InputJsonValue)
+          : undefined;
   const initialTotal =
     productId === "int-static"
       ? INT_STATIC_FIRST_FLOOR_EUR
@@ -579,6 +588,61 @@ export async function updateTour360Config(
         tourAssembly: sanitizedAssembly,
       } as unknown as Prisma.InputJsonValue,
       totalEur,
+    },
+  });
+
+  await repriceOrder(item.order.id);
+  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true };
+}
+
+// ─── Landscape (land-static) ───────────────────────────────────────────
+
+export async function updateLandscapeConfig(
+  itemId: string,
+  config: LandscapeConfig,
+): Promise<ItemConfigResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!item) return { error: "Stavka nije pronađena." };
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (item.productId !== "land-static")
+    return { error: "Samo za pejzažni render." };
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." };
+
+  const sanitized = sanitizeLandscapeConfig(config);
+
+  // Translate config inputs into add-on quantities so the standard
+  // engine path (calculateQuote inside repriceOrder) prices the item:
+  //   land-cam: cameraCount - 1 (basePrice covers the first kadar)
+  //   land-aerial: aerialEnabled ? 1 : 0
+  const addOnQuantities: Record<string, number> = {
+    "land-cam": Math.max(0, sanitized.cameraCount - 1),
+  };
+  if (sanitized.aerialEnabled) {
+    addOnQuantities["land-aerial"] = 1;
+  }
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId: "land-static",
+    categoryId: "landscape",
+    addOnQuantities,
+  };
+  const calc = calculateQuote([qi]);
+  const addOns = calc.items[0]?.addOns ?? [];
+
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
     },
   });
 

@@ -33,6 +33,7 @@ import {
 } from "@/server/actions/item-config";
 import { InteriorConfigSection } from "./interior-config-section";
 import { Tour360ConfigSection } from "./tour360-config-section";
+import { LandscapeConfigSection } from "./landscape-config-section";
 import type { InteriorFloor } from "@/lib/catalog/interior-config";
 import {
   defaultTourAssembly,
@@ -40,6 +41,7 @@ import {
   type Tour360Floor,
   type TourAssembly,
 } from "@/lib/catalog/tour360-config";
+import { readLandscapeConfig } from "@/lib/catalog/landscape-config";
 
 type ItemFile = {
   id: string;
@@ -94,6 +96,7 @@ export function ItemConfigPanel({
 
   const isInterior = item.productId === "int-static";
   const isTour360 = item.productId === "int-360";
+  const isLandscape = item.productId === "land-static";
   const interiorFloors =
     (item.configJson?.floors as InteriorFloor[] | undefined) ?? null;
   const tour360Config: Tour360Config | null = isTour360
@@ -104,6 +107,9 @@ export function ItemConfigPanel({
           (item.configJson?.tourAssembly as TourAssembly | undefined) ??
           defaultTourAssembly(),
       }
+    : null;
+  const landscapeConfig = isLandscape
+    ? readLandscapeConfig(item.configJson)
     : null;
 
   const handleSave = async () => {
@@ -311,6 +317,14 @@ export function ItemConfigPanel({
               itemId={item.id}
               orderId={item.orderId}
               initialConfig={tour360Config}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isLandscape && landscapeConfig ? (
+            <LandscapeConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              initialConfig={landscapeConfig}
               files={item.files}
               editable={canDelete}
             />

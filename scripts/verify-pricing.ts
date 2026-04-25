@@ -90,28 +90,6 @@ const cases: Case[] = [
     },
   },
   {
-    name: "Photomontage — no pm-extended add-on: −50% with exterior present",
-    items: [
-      qi("e", "ext-static", "exterior"),
-      qi("p", "pm-first", "photomontage"),
-    ],
-    expect: {
-      perItem: [{ instanceId: "p", discountPct: 50 }],
-    },
-  },
-  {
-    name: "Photomontage — with pm-extended add-on: falls back to −15%",
-    items: [
-      qi("e", "ext-static", "exterior"),
-      qi("p", "pm-first", "photomontage", {
-        addOnQuantities: { "pm-extended": 1 },
-      }),
-    ],
-    expect: {
-      perItem: [{ instanceId: "p", discountPct: 15 }],
-    },
-  },
-  {
     name: "vr-standalone + ext-static — VR −50% from exterior-shell, ext-static −50% from complete-model",
     items: [
       qi("v", "vr-standalone", "vr-experiences"),
@@ -136,23 +114,6 @@ const cases: Case[] = [
         { instanceId: "e", discountPct: 50 },
         // ext-static creates exterior-shell → anim-scratch consumes it at −33%
         { instanceId: "a", discountPct: 33 },
-      ],
-    },
-  },
-  {
-    name: "pm-first + ext-static — ext-static −25% (no pm-extended); pm also gets ext-shell rule",
-    items: [
-      qi("p", "pm-first", "photomontage"),
-      qi("e", "ext-static", "exterior"),
-    ],
-    expect: {
-      perItem: [
-        // pm-first (300) is more expensive than ext-static (250), so ext-static is
-        // canonical for exterior-shell → pm-first still qualifies for its own
-        // exterior-shell consume at −50%.
-        { instanceId: "p", discountPct: 50 },
-        // ext-static consumes exterior-shell from pm-first → −25% (no pm-extended add-on).
-        { instanceId: "e", discountPct: 25 },
       ],
     },
   },

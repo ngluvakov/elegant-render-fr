@@ -18,6 +18,7 @@ import {
   Camera,
   Check,
   FileUp,
+  Image as ImageIcon,
   Minus,
   Pencil,
   Plus,
@@ -34,11 +35,13 @@ import { Label } from "@/components/ui/label";
 import {
   ARCH_STYLES,
   ENVIRONMENTS,
+  RENDERING_MODES,
   WEATHER,
   extStaticAddOnQuantitiesFor,
   type ArchStyleId,
   type EnvironmentId,
   type ExtStaticConfig,
+  type RenderingModeId,
   type WeatherId,
 } from "@/lib/catalog/exterior-config";
 import {
@@ -67,7 +70,7 @@ function formatSize(b: number) {
     : `${(b / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-type FileKind = "source" | "reference";
+type FileKind = "source" | "reference" | "location-photo";
 
 export function ExtStaticConfigSection({
   itemId,
@@ -91,6 +94,7 @@ export function ExtStaticConfigSection({
   const initRef = useRef(true);
   const sourceInputRef = useRef<HTMLInputElement>(null);
   const refInputRef = useRef<HTMLInputElement>(null);
+  const locationPhotoInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   const totalEur = useMemo(() => {
@@ -136,9 +140,13 @@ export function ExtStaticConfigSection({
   };
 
   const sourceFiles = files.filter(
-    (f) => f.kind !== "reference" && f.kind !== "logo",
+    (f) =>
+      f.kind !== "reference" &&
+      f.kind !== "logo" &&
+      f.kind !== "location-photo",
   );
   const referenceFiles = files.filter((f) => f.kind === "reference");
+  const locationPhotoFiles = files.filter((f) => f.kind === "location-photo");
 
   const uploadFile = useCallback(
     async (file: File, kind: FileKind) => {
@@ -340,6 +348,52 @@ export function ExtStaticConfigSection({
           </select>
         </div>
       </div>
+
+      {/* Rendering mode (standard vs fotomontaža) */}
+      <div className="space-y-1">
+        <Label
+          htmlFor={`mode-${itemId}`}
+          className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
+        >
+          <ImageIcon className="h-3 w-3 text-accent/60" />
+          Tip rendera
+        </Label>
+        <select
+          id={`mode-${itemId}`}
+          value={config.renderingMode}
+          onChange={(e) =>
+            patch({ renderingMode: e.target.value as RenderingModeId })
+          }
+          disabled={!editable}
+          className="w-full rounded-md bg-secondary/40 px-2.5 py-1.5 text-sm text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
+        >
+          {RENDERING_MODES.map((m) => (
+            <option key={m.id} value={m.id}>
+              {m.label}
+            </option>
+          ))}
+        </select>
+        {config.renderingMode === "fotomontaza" && (
+          <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
+            + Fotomontaža: €50 (uključuje analizu perspektive, uklapanje
+            kamere i osvetljenja, kompoziting)
+          </p>
+        )}
+      </div>
+
+      {/* Conditional location-photo upload (only for fotomontaža mode) */}
+      <Collapsible open={config.renderingMode === "fotomontaza"}>
+        <div className="space-y-1.5 rounded-md border border-border/30 bg-secondary/20 p-3">
+          <Label className="text-xs">Fotografija lokacije</Label>
+          {renderUploadZone(
+            locationPhotoInputRef,
+            "Fotografija lokacije u koju se uklapa 3D model",
+            "image/*",
+            "location-photo",
+          )}
+          {renderFileList(locationPhotoFiles)}
+        </div>
+      </Collapsible>
 
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">

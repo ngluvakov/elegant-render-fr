@@ -46,6 +46,20 @@ export const ENVIRONMENTS = [
 export type EnvironmentId = (typeof ENVIRONMENTS)[number]["id"];
 export const ENVIRONMENT_IDS = ENVIRONMENTS.map((e) => e.id) as EnvironmentId[];
 
+// ─── Rendering mode (ext-static + ext-360) ────────────────────────────
+
+export const RENDERING_MODES = [
+  { id: "standard", label: "Standardni render (sintetičko okruženje)" },
+  {
+    id: "fotomontaza",
+    label: "Fotomontaža (uklapanje u fotografiju lokacije)",
+  },
+] as const;
+export type RenderingModeId = (typeof RENDERING_MODES)[number]["id"];
+export const RENDERING_MODE_IDS = RENDERING_MODES.map(
+  (m) => m.id,
+) as RenderingModeId[];
+
 // ─── Aerial-specific vocabularies ─────────────────────────────────────
 
 export const AERIAL_VIEWS = [
@@ -86,6 +100,7 @@ function pickFromAllowlist<T extends string>(
 export type ExtStaticConfig = {
   modelName: string;
   cameraCount: number;            // min 1; quantity for ext-static-cam = count - 1
+  renderingMode: RenderingModeId; // standard | fotomontaza (drives ext-static-photo)
   styleId?: ArchStyleId;
   description?: string;
   timeOfDay?: TimeOfDayId;
@@ -95,7 +110,11 @@ export type ExtStaticConfig = {
 };
 
 export function defaultExtStaticConfig(): ExtStaticConfig {
-  return { modelName: "Objekat 1", cameraCount: 1 };
+  return {
+    modelName: "Objekat 1",
+    cameraCount: 1,
+    renderingMode: "standard",
+  };
 }
 
 export function sanitizeExtStaticConfig(
@@ -105,6 +124,11 @@ export function sanitizeExtStaticConfig(
     modelName:
       String(c.modelName ?? "").trim().slice(0, 80) || "Objekat 1",
     cameraCount: clampCount(c.cameraCount, 1, 30),
+    renderingMode:
+      pickFromAllowlist<RenderingModeId>(
+        c.renderingMode,
+        RENDERING_MODE_IDS,
+      ) ?? "standard",
     ...((s) => (s ? { styleId: s } : {}))(
       pickFromAllowlist<ArchStyleId>(c.styleId, ARCH_STYLE_IDS),
     ),
@@ -143,6 +167,7 @@ export function readExtStaticConfig(cj: unknown): ExtStaticConfig {
 export type Ext360Config = {
   modelName: string;
   hotspotCount: number;           // min 1; quantity for ext-360-hotspot = count - 1
+  renderingMode: RenderingModeId; // standard | fotomontaza (drives ext-360-photo)
   styleId?: ArchStyleId;
   description?: string;
   timeOfDay?: TimeOfDayId;
@@ -156,6 +181,7 @@ export function defaultExt360Config(): Ext360Config {
   return {
     modelName: "Objekat 1",
     hotspotCount: 1,
+    renderingMode: "standard",
     tourAssembly: defaultTourAssembly(),
   };
 }
@@ -165,6 +191,11 @@ export function sanitizeExt360Config(c: Ext360Config): Ext360Config {
     modelName:
       String(c.modelName ?? "").trim().slice(0, 80) || "Objekat 1",
     hotspotCount: clampCount(c.hotspotCount, 1, 30),
+    renderingMode:
+      pickFromAllowlist<RenderingModeId>(
+        c.renderingMode,
+        RENDERING_MODE_IDS,
+      ) ?? "standard",
     ...((s) => (s ? { styleId: s } : {}))(
       pickFromAllowlist<ArchStyleId>(c.styleId, ARCH_STYLE_IDS),
     ),
@@ -267,6 +298,7 @@ export function extStaticAddOnQuantitiesFor(
   const q: Record<string, number> = {};
   if (config.cameraCount > 1)
     q["ext-static-cam"] = config.cameraCount - 1;
+  if (config.renderingMode === "fotomontaza") q["ext-static-photo"] = 1;
   return q;
 }
 
@@ -276,6 +308,7 @@ export function ext360AddOnQuantitiesFor(
   const q: Record<string, number> = {};
   if (config.hotspotCount > 1)
     q["ext-360-hotspot"] = config.hotspotCount - 1;
+  if (config.renderingMode === "fotomontaza") q["ext-360-photo"] = 1;
   return q;
 }
 

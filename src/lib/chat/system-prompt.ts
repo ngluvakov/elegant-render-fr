@@ -60,7 +60,6 @@ RENDERI:
 - ext-360 → 360 eksterijer → od €335 (VR-ready)
 - ext-aerial → Aerial render → od €420 (pogled iz vazduha)
 - land-static → Pejzažni render → od €220 (dvorište, vrt)
-- pm-first → Fotomontaža → od €300 (objekat u realnu foto)
 
 STAMBENI KOMPLEKSI:
 

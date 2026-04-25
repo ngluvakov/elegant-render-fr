@@ -115,19 +115,6 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
           {
             requires: "exterior-shell",
-            discountPct: 25,
-            reason: "Model postoji iz fotomontaže",
-            sourceProducts: ["pm-first"],
-            condition: { type: "addOnAbsent", addOnId: "pm-extended" },
-          },
-          {
-            requires: "exterior-shell",
-            discountPct: 15,
-            reason: "Model postoji iz fotomontaže (delimično)",
-            sourceProducts: ["pm-first"],
-          },
-          {
-            requires: "exterior-shell",
             discountPct: 20,
             reason: "Massing postoji iz situacionog plana",
             sourceProducts: ["sp-first"],
@@ -167,6 +154,16 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             maxQty: 1,
             volumeRules: [],
           },
+          {
+            id: "ext-static-photo",
+            label: "Fotomontaža (uklapanje u fotografiju)",
+            description: "3D model komponovan u fotografiju lokacije — analiza perspektive, uklapanje kamere i osvetljenja",
+            priceEur: 50,
+            priceType: "fixed",
+            includedQty: 0,
+            maxQty: 1,
+            volumeRules: [],
+          },
         ],
       },
       {
@@ -199,6 +196,16 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             label: "Extended Model Hotspot",
             description: "Hotspot koji zahteva neviđenu geometriju (jednokratno)",
             priceEur: 60,
+            priceType: "fixed",
+            includedQty: 0,
+            maxQty: 1,
+            volumeRules: [],
+          },
+          {
+            id: "ext-360-photo",
+            label: "Fotomontaža (360 panorama lokacije)",
+            description: "Uklapanje 3D modela u 360° panoramsku fotografiju lokacije",
+            priceEur: 50,
             priceType: "fixed",
             includedQty: 0,
             maxQty: 1,
@@ -425,78 +432,6 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             label: "Aerial pejzažni prikaz",
             description: "Kompletni overhead kontekst",
             priceEur: 380,
-            priceType: "fixed",
-            includedQty: 0,
-            maxQty: 1,
-            volumeRules: [],
-          },
-        ],
-      },
-    ],
-  },
-
-  // ═══════════════════════════════════════════
-  // 1.1 — PHOTOMONTAGE
-  // ═══════════════════════════════════════════
-  {
-    id: "photomontage",
-    label: "Fotomontaža",
-    sectionLabel: "1.1 — Rendering",
-    icon: "images",
-    description:
-      "3D-renderirani objekti ukomponovani u fotografiju lokacije",
-    products: [
-      {
-        id: "pm-first",
-        creates: ["exterior-shell"],
-        consumes: [
-          {
-            requires: "exterior-shell",
-            discountPct: 50,
-            reason: "Model postoji iz eksterijernog rendera",
-            condition: { type: "addOnAbsent", addOnId: "pm-extended" },
-          },
-          { requires: "exterior-shell", discountPct: 15, reason: "Model postoji iz eksterijernog rendera (delimično)" },
-          { requires: "complete-model", discountPct: 60, reason: "Kompletan model već postoji" },
-        ],
-        label: "Fotomontaža",
-        basePriceEur: 300,
-        unitLabel: "3D model + foto uklapanje + kompoziting",
-        includes: [
-          "Analiza fotografije lokacije",
-          "Uklapanje kamere",
-          "Uklapanje osvetljenja",
-          "Kompoziting",
-        ],
-        disclaimers: [
-          "Extended Model Surcharge (+25%) ako je potrebna nova geometrija",
-        ],
-        addOns: [
-          {
-            id: "pm-angle",
-            label: "Dodatni ugao (ista foto)",
-            description: "Samo ponovno uklapanje kamere",
-            priceEur: 55,
-            priceType: "fixed",
-            includedQty: 0,
-            maxQty: Infinity,
-            volumeRules: [],
-          },
-          {
-            id: "pm-photo",
-            label: "Druga fotografija lokacije",
-            description: "Nova analiza + kompoziting",
-            priceEur: 85,
-            priceType: "fixed",
-            includedQty: 0,
-            maxQty: Infinity,
-            volumeRules: [],
-          },
-          {
-            id: "pm-extended",
-            label: "Extended Model Surcharge",
-            description: "Ako je potrebna nova geometrija (+25%, jednokratno)",
-            priceEur: 75,
             priceType: "fixed",
             includedQty: 0,
             maxQty: 1,

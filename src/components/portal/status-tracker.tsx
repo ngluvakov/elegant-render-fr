@@ -4,9 +4,9 @@
  *
  * Used on: /portal/porudzbine/[orderId] (order detail page).
  */
-import { Check } from "lucide-react";
+import { AlertCircle, Check, Info, MoveRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { STATUS_STEPS } from "./status-utils";
+import { STATUS_STEPS, statusGuidance } from "./status-utils";
 
 type StatusTrackerProps = {
   currentStatus: string;
@@ -18,6 +18,7 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
   const currentIndex = STATUS_ORDER.indexOf(currentStatus as (typeof STATUS_ORDER)[number]);
   // If status not in the main flow (e.g. cancelled), show last known
   const activeIndex = currentIndex >= 0 ? currentIndex : STATUS_ORDER.length - 1;
+  const guidance = statusGuidance(currentStatus);
 
   return (
     <div className="mt-6 rounded-2xl border border-border/40 bg-card/60 p-5">
@@ -100,6 +101,55 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
           );
         })}
       </div>
+
+      {/* Guidance card — what does this status mean for me? */}
+      {guidance.description && (
+        <div
+          className={cn(
+            "mt-5 flex items-start gap-3 rounded-xl border px-4 py-3",
+            guidance.tone === "action" &&
+              "border-accent/30 bg-accent/[0.06]",
+            guidance.tone === "info" &&
+              "border-[color:var(--color-sage)]/25 bg-[color:var(--color-sage)]/[0.06]",
+            guidance.tone === "alert" &&
+              "border-destructive/25 bg-destructive/[0.05]",
+          )}
+        >
+          <div
+            className={cn(
+              "mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full",
+              guidance.tone === "action" && "bg-accent text-white",
+              guidance.tone === "info" &&
+                "bg-[color:var(--color-sage-deep)] text-white",
+              guidance.tone === "alert" && "bg-destructive text-white",
+            )}
+          >
+            {guidance.tone === "action" ? (
+              <MoveRight className="h-3 w-3" />
+            ) : guidance.tone === "alert" ? (
+              <AlertCircle className="h-3 w-3" />
+            ) : (
+              <Info className="h-3 w-3" />
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p
+              className={cn(
+                "text-[0.78rem] font-semibold",
+                guidance.tone === "action" && "text-accent",
+                guidance.tone === "info" &&
+                  "text-[color:var(--color-sage-deep)]",
+                guidance.tone === "alert" && "text-destructive",
+              )}
+            >
+              {guidance.title}
+            </p>
+            <p className="mt-0.5 text-[0.78rem] leading-relaxed text-muted-foreground">
+              {guidance.description}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

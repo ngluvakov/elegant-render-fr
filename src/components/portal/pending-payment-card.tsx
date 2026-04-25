@@ -160,7 +160,7 @@ export function PendingPaymentCard({ orderId, totalEur }: PendingPaymentCardProp
           </div>
           <Button
             variant="accent"
-            size="sm"
+            size="xl"
             className="w-full"
             onClick={handleMockCard}
             disabled={cardPending}

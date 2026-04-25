@@ -192,7 +192,7 @@ export function QuoteSummary() {
             type="button"
             onClick={handleOrder}
             className={cn(
-              buttonVariants({ variant: "accent", size: "lg" }),
+              buttonVariants({ variant: "accent", size: "xl" }),
               "w-full justify-center rounded-xl",
             )}
           >

@@ -147,7 +147,7 @@ export function StepPayment() {
             </div>
             <Button
               variant="accent"
-              size="lg"
+              size="xl"
               className="w-full"
               onClick={handleMockCard}
               disabled={cardPending}

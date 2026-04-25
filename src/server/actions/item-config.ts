@@ -38,6 +38,16 @@ import {
   type TimeOfDayId,
   type SeasonId,
 } from "@/lib/catalog/interior-config";
+import {
+  calcTour360Total,
+  defaultTourAssembly,
+  newTour360Floor,
+  TOUR360_FIRST_FLOOR_EUR,
+  type Tour360Config,
+  type Tour360Floor,
+  type Tour360Room,
+  type TourAssembly,
+} from "@/lib/catalog/tour360-config";
 
 export type ItemConfigResult = {
   error?: string;
@@ -186,19 +196,34 @@ export async function repriceOrder(orderId: string) {
     }));
   }
 
-  // Non-int-static items re-price through the full engine. int-static
-  // items are priced separately below via calcInteriorTotal, but they
-  // still need to appear in the resolver's asset inventory so the
-  // engine can discount sibling services that consume interior-model.
-  // Route them through externalSources (same semantics: contributes to
-  // inventory but doesn't get a breakdown in the engine output).
-  const standardItems = quoteItems.filter((qi) => qi.productId !== "int-static");
+  // int-static and configured int-360 items are priced separately below
+  // (per-floor calculations) but still need to appear in the resolver's
+  // asset inventory so the engine can discount siblings that consume
+  // interior-model / tour-content. Route them through externalSources:
+  // contributes to inventory, no breakdown in the engine output.
+  // int-360 items WITHOUT a per-floor configJson fall back to standard
+  // engine pricing (legacy path for drafts created before this UI).
+  const tour360IdsWithFloors = new Set(
+    items
+      .filter(
+        (i) => i.productId === "int-360" && hasTour360Config(i.configJson),
+      )
+      .map((i) => i.id),
+  );
+  const standardItems = quoteItems.filter(
+    (qi) =>
+      qi.productId !== "int-static" && !tour360IdsWithFloors.has(qi.instanceId),
+  );
   const intStaticAsSources = quoteItems.filter(
     (qi) => qi.productId === "int-static",
+  );
+  const tour360AsSources = quoteItems.filter((qi) =>
+    tour360IdsWithFloors.has(qi.instanceId),
   );
   const calc = calculateQuote(standardItems, [
     ...externalSources,
     ...intStaticAsSources,
+    ...tour360AsSources,
   ]);
   const breakdownById = new Map(calc.items.map((b) => [b.instanceId, b]));
 
@@ -212,6 +237,34 @@ export async function repriceOrder(orderId: string) {
         ? (i.configJson as { floors: InteriorFloor[] }).floors
         : []) as InteriorFloor[];
       const preDiscount = calcInteriorTotal(floors).totalEur;
+      const target = quoteItems.find((q) => q.instanceId === i.id);
+      const discount = target
+        ? resolveDiscount(target, [...quoteItems, ...externalSources])
+        : null;
+      const totalEur = discount
+        ? Math.round(preDiscount * (1 - discount.pct / 100))
+        : preDiscount;
+      await prisma.orderItem.update({
+        where: { id: i.id },
+        data: {
+          totalEur,
+          originalTotalEur: preDiscount,
+          discountPct: discount?.pct ?? 0,
+          discountReason: discount?.reason ?? null,
+        },
+      });
+      orderTotal += totalEur;
+      continue;
+    }
+
+    if (tour360IdsWithFloors.has(i.id)) {
+      // int-360 pricing: per-floor (rooms / hotspots / static cameras)
+      // + tour-assembly cost; resolver discount applied on top.
+      const cfg = readTour360Config(i.configJson);
+      const preDiscount = calcTour360Total(
+        cfg.floors,
+        cfg.tourAssembly,
+      ).totalEur;
       const target = quoteItems.find((q) => q.instanceId === i.id);
       const discount = target
         ? resolveDiscount(target, [...quoteItems, ...externalSources])
@@ -325,14 +378,23 @@ export async function addOrderItem(
   const breakdown = calc.items[0];
   if (!breakdown) return { error: "Greška u izračunu." };
 
-  // int-static items always start with one default floor so the price is
-  // stable (€170) and the UI has something to show.
+  // int-static and int-360 items always start with one default floor so
+  // the price is stable (€170 / €295) and the UI has something to show.
   const initialConfigJson: Prisma.InputJsonValue | undefined =
-    productId === "int-static" ? { floors: [newFloor(0)] } : undefined;
+    productId === "int-static"
+      ? { floors: [newFloor(0)] }
+      : productId === "int-360"
+        ? ({
+            floors: [newTour360Floor(0)],
+            tourAssembly: defaultTourAssembly(),
+          } as unknown as Prisma.InputJsonValue)
+        : undefined;
   const initialTotal =
     productId === "int-static"
       ? INT_STATIC_FIRST_FLOOR_EUR
-      : breakdown.totalEur;
+      : productId === "int-360"
+        ? TOUR360_FIRST_FLOOR_EUR
+        : breakdown.totalEur;
 
   await prisma.orderItem.create({
     data: {
@@ -398,6 +460,131 @@ function sanitizeFloor(f: InteriorFloor, idx: number): InteriorFloor {
     ...(validStyleMode ? { styleMode: validStyleMode } : {}),
     ...(validGlobalStyle ? { globalStyleId: validGlobalStyle } : {}),
   };
+}
+
+// ─── Tour360 (int-360) sanitizers + helpers ────────────────────────────
+
+function hasTour360Config(cj: unknown): boolean {
+  return (
+    !!cj &&
+    typeof cj === "object" &&
+    !Array.isArray(cj) &&
+    "floors" in (cj as Record<string, unknown>) &&
+    Array.isArray((cj as Record<string, unknown>).floors)
+  );
+}
+
+function readTour360Config(cj: unknown): Tour360Config {
+  if (!hasTour360Config(cj)) {
+    return { floors: [], tourAssembly: defaultTourAssembly() };
+  }
+  const obj = cj as Record<string, unknown>;
+  const floors = (obj.floors as Tour360Floor[]) ?? [];
+  const ta =
+    obj.tourAssembly &&
+    typeof obj.tourAssembly === "object" &&
+    !Array.isArray(obj.tourAssembly)
+      ? { ...defaultTourAssembly(), ...(obj.tourAssembly as TourAssembly) }
+      : defaultTourAssembly();
+  return { floors, tourAssembly: ta };
+}
+
+function sanitizeTour360Room(r: Tour360Room): Tour360Room {
+  const styleId = (r.styleId ?? "") as string;
+  const validStyle = (ROOM_STYLE_IDS as readonly string[]).includes(styleId)
+    ? (styleId as RoomStyleId)
+    : undefined;
+  const notes = String(r.notes ?? "").slice(0, 2000);
+  return {
+    name: String(r.name ?? "").trim().slice(0, 80) || "Prostorija",
+    hotspots: Math.max(0, Math.min(20, Number(r.hotspots) || 0)),
+    staticCameras: Math.max(0, Math.min(20, Number(r.staticCameras) || 0)),
+    ...(validStyle ? { styleId: validStyle } : {}),
+    ...(notes ? { notes } : {}),
+  };
+}
+
+function sanitizeTour360Floor(f: Tour360Floor, idx: number): Tour360Floor {
+  const timeOfDay = (f.timeOfDay ?? "") as string;
+  const validTime = (TIME_OF_DAY_IDS as readonly string[]).includes(timeOfDay)
+    ? (timeOfDay as TimeOfDayId)
+    : undefined;
+  const season = (f.season ?? "") as string;
+  const validSeason = (SEASON_IDS as readonly string[]).includes(season)
+    ? (season as SeasonId)
+    : undefined;
+  const styleMode = (f.styleMode ?? "") as string;
+  const validStyleMode = (STYLE_MODES as readonly string[]).includes(styleMode)
+    ? (styleMode as StyleMode)
+    : undefined;
+  const globalStyleId = (f.globalStyleId ?? "") as string;
+  const validGlobalStyle = (ROOM_STYLE_IDS as readonly string[]).includes(
+    globalStyleId,
+  )
+    ? (globalStyleId as RoomStyleId)
+    : undefined;
+  return {
+    id: String(f.id || makeFloorId()),
+    name: String(f.name || `Sprat ${idx + 1}`).trim().slice(0, 80),
+    rooms: (f.rooms ?? []).map(sanitizeTour360Room).slice(0, 40),
+    description: String(f.description ?? "").slice(0, 2000),
+    ...(validTime ? { timeOfDay: validTime } : {}),
+    ...(validSeason ? { season: validSeason } : {}),
+    ...(validStyleMode ? { styleMode: validStyleMode } : {}),
+    ...(validGlobalStyle ? { globalStyleId: validGlobalStyle } : {}),
+  };
+}
+
+function sanitizeTourAssembly(a: TourAssembly | undefined): TourAssembly {
+  const base = defaultTourAssembly();
+  if (!a) return base;
+  const web = Boolean(a.webTourEnabled);
+  return {
+    webTourEnabled: web,
+    floorPlanNavEnabled: web && Boolean(a.floorPlanNavEnabled),
+    whiteLabelEnabled: web && Boolean(a.whiteLabelEnabled),
+  };
+}
+
+export async function updateTour360Config(
+  itemId: string,
+  config: Tour360Config,
+): Promise<ItemConfigResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!item) return { error: "Stavka nije pronađena." };
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (item.productId !== "int-360")
+    return { error: "Samo za 360 virtuelnu turu." };
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." };
+
+  const sanitizedFloors = (config.floors ?? [])
+    .slice(0, 20)
+    .map(sanitizeTour360Floor);
+  const sanitizedAssembly = sanitizeTourAssembly(config.tourAssembly);
+  const { totalEur } = calcTour360Total(sanitizedFloors, sanitizedAssembly);
+
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: {
+        floors: sanitizedFloors,
+        tourAssembly: sanitizedAssembly,
+      } as unknown as Prisma.InputJsonValue,
+      totalEur,
+    },
+  });
+
+  await repriceOrder(item.order.id);
+  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true };
 }
 
 export async function updateInteriorFloors(

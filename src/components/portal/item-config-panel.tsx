@@ -32,7 +32,14 @@ import {
   updateItemConfig,
 } from "@/server/actions/item-config";
 import { InteriorConfigSection } from "./interior-config-section";
+import { Tour360ConfigSection } from "./tour360-config-section";
 import type { InteriorFloor } from "@/lib/catalog/interior-config";
+import {
+  defaultTourAssembly,
+  type Tour360Config,
+  type Tour360Floor,
+  type TourAssembly,
+} from "@/lib/catalog/tour360-config";
 
 type ItemFile = {
   id: string;
@@ -86,8 +93,18 @@ export function ItemConfigPanel({
   const router = useRouter();
 
   const isInterior = item.productId === "int-static";
+  const isTour360 = item.productId === "int-360";
   const interiorFloors =
     (item.configJson?.floors as InteriorFloor[] | undefined) ?? null;
+  const tour360Config: Tour360Config | null = isTour360
+    ? {
+        floors:
+          (item.configJson?.floors as Tour360Floor[] | undefined) ?? [],
+        tourAssembly:
+          (item.configJson?.tourAssembly as TourAssembly | undefined) ??
+          defaultTourAssembly(),
+      }
+    : null;
 
   const handleSave = async () => {
     setSaving(true);
@@ -286,6 +303,14 @@ export function ItemConfigPanel({
               itemId={item.id}
               orderId={item.orderId}
               initialFloors={interiorFloors}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isTour360 ? (
+            <Tour360ConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              initialConfig={tour360Config}
               files={item.files}
               editable={canDelete}
             />

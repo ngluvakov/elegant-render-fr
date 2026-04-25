@@ -42,6 +42,7 @@ import { RenovationConfigSection } from "./renovation-config-section";
 import { DtdConfigSection } from "./dtd-config-section";
 import { ItemRemovalConfigSection } from "./item-removal-config-section";
 import { AnimationConfigSection } from "./animation-config-section";
+import { VrConfigSection } from "./vr-config-section";
 import type { InteriorFloor } from "@/lib/catalog/interior-config";
 import {
   defaultTourAssembly,
@@ -58,6 +59,7 @@ import { readRenovationConfig } from "@/lib/catalog/renovation-config";
 import { readDtdConfig } from "@/lib/catalog/dtd-config";
 import { readItemRemovalConfig } from "@/lib/catalog/item-removal-config";
 import { readAnimationConfig } from "@/lib/catalog/animation-config";
+import { readVrConfig } from "@/lib/catalog/vr-config";
 
 type ItemFile = {
   id: string;
@@ -126,6 +128,8 @@ export function ItemConfigPanel({
     item.productId === "anim-scratch" ||
     item.productId === "anim-existing" ||
     item.productId === "anim-active";
+  const isVr =
+    item.productId === "vr-existing" || item.productId === "vr-standalone";
   const interiorFloors =
     (item.configJson?.floors as InteriorFloor[] | undefined) ?? null;
   const tour360Config: Tour360Config | null = isTour360
@@ -162,6 +166,7 @@ export function ItemConfigPanel({
   const animationConfig = isAnimation
     ? readAnimationConfig(item.configJson)
     : null;
+  const vrConfig = isVr ? readVrConfig(item.configJson) : null;
 
   const handleSave = async () => {
     setSaving(true);
@@ -448,6 +453,15 @@ export function ItemConfigPanel({
                   | "anim-active"
               }
               initialConfig={animationConfig}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isVr && vrConfig ? (
+            <VrConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              productId={item.productId as "vr-existing" | "vr-standalone"}
+              initialConfig={vrConfig}
               files={item.files}
               editable={canDelete}
             />

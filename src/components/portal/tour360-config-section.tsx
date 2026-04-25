@@ -2,9 +2,10 @@
  * Tour360ConfigSection — Multi-floor configurator for the int-360 product
  * (360 virtual tour). Mirrors InteriorConfigSection's layout: each floor
  * is a self-contained subset (rooms with two steppers — hotspots +
- * static cameras — description, files, advanced settings). Adds a
- * "Tour Assembly" card at the bottom for the per-item web tour /
- * floor-plan navigation / white-label flags. Autosaves the whole config
+ * static cameras — description, files, advanced settings). The tour
+ * add-ons card (web tour / floor-plan navigation / white-label flags) is
+ * surfaced just below the summary bar so the upsell is visible before
+ * the customer scrolls through floor configs. Autosaves the whole config
  * (floors + tourAssembly) to OrderItem.configJson with a 600ms debounce.
  */
 "use client";
@@ -932,11 +933,11 @@ export function TourAssemblyCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Sklapanje u interaktivnu turu
+            Dodaci za turu
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Vaši 360 renderi mogu biti spojeni u interaktivnu web turu sa
-            navigacijom između prostorija.
+            Spojite 360 rendere u interaktivnu web turu sa navigacijom između
+            prostorija.
           </p>
         </div>
         {assemblyCalc.enabled && (
@@ -1281,6 +1282,20 @@ export function Tour360ConfigSection({
         </div>
       </div>
 
+      {/* Tour add-ons — surfaced near the top so the upsell is visible early */}
+      <TourAssemblyCard
+        assembly={tourAssembly}
+        assemblyCalc={calc.assembly}
+        totalHotspots={calc.totalHotspots}
+        editable={editable}
+        orderId={orderId}
+        itemId={itemId}
+        logoFiles={logoFiles}
+        onPatch={(patch) =>
+          setTourAssembly((prev) => ({ ...prev, ...patch }))
+        }
+      />
+
       {/* Floor list */}
       {floors.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border/40 bg-card/40 px-4 py-8 text-center">
@@ -1337,19 +1352,6 @@ export function Tour360ConfigSection({
         </button>
       )}
 
-      {/* Tour Assembly card */}
-      <TourAssemblyCard
-        assembly={tourAssembly}
-        assemblyCalc={calc.assembly}
-        totalHotspots={calc.totalHotspots}
-        editable={editable}
-        orderId={orderId}
-        itemId={itemId}
-        logoFiles={logoFiles}
-        onPatch={(patch) =>
-          setTourAssembly((prev) => ({ ...prev, ...patch }))
-        }
-      />
     </div>
   );
 }

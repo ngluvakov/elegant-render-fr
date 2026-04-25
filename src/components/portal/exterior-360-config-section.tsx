@@ -1,8 +1,8 @@
 /**
  * Ext360ConfigSection — Per-item configurator for the ext-360 product
- * (360 eksterijer). Hotspot stepper drives ext-360-hotspot. Tour
- * Assembly card on the bottom (same as int-360, with the same flat-10
- * free-threshold logic).
+ * (360 eksterijer). Hotspot stepper drives ext-360-hotspot. Tour add-ons
+ * card sits just below the summary bar (same as int-360, with the same
+ * flat-10 free-threshold logic) so the upsell is visible early.
  */
 "use client";
 
@@ -291,6 +291,20 @@ export function Ext360ConfigSection({
         </div>
       </div>
 
+      {/* Tour add-ons — surfaced near the top so the upsell is visible early */}
+      <TourAssemblyCard
+        assembly={config.tourAssembly}
+        assemblyCalc={assemblyCalc}
+        totalHotspots={config.hotspotCount}
+        editable={editable}
+        orderId={orderId}
+        itemId={itemId}
+        logoFiles={logoFiles}
+        onPatch={(p: Partial<TourAssembly>) =>
+          patch({ tourAssembly: { ...config.tourAssembly, ...p } })
+        }
+      />
+
       <div className="space-y-1">
         <Label htmlFor={`name-${itemId}`} className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
           <Pencil className="h-3 w-3 text-accent/60" />
@@ -517,19 +531,6 @@ export function Ext360ConfigSection({
           </div>
         </div>
       </Collapsible>
-
-      <TourAssemblyCard
-        assembly={config.tourAssembly}
-        assemblyCalc={assemblyCalc}
-        totalHotspots={config.hotspotCount}
-        editable={editable}
-        orderId={orderId}
-        itemId={itemId}
-        logoFiles={logoFiles}
-        onPatch={(p: Partial<TourAssembly>) =>
-          patch({ tourAssembly: { ...config.tourAssembly, ...p } })
-        }
-      />
     </div>
   );
 }

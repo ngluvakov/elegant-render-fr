@@ -65,6 +65,12 @@ import {
   sanitizeFloorplan2dConfig,
   type Floorplan2dConfig,
 } from "@/lib/catalog/floorplan-2d-config";
+import {
+  addOnQuantitiesFor as spAddOnQuantitiesFor,
+  defaultSiteplanConfig,
+  sanitizeSiteplanConfig,
+  type SiteplanConfig,
+} from "@/lib/catalog/siteplan-config";
 
 export type ItemConfigResult = {
   error?: string;
@@ -413,7 +419,9 @@ export async function addOrderItem(
             ? (defaultFloorplanConfig() as unknown as Prisma.InputJsonValue)
             : productId === "fp2d-single"
               ? (defaultFloorplan2dConfig() as unknown as Prisma.InputJsonValue)
-              : undefined;
+              : productId === "sp-first"
+                ? (defaultSiteplanConfig() as unknown as Prisma.InputJsonValue)
+                : undefined;
   const initialTotal =
     productId === "int-static"
       ? INT_STATIC_FIRST_FLOOR_EUR
@@ -738,6 +746,50 @@ export async function updateFloorplan2dConfig(
     productId: "fp2d-single",
     categoryId: "floorplans-2d",
     addOnQuantities: fp2dAddOnQuantitiesFor(sanitized),
+  };
+  const calc = calculateQuote([qi]);
+  const addOns = calc.items[0]?.addOns ?? [];
+
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+    },
+  });
+
+  await repriceOrder(item.order.id);
+  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true };
+}
+
+// ─── Site plan (sp-first) ──────────────────────────────────────────────
+
+export async function updateSiteplanConfig(
+  itemId: string,
+  config: SiteplanConfig,
+): Promise<ItemConfigResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!item) return { error: "Stavka nije pronađena." };
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (item.productId !== "sp-first")
+    return { error: "Samo za 3D situacioni prikaz." };
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." };
+
+  const sanitized = sanitizeSiteplanConfig(config);
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId: "sp-first",
+    categoryId: "siteplans",
+    addOnQuantities: spAddOnQuantitiesFor(sanitized),
   };
   const calc = calculateQuote([qi]);
   const addOns = calc.items[0]?.addOns ?? [];

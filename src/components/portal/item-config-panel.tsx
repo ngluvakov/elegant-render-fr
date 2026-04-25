@@ -36,6 +36,7 @@ import { Tour360ConfigSection } from "./tour360-config-section";
 import { LandscapeConfigSection } from "./landscape-config-section";
 import { FloorplanConfigSection } from "./floorplan-config-section";
 import { Floorplan2dConfigSection } from "./floorplan-2d-config-section";
+import { SiteplanConfigSection } from "./siteplan-config-section";
 import type { InteriorFloor } from "@/lib/catalog/interior-config";
 import {
   defaultTourAssembly,
@@ -46,6 +47,7 @@ import {
 import { readLandscapeConfig } from "@/lib/catalog/landscape-config";
 import { readFloorplanConfig } from "@/lib/catalog/floorplan-config";
 import { readFloorplan2dConfig } from "@/lib/catalog/floorplan-2d-config";
+import { readSiteplanConfig } from "@/lib/catalog/siteplan-config";
 
 type ItemFile = {
   id: string;
@@ -103,6 +105,7 @@ export function ItemConfigPanel({
   const isLandscape = item.productId === "land-static";
   const isFloorplan = item.productId === "fp3d-single";
   const isFloorplan2d = item.productId === "fp2d-single";
+  const isSiteplan = item.productId === "sp-first";
   const interiorFloors =
     (item.configJson?.floors as InteriorFloor[] | undefined) ?? null;
   const tour360Config: Tour360Config | null = isTour360
@@ -122,6 +125,9 @@ export function ItemConfigPanel({
     : null;
   const floorplan2dConfig = isFloorplan2d
     ? readFloorplan2dConfig(item.configJson)
+    : null;
+  const siteplanConfig = isSiteplan
+    ? readSiteplanConfig(item.configJson)
     : null;
 
   const handleSave = async () => {
@@ -353,6 +359,14 @@ export function ItemConfigPanel({
               itemId={item.id}
               orderId={item.orderId}
               initialConfig={floorplan2dConfig}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isSiteplan && siteplanConfig ? (
+            <SiteplanConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              initialConfig={siteplanConfig}
               files={item.files}
               editable={canDelete}
             />

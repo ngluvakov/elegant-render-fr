@@ -38,6 +38,7 @@ import { FloorplanConfigSection } from "./floorplan-config-section";
 import { Floorplan2dConfigSection } from "./floorplan-2d-config-section";
 import { SiteplanConfigSection } from "./siteplan-config-section";
 import { StagingConfigSection } from "./staging-config-section";
+import { RenovationConfigSection } from "./renovation-config-section";
 import type { InteriorFloor } from "@/lib/catalog/interior-config";
 import {
   defaultTourAssembly,
@@ -50,6 +51,7 @@ import { readFloorplanConfig } from "@/lib/catalog/floorplan-config";
 import { readFloorplan2dConfig } from "@/lib/catalog/floorplan-2d-config";
 import { readSiteplanConfig } from "@/lib/catalog/siteplan-config";
 import { readStagingConfig } from "@/lib/catalog/staging-config";
+import { readRenovationConfig } from "@/lib/catalog/renovation-config";
 
 type ItemFile = {
   id: string;
@@ -110,6 +112,7 @@ export function ItemConfigPanel({
   const isSiteplan = item.productId === "sp-first";
   const isStaging =
     item.productId === "vs-static" || item.productId === "vs-360";
+  const isRenovation = item.productId === "reno-image";
   const interiorFloors =
     (item.configJson?.floors as InteriorFloor[] | undefined) ?? null;
   const tour360Config: Tour360Config | null = isTour360
@@ -135,6 +138,9 @@ export function ItemConfigPanel({
     : null;
   const stagingConfig = isStaging
     ? readStagingConfig(item.configJson)
+    : null;
+  const renovationConfig = isRenovation
+    ? readRenovationConfig(item.configJson)
     : null;
 
   const handleSave = async () => {
@@ -383,6 +389,14 @@ export function ItemConfigPanel({
               orderId={item.orderId}
               productId={item.productId as "vs-static" | "vs-360"}
               initialConfig={stagingConfig}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isRenovation && renovationConfig ? (
+            <RenovationConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              initialConfig={renovationConfig}
               files={item.files}
               editable={canDelete}
             />

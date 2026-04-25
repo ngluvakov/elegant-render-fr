@@ -78,6 +78,12 @@ import {
   type StagingConfig,
   type StagingProductId,
 } from "@/lib/catalog/staging-config";
+import {
+  addOnQuantitiesFor as renoAddOnQuantitiesFor,
+  defaultRenovationConfig,
+  sanitizeRenovationConfig,
+  type RenovationConfig,
+} from "@/lib/catalog/renovation-config";
 
 export type ItemConfigResult = {
   error?: string;
@@ -430,7 +436,9 @@ export async function addOrderItem(
                 ? (defaultSiteplanConfig() as unknown as Prisma.InputJsonValue)
                 : productId === "vs-static" || productId === "vs-360"
                   ? (defaultStagingConfig() as unknown as Prisma.InputJsonValue)
-                  : undefined;
+                  : productId === "reno-image"
+                    ? (defaultRenovationConfig() as unknown as Prisma.InputJsonValue)
+                    : undefined;
   const initialTotal =
     productId === "int-static"
       ? INT_STATIC_FIRST_FLOOR_EUR
@@ -844,6 +852,50 @@ export async function updateStagingConfig(
     productId,
     categoryId: "staging",
     addOnQuantities: vsAddOnQuantitiesFor(sanitized, productId),
+  };
+  const calc = calculateQuote([qi]);
+  const addOns = calc.items[0]?.addOns ?? [];
+
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+    },
+  });
+
+  await repriceOrder(item.order.id);
+  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true };
+}
+
+// ─── Virtual renovation (reno-image) ──────────────────────────────────
+
+export async function updateRenovationConfig(
+  itemId: string,
+  config: RenovationConfig,
+): Promise<ItemConfigResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!item) return { error: "Stavka nije pronađena." };
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (item.productId !== "reno-image")
+    return { error: "Samo za virtuelnu renovaciju." };
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." };
+
+  const sanitized = sanitizeRenovationConfig(config);
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId: "reno-image",
+    categoryId: "renovation",
+    addOnQuantities: renoAddOnQuantitiesFor(sanitized),
   };
   const calc = calculateQuote([qi]);
   const addOns = calc.items[0]?.addOns ?? [];

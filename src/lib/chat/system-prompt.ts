@@ -74,7 +74,6 @@ ANIMACIJA I IMERZIJA:
 - anim-scratch → Animacija (od nule) → od €15/sek (min 15s = €225)
 - anim-existing → Animacija (postojeći model) → od €10/sek
 - anim-active → Animacija (aktivan projekat) → od €8/sek
-- vt-tour → 360 tura → od €20
 - vr-existing → VR Walkthrough (postojeći) → od €1500
 - vr-standalone → VR Walkthrough (samostalno) → od €3000
 

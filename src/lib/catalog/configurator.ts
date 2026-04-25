@@ -992,55 +992,6 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
   },
 
   // ═══════════════════════════════════════════
-  // 1.3 — 360 VIRTUAL TOURS
-  // ═══════════════════════════════════════════
-  {
-    id: "virtual-tours",
-    label: "360 virtuelne ture",
-    sectionLabel: "1.3 — Animacija i imerzija",
-    icon: "camera",
-    description: "Interaktivne web ture sa 360° panoramskim renderima",
-    products: [
-      {
-        id: "vt-tour",
-        consumes: [
-          { requires: "tour-content", discountPct: 100, reason: "360° renderi već postoje u porudžbini" },
-        ],
-        label: "Sklapanje i hosting ture",
-        basePriceEur: 20,
-        unitLabel: "web interaktivna tura",
-        includes: [
-          "Web platforma za turu",
-          "Kontrole navigacije",
-          "Responzivan dizajn",
-        ],
-        addOns: [
-          {
-            id: "vt-floorplan",
-            label: "Interaktivna navigacija planom",
-            description: "Klikabilni overlay osnove sprata",
-            priceEur: 15,
-            priceType: "fixed",
-            includedQty: 0,
-            maxQty: 1,
-            volumeRules: [],
-          },
-          {
-            id: "vt-branded",
-            label: "Brendirana tura",
-            description: "Prilagođen UI, logo, boje — white-label",
-            priceEur: 35,
-            priceType: "fixed",
-            includedQty: 0,
-            maxQty: 1,
-            volumeRules: [],
-          },
-        ],
-      },
-    ],
-  },
-
-  // ═══════════════════════════════════════════
   // 1.3 — VR EXPERIENCES (OUTSOURCED)
   // ═══════════════════════════════════════════
   {

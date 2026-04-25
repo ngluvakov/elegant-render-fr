@@ -125,19 +125,6 @@ const cases: Case[] = [
     },
   },
   {
-    name: "int-360 + vt-tour — tour −100%",
-    items: [
-      qi("i", "int-360", "interior"),
-      qi("t", "vt-tour", "virtual-tours"),
-    ],
-    expect: {
-      perItem: [
-        { instanceId: "i", discountPct: 0 },
-        { instanceId: "t", total: 0, discountPct: 100 },
-      ],
-    },
-  },
-  {
     name: "Animation 30s + ext-static — anim −33%, ext-static −50% (bidirectional)",
     items: [
       qi("e", "ext-static", "exterior"),

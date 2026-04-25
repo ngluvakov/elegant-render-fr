@@ -59,6 +59,12 @@ import {
   sanitizeFloorplanConfig,
   type FloorplanConfig,
 } from "@/lib/catalog/floorplan-config";
+import {
+  addOnQuantitiesFor as fp2dAddOnQuantitiesFor,
+  defaultFloorplan2dConfig,
+  sanitizeFloorplan2dConfig,
+  type Floorplan2dConfig,
+} from "@/lib/catalog/floorplan-2d-config";
 
 export type ItemConfigResult = {
   error?: string;
@@ -405,7 +411,9 @@ export async function addOrderItem(
           ? (defaultLandscapeConfig() as unknown as Prisma.InputJsonValue)
           : productId === "fp3d-single"
             ? (defaultFloorplanConfig() as unknown as Prisma.InputJsonValue)
-            : undefined;
+            : productId === "fp2d-single"
+              ? (defaultFloorplan2dConfig() as unknown as Prisma.InputJsonValue)
+              : undefined;
   const initialTotal =
     productId === "int-static"
       ? INT_STATIC_FIRST_FLOOR_EUR
@@ -686,6 +694,50 @@ export async function updateFloorplanConfig(
     productId: "fp3d-single",
     categoryId: "floorplans-3d",
     addOnQuantities: fpAddOnQuantitiesFor(sanitized),
+  };
+  const calc = calculateQuote([qi]);
+  const addOns = calc.items[0]?.addOns ?? [];
+
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+    },
+  });
+
+  await repriceOrder(item.order.id);
+  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true };
+}
+
+// ─── Floorplan 2D (fp2d-single) ────────────────────────────────────────
+
+export async function updateFloorplan2dConfig(
+  itemId: string,
+  config: Floorplan2dConfig,
+): Promise<ItemConfigResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!item) return { error: "Stavka nije pronađena." };
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (item.productId !== "fp2d-single")
+    return { error: "Samo za 2D osnove prostora." };
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." };
+
+  const sanitized = sanitizeFloorplan2dConfig(config);
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId: "fp2d-single",
+    categoryId: "floorplans-2d",
+    addOnQuantities: fp2dAddOnQuantitiesFor(sanitized),
   };
   const calc = calculateQuote([qi]);
   const addOns = calc.items[0]?.addOns ?? [];

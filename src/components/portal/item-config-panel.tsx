@@ -35,6 +35,7 @@ import { InteriorConfigSection } from "./interior-config-section";
 import { Tour360ConfigSection } from "./tour360-config-section";
 import { LandscapeConfigSection } from "./landscape-config-section";
 import { FloorplanConfigSection } from "./floorplan-config-section";
+import { Floorplan2dConfigSection } from "./floorplan-2d-config-section";
 import type { InteriorFloor } from "@/lib/catalog/interior-config";
 import {
   defaultTourAssembly,
@@ -44,6 +45,7 @@ import {
 } from "@/lib/catalog/tour360-config";
 import { readLandscapeConfig } from "@/lib/catalog/landscape-config";
 import { readFloorplanConfig } from "@/lib/catalog/floorplan-config";
+import { readFloorplan2dConfig } from "@/lib/catalog/floorplan-2d-config";
 
 type ItemFile = {
   id: string;
@@ -100,6 +102,7 @@ export function ItemConfigPanel({
   const isTour360 = item.productId === "int-360";
   const isLandscape = item.productId === "land-static";
   const isFloorplan = item.productId === "fp3d-single";
+  const isFloorplan2d = item.productId === "fp2d-single";
   const interiorFloors =
     (item.configJson?.floors as InteriorFloor[] | undefined) ?? null;
   const tour360Config: Tour360Config | null = isTour360
@@ -116,6 +119,9 @@ export function ItemConfigPanel({
     : null;
   const floorplanConfig = isFloorplan
     ? readFloorplanConfig(item.configJson)
+    : null;
+  const floorplan2dConfig = isFloorplan2d
+    ? readFloorplan2dConfig(item.configJson)
     : null;
 
   const handleSave = async () => {
@@ -339,6 +345,14 @@ export function ItemConfigPanel({
               itemId={item.id}
               orderId={item.orderId}
               initialConfig={floorplanConfig}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isFloorplan2d && floorplan2dConfig ? (
+            <Floorplan2dConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              initialConfig={floorplan2dConfig}
               files={item.files}
               editable={canDelete}
             />

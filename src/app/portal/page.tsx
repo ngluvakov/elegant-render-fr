@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   AlertCircle,
   Briefcase,
   Download,
   MessageSquare,
+  Plus,
   ShoppingBag,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { buttonVariants } from "@/components/ui/button";
 import { SummaryStatCard } from "@/components/portal/summary-stat-card";
 import { OrderOverviewCard } from "@/components/portal/order-overview-card";
 import { ActivityFeed } from "@/components/portal/activity-feed";
@@ -71,15 +75,27 @@ export default async function PortalPage() {
   return (
     <div className="space-y-8">
       {/* Welcome header */}
-      <div>
-        <h1 className="font-heading text-3xl text-foreground md:text-4xl">
-          Dobrodošli, {user?.name?.split(" ")[0] || "korisniče"}
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {activeCount > 0
-            ? `${activeCount} aktivn${activeCount === 1 ? "i" : "ih"} projek${activeCount === 1 ? "at" : "ata"}`
-            : "Nemate aktivnih projekata"}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-3xl text-foreground md:text-4xl">
+            Dobrodošli, {user?.name?.split(" ")[0] || "korisniče"}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {activeCount > 0
+              ? `${activeCount} aktivn${activeCount === 1 ? "i" : "ih"} projek${activeCount === 1 ? "at" : "ata"}`
+              : "Nemate aktivnih projekata"}
+          </p>
+        </div>
+        <Link
+          href="/cene"
+          className={cn(
+            buttonVariants({ variant: "accent", size: "default" }),
+            "shrink-0",
+          )}
+        >
+          <Plus className="h-4 w-4" />
+          Nova porudžbina
+        </Link>
       </div>
 
       {/* Stat cards */}

@@ -41,6 +41,7 @@ import { StagingConfigSection } from "./staging-config-section";
 import { RenovationConfigSection } from "./renovation-config-section";
 import { DtdConfigSection } from "./dtd-config-section";
 import { ItemRemovalConfigSection } from "./item-removal-config-section";
+import { AnimationConfigSection } from "./animation-config-section";
 import type { InteriorFloor } from "@/lib/catalog/interior-config";
 import {
   defaultTourAssembly,
@@ -56,6 +57,7 @@ import { readStagingConfig } from "@/lib/catalog/staging-config";
 import { readRenovationConfig } from "@/lib/catalog/renovation-config";
 import { readDtdConfig } from "@/lib/catalog/dtd-config";
 import { readItemRemovalConfig } from "@/lib/catalog/item-removal-config";
+import { readAnimationConfig } from "@/lib/catalog/animation-config";
 
 type ItemFile = {
   id: string;
@@ -120,6 +122,10 @@ export function ItemConfigPanel({
   const isDtd = item.productId === "dtd-image";
   const isItemRemoval =
     item.productId === "ir-simple" || item.productId === "ir-complex";
+  const isAnimation =
+    item.productId === "anim-scratch" ||
+    item.productId === "anim-existing" ||
+    item.productId === "anim-active";
   const interiorFloors =
     (item.configJson?.floors as InteriorFloor[] | undefined) ?? null;
   const tour360Config: Tour360Config | null = isTour360
@@ -152,6 +158,9 @@ export function ItemConfigPanel({
   const dtdConfig = isDtd ? readDtdConfig(item.configJson) : null;
   const itemRemovalConfig = isItemRemoval
     ? readItemRemovalConfig(item.configJson)
+    : null;
+  const animationConfig = isAnimation
+    ? readAnimationConfig(item.configJson)
     : null;
 
   const handleSave = async () => {
@@ -425,6 +434,20 @@ export function ItemConfigPanel({
               orderId={item.orderId}
               productId={item.productId as "ir-simple" | "ir-complex"}
               initialConfig={itemRemovalConfig}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isAnimation && animationConfig ? (
+            <AnimationConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              productId={
+                item.productId as
+                  | "anim-scratch"
+                  | "anim-existing"
+                  | "anim-active"
+              }
+              initialConfig={animationConfig}
               files={item.files}
               editable={canDelete}
             />

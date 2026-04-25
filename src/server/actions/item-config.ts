@@ -97,6 +97,13 @@ import {
   type ItemRemovalConfig,
   type ItemRemovalProductId,
 } from "@/lib/catalog/item-removal-config";
+import {
+  addOnQuantitiesFor as animAddOnQuantitiesFor,
+  defaultAnimationConfig,
+  sanitizeAnimationConfig,
+  type AnimationConfig,
+  type AnimationProductId,
+} from "@/lib/catalog/animation-config";
 
 export type ItemConfigResult = {
   error?: string;
@@ -455,7 +462,11 @@ export async function addOrderItem(
                       ? (defaultDtdConfig() as unknown as Prisma.InputJsonValue)
                       : productId === "ir-simple" || productId === "ir-complex"
                         ? (defaultItemRemovalConfig() as unknown as Prisma.InputJsonValue)
-                        : undefined;
+                        : productId === "anim-scratch" ||
+                            productId === "anim-existing" ||
+                            productId === "anim-active"
+                          ? (defaultAnimationConfig() as unknown as Prisma.InputJsonValue)
+                          : undefined;
   const initialTotal =
     productId === "int-static"
       ? INT_STATIC_FIRST_FLOOR_EUR
@@ -1011,6 +1022,59 @@ export async function updateItemRemovalConfig(
     data: {
       configJson: sanitized as unknown as Prisma.InputJsonValue,
       addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+    },
+  });
+
+  await repriceOrder(item.order.id);
+  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true };
+}
+
+// ─── 3D animation (anim-scratch / anim-existing / anim-active) ────────
+
+export async function updateAnimationConfig(
+  itemId: string,
+  config: AnimationConfig,
+): Promise<ItemConfigResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!item) return { error: "Stavka nije pronađena." };
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (
+    item.productId !== "anim-scratch" &&
+    item.productId !== "anim-existing" &&
+    item.productId !== "anim-active"
+  )
+    return { error: "Samo za 3D animaciju." };
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." };
+
+  const productId = item.productId as AnimationProductId;
+  const sanitized = sanitizeAnimationConfig(config);
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId,
+    categoryId: "animation",
+    addOnQuantities: animAddOnQuantitiesFor(sanitized, productId),
+    durationSeconds: sanitized.durationSeconds,
+  };
+  const calc = calculateQuote([qi]);
+  const breakdown = calc.items[0];
+  const addOns = breakdown?.addOns ?? [];
+
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+      durationSeconds: sanitized.durationSeconds,
+      durationDiscount: breakdown?.durationDiscount ?? null,
     },
   });
 

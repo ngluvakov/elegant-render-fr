@@ -88,6 +88,9 @@ export type InteriorRoom = {
   notes?: string;
 };
 
+export type StyleMode = "all" | "per-room";
+export const STYLE_MODES = ["all", "per-room"] as const;
+
 export type InteriorFloor = {
   id: string;
   name: string;
@@ -95,7 +98,25 @@ export type InteriorFloor = {
   description?: string;
   timeOfDay?: TimeOfDayId;
   season?: SeasonId;
+  styleMode?: StyleMode;
+  globalStyleId?: RoomStyleId;
 };
+
+/**
+ * Resolves the style that actually applies to a room. In "all" mode the
+ * floor-level globalStyleId wins; the per-room styleId is preserved on
+ * the room object but not used. In "per-room" mode the room's own
+ * styleId is used. Treat undefined floor.styleMode as "all" for
+ * backwards-compat with floors created before the toggle existed.
+ */
+export function effectiveStyleId(
+  floor: InteriorFloor,
+  room: InteriorRoom,
+): RoomStyleId | undefined {
+  return (floor.styleMode ?? "all") === "per-room"
+    ? room.styleId
+    : floor.globalStyleId;
+}
 
 export const INT_STATIC_FIRST_FLOOR_EUR = 170;
 export const INT_STATIC_EXTRA_FLOOR_EUR = 120;

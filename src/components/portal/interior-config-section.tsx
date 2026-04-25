@@ -59,6 +59,7 @@ import {
   type InteriorRoom,
   type RoomStyleId,
   type SeasonId,
+  type StyleMode,
   type TimeOfDayId,
 } from "@/lib/catalog/interior-config";
 import {
@@ -126,6 +127,8 @@ function FloorPanel({
   const sourceFiles = files.filter((f) => f.kind !== "window-view");
   const viewFiles = files.filter((f) => f.kind === "window-view");
 
+  const styleMode: StyleMode = floor.styleMode ?? "all";
+
   const updateRoom = (rIdx: number, patch: Partial<InteriorRoom>) => {
     onPatch({
       rooms: floor.rooms.map((r, i) => (i === rIdx ? { ...r, ...patch } : r)),
@@ -145,7 +148,14 @@ function FloorPanel({
   const addRoom = () => {
     if (floor.rooms.length >= 40) return;
     onPatch({
-      rooms: [...floor.rooms, { name: `Prostorija ${floor.rooms.length + 1}`, cameras: 1 }],
+      rooms: [
+        ...floor.rooms,
+        {
+          name: `Prostorija ${floor.rooms.length + 1}`,
+          cameras: 1,
+          ...(floor.globalStyleId ? { styleId: floor.globalStyleId } : {}),
+        },
+      ],
     });
   };
   const removeRoom = (rIdx: number) => {
@@ -365,6 +375,66 @@ function FloorPanel({
               />
             </div>
 
+            {/* Style mode toggle + global picker */}
+            <div className="space-y-2 rounded-md border border-border/30 bg-secondary/20 p-2.5">
+              <label
+                htmlFor={`style-mode-${floor.id}`}
+                className="flex cursor-pointer items-center justify-between gap-3"
+              >
+                <div className="flex items-center gap-2">
+                  <Palette className="h-3 w-3 text-accent" />
+                  <span className="text-[0.7rem] font-medium text-foreground">
+                    Stil po sobi
+                  </span>
+                  <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
+                    · {styleMode === "per-room"
+                      ? "svaka soba bira sama"
+                      : "isti stil za sve sobe"}
+                  </span>
+                </div>
+                <Switch
+                  id={`style-mode-${floor.id}`}
+                  checked={styleMode === "per-room"}
+                  onCheckedChange={(v) =>
+                    onPatch({ styleMode: v ? "per-room" : "all" })
+                  }
+                  disabled={!editable}
+                />
+              </label>
+
+              {styleMode === "all" && (
+                <div className="space-y-1">
+                  <Label
+                    htmlFor={`global-style-${floor.id}`}
+                    className="text-[0.7rem]"
+                  >
+                    Stil za sve sobe
+                  </Label>
+                  <select
+                    id={`global-style-${floor.id}`}
+                    value={floor.globalStyleId ?? ""}
+                    onChange={(e) =>
+                      onPatch({
+                        globalStyleId:
+                          (e.target.value || undefined) as
+                            | RoomStyleId
+                            | undefined,
+                      })
+                    }
+                    disabled={!editable}
+                    className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
+                  >
+                    <option value="">— izaberite —</option>
+                    {ROOM_STYLES.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
             {/* Rooms list */}
             {floor.rooms.length === 0 ? (
               <div className="rounded-md border border-dashed border-border/40 px-3 py-4 text-center">
@@ -394,24 +464,26 @@ function FloorPanel({
                           className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground/50"
                           placeholder="Naziv prostorije"
                         />
-                        <select
-                          value={room.styleId ?? ""}
-                          onChange={(e) =>
-                            updateRoom(rIdx, {
-                              styleId: (e.target.value || undefined) as RoomStyleId | undefined,
-                            })
-                          }
-                          disabled={!editable}
-                          aria-label="Stil enterijera"
-                          className="rounded bg-secondary/60 px-2 py-1 text-[0.72rem] text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
-                        >
-                          <option value="">Stil — izaberite</option>
-                          {ROOM_STYLES.map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.label}
-                            </option>
-                          ))}
-                        </select>
+                        {styleMode === "per-room" && (
+                          <select
+                            value={room.styleId ?? ""}
+                            onChange={(e) =>
+                              updateRoom(rIdx, {
+                                styleId: (e.target.value || undefined) as RoomStyleId | undefined,
+                              })
+                            }
+                            disabled={!editable}
+                            aria-label="Stil enterijera"
+                            className="rounded bg-secondary/60 px-2 py-1 text-[0.72rem] text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
+                          >
+                            <option value="">Stil — izaberite</option>
+                            {ROOM_STYLES.map((s) => (
+                              <option key={s.id} value={s.id}>
+                                {s.label}
+                              </option>
+                            ))}
+                          </select>
+                        )}
                         {isBeyondRooms && (
                           <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.62rem] font-semibold text-accent">
                             +€{INT_STATIC_EXTRA_ROOM_EUR}
@@ -707,12 +779,16 @@ function FloorPanel({
         <StyleGuideModal
           onClose={() => setStyleGuideOpen(false)}
           onApplyToAll={(styleId) => {
-            onPatch({
-              rooms: floor.rooms.map((r) => ({ ...r, styleId })),
-            });
+            if (styleMode === "all") {
+              onPatch({ globalStyleId: styleId });
+            } else {
+              onPatch({
+                rooms: floor.rooms.map((r) => ({ ...r, styleId })),
+              });
+            }
             setStyleGuideOpen(false);
           }}
-          editable={editable && floor.rooms.length > 0}
+          editable={editable && (styleMode === "all" || floor.rooms.length > 0)}
         />
       )}
     </div>

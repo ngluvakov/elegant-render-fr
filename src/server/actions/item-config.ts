@@ -28,11 +28,13 @@ import {
   makeFloorId,
   INT_STATIC_FIRST_FLOOR_EUR,
   ROOM_STYLE_IDS,
+  STYLE_MODES,
   TIME_OF_DAY_IDS,
   SEASON_IDS,
   type InteriorFloor,
   type InteriorRoom,
   type RoomStyleId,
+  type StyleMode,
   type TimeOfDayId,
   type SeasonId,
 } from "@/lib/catalog/interior-config";
@@ -376,6 +378,16 @@ function sanitizeFloor(f: InteriorFloor, idx: number): InteriorFloor {
   const validSeason = (SEASON_IDS as readonly string[]).includes(season)
     ? (season as SeasonId)
     : undefined;
+  const styleMode = (f.styleMode ?? "") as string;
+  const validStyleMode = (STYLE_MODES as readonly string[]).includes(styleMode)
+    ? (styleMode as StyleMode)
+    : undefined;
+  const globalStyleId = (f.globalStyleId ?? "") as string;
+  const validGlobalStyle = (ROOM_STYLE_IDS as readonly string[]).includes(
+    globalStyleId,
+  )
+    ? (globalStyleId as RoomStyleId)
+    : undefined;
   return {
     id: String(f.id || makeFloorId()),
     name: String(f.name || `Sprat ${idx + 1}`).trim().slice(0, 80),
@@ -383,6 +395,8 @@ function sanitizeFloor(f: InteriorFloor, idx: number): InteriorFloor {
     description: String(f.description ?? "").slice(0, 2000),
     ...(validTime ? { timeOfDay: validTime } : {}),
     ...(validSeason ? { season: validSeason } : {}),
+    ...(validStyleMode ? { styleMode: validStyleMode } : {}),
+    ...(validGlobalStyle ? { globalStyleId: validGlobalStyle } : {}),
   };
 }
 

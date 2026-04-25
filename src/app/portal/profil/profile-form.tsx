@@ -16,12 +16,14 @@ type ProfileFormProps = {
   defaultName: string;
   defaultEmail: string;
   defaultPhone: string;
+  hasPassword: boolean;
 };
 
 export function ProfileForm({
   defaultName,
   defaultEmail,
   defaultPhone,
+  hasPassword,
 }: ProfileFormProps) {
   const [state, formAction, pending] = useActionState(
     updateProfileAction,
@@ -82,10 +84,10 @@ export function ProfileForm({
         />
       </div>
 
-      <div className="space-y-2">
+      <div id="password" className="space-y-2 scroll-mt-24">
         <Label htmlFor="newPassword">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Nova lozinka (opciono)
+          {hasPassword ? "Nova lozinka (opciono)" : "Postavite lozinku"}
         </Label>
         <Input
           id="newPassword"
@@ -93,8 +95,16 @@ export function ProfileForm({
           type="password"
           autoComplete="new-password"
           minLength={8}
-          placeholder="Ostavite prazno ako ne menjate"
+          placeholder={
+            hasPassword ? "Ostavite prazno ako ne menjate" : "Najmanje 8 karaktera"
+          }
         />
+        {!hasPassword && (
+          <p className="text-xs text-muted-foreground">
+            Nakon postavljanja, moći ćete da se prijavite direktno bez
+            čekanja na link iz email-a.
+          </p>
+        )}
       </div>
 
       <Button type="submit" variant="accent" size="lg" disabled={pending}>

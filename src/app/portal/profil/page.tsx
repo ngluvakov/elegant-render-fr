@@ -15,10 +15,12 @@ export default async function ProfilPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { name: true, email: true, phone: true },
+    select: { name: true, email: true, phone: true, passwordHash: true },
   });
 
   if (!user) return null;
+
+  const hasPassword = Boolean(user.passwordHash);
 
   return (
     <div className="mx-auto w-full max-w-2xl px-6 py-20 md:py-28">
@@ -34,6 +36,7 @@ export default async function ProfilPage() {
         defaultName={user.name ?? ""}
         defaultEmail={user.email}
         defaultPhone={user.phone ?? ""}
+        hasPassword={hasPassword}
       />
     </div>
   );

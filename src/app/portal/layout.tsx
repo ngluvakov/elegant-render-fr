@@ -14,7 +14,7 @@ export default async function PortalLayout({
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { isAdmin: true },
+    select: { isAdmin: true, passwordHash: true },
   });
 
   return (
@@ -22,6 +22,7 @@ export default async function PortalLayout({
       userName={session.user.name ?? "Korisnik"}
       userEmail={session.user.email ?? ""}
       isAdmin={user?.isAdmin ?? false}
+      hasPassword={Boolean(user?.passwordHash)}
     >
       {children}
       <ChatWidget />

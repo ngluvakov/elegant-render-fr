@@ -10,11 +10,13 @@ import { useState } from "react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { PortalSidebar } from "./portal-sidebar";
 import { PortalTopbar } from "./portal-topbar";
+import { SetPasswordBanner } from "./set-password-banner";
 
 type PortalLayoutShellProps = {
   userName: string;
   userEmail: string;
   isAdmin?: boolean;
+  hasPassword: boolean;
   children: React.ReactNode;
 };
 
@@ -22,6 +24,7 @@ export function PortalLayoutShell({
   userName,
   userEmail,
   isAdmin,
+  hasPassword,
   children,
 }: PortalLayoutShellProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -47,7 +50,10 @@ export function PortalLayoutShell({
           showMenuTrigger
           onMenuClick={() => setDrawerOpen(true)}
         />
-        <main className="flex-1 p-4 lg:p-6 xl:p-8">{children}</main>
+        <main className="flex-1 p-4 lg:p-6 xl:p-8">
+          {!hasPassword && <SetPasswordBanner />}
+          {children}
+        </main>
       </div>
     </div>
   );

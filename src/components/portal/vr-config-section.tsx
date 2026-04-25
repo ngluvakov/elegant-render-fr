@@ -15,6 +15,7 @@ import {
   useTransition,
 } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Boxes,
   Check,
@@ -26,6 +27,7 @@ import {
   Headphones,
   Layers,
   Lightbulb,
+  MessageCircle,
   Minus,
   Palette,
   Pencil,
@@ -290,6 +292,34 @@ export function VrConfigSection({
             {formatEur(totalEur)}
           </p>
         </div>
+      </div>
+
+      {/* Consultation prompt — VR is a premium product (€1500–3000) so we
+          surface a pre-payment consultation invite right after the price. */}
+      <div className="flex flex-col gap-3 rounded-xl border border-accent/30 bg-accent/[0.06] p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-3">
+          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent text-white">
+            <MessageCircle className="h-4 w-4" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">
+              Razgovaraj sa timom pre plaćanja
+            </p>
+            <p className="mt-0.5 text-[0.78rem] leading-relaxed text-muted-foreground">
+              VR projekti zahtevaju dogovor o opsegu, target uređajima i
+              roku — javite nam se da osmislimo tačan plan pre nego što
+              krenemo u izradu.
+            </p>
+          </div>
+        </div>
+        <Link
+          href="/kontakt"
+          className={cn(
+            "inline-flex flex-shrink-0 items-center justify-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent/90",
+          )}
+        >
+          Kontakt
+        </Link>
       </div>
 
       {/* Project name */}

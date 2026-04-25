@@ -53,6 +53,12 @@ import {
   sanitizeLandscapeConfig,
   type LandscapeConfig,
 } from "@/lib/catalog/landscape-config";
+import {
+  addOnQuantitiesFor as fpAddOnQuantitiesFor,
+  defaultFloorplanConfig,
+  sanitizeFloorplanConfig,
+  type FloorplanConfig,
+} from "@/lib/catalog/floorplan-config";
 
 export type ItemConfigResult = {
   error?: string;
@@ -397,7 +403,9 @@ export async function addOrderItem(
           } as unknown as Prisma.InputJsonValue)
         : productId === "land-static"
           ? (defaultLandscapeConfig() as unknown as Prisma.InputJsonValue)
-          : undefined;
+          : productId === "fp3d-single"
+            ? (defaultFloorplanConfig() as unknown as Prisma.InputJsonValue)
+            : undefined;
   const initialTotal =
     productId === "int-static"
       ? INT_STATIC_FIRST_FLOOR_EUR
@@ -634,6 +642,50 @@ export async function updateLandscapeConfig(
     productId: "land-static",
     categoryId: "landscape",
     addOnQuantities,
+  };
+  const calc = calculateQuote([qi]);
+  const addOns = calc.items[0]?.addOns ?? [];
+
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+    },
+  });
+
+  await repriceOrder(item.order.id);
+  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true };
+}
+
+// ─── Floorplan 3D (fp3d-single) ────────────────────────────────────────
+
+export async function updateFloorplanConfig(
+  itemId: string,
+  config: FloorplanConfig,
+): Promise<ItemConfigResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!item) return { error: "Stavka nije pronađena." };
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (item.productId !== "fp3d-single")
+    return { error: "Samo za 3D osnove prostora." };
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." };
+
+  const sanitized = sanitizeFloorplanConfig(config);
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId: "fp3d-single",
+    categoryId: "floorplans-3d",
+    addOnQuantities: fpAddOnQuantitiesFor(sanitized),
   };
   const calc = calculateQuote([qi]);
   const addOns = calc.items[0]?.addOns ?? [];

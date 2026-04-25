@@ -33,7 +33,12 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { calculateQuote, formatEur } from "@/lib/catalog/calculate";
+import {
+  calculateQuote,
+  formatEur,
+  type LineItemBreakdown,
+} from "@/lib/catalog/calculate";
+import { PricingBreakdown } from "./pricing-breakdown";
 import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -108,7 +113,7 @@ export function SiteplanConfigSection({
   const droneInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const totalEur = useMemo(() => {
+  const breakdown = useMemo<LineItemBreakdown>(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -117,8 +122,9 @@ export function SiteplanConfigSection({
         addOnQuantities: addOnQuantitiesFor(config),
       },
     ]);
-    return calc.items[0]?.totalEur ?? 0;
+    return calc.items[0]!;
   }, [itemId, config]);
+  const totalEur = breakdown.totalEur;
 
   useEffect(() => {
     if (!editable) return;
@@ -731,6 +737,8 @@ export function SiteplanConfigSection({
               </label>
             </div>
           </div>
+
+          <PricingBreakdown breakdown={breakdown} />
         </div>
       </Collapsible>
 

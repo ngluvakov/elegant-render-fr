@@ -33,7 +33,12 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { calculateQuote, formatEur } from "@/lib/catalog/calculate";
+import {
+  calculateQuote,
+  formatEur,
+  type LineItemBreakdown,
+} from "@/lib/catalog/calculate";
+import { PricingBreakdown } from "./pricing-breakdown";
 import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -116,7 +121,7 @@ export function LandscapeConfigSection({
   const droneInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const totalEur = useMemo(() => {
+  const breakdown = useMemo<LineItemBreakdown>(() => {
     const addOnQuantities: Record<string, number> = {
       "land-cam": Math.max(0, config.cameraCount - 1),
     };
@@ -129,8 +134,9 @@ export function LandscapeConfigSection({
         addOnQuantities,
       },
     ]);
-    return calc.items[0]?.totalEur ?? 0;
+    return calc.items[0]!;
   }, [itemId, config.cameraCount, config.aerialEnabled]);
+  const totalEur = breakdown.totalEur;
 
   useEffect(() => {
     if (!editable) return;
@@ -758,6 +764,8 @@ export function LandscapeConfigSection({
               {renderFileList(plantingFiles)}
             </div>
           </div>
+
+          <PricingBreakdown breakdown={breakdown} />
         </div>
       </Collapsible>
 

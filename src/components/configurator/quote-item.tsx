@@ -200,8 +200,10 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                       includedQty={def.includedQty}
                       maxQty={def.maxQty}
                       priceEur={aoBreakdown?.unitPriceEur ?? def.priceEur}
+                      basePriceEur={def.priceEur}
                       priceType={def.priceType}
                       isVolumeRate={aoBreakdown?.isVolumeRate ?? false}
+                      volumeRules={def.volumeRules}
                       onChange={(qty) =>
                         setAddOnQty(item.instanceId, def.id, qty)
                       }

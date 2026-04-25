@@ -9,6 +9,8 @@
 import { Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+type VolumeRule = { afterQty: number; priceEur: number };
+
 type AddOnStepperProps = {
   label: string;
   description: string;
@@ -16,8 +18,10 @@ type AddOnStepperProps = {
   includedQty: number;
   maxQty: number;
   priceEur: number;
+  basePriceEur: number;
   priceType: "fixed" | "percent";
   isVolumeRate: boolean;
+  volumeRules: VolumeRule[];
   onChange: (qty: number) => void;
 };
 
@@ -28,14 +32,24 @@ export function AddOnStepper({
   includedQty,
   maxQty,
   priceEur,
+  basePriceEur,
   priceType,
   isVolumeRate,
+  volumeRules,
   onChange,
 }: AddOnStepperProps) {
   const billableQty = Math.max(0, quantity - includedQty);
   const isWithinIncluded = includedQty > 0 && quantity <= includedQty;
   const atMax = maxQty !== Infinity && quantity >= maxQty;
   const atMin = quantity <= 0;
+
+  // Pre-threshold hint: only surface upcoming DECREASE tiers (real bulk discounts).
+  // Increases (e.g. ext-360-hotspot €48→€53 from 5th) are not advertised proactively.
+  const upcomingDiscount = !isVolumeRate
+    ? volumeRules
+        .filter((r) => r.priceEur < basePriceEur && quantity <= r.afterQty)
+        .sort((a, b) => a.afterQty - b.afterQty)[0]
+    : undefined;
 
   return (
     <div
@@ -62,6 +76,14 @@ export function AddOnStepper({
         {isVolumeRate && billableQty > 0 && (
           <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
             Volumen cena: €{priceEur} po komadu
+          </p>
+        )}
+        {upcomingDiscount && (
+          <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
+            Od {upcomingDiscount.afterQty + 1}. nadalje: €{upcomingDiscount.priceEur} po komadu
+            <span className="ml-1 text-muted-foreground">
+              (−€{basePriceEur - upcomingDiscount.priceEur})
+            </span>
           </p>
         )}
       </div>

@@ -45,6 +45,7 @@ import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { HelpTip } from "@/components/ui/help-tip";
 import {
   CounterPill,
   StyleGuideModal,
@@ -1043,8 +1044,14 @@ export function TourAssemblyCard({
             />
             <div className="flex flex-1 items-start justify-between gap-2">
               <div>
-                <p className="text-[0.78rem] font-medium text-foreground">
+                <p className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
                   Brendirana tura (white-label)
+                  <HelpTip>
+                    <strong>White-label</strong> tura nema Elegant Render
+                    logo niti reklame — vaš klijent vidi samo vaš
+                    brending (logo, boje, naziv). Korisno za agencije
+                    koje turu daju kao deo svoje usluge.
+                  </HelpTip>
                 </p>
                 <p className="text-[0.72rem] text-muted-foreground">
                   Prilagođen interfejs sa vašim logom i bojama

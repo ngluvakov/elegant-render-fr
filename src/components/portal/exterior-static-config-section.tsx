@@ -32,6 +32,7 @@ import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { HelpTip } from "@/components/ui/help-tip";
 import {
   ARCH_STYLES,
   ENVIRONMENTS,
@@ -357,6 +358,12 @@ export function ExtStaticConfigSection({
         >
           <ImageIcon className="h-3 w-3 text-accent/60" />
           Tip rendera
+          <HelpTip>
+            <strong>Fotomontaža</strong> — 3D model objekta uklopljen u
+            stvarnu fotografiju lokacije. Daje veću autentičnost (postojeća
+            zgrada, susedi, drveće), ali zahteva da nam pošaljete
+            fotografiju kvalitetnog ugla.
+          </HelpTip>
         </Label>
         <select
           id={`mode-${itemId}`}

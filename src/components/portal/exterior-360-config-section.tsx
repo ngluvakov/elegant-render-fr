@@ -34,6 +34,7 @@ import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { HelpTip } from "@/components/ui/help-tip";
 import {
   ARCH_STYLES,
   ENVIRONMENTS,
@@ -326,6 +327,12 @@ export function Ext360ConfigSection({
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Compass className="h-3 w-3 text-accent/60" />
             Broj 360 hotspotova
+            <HelpTip>
+              <strong>Hotspot</strong> — jedna 360° tačka gledanja iz koje
+              korisnik može da pogleda u svim pravcima. Više hotspotova =
+              više tačaka iz kojih se može razgledati objekat (npr.
+              ulaz, dvorište, terasa).
+            </HelpTip>
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
@@ -382,6 +389,12 @@ export function Ext360ConfigSection({
         >
           <ImageIcon className="h-3 w-3 text-accent/60" />
           Tip rendera
+          <HelpTip>
+            <strong>Fotomontaža</strong> — 3D model uklopljen u 360°
+            panoramsku fotografiju stvarne lokacije. Šaljete nam
+            panoramsku fotku, mi uklapamo objekat sa pravom svetlošću i
+            okruženjem.
+          </HelpTip>
         </Label>
         <select
           id={`mode-${itemId}`}

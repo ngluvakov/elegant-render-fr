@@ -12,6 +12,18 @@ import { Resend } from "resend";
 
 const FROM = process.env.EMAIL_FROM ?? "Elegant Render <noreply@elegantrender.rs>";
 
+// Pick the host to embed in transactional links. Vercel preview deploys
+// share AUTH_URL with production, so a magic link emitted from a preview
+// would point at production where the new code may not exist yet.
+// On preview we fall back to VERCEL_URL (the deployment-specific host)
+// so the link round-trips back to the same deploy that minted it.
+function getAuthUrl(): string {
+  if (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return process.env.AUTH_URL ?? "http://localhost:3000";
+}
+
 // Lazy-init so the module can be imported (and pages can render) even when
 // RESEND_API_KEY isn't set — only an actual send call surfaces the error.
 let _resend: Resend | null = null;
@@ -43,7 +55,7 @@ export async function sendVerificationEmail(
   to: string,
   token: string,
 ) {
-  const url = `${process.env.AUTH_URL}/verifikacija?token=${token}`;
+  const url = `${getAuthUrl()}/verifikacija?token=${token}`;
 
   await send({
     to,
@@ -71,7 +83,7 @@ export async function sendPasswordResetEmail(
   to: string,
   token: string,
 ) {
-  const url = `${process.env.AUTH_URL}/nova-lozinka?token=${token}`;
+  const url = `${getAuthUrl()}/nova-lozinka?token=${token}`;
 
   await send({
     to,
@@ -103,7 +115,7 @@ export async function sendPortalAccessEmail(
   orderNumber: string,
   orderId: string,
 ) {
-  const url = `${process.env.AUTH_URL}/portal-pristup?token=${token}&next=${encodeURIComponent(
+  const url = `${getAuthUrl()}/portal-pristup?token=${token}&next=${encodeURIComponent(
     `/portal/porudzbine/${orderId}`,
   )}`;
 
@@ -137,7 +149,7 @@ export async function sendOrderConfirmationEmail(
   orderNumber: string,
   totalEur: number,
 ) {
-  const portalUrl = `${process.env.AUTH_URL}/portal`;
+  const portalUrl = `${getAuthUrl()}/portal`;
 
   await send({
     to,

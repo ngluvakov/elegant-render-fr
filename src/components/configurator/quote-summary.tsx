@@ -23,6 +23,11 @@ export function QuoteSummary() {
 
   const handleOrder = () => {
     sessionStorage.setItem("er-checkout-quote", JSON.stringify(items));
+    router.push("/poruci");
+  };
+
+  const handleOrderInPortal = () => {
+    sessionStorage.setItem("er-checkout-quote", JSON.stringify(items));
     router.push("/portal/nova-porudzbina");
   };
 
@@ -194,7 +199,17 @@ export function QuoteSummary() {
             Naruči
             <ArrowRight className="ml-1.5 h-4 w-4" />
           </button>
-          <p className="mt-3 text-center text-[0.72rem] text-background/30">
+          <p className="mt-3 text-center text-[0.7rem] text-background/40">
+            Bez registracije — naručite u par koraka.{" "}
+            <button
+              type="button"
+              onClick={handleOrderInPortal}
+              className="underline-offset-2 hover:text-background/70 hover:underline"
+            >
+              Imam nalog
+            </button>
+          </p>
+          <p className="mt-2 text-center text-[0.68rem] text-background/30">
             Cene su procene. Konačna ponuda može varirati u zavisnosti od
             specifičnosti projekta. Sve cene su u EUR bez PDV-a.
           </p>

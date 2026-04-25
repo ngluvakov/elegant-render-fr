@@ -330,6 +330,10 @@ function Tour360FloorPanel({
           </div>
 
           {/* Advanced toggle */}
+          <p className="flex items-center gap-1.5 text-[0.7rem] text-[color:var(--color-sage-deep)]">
+            <Check className="h-3 w-3" />
+            Sprat je spreman za naručivanje. Ispod je fino podešavanje.
+          </p>
           <label
             htmlFor={`adv-${floor.id}`}
             className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-secondary/30 px-3 py-2"
@@ -337,7 +341,8 @@ function Tour360FloorPanel({
             <div className="flex items-center gap-2">
               <Settings2 className="h-3 w-3 text-accent" />
               <span className="text-[0.7rem] font-medium text-foreground">
-                Napredno podešavanje
+                Napredno podešavanje{" "}
+                <span className="text-muted-foreground">(opciono)</span>
               </span>
               <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
                 · doba dana, godišnje doba, pogled kroz prozor

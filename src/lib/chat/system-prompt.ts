@@ -63,7 +63,6 @@ RENDERI:
 - pm-first → Fotomontaža → od €300 (objekat u realnu foto)
 
 STAMBENI KOMPLEKSI:
-- apt-floor → Floor Commitment paket → od €170 (progresivni popusti)
 
 OSNOVE:
 - fp3d-single → 3D osnova → od €29 po nivou

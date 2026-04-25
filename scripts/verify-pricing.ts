@@ -140,19 +140,6 @@ const cases: Case[] = [
     },
   },
   {
-    name: "apt-floor + ext-static — ext-static −30% (exterior-shell from apt, sourceProducts filter)",
-    items: [
-      qi("a", "apt-floor", "apartment"),
-      qi("e", "ext-static", "exterior"),
-    ],
-    expect: {
-      perItem: [
-        { instanceId: "a", discountPct: 0 },
-        { instanceId: "e", discountPct: 30 },
-      ],
-    },
-  },
-  {
     name: "pm-first + ext-static — ext-static −25% (no pm-extended); pm also gets ext-shell rule",
     items: [
       qi("p", "pm-first", "photomontage"),

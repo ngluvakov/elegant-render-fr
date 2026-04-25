@@ -40,6 +40,7 @@ import { SiteplanConfigSection } from "./siteplan-config-section";
 import { StagingConfigSection } from "./staging-config-section";
 import { RenovationConfigSection } from "./renovation-config-section";
 import { DtdConfigSection } from "./dtd-config-section";
+import { ItemRemovalConfigSection } from "./item-removal-config-section";
 import type { InteriorFloor } from "@/lib/catalog/interior-config";
 import {
   defaultTourAssembly,
@@ -54,6 +55,7 @@ import { readSiteplanConfig } from "@/lib/catalog/siteplan-config";
 import { readStagingConfig } from "@/lib/catalog/staging-config";
 import { readRenovationConfig } from "@/lib/catalog/renovation-config";
 import { readDtdConfig } from "@/lib/catalog/dtd-config";
+import { readItemRemovalConfig } from "@/lib/catalog/item-removal-config";
 
 type ItemFile = {
   id: string;
@@ -116,6 +118,8 @@ export function ItemConfigPanel({
     item.productId === "vs-static" || item.productId === "vs-360";
   const isRenovation = item.productId === "reno-image";
   const isDtd = item.productId === "dtd-image";
+  const isItemRemoval =
+    item.productId === "ir-simple" || item.productId === "ir-complex";
   const interiorFloors =
     (item.configJson?.floors as InteriorFloor[] | undefined) ?? null;
   const tour360Config: Tour360Config | null = isTour360
@@ -146,6 +150,9 @@ export function ItemConfigPanel({
     ? readRenovationConfig(item.configJson)
     : null;
   const dtdConfig = isDtd ? readDtdConfig(item.configJson) : null;
+  const itemRemovalConfig = isItemRemoval
+    ? readItemRemovalConfig(item.configJson)
+    : null;
 
   const handleSave = async () => {
     setSaving(true);
@@ -409,6 +416,15 @@ export function ItemConfigPanel({
               itemId={item.id}
               orderId={item.orderId}
               initialConfig={dtdConfig}
+              files={item.files}
+              editable={canDelete}
+            />
+          ) : isItemRemoval && itemRemovalConfig ? (
+            <ItemRemovalConfigSection
+              itemId={item.id}
+              orderId={item.orderId}
+              productId={item.productId as "ir-simple" | "ir-complex"}
+              initialConfig={itemRemovalConfig}
               files={item.files}
               editable={canDelete}
             />

@@ -90,6 +90,13 @@ import {
   sanitizeDtdConfig,
   type DtdConfig,
 } from "@/lib/catalog/dtd-config";
+import {
+  addOnQuantitiesFor as irAddOnQuantitiesFor,
+  defaultItemRemovalConfig,
+  sanitizeItemRemovalConfig,
+  type ItemRemovalConfig,
+  type ItemRemovalProductId,
+} from "@/lib/catalog/item-removal-config";
 
 export type ItemConfigResult = {
   error?: string;
@@ -446,7 +453,9 @@ export async function addOrderItem(
                     ? (defaultRenovationConfig() as unknown as Prisma.InputJsonValue)
                     : productId === "dtd-image"
                       ? (defaultDtdConfig() as unknown as Prisma.InputJsonValue)
-                      : undefined;
+                      : productId === "ir-simple" || productId === "ir-complex"
+                        ? (defaultItemRemovalConfig() as unknown as Prisma.InputJsonValue)
+                        : undefined;
   const initialTotal =
     productId === "int-static"
       ? INT_STATIC_FIRST_FLOOR_EUR
@@ -948,6 +957,51 @@ export async function updateDtdConfig(
     productId: "dtd-image",
     categoryId: "day-to-dusk",
     addOnQuantities: dtdAddOnQuantitiesFor(sanitized),
+  };
+  const calc = calculateQuote([qi]);
+  const addOns = calc.items[0]?.addOns ?? [];
+
+  await prisma.orderItem.update({
+    where: { id: itemId },
+    data: {
+      configJson: sanitized as unknown as Prisma.InputJsonValue,
+      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
+    },
+  });
+
+  await repriceOrder(item.order.id);
+  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true };
+}
+
+// ─── Item Removal (ir-simple + ir-complex) ─────────────────────────────
+
+export async function updateItemRemovalConfig(
+  itemId: string,
+  config: ItemRemovalConfig,
+): Promise<ItemConfigResult> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: { order: { select: { userId: true, status: true, id: true } } },
+  });
+  if (!item) return { error: "Stavka nije pronađena." };
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (item.productId !== "ir-simple" && item.productId !== "ir-complex")
+    return { error: "Samo za uklanjanje elemenata." };
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." };
+
+  const productId = item.productId as ItemRemovalProductId;
+  const sanitized = sanitizeItemRemovalConfig(config);
+  const qi: QuoteItem = {
+    instanceId: itemId,
+    productId,
+    categoryId: "item-removal",
+    addOnQuantities: irAddOnQuantitiesFor(sanitized, productId),
   };
   const calc = calculateQuote([qi]);
   const addOns = calc.items[0]?.addOns ?? [];

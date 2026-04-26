@@ -42,7 +42,6 @@ import { RenovationConfigSection } from "./renovation-config-section";
 import { DtdConfigSection } from "./dtd-config-section";
 import { ItemRemovalConfigSection } from "./item-removal-config-section";
 import { AnimationConfigSection } from "./animation-config-section";
-import { VrConfigSection } from "./vr-config-section";
 import { ExtStaticConfigSection } from "./exterior-static-config-section";
 import { Ext360ConfigSection } from "./exterior-360-config-section";
 import { ExtAerialConfigSection } from "./exterior-aerial-config-section";
@@ -62,7 +61,6 @@ import { readRenovationConfig } from "@/lib/catalog/renovation-config";
 import { readDtdConfig } from "@/lib/catalog/dtd-config";
 import { readItemRemovalConfig } from "@/lib/catalog/item-removal-config";
 import { readAnimationConfig } from "@/lib/catalog/animation-config";
-import { readVrConfig } from "@/lib/catalog/vr-config";
 import {
   readExt360Config,
   readExtAerialConfig,
@@ -133,8 +131,6 @@ export function ItemConfigPanel({
   const isItemRemoval =
     item.productId === "ir-simple" || item.productId === "ir-complex";
   const isAnimation = item.productId === "anim";
-  const isVr =
-    item.productId === "vr-existing" || item.productId === "vr-standalone";
   const isExtStatic = item.productId === "ext-static";
   const isExt360 = item.productId === "ext-360";
   const isExtAerial = item.productId === "ext-aerial";
@@ -174,7 +170,6 @@ export function ItemConfigPanel({
   const animationConfig = isAnimation
     ? readAnimationConfig(item.configJson)
     : null;
-  const vrConfig = isVr ? readVrConfig(item.configJson) : null;
   const extStaticConfig = isExtStatic
     ? readExtStaticConfig(item.configJson)
     : null;
@@ -462,15 +457,6 @@ export function ItemConfigPanel({
               itemId={item.id}
               orderId={item.orderId}
               initialConfig={animationConfig}
-              files={item.files}
-              editable={canDelete}
-            />
-          ) : isVr && vrConfig ? (
-            <VrConfigSection
-              itemId={item.id}
-              orderId={item.orderId}
-              productId={item.productId as "vr-existing" | "vr-standalone"}
-              initialConfig={vrConfig}
               files={item.files}
               editable={canDelete}
             />

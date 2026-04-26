@@ -106,13 +106,6 @@ import {
   type AnimationConfig,
 } from "@/lib/catalog/animation-config";
 import {
-  addOnQuantitiesFor as vrAddOnQuantitiesFor,
-  defaultVrConfig,
-  sanitizeVrConfig,
-  type VrConfig,
-  type VrProductId,
-} from "@/lib/catalog/vr-config";
-import {
   defaultExt360Config,
   defaultExtAerialConfig,
   defaultExtStaticConfig,
@@ -562,10 +555,7 @@ export async function addOrderItem(
                                 | "existing"
                                 | "active") ?? "scratch",
                             ) as unknown as Prisma.InputJsonValue)
-                          : productId === "vr-existing" ||
-                              productId === "vr-standalone"
-                            ? (defaultVrConfig() as unknown as Prisma.InputJsonValue)
-                            : productId === "ext-static"
+                          : productId === "ext-static"
                               ? (defaultExtStaticConfig() as unknown as Prisma.InputJsonValue)
                               : productId === "ext-360"
                                 ? (defaultExt360Config() as unknown as Prisma.InputJsonValue)
@@ -1264,51 +1254,6 @@ export async function updateAnimationConfig(
       addOnsJson: addOns as unknown as Prisma.InputJsonValue,
       durationSeconds: sanitized.durationSeconds,
       durationDiscount: breakdown?.durationDiscount ?? null,
-    },
-  });
-
-  await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
-  return { success: true };
-}
-
-// ─── VR experiences (vr-existing + vr-standalone) ──────────────────────
-
-export async function updateVrConfig(
-  itemId: string,
-  config: VrConfig,
-): Promise<ItemConfigResult> {
-  const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
-
-  const item = await prisma.orderItem.findUnique({
-    where: { id: itemId },
-    include: { order: { select: { userId: true, status: true, id: true } } },
-  });
-  if (!item) return { error: "Stavka nije pronađena." };
-  if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
-  if (item.productId !== "vr-existing" && item.productId !== "vr-standalone")
-    return { error: "Samo za VR iskustva." };
-  if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
-
-  const productId = item.productId as VrProductId;
-  const sanitized = sanitizeVrConfig(config);
-  const qi: QuoteItem = {
-    instanceId: itemId,
-    productId,
-    categoryId: "vr-experiences",
-    addOnQuantities: vrAddOnQuantitiesFor(sanitized, productId),
-  };
-  const calc = calculateQuote([qi]);
-  const addOns = calc.items[0]?.addOns ?? [];
-
-  await prisma.orderItem.update({
-    where: { id: itemId },
-    data: {
-      configJson: sanitized as unknown as Prisma.InputJsonValue,
-      addOnsJson: addOns as unknown as Prisma.InputJsonValue,
     },
   });
 

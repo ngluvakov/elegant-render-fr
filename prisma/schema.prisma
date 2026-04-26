@@ -257,17 +257,21 @@ enum VrInquiryStatus {
 }
 
 model VrInquiry {
-  id          String          @id @default(cuid())
-  productId   String          // "vr-existing" | "vr-standalone"
-  configJson  Json            // sanitized VrConfig
-  contactName String
-  email       String
-  phone       String?
-  message     String?         @db.Text
-  userId      String?         // set if a logged-in user submitted
-  status      VrInquiryStatus @default(pending)
-  createdAt   DateTime        @default(now())
-  reviewedAt  DateTime?
+  id                String          @id @default(cuid())
+  productId         String          // "vr-existing" | "vr-standalone"
+  configJson        Json            // sanitized VrConfig
+  contactName       String
+  email             String
+  phone             String?
+  message           String?         @db.Text
+  userId            String?         // set if a logged-in user submitted
+  status            VrInquiryStatus @default(pending)
+  // Set when an admin runs convertVrInquiryToOrder; references Order.id
+  // without an FK so an order can be deleted without orphaning the
+  // inquiry record.
+  convertedOrderId  String?
+  createdAt         DateTime        @default(now())
+  reviewedAt        DateTime?
 
   @@index([status, createdAt])
   @@map("vr_inquiries")

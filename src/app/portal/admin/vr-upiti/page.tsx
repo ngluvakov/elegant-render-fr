@@ -9,7 +9,9 @@ import {
   type VrConfig,
   type VrProductId,
 } from "@/lib/catalog/vr-config";
+import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { VrInquiryStatusActions } from "./status-actions";
+import { VrInquiryConvertForm } from "./convert-form";
 
 export const metadata: Metadata = {
   title: "VR upiti — Admin",
@@ -72,6 +74,21 @@ export default async function VrInquiriesPage({
   const countByStatus = Object.fromEntries(
     counts.map((c) => [c.status, c._count._all]),
   ) as Record<string, number>;
+
+  // Resolve order numbers for already-converted inquiries so the link
+  // text in the convert-form can show "Otvori order ER-XXXX" instead
+  // of just an opaque id.
+  const convertedIds = inquiries
+    .map((i) => i.convertedOrderId)
+    .filter((x): x is string => Boolean(x));
+  const orderNumberMap = new Map<string, string>();
+  if (convertedIds.length > 0) {
+    const orders = await prisma.order.findMany({
+      where: { id: { in: convertedIds } },
+      select: { id: true, orderNumber: true },
+    });
+    for (const o of orders) orderNumberMap.set(o.id, o.orderNumber);
+  }
 
   return (
     <div className="space-y-6 p-6">
@@ -234,6 +251,25 @@ export default async function VrInquiriesPage({
                         </p>
                       </div>
                     )}
+                  </div>
+                )}
+
+                {inq.status !== "closed" && (
+                  <div className="mt-4 flex justify-end">
+                    <VrInquiryConvertForm
+                      inquiryId={inq.id}
+                      defaultProjectName={cfg.projectName}
+                      defaultPriceEur={
+                        getConfiguratorProduct(inq.productId)?.product
+                          .basePriceEur ?? 0
+                      }
+                      convertedOrderId={inq.convertedOrderId}
+                      convertedOrderNumber={
+                        inq.convertedOrderId
+                          ? orderNumberMap.get(inq.convertedOrderId)
+                          : undefined
+                      }
+                    />
                   </div>
                 )}
               </div>

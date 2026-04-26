@@ -322,6 +322,15 @@ export async function repriceOrder(orderId: string) {
   let orderTotal = 0;
 
   for (const i of items) {
+    // Inquiry-only items (e.g. converted VR projects) carry a manually
+    // set price agreed during consultation — never recompute from the
+    // catalog, just keep the existing totalEur.
+    const lookup = getConfiguratorProduct(i.productId);
+    if (lookup?.product.inquiryOnly) {
+      orderTotal += i.totalEur;
+      continue;
+    }
+
     if (i.productId === "int-static") {
       // int-static pricing derives from configJson.floors; apply discount on top.
       const floors = (i.configJson && typeof i.configJson === "object" &&

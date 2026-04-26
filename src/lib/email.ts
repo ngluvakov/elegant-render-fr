@@ -279,6 +279,58 @@ export async function sendVrInquiryAdminEmail(args: {
   });
 }
 
+export async function sendVrProjectReadyEmail(args: {
+  to: string;
+  contactName: string;
+  productLabel: string;
+  projectName: string;
+  priceEur: number;
+  orderNumber: string;
+  orderId: string;
+  token: string;
+}) {
+  const url = `${getAuthUrl()}/portal-pristup?token=${args.token}&next=${encodeURIComponent(
+    `/portal/porudzbine/${args.orderId}`,
+  )}`;
+  await send({
+    to: args.to,
+    subject: `Vaš VR projekat je spreman za plaćanje — ${args.orderNumber}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Dogovor zaključen</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Zdravo ${escapeHtml(args.contactName)},
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Hvala na razgovoru — definisali smo opseg projekta i pripremili
+          porudžbinu za plaćanje.
+        </p>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0; color: #1C1A19; line-height: 1.7;">
+            <strong>Projekat:</strong> ${escapeHtml(args.projectName)}<br/>
+            <strong>Usluga:</strong> ${escapeHtml(args.productLabel)}<br/>
+            <strong>Broj porudžbine:</strong> ${escapeHtml(args.orderNumber)}<br/>
+            <strong>Iznos:</strong> €${args.priceEur}
+          </p>
+        </div>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Kliknite na dugme ispod da otvorite porudžbinu i dovršite plaćanje.
+          Link vas direktno prijavljuje u portal — nije potrebna lozinka.
+        </p>
+        <a href="${url}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Otvori i plati
+        </a>
+        <p style="color: #9ca3af; font-size: 13px;">
+          Link važi 7 dana. Možete ga koristiti samo jednom — nakon toga
+          ćete biti prijavljeni i možete postaviti lozinku u portalu.
+        </p>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendVrInquiryCustomerEmail(args: {
   to: string;
   contactName: string;

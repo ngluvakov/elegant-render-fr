@@ -112,6 +112,7 @@ export function AiStudioWorkspace({
   const [parentGenerationId, setParentGenerationId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [maskDirty, setMaskDirty] = useState(false);
 
@@ -127,6 +128,7 @@ export function AiStudioWorkspace({
 
   const handleUpload = async (file: File) => {
     setError("");
+    setNotice("");
     const upload = await uploadAiFile(file, "input");
     const url = URL.createObjectURL(file);
     setUploaded({
@@ -153,6 +155,7 @@ export function AiStudioWorkspace({
 
     setPending(true);
     setError("");
+    setNotice("");
 
     try {
       let maskStoragePath: string | null = null;
@@ -183,6 +186,7 @@ export function AiStudioWorkspace({
       if (typeof result.balanceUnits === "number") {
         setBalanceUnits(result.balanceUnits);
       }
+      if (result.notice) setNotice(result.notice);
       if (result.resultUrl && result.resultStoragePath) {
         const completedResultUrl = result.resultUrl;
         const resultStoragePath = result.resultStoragePath;
@@ -200,9 +204,11 @@ export function AiStudioWorkspace({
           {
             id: result.generationId ?? crypto.randomUUID(),
             editType,
-            provider,
-            model: AI_IMAGE_PROVIDERS.find((item) => item.id === provider)
-              ?.label ?? provider,
+            provider: result.provider ?? provider,
+            model:
+              result.model ??
+              AI_IMAGE_PROVIDERS.find((item) => item.id === provider)?.label ??
+              provider,
             prompt,
             styleId: activeEdit.supportsStyles ? styleId : null,
             status: "completed",
@@ -269,6 +275,12 @@ export function AiStudioWorkspace({
       {error && (
         <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {error}
+        </div>
+      )}
+
+      {notice && (
+        <div className="rounded-xl border border-accent/30 bg-accent/10 px-4 py-3 text-sm text-foreground">
+          {notice}
         </div>
       )}
 

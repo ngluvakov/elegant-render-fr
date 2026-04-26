@@ -12,23 +12,81 @@ export type AiEditProviderInput = {
 export type AiEditProviderOutput = {
   image: Buffer;
   mimeType: string;
+  provider: AiImageProvider;
+  model: string;
   providerResponseId?: string;
+  fallbackFrom?: AiImageProvider;
 };
+
+class AiProviderError extends Error {
+  status?: number;
+  provider: AiImageProvider;
+  model: string;
+  publicMessage: string;
+  fallbackAllowed: boolean;
+
+  constructor({
+    provider,
+    model,
+    status,
+    message,
+    publicMessage,
+    fallbackAllowed,
+  }: {
+    provider: AiImageProvider;
+    model: string;
+    status?: number;
+    message: string;
+    publicMessage: string;
+    fallbackAllowed: boolean;
+  }) {
+    super(message);
+    this.name = "AiProviderError";
+    this.provider = provider;
+    this.model = model;
+    this.status = status;
+    this.publicMessage = publicMessage;
+    this.fallbackAllowed = fallbackAllowed;
+  }
+}
 
 export async function generateAiEdit(
   input: AiEditProviderInput,
 ): Promise<AiEditProviderOutput> {
-  if (input.provider === "openai") return generateWithOpenAi(input);
-  return generateWithGemini(input);
+  const attempts = getProviderAttempts(input.provider);
+  let lastError: unknown = null;
+
+  for (const provider of attempts) {
+    if (provider !== input.provider && !isProviderConfigured(provider)) continue;
+
+    try {
+      const output =
+        provider === "openai"
+          ? await generateWithOpenAi(input)
+          : await generateWithGemini(input, provider);
+
+      return {
+        ...output,
+        fallbackFrom: provider === input.provider ? undefined : input.provider,
+      };
+    } catch (err) {
+      lastError = err;
+      logProviderFailure(err, provider);
+      if (!isFallbackAllowed(err)) throw toPublicError(err);
+    }
+  }
+
+  throw toPublicError(lastError);
 }
 
 async function generateWithGemini(
   input: AiEditProviderInput,
+  provider: Exclude<AiImageProvider, "openai">,
 ): Promise<AiEditProviderOutput> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY nije konfigurisan.");
 
-  const model = getAiProviderModel(input.provider);
+  const model = getAiProviderModel(provider);
   const parts: Array<Record<string, unknown>> = [
     { text: input.prompt },
     {
@@ -66,8 +124,15 @@ async function generateWithGemini(
   );
 
   if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Gemini image generation failed: ${res.status} ${body}`);
+    const body = await readResponseText(res);
+    throw new AiProviderError({
+      provider,
+      model,
+      status: res.status,
+      message: `Gemini image generation failed: ${res.status} ${body}`,
+      publicMessage: getPublicProviderMessage("gemini", res.status, body),
+      fallbackAllowed: isFallbackStatus(res.status),
+    });
   }
 
   const data = await res.json();
@@ -83,6 +148,8 @@ async function generateWithGemini(
   return {
     image: Buffer.from(base64, "base64"),
     mimeType: inlineData.mimeType ?? inlineData.mime_type ?? "image/png",
+    provider,
+    model,
     providerResponseId: data.responseId,
   };
 }
@@ -125,8 +192,15 @@ async function generateWithOpenAi(
   });
 
   if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`OpenAI image edit failed: ${res.status} ${body}`);
+    const body = await readResponseText(res);
+    throw new AiProviderError({
+      provider: "openai",
+      model,
+      status: res.status,
+      message: `OpenAI image edit failed: ${res.status} ${body}`,
+      publicMessage: getPublicProviderMessage("openai", res.status, body),
+      fallbackAllowed: false,
+    });
   }
 
   const data = await res.json();
@@ -135,6 +209,8 @@ async function generateWithOpenAi(
     return {
       image: Buffer.from(item.b64_json, "base64"),
       mimeType: "image/png",
+      provider: "openai",
+      model,
       providerResponseId: data.id,
     };
   }
@@ -144,9 +220,82 @@ async function generateWithOpenAi(
     return {
       image: Buffer.from(await imageRes.arrayBuffer()),
       mimeType: imageRes.headers.get("content-type") ?? "image/png",
+      provider: "openai",
+      model,
       providerResponseId: data.id,
     };
   }
 
   throw new Error("OpenAI nije vratio sliku.");
+}
+
+function getProviderAttempts(provider: AiImageProvider): AiImageProvider[] {
+  if (provider === "gemini_pro") return ["gemini_pro", "gemini_flash", "openai"];
+  if (provider === "gemini_flash") return ["gemini_flash", "openai"];
+  return ["openai"];
+}
+
+function isProviderConfigured(provider: AiImageProvider): boolean {
+  if (provider === "openai") return Boolean(process.env.OPENAI_API_KEY);
+  return Boolean(process.env.GEMINI_API_KEY);
+}
+
+function isFallbackAllowed(err: unknown): boolean {
+  return err instanceof AiProviderError && err.fallbackAllowed;
+}
+
+function isFallbackStatus(status: number): boolean {
+  return status === 403 || status === 404 || status === 429 || status >= 500;
+}
+
+function toPublicError(err: unknown): Error {
+  if (err instanceof AiProviderError) return new Error(err.publicMessage);
+  if (err instanceof Error) return err;
+  return new Error("AI obrada trenutno nije uspela.");
+}
+
+function getPublicProviderMessage(
+  provider: "gemini" | "openai",
+  status: number,
+  body: string,
+): string {
+  const lowerBody = body.toLowerCase();
+  if (
+    status === 429 ||
+    lowerBody.includes("quota") ||
+    lowerBody.includes("rate limit") ||
+    lowerBody.includes("resource_exhausted")
+  ) {
+    return provider === "gemini"
+      ? "Google AI engine trenutno nema raspoloživ quota za ovu obradu. Pokušavamo drugi engine, a ako se ponovi izaberite Nano Banana ili GPT Image."
+      : "OpenAI engine trenutno nema raspoloživ quota za ovu obradu. Pokušajte ponovo malo kasnije ili izaberite drugi engine.";
+  }
+  if (status === 401 || status === 403) {
+    return "AI engine nije autorizovan ili nema uključen billing za izabrani model.";
+  }
+  if (status === 404) {
+    return "Izabrani AI model trenutno nije dostupan.";
+  }
+  if (status >= 500) {
+    return "AI provider trenutno ne odgovara stabilno. Pokušajte ponovo za nekoliko minuta.";
+  }
+  return "AI obrada nije uspela. Proverite sliku i prompt, pa pokušajte ponovo.";
+}
+
+async function readResponseText(res: Response): Promise<string> {
+  const text = await res.text();
+  return text.length > 1500 ? `${text.slice(0, 1500)}...` : text;
+}
+
+function logProviderFailure(err: unknown, provider: AiImageProvider) {
+  const message = err instanceof Error ? err.message : String(err);
+  const status = err instanceof AiProviderError ? err.status : undefined;
+  const model =
+    err instanceof AiProviderError ? err.model : getAiProviderModel(provider);
+  console.error("[AI Studio] Provider attempt failed", {
+    provider,
+    model,
+    status,
+    message: message.length > 1500 ? `${message.slice(0, 1500)}...` : message,
+  });
 }

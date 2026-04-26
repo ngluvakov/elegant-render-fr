@@ -14,6 +14,7 @@ import {
   type AiEditType,
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
+import { sanitizeAiStudioError } from "@/lib/ai-studio/errors";
 import { buildAiEditPrompt } from "@/lib/ai-studio/prompts";
 import { generateAiEdit } from "@/lib/ai-studio/providers";
 import {
@@ -43,6 +44,9 @@ export type AiStudioGenerationResult = {
   resultStoragePath?: string;
   resultMimeType?: string;
   balanceUnits?: number;
+  provider?: AiImageProvider;
+  model?: string;
+  notice?: string;
 };
 
 export async function getAiStudioState() {
@@ -98,7 +102,7 @@ export async function getAiStudioState() {
         status: generation.status,
         unitsCharged: generation.unitsCharged,
         freeAttemptIndex: generation.freeAttemptIndex,
-        errorMessage: generation.errorMessage,
+        errorMessage: sanitizeAiStudioError(generation.errorMessage),
         createdAt: generation.createdAt.toISOString(),
         expiresAt: generation.expiresAt.toISOString(),
         inputStoragePath: generation.inputStoragePath,
@@ -258,6 +262,8 @@ export async function generateAiStudioImage(
       where: { id: generation.id },
       data: {
         status: "completed",
+        provider: output.provider,
+        model: output.model,
         resultStoragePath: resultPath,
         resultMimeType: output.mimeType,
         providerResponseId: output.providerResponseId ?? null,
@@ -284,9 +290,23 @@ export async function generateAiStudioImage(
       resultStoragePath: resultPath,
       resultMimeType: output.mimeType,
       balanceUnits: spend.balanceAfterUnits,
+      provider: output.provider,
+      model: output.model,
+      notice: output.fallbackFrom
+        ? `Izabrani engine trenutno nije imao raspoloživ quota, pa je obrada završena preko ${output.provider === "openai" ? "GPT Image" : "Nano Banana"}.`
+        : undefined,
     };
   } catch (err) {
-    const message = err instanceof Error ? err.message : "AI obrada nije uspela.";
+    const rawMessage =
+      err instanceof Error ? err.message : "AI obrada nije uspela.";
+    console.error("[AI Studio] Generation failed", {
+      generationId: generation.id,
+      provider: input.provider,
+      model,
+      message:
+        rawMessage.length > 1500 ? `${rawMessage.slice(0, 1500)}...` : rawMessage,
+    });
+    const message = sanitizeAiStudioError(rawMessage);
     const refund =
       reservedUnits > 0
         ? await refundAiCreditUnits({

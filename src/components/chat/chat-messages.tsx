@@ -37,12 +37,23 @@ function renderLinks(text: string) {
   });
 }
 
-type ProposalItem = { id: string; qty: number };
+type ProposalItem = { id: string; qty: number; sourceMode?: string };
 
+// Accepts "id:qty" or "id/sourceMode:qty". The sourceMode form is used
+// for the consolidated `anim` product (anim/scratch:30, anim/active:60).
 function parseProposalItems(raw: string[]): ProposalItem[] {
   return raw.map((entry) => {
-    const [id, qtyStr] = entry.split(":");
-    return { id: id.trim(), qty: parseInt(qtyStr) || 1 };
+    const [head, qtyStr] = entry.split(":");
+    const trimmed = head.trim();
+    const slash = trimmed.indexOf("/");
+    if (slash > 0) {
+      return {
+        id: trimmed.slice(0, slash),
+        sourceMode: trimmed.slice(slash + 1),
+        qty: parseInt(qtyStr) || 1,
+      };
+    }
+    return { id: trimmed, qty: parseInt(qtyStr) || 1 };
   });
 }
 

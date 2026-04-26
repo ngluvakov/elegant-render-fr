@@ -1,12 +1,17 @@
 /**
- * AnimationConfigSection — Per-item configurator for the three
- * animation products (anim-scratch / anim-existing / anim-active).
- * One component handles all three via productId prop, which drives:
+ * AnimationConfigSection — Per-item configurator for the consolidated
+ * `anim` product. Source mode (scratch / existing / active) lives on
+ * config.sourceMode and drives:
  *   - the type badge label
- *   - the per-second base price hint
+ *   - per-second base price (€15 / €10 / €8)
  *   - which add-on suffix gets driven for paths/daynight
- *   - visibility of upsell options (daynight not on anim-active;
- *     season only on anim-scratch)
+ *   - visibility of upsell options (daynight not on active; season
+ *     only on scratch)
+ *
+ * Mode picker is rendered as a 3-segment selector near the top of the
+ * section so the customer can switch source mode without re-adding the
+ * item. Switching the mode auto-clears unsupported add-on flags via
+ * sanitizeAnimationConfig.
  */
 "use client";
 
@@ -50,18 +55,20 @@ import {
   ANIM_DURATION_STEP,
   ANIM_FOCUS_AREA_OPTIONS,
   ANIM_MUSIC_MOODS,
+  ANIM_PRODUCT_ID,
   ANIM_SCENE_ELEMENT_OPTIONS,
   ANIM_SEASONS,
+  ANIM_SOURCE_MODES,
   ANIM_TIMES_OF_DAY,
   ANIM_TYPES,
   addOnQuantitiesFor,
   animPerSecondEur,
-  animProductLabel,
+  animSourceModeLabel,
   animSupportsDayNight,
   animSupportsSeason,
   animTierDiscountPct,
   type AnimationConfig,
-  type AnimationProductId,
+  type AnimSourceMode,
   type AnimCameraSpeedId,
   type AnimFocusAreas,
   type AnimMusicMoodId,
@@ -95,14 +102,12 @@ type FileKind = "source";
 export function AnimationConfigSection({
   itemId,
   orderId,
-  productId,
   initialConfig,
   files,
   editable,
 }: {
   itemId: string;
   orderId: string;
-  productId: AnimationProductId;
   initialConfig: AnimationConfig;
   files: ItemFile[];
   editable: boolean;
@@ -117,23 +122,24 @@ export function AnimationConfigSection({
   const sourceInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const showDayNight = animSupportsDayNight(productId);
-  const showSeason = animSupportsSeason(productId);
-  const perSecondEur = animPerSecondEur(productId);
+  const showDayNight = animSupportsDayNight(config.sourceMode);
+  const showSeason = animSupportsSeason(config.sourceMode);
+  const perSecondEur = animPerSecondEur(config.sourceMode);
   const tierDiscountPct = animTierDiscountPct(config.durationSeconds);
 
   const totalEur = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
-        productId,
+        productId: ANIM_PRODUCT_ID,
         categoryId: "animation",
-        addOnQuantities: addOnQuantitiesFor(config, productId),
+        addOnQuantities: addOnQuantitiesFor(config),
         durationSeconds: config.durationSeconds,
+        sourceMode: config.sourceMode,
       },
     ]);
     return calc.items[0]?.totalEur ?? 0;
-  }, [itemId, productId, config]);
+  }, [itemId, config]);
 
   useEffect(() => {
     if (!editable) return;
@@ -268,7 +274,7 @@ export function AnimationConfigSection({
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
               <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-accent">
-                {animProductLabel(productId)}
+                {animSourceModeLabel(config.sourceMode)}
               </span>
               <span className="ml-2">
                 {config.durationSeconds}s
@@ -291,6 +297,47 @@ export function AnimationConfigSection({
           <p className="text-base font-bold text-foreground tabular-nums">
             {formatEur(totalEur)}
           </p>
+        </div>
+      </div>
+
+      {/* Source mode picker — switches per-second pricing and which
+          add-ons are available. Switching mode auto-clears unsupported
+          flags via sanitizeAnimationConfig on save. */}
+      <div className="space-y-2 rounded-xl border border-border/40 bg-card/60 p-3">
+        <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
+          Šta već postoji?
+        </Label>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {ANIM_SOURCE_MODES.map((m) => {
+            const isActive = config.sourceMode === m.id;
+            return (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => patch({ sourceMode: m.id })}
+                disabled={!editable}
+                className={cn(
+                  "flex flex-col items-start gap-1 rounded-lg border px-3 py-2 text-left transition-colors",
+                  isActive
+                    ? "border-accent bg-accent/10"
+                    : "border-border/40 bg-background/40 hover:border-accent/40",
+                  !editable && "opacity-60",
+                )}
+              >
+                <span className="flex w-full items-center justify-between gap-2">
+                  <span className="text-[0.78rem] font-semibold text-foreground">
+                    {m.shortLabel}
+                  </span>
+                  <span className="text-[0.7rem] font-bold text-accent tabular-nums">
+                    €{m.perSecondEur}/s
+                  </span>
+                </span>
+                <span className="text-[0.7rem] leading-snug text-muted-foreground">
+                  {m.description}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -728,7 +775,7 @@ export function AnimationConfigSection({
           )}
         </div>
 
-        {/* Day/Night toggle (hidden for anim-active) */}
+        {/* Day/Night toggle (hidden in active mode) */}
         {showDayNight && (
           <label
             htmlFor={`daynight-${itemId}`}
@@ -761,7 +808,7 @@ export function AnimationConfigSection({
           </label>
         )}
 
-        {/* Seasonal toggle (only anim-scratch) */}
+        {/* Seasonal toggle (only in scratch mode) */}
         {showSeason && (
           <label
             htmlFor={`seasonvar-${itemId}`}

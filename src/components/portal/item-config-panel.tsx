@@ -132,10 +132,7 @@ export function ItemConfigPanel({
   const isDtd = item.productId === "dtd-image";
   const isItemRemoval =
     item.productId === "ir-simple" || item.productId === "ir-complex";
-  const isAnimation =
-    item.productId === "anim-scratch" ||
-    item.productId === "anim-existing" ||
-    item.productId === "anim-active";
+  const isAnimation = item.productId === "anim";
   const isVr =
     item.productId === "vr-existing" || item.productId === "vr-standalone";
   const isExtStatic = item.productId === "ext-static";
@@ -464,12 +461,6 @@ export function ItemConfigPanel({
             <AnimationConfigSection
               itemId={item.id}
               orderId={item.orderId}
-              productId={
-                item.productId as
-                  | "anim-scratch"
-                  | "anim-existing"
-                  | "anim-active"
-              }
               initialConfig={animationConfig}
               files={item.files}
               editable={canDelete}

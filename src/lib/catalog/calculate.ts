@@ -16,7 +16,7 @@ import {
   type ConsumeRule,
   type DurationConfig,
   type ModelAsset,
-  getConfiguratorProduct,
+  getEffectiveProduct,
 } from "./configurator";
 
 // ─── Types ───────────────────────────────────────────────
@@ -27,6 +27,10 @@ export type QuoteItem = {
   categoryId: string;
   addOnQuantities: Record<string, number>;
   durationSeconds?: number;
+  // Source mode for products with sourceModeRules (currently only the
+  // consolidated `anim` product). Resolved by getEffectiveProduct so
+  // pricing / creates / consumes match the picked mode.
+  sourceMode?: string;
   // Rule 4 (active project tier): items from a referenced order whose
   // status is still "in production" get a +5pp boost on the resolved
   // discount (capped at 55 %). Only set on externalSources items.
@@ -237,12 +241,14 @@ type AssetSource = {
 
 // Builds asset → sorted list of creator items (ascending basePrice, then
 // insertion order). Cheapest creator is the canonical source of that asset.
+// Uses the source-mode-resolved product so e.g. anim-existing (which
+// reuses a model) doesn't show up as a creator of complete-model.
 function buildAssetInventory(
   items: QuoteItem[],
 ): Map<ModelAsset, AssetSource[]> {
   const inv = new Map<ModelAsset, AssetSource[]>();
   items.forEach((item, idx) => {
-    const result = getConfiguratorProduct(item.productId);
+    const result = getEffectiveProduct(item.productId, item.sourceMode);
     if (!result?.product.creates) return;
     for (const asset of result.product.creates) {
       const list = inv.get(asset) ?? [];
@@ -289,7 +295,8 @@ export function resolveDiscount(
   target: QuoteItem,
   siblings: QuoteItem[],
 ): { pct: number; reason: string } | null {
-  const product = getConfiguratorProduct(target.productId)?.product;
+  const product = getEffectiveProduct(target.productId, target.sourceMode)
+    ?.product;
   if (!product?.consumes || product.consumes.length === 0) return null;
 
   const inventory = buildAssetInventory(siblings);
@@ -373,7 +380,7 @@ export function calculateQuote(
 
   // Pass 1: per-item breakdown with no cross-service awareness
   for (const item of items) {
-    const result = getConfiguratorProduct(item.productId);
+    const result = getEffectiveProduct(item.productId, item.sourceMode);
     if (!result) continue;
     breakdowns.push(
       calculateItem(item, result.product, result.category.label),
@@ -388,7 +395,8 @@ export function calculateQuote(
     if (!target) continue;
     const discount = resolveDiscount(target, siblings);
     if (!discount) continue;
-    const product = getConfiguratorProduct(breakdown.productId)?.product;
+    const product = getEffectiveProduct(breakdown.productId, target.sourceMode)
+      ?.product;
     if (!product) continue;
     applyDiscount(breakdown, product, discount.pct, discount.reason);
   }

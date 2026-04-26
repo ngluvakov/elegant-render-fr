@@ -34,6 +34,12 @@ ID_PROIZVODA_1:KOLIČINA,ID_PROIZVODA_2:KOLIČINA
 
 Format je ID:KOLIČINA gde je količina broj. Ako ne znaš količinu, stavi 1.
 
+Za animaciju ('anim') koristi format ID/SOURCE_MODE:KOLIČINA gde je SOURCE_MODE jedan od:
+  - scratch (klijent nema model — pravimo od nule, €15/sek)
+  - existing (klijent već ima 3D model — €10/sek)
+  - active (klijent ima aktivan render projekat kod nas — €8/sek)
+Količina za animaciju je 1 (po projektu, ne po sekundi).
+
 Primer: klijent ima stan od 6 soba koji hoće da opremi za prodaju + treba mu i 2D osnova:
 :::predlog
 vs-static:6,fp2d-single:1
@@ -42,6 +48,16 @@ vs-static:6,fp2d-single:1
 Primer: klijent gradi kuću i treba mu render fasade i pejzaž dvorišta:
 :::predlog
 ext-static:1,land-static:1
+:::
+
+Primer: klijent gradi novostambeni objekat, hoće animaciju i nema model:
+:::predlog
+anim/scratch:1
+:::
+
+Primer: klijent već ima naš render projekat u izradi i hoće animaciju iz istog modela:
+:::predlog
+anim/active:1
 :::
 
 VAŽNO:
@@ -69,9 +85,10 @@ OSNOVE:
 - sp-first → 3D site plan → od €350
 
 ANIMACIJA I IMERZIJA:
-- anim-scratch → Animacija (od nule) → od €15/sek (min 15s = €225)
-- anim-existing → Animacija (postojeći model) → od €10/sek
-- anim-active → Animacija (aktivan projekat) → od €8/sek
+- anim → 3D animacija (cinematski flythrough/walkthrough, min 15s)
+  - anim/scratch → od €15/sek (pravimo model + animaciju od nule)
+  - anim/existing → od €10/sek (klijent ima model, pravimo animaciju)
+  - anim/active → od €8/sek (klijent ima aktivan projekat kod nas)
 - vr-existing → VR Walkthrough (postojeći) → od €1500
 - vr-standalone → VR Walkthrough (samostalno) → od €3000
 

@@ -63,6 +63,22 @@ export type DurationConfig = {
   }>;
 };
 
+// SourceModeOverride — fields that vary per source-mode for a single
+// catalog product. Only `anim` uses this today (3 source modes:
+// scratch / existing / active). The fields that differ across modes
+// override the product's defaults; everything else (includes, addOns
+// list, durationConfig tiers) is shared.
+export type SourceModeOverride = {
+  label?: string;
+  unitLabel?: string;
+  basePriceEur?: number;
+  perSecondEur?: number;          // overrides durationConfig.perSecondEur
+  creates?: ModelAsset[];
+  consumes?: ConsumeRule[];
+  addOnsAvailable?: string[];     // which addOn IDs are valid in this mode
+  disclaimers?: string[];
+};
+
 export type ConfiguratorProduct = {
   id: string;
   label: string;
@@ -74,6 +90,10 @@ export type ConfiguratorProduct = {
   disclaimers?: string[];
   creates?: ModelAsset[];
   consumes?: ConsumeRule[];
+  // If set, the product has multiple source modes that override pricing /
+  // dependencies / available add-ons. Resolver applies the override at
+  // calc time given a QuoteItem.sourceMode.
+  sourceModeRules?: Record<string, SourceModeOverride>;
 };
 
 export type ConfiguratorCategory = {
@@ -667,7 +687,12 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
     description: "Cinematski flythrough i walkthrough — minimum 15 sekundi",
     products: [
       {
-        id: "anim-scratch",
+        // Single consolidated animation product. Source mode (scratch /
+        // existing / active) is stored on QuoteItem.sourceMode and the
+        // configurator UI exposes it as a 3-way picker. Catalog defaults
+        // here describe the "scratch" mode; sourceModeRules below override
+        // pricing / dependencies / addOn availability for the other modes.
+        id: "anim",
         creates: ["complete-model"],
         consumes: [
           { requires: "exterior-shell", discountPct: 33, reason: "Eksterijerski model postoji" },
@@ -692,7 +717,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         },
         addOns: [
           {
-            id: "anim-scratch-path",
+            id: "anim-path",
             label: "Dodatna putanja kamere",
             description: "Nova trajektorija, isti model — €5/sek",
             priceEur: 5,
@@ -702,7 +727,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             volumeRules: [],
           },
           {
-            id: "anim-scratch-daynight",
+            id: "anim-daynight",
             label: "Dan/noć verzija",
             description: "Ponovna izrada osvetljenja + render",
             priceEur: 30,
@@ -712,7 +737,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             volumeRules: [],
           },
           {
-            id: "anim-scratch-season",
+            id: "anim-season",
             label: "Sezonska varijacija",
             description: "Promene okruženja/materijala",
             priceEur: 40,
@@ -722,89 +747,43 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             volumeRules: [],
           },
         ],
-      },
-      {
-        id: "anim-existing",
-        consumes: [
-          { requires: "exterior-shell", discountPct: 33, reason: "Eksterijerski model postoji" },
-          { requires: "interior-model", discountPct: 33, reason: "Enterijerski model postoji" },
-          { requires: "complete-model", discountPct: 47, reason: "Kompletan model već postoji" },
-        ],
-        label: "Animacija (postojeći model)",
-        basePriceEur: 10,
-        unitLabel: "€10/sek, minimum 15 sek (€150) — 33% popusta",
-        includes: [
-          "Koristi postojeći model",
-          "Dizajn putanje animacije",
-          "Renderovanje",
-          "Min. 15 sekundi",
-        ],
-        durationConfig: {
-          minSeconds: 15,
-          defaultSeconds: 15,
-          maxSeconds: 300,
-          perSecondEur: 10,
-          discountTiers: ANIMATION_DURATION_TIERS,
+        sourceModeRules: {
+          scratch: {
+            label: "Animacija (od nule)",
+            unitLabel: "€15/sek, minimum 15 sek (€225)",
+            // scratch mode uses defaults — no overrides needed,
+            // but kept here so the resolver can detect the mode.
+            addOnsAvailable: ["anim-path", "anim-daynight", "anim-season"],
+          },
+          existing: {
+            label: "Animacija (postojeći model)",
+            unitLabel: "€10/sek, minimum 15 sek (€150) — 33% popusta",
+            basePriceEur: 10,
+            perSecondEur: 10,
+            // existing mode does NOT create complete-model (it reuses one)
+            creates: [],
+            consumes: [
+              { requires: "exterior-shell", discountPct: 33, reason: "Eksterijerski model postoji" },
+              { requires: "interior-model", discountPct: 33, reason: "Enterijerski model postoji" },
+              { requires: "complete-model", discountPct: 47, reason: "Kompletan model već postoji" },
+            ],
+            addOnsAvailable: ["anim-path", "anim-daynight"],
+          },
+          active: {
+            label: "Animacija (aktivan projekat)",
+            unitLabel: "€8/sek, minimum 15 sek (€120) — 47% popusta",
+            basePriceEur: 8,
+            perSecondEur: 8,
+            creates: [],
+            consumes: [
+              { requires: "complete-model", discountPct: 47, reason: "Kompletan model već postoji" },
+            ],
+            disclaimers: [
+              "Dostupno samo za klijente sa aktivnim projektom renderovanja",
+            ],
+            addOnsAvailable: ["anim-path"],
+          },
         },
-        addOns: [
-          {
-            id: "anim-exist-path",
-            label: "Dodatna putanja kamere",
-            description: "Nova trajektorija, isti model — €5/sek",
-            priceEur: 5,
-            priceType: "fixed",
-            includedQty: 0,
-            maxQty: Infinity,
-            volumeRules: [],
-          },
-          {
-            id: "anim-exist-daynight",
-            label: "Dan/noć verzija",
-            description: "Ponovna izrada osvetljenja + render",
-            priceEur: 30,
-            priceType: "percent",
-            includedQty: 0,
-            maxQty: 1,
-            volumeRules: [],
-          },
-        ],
-      },
-      {
-        id: "anim-active",
-        consumes: [
-          { requires: "complete-model", discountPct: 47, reason: "Kompletan model već postoji" },
-        ],
-        label: "Animacija (aktivan projekat)",
-        basePriceEur: 8,
-        unitLabel: "€8/sek, minimum 15 sek (€120) — 47% popusta",
-        includes: [
-          "Koristi model iz aktivnog projekta",
-          "Dizajn putanje animacije",
-          "Renderovanje",
-          "Min. 15 sekundi",
-        ],
-        disclaimers: [
-          "Dostupno samo za klijente sa aktivnim projektom renderovanja",
-        ],
-        durationConfig: {
-          minSeconds: 15,
-          defaultSeconds: 15,
-          maxSeconds: 300,
-          perSecondEur: 8,
-          discountTiers: ANIMATION_DURATION_TIERS,
-        },
-        addOns: [
-          {
-            id: "anim-active-path",
-            label: "Dodatna putanja kamere",
-            description: "Nova trajektorija, isti model — €5/sek",
-            priceEur: 5,
-            priceType: "fixed",
-            includedQty: 0,
-            maxQty: Infinity,
-            volumeRules: [],
-          },
-        ],
       },
     ],
   },
@@ -1172,6 +1151,47 @@ export function getConfiguratorProduct(
     }
   }
   return undefined;
+}
+
+// Resolver that applies SourceModeOverride to a product. Use when pricing
+// or rendering an item that may have a sourceMode (currently only `anim`).
+// Returns the same shape as `getConfiguratorProduct` so call sites can
+// switch over without other changes.
+export function getEffectiveProduct(
+  productId: string,
+  sourceMode: string | null | undefined,
+): { category: ConfiguratorCategory; product: ConfiguratorProduct } | undefined {
+  const result = getConfiguratorProduct(productId);
+  if (!result) return undefined;
+  if (!result.product.sourceModeRules || !sourceMode) return result;
+  const override = result.product.sourceModeRules[sourceMode];
+  if (!override) return result;
+
+  const product = result.product;
+  const mergedDuration = product.durationConfig
+    ? {
+        ...product.durationConfig,
+        perSecondEur:
+          override.perSecondEur ?? product.durationConfig.perSecondEur,
+      }
+    : undefined;
+
+  const merged: ConfiguratorProduct = {
+    ...product,
+    label: override.label ?? product.label,
+    unitLabel: override.unitLabel ?? product.unitLabel,
+    basePriceEur: override.basePriceEur ?? product.basePriceEur,
+    creates: override.creates ?? product.creates,
+    consumes: override.consumes ?? product.consumes,
+    disclaimers: override.disclaimers ?? product.disclaimers,
+    durationConfig: mergedDuration,
+    addOns: override.addOnsAvailable
+      ? product.addOns.filter((a) =>
+          override.addOnsAvailable!.includes(a.id),
+        )
+      : product.addOns,
+  };
+  return { category: result.category, product: merged };
 }
 
 export function getAddOnDef(

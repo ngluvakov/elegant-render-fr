@@ -2,18 +2,29 @@
  * ServiceAdder — Category tab bar with browsable product cards and "Dodaj" buttons.
  * Groups services by section and lets users add items to the quote.
  *
+ * The animation category is rendered specially: instead of showing the
+ * 3 source-mode product variants as separate cards, a single
+ * "Animacija" card exposes a 3-segment mode picker (od nule / postojeći
+ * model / aktivan projekat). All three feed the same `anim` catalog
+ * product; the picked mode is passed to addProduct as `sourceMode`.
+ *
  * Used on: PricingConfigurator (main column, /cene page).
  */
 "use client";
 
 import { useState } from "react";
-import { Check, Plus } from "lucide-react";
+import { Check, Film, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   CONFIGURATOR_CATEGORIES,
   type ConfiguratorCategory,
   type ConfiguratorProduct,
 } from "@/lib/catalog/configurator";
+import {
+  ANIM_PRODUCT_ID,
+  ANIM_SOURCE_MODES,
+  type AnimSourceMode,
+} from "@/lib/catalog/animation-config";
 import { useQuote } from "./quote-context";
 
 // Group categories by sectionLabel for the tab bar
@@ -43,9 +54,9 @@ export function ServiceAdder() {
     (c) => c.id === activeCategoryId,
   );
 
-  const handleAdd = (product: ConfiguratorProduct) => {
+  const handleAdd = (product: ConfiguratorProduct, sourceMode?: string) => {
     if (!activeCategory) return;
-    addProduct(product.id, activeCategory.id);
+    addProduct(product.id, activeCategory.id, sourceMode);
     setJustAdded(product.id);
     setTimeout(() => setJustAdded(null), 1200);
   };
@@ -93,73 +104,198 @@ export function ServiceAdder() {
       {/* Product cards for active category */}
       {activeCategory && (
         <div className="space-y-3">
-          {activeCategory.products.map((product) => {
-            const isAdded = justAdded === product.id;
-            return (
-              <div
-                key={product.id}
-                className="rounded-2xl border border-border/60 bg-card/80 p-5 transition-shadow hover:shadow-[0_14px_40px_rgba(28,26,25,0.05)]"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-base font-semibold text-foreground">
-                      {product.label}
-                    </h3>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {product.unitLabel}
-                    </p>
-                    {product.includes.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1.5">
-                        {product.includes.map((inc) => (
-                          <span
-                            key={inc}
-                            className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/12 px-2 py-0.5 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)]"
-                          >
-                            <Check className="h-3 w-3" />
-                            {inc}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-shrink-0 flex-col items-end gap-2">
-                    <p className="text-xl font-semibold text-foreground">
-                      {product.durationConfig
-                        ? `€${product.durationConfig.perSecondEur}`
-                        : `€${product.basePriceEur}`}
-                      {product.durationConfig && (
-                        <span className="text-xs font-normal text-muted-foreground">
-                          /sek
-                        </span>
-                      )}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => handleAdd(product)}
-                      className={cn(
-                        "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all",
-                        isAdded
-                          ? "bg-[color:var(--color-sage)] text-white"
-                          : "bg-accent/15 text-accent hover:bg-accent hover:text-white",
-                      )}
-                    >
-                      {isAdded ? (
-                        <>
-                          <Check className="h-3 w-3" /> Dodato
-                        </>
-                      ) : (
-                        <>
-                          <Plus className="h-3 w-3" /> Dodaj
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {/* Animation category renders one consolidated card with a mode
+              picker; everything else maps catalog products to cards 1:1. */}
+          {activeCategory.id === "animation"
+            ? renderAnimationCard(activeCategory, justAdded, handleAdd)
+            : activeCategory.products.map((product) => {
+                const isAdded = justAdded === product.id;
+                return (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    isAdded={isAdded}
+                    onAdd={() => handleAdd(product)}
+                  />
+                );
+              })}
         </div>
       )}
+    </div>
+  );
+}
+
+function ProductCard({
+  product,
+  isAdded,
+  onAdd,
+}: {
+  product: ConfiguratorProduct;
+  isAdded: boolean;
+  onAdd: () => void;
+}) {
+  return (
+    <div className="rounded-2xl border border-border/60 bg-card/80 p-5 transition-shadow hover:shadow-[0_14px_40px_rgba(28,26,25,0.05)]">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <h3 className="text-base font-semibold text-foreground">
+            {product.label}
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {product.unitLabel}
+          </p>
+          {product.includes.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {product.includes.map((inc) => (
+                <span
+                  key={inc}
+                  className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/12 px-2 py-0.5 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)]"
+                >
+                  <Check className="h-3 w-3" />
+                  {inc}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="flex flex-shrink-0 flex-col items-end gap-2">
+          <p className="text-xl font-semibold text-foreground">
+            {product.durationConfig
+              ? `€${product.durationConfig.perSecondEur}`
+              : `€${product.basePriceEur}`}
+            {product.durationConfig && (
+              <span className="text-xs font-normal text-muted-foreground">
+                /sek
+              </span>
+            )}
+          </p>
+          <button
+            type="button"
+            onClick={onAdd}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all",
+              isAdded
+                ? "bg-[color:var(--color-sage)] text-white"
+                : "bg-accent/15 text-accent hover:bg-accent hover:text-white",
+            )}
+          >
+            {isAdded ? (
+              <>
+                <Check className="h-3 w-3" /> Dodato
+              </>
+            ) : (
+              <>
+                <Plus className="h-3 w-3" /> Dodaj
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function renderAnimationCard(
+  category: ConfiguratorCategory,
+  justAdded: string | null,
+  onAdd: (product: ConfiguratorProduct, sourceMode: string) => void,
+) {
+  const product = category.products.find((p) => p.id === ANIM_PRODUCT_ID);
+  if (!product) return null;
+  return (
+    <AnimationCard product={product} isAdded={justAdded === product.id} onAdd={onAdd} />
+  );
+}
+
+function AnimationCard({
+  product,
+  isAdded,
+  onAdd,
+}: {
+  product: ConfiguratorProduct;
+  isAdded: boolean;
+  onAdd: (product: ConfiguratorProduct, sourceMode: string) => void;
+}) {
+  const [mode, setMode] = useState<AnimSourceMode>("scratch");
+  const modeMeta = ANIM_SOURCE_MODES.find((m) => m.id === mode);
+  const perSec = modeMeta?.perSecondEur ?? 15;
+
+  return (
+    <div className="rounded-2xl border border-border/60 bg-card/80 p-5 transition-shadow hover:shadow-[0_14px_40px_rgba(28,26,25,0.05)]">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
+            <Film className="h-4 w-4 text-accent" />
+            3D animacija
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Cinematski flythrough / walkthrough — minimum 15 sekundi
+          </p>
+        </div>
+        <div className="flex flex-shrink-0 flex-col items-end gap-2">
+          <p className="text-xl font-semibold text-foreground">
+            €{perSec}
+            <span className="text-xs font-normal text-muted-foreground">
+              /sek
+            </span>
+          </p>
+        </div>
+      </div>
+
+      {/* Source mode picker */}
+      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        {ANIM_SOURCE_MODES.map((m) => {
+          const isActive = mode === m.id;
+          return (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => setMode(m.id)}
+              className={cn(
+                "flex flex-col items-start gap-1 rounded-lg border px-3 py-2 text-left transition-colors",
+                isActive
+                  ? "border-accent bg-accent/10"
+                  : "border-border/40 bg-background/40 hover:border-accent/40",
+              )}
+            >
+              <span className="flex w-full items-center justify-between gap-2">
+                <span className="text-[0.78rem] font-semibold text-foreground">
+                  {m.shortLabel}
+                </span>
+                <span className="text-[0.7rem] font-bold text-accent tabular-nums">
+                  €{m.perSecondEur}/s
+                </span>
+              </span>
+              <span className="text-[0.7rem] leading-snug text-muted-foreground">
+                {m.description}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 flex items-center justify-end">
+        <button
+          type="button"
+          onClick={() => onAdd(product, mode)}
+          className={cn(
+            "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all",
+            isAdded
+              ? "bg-[color:var(--color-sage)] text-white"
+              : "bg-accent/15 text-accent hover:bg-accent hover:text-white",
+          )}
+        >
+          {isAdded ? (
+            <>
+              <Check className="h-3 w-3" /> Dodato
+            </>
+          ) : (
+            <>
+              <Plus className="h-3 w-3" /> Dodaj animaciju
+            </>
+          )}
+        </button>
+      </div>
     </div>
   );
 }

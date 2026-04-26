@@ -24,10 +24,16 @@ import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 // ─── Actions ─────────────────────────────────────────────
 
 type QuoteAction =
-  | { type: "ADD_PRODUCT"; productId: string; categoryId: string }
+  | {
+      type: "ADD_PRODUCT";
+      productId: string;
+      categoryId: string;
+      sourceMode?: string;
+    }
   | { type: "REMOVE_PRODUCT"; instanceId: string }
   | { type: "SET_ADDON_QTY"; instanceId: string; addOnId: string; qty: number }
   | { type: "SET_DURATION"; instanceId: string; seconds: number }
+  | { type: "SET_SOURCE_MODE"; instanceId: string; sourceMode: string }
   | { type: "CLEAR_ALL" }
   | { type: "LOAD_ITEMS"; items: QuoteItem[] };
 
@@ -51,6 +57,7 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
           categoryId: action.categoryId,
           addOnQuantities: defaultQuantities,
           durationSeconds: product.durationConfig?.defaultSeconds,
+          ...(action.sourceMode ? { sourceMode: action.sourceMode } : {}),
         },
       ];
     }
@@ -77,6 +84,12 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
           durationSeconds: Math.max(min, action.seconds),
         };
       });
+    case "SET_SOURCE_MODE":
+      return state.map((item) =>
+        item.instanceId === action.instanceId
+          ? { ...item, sourceMode: action.sourceMode }
+          : item,
+      );
     case "CLEAR_ALL":
       return [];
     case "LOAD_ITEMS":
@@ -92,10 +105,15 @@ type QuoteContextValue = {
   items: QuoteItem[];
   calculation: QuoteCalculation;
   dispatch: React.Dispatch<QuoteAction>;
-  addProduct: (productId: string, categoryId: string) => void;
+  addProduct: (
+    productId: string,
+    categoryId: string,
+    sourceMode?: string,
+  ) => void;
   removeProduct: (instanceId: string) => void;
   setAddOnQty: (instanceId: string, addOnId: string, qty: number) => void;
   setDuration: (instanceId: string, seconds: number) => void;
+  setSourceMode: (instanceId: string, sourceMode: string) => void;
   clearAll: () => void;
   loadItems: (items: QuoteItem[]) => void;
 };
@@ -107,8 +125,8 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
   const calculation = useMemo(() => calculateQuote(items), [items]);
 
   const addProduct = useCallback(
-    (productId: string, categoryId: string) =>
-      dispatch({ type: "ADD_PRODUCT", productId, categoryId }),
+    (productId: string, categoryId: string, sourceMode?: string) =>
+      dispatch({ type: "ADD_PRODUCT", productId, categoryId, sourceMode }),
     [],
   );
   const removeProduct = useCallback(
@@ -126,6 +144,11 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "SET_DURATION", instanceId, seconds }),
     [],
   );
+  const setSourceMode = useCallback(
+    (instanceId: string, sourceMode: string) =>
+      dispatch({ type: "SET_SOURCE_MODE", instanceId, sourceMode }),
+    [],
+  );
   const clearAll = useCallback(() => dispatch({ type: "CLEAR_ALL" }), []);
   const loadItems = useCallback(
     (loaded: QuoteItem[]) => dispatch({ type: "LOAD_ITEMS", items: loaded }),
@@ -141,6 +164,7 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       removeProduct,
       setAddOnQty,
       setDuration,
+      setSourceMode,
       clearAll,
       loadItems,
     }),
@@ -151,6 +175,7 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       removeProduct,
       setAddOnQty,
       setDuration,
+      setSourceMode,
       clearAll,
       loadItems,
     ],

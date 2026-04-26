@@ -51,14 +51,18 @@ function ConfiguratorInner() {
       if (!raw) return;
 
       try {
-        const entries: Array<{ id: string; qty: number } | string> = JSON.parse(raw);
+        const entries: Array<
+          { id: string; qty: number; sourceMode?: string } | string
+        > = JSON.parse(raw);
         for (const entry of entries) {
           const productId = typeof entry === "string" ? entry : entry.id;
           const qty = typeof entry === "string" ? 1 : (entry.qty || 1);
+          const sourceMode =
+            typeof entry === "string" ? undefined : entry.sourceMode;
           const result = getConfiguratorProduct(productId);
           if (result) {
             for (let i = 0; i < qty; i++) {
-              addProduct(productId, result.category.id);
+              addProduct(productId, result.category.id, sourceMode);
             }
           }
         }

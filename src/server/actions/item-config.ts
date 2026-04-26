@@ -99,11 +99,11 @@ import {
   type ItemRemovalProductId,
 } from "@/lib/catalog/item-removal-config";
 import {
+  ANIM_PRODUCT_ID,
   addOnQuantitiesFor as animAddOnQuantitiesFor,
   defaultAnimationConfig,
   sanitizeAnimationConfig,
   type AnimationConfig,
-  type AnimationProductId,
 } from "@/lib/catalog/animation-config";
 import {
   addOnQuantitiesFor as vrAddOnQuantitiesFor,
@@ -486,6 +486,7 @@ export async function deleteOrderItem(
 export async function addOrderItem(
   orderId: string,
   productId: string,
+  sourceMode?: string,
 ): Promise<ItemConfigResult> {
   const session = await auth();
   if (!session?.user?.id) return { error: "Niste prijavljeni." };
@@ -517,6 +518,7 @@ export async function addOrderItem(
     ...(lookup.product.durationConfig
       ? { durationSeconds: lookup.product.durationConfig.defaultSeconds }
       : {}),
+    ...(sourceMode ? { sourceMode } : {}),
   };
 
   const calc = calculateQuote([quoteItem]);
@@ -551,10 +553,13 @@ export async function addOrderItem(
                       ? (defaultDtdConfig() as unknown as Prisma.InputJsonValue)
                       : productId === "ir-simple" || productId === "ir-complex"
                         ? (defaultItemRemovalConfig() as unknown as Prisma.InputJsonValue)
-                        : productId === "anim-scratch" ||
-                            productId === "anim-existing" ||
-                            productId === "anim-active"
-                          ? (defaultAnimationConfig() as unknown as Prisma.InputJsonValue)
+                        : productId === ANIM_PRODUCT_ID
+                          ? (defaultAnimationConfig(
+                              (sourceMode as
+                                | "scratch"
+                                | "existing"
+                                | "active") ?? "scratch",
+                            ) as unknown as Prisma.InputJsonValue)
                           : productId === "vr-existing" ||
                               productId === "vr-standalone"
                             ? (defaultVrConfig() as unknown as Prisma.InputJsonValue)
@@ -1118,7 +1123,7 @@ export async function updateItemRemovalConfig(
   return { success: true };
 }
 
-// ─── 3D animation (anim-scratch / anim-existing / anim-active) ────────
+// ─── 3D animation (consolidated `anim` product, sourceMode in config) ─
 
 export async function updateAnimationConfig(
   itemId: string,
@@ -1134,23 +1139,19 @@ export async function updateAnimationConfig(
   if (!item) return { error: "Stavka nije pronađena." };
   if (item.order.userId !== session.user.id)
     return { error: "Nemate pristup." };
-  if (
-    item.productId !== "anim-scratch" &&
-    item.productId !== "anim-existing" &&
-    item.productId !== "anim-active"
-  )
+  if (item.productId !== ANIM_PRODUCT_ID)
     return { error: "Samo za 3D animaciju." };
   if (item.order.status !== "draft")
     return { error: "Izmene dozvoljene samo u nacrtu." };
 
-  const productId = item.productId as AnimationProductId;
   const sanitized = sanitizeAnimationConfig(config);
   const qi: QuoteItem = {
     instanceId: itemId,
-    productId,
+    productId: ANIM_PRODUCT_ID,
     categoryId: "animation",
-    addOnQuantities: animAddOnQuantitiesFor(sanitized, productId),
+    addOnQuantities: animAddOnQuantitiesFor(sanitized),
     durationSeconds: sanitized.durationSeconds,
+    sourceMode: sanitized.sourceMode,
   };
   const calc = calculateQuote([qi]);
   const breakdown = calc.items[0];

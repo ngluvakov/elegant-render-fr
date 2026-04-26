@@ -42,6 +42,9 @@ function qi(
     ...(overrides.durationSeconds !== undefined
       ? { durationSeconds: overrides.durationSeconds }
       : {}),
+    ...(overrides.sourceMode !== undefined
+      ? { sourceMode: overrides.sourceMode }
+      : {}),
   };
 }
 
@@ -106,13 +109,16 @@ const cases: Case[] = [
     name: "Animation 30s + ext-static — anim −33%, ext-static −50% (bidirectional)",
     items: [
       qi("e", "ext-static", "exterior"),
-      qi("a", "anim-scratch", "animation", { durationSeconds: 30 }),
+      qi("a", "anim", "animation", {
+        durationSeconds: 30,
+        sourceMode: "scratch",
+      }),
     ],
     expect: {
       perItem: [
-        // anim-scratch creates complete-model → ext-static consumes it at −50%
+        // anim/scratch creates complete-model → ext-static consumes it at −50%
         { instanceId: "e", discountPct: 50 },
-        // ext-static creates exterior-shell → anim-scratch consumes it at −33%
+        // ext-static creates exterior-shell → anim/scratch consumes it at −33%
         { instanceId: "a", discountPct: 33 },
       ],
     },
@@ -169,9 +175,14 @@ const externalCases: ExternalCase[] = [
     },
   },
   {
-    name: "Ref order has anim-scratch → new ext-static gets −50% (complete-model)",
+    name: "Ref order has anim/scratch → new ext-static gets −50% (complete-model)",
     items: [qi("e", "ext-static", "exterior")],
-    externalSources: [qi("ref-a", "anim-scratch", "animation", { durationSeconds: 30 })],
+    externalSources: [
+      qi("ref-a", "anim", "animation", {
+        durationSeconds: 30,
+        sourceMode: "scratch",
+      }),
+    ],
     expect: {
       perItem: [{ instanceId: "e", discountPct: 50 }],
     },
@@ -190,11 +201,14 @@ const externalCases: ExternalCase[] = [
     },
   },
   {
-    name: "Rule 4 cap: active ref anim-scratch → ext-static 50 → 55 (capped)",
+    name: "Rule 4 cap: active ref anim/scratch → ext-static 50 → 55 (capped)",
     items: [qi("e", "ext-static", "exterior")],
     externalSources: [
       {
-        ...qi("ref-a", "anim-scratch", "animation", { durationSeconds: 30 }),
+        ...qi("ref-a", "anim", "animation", {
+          durationSeconds: 30,
+          sourceMode: "scratch",
+        }),
         fromActiveExternalOrder: true,
       },
     ],

@@ -1,59 +1,83 @@
 /**
- * animation-config.ts — Per-item config + vocabularies for the three
- * animation products: `anim-scratch` (od nule), `anim-existing`
- * (postojeći model), `anim-active` (aktivan projekat). One config
- * shape covers all three; the productId picks the correct add-on
- * suffix for paths/daynight, and gates which upsell options are
- * available (daynight not on anim-active; season only on anim-scratch).
+ * animation-config.ts — Per-item config + vocabularies for the
+ * consolidated `anim` product. Source mode (scratch / existing /
+ * active) is stored on QuoteItem.sourceMode AND on configJson, and
+ * drives:
+ *   - which add-ons are available (path always; daynight not on
+ *     active; season only on scratch)
+ *   - per-second pricing (€15 / €10 / €8) — resolved by
+ *     getEffectiveProduct(productId, sourceMode) in the catalog
+ *   - cross-product creates/consumes (resolved the same way)
  *
- * Pricing per second is handled by the engine via `durationConfig` on
- * each product entry. The configurator stores `durationSeconds` on the
- * config and the server action propagates it onto the QuoteItem so
- * `calcLineItem` applies the correct base × seconds × duration tier.
+ * The configurator UI exposes a 3-way mode picker that writes
+ * `sourceMode` into configJson; calculate.ts reads it from QuoteItem.
  */
 
-export type AnimationProductId =
-  | "anim-scratch"
-  | "anim-existing"
-  | "anim-active";
+import type { ConsumeRule, ModelAsset } from "./configurator";
+import {
+  ANIMATION_DURATION_TIERS,
+} from "./configurator";
+
+void ANIMATION_DURATION_TIERS;
+void ({} as ConsumeRule);
+void ({} as ModelAsset);
+
+export const ANIM_PRODUCT_ID = "anim" as const;
+
+export type AnimSourceMode = "scratch" | "existing" | "active";
+
+export const ANIM_SOURCE_MODES: ReadonlyArray<{
+  id: AnimSourceMode;
+  label: string;
+  shortLabel: string;
+  perSecondEur: number;
+  description: string;
+}> = [
+  {
+    id: "scratch",
+    label: "Animacija (od nule)",
+    shortLabel: "Od nule",
+    perSecondEur: 15,
+    description: "Pravimo 3D model i animaciju — kreće od skica/foto-referenci.",
+  },
+  {
+    id: "existing",
+    label: "Animacija (postojeći model)",
+    shortLabel: "Postojeći model",
+    perSecondEur: 10,
+    description: "Već imate 3D model — mi pravimo animaciju iz njega.",
+  },
+  {
+    id: "active",
+    label: "Animacija (aktivan projekat)",
+    shortLabel: "Aktivan projekat",
+    perSecondEur: 8,
+    description: "Imate aktivan render projekat kod nas — koristimo isti model.",
+  },
+];
+
+const ANIM_SOURCE_MODE_IDS = ANIM_SOURCE_MODES.map(
+  (m) => m.id,
+) as AnimSourceMode[];
 
 export const ANIM_DURATION_MIN = 15;
 export const ANIM_DURATION_MAX = 300;
 export const ANIM_DURATION_STEP = 5;
 
-// Per-product lookup
-const ANIM_SUFFIX = {
-  "anim-scratch": "scratch",
-  "anim-existing": "exist",
-  "anim-active": "active",
-} as const;
-
-const ANIM_PER_SECOND_EUR = {
-  "anim-scratch": 15,
-  "anim-existing": 10,
-  "anim-active": 8,
-} as const;
-
-const ANIM_PRODUCT_LABELS = {
-  "anim-scratch": "Animacija (od nule)",
-  "anim-existing": "Animacija (postojeći model)",
-  "anim-active": "Animacija (aktivan projekat)",
-} as const;
-
-export function animProductLabel(productId: AnimationProductId): string {
-  return ANIM_PRODUCT_LABELS[productId];
+export function animSourceModeLabel(mode: AnimSourceMode): string {
+  return ANIM_SOURCE_MODES.find((m) => m.id === mode)?.label ?? mode;
 }
 
-export function animPerSecondEur(productId: AnimationProductId): number {
-  return ANIM_PER_SECOND_EUR[productId];
+export function animPerSecondEur(mode: AnimSourceMode): number {
+  return ANIM_SOURCE_MODES.find((m) => m.id === mode)?.perSecondEur ?? 15;
 }
 
-export function animSupportsDayNight(productId: AnimationProductId): boolean {
-  return productId !== "anim-active";
+export function animSupportsDayNight(mode: AnimSourceMode): boolean {
+  return mode !== "active";
 }
 
-export function animSupportsSeason(productId: AnimationProductId): boolean {
-  return productId === "anim-scratch";
+export function animSupportsSeason(mode: AnimSourceMode): boolean {
+  return mode === "scratch";
 }
 
 // Tier discount (matches ANIMATION_DURATION_TIERS in configurator.ts):
@@ -145,6 +169,7 @@ export type AnimSceneElements = {
 // ─── Main config ──────────────────────────────────────────────────────
 
 export type AnimationConfig = {
+  sourceMode: AnimSourceMode;
   animationName: string;
   animationType: AnimTypeId;
   durationSeconds: number;          // multiple of ANIM_DURATION_STEP, min 15
@@ -157,10 +182,10 @@ export type AnimationConfig = {
   focusAreas: AnimFocusAreas;
   sceneElements: AnimSceneElements;
   musicMood?: AnimMusicMoodId;
-  // upsell
-  extraPathsCount: number;          // drives anim-{suffix}-path
-  dayNightVariant: boolean;         // drives anim-{suffix}-daynight (where supported)
-  seasonalVariant: boolean;         // drives anim-scratch-season (anim-scratch only)
+  // upsell — drive add-on quantities
+  extraPathsCount: number;          // anim-path
+  dayNightVariant: boolean;         // anim-daynight (when supported)
+  seasonalVariant: boolean;         // anim-season (scratch only)
 };
 
 export function defaultFocusAreas(): AnimFocusAreas {
@@ -175,8 +200,11 @@ export function defaultSceneElements(): AnimSceneElements {
   return { ljudi: false, automobili: false, vodaDrvece: false };
 }
 
-export function defaultAnimationConfig(): AnimationConfig {
+export function defaultAnimationConfig(
+  sourceMode: AnimSourceMode = "scratch",
+): AnimationConfig {
   return {
+    sourceMode,
     animationName: "Animacija 1",
     animationType: "eksterijer",
     durationSeconds: ANIM_DURATION_MIN,
@@ -232,10 +260,20 @@ function sanitizeBooleans<T extends Record<string, boolean>>(
 export function sanitizeAnimationConfig(
   c: AnimationConfig,
 ): AnimationConfig {
+  const sourceMode =
+    pickFromAllowlist<AnimSourceMode>(c.sourceMode, ANIM_SOURCE_MODE_IDS) ??
+    "scratch";
   const animationType =
     pickFromAllowlist<AnimTypeId>(c.animationType, ANIM_TYPE_IDS) ??
     "eksterijer";
+  // Force-clear add-on flags that aren't supported by the chosen mode so
+  // saved configs can't keep stale toggles after a mode switch.
+  const dayNightVariant =
+    Boolean(c.dayNightVariant) && animSupportsDayNight(sourceMode);
+  const seasonalVariant =
+    Boolean(c.seasonalVariant) && animSupportsSeason(sourceMode);
   return {
+    sourceMode,
     animationName:
       String(c.animationName ?? "").trim().slice(0, 100) || "Animacija 1",
     animationType,
@@ -264,8 +302,8 @@ export function sanitizeAnimationConfig(
       pickFromAllowlist<AnimMusicMoodId>(c.musicMood, ANIM_MUSIC_MOOD_IDS),
     ),
     extraPathsCount: clampCount(c.extraPathsCount, 0, 10),
-    dayNightVariant: Boolean(c.dayNightVariant),
-    seasonalVariant: Boolean(c.seasonalVariant),
+    dayNightVariant,
+    seasonalVariant,
   };
 }
 
@@ -273,26 +311,23 @@ export function sanitizeAnimationConfig(
 
 export function addOnQuantitiesFor(
   config: AnimationConfig,
-  productId: AnimationProductId,
 ): Record<string, number> {
   const q: Record<string, number> = {};
-  const suffix = ANIM_SUFFIX[productId];
 
   // Each extra path is billed as €5/sec of path-seconds. We approximate
   // path length = main animation length, so quantity = pathCount × seconds.
   if (config.extraPathsCount > 0 && config.durationSeconds > 0) {
-    q[`anim-${suffix}-path`] =
-      config.extraPathsCount * config.durationSeconds;
+    q["anim-path"] = config.extraPathsCount * config.durationSeconds;
   }
 
   // Day/Night: percent add-on, only available on scratch + existing
-  if (config.dayNightVariant && animSupportsDayNight(productId)) {
-    q[`anim-${suffix}-daynight`] = 1;
+  if (config.dayNightVariant && animSupportsDayNight(config.sourceMode)) {
+    q["anim-daynight"] = 1;
   }
 
   // Seasonal: percent add-on, only available on scratch
-  if (config.seasonalVariant && productId === "anim-scratch") {
-    q["anim-scratch-season"] = 1;
+  if (config.seasonalVariant && animSupportsSeason(config.sourceMode)) {
+    q["anim-season"] = 1;
   }
 
   return q;

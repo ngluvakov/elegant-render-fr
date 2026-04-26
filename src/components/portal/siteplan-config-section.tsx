@@ -39,6 +39,7 @@ import {
   type LineItemBreakdown,
 } from "@/lib/catalog/calculate";
 import { PricingBreakdown } from "./pricing-breakdown";
+import { HelpTip } from "@/components/ui/help-tip";
 import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -762,8 +763,14 @@ export function SiteplanConfigSection({
           <div className="flex items-center gap-2">
             <CalendarClock className="h-3.5 w-3.5 text-accent" />
             <div>
-              <span className="block text-[0.78rem] font-medium text-foreground">
+              <span className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
                 Sezonska varijanta
+                <HelpTip>
+                  Isti rendering generisan još jednom sa drugačijim
+                  vremenskim uslovima (npr. zimski dan + letnja noć).
+                  Korisno za marketing — jedna prezentacija pokriva više
+                  godišnjih doba.
+                </HelpTip>
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
                 Isti prikaz u drugom dobu dana ili godišnjem dobu
@@ -864,8 +871,14 @@ export function SiteplanConfigSection({
           <div className="flex items-center gap-2">
             <Layers className="h-3.5 w-3.5 text-accent" />
             <div>
-              <span className="block text-[0.78rem] font-medium text-foreground">
+              <span className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
                 Fazna varijanta (Phasing)
+                <HelpTip>
+                  <strong>Phasing</strong> prikazuje gradnju u etapama —
+                  trenutno izgrađeni objekti su puni, planirana faza se
+                  prikazuje providnim ili konturnim blokovima. Standard u
+                  urbanističkim prezentacijama velikih kompleksa.
+                </HelpTip>
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
                 Faza 1 izgrađena, Faza 2 u transparentnim blokovima

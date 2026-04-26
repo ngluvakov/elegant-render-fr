@@ -39,6 +39,7 @@ import {
   type LineItemBreakdown,
 } from "@/lib/catalog/calculate";
 import { PricingBreakdown } from "./pricing-breakdown";
+import { HelpTip } from "@/components/ui/help-tip";
 import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -603,8 +604,13 @@ export function LandscapeConfigSection({
 
           {/* 2.2 Terrain & hardscape */}
           <div className="space-y-2">
-            <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
+            <p className="flex items-center gap-1.5 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
               Teren i hardscape
+              <HelpTip>
+                <strong>Hardscape</strong> — neživi delovi pejzaža:
+                staze, popločani prostori, zidići, stepenice, ograde,
+                drvene terase. Suprotno od „softscape“ (biljke, trava).
+              </HelpTip>
             </p>
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">

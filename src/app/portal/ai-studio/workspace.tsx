@@ -42,23 +42,23 @@ import {
   type AiEditType,
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
-import {
-  generateAiStudioImage,
-  getAiStudioState,
-} from "@/server/actions/ai-studio";
 
 type GenerationHistoryItem = {
   id: string;
+  parentGenerationId: string | null;
   editType: AiEditType;
   provider: AiImageProvider;
   model: string;
   prompt: string;
   styleId: string | null;
-  status: "processing" | "completed" | "failed";
+  status: "queued" | "processing" | "completed" | "failed";
   unitsCharged: number;
   freeAttemptIndex: number | null;
   errorMessage: string | null;
   createdAt: string;
+  updatedAt: string;
+  startedAt: string | null;
+  completedAt: string | null;
   expiresAt: string;
   inputStoragePath: string;
   inputMimeType: string;
@@ -66,6 +66,7 @@ type GenerationHistoryItem = {
   resultMimeType: string | null;
   resultUrl: string | null;
   inputUrl: string | null;
+  downloadUrl: string | null;
   filesExpired: boolean;
 };
 
@@ -109,21 +110,73 @@ export function AiStudioWorkspace({
   const [styleId, setStyleId] = useState("modern");
   const [colorHex, setColorHex] = useState("#f2eee8");
   const [prompt, setPrompt] = useState("");
-  const [uploaded, setUploaded] = useState<UploadedInput | null>(null);
-  const [currentResult, setCurrentResult] = useState<UploadedInput | null>(null);
-  const [useCurrentResult, setUseCurrentResult] = useState(false);
-  const [parentGenerationId, setParentGenerationId] = useState<string | null>(null);
+  const initialCompleted = useMemo(
+    () =>
+      "generations" in initialState
+        ? initialState.generations.find(
+            (item) => item.status === "completed" && item.resultUrl,
+          )
+        : null,
+    [initialState],
+  );
+  const initialInput = useMemo(
+    () =>
+      "generations" in initialState
+        ? initialState.generations.find((item) => item.inputUrl)
+        : null,
+    [initialState],
+  );
+  const [originalInput, setOriginalInput] = useState<UploadedInput | null>(
+    initialInput?.inputUrl
+      ? {
+          url: initialInput.inputUrl,
+          storagePath: initialInput.inputStoragePath,
+          mimeType: initialInput.inputMimeType,
+          fileName: "original",
+        }
+      : null,
+  );
+  const [workingInput, setWorkingInput] = useState<UploadedInput | null>(
+    initialInput?.inputUrl
+      ? {
+          url: initialInput.inputUrl,
+          storagePath: initialInput.inputStoragePath,
+          mimeType: initialInput.inputMimeType,
+          fileName: "trenutni-input",
+        }
+      : null,
+  );
+  const [currentResult, setCurrentResult] = useState<UploadedInput | null>(
+    initialCompleted?.resultUrl && initialCompleted.resultStoragePath
+      ? {
+          url: initialCompleted.resultUrl,
+          storagePath: initialCompleted.resultStoragePath,
+          mimeType: initialCompleted.resultMimeType ?? "image/jpeg",
+          fileName: "ai-result.jpg",
+        }
+      : null,
+  );
+  const [parentGenerationId, setParentGenerationId] = useState<string | null>(
+    initialCompleted?.id ?? null,
+  );
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultUrl, setResultUrl] = useState<string | null>(
+    initialCompleted?.resultUrl ?? null,
+  );
   const [maskDirty, setMaskDirty] = useState(false);
+  const [editorResetToken, setEditorResetToken] = useState(0);
 
   const activeEdit = useMemo(() => getAiEditType(editType), [editType]);
-  const activeInput = useCurrentResult && currentResult ? currentResult : uploaded;
+  const activeInput = workingInput ?? originalInput;
+  const hasPendingJobs = history.some(
+    (item) => item.status === "queued" || item.status === "processing",
+  );
 
   const refreshState = useCallback(async () => {
-    const nextState = await getAiStudioState();
+    const response = await fetch("/api/ai-studio/state", { cache: "no-store" });
+    const nextState = (await response.json()) as AiStudioState;
     if ("error" in nextState) {
       setError(nextState.error ?? "AI Studio stanje nije dostupno.");
       return;
@@ -131,25 +184,63 @@ export function AiStudioWorkspace({
     setBalanceUnits(nextState.balanceUnits);
     setCreditsExpireAt(nextState.creditsExpireAt);
     setHistory(nextState.generations);
-    if (parentGenerationId) {
-      const current = nextState.generations.find(
-        (item) => item.id === parentGenerationId,
-      );
-      if (current?.resultUrl && current.resultStoragePath && !current.filesExpired) {
-        setResultUrl(current.resultUrl);
-        setCurrentResult((prev) =>
-          prev
-            ? {
-                ...prev,
-                url: current.resultUrl ?? prev.url,
-                storagePath: current.resultStoragePath ?? prev.storagePath,
-                mimeType: current.resultMimeType ?? prev.mimeType,
-              }
-            : prev,
-        );
-      }
+    const latestCompleted = nextState.generations.find(
+      (item) => item.status === "completed" && item.resultUrl,
+    );
+    if (latestCompleted?.resultUrl && latestCompleted.resultStoragePath) {
+      setResultUrl(latestCompleted.resultUrl);
+      setCurrentResult({
+        url: latestCompleted.resultUrl,
+        storagePath: latestCompleted.resultStoragePath,
+        mimeType: latestCompleted.resultMimeType ?? "image/jpeg",
+        fileName: "ai-result.jpg",
+      });
+      setParentGenerationId(latestCompleted.id);
     }
-  }, [parentGenerationId]);
+  }, []);
+
+  const refreshGeneration = useCallback(async (generationId: string) => {
+    const response = await fetch(`/api/ai-studio/generations/${generationId}`, {
+      cache: "no-store",
+    });
+    const data = (await response.json()) as {
+      error?: string;
+      generation?: GenerationHistoryItem;
+      balanceUnits?: number;
+      creditsExpireAt?: string | null;
+    };
+
+    if (data.error) {
+      setError(data.error);
+      return;
+    }
+    if (!data.generation) return;
+
+    setHistory((prev) =>
+      prev.map((item) => (item.id === data.generation?.id ? data.generation : item)),
+    );
+    if (typeof data.balanceUnits === "number") setBalanceUnits(data.balanceUnits);
+    if ("creditsExpireAt" in data) setCreditsExpireAt(data.creditsExpireAt ?? null);
+
+    if (
+      data.generation.status === "completed" &&
+      data.generation.resultUrl &&
+      data.generation.resultStoragePath
+    ) {
+      setResultUrl(data.generation.resultUrl);
+      setCurrentResult({
+        url: data.generation.resultUrl,
+        storagePath: data.generation.resultStoragePath,
+        mimeType: data.generation.resultMimeType ?? "image/jpeg",
+        fileName: "ai-result.jpg",
+      });
+      setParentGenerationId(data.generation.id);
+      setNotice("AI obrada je završena.");
+    }
+    if (data.generation.status === "failed") {
+      setError(data.generation.errorMessage ?? "AI obrada nije uspela.");
+    }
+  }, []);
 
   useEffect(() => {
     const intervalId = window.setInterval(
@@ -165,6 +256,22 @@ export function AiStudioWorkspace({
   }, [refreshState]);
 
   useEffect(() => {
+    if (!hasPendingJobs) return;
+
+    const poll = async () => {
+      const pendingItems = history.filter(
+        (item) => item.status === "queued" || item.status === "processing",
+      );
+      await Promise.all(pendingItems.map((item) => refreshGeneration(item.id)));
+    };
+
+    void poll();
+    const intervalId = window.setInterval(() => void poll(), 3500);
+    return () => window.clearInterval(intervalId);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasPendingJobs, history]);
+
+  useEffect(() => {
     setSelectedOption(activeEdit.options?.[0]?.id ?? "");
     if (!activeEdit.supportsStyles) setStyleId("none");
     if (activeEdit.supportsStyles && styleId === "none") setStyleId("modern");
@@ -176,16 +283,18 @@ export function AiStudioWorkspace({
     setNotice("");
     const upload = await uploadAiFile(file, "input");
     const url = URL.createObjectURL(file);
-    setUploaded({
+    const nextInput = {
       url,
       storagePath: upload.storagePath,
       mimeType: file.type,
       fileName: file.name,
-    });
-    setUseCurrentResult(false);
+    };
+    setOriginalInput(nextInput);
+    setWorkingInput(nextInput);
     setParentGenerationId(null);
     setResultUrl(null);
     setCurrentResult(null);
+    setEditorResetToken((value) => value + 1);
   };
 
   const handleGenerate = async (maskBlob: Blob | null) => {
@@ -210,69 +319,81 @@ export function AiStudioWorkspace({
         maskStoragePath = upload.storagePath;
       }
 
-      const result = await generateAiStudioImage({
-        editType,
-        provider,
-        inputStoragePath: activeInput.storagePath,
-        inputMimeType: activeInput.mimeType,
-        maskStoragePath,
-        prompt,
-        styleId: activeEdit.supportsStyles ? styleId : null,
-        selectedOption: selectedOption || null,
-        colorHex: activeEdit.supportsColor ? colorHex : null,
-        parentGenerationId,
+      const response = await fetch("/api/ai-studio/generations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          editType,
+          provider,
+          inputStoragePath: activeInput.storagePath,
+          inputMimeType: activeInput.mimeType,
+          maskStoragePath,
+          prompt,
+          styleId: activeEdit.supportsStyles ? styleId : null,
+          selectedOption: selectedOption || null,
+          colorHex: activeEdit.supportsColor ? colorHex : null,
+          parentGenerationId,
+        }),
       });
+
+      const result = (await response.json()) as {
+        error?: string;
+        generationId?: string;
+        status?: GenerationHistoryItem["status"];
+        balanceUnits?: number;
+        unitsCharged?: number;
+        freeAttemptIndex?: number | null;
+      };
 
       if (result.error) {
         setError(result.error);
+        return;
+      }
+      if (!result.generationId) {
+        setError("AI obrada nije pokrenuta.");
         return;
       }
 
       if (typeof result.balanceUnits === "number") {
         setBalanceUnits(result.balanceUnits);
       }
-      if (result.notice) setNotice(result.notice);
-      if (result.resultUrl && result.resultStoragePath) {
-        const completedResultUrl = result.resultUrl;
-        const resultStoragePath = result.resultStoragePath;
-        const resultMimeType = result.resultMimeType ?? "image/png";
-        setResultUrl(completedResultUrl);
-        const resultInput = {
-          url: completedResultUrl,
-          storagePath: resultStoragePath,
-          mimeType: resultMimeType,
-          fileName: "ai-result.png",
-        };
-        setCurrentResult(resultInput);
-        setParentGenerationId(result.generationId ?? null);
-        setHistory((prev) => [
-          {
-            id: result.generationId ?? crypto.randomUUID(),
-            editType,
-            provider: result.provider ?? provider,
-            model:
-              result.model ??
-              AI_IMAGE_PROVIDERS.find((item) => item.id === provider)?.label ??
-              provider,
-            prompt,
-            styleId: activeEdit.supportsStyles ? styleId : null,
-            status: "completed",
-            unitsCharged: result.unitsCharged ?? activeEdit.units,
-            freeAttemptIndex: result.freeAttemptIndex ?? null,
-            errorMessage: null,
-            createdAt: new Date().toISOString(),
-            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            inputStoragePath: activeInput.storagePath,
-            inputMimeType: activeInput.mimeType,
-            resultStoragePath,
-            resultMimeType,
-            resultUrl: completedResultUrl,
-            inputUrl: activeInput.url,
-            filesExpired: false,
-          },
-          ...prev,
-        ]);
-      }
+      const now = new Date();
+      setHistory((prev) => [
+        {
+          id: result.generationId!,
+          parentGenerationId,
+          editType,
+          provider,
+          model:
+            AI_IMAGE_PROVIDERS.find((item) => item.id === provider)?.label ??
+            provider,
+          prompt,
+          styleId: activeEdit.supportsStyles ? styleId : null,
+          status: result.status ?? "queued",
+          unitsCharged: result.unitsCharged ?? activeEdit.units,
+          freeAttemptIndex: result.freeAttemptIndex ?? null,
+          errorMessage: null,
+          createdAt: now.toISOString(),
+          updatedAt: now.toISOString(),
+          startedAt: null,
+          completedAt: null,
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          inputStoragePath: activeInput.storagePath,
+          inputMimeType: activeInput.mimeType,
+          resultStoragePath: null,
+          resultMimeType: null,
+          resultUrl: null,
+          inputUrl: activeInput.url,
+          downloadUrl: null,
+          filesExpired: false,
+        },
+        ...prev,
+      ]);
+      setPrompt("");
+      setMaskDirty(false);
+      setEditorResetToken((value) => value + 1);
+      setNotice("AI obrada je pokrenuta. Možete ostati ovde ili se vratiti kasnije.");
+      void refreshGeneration(result.generationId);
     } finally {
       setPending(false);
     }
@@ -350,14 +471,16 @@ export function AiStudioWorkspace({
 
           <AiImageEditor
             mode={mode}
-            uploaded={uploaded}
+            originalInput={originalInput}
+            workingInput={workingInput}
             currentResult={currentResult}
-            useCurrentResult={useCurrentResult}
-            setUseCurrentResult={setUseCurrentResult}
+            setWorkingInput={setWorkingInput}
             onUpload={handleUpload}
             onGenerate={handleGenerate}
             pending={pending}
             resultUrl={resultUrl}
+            parentGenerationId={parentGenerationId}
+            resetToken={editorResetToken}
             onMaskDirtyChange={setMaskDirty}
           />
         </div>
@@ -366,13 +489,14 @@ export function AiStudioWorkspace({
           history={history}
           onUseResult={(item) => {
             if (!item.resultUrl || !item.resultStoragePath || item.filesExpired) return;
-            setCurrentResult({
+            const nextInput = {
               url: item.resultUrl,
               storagePath: item.resultStoragePath,
-              mimeType: item.resultMimeType ?? "image/png",
-              fileName: "ai-result.png",
-            });
-            setUseCurrentResult(true);
+              mimeType: item.resultMimeType ?? "image/jpeg",
+              fileName: "ai-result.jpg",
+            };
+            setCurrentResult(nextInput);
+            setWorkingInput(nextInput);
             setParentGenerationId(item.id);
             setResultUrl(item.resultUrl);
           }}
@@ -585,25 +709,29 @@ function StudioControls({
 
 function AiImageEditor({
   mode,
-  uploaded,
+  originalInput,
+  workingInput,
   currentResult,
-  useCurrentResult,
-  setUseCurrentResult,
+  setWorkingInput,
   onUpload,
   onGenerate,
   pending,
   resultUrl,
+  parentGenerationId,
+  resetToken,
   onMaskDirtyChange,
 }: {
   mode: ToolMode;
-  uploaded: UploadedInput | null;
+  originalInput: UploadedInput | null;
+  workingInput: UploadedInput | null;
   currentResult: UploadedInput | null;
-  useCurrentResult: boolean;
-  setUseCurrentResult: (value: boolean) => void;
+  setWorkingInput: (value: UploadedInput) => void;
   onUpload: (file: File) => void;
   onGenerate: (mask: Blob | null) => void;
   pending: boolean;
   resultUrl: string | null;
+  parentGenerationId: string | null;
+  resetToken: number;
   onMaskDirtyChange: (dirty: boolean) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -617,7 +745,7 @@ function AiImageEditor({
   const [rectStart, setRectStart] = useState<{ x: number; y: number } | null>(null);
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
-  const activeImage = useCurrentResult && currentResult ? currentResult : uploaded;
+  const activeImage = workingInput ?? originalInput;
 
   const resetCanvas = useCallback(() => {
     const canvas = maskCanvasRef.current;
@@ -632,7 +760,7 @@ function AiImageEditor({
 
   useEffect(() => {
     resetCanvas();
-  }, [activeImage?.url, resetCanvas]);
+  }, [activeImage?.url, resetCanvas, resetToken]);
 
   const pushUndo = () => {
     const canvas = maskCanvasRef.current;
@@ -748,9 +876,9 @@ function AiImageEditor({
           {currentResult && (
             <button
               type="button"
-              onClick={() => setUseCurrentResult(!useCurrentResult)}
+              onClick={() => setWorkingInput(currentResult)}
               className={`rounded-lg border px-3 py-2 text-xs font-semibold ${
-                useCurrentResult
+                workingInput?.storagePath === currentResult.storagePath
                   ? "border-accent bg-accent/10 text-accent"
                   : "border-border/60 text-muted-foreground"
               }`}
@@ -879,8 +1007,48 @@ function AiImageEditor({
         </div>
       )}
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+      <div className="mt-4 grid gap-4 xl:grid-cols-3">
         <div className="overflow-auto rounded-2xl border border-border/60 bg-background/50 p-3">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Original
+            </p>
+          </div>
+          {originalInput ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={originalInput.url}
+              alt="Originalna slika"
+              className="h-auto w-full rounded-xl object-contain"
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="flex min-h-[320px] w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/70 bg-background/40 text-center transition hover:border-accent/50"
+            >
+              <ImageIcon className="h-10 w-10 text-muted-foreground/50" />
+              <span className="mt-3 text-sm font-semibold text-foreground">
+                Uploadujte fotografiju
+              </span>
+              <span className="mt-1 text-xs text-muted-foreground">
+                JPG, PNG ili WebP do 50MB
+              </span>
+            </button>
+          )}
+        </div>
+
+        <div className="overflow-auto rounded-2xl border border-border/60 bg-background/50 p-3">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Trenutni input
+            </p>
+            {parentGenerationId && (
+              <span className="text-[0.7rem] text-muted-foreground">
+                Vezano za prethodni rezultat
+              </span>
+            )}
+          </div>
           {activeImage ? (
             <div
               className="relative mx-auto max-w-full touch-none overflow-hidden rounded-xl bg-black/5"
@@ -926,6 +1094,11 @@ function AiImageEditor({
         </div>
 
         <div className="rounded-2xl border border-border/60 bg-background/50 p-3">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Rezultat
+            </p>
+          </div>
           {resultUrl ? (
             <div className="space-y-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -935,7 +1108,11 @@ function AiImageEditor({
                 className="h-auto w-full rounded-xl object-contain"
               />
               <a
-                href={resultUrl}
+                href={
+                  parentGenerationId
+                    ? `/api/ai-studio/generations/${parentGenerationId}/download`
+                    : resultUrl
+                }
                 download
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background"
               >
@@ -950,8 +1127,8 @@ function AiImageEditor({
                 Rezultat će se prikazati ovde
               </p>
               <p className="mt-1 max-w-xs text-xs text-muted-foreground">
-                Kredit se troši pri kliku na Generate, uz 2 besplatna pokušaja
-                u okviru iste slike/session-a.
+                Kredit se rezerviše kada obrada krene. Ako AI obrada tehnički
+                ne uspe, kredit se automatski vraća.
               </p>
             </div>
           )}
@@ -1048,6 +1225,11 @@ function HistoryPanel({
                   {new Date(item.createdAt).toLocaleDateString("sr-RS")} ·{" "}
                   {AI_IMAGE_PROVIDERS.find((p) => p.id === item.provider)?.label}
                 </p>
+                {(item.status === "queued" || item.status === "processing") && (
+                  <p className="mt-1 text-xs text-accent">
+                    {item.status === "queued" ? "Čeka obradu" : "Obrada u toku"}
+                  </p>
+                )}
                 {item.status === "failed" && (
                   <p className="mt-1 text-xs text-destructive">
                     {item.errorMessage ?? "Obrada nije uspela."}
@@ -1071,7 +1253,7 @@ function HistoryPanel({
                   Koristi kao input
                 </Button>
                 <a
-                  href={item.resultUrl}
+                  href={item.downloadUrl ?? `/api/ai-studio/generations/${item.id}/download`}
                   download
                   className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-card/60 px-3 text-[0.8rem] font-medium"
                 >

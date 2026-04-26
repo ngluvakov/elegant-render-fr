@@ -2,20 +2,23 @@ import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { formatCreditsFromUnits } from "@/lib/ai-studio/catalog";
 import { enqueueOutboxEvent } from "@/lib/outbox";
+import { recoverAiStudioGenerationJobs } from "@/server/actions/ai-studio";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export async function runAiStudioMaintenance(now = new Date()) {
-  const [expiredCredits, reminders, files] = await Promise.all([
+  const [expiredCredits, reminders, files, recoveredJobs] = await Promise.all([
     expireStaleCreditBalances(now),
     sendCreditExpiryReminders(now),
     removeExpiredGenerationFiles(now),
+    recoverAiStudioGenerationJobs(),
   ]);
 
   return {
     expiredCreditBalances: expiredCredits,
     remindersSent: reminders,
     storageFilesRemoved: files,
+    recoveredJobs,
   };
 }
 

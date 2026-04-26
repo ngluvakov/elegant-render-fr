@@ -1,4 +1,5 @@
 import { getAiProviderModel, type AiImageProvider } from "./catalog";
+import type { ProviderTarget } from "./image-processing";
 
 const AI_PROVIDER_TIMEOUT_MS = 120_000;
 const AI_PROVIDER_RETRY_DELAY_MS = 1_200;
@@ -10,6 +11,7 @@ export type AiEditProviderInput = {
   imageMimeType: string;
   mask?: Buffer;
   maskMimeType?: string;
+  target?: ProviderTarget;
 };
 
 export type AiEditProviderOutput = {
@@ -128,6 +130,13 @@ async function generateWithGemini(
         contents: [{ parts }],
         generationConfig: {
           responseModalities: ["TEXT", "IMAGE"],
+          ...(input.target
+            ? {
+                imageConfig: {
+                  aspectRatio: input.target.ratioLabel,
+                },
+              }
+            : {}),
         },
       }),
     },
@@ -182,7 +191,7 @@ async function generateWithOpenAi(
     new Blob([new Uint8Array(input.image)], { type: input.imageMimeType }),
     "input.png",
   );
-  form.append("size", "auto");
+  form.append("size", input.target?.openaiSize ?? "auto");
 
   if (input.mask) {
     form.append(

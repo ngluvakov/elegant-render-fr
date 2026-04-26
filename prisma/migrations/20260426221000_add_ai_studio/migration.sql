@@ -19,7 +19,7 @@ END $$;
 
 DO $$
 BEGIN
-  CREATE TYPE "AiGenerationStatus" AS ENUM ('processing', 'completed', 'failed');
+  CREATE TYPE "AiGenerationStatus" AS ENUM ('queued', 'processing', 'completed', 'failed');
 EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
@@ -39,6 +39,7 @@ EXCEPTION
 END $$;
 
 ALTER TYPE "OutboxEventType" ADD VALUE IF NOT EXISTS 'ai_credits_expiry_reminder_email';
+ALTER TYPE "AiGenerationStatus" ADD VALUE IF NOT EXISTS 'queued';
 
 -- AlterTable
 ALTER TABLE "users"
@@ -103,7 +104,7 @@ CREATE TABLE IF NOT EXISTS "ai_generations" (
   "prompt" TEXT NOT NULL,
   "styleId" TEXT,
   "optionsJson" JSONB,
-  "status" "AiGenerationStatus" NOT NULL DEFAULT 'processing',
+  "status" "AiGenerationStatus" NOT NULL DEFAULT 'queued',
   "inputStoragePath" TEXT NOT NULL,
   "inputMimeType" TEXT NOT NULL,
   "maskStoragePath" TEXT,
@@ -116,10 +117,23 @@ CREATE TABLE IF NOT EXISTS "ai_generations" (
   "providerResponseId" TEXT,
   "expiresAt" TIMESTAMP(3) NOT NULL,
   "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "startedAt" TIMESTAMP(3),
   "completedAt" TIMESTAMP(3),
+  "processingLockUntil" TIMESTAMP(3),
+  "attemptCount" INTEGER NOT NULL DEFAULT 0,
 
   CONSTRAINT "ai_generations_pkey" PRIMARY KEY ("id")
 );
+
+ALTER TABLE "ai_generations"
+  ADD COLUMN IF NOT EXISTS "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ADD COLUMN IF NOT EXISTS "startedAt" TIMESTAMP(3),
+  ADD COLUMN IF NOT EXISTS "processingLockUntil" TIMESTAMP(3),
+  ADD COLUMN IF NOT EXISTS "attemptCount" INTEGER NOT NULL DEFAULT 0;
+
+ALTER TABLE "ai_generations"
+  ALTER COLUMN "status" SET DEFAULT 'queued';
 
 -- CreateIndex
 CREATE INDEX IF NOT EXISTS "ai_credit_transactions_userId_createdAt_idx" ON "ai_credit_transactions"("userId", "createdAt");
@@ -130,6 +144,7 @@ CREATE INDEX IF NOT EXISTS "ai_generations_userId_createdAt_idx" ON "ai_generati
 CREATE INDEX IF NOT EXISTS "ai_generations_expiresAt_idx" ON "ai_generations"("expiresAt");
 CREATE INDEX IF NOT EXISTS "ai_generations_status_createdAt_idx" ON "ai_generations"("status", "createdAt");
 CREATE INDEX IF NOT EXISTS "ai_generations_paidGenerationId_idx" ON "ai_generations"("paidGenerationId");
+CREATE INDEX IF NOT EXISTS "ai_generations_processingLockUntil_idx" ON "ai_generations"("processingLockUntil");
 CREATE UNIQUE INDEX IF NOT EXISTS "ai_generations_paidGenerationId_freeAttemptIndex_key" ON "ai_generations"("paidGenerationId", "freeAttemptIndex");
 
 -- AddForeignKey

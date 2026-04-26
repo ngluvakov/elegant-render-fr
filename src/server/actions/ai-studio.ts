@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma, type AiGeneration } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
@@ -16,13 +16,25 @@ import {
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
 import { sanitizeAiStudioError } from "@/lib/ai-studio/errors";
+import {
+  composeWithMask,
+  getImageDimensions,
+  pickProviderTarget,
+  prepareInputForProvider,
+  prepareMaskForProvider,
+  resizeToOriginal,
+} from "@/lib/ai-studio/image-processing";
 import { buildAiEditPrompt } from "@/lib/ai-studio/prompts";
+import { validateAiPromptScope } from "@/lib/ai-studio/prompt-scope";
 import { generateAiEdit } from "@/lib/ai-studio/providers";
 import {
   expireAiCreditsIfNeeded,
   refundAiCreditUnits,
   spendAiCreditUnits,
 } from "@/server/actions/ai-credits";
+
+const AI_GENERATION_LOCK_MS = 10 * 60 * 1000;
+const AI_GENERATION_MAX_ATTEMPTS = 2;
 
 export type AiStudioGenerateInput = {
   editType: AiEditType;
@@ -38,18 +50,60 @@ export type AiStudioGenerateInput = {
   parentGenerationId?: string | null;
 };
 
-export type AiStudioGenerationResult = {
+export type AiGenerationStatusValue =
+  | "queued"
+  | "processing"
+  | "completed"
+  | "failed";
+
+export type SignedAiGeneration = {
+  id: string;
+  parentGenerationId: string | null;
+  editType: AiEditType;
+  provider: AiImageProvider;
+  model: string;
+  prompt: string;
+  styleId: string | null;
+  status: AiGenerationStatusValue;
+  unitsCharged: number;
+  freeAttemptIndex: number | null;
+  errorMessage: string | null;
+  createdAt: string;
+  updatedAt: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  expiresAt: string;
+  inputStoragePath: string;
+  inputMimeType: string;
+  resultStoragePath: string | null;
+  resultMimeType: string | null;
+  resultUrl: string | null;
+  inputUrl: string | null;
+  downloadUrl: string | null;
+  filesExpired: boolean;
+};
+
+export type AiStudioStartResult = {
   error?: string;
   generationId?: string;
-  resultUrl?: string;
-  resultStoragePath?: string;
-  resultMimeType?: string;
+  status?: AiGenerationStatusValue;
   balanceUnits?: number;
-  provider?: AiImageProvider;
-  model?: string;
-  notice?: string;
   unitsCharged?: number;
   freeAttemptIndex?: number | null;
+};
+
+export type AiStudioStatusResult = {
+  error?: string;
+  generation?: SignedAiGeneration;
+  balanceUnits?: number;
+  balanceLabel?: string;
+  creditsExpireAt?: string | null;
+};
+
+type GenerationOptions = {
+  selectedOption: string | null;
+  colorHex: string | null;
+  maskInverted: boolean;
 };
 
 export async function getAiStudioState() {
@@ -74,49 +128,8 @@ export async function getAiStudioState() {
     }),
   ]);
 
-  const now = new Date();
   const signedGenerations = await Promise.all(
-    generations.map(async (generation) => {
-      const isFileActive = generation.expiresAt > now;
-      let resultUrl: string | null = null;
-      let inputUrl: string | null = null;
-
-      if (isFileActive && generation.resultStoragePath) {
-        const { data } = await getSupabaseAdmin().storage
-          .from("order-files")
-          .createSignedUrl(generation.resultStoragePath, 60 * 30);
-        resultUrl = data?.signedUrl ?? null;
-      }
-
-      if (isFileActive && generation.inputStoragePath) {
-        const { data } = await getSupabaseAdmin().storage
-          .from("order-files")
-          .createSignedUrl(generation.inputStoragePath, 60 * 30);
-        inputUrl = data?.signedUrl ?? null;
-      }
-
-      return {
-        id: generation.id,
-        editType: generation.editType,
-        provider: generation.provider,
-        model: generation.model,
-        prompt: generation.prompt,
-        styleId: generation.styleId,
-        status: generation.status,
-        unitsCharged: generation.unitsCharged,
-        freeAttemptIndex: generation.freeAttemptIndex,
-        errorMessage: sanitizeAiStudioError(generation.errorMessage),
-        createdAt: generation.createdAt.toISOString(),
-        expiresAt: generation.expiresAt.toISOString(),
-        inputStoragePath: generation.inputStoragePath,
-        inputMimeType: generation.inputMimeType,
-        resultStoragePath: generation.resultStoragePath,
-        resultMimeType: generation.resultMimeType,
-        resultUrl,
-        inputUrl,
-        filesExpired: !isFileActive,
-      };
-    }),
+    generations.map((generation) => signGeneration(generation)),
   );
 
   return {
@@ -127,14 +140,29 @@ export async function getAiStudioState() {
   };
 }
 
-export async function generateAiStudioImage(
+export async function startAiStudioGeneration(
   input: AiStudioGenerateInput,
-): Promise<AiStudioGenerationResult> {
+): Promise<AiStudioStartResult> {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return { error: "Niste prijavljeni." };
 
+  if (!ownsAiStudioPath(userId, input.inputStoragePath)) {
+    return { error: "Ulazna slika nije dostupna za ovaj nalog." };
+  }
+  if (input.maskStoragePath && !ownsAiStudioPath(userId, input.maskStoragePath)) {
+    return { error: "Maska nije dostupna za ovaj nalog." };
+  }
+
   const editDef = getAiEditType(input.editType);
+  const prompt = input.prompt.trim();
+  const scopeError = validateAiPromptScope({
+    editType: input.editType,
+    prompt,
+    styleId: input.styleId,
+  });
+  if (scopeError) return { error: scopeError };
+
   const model = getAiProviderModel(input.provider);
   const expiresAt = addDays(new Date(), AI_FILE_RETENTION_DAYS);
   let unitsToCharge = editDef.units;
@@ -148,6 +176,9 @@ export async function generateAiStudioImage(
       where: { id: input.parentGenerationId, userId },
     });
     if (!parent) return { error: "Prethodna obrada nije pronađena." };
+    if (parent.status !== "completed" || !parent.resultStoragePath) {
+      return { error: "Prethodna obrada još nije završena." };
+    }
 
     paidGenerationId = parent.paidGenerationId ?? parent.id;
     const root = await prisma.aiGeneration.findFirst({
@@ -156,23 +187,16 @@ export async function generateAiStudioImage(
     if (!root) return { error: "Početna plaćena obrada nije pronađena." };
     rootCoveredUnits = root.coveredUnits;
 
-    const freeUsed = await prisma.aiGeneration.count({
-      where: {
-        userId,
-        paidGenerationId,
-        freeAttemptIndex: { not: null },
-      },
-    });
-
+    const freeUsed = await countFreeAttempts(userId, paidGenerationId);
     if (freeUsed < AI_FREE_REGENERATIONS) {
       if (editDef.units <= rootCoveredUnits) {
         unitsToCharge = 0;
-        freeAttemptIndex = freeUsed + 1;
+        coveredUnits = rootCoveredUnits;
       } else {
         unitsToCharge = editDef.units - rootCoveredUnits;
         coveredUnits = editDef.units;
-        freeAttemptIndex = freeUsed + 1;
       }
+      freeAttemptIndex = freeUsed + 1;
     } else {
       paidGenerationId = null;
     }
@@ -187,13 +211,14 @@ export async function generateAiStudioImage(
         editType: input.editType,
         provider: input.provider,
         model,
-        prompt: input.prompt.trim(),
+        prompt,
         styleId: input.styleId || null,
         optionsJson: {
           selectedOption: input.selectedOption ?? null,
           colorHex: input.colorHex ?? null,
           maskInverted: input.maskInverted === true,
         },
+        status: "queued",
         inputStoragePath: input.inputStoragePath,
         inputMimeType: input.inputMimeType,
         maskStoragePath: input.maskStoragePath || null,
@@ -216,23 +241,18 @@ export async function generateAiStudioImage(
       err.code === "P2002";
 
     if (!canRetryFreeAttempt) throw err;
-    const retryRootCoveredUnits = rootCoveredUnits;
-    if (retryRootCoveredUnits === null) throw err;
-
-    const freeUsed = await prisma.aiGeneration.count({
-      where: {
-        userId,
-        paidGenerationId,
-        freeAttemptIndex: { not: null },
-      },
-    });
+    const retryCoveredUnits = rootCoveredUnits;
+    if (retryCoveredUnits === null) throw err;
+    const freeUsed = paidGenerationId
+      ? await countFreeAttempts(userId, paidGenerationId)
+      : AI_FREE_REGENERATIONS;
 
     if (freeUsed < AI_FREE_REGENERATIONS && paidGenerationId) {
-      if (editDef.units <= retryRootCoveredUnits) {
+      if (editDef.units <= retryCoveredUnits) {
         unitsToCharge = 0;
-        coveredUnits = retryRootCoveredUnits;
+        coveredUnits = retryCoveredUnits;
       } else {
-        unitsToCharge = editDef.units - retryRootCoveredUnits;
+        unitsToCharge = editDef.units - retryCoveredUnits;
         coveredUnits = editDef.units;
       }
       freeAttemptIndex = freeUsed + 1;
@@ -260,7 +280,6 @@ export async function generateAiStudioImage(
     generationId: generation.id,
     note: `AI Studio: ${editDef.label}`,
   });
-  const reservedUnits = spend.error ? 0 : unitsToCharge;
 
   if (spend.error) {
     await prisma.aiGeneration.update({
@@ -270,115 +289,338 @@ export async function generateAiStudioImage(
     return { error: spend.error, balanceUnits: spend.balanceAfterUnits };
   }
 
+  revalidatePath("/portal/ai-studio");
+
+  return {
+    generationId: generation.id,
+    status: "queued",
+    balanceUnits: spend.balanceAfterUnits,
+    unitsCharged: unitsToCharge,
+    freeAttemptIndex,
+  };
+}
+
+export async function getAiStudioGenerationStatus(
+  generationId: string,
+): Promise<AiStudioStatusResult> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return { error: "Niste prijavljeni." };
+
+  await expireAiCreditsIfNeeded(userId);
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      isAdmin: true,
+      aiCreditBalanceUnits: true,
+      aiCreditsExpireAt: true,
+    },
+  });
+  if (!user) return { error: "Korisnik nije pronađen." };
+
+  const generation = await prisma.aiGeneration.findFirst({
+    where: {
+      id: generationId,
+      ...(user.isAdmin ? {} : { userId }),
+    },
+  });
+  if (!generation) return { error: "AI obrada nije pronađena." };
+
+  return {
+    generation: await signGeneration(generation),
+    balanceUnits: user.aiCreditBalanceUnits,
+    balanceLabel: formatCreditsFromUnits(user.aiCreditBalanceUnits),
+    creditsExpireAt: user.aiCreditsExpireAt?.toISOString() ?? null,
+  };
+}
+
+export async function processAiStudioGenerationJob(generationId: string) {
+  const claimed = await claimGenerationForProcessing(generationId);
+  if (!claimed) {
+    await failIfAttemptsExhausted(generationId);
+    return;
+  }
+
   try {
-    const [image, mask] = await Promise.all([
-      downloadStorageFile(input.inputStoragePath),
-      input.maskStoragePath ? downloadStorageFile(input.maskStoragePath) : null,
-    ]);
-
-    const fullPrompt = buildAiEditPrompt({
-      editType: input.editType,
-      userPrompt: input.prompt,
-      styleId: input.styleId,
-      selectedOption: input.selectedOption,
-      colorHex: input.colorHex,
-      hasMask: Boolean(mask),
-      maskInverted: input.maskInverted === true,
-    });
-
-    const output = await generateAiEdit({
-      provider: input.provider,
-      prompt: fullPrompt,
-      image: image.buffer,
-      imageMimeType: image.mimeType || input.inputMimeType,
-      mask: mask?.buffer,
-      maskMimeType: mask?.mimeType,
-    });
-
-    const extension = output.mimeType.includes("jpeg") ? "jpg" : "png";
-    const resultPath = `ai-studio/${userId}/results/${generation.id}.${extension}`;
-    const { error: uploadError } = await getSupabaseAdmin().storage
-      .from("order-files")
-      .upload(resultPath, output.image, {
-        contentType: output.mimeType,
-        upsert: true,
-      });
-
-    if (uploadError) throw new Error(uploadError.message);
-
-    await prisma.aiGeneration.update({
-      where: { id: generation.id },
-      data: {
-        status: "completed",
-        provider: output.provider,
-        model: output.model,
-        resultStoragePath: resultPath,
-        resultMimeType: output.mimeType,
-        providerResponseId: output.providerResponseId ?? null,
-        completedAt: new Date(),
-      },
-    });
-
-    if (input.parentGenerationId && coveredUnits > editDef.units - unitsToCharge) {
-      await prisma.aiGeneration.updateMany({
-        where: { id: paidGenerationId, userId },
-        data: { coveredUnits },
-      });
-    }
-
-    const { data } = await getSupabaseAdmin().storage
-      .from("order-files")
-      .createSignedUrl(resultPath, 60 * 30);
-
-    revalidatePath("/portal/ai-studio");
-
-    return {
-      generationId: generation.id,
-      resultUrl: data?.signedUrl ?? undefined,
-      resultStoragePath: resultPath,
-      resultMimeType: output.mimeType,
-      balanceUnits: spend.balanceAfterUnits,
-      provider: output.provider,
-      model: output.model,
-      unitsCharged: generation.unitsCharged,
-      freeAttemptIndex: generation.freeAttemptIndex,
-      notice: output.fallbackFrom
-        ? `Izabrani engine trenutno nije imao raspoloživ quota, pa je obrada završena preko ${output.provider === "openai" ? "GPT Image" : "Nano Banana"}.`
-        : undefined,
-    };
+    await runGenerationProcessing(claimed);
   } catch (err) {
     const rawMessage =
       err instanceof Error ? err.message : "AI obrada nije uspela.";
     console.error("[AI Studio] Generation failed", {
-      generationId: generation.id,
-      provider: input.provider,
-      model,
+      generationId: claimed.id,
+      provider: claimed.provider,
+      model: claimed.model,
       message:
         rawMessage.length > 1500 ? `${rawMessage.slice(0, 1500)}...` : rawMessage,
     });
-    const message = sanitizeAiStudioError(rawMessage);
-    const refund =
-      reservedUnits > 0
-        ? await refundAiCreditUnits({
-            userId,
-            units: reservedUnits,
-            generationId: generation.id,
-            note: `AI Studio refund: ${editDef.label}`,
-          })
-        : null;
-    await prisma.aiGeneration.update({
-      where: { id: generation.id },
-      data: {
-        status: "failed",
-        errorMessage: message,
-        ...(reservedUnits > 0 ? { unitsCharged: 0 } : {}),
-      },
-    });
-    return {
-      error: message,
-      balanceUnits: refund?.balanceAfterUnits ?? spend.balanceAfterUnits,
-    };
+    await failAiGeneration(claimed, sanitizeAiStudioError(rawMessage));
   }
+}
+
+export async function recoverAiStudioGenerationJobs(userId?: string) {
+  const now = new Date();
+  const stale = await prisma.aiGeneration.findMany({
+    where: {
+      ...(userId ? { userId } : {}),
+      status: { in: ["queued", "processing"] },
+      attemptCount: { lt: AI_GENERATION_MAX_ATTEMPTS },
+      OR: [
+        { status: "queued" },
+        { processingLockUntil: null },
+        { processingLockUntil: { lt: now } },
+      ],
+    },
+    orderBy: { createdAt: "asc" },
+    take: 3,
+  });
+
+  await Promise.allSettled(
+    stale.map((generation) => processAiStudioGenerationJob(generation.id)),
+  );
+  return stale.length;
+}
+
+async function runGenerationProcessing(generation: AiGeneration) {
+  const editDef = getAiEditType(generation.editType);
+  const options = parseGenerationOptions(generation.optionsJson);
+
+  const [image, mask] = await Promise.all([
+    downloadStorageFile(generation.inputStoragePath),
+    generation.maskStoragePath
+      ? downloadStorageFile(generation.maskStoragePath)
+      : null,
+  ]);
+
+  const originalDims = await getImageDimensions(image.buffer);
+  const target = pickProviderTarget(originalDims, generation.provider);
+  const preparedImage = await prepareInputForProvider(image.buffer, target);
+  const preparedMask = mask
+    ? await prepareMaskForProvider(mask.buffer, target)
+    : undefined;
+
+  const fullPrompt = buildAiEditPrompt({
+    editType: generation.editType,
+    userPrompt: generation.prompt,
+    styleId: generation.styleId,
+    selectedOption: options.selectedOption,
+    colorHex: options.colorHex,
+    hasMask: Boolean(mask),
+    maskInverted: options.maskInverted,
+    ratioLabel: target.ratioLabel,
+  });
+
+  const output = await generateAiEdit({
+    provider: generation.provider,
+    prompt: fullPrompt,
+    image: preparedImage,
+    imageMimeType: "image/jpeg",
+    mask: preparedMask,
+    maskMimeType: preparedMask ? "image/png" : undefined,
+    target,
+  });
+
+  const finalImage = mask
+    ? await composeWithMask({
+        original: image.buffer,
+        aiResult: output.image,
+        mask: mask.buffer,
+        originalDims,
+        maskInverted: options.maskInverted,
+      })
+    : await resizeToOriginal(output.image, originalDims);
+
+  const resultPath = `ai-studio/${generation.userId}/results/${generation.id}.jpg`;
+  const { error: uploadError } = await getSupabaseAdmin().storage
+    .from("order-files")
+    .upload(resultPath, finalImage, {
+      contentType: "image/jpeg",
+      upsert: true,
+    });
+  if (uploadError) throw new Error(uploadError.message);
+
+  await prisma.aiGeneration.update({
+    where: { id: generation.id },
+    data: {
+      status: "completed",
+      provider: output.provider,
+      model: output.model,
+      resultStoragePath: resultPath,
+      resultMimeType: "image/jpeg",
+      providerResponseId: output.providerResponseId ?? null,
+      processingLockUntil: null,
+      errorMessage: null,
+      completedAt: new Date(),
+    },
+  });
+
+  if (
+    generation.parentGenerationId &&
+    generation.paidGenerationId &&
+    generation.coveredUnits > editDef.units - generation.unitsCharged
+  ) {
+    await prisma.aiGeneration.updateMany({
+      where: { id: generation.paidGenerationId, userId: generation.userId },
+      data: { coveredUnits: generation.coveredUnits },
+    });
+  }
+
+  revalidatePath("/portal/ai-studio");
+}
+
+async function claimGenerationForProcessing(generationId: string) {
+  const now = new Date();
+  const lockUntil = new Date(now.getTime() + AI_GENERATION_LOCK_MS);
+
+  const result = await prisma.aiGeneration.updateMany({
+    where: {
+      id: generationId,
+      status: { in: ["queued", "processing"] },
+      attemptCount: { lt: AI_GENERATION_MAX_ATTEMPTS },
+      OR: [
+        { status: "queued" },
+        { processingLockUntil: null },
+        { processingLockUntil: { lt: now } },
+      ],
+    },
+    data: {
+      status: "processing",
+      startedAt: now,
+      processingLockUntil: lockUntil,
+      attemptCount: { increment: 1 },
+    },
+  });
+
+  if (result.count === 0) return null;
+  return prisma.aiGeneration.findUniqueOrThrow({ where: { id: generationId } });
+}
+
+async function failIfAttemptsExhausted(generationId: string) {
+  const now = new Date();
+  const generation = await prisma.aiGeneration.findUnique({
+    where: { id: generationId },
+  });
+  if (
+    !generation ||
+    generation.status === "completed" ||
+    generation.status === "failed" ||
+    generation.attemptCount < AI_GENERATION_MAX_ATTEMPTS ||
+    (generation.processingLockUntil && generation.processingLockUntil > now)
+  ) {
+    return;
+  }
+
+  await failAiGeneration(
+    generation,
+    "AI obrada nije uspela posle više pokušaja. Kredit je vraćen.",
+  );
+}
+
+async function failAiGeneration(generation: AiGeneration, message: string) {
+  const result = await prisma.aiGeneration.updateMany({
+    where: {
+      id: generation.id,
+      status: { in: ["queued", "processing"] },
+    },
+    data: {
+      status: "failed",
+      errorMessage: message,
+      processingLockUntil: null,
+      ...(generation.unitsCharged > 0 ? { unitsCharged: 0 } : {}),
+    },
+  });
+  if (result.count === 0) return;
+
+  if (generation.unitsCharged > 0) {
+    await refundAiCreditUnits({
+      userId: generation.userId,
+      units: generation.unitsCharged,
+      generationId: generation.id,
+      note: `AI Studio refund: ${getAiEditType(generation.editType).label}`,
+    });
+  }
+
+  revalidatePath("/portal/ai-studio");
+}
+
+async function signGeneration(
+  generation: AiGeneration,
+): Promise<SignedAiGeneration> {
+  const isFileActive = generation.expiresAt > new Date();
+  let resultUrl: string | null = null;
+  let inputUrl: string | null = null;
+
+  if (isFileActive && generation.resultStoragePath) {
+    const { data } = await getSupabaseAdmin().storage
+      .from("order-files")
+      .createSignedUrl(generation.resultStoragePath, 60 * 30);
+    resultUrl = data?.signedUrl ?? null;
+  }
+
+  if (isFileActive && generation.inputStoragePath) {
+    const { data } = await getSupabaseAdmin().storage
+      .from("order-files")
+      .createSignedUrl(generation.inputStoragePath, 60 * 30);
+    inputUrl = data?.signedUrl ?? null;
+  }
+
+  return {
+    id: generation.id,
+    parentGenerationId: generation.parentGenerationId,
+    editType: generation.editType,
+    provider: generation.provider,
+    model: generation.model,
+    prompt: generation.prompt,
+    styleId: generation.styleId,
+    status: generation.status as AiGenerationStatusValue,
+    unitsCharged: generation.unitsCharged,
+    freeAttemptIndex: generation.freeAttemptIndex,
+    errorMessage: sanitizeAiStudioError(generation.errorMessage),
+    createdAt: generation.createdAt.toISOString(),
+    updatedAt: generation.updatedAt.toISOString(),
+    startedAt: generation.startedAt?.toISOString() ?? null,
+    completedAt: generation.completedAt?.toISOString() ?? null,
+    expiresAt: generation.expiresAt.toISOString(),
+    inputStoragePath: generation.inputStoragePath,
+    inputMimeType: generation.inputMimeType,
+    resultStoragePath: generation.resultStoragePath,
+    resultMimeType: generation.resultMimeType,
+    resultUrl,
+    inputUrl,
+    downloadUrl:
+      isFileActive && generation.resultStoragePath
+        ? `/api/ai-studio/generations/${generation.id}/download`
+        : null,
+    filesExpired: !isFileActive,
+  };
+}
+
+async function countFreeAttempts(userId: string, paidGenerationId: string) {
+  return prisma.aiGeneration.count({
+    where: {
+      userId,
+      paidGenerationId,
+      freeAttemptIndex: { not: null },
+    },
+  });
+}
+
+function parseGenerationOptions(value: Prisma.JsonValue | null): GenerationOptions {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return { selectedOption: null, colorHex: null, maskInverted: false };
+  }
+
+  const data = value as Record<string, unknown>;
+  return {
+    selectedOption:
+      typeof data.selectedOption === "string" ? data.selectedOption : null,
+    colorHex: typeof data.colorHex === "string" ? data.colorHex : null,
+    maskInverted: data.maskInverted === true,
+  };
+}
+
+function ownsAiStudioPath(userId: string, storagePath: string) {
+  return storagePath.startsWith(`ai-studio/${userId}/`);
 }
 
 async function downloadStorageFile(storagePath: string) {

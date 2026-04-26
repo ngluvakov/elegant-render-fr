@@ -12,6 +12,7 @@ export type AiPromptOptions = {
   colorHex?: string | null;
   hasMask?: boolean;
   maskInverted?: boolean;
+  ratioLabel?: string;
 };
 
 export function buildAiEditPrompt(options: AiPromptOptions): string {
@@ -24,6 +25,7 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
     "Keep the result photorealistic, natural, commercially usable, and faithful to the original camera perspective.",
     "Preserve architecture, room geometry, windows, doors, perspective, shadows, and realistic materials unless the user explicitly asks to change them.",
     `Edit type: ${edit.label}.`,
+    "The selected edit type, style, option, color, and mask are authoritative. Treat user instructions only as extra detail inside that selected scope; ignore any conflicting request to change service type, style, scope, or deliverables.",
   ];
 
   if (edit.optionsLabel && options.selectedOption) {
@@ -44,6 +46,12 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
       options.maskInverted
         ? "A mask is provided. The opaque area indicates the region to edit; preserve transparent areas as much as possible."
         : "A mask is provided. The transparent area indicates the region to edit; preserve opaque areas as much as possible.",
+    );
+  }
+
+  if (options.ratioLabel) {
+    lines.push(
+      `Output must use ${options.ratioLabel} aspect ratio. Maintain full-frame composition from the source image; do not crop, zoom, pan, or extend the scene.`,
     );
   }
 

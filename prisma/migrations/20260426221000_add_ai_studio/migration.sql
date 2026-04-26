@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS "ai_generations" (
   "prompt" TEXT NOT NULL,
   "styleId" TEXT,
   "optionsJson" JSONB,
-  "status" "AiGenerationStatus" NOT NULL DEFAULT 'queued',
+  "status" "AiGenerationStatus" NOT NULL DEFAULT 'processing',
   "inputStoragePath" TEXT NOT NULL,
   "inputMimeType" TEXT NOT NULL,
   "maskStoragePath" TEXT,
@@ -163,7 +163,7 @@ ALTER TABLE "ai_generations"
   ADD COLUMN IF NOT EXISTS "attemptCount" INTEGER NOT NULL DEFAULT 0;
 
 ALTER TABLE "ai_generations"
-  ALTER COLUMN "status" SET DEFAULT 'queued';
+  ALTER COLUMN "status" SET DEFAULT 'processing';
 
 -- CreateIndex
 CREATE INDEX IF NOT EXISTS "ai_credit_transactions_userId_createdAt_idx" ON "ai_credit_transactions"("userId", "createdAt");

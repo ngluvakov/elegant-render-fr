@@ -239,3 +239,36 @@ model Quote {
   @@index([expiresAt])
   @@map("quotes")
 }
+
+// ─── VR consultation inquiries ───────────────────────────
+//
+// VR products (vr-existing, vr-standalone) bypass the cart/payment flow
+// entirely — too premium and scope-dependent for self-serve. Customers
+// fill an intake form on /usluge/vr/konsultacija that captures the same
+// VrConfig shape used by the per-item configurator, plus contact info.
+// The team reviews the inquiry, holds a meeting, and creates the actual
+// order manually with a custom quote.
+
+enum VrInquiryStatus {
+  pending      // submitted, awaiting team review
+  in_progress  // team has contacted customer
+  converted    // customer's project became an Order
+  closed       // customer didn't proceed
+}
+
+model VrInquiry {
+  id          String          @id @default(cuid())
+  productId   String          // "vr-existing" | "vr-standalone"
+  configJson  Json            // sanitized VrConfig
+  contactName String
+  email       String
+  phone       String?
+  message     String?         @db.Text
+  userId      String?         // set if a logged-in user submitted
+  status      VrInquiryStatus @default(pending)
+  createdAt   DateTime        @default(now())
+  reviewedAt  DateTime?
+
+  @@index([status, createdAt])
+  @@map("vr_inquiries")
+}

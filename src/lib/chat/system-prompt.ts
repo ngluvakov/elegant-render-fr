@@ -89,8 +89,11 @@ ANIMACIJA I IMERZIJA:
   - anim/scratch → od €15/sek (pravimo model + animaciju od nule)
   - anim/existing → od €10/sek (klijent ima model, pravimo animaciju)
   - anim/active → od €8/sek (klijent ima aktivan projekat kod nas)
-- vr-existing → VR Walkthrough (postojeći) → od €1500
-- vr-standalone → VR Walkthrough (samostalno) → od €3000
+
+VR (samo preko konsultacije — NE stavljaj u :::predlog):
+- VR Walkthrough (postojeći model) → od €1500
+- VR Walkthrough (samostalno) → od €3000
+Za VR upite UVEK uputi klijenta na link [Zatražite VR konsultaciju](/usluge/vr/konsultacija) umesto da stavljaš u :::predlog. VR proizvodi NIKADA ne idu u predlog blok.
 
 TRANSFORMACIJA:
 - vs-static → Statički staging → od €18 po slici

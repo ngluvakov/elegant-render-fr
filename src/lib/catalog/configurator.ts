@@ -94,6 +94,10 @@ export type ConfiguratorProduct = {
   // dependencies / available add-ons. Resolver applies the override at
   // calc time given a QuoteItem.sourceMode.
   sourceModeRules?: Record<string, SourceModeOverride>;
+  // If true, the product cannot be added to a cart and instead routes
+  // to a consultation intake form (currently used for VR products that
+  // require scope alignment before commitment).
+  inquiryOnly?: boolean;
 };
 
 export type ConfiguratorCategory = {
@@ -801,6 +805,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
     products: [
       {
         id: "vr-existing",
+        inquiryOnly: true,
         consumes: [
           { requires: "exterior-shell", discountPct: 50, reason: "Eksterijerski model postoji" },
           { requires: "interior-model", discountPct: 50, reason: "Enterijerski model postoji" },
@@ -808,7 +813,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         ],
         label: "VR Walkthrough (postojeći model)",
         basePriceEur: 1500,
-        unitLabel: "50% popusta — model već izgrađen",
+        unitLabel: "Od €1500 — konsultacija pre izrade",
         includes: [
           "VR optimizacija",
           "Headset-ready izlaz",
@@ -840,6 +845,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
       },
       {
         id: "vr-standalone",
+        inquiryOnly: true,
         creates: ["complete-model"],
         consumes: [
           { requires: "exterior-shell", discountPct: 50, reason: "Eksterijerski model postoji" },
@@ -848,7 +854,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         ],
         label: "VR Walkthrough (samostalno)",
         basePriceEur: 3000,
-        unitLabel: "puna izgradnja + VR optimizacija",
+        unitLabel: "Od €3000 — konsultacija pre izrade",
         includes: [
           "Kompletan 3D model",
           "VR optimizacija",

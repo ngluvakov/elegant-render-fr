@@ -2,15 +2,18 @@
  * email.ts — Resend transactional email sender for the platform.
  *
  * Exports sendVerificationEmail, sendPasswordResetEmail,
- * sendOrderConfirmationEmail, and sendPortalAccessEmail — all branded
- * HTML templates in Serbian.
+ * sendOrderConfirmationEmail, sendPortalAccessEmail, and the VR
+ * inquiry pair — all branded HTML templates in Serbian.
  *
  * Used by: server/actions/auth, server/actions/checkout,
- *          server/actions/payment
+ *          server/actions/payment, server/actions/vr-inquiry
  */
 import { Resend } from "resend";
+import type { VrConfig } from "@/lib/catalog/vr-config";
 
 const FROM = process.env.EMAIL_FROM ?? "Elegant Render <noreply@elegantrender.rs>";
+const ADMIN_NOTIFY_EMAIL =
+  process.env.ADMIN_NOTIFY_EMAIL ?? "info@elegantrender.rs";
 
 // Pick the host to embed in transactional links. Vercel preview deploys
 // share AUTH_URL with production, so a magic link emitted from a preview
@@ -172,6 +175,134 @@ export async function sendOrderConfirmationEmail(
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
           Otvorite portal
         </a>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}
+
+// ─── VR consultation inquiries ───────────────────────────
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function configToBullets(config: VrConfig): string {
+  const items: string[] = [];
+  items.push(`<strong>Projekat:</strong> ${escapeHtml(config.projectName)}`);
+  items.push(`<strong>Tip iskustva:</strong> ${config.experienceType}`);
+  items.push(`<strong>Target uređaj:</strong> ${config.targetDevice}`);
+  if (config.locomotion)
+    items.push(`<strong>Locomotion:</strong> ${config.locomotion}`);
+  if (config.dayNightMode)
+    items.push(`<strong>Day/Night:</strong> ${config.dayNightMode}`);
+  const interactions: string[] = [];
+  if (config.doorInteraction) interactions.push("vrata");
+  if (config.lightsInteraction) interactions.push("svetla");
+  if (config.materialsInteraction) interactions.push("materijali");
+  if (interactions.length > 0) {
+    items.push(`<strong>Interakcije:</strong> ${interactions.join(", ")}`);
+  }
+  if (config.extraFloorsCount > 0)
+    items.push(`<strong>Dodatni spratovi:</strong> ${config.extraFloorsCount}`);
+  if (config.interactiveTypeCount > 0)
+    items.push(
+      `<strong>Interaktivni tipovi (broj):</strong> ${config.interactiveTypeCount}`,
+    );
+  if (config.brandingEnabled) items.push(`<strong>Brending:</strong> da`);
+  if (config.description) {
+    items.push(
+      `<strong>Opis:</strong><br/>${escapeHtml(config.description).replace(/\n/g, "<br/>")}`,
+    );
+  }
+  if (config.customInteractionDescription) {
+    items.push(
+      `<strong>Custom interakcije:</strong><br/>${escapeHtml(config.customInteractionDescription).replace(/\n/g, "<br/>")}`,
+    );
+  }
+  return items.map((i) => `<li>${i}</li>`).join("\n");
+}
+
+export async function sendVrInquiryAdminEmail(args: {
+  inquiryId: string;
+  productLabel: string;
+  contactName: string;
+  email: string;
+  phone?: string;
+  message?: string;
+  config: VrConfig;
+}) {
+  const adminUrl = `${getAuthUrl()}/portal/admin/vr-upiti`;
+  await send({
+    to: ADMIN_NOTIFY_EMAIL,
+    subject: `Novi VR upit — ${args.contactName} (${args.productLabel})`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Novi VR upit</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          ${escapeHtml(args.contactName)} je popunio konsultacioni intake za
+          <strong>${escapeHtml(args.productLabel)}</strong>.
+        </p>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Kontakt:</strong></p>
+          <ul style="margin: 0; padding-left: 18px; color: #1C1A19;">
+            <li>${escapeHtml(args.contactName)}</li>
+            <li><a href="mailto:${escapeHtml(args.email)}">${escapeHtml(args.email)}</a></li>
+            ${args.phone ? `<li>${escapeHtml(args.phone)}</li>` : ""}
+          </ul>
+        </div>
+        ${
+          args.message
+            ? `
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Poruka klijenta:</strong></p>
+          <p style="margin: 0; color: #1C1A19; white-space: pre-wrap;">${escapeHtml(args.message)}</p>
+        </div>`
+            : ""
+        }
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Konfiguracija:</strong></p>
+          <ul style="margin: 0; padding-left: 18px; color: #1C1A19; line-height: 1.6;">
+            ${configToBullets(args.config)}
+          </ul>
+        </div>
+        <a href="${adminUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Otvori upit u admin panelu
+        </a>
+      </div>
+    `,
+  });
+}
+
+export async function sendVrInquiryCustomerEmail(args: {
+  to: string;
+  contactName: string;
+  productLabel: string;
+}) {
+  await send({
+    to: args.to,
+    subject: `Vaš VR upit je primljen — ${args.productLabel}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Hvala na upitu</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Zdravo ${escapeHtml(args.contactName)},
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Primili smo vaš upit za <strong>${escapeHtml(args.productLabel)}</strong>.
+          VR projekti zahtevaju razgovor o opsegu, target uređajima i
+          tehničkim detaljima — javićemo vam se u roku od <strong>1 radnog dana</strong>
+          da dogovorimo termin za konsultaciju.
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Ako imate dodatne fajlove ili reference koje biste odmah da podelite,
+          slobodno odgovorite na ovaj email.
+        </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
         <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
       </div>

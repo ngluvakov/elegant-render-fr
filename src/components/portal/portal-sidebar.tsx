@@ -10,6 +10,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ExternalLink,
+  Headphones,
   LayoutDashboard,
   LogOut,
   Shield,
@@ -27,7 +28,13 @@ const CLIENT_NAV = [
 ];
 
 const ADMIN_NAV = [
-  { href: "/portal/admin", label: "Admin", icon: Shield, exact: false },
+  { href: "/portal/admin", label: "Admin", icon: Shield, exact: true },
+  {
+    href: "/portal/admin/vr-upiti",
+    label: "VR upiti",
+    icon: Headphones,
+    exact: false,
+  },
   { href: "/portal/profil", label: "Profil", icon: User, exact: true },
 ];
 

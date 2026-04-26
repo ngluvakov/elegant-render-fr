@@ -13,7 +13,8 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Film, Plus } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Check, Film, Headphones, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   CONFIGURATOR_CATEGORIES,
@@ -169,26 +170,36 @@ function ProductCard({
               </span>
             )}
           </p>
-          <button
-            type="button"
-            onClick={onAdd}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all",
-              isAdded
-                ? "bg-[color:var(--color-sage)] text-white"
-                : "bg-accent/15 text-accent hover:bg-accent hover:text-white",
-            )}
-          >
-            {isAdded ? (
-              <>
-                <Check className="h-3 w-3" /> Dodato
-              </>
-            ) : (
-              <>
-                <Plus className="h-3 w-3" /> Dodaj
-              </>
-            )}
-          </button>
+          {product.inquiryOnly ? (
+            <Link
+              href={`/usluge/vr/konsultacija?p=${product.id}`}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-4 py-2 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-white"
+            >
+              <Headphones className="h-3 w-3" /> Zatraži konsultaciju
+              <ArrowRight className="h-3 w-3" />
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={onAdd}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all",
+                isAdded
+                  ? "bg-[color:var(--color-sage)] text-white"
+                  : "bg-accent/15 text-accent hover:bg-accent hover:text-white",
+              )}
+            >
+              {isAdded ? (
+                <>
+                  <Check className="h-3 w-3" /> Dodato
+                </>
+              ) : (
+                <>
+                  <Plus className="h-3 w-3" /> Dodaj
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

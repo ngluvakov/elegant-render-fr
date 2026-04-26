@@ -509,6 +509,8 @@ export async function addOrderItem(
 
   const lookup = getConfiguratorProduct(productId);
   if (!lookup) return { error: "Nepoznata usluga." };
+  if (lookup.product.inquiryOnly)
+    return { error: "Ova usluga zahteva konsultaciju, ne može se dodati u korpu." };
 
   const quoteItem: QuoteItem = {
     instanceId: `new-${Date.now()}`,

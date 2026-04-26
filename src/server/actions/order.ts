@@ -12,6 +12,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { calculateQuote, type QuoteItem } from "@/lib/catalog/calculate";
+import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { generateOrderNumber } from "@/lib/order/generate-number";
 import { repriceOrder } from "@/server/actions/item-config";
 import { syncNewDeal } from "@/server/bitrix/sync-deal";
@@ -30,6 +31,19 @@ export async function createOrder(
 ): Promise<OrderResult> {
   if (!userId) return { error: "Korisnik nije identifikovan." };
   if (!quoteItems.length) return { error: "Ponuda je prazna." };
+
+  // Defensive: inquiry-only products (VR) must never enter the order /
+  // payment flow. They route to /usluge/vr/konsultacija from /cene; if
+  // one slips through (tampered cart, stale URL), refuse the order.
+  for (const qi of quoteItems) {
+    const lookup = getConfiguratorProduct(qi.productId);
+    if (lookup?.product.inquiryOnly) {
+      return {
+        error:
+          "VR usluge se ne mogu plaćati direktno — zatražite konsultaciju.",
+      };
+    }
+  }
 
   // Server-side price verification
   const calculation = calculateQuote(quoteItems);

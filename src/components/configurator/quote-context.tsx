@@ -44,6 +44,10 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
     case "ADD_PRODUCT": {
       const result = getConfiguratorProduct(action.productId);
       if (!result) return state;
+      // Inquiry-only products (currently VR) bypass the cart entirely —
+      // they route to a consultation intake page instead. Any attempt to
+      // add one here is a routing bug; refuse silently.
+      if (result.product.inquiryOnly) return state;
       const { product } = result;
       const defaultQuantities: Record<string, number> = {};
       for (const ao of product.addOns) {

@@ -7,15 +7,41 @@
  */
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { QuoteProvider, useQuote } from "./quote-context";
 import { ServiceAdder } from "./service-adder";
 import { QuoteItemCard } from "./quote-item";
 import { QuoteSummary } from "./quote-summary";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
+import { loadQuote } from "@/server/actions/quote";
 
 function ConfiguratorInner() {
-  const { calculation, addProduct } = useQuote();
+  const { calculation, addProduct, loadItems } = useQuote();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const sharedToken = searchParams.get("q");
+  const hydratedRef = useRef(false);
+
+  // Hydrate from a shared quote URL (?q=<token>) on first mount only.
+  useEffect(() => {
+    if (!sharedToken || hydratedRef.current) return;
+    hydratedRef.current = true;
+    let cancelled = false;
+    (async () => {
+      const result = await loadQuote(sharedToken);
+      if (cancelled) return;
+      if ("items" in result && result.items.length > 0) {
+        loadItems(result.items);
+      }
+      // Strip the ?q= from the URL so a refresh doesn't re-hydrate
+      // (and a copy-paste doesn't expose the token in the address bar).
+      router.replace("/cene", { scroll: false });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sharedToken, loadItems, router]);
 
   // Listen for chat proposal events (when user is already on /cene)
   // and check sessionStorage on mount (when navigated from another page)
@@ -89,7 +115,9 @@ function ConfiguratorInner() {
 export function PricingConfigurator() {
   return (
     <QuoteProvider>
-      <ConfiguratorInner />
+      <Suspense fallback={null}>
+        <ConfiguratorInner />
+      </Suspense>
     </QuoteProvider>
   );
 }

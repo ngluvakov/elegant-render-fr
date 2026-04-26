@@ -6,18 +6,34 @@
  */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Info, ShoppingCart, Trash2, X } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Copy,
+  Info,
+  Share2,
+  ShoppingCart,
+  Trash2,
+  X,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Collapsible } from "@/components/ui/collapsible";
 import { formatDiscountedPrice, formatEur } from "@/lib/catalog/calculate";
+import { saveQuote } from "@/server/actions/quote";
 import { useQuote } from "./quote-context";
 
 export function QuoteSummary() {
   const { items, calculation, clearAll, removeProduct } = useQuote();
   const [explainerOpen, setExplainerOpen] = useState(false);
+  const [shareState, setShareState] = useState<
+    | { kind: "idle" }
+    | { kind: "saving" }
+    | { kind: "saved"; url: string; copied: boolean }
+    | { kind: "error"; message: string }
+  >({ kind: "idle" });
   const hasItems = calculation.items.length > 0;
   const router = useRouter();
 
@@ -29,6 +45,40 @@ export function QuoteSummary() {
   const handleOrderInPortal = () => {
     sessionStorage.setItem("er-checkout-quote", JSON.stringify(items));
     router.push("/portal/nova-porudzbina");
+  };
+
+  // Empty cart should drop any stale share UI — that link snapshot is no
+  // longer relevant once the customer cleared everything.
+  useEffect(() => {
+    if (!hasItems && shareState.kind !== "idle") {
+      setShareState({ kind: "idle" });
+    }
+  }, [hasItems, shareState.kind]);
+
+  const handleShare = async () => {
+    setShareState({ kind: "saving" });
+    const result = await saveQuote(items);
+    if ("error" in result) {
+      setShareState({ kind: "error", message: result.error });
+      return;
+    }
+    const url = `${window.location.origin}/cene?q=${result.token}`;
+    setShareState({ kind: "saved", url, copied: false });
+  };
+
+  const handleCopy = async () => {
+    if (shareState.kind !== "saved") return;
+    try {
+      await navigator.clipboard.writeText(shareState.url);
+      setShareState({ ...shareState, copied: true });
+      setTimeout(() => {
+        setShareState((cur) =>
+          cur.kind === "saved" ? { ...cur, copied: false } : cur,
+        );
+      }, 2000);
+    } catch {
+      // Clipboard API blocked — leave URL visible for manual copy
+    }
   };
 
   return (
@@ -209,7 +259,65 @@ export function QuoteSummary() {
               Imam nalog
             </button>
           </p>
-          <p className="mt-2 text-center text-[0.68rem] text-background/30">
+
+          {/* Share quote — saves to DB and returns a tokenized link.
+              Lets the customer come back later or send it to a colleague. */}
+          <div className="mt-3 border-t border-background/10 pt-3">
+            {shareState.kind === "idle" && (
+              <button
+                type="button"
+                onClick={handleShare}
+                className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-[0.72rem] font-medium text-background/55 transition-colors hover:bg-background/5 hover:text-background/85"
+              >
+                <Share2 className="h-3 w-3" />
+                Sačuvaj i podeli ponudu
+              </button>
+            )}
+            {shareState.kind === "saving" && (
+              <p className="text-center text-[0.72rem] text-background/40">
+                Čuvanje…
+              </p>
+            )}
+            {shareState.kind === "error" && (
+              <p className="text-center text-[0.72rem] text-destructive">
+                {shareState.message}
+              </p>
+            )}
+            {shareState.kind === "saved" && (
+              <div className="space-y-2">
+                <p className="text-[0.7rem] text-background/55">
+                  Link važi 30 dana. Otvaranjem se učitavaju iste stavke.
+                </p>
+                <div className="flex items-center gap-1.5 rounded-lg bg-background/10 p-1.5">
+                  <input
+                    readOnly
+                    value={shareState.url}
+                    onFocus={(e) => e.currentTarget.select()}
+                    className="flex-1 truncate bg-transparent px-2 py-1 text-[0.7rem] text-background/85 outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="flex flex-shrink-0 items-center gap-1 rounded-md bg-background/10 px-2 py-1 text-[0.7rem] font-semibold text-background/85 transition-colors hover:bg-background/20"
+                  >
+                    {shareState.copied ? (
+                      <>
+                        <Check className="h-3 w-3" />
+                        Kopirano
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3 w-3" />
+                        Kopiraj
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <p className="mt-3 text-center text-[0.68rem] text-background/30">
             Cene su procene. Konačna ponuda može varirati u zavisnosti od
             specifičnosti projekta. Sve cene su u EUR bez PDV-a.
           </p>

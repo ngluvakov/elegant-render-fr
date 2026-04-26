@@ -219,3 +219,23 @@ model BitrixSyncLog {
   @@index([direction, createdAt])
   @@map("bitrix_sync_logs")
 }
+
+// ─── Saved / shared quotes ───────────────────────────────
+//
+// A `Quote` is a snapshot of a /cene configurator session that the
+// customer chose to save before paying. The id is the share token; the
+// URL is /cene?q=<id>. Items are stored as the same QuoteItem[] shape
+// the configurator works with, so loading rehydrates the cart 1:1.
+// Expires after 30 days unless reopened.
+
+model Quote {
+  id        String    @id @default(cuid())
+  itemsJson Json
+  userId    String?
+  createdAt DateTime  @default(now())
+  expiresAt DateTime
+  openedAt  DateTime?
+
+  @@index([expiresAt])
+  @@map("quotes")
+}

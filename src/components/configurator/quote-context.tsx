@@ -28,7 +28,8 @@ type QuoteAction =
   | { type: "REMOVE_PRODUCT"; instanceId: string }
   | { type: "SET_ADDON_QTY"; instanceId: string; addOnId: string; qty: number }
   | { type: "SET_DURATION"; instanceId: string; seconds: number }
-  | { type: "CLEAR_ALL" };
+  | { type: "CLEAR_ALL" }
+  | { type: "LOAD_ITEMS"; items: QuoteItem[] };
 
 // ─── Reducer ─────────────────────────────────────────────
 
@@ -78,6 +79,8 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
       });
     case "CLEAR_ALL":
       return [];
+    case "LOAD_ITEMS":
+      return action.items;
     default:
       return state;
   }
@@ -94,6 +97,7 @@ type QuoteContextValue = {
   setAddOnQty: (instanceId: string, addOnId: string, qty: number) => void;
   setDuration: (instanceId: string, seconds: number) => void;
   clearAll: () => void;
+  loadItems: (items: QuoteItem[]) => void;
 };
 
 const QuoteContext = createContext<QuoteContextValue | null>(null);
@@ -123,6 +127,10 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
     [],
   );
   const clearAll = useCallback(() => dispatch({ type: "CLEAR_ALL" }), []);
+  const loadItems = useCallback(
+    (loaded: QuoteItem[]) => dispatch({ type: "LOAD_ITEMS", items: loaded }),
+    [],
+  );
 
   const value = useMemo<QuoteContextValue>(
     () => ({
@@ -134,8 +142,18 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       setAddOnQty,
       setDuration,
       clearAll,
+      loadItems,
     }),
-    [items, calculation, addProduct, removeProduct, setAddOnQty, setDuration, clearAll],
+    [
+      items,
+      calculation,
+      addProduct,
+      removeProduct,
+      setAddOnQty,
+      setDuration,
+      clearAll,
+      loadItems,
+    ],
   );
 
   return (

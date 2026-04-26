@@ -1056,9 +1056,12 @@ export async function swapStagingType(
   const breakdown = calc.items[0];
   if (!breakdown) return { error: "Greška u izračunu." };
 
+  // Order is critical: OrderFile.orderItemId has no onDelete cascade, so
+  // deleting the old item before re-pointing files would fail with an FK
+  // constraint. We create the new item first, re-attach files, then
+  // delete the old item — all inside a transaction.
   const newItem = await prisma.$transaction(async (tx) => {
-    await tx.orderItem.delete({ where: { id: itemId } });
-    return tx.orderItem.create({
+    const created = await tx.orderItem.create({
       data: {
         orderId: item.order.id,
         productId: targetProductId,
@@ -1072,6 +1075,12 @@ export async function swapStagingType(
       },
       select: { id: true },
     });
+    await tx.orderFile.updateMany({
+      where: { orderItemId: itemId },
+      data: { orderItemId: created.id },
+    });
+    await tx.orderItem.delete({ where: { id: itemId } });
+    return created;
   });
 
   await repriceOrder(item.order.id);

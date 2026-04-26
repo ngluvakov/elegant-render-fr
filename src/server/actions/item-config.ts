@@ -990,6 +990,95 @@ export async function updateStagingConfig(
   return { success: true };
 }
 
+// ─── Staging type swap (vs-static ↔ vs-360) ──────────────────────────
+//
+// Replaces a staging item with one of the other type. Resets configJson
+// to defaults because the source-photo expectation differs (regular
+// photos vs equirectangular panoramas) and add-on IDs are mode-specific.
+// Files are kept attached to the new item — the customer can delete /
+// re-upload as needed.
+
+export async function swapStagingType(
+  itemId: string,
+): Promise<ItemConfigResult & { newItemId?: string }> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const item = await prisma.orderItem.findUnique({
+    where: { id: itemId },
+    include: {
+      order: {
+        select: {
+          userId: true,
+          status: true,
+          id: true,
+          items: { select: { productId: true } },
+        },
+      },
+    },
+  });
+  if (!item) return { error: "Stavka nije pronađena." };
+  if (item.order.userId !== session.user.id)
+    return { error: "Nemate pristup." };
+  if (item.productId !== "vs-static" && item.productId !== "vs-360")
+    return { error: "Samo za virtuelno opremanje." };
+  if (item.order.status !== "draft")
+    return { error: "Izmene dozvoljene samo u nacrtu." };
+
+  const targetProductId =
+    item.productId === "vs-static" ? "vs-360" : "vs-static";
+  if (
+    item.order.items.some(
+      (i) => i.productId === targetProductId && i.productId !== item.productId,
+    )
+  ) {
+    return {
+      error:
+        "Drugi tip staging-a već postoji u ovoj porudžbini. Obrišite ga prvo.",
+    };
+  }
+
+  const lookup = getConfiguratorProduct(targetProductId);
+  if (!lookup) return { error: "Nepoznata usluga." };
+
+  const sanitized = sanitizeStagingConfig({
+    ...defaultStagingConfig(),
+    // Carry over the room name so the customer doesn't lose context
+    roomName: (item.configJson as { roomName?: string } | null)?.roomName ?? "Soba",
+  });
+  const qi: QuoteItem = {
+    instanceId: `swap-${Date.now()}`,
+    productId: targetProductId,
+    categoryId: "staging",
+    addOnQuantities: vsAddOnQuantitiesFor(sanitized, targetProductId),
+  };
+  const calc = calculateQuote([qi]);
+  const breakdown = calc.items[0];
+  if (!breakdown) return { error: "Greška u izračunu." };
+
+  const newItem = await prisma.$transaction(async (tx) => {
+    await tx.orderItem.delete({ where: { id: itemId } });
+    return tx.orderItem.create({
+      data: {
+        orderId: item.order.id,
+        productId: targetProductId,
+        categoryId: "staging",
+        productLabel: lookup.product.label,
+        categoryLabel: lookup.category.label,
+        basePriceEur: lookup.product.basePriceEur,
+        totalEur: breakdown.totalEur,
+        configJson: sanitized as unknown as Prisma.InputJsonValue,
+        addOnsJson: breakdown.addOns as unknown as Prisma.InputJsonValue,
+      },
+      select: { id: true },
+    });
+  });
+
+  await repriceOrder(item.order.id);
+  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  return { success: true, newItemId: newItem.id };
+}
+
 // ─── Virtual renovation (reno-image) ──────────────────────────────────
 
 export async function updateRenovationConfig(

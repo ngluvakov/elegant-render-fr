@@ -16,12 +16,14 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import {
+  ArrowLeftRight,
   Camera,
   Check,
   Compass,
   Eraser,
   FileUp,
   Lightbulb,
+  Loader2,
   Minus,
   Palette,
   Pencil,
@@ -58,6 +60,7 @@ import {
 import {
   confirmItemFileUpload,
   deleteOrderFile,
+  swapStagingType,
   updateStagingConfig,
 } from "@/server/actions/item-config";
 
@@ -97,6 +100,12 @@ export function StagingConfigSection({
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [, start] = useTransition();
   const [uploading, setUploading] = useState<string[]>([]);
+  const [swapState, setSwapState] = useState<
+    | { kind: "idle" }
+    | { kind: "confirm" }
+    | { kind: "swapping" }
+    | { kind: "error"; message: string }
+  >({ kind: "idle" });
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initRef = useRef(true);
   const sourceInputRef = useRef<HTMLInputElement>(null);
@@ -207,6 +216,18 @@ export function StagingConfigSection({
     router.refresh();
   };
 
+  const handleSwapType = async () => {
+    setSwapState({ kind: "swapping" });
+    const res = await swapStagingType(itemId);
+    if (res.error) {
+      setSwapState({ kind: "error", message: res.error });
+      return;
+    }
+    // Server-action revalidates the order page; refresh picks up the new
+    // item (renders in the same panel layout, just with the other type).
+    router.refresh();
+  };
+
   const renderFileList = (list: ItemFile[]) =>
     list.length > 0 ? (
       <div className="space-y-1">
@@ -279,6 +300,24 @@ export function StagingConfigSection({
               <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-accent">
                 {stagingProductLabel(productId)}
               </span>
+              {editable && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSwapState({
+                      kind:
+                        swapState.kind === "confirm" ? "idle" : "confirm",
+                    })
+                  }
+                  disabled={
+                    swapState.kind === "swapping" || swapState.kind === "confirm"
+                  }
+                  className="ml-2 inline-flex items-center gap-1 text-[0.62rem] font-medium text-muted-foreground/80 underline-offset-2 hover:text-foreground hover:underline disabled:pointer-events-none disabled:opacity-60"
+                >
+                  <ArrowLeftRight className="h-3 w-3" />
+                  Promeni tip
+                </button>
+              )}
               {config.extraAnglesCount > 0 && (
                 <span className="ml-2">
                   +{config.extraAnglesCount} dodatn
@@ -301,6 +340,55 @@ export function StagingConfigSection({
           </p>
         </div>
       </div>
+
+      {/* Swap-type confirmation — destructive (resets config + add-ons) */}
+      {swapState.kind === "confirm" && (
+        <div className="flex flex-col gap-2 rounded-lg border border-destructive/30 bg-destructive/[0.06] p-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[0.78rem] leading-relaxed text-foreground">
+            Prebacujem na{" "}
+            <strong>
+              {is360 ? "Statički staging" : "360 staging"}
+            </strong>
+            ? Trenutna podešavanja se brišu (osim naziva sobe), fajlovi
+            ostaju attachovani — proverite da li su odgovarajućeg formata.
+          </p>
+          <div className="flex flex-shrink-0 gap-2">
+            <button
+              type="button"
+              onClick={() => setSwapState({ kind: "idle" })}
+              className="inline-flex items-center justify-center rounded-lg bg-secondary px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80"
+            >
+              Otkaži
+            </button>
+            <button
+              type="button"
+              onClick={handleSwapType}
+              className="inline-flex items-center justify-center gap-1 rounded-lg bg-destructive px-3 py-1.5 text-xs font-semibold text-white hover:bg-destructive/90"
+            >
+              <ArrowLeftRight className="h-3 w-3" />
+              Prebaci
+            </button>
+          </div>
+        </div>
+      )}
+      {swapState.kind === "swapping" && (
+        <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-card/60 p-3 text-[0.78rem] text-muted-foreground">
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-accent" />
+          Prebacujem tip…
+        </div>
+      )}
+      {swapState.kind === "error" && (
+        <div className="flex items-center justify-between gap-2 rounded-lg border border-destructive/30 bg-destructive/[0.06] p-3 text-[0.78rem] text-destructive">
+          <span>{swapState.message}</span>
+          <button
+            type="button"
+            onClick={() => setSwapState({ kind: "idle" })}
+            className="rounded p-1 hover:bg-destructive/10"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Room name */}
       <div className="space-y-1">

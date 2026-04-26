@@ -4,9 +4,13 @@
  * pricing inputs the customer has accumulated so they can see exactly
  * where the total comes from before they pay.
  *
- * Used inside the Advanced collapsible of the heavyweight configurators
- * (landscape, siteplan, …). Pass an `extras` prop for line items the
- * catalog calculator doesn't know about (e.g. tour-assembly fees).
+ * Two ways to feed it:
+ *  - `breakdown` — pass a catalog `LineItemBreakdown` (landscape, siteplan)
+ *  - `rows` + `total` — pass explicit rows for sections with a custom
+ *    calc that doesn't fit `LineItemBreakdown` (interior, int-360 per-floor)
+ *
+ * Use `extras` for line items the catalog calculator doesn't model
+ * (e.g. tour-assembly fees) — works with either feed.
  */
 "use client";
 
@@ -14,38 +18,55 @@ import type { LineItemBreakdown } from "@/lib/catalog/calculate";
 import { formatEur } from "@/lib/catalog/calculate";
 
 type Extra = { label: string; eur: number };
+type ExplicitRow = { label: string; value: number; sub?: string };
 
 type Props = {
-  breakdown: LineItemBreakdown;
+  breakdown?: LineItemBreakdown;
+  rows?: ExplicitRow[];
+  total?: number;
   extras?: Extra[];
   baseLabel?: string;
+  title?: string;
 };
 
 export function PricingBreakdown({
   breakdown,
+  rows,
+  total: totalOverride,
   extras = [],
   baseLabel = "Bazna cena",
+  title = "Sastav cene",
 }: Props) {
-  const billableAddOns = breakdown.addOns.filter((a) => a.totalEur > 0);
   const extrasTotal = extras.reduce((s, e) => s + e.eur, 0);
-  const total = breakdown.totalEur + extrasTotal;
+
+  let lineRows: ExplicitRow[];
+  let total: number;
+  if (breakdown) {
+    const billableAddOns = breakdown.addOns.filter((a) => a.totalEur > 0);
+    lineRows = [
+      { label: baseLabel, value: breakdown.basePriceEur },
+      ...billableAddOns.map((a) => ({
+        label: a.billableQty > 1 ? `${a.label} × ${a.billableQty}` : a.label,
+        value: a.totalEur,
+        sub: a.isVolumeRate ? `volumen €${a.unitPriceEur}/kom` : undefined,
+      })),
+    ];
+    total = breakdown.totalEur + extrasTotal;
+  } else if (rows && totalOverride !== undefined) {
+    lineRows = rows;
+    total = totalOverride + extrasTotal;
+  } else {
+    return null;
+  }
 
   return (
     <div className="space-y-2 rounded-md border border-border/30 bg-card/60 p-3">
       <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-        Sastav cene
+        {title}
       </p>
       <div className="space-y-1 text-[0.78rem]">
-        <Row label={baseLabel} value={breakdown.basePriceEur} />
-        {billableAddOns.map((a) => (
-          <Row
-            key={a.addOnId}
-            label={
-              a.billableQty > 1 ? `${a.label} × ${a.billableQty}` : a.label
-            }
-            value={a.totalEur}
-            sub={a.isVolumeRate ? `volumen €${a.unitPriceEur}/kom` : undefined}
-          />
+        {lineRows.map((r, i) => (
+          <Row key={`r-${i}`} label={r.label} value={r.value} sub={r.sub} />
         ))}
         {extras.map((e, i) => (
           <Row key={`x-${i}`} label={e.label} value={e.eur} />

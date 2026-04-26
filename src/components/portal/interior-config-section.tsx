@@ -67,6 +67,33 @@ import {
   deleteOrderFile,
   updateInteriorFloors,
 } from "@/server/actions/item-config";
+import { PricingBreakdown } from "./pricing-breakdown";
+
+function floorPricingRows(calc: InteriorFloorCalc) {
+  const rows: { label: string; value: number; sub?: string }[] = [
+    {
+      label: calc.isFirstFloor
+        ? "Bazna cena (prvi sprat, 10 prostorija + 10 rendera)"
+        : "Bazna cena dodatnog sprata (−30%)",
+      value: calc.baseCost,
+    },
+  ];
+  if (calc.extraRoomsCost > 0) {
+    rows.push({
+      label: `+${calc.extraRooms} dodatn${calc.extraRooms === 1 ? "a prostorija" : "ih prostorija"}`,
+      value: calc.extraRoomsCost,
+      sub: `€${INT_STATIC_EXTRA_ROOM_EUR}/kom`,
+    });
+  }
+  if (calc.extraCamerasCost > 0) {
+    rows.push({
+      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"}`,
+      value: calc.extraCamerasCost,
+      sub: `€${INT_STATIC_EXTRA_CAMERA_EUR}/kom`,
+    });
+  }
+  return rows;
+}
 
 export function kameraNoun(n: number): string {
   const mod10 = n % 10;
@@ -775,6 +802,12 @@ function FloorPanel({
                   </div>
                 )}
               </div>
+
+              <PricingBreakdown
+                title="Sastav cene za ovaj sprat"
+                rows={floorPricingRows(calc)}
+                total={calc.floorTotal}
+              />
             </div>
           </Collapsible>
         </div>

@@ -83,6 +83,33 @@ import {
   deleteOrderFile,
   updateTour360Config,
 } from "@/server/actions/item-config";
+import { PricingBreakdown } from "./pricing-breakdown";
+
+function floorPricingRows(calc: Tour360FloorCalc) {
+  const rows: { label: string; value: number; sub?: string }[] = [
+    {
+      label: calc.isFirstFloor
+        ? "Bazna cena (prvi sprat, 10 hotspotova + 10 stat. kamera)"
+        : "Bazna cena dodatnog sprata (−30%)",
+      value: calc.baseCost,
+    },
+  ];
+  if (calc.extraHotspotsCost > 0) {
+    rows.push({
+      label: `+${calc.extraHotspots} dodatn${calc.extraHotspots === 1 ? "i hotspot" : "ih hotspotova"}`,
+      value: calc.extraHotspotsCost,
+      sub: `€${TOUR360_EXTRA_HOTSPOT_EUR}/kom`,
+    });
+  }
+  if (calc.extraCamerasCost > 0) {
+    rows.push({
+      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "a stat. kamera" : "ih stat. kamera"}`,
+      value: calc.extraCamerasCost,
+      sub: `€${TOUR360_EXTRA_CAMERA_EUR}/kom`,
+    });
+  }
+  return rows;
+}
 
 type FloorFile = {
   id: string;
@@ -836,6 +863,12 @@ function Tour360FloorPanel({
                   </div>
                 )}
               </div>
+
+              <PricingBreakdown
+                title="Sastav cene za ovaj sprat"
+                rows={floorPricingRows(calc)}
+                total={calc.floorTotal}
+              />
             </div>
           </Collapsible>
         </div>

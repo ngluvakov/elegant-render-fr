@@ -17,9 +17,14 @@ export async function syncNewDeal(orderId: string) {
     where: { id: orderId },
     include: {
       user: true,
-      items: { select: { productLabel: true, categoryLabel: true, totalEur: true } },
+      items: {
+        where: { kind: "service" },
+        select: { productLabel: true, categoryLabel: true, totalEur: true },
+      },
     },
   });
+
+  if (order.items.length === 0) return null;
 
   // Skip if already synced
   if (order.bitrix24DealId) return order.bitrix24DealId;
@@ -40,7 +45,7 @@ export async function syncNewDeal(orderId: string) {
       CATEGORY_ID: process.env.BITRIX24_PIPELINE_ID,
       STAGE_ID: stageId,
       CONTACT_ID: contactId,
-      OPPORTUNITY: order.totalEur,
+      OPPORTUNITY: order.premiumTotalEur ?? order.totalEur,
       CURRENCY_ID: "EUR",
       COMMENTS: `Portal: ${process.env.AUTH_URL}/portal/admin/porudzbine/${order.id}\n\nStavke:\n${itemsDescription}${order.customerNote ? `\n\nNapomena: ${order.customerNote}` : ""}`,
     },

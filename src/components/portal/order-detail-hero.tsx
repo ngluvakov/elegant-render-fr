@@ -17,6 +17,7 @@ type OrderDetailHeroProps = {
   orderNumber: string;
   status: string;
   totalEur: number;
+  totalCents?: number | null;
   savingsEur?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -30,6 +31,7 @@ export function OrderDetailHero({
   orderNumber,
   status,
   totalEur,
+  totalCents,
   savingsEur = 0,
   createdAt,
   updatedAt,
@@ -85,7 +87,7 @@ export function OrderDetailHero({
           <Badge className={statusAccent(status)}>{statusLabel(status)}</Badge>
           <div className="flex flex-col items-end">
             <p className="text-2xl font-bold text-foreground">
-              {formatEur(totalEur)}
+              {formatEur((totalCents ?? totalEur * 100) / 100)}
             </p>
             {savingsEur > 0 && (
               <p className="text-xs font-semibold text-[color:var(--color-sage-deep)]">

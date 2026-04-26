@@ -79,6 +79,7 @@ export default async function OrderDetailPage({
   });
 
   const firstItem = order.items[0];
+  const serviceItems = order.items.filter((item) => item.kind === "service");
   const sourceFiles = order.files.filter((f) => f.kind === "source" || f.kind === "revision");
   const deliverableFiles = order.files.filter((f) => f.kind === "deliverable");
   const savingsEur = order.items.reduce(
@@ -95,7 +96,7 @@ export default async function OrderDetailPage({
     order.status === "in_review" || order.status === "revision_requested";
 
   // Items missing the minimum: no description and no files.
-  const unconfiguredCount = order.items.filter(
+  const unconfiguredCount = serviceItems.filter(
     (item) => !item.clientNote?.trim() && item.files.length === 0,
   ).length;
 
@@ -107,6 +108,7 @@ export default async function OrderDetailPage({
         orderNumber={order.orderNumber}
         status={order.status}
         totalEur={order.totalEur}
+        totalCents={order.totalCents}
         savingsEur={savingsEur}
         createdAt={order.createdAt}
         updatedAt={order.updatedAt}
@@ -126,10 +128,10 @@ export default async function OrderDetailPage({
           {canEditItems && (
             <section>
               <h2 className="mb-4 text-sm font-semibold text-foreground">
-                Podešavanje stavki ({order.items.length})
+                Podešavanje stavki ({serviceItems.length})
               </h2>
               <p className="mb-4 text-xs text-muted-foreground">
-                Za svaku stavku dodajte opis, osnove i reference stila. Za detaljnije opcije koristite „Napredno podešavanje".
+                Za svaku stavku dodajte opis, osnove i reference stila. Za detaljnije opcije koristite „Napredno podešavanje”.
               </p>
 
               {isDraft && (
@@ -166,7 +168,7 @@ export default async function OrderDetailPage({
               )}
 
               <div className="space-y-3">
-                {order.items.map((item) => (
+                {serviceItems.map((item) => (
                   <ItemConfigPanel
                     key={item.id}
                     canDelete={isDraft}
@@ -190,7 +192,7 @@ export default async function OrderDetailPage({
                 {isDraft && (
                   <AddServiceDialog
                     orderId={order.id}
-                    existingProductIds={order.items.map((i) => i.productId)}
+                    existingProductIds={serviceItems.map((i) => i.productId)}
                   />
                 )}
               </div>
@@ -213,7 +215,11 @@ export default async function OrderDetailPage({
         {/* Right: utility panel */}
         <div className="space-y-6">
           {(order.status === "draft" || order.status === "awaiting_payment") && (
-            <PendingPaymentCard orderId={order.id} totalEur={order.totalEur} />
+            <PendingPaymentCard
+              orderId={order.id}
+              totalEur={order.totalEur}
+              totalCents={order.totalCents}
+            />
           )}
           <DeliverablesCard files={deliverableFiles} orderId={order.id} />
           <OrderSummaryCard

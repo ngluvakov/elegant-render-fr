@@ -14,7 +14,7 @@ import { syncDealStatus } from "@/server/bitrix/sync-status";
 const VALID_TRANSITIONS: Record<string, string[]> = {
   draft: ["awaiting_payment", "cancelled"],
   awaiting_payment: ["paid", "cancelled"],
-  paid: ["in_progress", "cancelled", "refunded"],
+  paid: ["in_progress", "closed", "cancelled", "refunded"],
   in_progress: ["in_review", "cancelled"],
   in_review: ["revision_requested", "delivered"],
   revision_requested: ["in_progress"],

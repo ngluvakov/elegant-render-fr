@@ -12,6 +12,7 @@ type OrderSummaryCardProps = {
     productLabel: string;
     categoryLabel: string;
     totalEur: number;
+    totalCents: number | null;
     originalTotalEur: number | null;
     discountPct: number | null;
     discountReason: string | null;
@@ -35,7 +36,7 @@ export function OrderSummaryCard({
       <div className="mt-4 space-y-2">
         {items.map((item) => {
           const { primary, struck } = formatDiscountedPrice(
-            item.totalEur,
+            (item.totalCents ?? item.totalEur * 100) / 100,
             item.originalTotalEur ?? item.totalEur,
             item.discountPct ?? 0,
           );

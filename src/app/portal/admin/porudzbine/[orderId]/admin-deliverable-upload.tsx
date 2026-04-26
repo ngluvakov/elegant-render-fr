@@ -63,7 +63,7 @@ export function AdminDeliverableUpload({ orderId }: { orderId: string }) {
         Otpremi deliverable
       </h3>
       <p className="mt-1 text-xs text-muted-foreground">
-        Fajlovi će biti vidljivi klijentu u sekciji "Spremno za preuzimanje".
+        Fajlovi će biti vidljivi klijentu u sekciji „Spremno za preuzimanje”.
       </p>
 
       <div

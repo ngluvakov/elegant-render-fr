@@ -32,7 +32,7 @@ export function PayPalPortalButtons({ orderId, onSuccess, onError }: Props) {
 
     const existing = document.querySelector('script[src*="paypal.com/sdk"]');
     if (existing) {
-      setLoaded(true);
+      queueMicrotask(() => setLoaded(true));
       return;
     }
 

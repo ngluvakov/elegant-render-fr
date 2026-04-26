@@ -34,7 +34,12 @@ async function getAccessToken(): Promise<string> {
 }
 
 export async function createPayPalOrder(amountEur: number): Promise<string> {
+  return createPayPalOrderCents(Math.round(amountEur * 100));
+}
+
+export async function createPayPalOrderCents(amountCents: number): Promise<string> {
   const token = await getAccessToken();
+  const amountEur = amountCents / 100;
 
   const res = await fetch(`${PAYPAL_BASE}/v2/checkout/orders`, {
     method: "POST",
@@ -67,7 +72,7 @@ export async function createPayPalOrder(amountEur: number): Promise<string> {
 
 export async function capturePayPalOrder(
   paypalOrderId: string,
-): Promise<{ capturedAmount: number; status: string }> {
+): Promise<{ capturedAmount: number; capturedAmountCents: number; status: string }> {
   const token = await getAccessToken();
 
   const res = await fetch(
@@ -89,9 +94,11 @@ export async function capturePayPalOrder(
   const data = await res.json();
   const capture = data.purchase_units?.[0]?.payments?.captures?.[0];
   const capturedAmount = capture ? parseFloat(capture.amount.value) : 0;
+  const capturedAmountCents = Math.round(capturedAmount * 100);
 
   return {
     capturedAmount: Math.round(capturedAmount),
+    capturedAmountCents,
     status: data.status,
   };
 }

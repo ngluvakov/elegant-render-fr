@@ -14,17 +14,60 @@ import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/lib/db";
 import { transitionOrder } from "@/lib/order/status-machine";
 import {
-  createPayPalOrder as createPPOrder,
+  createPayPalOrderCents as createPPOrder,
   capturePayPalOrder as capturePPOrder,
 } from "@/lib/payment/paypal";
-import { processMockCardPayment } from "@/lib/payment/mock-card";
+import { processMockCardPaymentCents } from "@/lib/payment/mock-card";
 import { enqueueOutboxEvent } from "@/lib/outbox";
+import { applyPurchasedAiCreditsForOrder } from "@/server/actions/ai-credits";
 
 export type PaymentResult = {
   error?: string;
   success?: boolean;
   paypalOrderId?: string;
 };
+
+function getOrderAmountCents(order: { totalEur: number; totalCents: number | null }) {
+  return order.totalCents ?? order.totalEur * 100;
+}
+
+async function finishSuccessfulPayment(
+  orderId: string,
+  options: { enqueueEmail?: boolean } = {},
+) {
+  const enqueueEmail = options.enqueueEmail ?? true;
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: {
+      items: { select: { kind: true } },
+    },
+  });
+  if (!order) return;
+
+  await applyPurchasedAiCreditsForOrder(orderId);
+
+  const hasServiceItems = order.items.some((item) => item.kind === "service");
+  const hasAiCreditItems = order.items.some((item) => item.kind === "ai_credits");
+
+  if (hasAiCreditItems && !hasServiceItems && order.status === "paid") {
+    await transitionOrder(
+      orderId,
+      "closed",
+      undefined,
+      "AI krediti aktivirani — porudžbina zatvorena",
+    );
+  }
+
+  if (enqueueEmail) {
+    // Enqueue confirmation email via outbox. Cron processor delivers it;
+    // if Resend has a transient outage, the row stays pending and retries.
+    await enqueueOutboxEvent({
+      type: "order_confirmation_email",
+      payload: { orderId },
+      idempotencyKey: `order_confirmation:${orderId}`,
+    });
+  }
+}
 
 // ─── PayPal ──────────────────────────────────────────────
 
@@ -50,7 +93,7 @@ export async function createPayPalOrderAction(
   }
 
   try {
-    const paypalOrderId = await createPPOrder(order.totalEur);
+    const paypalOrderId = await createPPOrder(getOrderAmountCents(order));
 
     await prisma.order.update({
       where: { id: orderId },
@@ -80,22 +123,27 @@ export async function capturePayPalOrderAction(
 ): Promise<PaymentResult> {
   const order = await prisma.order.findUnique({ where: { id: orderId } });
   if (!order) return { error: "Porudžbina nije pronađena." };
+  if (order.paymentStatus === "completed") {
+    await finishSuccessfulPayment(orderId, { enqueueEmail: false });
+    return { success: true };
+  }
 
   // Idempotency guard 1: pre-flight. If the order is already paid (the
   // user double-clicked, or a previous capture succeeded but the
   // response was lost) treat as success without re-charging the card.
   if (order.paymentStatus === "completed" || order.status === "paid") {
+    await finishSuccessfulPayment(orderId, { enqueueEmail: false });
     return { success: true };
   }
 
   try {
-    const { capturedAmount, status } = await capturePPOrder(paypalOrderId);
+    const { capturedAmountCents, status } = await capturePPOrder(paypalOrderId);
 
     if (status !== "COMPLETED") {
       return { error: "PayPal plaćanje nije uspelo." };
     }
 
-    if (capturedAmount !== order.totalEur) {
+    if (capturedAmountCents !== getOrderAmountCents(order)) {
       return { error: "Iznos plaćanja se ne poklapa." };
     }
 
@@ -114,16 +162,7 @@ export async function capturePayPalOrderAction(
 
     await transitionOrder(orderId, "paid", undefined, "PayPal plaćanje potvrđeno");
 
-    // Enqueue confirmation email via outbox. Cron processor delivers
-    // it; if Resend has a transient outage, the row stays pending and
-    // retries with exponential backoff. Idempotency key prevents
-    // re-enqueue on duplicate captures (the unique constraint on the
-    // outbox table enforces this).
-    await enqueueOutboxEvent({
-      type: "order_confirmation_email",
-      payload: { orderId },
-      idempotencyKey: `order_confirmation:${orderId}`,
-    });
+    await finishSuccessfulPayment(orderId);
 
     return { success: true };
   } catch (err) {
@@ -148,6 +187,7 @@ export async function mockCardPaymentAction(
   // instead of the confusing "Porudžbina nije u ispravnom statusu"
   // error (paid orders fail the draft/awaiting_payment filter).
   if (order.paymentStatus === "completed" || order.status === "paid") {
+    await finishSuccessfulPayment(orderId, { enqueueEmail: false });
     return { success: true };
   }
 
@@ -156,7 +196,9 @@ export async function mockCardPaymentAction(
   }
 
   try {
-    const { paymentId } = await processMockCardPayment(order.totalEur);
+    const { paymentId } = await processMockCardPaymentCents(
+      getOrderAmountCents(order),
+    );
 
     if (order.status === "draft") {
       await transitionOrder(orderId, "awaiting_payment");
@@ -179,11 +221,7 @@ export async function mockCardPaymentAction(
 
     await transitionOrder(orderId, "paid", undefined, "Kartično plaćanje potvrđeno (test)");
 
-    await enqueueOutboxEvent({
-      type: "order_confirmation_email",
-      payload: { orderId },
-      idempotencyKey: `order_confirmation:${orderId}`,
-    });
+    await finishSuccessfulPayment(orderId);
 
     return { success: true };
   } catch (err) {

@@ -14,6 +14,7 @@ export function StepReview() {
   } = useCheckout();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const requiresUpload = calculation.items.some((item) => item.kind === "service");
 
   const handleProceed = async () => {
     if (!userId) {
@@ -131,7 +132,7 @@ export function StepReview() {
       </div>
 
       <div className="flex justify-between">
-        <Button variant="outline" onClick={() => setStep(1)}>
+        <Button variant="outline" onClick={() => setStep(requiresUpload ? 1 : 0)}>
           Nazad
         </Button>
         <Button

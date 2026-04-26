@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import {
   ExternalLink,
   Headphones,
+  ImageIcon,
   LayoutDashboard,
   LogOut,
   Shield,
@@ -24,15 +25,23 @@ import { signOutAction } from "@/server/actions/sign-out";
 const CLIENT_NAV = [
   { href: "/portal", label: "Pregled", icon: LayoutDashboard, exact: true },
   { href: "/portal/porudzbine", label: "Porudžbine", icon: ShoppingBag, exact: false },
+  { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
   { href: "/portal/profil", label: "Profil", icon: User, exact: true },
 ];
 
 const ADMIN_NAV = [
   { href: "/portal/admin", label: "Admin", icon: Shield, exact: true },
+  { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
   {
     href: "/portal/admin/vr-upiti",
     label: "VR upiti",
     icon: Headphones,
+    exact: false,
+  },
+  {
+    href: "/portal/admin/ai-studio",
+    label: "AI generacije",
+    icon: ImageIcon,
     exact: false,
   },
   { href: "/portal/profil", label: "Profil", icon: User, exact: true },

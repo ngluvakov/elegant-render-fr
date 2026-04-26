@@ -52,6 +52,10 @@ async function send(args: { to: string; subject: string; html: string }) {
   }
 }
 
+function formatEmailEur(amount: number): string {
+  return amount % 1 === 0 ? `€${amount.toFixed(0)}` : `€${amount.toFixed(2)}`;
+}
+
 // ─── Email templates ─────────────────────────────────────
 
 export async function sendVerificationEmail(
@@ -166,7 +170,7 @@ export async function sendOrderConfirmationEmail(
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; font-size: 14px;">
             <strong>Broj porudžbine:</strong> ${orderNumber}<br/>
-            <strong>Ukupno:</strong> €${totalEur}
+            <strong>Ukupno:</strong> ${formatEmailEur(totalEur)}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
@@ -190,6 +194,38 @@ function escapeHtml(s: string): string {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+export async function sendAiCreditsExpiryReminderEmail(args: {
+  to: string;
+  creditsLabel: string;
+  expiresAt: Date;
+  daysLeft: 30 | 7;
+}) {
+  const portalUrl = `${getAuthUrl()}/portal/ai-studio/krediti`;
+  const dateLabel = args.expiresAt.toLocaleDateString("sr-RS");
+
+  await send({
+    to: args.to,
+    subject: `AI krediti ističu za ${args.daysLeft} dana — Elegant Render`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">AI krediti ističu uskoro</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Vaš aktivni AI Studio balans je <strong>${escapeHtml(args.creditsLabel)}</strong>
+          i važi do <strong>${escapeHtml(dateLabel)}</strong>.
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Nova dopuna produžava rok važenja celog aktivnog balansa na narednih 12 meseci.
+        </p>
+        <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Dopuni kredite
+        </a>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
 }
 
 function configToBullets(config: VrConfig): string {

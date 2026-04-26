@@ -47,6 +47,7 @@ export const PLATFORM_PRINCIPLES = [
 export type NavItem = { href: string; label: string };
 
 export const NAV_MAIN: NavItem[] = [
+  { href: "/ai-studio", label: "AI Studio" },
   { href: "/usluge", label: "Usluge" },
   { href: "/cene", label: "Cene" },
   { href: "/portfolio", label: "Portfolio" },

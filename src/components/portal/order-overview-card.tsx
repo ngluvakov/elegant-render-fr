@@ -17,6 +17,7 @@ type OrderOverviewCardProps = {
     projectName: string | null;
     status: string;
     totalEur: number;
+    totalCents: number | null;
     createdAt: Date;
     updatedAt: Date;
     customerNote: string | null;
@@ -54,7 +55,7 @@ export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
 
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
-          <span>{formatEur(order.totalEur)}</span>
+          <span>{formatEur((order.totalCents ?? order.totalEur * 100) / 100)}</span>
           <span>
             {order.updatedAt.toLocaleDateString("sr-Latn-RS", {
               day: "numeric",

@@ -38,6 +38,7 @@ import {
 import { cn } from "@/lib/utils";
 
 const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
+  { href: "/ai-studio", label: "AI Studio", pattern: "/ai-studio" },
   { href: "/cene", label: "Cene", pattern: "/cene" },
   { href: "/portfolio", label: "Portfolio", pattern: "/portfolio" },
   { href: "/o-nama", label: "O nama", pattern: "/o-nama" },

@@ -10,22 +10,28 @@ datasource db {
 // ─── Auth.js required models ─────────────────────────────
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  passwordHash  String?
-  phone         String?
-  isAdmin         Boolean   @default(false)
-  bitrixContactId String?   @unique
-  createdAt       DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                        String    @id @default(cuid())
+  name                      String?
+  email                     String    @unique
+  emailVerified             DateTime?
+  image                     String?
+  passwordHash              String?
+  phone                     String?
+  isAdmin                   Boolean   @default(false)
+  bitrixContactId           String?   @unique
+  aiCreditBalanceUnits      Int       @default(0)
+  aiCreditsExpireAt         DateTime?
+  aiCreditsReminder30SentAt DateTime?
+  aiCreditsReminder7SentAt  DateTime?
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
 
-  accounts Account[]
-  sessions Session[]
-  orders   Order[]
-  comments OrderComment[]
+  accounts             Account[]
+  sessions             Session[]
+  orders               Order[]
+  comments             OrderComment[]
+  aiCreditTransactions AiCreditTransaction[]
+  aiGenerations        AiGeneration[]
 
   @@map("users")
 }
@@ -98,23 +104,27 @@ enum PaymentProvider {
 }
 
 model Order {
-  id              String          @id @default(cuid())
-  orderNumber     String          @unique
-  userId          String
-  projectName     String?
-  status          OrderStatus     @default(draft)
-  paymentStatus   PaymentStatus   @default(pending)
-  paymentProvider PaymentProvider?
-  paymentId       String?
-  bitrix24DealId  String?   @unique
-  totalEur        Int
-  customerNote    String?         @db.Text
+  id                 String           @id @default(cuid())
+  orderNumber        String           @unique
+  userId             String
+  projectName        String?
+  status             OrderStatus      @default(draft)
+  paymentStatus      PaymentStatus    @default(pending)
+  paymentProvider    PaymentProvider?
+  paymentId          String?
+  bitrix24DealId     String?          @unique
+  totalEur           Int
+  totalCents         Int?
+  premiumTotalEur    Int?
+  containsAiCredits  Boolean          @default(false)
+  aiCreditsAppliedAt DateTime?
+  customerNote       String?          @db.Text
   // Rule 3: reference a prior paid order so its model assets feed
   // discount resolution on this order. Nullable; enforced same-user via
   // server action.
-  referencedOrderId String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+  referencedOrderId  String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
 
   user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   items             OrderItem[]
@@ -128,27 +138,37 @@ model Order {
 }
 
 model OrderItem {
-  id               String  @id @default(cuid())
+  id               String        @id @default(cuid())
   orderId          String
   productId        String
   categoryId       String
   productLabel     String
   categoryLabel    String
+  kind             OrderItemKind @default(service)
   basePriceEur     Int
+  basePriceCents   Int?
   totalEur         Int
+  totalCents       Int?
+  aiCreditQuantity Int?
+  aiCreditUnits    Int?
   addOnsJson       Json
   durationSeconds  Int?
   durationDiscount Float?
-  clientNote       String? @db.Text
+  clientNote       String?       @db.Text
   configJson       Json?
   originalTotalEur Int?
   discountPct      Int?
-  discountReason   String? @db.Text
+  discountReason   String?       @db.Text
 
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
   files OrderFile[]
 
   @@map("order_items")
+}
+
+enum OrderItemKind {
+  service
+  ai_credits
 }
 
 model OrderFile {
@@ -186,16 +206,16 @@ model OrderStatusEvent {
 }
 
 model OrderComment {
-  id        String   @id @default(cuid())
-  orderId   String
-  authorId  String
-  role               String   @default("client")
-  body               String   @db.Text
-  bitrix24CommentId  String?  @unique
-  createdAt          DateTime @default(now())
+  id                String   @id @default(cuid())
+  orderId           String
+  authorId          String
+  role              String   @default("client")
+  body              String   @db.Text
+  bitrix24CommentId String?  @unique
+  createdAt         DateTime @default(now())
 
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  order  Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  author User  @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([orderId, createdAt])
   @@map("order_comments")
@@ -240,6 +260,93 @@ model Quote {
   @@map("quotes")
 }
 
+// ─── AI Studio credits and generations ───────────────────
+
+enum AiCreditTransactionType {
+  purchase
+  spend
+  refund
+  expiry
+  adjustment
+}
+
+enum AiGenerationStatus {
+  processing
+  completed
+  failed
+}
+
+enum AiEditType {
+  item_removal
+  day_to_dusk
+  sky_replacement
+  wall_color_change
+  virtual_staging
+  virtual_renovation
+  room_redesign
+}
+
+enum AiImageProvider {
+  gemini_flash
+  gemini_pro
+  openai
+}
+
+model AiCreditTransaction {
+  id                String                  @id @default(cuid())
+  userId            String
+  orderId           String?
+  generationId      String?
+  type              AiCreditTransactionType
+  units             Int
+  balanceAfterUnits Int
+  amountCents       Int?
+  note              String?                 @db.Text
+  createdAt         DateTime                @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([orderId])
+  @@index([generationId])
+  @@map("ai_credit_transactions")
+}
+
+model AiGeneration {
+  id                 String             @id @default(cuid())
+  userId             String
+  parentGenerationId String?
+  paidGenerationId   String?
+  editType           AiEditType
+  provider           AiImageProvider
+  model              String
+  prompt             String             @db.Text
+  styleId            String?
+  optionsJson        Json?
+  status             AiGenerationStatus @default(processing)
+  inputStoragePath   String
+  inputMimeType      String
+  maskStoragePath    String?
+  resultStoragePath  String?
+  resultMimeType     String?
+  unitsCharged       Int
+  coveredUnits       Int
+  freeAttemptIndex   Int?
+  errorMessage       String?            @db.Text
+  providerResponseId String?
+  expiresAt          DateTime
+  createdAt          DateTime           @default(now())
+  completedAt        DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
+  @@index([status, createdAt])
+  @@index([paidGenerationId])
+  @@map("ai_generations")
+}
+
 // ─── VR consultation inquiries ───────────────────────────
 //
 // VR products (vr-existing, vr-standalone) bypass the cart/payment flow
@@ -250,10 +357,10 @@ model Quote {
 // order manually with a custom quote.
 
 enum VrInquiryStatus {
-  pending      // submitted, awaiting team review
-  in_progress  // team has contacted customer
-  converted    // customer's project became an Order
-  closed       // customer didn't proceed
+  pending // submitted, awaiting team review
+  in_progress // team has contacted customer
+  converted // customer's project became an Order
+  closed // customer didn't proceed
 }
 
 // ─── Transactional outbox ───────────────────────────────
@@ -301,21 +408,21 @@ model OutboxEvent {
 }
 
 model VrInquiry {
-  id                String          @id @default(cuid())
-  productId         String          // "vr-existing" | "vr-standalone"
-  configJson        Json            // sanitized VrConfig
-  contactName       String
-  email             String
-  phone             String?
-  message           String?         @db.Text
-  userId            String?         // set if a logged-in user submitted
-  status            VrInquiryStatus @default(pending)
+  id               String          @id @default(cuid())
+  productId        String // "vr-existing" | "vr-standalone"
+  configJson       Json // sanitized VrConfig
+  contactName      String
+  email            String
+  phone            String?
+  message          String?         @db.Text
+  userId           String? // set if a logged-in user submitted
+  status           VrInquiryStatus @default(pending)
   // Set when an admin runs convertVrInquiryToOrder; references Order.id
   // without an FK so an order can be deleted without orphaning the
   // inquiry record.
-  convertedOrderId  String?
-  createdAt         DateTime        @default(now())
-  reviewedAt        DateTime?
+  convertedOrderId String?
+  createdAt        DateTime        @default(now())
+  reviewedAt       DateTime?
 
   @@index([status, createdAt])
   @@map("vr_inquiries")

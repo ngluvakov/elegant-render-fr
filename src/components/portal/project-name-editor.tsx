@@ -54,6 +54,12 @@ export function ProjectNameEditor({
     };
   }, [value, orderId, editable, router]);
 
+  useEffect(() => {
+    if (!savedAt) return;
+    const timeout = setTimeout(() => setSavedAt(null), 2000);
+    return () => clearTimeout(timeout);
+  }, [savedAt]);
+
   // Non-editable (paid etc) — plain heading
   if (!editable) {
     return (
@@ -106,7 +112,7 @@ export function ProjectNameEditor({
             </div>
           )}
         </div>
-        {savedAt && Date.now() - savedAt < 2000 && (
+        {savedAt && (
           <span className="inline-flex flex-shrink-0 items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
             <Check className="h-3 w-3" />
             <span className="hidden sm:inline">Sačuvano</span>

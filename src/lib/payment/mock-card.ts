@@ -12,6 +12,13 @@
 export async function processMockCardPayment(
   amountEur: number,
 ): Promise<{ success: boolean; paymentId: string }> {
+  return processMockCardPaymentCents(Math.round(amountEur * 100));
+}
+
+export async function processMockCardPaymentCents(
+  amountCents: number,
+): Promise<{ success: boolean; paymentId: string }> {
+  void amountCents;
   // Simulate processing delay
   await new Promise((r) => setTimeout(r, 1000));
 

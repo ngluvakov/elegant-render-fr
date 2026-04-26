@@ -60,7 +60,7 @@ export function QuoteSummary() {
   // longer relevant once the customer cleared everything.
   useEffect(() => {
     if (!hasItems && shareState.kind !== "idle") {
-      setShareState({ kind: "idle" });
+      queueMicrotask(() => setShareState({ kind: "idle" }));
     }
   }, [hasItems, shareState.kind]);
 
@@ -332,7 +332,7 @@ export function QuoteSummary() {
 
           <p className="mt-3 text-center text-[0.68rem] text-background/30">
             Cene su procene. Konačna ponuda može varirati u zavisnosti od
-            specifičnosti projekta. Sve cene su u EUR bez PDV-a.
+            specifičnosti projekta. Sve cene su u EUR sa uračunatim PDV-om.
           </p>
         </div>
       )}

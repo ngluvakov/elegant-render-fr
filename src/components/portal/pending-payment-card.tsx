@@ -25,9 +25,10 @@ import { PayPalPortalButtons } from "./paypal-portal-buttons";
 type PendingPaymentCardProps = {
   orderId: string;
   totalEur: number;
+  totalCents?: number | null;
 };
 
-export function PendingPaymentCard({ orderId, totalEur }: PendingPaymentCardProps) {
+export function PendingPaymentCard({ orderId, totalEur, totalCents }: PendingPaymentCardProps) {
   const [method, setMethod] = useState<"paypal" | "card">("paypal");
   const [cardPending, setCardPending] = useState(false);
   const [error, setError] = useState("");
@@ -81,7 +82,9 @@ export function PendingPaymentCard({ orderId, totalEur }: PendingPaymentCardProp
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
         Ova porudžbina još nije plaćena. Ukupno:{" "}
-        <strong className="text-foreground">{formatEur(totalEur)}</strong>
+        <strong className="text-foreground">
+          {formatEur((totalCents ?? totalEur * 100) / 100)}
+        </strong>
       </p>
 
       {error && (
@@ -176,7 +179,9 @@ export function PendingPaymentCard({ orderId, totalEur }: PendingPaymentCardProp
             onClick={handleMockCard}
             disabled={cardPending}
           >
-            {cardPending ? "Obrada…" : `Plati ${formatEur(totalEur)}`}
+            {cardPending
+              ? "Obrada…"
+              : `Plati ${formatEur((totalCents ?? totalEur * 100) / 100)}`}
           </Button>
         </div>
       )}

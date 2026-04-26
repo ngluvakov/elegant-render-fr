@@ -18,6 +18,13 @@ import {
   type ModelAsset,
   getEffectiveProduct,
 } from "./configurator";
+import {
+  AI_CREDIT_PRODUCT_ID,
+  calculateAiCreditPurchase,
+  centsToEur,
+  formatCents,
+  isAiCreditProduct,
+} from "@/lib/ai-studio/catalog";
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -26,6 +33,7 @@ export type QuoteItem = {
   productId: string;
   categoryId: string;
   addOnQuantities: Record<string, number>;
+  aiCreditQuantity?: number;
   durationSeconds?: number;
   // Source mode for products with sourceModeRules (currently only the
   // consolidated `anim` product). Resolved by getEffectiveProduct so
@@ -53,13 +61,20 @@ export type LineItemBreakdown = {
   productId: string;
   productLabel: string;
   categoryLabel: string;
+  kind: "service" | "ai_credits";
   basePriceEur: number;
+  basePriceCents: number;
   durationSeconds?: number;
   durationDiscount?: number;
   addOns: AddOnBreakdown[];
   totalEur: number;
+  totalCents: number;
   originalBasePriceEur: number;
+  originalBasePriceCents: number;
   originalTotalEur: number;
+  originalTotalCents: number;
+  aiCreditQuantity?: number;
+  aiCreditUnits?: number;
   discountPct: number;
   discountReason: string | null;
 };
@@ -67,7 +82,9 @@ export type LineItemBreakdown = {
 export type QuoteCalculation = {
   items: LineItemBreakdown[];
   total: number;
+  totalCents: number;
   originalTotal: number;
+  originalTotalCents: number;
 };
 
 // ─── Duration discount helper ────────────────────────────
@@ -218,13 +235,43 @@ function calculateItem(
     productId: item.productId,
     productLabel: product.label,
     categoryLabel,
+    kind: "service",
     basePriceEur: basePriceRounded,
+    basePriceCents: basePriceRounded * 100,
     durationSeconds: product.durationConfig ? seconds : undefined,
     durationDiscount,
     addOns: addOnBreakdowns,
     totalEur,
+    totalCents: totalEur * 100,
     originalBasePriceEur: basePriceRounded,
+    originalBasePriceCents: basePriceRounded * 100,
     originalTotalEur: totalEur,
+    originalTotalCents: totalEur * 100,
+    discountPct: 0,
+    discountReason: null,
+  };
+}
+
+function calculateAiCreditItem(item: QuoteItem): LineItemBreakdown {
+  const purchase = calculateAiCreditPurchase(item.aiCreditQuantity ?? 1);
+  const totalEur = centsToEur(purchase.totalCents);
+  return {
+    instanceId: item.instanceId,
+    productId: AI_CREDIT_PRODUCT_ID,
+    productLabel: "AI Studio krediti",
+    categoryLabel: "AI Studio",
+    kind: "ai_credits",
+    basePriceEur: totalEur,
+    basePriceCents: purchase.totalCents,
+    addOns: [],
+    totalEur,
+    totalCents: purchase.totalCents,
+    originalBasePriceEur: totalEur,
+    originalBasePriceCents: purchase.totalCents,
+    originalTotalEur: totalEur,
+    originalTotalCents: purchase.totalCents,
+    aiCreditQuantity: purchase.credits,
+    aiCreditUnits: purchase.units,
     discountPct: 0,
     discountReason: null,
   };
@@ -295,6 +342,7 @@ export function resolveDiscount(
   target: QuoteItem,
   siblings: QuoteItem[],
 ): { pct: number; reason: string } | null {
+  if (isAiCreditProduct(target.productId)) return null;
   const product = getEffectiveProduct(target.productId, target.sourceMode)
     ?.product;
   if (!product?.consumes || product.consumes.length === 0) return null;
@@ -355,6 +403,8 @@ function applyDiscount(
   );
   breakdown.basePriceEur = discountedBase;
   breakdown.totalEur = Math.round(discountedBase + fixedAddOnTotal + percentTotal);
+  breakdown.basePriceCents = breakdown.basePriceEur * 100;
+  breakdown.totalCents = breakdown.totalEur * 100;
   breakdown.discountPct = pct;
   breakdown.discountReason = reason;
 }
@@ -380,6 +430,10 @@ export function calculateQuote(
 
   // Pass 1: per-item breakdown with no cross-service awareness
   for (const item of items) {
+    if (isAiCreditProduct(item.productId)) {
+      breakdowns.push(calculateAiCreditItem(item));
+      continue;
+    }
     const result = getEffectiveProduct(item.productId, item.sourceMode);
     if (!result) continue;
     breakdowns.push(
@@ -391,6 +445,7 @@ export function calculateQuote(
   // includes both the current items and any external references.
   const siblings = [...items, ...externalSources];
   for (const breakdown of breakdowns) {
+    if (breakdown.kind === "ai_credits") continue;
     const target = items.find((i) => i.instanceId === breakdown.instanceId);
     if (!target) continue;
     const discount = resolveDiscount(target, siblings);
@@ -404,14 +459,19 @@ export function calculateQuote(
   return {
     items: breakdowns,
     total: breakdowns.reduce((sum, b) => sum + b.totalEur, 0),
+    totalCents: breakdowns.reduce((sum, b) => sum + b.totalCents, 0),
     originalTotal: breakdowns.reduce((sum, b) => sum + b.originalTotalEur, 0),
+    originalTotalCents: breakdowns.reduce(
+      (sum, b) => sum + b.originalTotalCents,
+      0,
+    ),
   };
 }
 
 // ─── Format helpers ──────────────────────────────────────
 
 export function formatEur(amount: number): string {
-  return `€${amount}`;
+  return formatCents(Math.round(amount * 100));
 }
 
 export type DiscountedPriceParts = {

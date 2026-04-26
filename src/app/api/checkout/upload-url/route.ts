@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
 import {
   checkRateLimit,
   getRequestIdentifier,
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   const sanitized = fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
   const storagePath = `${orderId}/${Date.now()}-${sanitized}`;
 
-  const { data, error } = await supabaseAdmin.storage
+  const { data, error } = await getSupabaseAdmin().storage
     .from("order-files")
     .createSignedUploadUrl(storagePath);
 

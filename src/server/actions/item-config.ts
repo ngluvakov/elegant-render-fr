@@ -235,6 +235,9 @@ export async function repriceOrder(orderId: string) {
       productId: i.productId,
       categoryId: i.categoryId,
       addOnQuantities,
+      ...(i.aiCreditQuantity != null
+        ? { aiCreditQuantity: i.aiCreditQuantity }
+        : {}),
       ...(i.durationSeconds != null ? { durationSeconds: i.durationSeconds } : {}),
     };
   };
@@ -319,15 +322,46 @@ export async function repriceOrder(orderId: string) {
   ]);
   const breakdownById = new Map(calc.items.map((b) => [b.instanceId, b]));
 
-  let orderTotal = 0;
+  let orderTotalCents = 0;
+  let premiumTotalCents = 0;
+  let containsAiCredits = false;
 
   for (const i of items) {
+    const existingTotalCents = i.totalCents ?? i.totalEur * 100;
+
     // Inquiry-only items (e.g. converted VR projects) carry a manually
     // set price agreed during consultation — never recompute from the
     // catalog, just keep the existing totalEur.
     const lookup = getConfiguratorProduct(i.productId);
+    if (i.kind === "ai_credits") {
+      const bd = breakdownById.get(i.id);
+      if (bd) {
+        await prisma.orderItem.update({
+          where: { id: i.id },
+          data: {
+            basePriceEur: Math.round(bd.basePriceEur),
+            basePriceCents: bd.basePriceCents,
+            totalEur: Math.round(bd.totalEur),
+            totalCents: bd.totalCents,
+            aiCreditQuantity: bd.aiCreditQuantity ?? i.aiCreditQuantity,
+            aiCreditUnits: bd.aiCreditUnits ?? i.aiCreditUnits,
+            addOnsJson: [],
+            originalTotalEur: Math.round(bd.originalTotalEur),
+            discountPct: 0,
+            discountReason: null,
+          },
+        });
+        orderTotalCents += bd.totalCents;
+      } else {
+        orderTotalCents += existingTotalCents;
+      }
+      containsAiCredits = true;
+      continue;
+    }
+
     if (lookup?.product.inquiryOnly) {
-      orderTotal += i.totalEur;
+      orderTotalCents += existingTotalCents;
+      premiumTotalCents += existingTotalCents;
       continue;
     }
 
@@ -349,12 +383,15 @@ export async function repriceOrder(orderId: string) {
         where: { id: i.id },
         data: {
           totalEur,
+          basePriceCents: preDiscount * 100,
+          totalCents: totalEur * 100,
           originalTotalEur: preDiscount,
           discountPct: discount?.pct ?? 0,
           discountReason: discount?.reason ?? null,
         },
       });
-      orderTotal += totalEur;
+      orderTotalCents += totalEur * 100;
+      premiumTotalCents += totalEur * 100;
       continue;
     }
 
@@ -377,12 +414,15 @@ export async function repriceOrder(orderId: string) {
         where: { id: i.id },
         data: {
           totalEur,
+          basePriceCents: preDiscount * 100,
+          totalCents: totalEur * 100,
           originalTotalEur: preDiscount,
           discountPct: discount?.pct ?? 0,
           discountReason: discount?.reason ?? null,
         },
       });
-      orderTotal += totalEur;
+      orderTotalCents += totalEur * 100;
+      premiumTotalCents += totalEur * 100;
       continue;
     }
 
@@ -422,27 +462,33 @@ export async function repriceOrder(orderId: string) {
         where: { id: i.id },
         data: {
           totalEur,
+          basePriceCents: preDiscount * 100,
+          totalCents: totalEur * 100,
           originalTotalEur: preDiscount,
           addOnsJson: renderingBreakdown?.addOns ?? [],
           discountPct: discount?.pct ?? 0,
           discountReason: discount?.reason ?? null,
         },
       });
-      orderTotal += totalEur;
+      orderTotalCents += totalEur * 100;
+      premiumTotalCents += totalEur * 100;
       continue;
     }
 
     const bd = breakdownById.get(i.id);
     if (!bd) {
       // Unknown product id (shouldn't happen) — leave the row as-is.
-      orderTotal += i.totalEur;
+      orderTotalCents += existingTotalCents;
+      premiumTotalCents += existingTotalCents;
       continue;
     }
     await prisma.orderItem.update({
       where: { id: i.id },
       data: {
         basePriceEur: bd.basePriceEur,
+        basePriceCents: bd.basePriceCents,
         totalEur: bd.totalEur,
+        totalCents: bd.totalCents,
         addOnsJson: bd.addOns,
         durationSeconds: bd.durationSeconds ?? null,
         durationDiscount: bd.durationDiscount ?? null,
@@ -451,12 +497,18 @@ export async function repriceOrder(orderId: string) {
         discountReason: bd.discountReason,
       },
     });
-    orderTotal += bd.totalEur;
+    orderTotalCents += bd.totalCents;
+    premiumTotalCents += bd.totalCents;
   }
 
   await prisma.order.update({
     where: { id: orderId },
-    data: { totalEur: orderTotal },
+    data: {
+      totalEur: Math.round(orderTotalCents / 100),
+      totalCents: orderTotalCents,
+      premiumTotalEur: Math.round(premiumTotalCents / 100),
+      containsAiCredits,
+    },
   });
 }
 

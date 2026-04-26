@@ -27,7 +27,7 @@ export function PayPalButtons({ orderId, onSuccess, onError }: PayPalButtonsProp
     // Load PayPal JS SDK
     const existing = document.querySelector('script[src*="paypal.com/sdk"]');
     if (existing) {
-      setLoaded(true);
+      queueMicrotask(() => setLoaded(true));
       return;
     }
 

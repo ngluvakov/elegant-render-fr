@@ -14,6 +14,7 @@ import { auth } from "@/lib/auth";
 import * as Sentry from "@sentry/nextjs";
 import { calculateQuote, type QuoteItem } from "@/lib/catalog/calculate";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
+import { isAiCreditProduct } from "@/lib/ai-studio/catalog";
 import { generateOrderNumber } from "@/lib/order/generate-number";
 import {
   checkRateLimit,
@@ -51,7 +52,9 @@ export async function createOrder(
   // payment flow. They route to /usluge/vr/konsultacija from /cene; if
   // one slips through (tampered cart, stale URL), refuse the order.
   for (const qi of quoteItems) {
+    if (isAiCreditProduct(qi.productId)) continue;
     const lookup = getConfiguratorProduct(qi.productId);
+    if (!lookup) return { error: "Nepoznata stavka u ponudi." };
     if (lookup?.product.inquiryOnly) {
       return {
         error:
@@ -68,26 +71,44 @@ export async function createOrder(
   }
 
   const orderNumber = generateOrderNumber();
+  const containsAiCredits = calculation.items.some(
+    (item) => item.kind === "ai_credits",
+  );
+  const premiumItems = calculation.items.filter(
+    (item) => item.kind === "service",
+  );
+  const premiumTotalEur = premiumItems.reduce(
+    (sum, item) => sum + item.totalEur,
+    0,
+  );
 
   const order = await prisma.order.create({
     data: {
       orderNumber,
       userId,
-      totalEur: calculation.total,
+      totalEur: Math.round(calculation.total),
+      totalCents: calculation.totalCents,
+      premiumTotalEur: Math.round(premiumTotalEur),
+      containsAiCredits,
       customerNote: customerNote || null,
       items: {
         create: calculation.items.map((item) => ({
           productId: item.productId,
           categoryId: quoteItems.find((q) => q.instanceId === item.instanceId)
             ?.categoryId ?? "",
+          kind: item.kind,
           productLabel: item.productLabel,
           categoryLabel: item.categoryLabel,
-          basePriceEur: item.basePriceEur,
-          totalEur: item.totalEur,
+          basePriceEur: Math.round(item.basePriceEur),
+          basePriceCents: item.basePriceCents,
+          totalEur: Math.round(item.totalEur),
+          totalCents: item.totalCents,
+          aiCreditQuantity: item.aiCreditQuantity ?? null,
+          aiCreditUnits: item.aiCreditUnits ?? null,
           addOnsJson: item.addOns,
           durationSeconds: item.durationSeconds ?? null,
           durationDiscount: item.durationDiscount ?? null,
-          originalTotalEur: item.originalTotalEur,
+          originalTotalEur: Math.round(item.originalTotalEur),
           discountPct: item.discountPct,
           discountReason: item.discountReason,
         })),
@@ -101,13 +122,16 @@ export async function createOrder(
     },
   });
 
-  // Sync to Bitrix24
-  syncNewDeal(order.id).catch((err) => {
-    Sentry.captureException(err, {
-      tags: { area: "bitrix", flow: "sync-new-deal" },
-      extra: { orderId: order.id, orderNumber: order.orderNumber },
+  // Sync premium orders to Bitrix24. Credit-only orders stay inside the
+  // platform until we decide how to represent them in CRM/reporting.
+  if (premiumItems.length > 0) {
+    syncNewDeal(order.id).catch((err) => {
+      Sentry.captureException(err, {
+        tags: { area: "bitrix", flow: "sync-new-deal" },
+        extra: { orderId: order.id, orderNumber: order.orderNumber },
+      });
     });
-  });
+  }
 
   return { orderId: order.id, orderNumber: order.orderNumber };
 }

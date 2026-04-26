@@ -21,8 +21,21 @@ const STEPS = [
 ];
 
 function WizardInner() {
-  const { step, paymentComplete, orderId, initiallySignedIn, customerEmail } =
+  const {
+    step,
+    setStep,
+    calculation,
+    paymentComplete,
+    orderId,
+    initiallySignedIn,
+    customerEmail,
+  } =
     useCheckout();
+  const requiresUpload = calculation.items.some((item) => item.kind === "service");
+
+  useEffect(() => {
+    if (step === 1 && !requiresUpload) setStep(2);
+  }, [step, requiresUpload, setStep]);
 
   if (paymentComplete) {
     return (
@@ -220,7 +233,7 @@ export function CheckoutWizard({
         router.replace("/cene");
         return;
       }
-      setQuoteItems(items);
+      queueMicrotask(() => setQuoteItems(items));
     } catch {
       router.replace("/cene");
     }

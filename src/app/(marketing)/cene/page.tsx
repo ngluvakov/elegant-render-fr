@@ -85,7 +85,8 @@ export default function CenePage() {
             <h3 className="text-lg text-foreground">Napomene uz cenovnik</h3>
             <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
               <li>
-                Sve cene su u evrima (EUR) i <strong>ne uključuju PDV</strong>.
+                Sve cene su u evrima (EUR) i prikazane kao konačne cene sa
+                uračunatim PDV-om.
               </li>
               <li>
                 Svaki projekat uključuje{" "}

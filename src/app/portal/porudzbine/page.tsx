@@ -133,7 +133,7 @@ export default async function PorudzbinePage({
                     </div>
                     <div className="relative w-20 text-right">
                       <p className="text-sm font-semibold text-foreground">
-                        {formatEur(order.totalEur)}
+                        {formatEur((order.totalCents ?? order.totalEur * 100) / 100)}
                       </p>
                       {savingsEur > 0 && (
                         <p className="mt-0.5 text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
@@ -209,7 +209,7 @@ export default async function PorudzbinePage({
                       )}
                       <div className="text-right">
                         <p className="text-sm font-semibold text-foreground">
-                          {formatEur(order.totalEur)}
+                          {formatEur((order.totalCents ?? order.totalEur * 100) / 100)}
                         </p>
                         {savingsEur > 0 && (
                           <p className="text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">

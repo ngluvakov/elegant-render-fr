@@ -1274,6 +1274,12 @@ export function Tour360ConfigSection({
     };
   }, [floors, tourAssembly, itemId, editable, router]);
 
+  useEffect(() => {
+    if (!savedAt) return;
+    const timeout = setTimeout(() => setSavedAt(null), 2500);
+    return () => clearTimeout(timeout);
+  }, [savedAt]);
+
   const patchFloor = (fIdx: number, patch: Partial<Tour360Floor>) => {
     setFloors((prev) =>
       prev.map((f, i) => (i === fIdx ? { ...f, ...patch } : f)),
@@ -1316,7 +1322,7 @@ export function Tour360ConfigSection({
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {savedAt && Date.now() - savedAt < 2500 && (
+          {savedAt && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
               Sačuvano

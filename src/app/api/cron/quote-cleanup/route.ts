@@ -1,5 +1,5 @@
 /**
- * Daily cron — removes expired Quote rows.
+ * Daily cron — removes expired Quote rows and runs AI Studio maintenance.
  *
  * The Quote model (saved-and-shared cart snapshots from /cene) has a
  * 30-day TTL via `expiresAt`. The schema has @@index([expiresAt]) so
@@ -11,6 +11,7 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/lib/db";
+import { runAiStudioMaintenance } from "@/server/ai-studio/maintenance";
 
 // Sentry.withMonitor wraps the run in a Crons check-in so missed or
 // failed runs surface as alerts. The slug must match what Sentry
@@ -24,10 +25,17 @@ export async function GET(request: Request) {
   return Sentry.withMonitor(
     "quote-cleanup",
     async () => {
-      const result = await prisma.quote.deleteMany({
-        where: { expiresAt: { lt: new Date() } },
+      const now = new Date();
+      const quotes = await prisma.quote.deleteMany({
+        where: { expiresAt: { lt: now } },
       });
-      return NextResponse.json({ ok: true, deleted: result.count });
+      const aiStudio = await runAiStudioMaintenance(now);
+
+      return NextResponse.json({
+        ok: true,
+        deleted: quotes.count,
+        aiStudio,
+      });
     },
     {
       schedule: { type: "crontab", value: "30 3 * * *" },

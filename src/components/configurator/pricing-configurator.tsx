@@ -11,6 +11,7 @@ import { Suspense, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { QuoteProvider, useQuote } from "./quote-context";
 import { ServiceAdder } from "./service-adder";
+import { AiCreditAdder } from "./ai-credit-adder";
 import { QuoteItemCard } from "./quote-item";
 import { QuoteSummary } from "./quote-summary";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
@@ -92,6 +93,13 @@ function ConfiguratorInner() {
             Izaberite uslugu
           </h2>
           <ServiceAdder />
+        </section>
+
+        <section>
+          <h2 className="mb-4 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+            AI krediti
+          </h2>
+          <AiCreditAdder />
         </section>
 
         {/* Added items */}

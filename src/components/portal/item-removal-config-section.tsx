@@ -561,7 +561,7 @@ export function ItemRemovalConfigSection({
             </select>
             <p className="mt-1 text-[0.62rem] text-muted-foreground">
               Ovaj izbor pamtimo kao informaciju — naručite uslugu
-              "Statički staging" (vs-static) posebno iz cenovnika.
+              „Statički staging” (vs-static) posebno iz cenovnika.
             </p>
           </div>
         </Collapsible>

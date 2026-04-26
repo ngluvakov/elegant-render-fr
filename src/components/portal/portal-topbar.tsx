@@ -12,6 +12,7 @@ import { Menu } from "lucide-react";
 const SECTION_NAMES: Record<string, string> = {
   "/portal": "Pregled",
   "/portal/porudzbine": "Porudžbine",
+  "/portal/ai-studio": "AI Studio",
   "/portal/profil": "Profil",
 };
 

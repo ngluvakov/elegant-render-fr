@@ -21,6 +21,11 @@ import {
 } from "@/lib/catalog/calculate";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { track } from "@/lib/posthog-events";
+import {
+  AI_CREDIT_CATEGORY_ID,
+  AI_CREDIT_PRODUCT_ID,
+  isAiCreditProduct,
+} from "@/lib/ai-studio/catalog";
 
 // ─── Actions ─────────────────────────────────────────────
 
@@ -31,6 +36,7 @@ type QuoteAction =
       categoryId: string;
       sourceMode?: string;
     }
+  | { type: "SET_AI_CREDITS"; credits: number }
   | { type: "REMOVE_PRODUCT"; instanceId: string }
   | { type: "SET_ADDON_QTY"; instanceId: string; addOnId: string; qty: number }
   | { type: "SET_DURATION"; instanceId: string; seconds: number }
@@ -63,6 +69,24 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
           addOnQuantities: defaultQuantities,
           durationSeconds: product.durationConfig?.defaultSeconds,
           ...(action.sourceMode ? { sourceMode: action.sourceMode } : {}),
+        },
+      ];
+    }
+    case "SET_AI_CREDITS": {
+      const credits = Math.max(0, Math.floor(action.credits));
+      const withoutCredits = state.filter(
+        (item) => !isAiCreditProduct(item.productId),
+      );
+      if (credits === 0) return withoutCredits;
+      const existing = state.find((item) => isAiCreditProduct(item.productId));
+      return [
+        ...withoutCredits,
+        {
+          instanceId: existing?.instanceId ?? crypto.randomUUID(),
+          productId: AI_CREDIT_PRODUCT_ID,
+          categoryId: AI_CREDIT_CATEGORY_ID,
+          addOnQuantities: {},
+          aiCreditQuantity: credits,
         },
       ];
     }
@@ -121,6 +145,7 @@ type QuoteContextValue = {
   setSourceMode: (instanceId: string, sourceMode: string) => void;
   clearAll: () => void;
   loadItems: (items: QuoteItem[]) => void;
+  setAiCredits: (credits: number) => void;
 };
 
 const QuoteContext = createContext<QuoteContextValue | null>(null);
@@ -180,6 +205,10 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
     (loaded: QuoteItem[]) => dispatch({ type: "LOAD_ITEMS", items: loaded }),
     [],
   );
+  const setAiCredits = useCallback(
+    (credits: number) => dispatch({ type: "SET_AI_CREDITS", credits }),
+    [],
+  );
 
   const value = useMemo<QuoteContextValue>(
     () => ({
@@ -193,6 +222,7 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       setSourceMode,
       clearAll,
       loadItems,
+      setAiCredits,
     }),
     [
       items,
@@ -204,6 +234,7 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       setSourceMode,
       clearAll,
       loadItems,
+      setAiCredits,
     ],
   );
 

@@ -1,10 +1,11 @@
-// Client (browser) Sentry init. Loaded automatically by Next.js as the
-// client-side instrumentation hook. The DSN is split between client
-// (NEXT_PUBLIC_SENTRY_DSN — exposed to the browser bundle) and server
-// (SENTRY_DSN — server-only) so that public surface and server surface
-// can point at separate Sentry projects later if needed.
+// Client (browser) instrumentation. Loaded automatically by Next.js
+// as the client-side instrumentation hook. Initializes both Sentry
+// (errors / tracing / session replay) and PostHog (product analytics
+// / conversion funnels) here so they boot in the same place and at
+// the same lifecycle moment.
 
 import * as Sentry from "@sentry/nextjs";
+import posthog from "posthog-js";
 
 Sentry.init({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
@@ -42,3 +43,34 @@ Sentry.init({
 // App Router navigation transitions — gives Sentry a span for each
 // client-side route change so traces span page-to-page navigation.
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+
+// ─── PostHog ─────────────────────────────────────────────
+//
+// Product analytics + conversion funnels. Auto-captures pageviews,
+// rage clicks, and dead clicks; identified users are linked to their
+// pre-auth distinctId via PostHogIdentifyBridge in the portal layout.
+//
+// person_profiles: "identified_only" creates a Person record only
+// after .identify() is called — anonymous traffic stays anonymous in
+// PostHog (lower privacy risk, smaller event ingestion bill).
+
+if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+    api_host:
+      process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
+    defaults: "2026-01-30",
+    person_profiles: "identified_only",
+    // Don't autocapture on dev unless you really want to clutter the
+    // PostHog UI with localhost noise.
+    autocapture: process.env.NODE_ENV === "production",
+    capture_pageview: "history_change",
+    capture_pageleave: true,
+    // Session recordings are PostHog's product (separate from Sentry's
+    // error-only replay) — useful for funnel debugging where the user
+    // didn't crash but abandoned. 25% sampling keeps the bill under
+    // control on the free tier.
+    session_recording: {
+      sampleRate: process.env.NODE_ENV === "production" ? 0.25 : 0,
+    },
+  });
+}

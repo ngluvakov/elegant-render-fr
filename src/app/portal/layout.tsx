@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { PortalLayoutShell } from "@/components/portal/portal-layout-shell";
+import { PostHogIdentifyBridge } from "@/components/posthog-identify-bridge";
 import { ChatWidget } from "@/components/chat/chat-widget";
 
 export default async function PortalLayout({
@@ -24,6 +25,14 @@ export default async function PortalLayout({
       isAdmin={user?.isAdmin ?? false}
       hasPassword={Boolean(user?.passwordHash)}
     >
+      <PostHogIdentifyBridge
+        userId={session.user.id}
+        traits={{
+          email: session.user.email ?? undefined,
+          name: session.user.name ?? undefined,
+          isAdmin: user?.isAdmin ?? false,
+        }}
+      />
       {children}
       <ChatWidget />
     </PortalLayoutShell>

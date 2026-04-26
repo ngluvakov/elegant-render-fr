@@ -1000,6 +1000,7 @@ export function InteriorConfigSection({
     initialFloors && initialFloors.length > 0 ? initialFloors : [],
   );
   const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [styleGuideOpen, setStyleGuideOpen] = useState(false);
   const [, start] = useTransition();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initRef = useRef(true);
@@ -1074,6 +1075,33 @@ export function InteriorConfigSection({
         </div>
       </div>
 
+      {/* Style guide CTA — surfaced at section level so customers can
+          browse the gallery before configuring any floors. Per-floor
+          panels also have their own "Vodič kroz stilove" button that
+          can apply the picked style to that floor's rooms. */}
+      <button
+        type="button"
+        onClick={() => setStyleGuideOpen(true)}
+        className="group flex w-full items-center justify-between gap-3 rounded-xl border border-accent/30 bg-accent/[0.05] px-4 py-3 text-left transition-all hover:border-accent/60 hover:bg-accent/[0.08]"
+      >
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent transition-transform group-hover:scale-105">
+            <Palette className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-sm font-semibold text-foreground">
+              Pogledaj galeriju stilova
+            </p>
+            <p className="text-[0.72rem] text-muted-foreground">
+              Skandi, moderan, klasika, industrijski — birajte šta vam se sviđa pre nego što podesite spratove.
+            </p>
+          </div>
+        </div>
+        <span className="hidden flex-shrink-0 text-[0.72rem] font-semibold text-accent sm:inline">
+          Otvori →
+        </span>
+      </button>
+
       {/* Floor list */}
       {floors.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border/40 bg-card/40 px-4 py-8 text-center">
@@ -1128,6 +1156,17 @@ export function InteriorConfigSection({
             </span>
           )}
         </button>
+      )}
+
+      {/* Section-level style guide modal — browse-only (editable=false
+          so there's no "Apply to all" button). Customers apply styles
+          per-floor via each FloorPanel's own style picker. */}
+      {styleGuideOpen && (
+        <StyleGuideModal
+          onClose={() => setStyleGuideOpen(false)}
+          onApplyToAll={() => setStyleGuideOpen(false)}
+          editable={false}
+        />
       )}
     </div>
   );

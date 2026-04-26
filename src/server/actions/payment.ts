@@ -131,7 +131,7 @@ export async function capturePayPalOrderAction(
   // Idempotency guard 1: pre-flight. If the order is already paid (the
   // user double-clicked, or a previous capture succeeded but the
   // response was lost) treat as success without re-charging the card.
-  if (order.paymentStatus === "completed" || order.status === "paid") {
+  if (order.status === "paid") {
     await finishSuccessfulPayment(orderId, { enqueueEmail: false });
     return { success: true };
   }

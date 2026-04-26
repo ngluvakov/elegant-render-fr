@@ -1,5 +1,8 @@
 import { getAiProviderModel, type AiImageProvider } from "./catalog";
 
+const AI_PROVIDER_TIMEOUT_MS = 120_000;
+const AI_PROVIDER_RETRY_DELAY_MS = 1_200;
+
 export type AiEditProviderInput = {
   provider: AiImageProvider;
   prompt: string;
@@ -59,20 +62,27 @@ export async function generateAiEdit(
   for (const provider of attempts) {
     if (provider !== input.provider && !isProviderConfigured(provider)) continue;
 
-    try {
-      const output =
-        provider === "openai"
-          ? await generateWithOpenAi(input)
-          : await generateWithGemini(input, provider);
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const output =
+          provider === "openai"
+            ? await generateWithOpenAi(input)
+            : await generateWithGemini(input, provider);
 
-      return {
-        ...output,
-        fallbackFrom: provider === input.provider ? undefined : input.provider,
-      };
-    } catch (err) {
-      lastError = err;
-      logProviderFailure(err, provider);
-      if (!isFallbackAllowed(err)) throw toPublicError(err);
+        return {
+          ...output,
+          fallbackFrom: provider === input.provider ? undefined : input.provider,
+        };
+      } catch (err) {
+        lastError = err;
+        logProviderFailure(err, provider, attempt);
+        if (shouldRetryProviderAttempt(err, attempt)) {
+          await sleep(AI_PROVIDER_RETRY_DELAY_MS);
+          continue;
+        }
+        if (!isFallbackAllowed(err)) throw toPublicError(err);
+        break;
+      }
     }
   }
 
@@ -106,7 +116,7 @@ async function generateWithGemini(
     });
   }
 
-  const res = await fetch(
+  const res = await fetchWithTimeout(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
     {
       method: "POST",
@@ -121,6 +131,7 @@ async function generateWithGemini(
         },
       }),
     },
+    { provider, model },
   );
 
   if (!res.ok) {
@@ -183,13 +194,17 @@ async function generateWithOpenAi(
     );
   }
 
-  const res = await fetch("https://api.openai.com/v1/images/edits", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+  const res = await fetchWithTimeout(
+    "https://api.openai.com/v1/images/edits",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: form,
     },
-    body: form,
-  });
+    { provider: "openai", model },
+  );
 
   if (!res.ok) {
     const body = await readResponseText(res);
@@ -215,7 +230,11 @@ async function generateWithOpenAi(
     };
   }
   if (item?.url) {
-    const imageRes = await fetch(item.url);
+    const imageRes = await fetchWithTimeout(
+      item.url,
+      {},
+      { provider: "openai", model },
+    );
     if (!imageRes.ok) throw new Error("OpenAI result URL nije dostupan.");
     return {
       image: Buffer.from(await imageRes.arrayBuffer()),
@@ -242,6 +261,15 @@ function isProviderConfigured(provider: AiImageProvider): boolean {
 
 function isFallbackAllowed(err: unknown): boolean {
   return err instanceof AiProviderError && err.fallbackAllowed;
+}
+
+function shouldRetryProviderAttempt(err: unknown, attempt: number): boolean {
+  return (
+    attempt === 1 &&
+    err instanceof AiProviderError &&
+    typeof err.status === "number" &&
+    err.status >= 500
+  );
 }
 
 function isFallbackStatus(status: number): boolean {
@@ -287,7 +315,42 @@ async function readResponseText(res: Response): Promise<string> {
   return text.length > 1500 ? `${text.slice(0, 1500)}...` : text;
 }
 
-function logProviderFailure(err: unknown, provider: AiImageProvider) {
+async function fetchWithTimeout(
+  url: string,
+  init: RequestInit,
+  context: { provider: AiImageProvider; model: string },
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), AI_PROVIDER_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new AiProviderError({
+        provider: context.provider,
+        model: context.model,
+        status: 408,
+        message: `${context.provider} image request timed out after ${AI_PROVIDER_TIMEOUT_MS}ms`,
+        publicMessage:
+          "AI provider nije odgovorio na vreme. Pokušajte ponovo ili izaberite drugi engine.",
+        fallbackAllowed: true,
+      });
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function logProviderFailure(
+  err: unknown,
+  provider: AiImageProvider,
+  attempt: number,
+) {
   const message = err instanceof Error ? err.message : String(err);
   const status = err instanceof AiProviderError ? err.status : undefined;
   const model =
@@ -295,6 +358,7 @@ function logProviderFailure(err: unknown, provider: AiImageProvider) {
   console.error("[AI Studio] Provider attempt failed", {
     provider,
     model,
+    attempt,
     status,
     message: message.length > 1500 ? `${message.slice(0, 1500)}...` : message,
   });

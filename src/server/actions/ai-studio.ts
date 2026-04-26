@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
@@ -47,6 +48,8 @@ export type AiStudioGenerationResult = {
   provider?: AiImageProvider;
   model?: string;
   notice?: string;
+  unitsCharged?: number;
+  freeAttemptIndex?: number | null;
 };
 
 export async function getAiStudioState() {
@@ -138,6 +141,7 @@ export async function generateAiStudioImage(
   let coveredUnits = editDef.units;
   let paidGenerationId: string | null = null;
   let freeAttemptIndex: number | null = null;
+  let rootCoveredUnits: number | null = null;
 
   if (input.parentGenerationId) {
     const parent = await prisma.aiGeneration.findFirst({
@@ -150,6 +154,7 @@ export async function generateAiStudioImage(
       where: { id: paidGenerationId, userId },
     });
     if (!root) return { error: "Početna plaćena obrada nije pronađena." };
+    rootCoveredUnits = root.coveredUnits;
 
     const freeUsed = await prisma.aiGeneration.count({
       where: {
@@ -160,11 +165,11 @@ export async function generateAiStudioImage(
     });
 
     if (freeUsed < AI_FREE_REGENERATIONS) {
-      if (editDef.units <= root.coveredUnits) {
+      if (editDef.units <= rootCoveredUnits) {
         unitsToCharge = 0;
         freeAttemptIndex = freeUsed + 1;
       } else {
-        unitsToCharge = editDef.units - root.coveredUnits;
+        unitsToCharge = editDef.units - rootCoveredUnits;
         coveredUnits = editDef.units;
         freeAttemptIndex = freeUsed + 1;
       }
@@ -173,30 +178,73 @@ export async function generateAiStudioImage(
     }
   }
 
-  const generation = await prisma.aiGeneration.create({
-    data: {
-      userId,
-      parentGenerationId: input.parentGenerationId ?? null,
-      paidGenerationId,
-      editType: input.editType,
-      provider: input.provider,
-      model,
-      prompt: input.prompt.trim(),
-      styleId: input.styleId || null,
-      optionsJson: {
-        selectedOption: input.selectedOption ?? null,
-        colorHex: input.colorHex ?? null,
-        maskInverted: input.maskInverted === true,
+  const createGeneration = () =>
+    prisma.aiGeneration.create({
+      data: {
+        userId,
+        parentGenerationId: input.parentGenerationId ?? null,
+        paidGenerationId,
+        editType: input.editType,
+        provider: input.provider,
+        model,
+        prompt: input.prompt.trim(),
+        styleId: input.styleId || null,
+        optionsJson: {
+          selectedOption: input.selectedOption ?? null,
+          colorHex: input.colorHex ?? null,
+          maskInverted: input.maskInverted === true,
+        },
+        inputStoragePath: input.inputStoragePath,
+        inputMimeType: input.inputMimeType,
+        maskStoragePath: input.maskStoragePath || null,
+        unitsCharged: unitsToCharge,
+        coveredUnits,
+        freeAttemptIndex,
+        expiresAt,
       },
-      inputStoragePath: input.inputStoragePath,
-      inputMimeType: input.inputMimeType,
-      maskStoragePath: input.maskStoragePath || null,
-      unitsCharged: unitsToCharge,
-      coveredUnits,
-      freeAttemptIndex,
-      expiresAt,
-    },
-  });
+    });
+
+  let generation: Awaited<ReturnType<typeof createGeneration>>;
+  try {
+    generation = await createGeneration();
+  } catch (err) {
+    const canRetryFreeAttempt =
+      input.parentGenerationId &&
+      rootCoveredUnits !== null &&
+      freeAttemptIndex !== null &&
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002";
+
+    if (!canRetryFreeAttempt) throw err;
+    const retryRootCoveredUnits = rootCoveredUnits;
+    if (retryRootCoveredUnits === null) throw err;
+
+    const freeUsed = await prisma.aiGeneration.count({
+      where: {
+        userId,
+        paidGenerationId,
+        freeAttemptIndex: { not: null },
+      },
+    });
+
+    if (freeUsed < AI_FREE_REGENERATIONS && paidGenerationId) {
+      if (editDef.units <= retryRootCoveredUnits) {
+        unitsToCharge = 0;
+        coveredUnits = retryRootCoveredUnits;
+      } else {
+        unitsToCharge = editDef.units - retryRootCoveredUnits;
+        coveredUnits = editDef.units;
+      }
+      freeAttemptIndex = freeUsed + 1;
+    } else {
+      paidGenerationId = null;
+      unitsToCharge = editDef.units;
+      coveredUnits = editDef.units;
+      freeAttemptIndex = null;
+    }
+
+    generation = await createGeneration();
+  }
 
   if (!paidGenerationId) {
     paidGenerationId = generation.id;
@@ -292,6 +340,8 @@ export async function generateAiStudioImage(
       balanceUnits: spend.balanceAfterUnits,
       provider: output.provider,
       model: output.model,
+      unitsCharged: generation.unitsCharged,
+      freeAttemptIndex: generation.freeAttemptIndex,
       notice: output.fallbackFrom
         ? `Izabrani engine trenutno nije imao raspoloživ quota, pa je obrada završena preko ${output.provider === "openai" ? "GPT Image" : "Nano Banana"}.`
         : undefined,

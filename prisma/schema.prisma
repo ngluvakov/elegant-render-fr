@@ -340,6 +340,7 @@ model AiGeneration {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([paidGenerationId, freeAttemptIndex])
   @@index([userId, createdAt])
   @@index([expiresAt])
   @@index([status, createdAt])
@@ -378,16 +379,17 @@ enum VrInquiryStatus {
 // claim → succeed or back off.
 
 enum OutboxEventStatus {
-  pending      // newly enqueued or scheduled to retry
-  running      // processor has claimed this row, in-flight
-  succeeded    // handler completed successfully
-  failed       // exceeded maxAttempts; needs human intervention
+  pending // newly enqueued or scheduled to retry
+  running // processor has claimed this row, in-flight
+  succeeded // handler completed successfully
+  failed // exceeded maxAttempts; needs human intervention
 }
 
 enum OutboxEventType {
   order_confirmation_email
   portal_access_email
   vr_project_ready_email
+  ai_credits_expiry_reminder_email
 }
 
 model OutboxEvent {

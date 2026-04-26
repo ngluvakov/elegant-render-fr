@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { formatCreditsFromUnits } from "@/lib/ai-studio/catalog";
-import { sendAiCreditsExpiryReminderEmail } from "@/lib/email";
+import { enqueueOutboxEvent } from "@/lib/outbox";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -79,21 +79,9 @@ async function sendCreditExpiryReminders(now: Date) {
   });
 
   for (const user of thirtyDayUsers) {
-    if (!user.aiCreditsExpireAt) continue;
-    try {
-      await sendAiCreditsExpiryReminderEmail({
-        to: user.email,
-        creditsLabel: formatCreditsFromUnits(user.aiCreditBalanceUnits),
-        expiresAt: user.aiCreditsExpireAt,
-        daysLeft: 30,
-      });
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { aiCreditsReminder30SentAt: now },
-      });
+    const queued = await enqueueCreditExpiryReminder(user, 30, now);
+    if (queued) {
       sent += 1;
-    } catch (err) {
-      console.error("[AI Studio] 30-day credit reminder failed:", err);
     }
   }
 
@@ -113,25 +101,62 @@ async function sendCreditExpiryReminders(now: Date) {
   });
 
   for (const user of sevenDayUsers) {
-    if (!user.aiCreditsExpireAt) continue;
-    try {
-      await sendAiCreditsExpiryReminderEmail({
-        to: user.email,
-        creditsLabel: formatCreditsFromUnits(user.aiCreditBalanceUnits),
-        expiresAt: user.aiCreditsExpireAt,
-        daysLeft: 7,
-      });
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { aiCreditsReminder7SentAt: now },
-      });
+    const queued = await enqueueCreditExpiryReminder(user, 7, now);
+    if (queued) {
       sent += 1;
-    } catch (err) {
-      console.error("[AI Studio] 7-day credit reminder failed:", err);
     }
   }
 
   return sent;
+}
+
+async function enqueueCreditExpiryReminder(
+  user: {
+    id: string;
+    email: string;
+    aiCreditBalanceUnits: number;
+    aiCreditsExpireAt: Date | null;
+  },
+  daysLeft: 30 | 7,
+  now: Date,
+) {
+  if (!user.aiCreditsExpireAt) return false;
+  const expiresAt = user.aiCreditsExpireAt;
+
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const result =
+        daysLeft === 30
+          ? await tx.user.updateMany({
+              where: { id: user.id, aiCreditsReminder30SentAt: null },
+              data: { aiCreditsReminder30SentAt: now },
+            })
+          : await tx.user.updateMany({
+              where: { id: user.id, aiCreditsReminder7SentAt: null },
+              data: { aiCreditsReminder7SentAt: now },
+            });
+
+      if (result.count === 0) return false;
+
+      const expiresAtKey = expiresAt.toISOString().slice(0, 10);
+      await enqueueOutboxEvent({
+        tx,
+        type: "ai_credits_expiry_reminder_email",
+        payload: {
+          to: user.email,
+          creditsLabel: formatCreditsFromUnits(user.aiCreditBalanceUnits),
+          expiresAt: expiresAt.toISOString(),
+          daysLeft,
+        },
+        idempotencyKey: `ai_credit_expiry:${user.id}:${daysLeft}:${expiresAtKey}`,
+      });
+
+      return true;
+    });
+  } catch (err) {
+    console.error(`[AI Studio] ${daysLeft}-day credit reminder enqueue failed:`, err);
+    return false;
+  }
 }
 
 async function removeExpiredGenerationFiles(now: Date) {

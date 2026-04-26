@@ -36,6 +36,7 @@ import { Prisma } from "@/generated/prisma/client";
 import type { OutboxEventType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import {
+  sendAiCreditsExpiryReminderEmail,
   sendOrderConfirmationEmail,
   sendPortalAccessEmail,
   sendVrProjectReadyEmail,
@@ -95,7 +96,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
     await sendOrderConfirmationEmail(
       order.user.email,
       order.orderNumber,
-      order.totalEur,
+      order.totalCents ? order.totalCents / 100 : order.totalEur,
     );
   },
 
@@ -135,6 +136,27 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       orderNumber: String(payload.orderNumber),
       orderId: String(payload.orderId),
       token: String(payload.token),
+    });
+  },
+
+  ai_credits_expiry_reminder_email: async (payload) => {
+    const to = String(payload.to ?? "");
+    const creditsLabel = String(payload.creditsLabel ?? "");
+    const expiresAt = new Date(String(payload.expiresAt ?? ""));
+    const daysLeft = Number(payload.daysLeft);
+    if (!to || !creditsLabel || Number.isNaN(expiresAt.getTime())) {
+      throw new Error(
+        "ai_credits_expiry_reminder_email: missing required field(s)",
+      );
+    }
+    if (daysLeft !== 30 && daysLeft !== 7) {
+      throw new Error("ai_credits_expiry_reminder_email: invalid daysLeft");
+    }
+    await sendAiCreditsExpiryReminderEmail({
+      to,
+      creditsLabel,
+      expiresAt,
+      daysLeft,
     });
   },
 };

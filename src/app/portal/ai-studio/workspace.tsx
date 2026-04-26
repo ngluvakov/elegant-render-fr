@@ -42,7 +42,10 @@ import {
   type AiEditType,
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
-import { generateAiStudioImage } from "@/server/actions/ai-studio";
+import {
+  generateAiStudioImage,
+  getAiStudioState,
+} from "@/server/actions/ai-studio";
 
 type GenerationHistoryItem = {
   id: string;
@@ -96,7 +99,7 @@ export function AiStudioWorkspace({
   const [history, setHistory] = useState<GenerationHistoryItem[]>(
     "generations" in initialState ? initialState.generations : [],
   );
-  const [creditsExpireAt] = useState(
+  const [creditsExpireAt, setCreditsExpireAt] = useState(
     "creditsExpireAt" in initialState ? initialState.creditsExpireAt : null,
   );
   const [mode, setMode] = useState<ToolMode>("simple");
@@ -118,6 +121,48 @@ export function AiStudioWorkspace({
 
   const activeEdit = useMemo(() => getAiEditType(editType), [editType]);
   const activeInput = useCurrentResult && currentResult ? currentResult : uploaded;
+
+  const refreshState = useCallback(async () => {
+    const nextState = await getAiStudioState();
+    if ("error" in nextState) {
+      setError(nextState.error ?? "AI Studio stanje nije dostupno.");
+      return;
+    }
+    setBalanceUnits(nextState.balanceUnits);
+    setCreditsExpireAt(nextState.creditsExpireAt);
+    setHistory(nextState.generations);
+    if (parentGenerationId) {
+      const current = nextState.generations.find(
+        (item) => item.id === parentGenerationId,
+      );
+      if (current?.resultUrl && current.resultStoragePath && !current.filesExpired) {
+        setResultUrl(current.resultUrl);
+        setCurrentResult((prev) =>
+          prev
+            ? {
+                ...prev,
+                url: current.resultUrl ?? prev.url,
+                storagePath: current.resultStoragePath ?? prev.storagePath,
+                mimeType: current.resultMimeType ?? prev.mimeType,
+              }
+            : prev,
+        );
+      }
+    }
+  }, [parentGenerationId]);
+
+  useEffect(() => {
+    const intervalId = window.setInterval(
+      () => void refreshState(),
+      25 * 60 * 1000,
+    );
+    const handleFocus = () => void refreshState();
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [refreshState]);
 
   useEffect(() => {
     setSelectedOption(activeEdit.options?.[0]?.id ?? "");
@@ -212,8 +257,8 @@ export function AiStudioWorkspace({
             prompt,
             styleId: activeEdit.supportsStyles ? styleId : null,
             status: "completed",
-            unitsCharged: activeEdit.units,
-            freeAttemptIndex: null,
+            unitsCharged: result.unitsCharged ?? activeEdit.units,
+            freeAttemptIndex: result.freeAttemptIndex ?? null,
             errorMessage: null,
             createdAt: new Date().toISOString(),
             expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),

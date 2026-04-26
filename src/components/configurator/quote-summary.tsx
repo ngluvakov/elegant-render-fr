@@ -23,6 +23,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Collapsible } from "@/components/ui/collapsible";
 import { formatDiscountedPrice, formatEur } from "@/lib/catalog/calculate";
 import { saveQuote } from "@/server/actions/quote";
+import { track } from "@/lib/posthog-events";
 import { useQuote } from "./quote-context";
 
 export function QuoteSummary() {
@@ -39,11 +40,19 @@ export function QuoteSummary() {
 
   const handleOrder = () => {
     sessionStorage.setItem("er-checkout-quote", JSON.stringify(items));
+    track("checkout_started", {
+      cart_size: calculation.items.length,
+      total_eur: calculation.total,
+    });
     router.push("/poruci");
   };
 
   const handleOrderInPortal = () => {
     sessionStorage.setItem("er-checkout-quote", JSON.stringify(items));
+    track("checkout_started", {
+      cart_size: calculation.items.length,
+      total_eur: calculation.total,
+    });
     router.push("/portal/nova-porudzbina");
   };
 
@@ -64,6 +73,10 @@ export function QuoteSummary() {
     }
     const url = `${window.location.origin}/cene?q=${result.token}`;
     setShareState({ kind: "saved", url, copied: false });
+    track("quote_saved", {
+      cart_size: calculation.items.length,
+      total_eur: calculation.total,
+    });
   };
 
   const handleCopy = async () => {

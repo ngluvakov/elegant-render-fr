@@ -9,8 +9,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { type QuoteItem } from "@/lib/catalog/calculate";
+import { calculateQuote, type QuoteItem } from "@/lib/catalog/calculate";
 import { createOrder } from "@/server/actions/order";
+import { track } from "@/lib/posthog-events";
 
 export function NewOrderFromQuote({ userId }: { userId: string }) {
   const router = useRouter();
@@ -45,7 +46,14 @@ export function NewOrderFromQuote({ userId }: { userId: string }) {
         setError(result.error);
         return;
       }
-
+      const calc = calculateQuote(items);
+      if (result.orderNumber) {
+        track("order_created", {
+          order_number: result.orderNumber,
+          total_eur: calc.total,
+          item_count: items.length,
+        });
+      }
       sessionStorage.removeItem("er-checkout-quote");
       router.replace(`/portal/porudzbine/${result.orderId}`);
     });

@@ -15,6 +15,7 @@ import { QuoteItemCard } from "./quote-item";
 import { QuoteSummary } from "./quote-summary";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { loadQuote } from "@/server/actions/quote";
+import { track } from "@/lib/posthog-events";
 
 function ConfiguratorInner() {
   const { calculation, addProduct, loadItems } = useQuote();
@@ -33,6 +34,9 @@ function ConfiguratorInner() {
       if (cancelled) return;
       if ("items" in result && result.items.length > 0) {
         loadItems(result.items);
+        track("quote_loaded_from_share", {
+          cart_size: result.items.length,
+        });
       }
       // Strip the ?q= from the URL so a refresh doesn't re-hydrate
       // (and a copy-paste doesn't expose the token in the address bar).

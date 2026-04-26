@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { formatEur } from "@/lib/catalog/calculate";
+import { track } from "@/lib/posthog-events";
 import { useCheckout } from "../checkout-context";
 import { createOrder } from "@/server/actions/order";
 
@@ -31,7 +32,12 @@ export function StepReview() {
       return;
     }
 
-    if (result.orderId) {
+    if (result.orderId && result.orderNumber) {
+      track("order_created", {
+        order_number: result.orderNumber,
+        total_eur: calculation.total,
+        item_count: calculation.items.length,
+      });
       setOrderId(result.orderId);
       setStep(3);
     }

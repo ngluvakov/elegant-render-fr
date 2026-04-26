@@ -82,6 +82,7 @@ import {
   deleteOrderFile,
   updateAnimationConfig,
 } from "@/server/actions/item-config";
+import { track } from "@/lib/posthog-events";
 
 type ItemFile = {
   id: string;
@@ -314,7 +315,13 @@ export function AnimationConfigSection({
               <button
                 key={m.id}
                 type="button"
-                onClick={() => patch({ sourceMode: m.id })}
+                onClick={() => {
+                  patch({ sourceMode: m.id });
+                  track("anim_source_mode_picked", {
+                    mode: m.id,
+                    where: "configurator",
+                  });
+                }}
                 disabled={!editable}
                 className={cn(
                   "flex flex-col items-start gap-1 rounded-lg border px-3 py-2 text-left transition-colors",

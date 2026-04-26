@@ -26,6 +26,7 @@ import {
   ANIM_SOURCE_MODES,
   type AnimSourceMode,
 } from "@/lib/catalog/animation-config";
+import { track } from "@/lib/posthog-events";
 import { useQuote } from "./quote-context";
 
 // Group categories by sectionLabel for the tab bar
@@ -261,7 +262,10 @@ function AnimationCard({
             <button
               key={m.id}
               type="button"
-              onClick={() => setMode(m.id)}
+              onClick={() => {
+                setMode(m.id);
+                track("anim_source_mode_picked", { mode: m.id, where: "cene" });
+              }}
               className={cn(
                 "flex flex-col items-start gap-1 rounded-lg border px-3 py-2 text-left transition-colors",
                 isActive

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { convertVrInquiryToOrder } from "@/server/actions/vr-inquiry";
+import { track } from "@/lib/posthog-events";
 
 type Props = {
   inquiryId: string;
@@ -68,6 +69,11 @@ export function VrInquiryConvertForm({
         setError(res.error);
         return;
       }
+      track("vr_inquiry_converted", {
+        inquiry_id: inquiryId,
+        order_number: res.orderNumber,
+        price_eur: Number(priceEur),
+      });
       router.refresh();
     });
   };

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatEur } from "@/lib/catalog/calculate";
+import { track } from "@/lib/posthog-events";
 import {
   createPayPalOrderAction,
   capturePayPalOrderAction,
@@ -50,12 +51,22 @@ export function PendingPaymentCard({ orderId, totalEur }: PendingPaymentCardProp
   const handleMockCard = async () => {
     setCardPending(true);
     setError("");
+    track("payment_started", { provider: "card_mock", total_eur: totalEur });
     const result = await mockCardPaymentAction(orderId);
     if (result.error) {
       setError(result.error);
       setCardPending(false);
+      track("payment_failed", {
+        provider: "card_mock",
+        error_kind: result.error.slice(0, 80),
+      });
       return;
     }
+    track("payment_completed", {
+      provider: "card_mock",
+      total_eur: totalEur,
+      order_number: orderId,
+    });
     setSuccess(true);
     setTimeout(() => router.refresh(), 1500);
   };

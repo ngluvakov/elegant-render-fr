@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatEur } from "@/lib/catalog/calculate";
+import { track } from "@/lib/posthog-events";
 import { useCheckout } from "../checkout-context";
 import { PayPalButtons } from "../paypal-buttons";
 import {
@@ -29,12 +30,25 @@ export function StepPayment() {
   const handleMockCard = async () => {
     setCardPending(true);
     setError("");
+    track("payment_started", {
+      provider: "card_mock",
+      total_eur: calculation.total,
+    });
     const result = await mockCardPaymentAction(orderId);
     if (result.error) {
       setError(result.error);
       setCardPending(false);
+      track("payment_failed", {
+        provider: "card_mock",
+        error_kind: result.error.slice(0, 80),
+      });
       return;
     }
+    track("payment_completed", {
+      provider: "card_mock",
+      total_eur: calculation.total,
+      order_number: orderId,
+    });
     setPaymentComplete();
   };
 

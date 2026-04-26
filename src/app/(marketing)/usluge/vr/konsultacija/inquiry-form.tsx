@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Collapsible } from "@/components/ui/collapsible";
 import { submitVrInquiry } from "@/server/actions/vr-inquiry";
+import { track } from "@/lib/posthog-events";
 import {
   defaultVrConfig,
   VR_DAY_NIGHT_MODES,
@@ -92,6 +93,11 @@ export function VrInquiryForm({
       setResult({ kind: "error", message: res.error });
       return;
     }
+    track("vr_inquiry_submitted", {
+      product_id: productId,
+      experience_type: config.experienceType,
+      target_device: config.targetDevice,
+    });
     setResult({ kind: "success" });
   };
 

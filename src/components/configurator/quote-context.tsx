@@ -20,6 +20,7 @@ import {
   type QuoteCalculation,
 } from "@/lib/catalog/calculate";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
+import { track } from "@/lib/posthog-events";
 
 // ─── Actions ─────────────────────────────────────────────
 
@@ -129,14 +130,35 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
   const calculation = useMemo(() => calculateQuote(items), [items]);
 
   const addProduct = useCallback(
-    (productId: string, categoryId: string, sourceMode?: string) =>
-      dispatch({ type: "ADD_PRODUCT", productId, categoryId, sourceMode }),
-    [],
+    (productId: string, categoryId: string, sourceMode?: string) => {
+      const lookup = getConfiguratorProduct(productId);
+      if (!lookup || lookup.product.inquiryOnly) return;
+      const wasEmpty = items.length === 0;
+      dispatch({ type: "ADD_PRODUCT", productId, categoryId, sourceMode });
+      if (wasEmpty) {
+        track("quote_started", { product_id: productId, category_id: categoryId });
+      }
+      track("service_added", {
+        product_id: productId,
+        category_id: categoryId,
+        cart_size_after: items.length + 1,
+        ...(sourceMode ? { source_mode: sourceMode } : {}),
+      });
+    },
+    [items],
   );
   const removeProduct = useCallback(
-    (instanceId: string) =>
-      dispatch({ type: "REMOVE_PRODUCT", instanceId }),
-    [],
+    (instanceId: string) => {
+      dispatch({ type: "REMOVE_PRODUCT", instanceId });
+      const removed = items.find((i) => i.instanceId === instanceId);
+      if (removed) {
+        track("service_removed", {
+          product_id: removed.productId,
+          cart_size_after: Math.max(0, items.length - 1),
+        });
+      }
+    },
+    [items],
   );
   const setAddOnQty = useCallback(
     (instanceId: string, addOnId: string, qty: number) =>

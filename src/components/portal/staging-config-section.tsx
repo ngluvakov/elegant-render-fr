@@ -63,6 +63,7 @@ import {
   swapStagingType,
   updateStagingConfig,
 } from "@/server/actions/item-config";
+import { track } from "@/lib/posthog-events";
 
 type ItemFile = {
   id: string;
@@ -223,6 +224,10 @@ export function StagingConfigSection({
       setSwapState({ kind: "error", message: res.error });
       return;
     }
+    track("staging_type_swapped", {
+      from: productId,
+      to: productId === "vs-static" ? "vs-360" : "vs-static",
+    });
     // Server-action revalidates the order page; refresh picks up the new
     // item (renders in the same panel layout, just with the other type).
     router.refresh();

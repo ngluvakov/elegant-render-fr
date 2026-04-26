@@ -233,9 +233,15 @@ Copy `.env.example` to `.env.local` and fill in all values.
 
 ### Database
 ```bash
-npx prisma db push   # Push schema to Supabase
-npx prisma generate  # Regenerate client after schema changes
+npm run db:migrate         # Create + apply a migration locally (interactive)
+npm run db:migrate:status  # Verify schema vs migration history
+npm run db:migrate:deploy  # Apply pending migrations (CI / production)
+npx prisma generate        # Regenerate client after schema changes
 ```
+
+**Do not use `prisma db push`.** The project transitioned to migrations workflow on `00000000000000_init`. Mixing `db push` with `migrate` creates drift the deploy can't reconcile.
+
+`npm run build` runs `prisma generate && prisma migrate deploy && next build` so Vercel applies pending migrations on every deploy automatically.
 
 ### Scripts
 ```bash

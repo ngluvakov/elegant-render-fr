@@ -27,6 +27,29 @@ const prisma = new PrismaClient({ adapter });
 
 Use `DIRECT_URL` for scripts/migrations, `DATABASE_URL` (pooled) for runtime.
 
+## Database migrations
+
+Schema lives in `prisma/schema.prisma`. **Always change schema via `prisma migrate dev`, never `db push`.** The two workflows are mutually exclusive — `db push` skips the migration history and creates drift that `migrate deploy` can't reconcile.
+
+Workflow:
+
+```
+# Make schema changes
+vim prisma/schema.prisma
+
+# Create + apply a new migration locally (interactive — names the migration)
+npm run db:migrate
+
+# Verify against the DB
+npm run db:migrate:status
+```
+
+Production deploys run `prisma migrate deploy` automatically as part of `npm run build` (in Vercel build step). No manual action needed on push to main.
+
+If you find drift (someone ran `db push` by accident, or schema changed outside Prisma), reset by running `prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --script` to see the gap, then either roll the schema back or write a new migration to align.
+
+The baseline migration `00000000000000_init` was generated when the project transitioned from `db push` workflow — it represents the schema at that point and was registered as `--applied` on production without running its SQL (the DB was already in that state).
+
 ## Domain vocabulary (Serbian)
 
 Routes and labels are Serbian — not typos:

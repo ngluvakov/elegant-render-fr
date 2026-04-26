@@ -2,9 +2,9 @@
  * LandscapeConfigSection — Per-item configurator for the land-static
  * product (Pejzažni render). Single-level config (no floors): name,
  * camera stepper (drives land-cam add-on), style, description, source +
- * site-photo uploads, advanced collapsible (atmosphere / terrain /
- * optional elements / references), and an Aerial Upsell card at the
- * bottom (toggles land-aerial add-on, +€380).
+ * site-photo uploads, an Aerial Upsell card surfaced above the advanced
+ * toggle (land-aerial add-on, +€380), then the advanced collapsible
+ * (atmosphere / terrain / optional elements / references).
  */
 "use client";
 
@@ -486,6 +486,95 @@ export function LandscapeConfigSection({
         </div>
       )}
 
+      {/* Aerial upsell — surfaced above the advanced toggle so the
+          €380 add-on is visible without expanding fine-tuning. */}
+      <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h5 className="text-sm font-semibold text-foreground">
+              Aerial pejzažni prikaz
+            </h5>
+            <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
+              Dodajte pogled iz ptičje perspektive na celokupno rešenje.
+            </p>
+          </div>
+          {config.aerialEnabled && (
+            <p className="flex-shrink-0 text-sm font-bold text-foreground tabular-nums">
+              +€{LAND_AERIAL_PRICE_EUR}
+            </p>
+          )}
+        </div>
+
+        <label
+          htmlFor={`aerial-${itemId}`}
+          className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-secondary/30 px-3 py-2"
+        >
+          <div className="flex items-center gap-2">
+            <MountainSnow className="h-3.5 w-3.5 text-accent" />
+            <span className="text-[0.78rem] font-medium text-foreground">
+              Želim aerial (vazdušni) prikaz
+            </span>
+          </div>
+          <Switch
+            id={`aerial-${itemId}`}
+            checked={config.aerialEnabled}
+            onCheckedChange={(v) =>
+              patch({
+                aerialEnabled: v,
+                ...(v ? {} : { aerialEnvRepresentation: undefined }),
+              })
+            }
+            disabled={!editable}
+          />
+        </label>
+
+        <Collapsible open={config.aerialEnabled}>
+          <div className="space-y-2 rounded-md border border-border/30 bg-background/40 p-3">
+            <div className="space-y-1">
+              <Label htmlFor={`aer-env-${itemId}`} className="text-[0.7rem]">
+                Prikaz šireg okruženja
+              </Label>
+              <select
+                id={`aer-env-${itemId}`}
+                value={config.aerialEnvRepresentation ?? ""}
+                onChange={(e) =>
+                  patch({
+                    aerialEnvRepresentation: (e.target.value || undefined) as
+                      | AerialEnvRepId
+                      | undefined,
+                  })
+                }
+                disabled={!editable}
+                className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
+              >
+                <option value="">— izaberite —</option>
+                {AERIAL_ENV_REPS.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <Collapsible open={showDroneUpload}>
+              <div className="space-y-1.5 rounded-md bg-card/60 p-2.5">
+                <Label className="text-[0.7rem]">
+                  <ImageIcon className="h-3 w-3 text-accent/60" />
+                  Dron fotografije (za fotomontažu)
+                </Label>
+                {renderUploadZone(
+                  droneInputRef,
+                  "Postojeće dron fotografije lokacije",
+                  "image/*",
+                  "drone-photo",
+                )}
+                {renderFileList(droneFiles)}
+              </div>
+            </Collapsible>
+          </div>
+        </Collapsible>
+      </div>
+
       {/* Advanced toggle */}
       <p className="flex items-center gap-1.5 text-[0.7rem] text-[color:var(--color-sage-deep)]">
         <Check className="h-3 w-3" />
@@ -775,93 +864,6 @@ export function LandscapeConfigSection({
         </div>
       </Collapsible>
 
-      {/* Aerial Upsell card */}
-      <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h5 className="text-sm font-semibold text-foreground">
-              Aerial pejzažni prikaz
-            </h5>
-            <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-              Dodajte pogled iz ptičje perspektive na celokupno rešenje.
-            </p>
-          </div>
-          {config.aerialEnabled && (
-            <p className="flex-shrink-0 text-sm font-bold text-foreground tabular-nums">
-              +€{LAND_AERIAL_PRICE_EUR}
-            </p>
-          )}
-        </div>
-
-        <label
-          htmlFor={`aerial-${itemId}`}
-          className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-secondary/30 px-3 py-2"
-        >
-          <div className="flex items-center gap-2">
-            <MountainSnow className="h-3.5 w-3.5 text-accent" />
-            <span className="text-[0.78rem] font-medium text-foreground">
-              Želim aerial (vazdušni) prikaz
-            </span>
-          </div>
-          <Switch
-            id={`aerial-${itemId}`}
-            checked={config.aerialEnabled}
-            onCheckedChange={(v) =>
-              patch({
-                aerialEnabled: v,
-                ...(v ? {} : { aerialEnvRepresentation: undefined }),
-              })
-            }
-            disabled={!editable}
-          />
-        </label>
-
-        <Collapsible open={config.aerialEnabled}>
-          <div className="space-y-2 rounded-md border border-border/30 bg-background/40 p-3">
-            <div className="space-y-1">
-              <Label htmlFor={`aer-env-${itemId}`} className="text-[0.7rem]">
-                Prikaz šireg okruženja
-              </Label>
-              <select
-                id={`aer-env-${itemId}`}
-                value={config.aerialEnvRepresentation ?? ""}
-                onChange={(e) =>
-                  patch({
-                    aerialEnvRepresentation: (e.target.value || undefined) as
-                      | AerialEnvRepId
-                      | undefined,
-                  })
-                }
-                disabled={!editable}
-                className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
-              >
-                <option value="">— izaberite —</option>
-                {AERIAL_ENV_REPS.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <Collapsible open={showDroneUpload}>
-              <div className="space-y-1.5 rounded-md bg-card/60 p-2.5">
-                <Label className="text-[0.7rem]">
-                  <ImageIcon className="h-3 w-3 text-accent/60" />
-                  Dron fotografije (za fotomontažu)
-                </Label>
-                {renderUploadZone(
-                  droneInputRef,
-                  "Postojeće dron fotografije lokacije",
-                  "image/*",
-                  "drone-photo",
-                )}
-                {renderFileList(droneFiles)}
-              </div>
-            </Collapsible>
-          </div>
-        </Collapsible>
-      </div>
     </div>
   );
 }

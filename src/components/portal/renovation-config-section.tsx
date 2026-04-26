@@ -41,6 +41,7 @@ import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { HelpTip } from "@/components/ui/help-tip";
 import {
   addOnQuantitiesFor,
   RENO_FLOOR_MATERIALS,
@@ -710,8 +711,15 @@ export function RenovationConfigSection({
           <div className="flex items-center gap-2">
             <Palette className="h-3.5 w-3.5 text-accent" />
             <div>
-              <span className="block text-[0.78rem] font-medium text-foreground">
+              <span className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
                 Varijanta dizajna
+                <HelpTip>
+                  <strong>Drugi predlog dizajna</strong> iste sobe — npr.
+                  prvi render je moderni minimalizam, drugi je topli
+                  skandi stil. Geometrija prostora je ista, samo se menja
+                  paleta materijala / nameštaja, pa je jeftinije nego
+                  novi render od nule.
+                </HelpTip>
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
                 Ista prostorija u drugačijem stilu ili sa drugim materijalima

@@ -38,6 +38,20 @@ EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
 
+DO $$
+BEGIN
+  CREATE TYPE "OutboxEventStatus" AS ENUM ('pending', 'running', 'succeeded', 'failed');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$
+BEGIN
+  CREATE TYPE "OutboxEventType" AS ENUM ('order_confirmation_email', 'portal_access_email', 'vr_project_ready_email', 'ai_credits_expiry_reminder_email');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
 ALTER TYPE "OutboxEventType" ADD VALUE IF NOT EXISTS 'ai_credits_expiry_reminder_email';
 ALTER TYPE "AiGenerationStatus" ADD VALUE IF NOT EXISTS 'queued';
 
@@ -126,6 +140,22 @@ CREATE TABLE IF NOT EXISTS "ai_generations" (
   CONSTRAINT "ai_generations_pkey" PRIMARY KEY ("id")
 );
 
+CREATE TABLE IF NOT EXISTS "outbox_events" (
+  "id" TEXT NOT NULL,
+  "type" "OutboxEventType" NOT NULL,
+  "payload" JSONB NOT NULL,
+  "idempotencyKey" TEXT NOT NULL,
+  "status" "OutboxEventStatus" NOT NULL DEFAULT 'pending',
+  "attempts" INTEGER NOT NULL DEFAULT 0,
+  "maxAttempts" INTEGER NOT NULL DEFAULT 5,
+  "nextAttemptAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "lastError" TEXT,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "succeededAt" TIMESTAMP(3),
+
+  CONSTRAINT "outbox_events_pkey" PRIMARY KEY ("id")
+);
+
 ALTER TABLE "ai_generations"
   ADD COLUMN IF NOT EXISTS "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
   ADD COLUMN IF NOT EXISTS "startedAt" TIMESTAMP(3),
@@ -146,6 +176,8 @@ CREATE INDEX IF NOT EXISTS "ai_generations_status_createdAt_idx" ON "ai_generati
 CREATE INDEX IF NOT EXISTS "ai_generations_paidGenerationId_idx" ON "ai_generations"("paidGenerationId");
 CREATE INDEX IF NOT EXISTS "ai_generations_processingLockUntil_idx" ON "ai_generations"("processingLockUntil");
 CREATE UNIQUE INDEX IF NOT EXISTS "ai_generations_paidGenerationId_freeAttemptIndex_key" ON "ai_generations"("paidGenerationId", "freeAttemptIndex");
+CREATE UNIQUE INDEX IF NOT EXISTS "outbox_events_idempotencyKey_key" ON "outbox_events"("idempotencyKey");
+CREATE INDEX IF NOT EXISTS "outbox_events_status_nextAttemptAt_idx" ON "outbox_events"("status", "nextAttemptAt");
 
 -- AddForeignKey
 DO $$

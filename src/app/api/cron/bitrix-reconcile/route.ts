@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { reconcileAllOrders } from "@/server/bitrix/reconcile";
 
 export async function GET(request: Request) {
@@ -7,6 +8,17 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await reconcileAllOrders();
-  return NextResponse.json({ ok: true });
+  return Sentry.withMonitor(
+    "bitrix-reconcile",
+    async () => {
+      await reconcileAllOrders();
+      return NextResponse.json({ ok: true });
+    },
+    {
+      schedule: { type: "crontab", value: "0 3 * * *" },
+      checkinMargin: 5,
+      maxRuntime: 30,
+      timezone: "UTC",
+    },
+  );
 }

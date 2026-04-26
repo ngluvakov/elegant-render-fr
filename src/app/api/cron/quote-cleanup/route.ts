@@ -9,17 +9,31 @@
  * Schedule: see vercel.json.
  */
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/lib/db";
 
+// Sentry.withMonitor wraps the run in a Crons check-in so missed or
+// failed runs surface as alerts. The slug must match what Sentry
+// expects in the Crons UI.
 export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const result = await prisma.quote.deleteMany({
-    where: { expiresAt: { lt: new Date() } },
-  });
-
-  return NextResponse.json({ ok: true, deleted: result.count });
+  return Sentry.withMonitor(
+    "quote-cleanup",
+    async () => {
+      const result = await prisma.quote.deleteMany({
+        where: { expiresAt: { lt: new Date() } },
+      });
+      return NextResponse.json({ ok: true, deleted: result.count });
+    },
+    {
+      schedule: { type: "crontab", value: "30 3 * * *" },
+      checkinMargin: 5,
+      maxRuntime: 5,
+      timezone: "UTC",
+    },
+  );
 }

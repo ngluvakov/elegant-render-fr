@@ -8,6 +8,7 @@
  */
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { syncCommentToDeal } from "@/server/bitrix/sync-comment";
@@ -42,7 +43,10 @@ export async function createCommentAction(
   });
 
   syncCommentToDeal(comment.id).catch((err) => {
-    console.error("[Bitrix24] Comment sync failed:", err);
+    Sentry.captureException(err, {
+      tags: { area: "bitrix", flow: "sync-comment" },
+      extra: { commentId: comment.id, orderId: comment.orderId },
+    });
   });
 
   return { success: true };

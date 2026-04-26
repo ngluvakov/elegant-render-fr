@@ -11,6 +11,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
+import * as Sentry from "@sentry/nextjs";
 import { calculateQuote, type QuoteItem } from "@/lib/catalog/calculate";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { generateOrderNumber } from "@/lib/order/generate-number";
@@ -88,7 +89,10 @@ export async function createOrder(
 
   // Sync to Bitrix24
   syncNewDeal(order.id).catch((err) => {
-    console.error("[Bitrix24] Deal creation failed:", err);
+    Sentry.captureException(err, {
+      tags: { area: "bitrix", flow: "sync-new-deal" },
+      extra: { orderId: order.id, orderNumber: order.orderNumber },
+    });
   });
 
   return { orderId: order.id, orderNumber: order.orderNumber };
@@ -228,6 +232,9 @@ export async function confirmFileUpload(
   });
 
   syncFileToDeal(file.id).catch((err) => {
-    console.error("[Bitrix24] File sync failed:", err);
+    Sentry.captureException(err, {
+      tags: { area: "bitrix", flow: "sync-file" },
+      extra: { fileId: file.id, orderId: file.orderId ?? null },
+    });
   });
 }

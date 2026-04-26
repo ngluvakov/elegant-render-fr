@@ -6,6 +6,7 @@
  *
  * Used by: api/cron/bitrix-reconcile/route
  */
+import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/lib/db";
 import { bitrixCall } from "@/lib/bitrix24/client";
 import { orderStatusToStage } from "@/lib/bitrix24/stage-map";
@@ -52,7 +53,10 @@ export async function reconcileAllOrders() {
         );
       }
     } catch (err) {
-      console.error(`[Reconcile] Error checking ${order.orderNumber}:`, err);
+      Sentry.captureException(err, {
+        tags: { area: "bitrix", flow: "reconcile-check-drift" },
+        extra: { orderId: order.id, orderNumber: order.orderNumber },
+      });
     }
   }
 
@@ -70,7 +74,10 @@ export async function reconcileAllOrders() {
       await syncNewDeal(order.id);
       console.log(`[Reconcile] Synced missing deal for ${order.orderNumber}`);
     } catch (err) {
-      console.error(`[Reconcile] Failed to sync ${order.orderNumber}:`, err);
+      Sentry.captureException(err, {
+        tags: { area: "bitrix", flow: "reconcile-retry-sync" },
+        extra: { orderId: order.id, orderNumber: order.orderNumber },
+      });
     }
   }
 

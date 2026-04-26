@@ -7,6 +7,7 @@
  *
  * Used by: api/webhooks/bitrix24/route
  */
+import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/lib/db";
 import { bitrixCall } from "@/lib/bitrix24/client";
 import { stageToOrderStatus } from "@/lib/bitrix24/stage-map";
@@ -49,6 +50,13 @@ export async function handleDealUpdate(dealId: string) {
     );
     console.log(`[Bitrix24 Inbound] Order ${order.orderNumber}: ${order.status} → ${newStatus}`);
   } catch (err) {
-    console.error(`[Bitrix24 Inbound] Transition failed:`, err);
+    Sentry.captureException(err, {
+      tags: { area: "bitrix", flow: "inbound-transition" },
+      extra: {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        targetStatus: newStatus,
+      },
+    });
   }
 }

@@ -11,6 +11,7 @@
 
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
+import * as Sentry from "@sentry/nextjs";
 import { redirect } from "next/navigation";
 import { signIn } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -239,7 +240,14 @@ export async function requestPortalAccessAction(
       order.id,
     );
   } catch (e) {
-    console.error("[requestPortalAccessAction] send failed", e);
+    Sentry.captureException(e, {
+      tags: { area: "email", template: "portal_access" },
+      extra: {
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        recipient: order.user.email,
+      },
+    });
     const detail = e instanceof Error ? e.message : "unknown error";
     return { error: `Greška pri slanju emaila: ${detail}` };
   }

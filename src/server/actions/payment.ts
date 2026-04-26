@@ -10,6 +10,7 @@
  */
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/lib/db";
 import { transitionOrder } from "@/lib/order/status-machine";
 import {
@@ -53,6 +54,10 @@ export async function createPayPalOrderAction(
 
     return { paypalOrderId };
   } catch (err) {
+    Sentry.captureException(err, {
+      tags: { area: "payment", flow: "paypal-create" },
+      extra: { orderId },
+    });
     return { error: `PayPal greška: ${err instanceof Error ? err.message : "Nepoznata greška"}` };
   }
 }
@@ -91,13 +96,23 @@ export async function capturePayPalOrderAction(
           order.orderNumber,
           order.totalEur,
         );
-      } catch {
-        // Don't fail payment if email fails
+      } catch (err) {
+        // Customer just paid; failing to email them is a tier-1
+        // anomaly even though payment itself succeeded — they'll
+        // wonder if anything happened. Capture so we can replay.
+        Sentry.captureException(err, {
+          tags: { area: "email", template: "order_confirmation", flow: "paypal-capture" },
+          extra: { orderId, orderNumber: order.orderNumber, recipient: user.email },
+        });
       }
     }
 
     return { success: true };
   } catch (err) {
+    Sentry.captureException(err, {
+      tags: { area: "payment", flow: "paypal-capture" },
+      extra: { orderId, paypalOrderId },
+    });
     return { error: `Greška pri potvrdi: ${err instanceof Error ? err.message : "Nepoznata greška"}` };
   }
 }
@@ -139,13 +154,20 @@ export async function mockCardPaymentAction(
           order.orderNumber,
           order.totalEur,
         );
-      } catch {
-        // Don't fail payment if email fails
+      } catch (err) {
+        Sentry.captureException(err, {
+          tags: { area: "email", template: "order_confirmation", flow: "card-capture" },
+          extra: { orderId, orderNumber: order.orderNumber, recipient: user.email },
+        });
       }
     }
 
     return { success: true };
   } catch (err) {
+    Sentry.captureException(err, {
+      tags: { area: "payment", flow: "card-mock-capture" },
+      extra: { orderId },
+    });
     return { error: `Greška: ${err instanceof Error ? err.message : "Nepoznata greška"}` };
   }
 }

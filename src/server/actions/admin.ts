@@ -9,6 +9,7 @@
  */
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { transitionOrder } from "@/lib/order/status-machine";
@@ -41,7 +42,10 @@ export async function adminCreateComment(orderId: string, body: string) {
   });
 
   syncCommentToDeal(comment.id).catch((err) => {
-    console.error("[Bitrix24] Team comment sync failed:", err);
+    Sentry.captureException(err, {
+      tags: { area: "bitrix", flow: "sync-comment-team" },
+      extra: { commentId: comment.id, orderId: comment.orderId },
+    });
   });
 
   return { success: true };
@@ -83,7 +87,10 @@ export async function adminUploadDeliverable(
   });
 
   syncFileToDeal(file.id).catch((err) => {
-    console.error("[Bitrix24] Deliverable sync failed:", err);
+    Sentry.captureException(err, {
+      tags: { area: "bitrix", flow: "sync-file-deliverable" },
+      extra: { fileId: file.id, orderId },
+    });
   });
 
   return { success: true };

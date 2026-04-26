@@ -9,6 +9,7 @@
 "use server";
 
 import crypto from "node:crypto";
+import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -293,7 +294,17 @@ export async function convertVrInquiryToOrder(args: {
     orderId: order.id,
     token,
   }).catch((e) => {
-    console.error("[convertVrInquiryToOrder] email failed:", e);
+    // Order is already created at this point — failed email means the
+    // customer can't reach the payment link without admin intervention.
+    Sentry.captureException(e, {
+      tags: { area: "email", template: "vr_project_ready" },
+      extra: {
+        inquiryId: inquiry.id,
+        orderId: order.id,
+        orderNumber: order.orderNumber,
+        recipient: inquiry.email,
+      },
+    });
   });
 
   revalidatePath("/portal/admin/vr-upiti");

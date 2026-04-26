@@ -11,15 +11,14 @@
 
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
-import * as Sentry from "@sentry/nextjs";
 import { redirect } from "next/navigation";
 import { signIn } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
   sendVerificationEmail,
   sendPasswordResetEmail,
-  sendPortalAccessEmail,
 } from "@/lib/email";
+import { enqueueOutboxEvent } from "@/lib/outbox";
 
 export type AuthState = {
   error?: string;
@@ -232,25 +231,20 @@ export async function requestPortalAccessAction(
     },
   });
 
-  try {
-    await sendPortalAccessEmail(
-      order.user.email,
+  // Enqueue via outbox so transient Resend outages don't lose the
+  // magic-link mail. Idempotency key includes the token hash so a
+  // newly-issued token (e.g. user clicked "Pošalji ponovo") gets its
+  // own row instead of being deduped against the previous one.
+  await enqueueOutboxEvent({
+    type: "portal_access_email",
+    payload: {
+      to: order.user.email,
       token,
-      order.orderNumber,
-      order.id,
-    );
-  } catch (e) {
-    Sentry.captureException(e, {
-      tags: { area: "email", template: "portal_access" },
-      extra: {
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        recipient: order.user.email,
-      },
-    });
-    const detail = e instanceof Error ? e.message : "unknown error";
-    return { error: `Greška pri slanju emaila: ${detail}` };
-  }
+      orderNumber: order.orderNumber,
+      orderId: order.id,
+    },
+    idempotencyKey: `portal_access:${order.id}:${token.slice(0, 16)}`,
+  });
 
   return {
     success: true,

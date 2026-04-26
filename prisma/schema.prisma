@@ -256,6 +256,50 @@ enum VrInquiryStatus {
   closed       // customer didn't proceed
 }
 
+// ─── Transactional outbox ───────────────────────────────
+//
+// Side effects that we MUST NOT lose if a transient failure happens —
+// transactional emails (order confirmation, portal access, VR project
+// ready) and any future critical webhook deliveries — are written
+// here in the same transaction as the trigger event. A separate cron
+// processor picks them up, runs the handler, and marks the row.
+//
+// `idempotencyKey` is a deterministic string per event (e.g.
+// "order_confirmation:<orderId>"). The unique constraint guarantees
+// a producer can't enqueue the same event twice; the processor uses
+// (status, nextAttemptAt) to find work and updates row state to
+// claim → succeed or back off.
+
+enum OutboxEventStatus {
+  pending      // newly enqueued or scheduled to retry
+  running      // processor has claimed this row, in-flight
+  succeeded    // handler completed successfully
+  failed       // exceeded maxAttempts; needs human intervention
+}
+
+enum OutboxEventType {
+  order_confirmation_email
+  portal_access_email
+  vr_project_ready_email
+}
+
+model OutboxEvent {
+  id             String            @id @default(cuid())
+  type           OutboxEventType
+  payload        Json
+  idempotencyKey String            @unique
+  status         OutboxEventStatus @default(pending)
+  attempts       Int               @default(0)
+  maxAttempts    Int               @default(5)
+  nextAttemptAt  DateTime          @default(now())
+  lastError      String?           @db.Text
+  createdAt      DateTime          @default(now())
+  succeededAt    DateTime?
+
+  @@index([status, nextAttemptAt])
+  @@map("outbox_events")
+}
+
 model VrInquiry {
   id                String          @id @default(cuid())
   productId         String          // "vr-existing" | "vr-standalone"

@@ -18,7 +18,7 @@ import {
   capturePayPalOrder as capturePPOrder,
 } from "@/lib/payment/paypal";
 import { processMockCardPayment } from "@/lib/payment/mock-card";
-import { sendOrderConfirmationEmail } from "@/lib/email";
+import { enqueueOutboxEvent } from "@/lib/outbox";
 
 export type PaymentResult = {
   error?: string;
@@ -114,25 +114,16 @@ export async function capturePayPalOrderAction(
 
     await transitionOrder(orderId, "paid", undefined, "PayPal plaćanje potvrđeno");
 
-    // Send confirmation email
-    const user = await prisma.user.findUnique({ where: { id: order.userId } });
-    if (user?.email) {
-      try {
-        await sendOrderConfirmationEmail(
-          user.email,
-          order.orderNumber,
-          order.totalEur,
-        );
-      } catch (err) {
-        // Customer just paid; failing to email them is a tier-1
-        // anomaly even though payment itself succeeded — they'll
-        // wonder if anything happened. Capture so we can replay.
-        Sentry.captureException(err, {
-          tags: { area: "email", template: "order_confirmation", flow: "paypal-capture" },
-          extra: { orderId, orderNumber: order.orderNumber, recipient: user.email },
-        });
-      }
-    }
+    // Enqueue confirmation email via outbox. Cron processor delivers
+    // it; if Resend has a transient outage, the row stays pending and
+    // retries with exponential backoff. Idempotency key prevents
+    // re-enqueue on duplicate captures (the unique constraint on the
+    // outbox table enforces this).
+    await enqueueOutboxEvent({
+      type: "order_confirmation_email",
+      payload: { orderId },
+      idempotencyKey: `order_confirmation:${orderId}`,
+    });
 
     return { success: true };
   } catch (err) {
@@ -188,21 +179,11 @@ export async function mockCardPaymentAction(
 
     await transitionOrder(orderId, "paid", undefined, "Kartično plaćanje potvrđeno (test)");
 
-    const user = await prisma.user.findUnique({ where: { id: order.userId } });
-    if (user?.email) {
-      try {
-        await sendOrderConfirmationEmail(
-          user.email,
-          order.orderNumber,
-          order.totalEur,
-        );
-      } catch (err) {
-        Sentry.captureException(err, {
-          tags: { area: "email", template: "order_confirmation", flow: "card-capture" },
-          extra: { orderId, orderNumber: order.orderNumber, recipient: user.email },
-        });
-      }
-    }
+    await enqueueOutboxEvent({
+      type: "order_confirmation_email",
+      payload: { orderId },
+      idempotencyKey: `order_confirmation:${orderId}`,
+    });
 
     return { success: true };
   } catch (err) {

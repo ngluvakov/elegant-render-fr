@@ -9,7 +9,6 @@
 "use server";
 
 import crypto from "node:crypto";
-import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -21,8 +20,8 @@ import {
 import {
   sendVrInquiryAdminEmail,
   sendVrInquiryCustomerEmail,
-  sendVrProjectReadyEmail,
 } from "@/lib/email";
+import { enqueueOutboxEvent } from "@/lib/outbox";
 import { sanitizeVrConfig, type VrConfig, type VrProductId } from "@/lib/catalog/vr-config";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { generateOrderNumber } from "@/lib/order/generate-number";
@@ -296,28 +295,22 @@ export async function convertVrInquiryToOrder(args: {
     },
   });
 
-  // Best-effort email; failure shouldn't roll back the order.
-  void sendVrProjectReadyEmail({
-    to: inquiry.email,
-    contactName: inquiry.contactName,
-    productLabel: product.label,
-    projectName,
-    priceEur,
-    orderNumber: order.orderNumber,
-    orderId: order.id,
-    token,
-  }).catch((e) => {
-    // Order is already created at this point — failed email means the
-    // customer can't reach the payment link without admin intervention.
-    Sentry.captureException(e, {
-      tags: { area: "email", template: "vr_project_ready" },
-      extra: {
-        inquiryId: inquiry.id,
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        recipient: inquiry.email,
-      },
-    });
+  // Enqueue via outbox — order is already created so the customer
+  // expects this email. Resend transient failure shouldn't strand
+  // them; processor retries with backoff.
+  await enqueueOutboxEvent({
+    type: "vr_project_ready_email",
+    payload: {
+      to: inquiry.email,
+      contactName: inquiry.contactName,
+      productLabel: product.label,
+      projectName,
+      priceEur,
+      orderNumber: order.orderNumber,
+      orderId: order.id,
+      token,
+    },
+    idempotencyKey: `vr_project_ready:${order.id}`,
   });
 
   revalidatePath("/portal/admin/vr-upiti");

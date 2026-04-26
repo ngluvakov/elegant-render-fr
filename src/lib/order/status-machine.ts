@@ -6,6 +6,7 @@
  *
  * Used by: server/actions/payment, rework, admin, server/bitrix/inbound
  */
+import * as Sentry from "@sentry/nextjs";
 import type { OrderStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { syncDealStatus } from "@/server/bitrix/sync-status";
@@ -61,7 +62,10 @@ export async function transitionOrder(
   // Sync to Bitrix24 (skip if change came from Bitrix24 to prevent loops)
   if (source !== "bitrix24") {
     syncDealStatus(orderId, toStatus).catch((err) => {
-      console.error("[Bitrix24] Status sync failed:", err);
+      Sentry.captureException(err, {
+        tags: { area: "bitrix", flow: "sync-deal-status" },
+        extra: { orderId, toStatus, fromStatus: order.status },
+      });
     });
   }
 

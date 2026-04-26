@@ -37,6 +37,18 @@ export async function createPayPalOrderAction(
     return { error: "Porudžbina nije u ispravnom statusu za plaćanje." };
   }
 
+  // Idempotency: if a PayPal order id is already attached to this Order
+  // and we haven't captured yet, reuse it instead of creating a second
+  // PayPal order. Without this, a double-click on the PayPal button
+  // creates two PayPal orders and orphans the first.
+  if (
+    order.paymentProvider === "paypal" &&
+    order.paymentId &&
+    order.paymentStatus !== "completed"
+  ) {
+    return { paypalOrderId: order.paymentId };
+  }
+
   try {
     const paypalOrderId = await createPPOrder(order.totalEur);
 
@@ -69,6 +81,13 @@ export async function capturePayPalOrderAction(
   const order = await prisma.order.findUnique({ where: { id: orderId } });
   if (!order) return { error: "Porudžbina nije pronađena." };
 
+  // Idempotency guard 1: pre-flight. If the order is already paid (the
+  // user double-clicked, or a previous capture succeeded but the
+  // response was lost) treat as success without re-charging the card.
+  if (order.paymentStatus === "completed" || order.status === "paid") {
+    return { success: true };
+  }
+
   try {
     const { capturedAmount, status } = await capturePPOrder(paypalOrderId);
 
@@ -80,10 +99,18 @@ export async function capturePayPalOrderAction(
       return { error: "Iznos plaćanja se ne poklapa." };
     }
 
-    await prisma.order.update({
-      where: { id: orderId },
+    // Idempotency guard 2: race-safe atomic transition. Two concurrent
+    // captures both pass the pre-flight check above; updateMany with the
+    // `paymentStatus != completed` condition lets exactly one succeed.
+    // The loser sees count=0 and short-circuits without re-emailing.
+    const result = await prisma.order.updateMany({
+      where: { id: orderId, paymentStatus: { not: "completed" } },
       data: { paymentStatus: "completed" },
     });
+    if (result.count === 0) {
+      // Concurrent request beat us; their flow handles the email.
+      return { success: true };
+    }
 
     await transitionOrder(orderId, "paid", undefined, "PayPal plaćanje potvrđeno");
 
@@ -124,6 +151,15 @@ export async function mockCardPaymentAction(
 ): Promise<PaymentResult> {
   const order = await prisma.order.findUnique({ where: { id: orderId } });
   if (!order) return { error: "Porudžbina nije pronađena." };
+
+  // Idempotency guard 1: pre-flight. Run before the "valid status"
+  // check so a double-clicked already-paid order returns success
+  // instead of the confusing "Porudžbina nije u ispravnom statusu"
+  // error (paid orders fail the draft/awaiting_payment filter).
+  if (order.paymentStatus === "completed" || order.status === "paid") {
+    return { success: true };
+  }
+
   if (order.status !== "draft" && order.status !== "awaiting_payment") {
     return { error: "Porudžbina nije u ispravnom statusu za plaćanje." };
   }
@@ -135,14 +171,20 @@ export async function mockCardPaymentAction(
       await transitionOrder(orderId, "awaiting_payment");
     }
 
-    await prisma.order.update({
-      where: { id: orderId },
+    // Idempotency guard 2: atomic transition that wins exactly once
+    // even if two captures race. Sets paymentStatus + provider + id in
+    // the same conditional update so we don't double-email.
+    const result = await prisma.order.updateMany({
+      where: { id: orderId, paymentStatus: { not: "completed" } },
       data: {
         paymentProvider: "card_mock",
         paymentId,
         paymentStatus: "completed",
       },
     });
+    if (result.count === 0) {
+      return { success: true };
+    }
 
     await transitionOrder(orderId, "paid", undefined, "Kartično plaćanje potvrđeno (test)");
 

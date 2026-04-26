@@ -84,6 +84,7 @@ type UploadedInput = {
   storagePath: string;
   mimeType: string;
   fileName: string;
+  generationId?: string | null;
 };
 
 type ToolMode = "simple" | "advanced";
@@ -126,23 +127,13 @@ export function AiStudioWorkspace({
         : null,
     [initialState],
   );
-  const [originalInput, setOriginalInput] = useState<UploadedInput | null>(
+  const [baseInput, setBaseInput] = useState<UploadedInput | null>(
     initialInput?.inputUrl
       ? {
           url: initialInput.inputUrl,
           storagePath: initialInput.inputStoragePath,
           mimeType: initialInput.inputMimeType,
-          fileName: "original",
-        }
-      : null,
-  );
-  const [workingInput, setWorkingInput] = useState<UploadedInput | null>(
-    initialInput?.inputUrl
-      ? {
-          url: initialInput.inputUrl,
-          storagePath: initialInput.inputStoragePath,
-          mimeType: initialInput.inputMimeType,
-          fileName: "trenutni-input",
+          fileName: "slika-za-obradu",
         }
       : null,
   );
@@ -153,6 +144,7 @@ export function AiStudioWorkspace({
           storagePath: initialCompleted.resultStoragePath,
           mimeType: initialCompleted.resultMimeType ?? "image/jpeg",
           fileName: "ai-result.jpg",
+          generationId: initialCompleted.id,
         }
       : null,
   );
@@ -169,7 +161,7 @@ export function AiStudioWorkspace({
   const [editorResetToken, setEditorResetToken] = useState(0);
 
   const activeEdit = useMemo(() => getAiEditType(editType), [editType]);
-  const activeInput = workingInput ?? originalInput;
+  const activeInput = baseInput;
   const hasPendingJobs = history.some(
     (item) => item.status === "queued" || item.status === "processing",
   );
@@ -194,6 +186,7 @@ export function AiStudioWorkspace({
         storagePath: latestCompleted.resultStoragePath,
         mimeType: latestCompleted.resultMimeType ?? "image/jpeg",
         fileName: "ai-result.jpg",
+        generationId: latestCompleted.id,
       });
       setParentGenerationId(latestCompleted.id);
     }
@@ -233,6 +226,7 @@ export function AiStudioWorkspace({
         storagePath: data.generation.resultStoragePath,
         mimeType: data.generation.resultMimeType ?? "image/jpeg",
         fileName: "ai-result.jpg",
+        generationId: data.generation.id,
       });
       setParentGenerationId(data.generation.id);
       setNotice("AI obrada je završena.");
@@ -289,13 +283,20 @@ export function AiStudioWorkspace({
       mimeType: file.type,
       fileName: file.name,
     };
-    setOriginalInput(nextInput);
-    setWorkingInput(nextInput);
+    setBaseInput(nextInput);
     setParentGenerationId(null);
     setResultUrl(null);
     setCurrentResult(null);
     setEditorResetToken((value) => value + 1);
   };
+
+  const setResultAsBaseInput = useCallback((nextInput: UploadedInput) => {
+    setBaseInput(nextInput);
+    if (nextInput.generationId) setParentGenerationId(nextInput.generationId);
+    setMaskDirty(false);
+    setEditorResetToken((value) => value + 1);
+    setNotice("Rezultat je postavljen kao nova slika za obradu.");
+  }, []);
 
   const handleGenerate = async (maskBlob: Blob | null) => {
     if (!activeInput) {
@@ -471,10 +472,9 @@ export function AiStudioWorkspace({
 
           <AiImageEditor
             mode={mode}
-            originalInput={originalInput}
-            workingInput={workingInput}
+            baseInput={baseInput}
             currentResult={currentResult}
-            setWorkingInput={setWorkingInput}
+            onUseCurrentResult={setResultAsBaseInput}
             onUpload={handleUpload}
             onGenerate={handleGenerate}
             pending={pending}
@@ -494,9 +494,10 @@ export function AiStudioWorkspace({
               storagePath: item.resultStoragePath,
               mimeType: item.resultMimeType ?? "image/jpeg",
               fileName: "ai-result.jpg",
+              generationId: item.id,
             };
             setCurrentResult(nextInput);
-            setWorkingInput(nextInput);
+            setResultAsBaseInput(nextInput);
             setParentGenerationId(item.id);
             setResultUrl(item.resultUrl);
           }}
@@ -709,10 +710,9 @@ function StudioControls({
 
 function AiImageEditor({
   mode,
-  originalInput,
-  workingInput,
+  baseInput,
   currentResult,
-  setWorkingInput,
+  onUseCurrentResult,
   onUpload,
   onGenerate,
   pending,
@@ -722,10 +722,9 @@ function AiImageEditor({
   onMaskDirtyChange,
 }: {
   mode: ToolMode;
-  originalInput: UploadedInput | null;
-  workingInput: UploadedInput | null;
+  baseInput: UploadedInput | null;
   currentResult: UploadedInput | null;
-  setWorkingInput: (value: UploadedInput) => void;
+  onUseCurrentResult: (value: UploadedInput) => void;
   onUpload: (file: File) => void;
   onGenerate: (mask: Blob | null) => void;
   pending: boolean;
@@ -745,7 +744,7 @@ function AiImageEditor({
   const [rectStart, setRectStart] = useState<{ x: number; y: number } | null>(null);
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
-  const activeImage = workingInput ?? originalInput;
+  const activeImage = baseInput;
 
   const resetCanvas = useCallback(() => {
     const canvas = maskCanvasRef.current;
@@ -876,14 +875,14 @@ function AiImageEditor({
           {currentResult && (
             <button
               type="button"
-              onClick={() => setWorkingInput(currentResult)}
+              onClick={() => onUseCurrentResult(currentResult)}
               className={`rounded-lg border px-3 py-2 text-xs font-semibold ${
-                workingInput?.storagePath === currentResult.storagePath
+                baseInput?.storagePath === currentResult.storagePath
                   ? "border-accent bg-accent/10 text-accent"
                   : "border-border/60 text-muted-foreground"
               }`}
             >
-              Koristi trenutni rezultat
+              Koristi rezultat kao sliku za obradu
             </button>
           )}
           <Button type="button" variant="outline" onClick={() => fileRef.current?.click()}>
@@ -1007,45 +1006,15 @@ function AiImageEditor({
         </div>
       )}
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-3">
+      <div className="mt-4 grid gap-4 xl:grid-cols-2">
         <div className="overflow-auto rounded-2xl border border-border/60 bg-background/50 p-3">
           <div className="mb-2 flex items-center justify-between gap-2">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Original
+              Slika za obradu
             </p>
-          </div>
-          {originalInput ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={originalInput.url}
-              alt="Originalna slika"
-              className="h-auto w-full rounded-xl object-contain"
-            />
-          ) : (
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              className="flex min-h-[320px] w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/70 bg-background/40 text-center transition hover:border-accent/50"
-            >
-              <ImageIcon className="h-10 w-10 text-muted-foreground/50" />
-              <span className="mt-3 text-sm font-semibold text-foreground">
-                Uploadujte fotografiju
-              </span>
-              <span className="mt-1 text-xs text-muted-foreground">
-                JPG, PNG ili WebP do 50MB
-              </span>
-            </button>
-          )}
-        </div>
-
-        <div className="overflow-auto rounded-2xl border border-border/60 bg-background/50 p-3">
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Trenutni input
-            </p>
-            {parentGenerationId && (
+            {baseInput?.generationId && parentGenerationId && (
               <span className="text-[0.7rem] text-muted-foreground">
-                Vezano za prethodni rezultat
+                Iz prethodnog rezultata
               </span>
             )}
           </div>
@@ -1109,8 +1078,8 @@ function AiImageEditor({
               />
               <a
                 href={
-                  parentGenerationId
-                    ? `/api/ai-studio/generations/${parentGenerationId}/download`
+                  currentResult?.generationId
+                    ? `/api/ai-studio/generations/${currentResult.generationId}/download`
                     : resultUrl
                 }
                 download
@@ -1250,7 +1219,7 @@ function HistoryPanel({
                   size="sm"
                   onClick={() => onUseResult(item)}
                 >
-                  Koristi kao input
+                  Koristi kao sliku za obradu
                 </Button>
                 <a
                   href={item.downloadUrl ?? `/api/ai-studio/generations/${item.id}/download`}

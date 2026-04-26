@@ -15,6 +15,11 @@ import * as Sentry from "@sentry/nextjs";
 import { calculateQuote, type QuoteItem } from "@/lib/catalog/calculate";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { generateOrderNumber } from "@/lib/order/generate-number";
+import {
+  checkRateLimit,
+  getServerActionIdentifier,
+  rateLimitMessage,
+} from "@/lib/rate-limit";
 import { repriceOrder } from "@/server/actions/item-config";
 import { syncNewDeal } from "@/server/bitrix/sync-deal";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
@@ -32,6 +37,15 @@ export async function createOrder(
 ): Promise<OrderResult> {
   if (!userId) return { error: "Korisnik nije identifikovan." };
   if (!quoteItems.length) return { error: "Ponuda je prazna." };
+
+  // Rate-limit before any DB writes. createOrder is reachable from
+  // /poruci by anyone (guest or logged-in), so a tampered client could
+  // spam Order rows. Identifier prefers user:<id> when authenticated.
+  const identifier = await getServerActionIdentifier();
+  const limit = await checkRateLimit("checkout", identifier);
+  if (!limit.ok) {
+    return { error: rateLimitMessage(limit.retryAfterSeconds) };
+  }
 
   // Defensive: inquiry-only products (VR) must never enter the order /
   // payment flow. They route to /usluge/vr/konsultacija from /cene; if

@@ -14,6 +14,11 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
+  checkRateLimit,
+  getServerActionIdentifier,
+  rateLimitMessage,
+} from "@/lib/rate-limit";
+import {
   sendVrInquiryAdminEmail,
   sendVrInquiryCustomerEmail,
   sendVrProjectReadyEmail,
@@ -44,6 +49,14 @@ function validEmail(s: string): boolean {
 export async function submitVrInquiry(
   input: VrInquiryInput,
 ): Promise<VrInquiryResult> {
+  // Public, unauthenticated endpoint — anyone POSTs. Rate limit before
+  // touching the DB so a bot flood can't create thousands of rows.
+  const identifier = await getServerActionIdentifier();
+  const limit = await checkRateLimit("vrInquiry", identifier);
+  if (!limit.ok) {
+    return { error: rateLimitMessage(limit.retryAfterSeconds) };
+  }
+
   if (!input || typeof input !== "object") {
     return { error: "Neispravan zahtev." };
   }

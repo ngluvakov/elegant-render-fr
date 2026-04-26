@@ -7,10 +7,26 @@
 
 import OpenAI from "openai";
 import { SYSTEM_PROMPT } from "@/lib/chat/system-prompt";
+import {
+  checkRateLimit,
+  getRequestIdentifier,
+  rateLimitMessage,
+} from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  // Rate-limit before any OpenAI call so a botted /api/chat can't run
+  // up the OpenAI bill. 30/h per IP — normal conversations stay well
+  // under this; bot floods get cut off.
+  const limit = await checkRateLimit("chat", getRequestIdentifier(request));
+  if (!limit.ok) {
+    return new Response(rateLimitMessage(limit.retryAfterSeconds), {
+      status: 429,
+      headers: { "Retry-After": String(limit.retryAfterSeconds) },
+    });
+  }
+
   const { messages } = await request.json();
 
   if (!messages || !Array.isArray(messages)) {

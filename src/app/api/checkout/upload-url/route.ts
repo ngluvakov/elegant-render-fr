@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import {
+  checkRateLimit,
+  getRequestIdentifier,
+  rateLimitMessage,
+} from "@/lib/rate-limit";
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB per file
 const ALLOWED_TYPES = [
@@ -8,6 +13,17 @@ const ALLOWED_TYPES = [
 ];
 
 export async function POST(request: Request) {
+  // Rate-limit BEFORE issuing presigned URLs. Without this, anyone with
+  // a known orderId could request 1000s of upload URLs per minute and
+  // spam Supabase storage with garbage.
+  const limit = await checkRateLimit("uploadUrl", getRequestIdentifier(request));
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: rateLimitMessage(limit.retryAfterSeconds) },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } },
+    );
+  }
+
   const { orderId, fileName, mimeType, fileSize } = await request.json();
 
   if (!orderId || !fileName || !mimeType || !fileSize) {

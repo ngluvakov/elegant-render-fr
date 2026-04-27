@@ -15,6 +15,10 @@ import {
   type AiEditType,
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
+import {
+  composeResultFileName,
+  slugifyFileName,
+} from "@/lib/ai-studio/naming";
 import { sanitizeAiStudioError } from "@/lib/ai-studio/errors";
 import {
   composeWithMask,
@@ -41,6 +45,7 @@ export type AiStudioGenerateInput = {
   provider: AiImageProvider;
   inputStoragePath: string;
   inputMimeType: string;
+  inputFileName?: string | null;
   maskStoragePath?: string | null;
   maskInverted?: boolean;
   prompt: string;
@@ -80,7 +85,15 @@ export type SignedAiGeneration = {
   resultUrl: string | null;
   inputUrl: string | null;
   downloadUrl: string | null;
+  inputDownloadUrl: string | null;
   filesExpired: boolean;
+  rootFileName: string | null;
+  inputFileName: string | null;
+  resultFileName: string | null;
+  selectedOption: string | null;
+  colorHex: string | null;
+  maskInverted: boolean;
+  hasMask: boolean;
 };
 
 export type AiStudioStartResult = {
@@ -164,12 +177,17 @@ export async function startAiStudioGeneration(
   if (scopeError) return { error: scopeError };
 
   const model = getAiProviderModel(input.provider);
-  const expiresAt = addDays(new Date(), AI_FILE_RETENTION_DAYS);
+  const now = new Date();
+  const expiresAt = addDays(now, AI_FILE_RETENTION_DAYS);
   let unitsToCharge = editDef.units;
   let coveredUnits = editDef.units;
   let paidGenerationId: string | null = null;
   let freeAttemptIndex: number | null = null;
   let rootCoveredUnits: number | null = null;
+  // Filename tracking — propagate the root through derivative chains
+  // so downloads stay tied to the original upload.
+  let rootFileName: string = slugifyFileName(input.inputFileName ?? "slika");
+  let inputFileName: string = rootFileName;
 
   if (input.parentGenerationId) {
     const parent = await prisma.aiGeneration.findFirst({
@@ -187,6 +205,12 @@ export async function startAiStudioGeneration(
     if (!root) return { error: "Početna plaćena obrada nije pronađena." };
     rootCoveredUnits = root.coveredUnits;
 
+    // Inherit the root name from the parent chain. Input name for THIS
+    // gen is the parent's resultFileName (since we're processing its
+    // result image), with a fallback when the parent predates naming.
+    if (parent.rootFileName) rootFileName = parent.rootFileName;
+    if (parent.resultFileName) inputFileName = parent.resultFileName;
+
     const freeUsed = await countFreeAttempts(userId, paidGenerationId);
     if (freeUsed < AI_FREE_REGENERATIONS) {
       if (editDef.units <= rootCoveredUnits) {
@@ -201,6 +225,21 @@ export async function startAiStudioGeneration(
       paidGenerationId = null;
     }
   }
+
+  // Counter for the result filename: how many generations of THIS edit
+  // type already exist on THIS root chain. Padded later via composeResultFileName.
+  // Tiny race: two simultaneous create calls can both observe the same
+  // count and produce the same filename. Storage path uses the gen id
+  // so files don't collide; the duplicate filename is just a UX edge.
+  const priorOnRoot = await prisma.aiGeneration.count({
+    where: { userId, rootFileName, editType: input.editType },
+  });
+  const resultFileName = composeResultFileName({
+    rootFileName,
+    editType: input.editType,
+    counter: priorOnRoot + 1,
+    date: now,
+  });
 
   const createGeneration = () =>
     prisma.aiGeneration.create({
@@ -222,6 +261,9 @@ export async function startAiStudioGeneration(
         inputStoragePath: input.inputStoragePath,
         inputMimeType: input.inputMimeType,
         maskStoragePath: input.maskStoragePath || null,
+        rootFileName,
+        inputFileName,
+        resultFileName,
         unitsCharged: unitsToCharge,
         coveredUnits,
         freeAttemptIndex,
@@ -564,6 +606,8 @@ async function signGeneration(
     inputUrl = data?.signedUrl ?? null;
   }
 
+  const options = parseGenerationOptions(generation.optionsJson);
+
   return {
     id: generation.id,
     parentGenerationId: generation.parentGenerationId,
@@ -591,7 +635,17 @@ async function signGeneration(
       isFileActive && generation.resultStoragePath
         ? `/api/ai-studio/generations/${generation.id}/download`
         : null,
+    inputDownloadUrl: isFileActive
+      ? `/api/ai-studio/generations/${generation.id}/download/input`
+      : null,
     filesExpired: !isFileActive,
+    rootFileName: generation.rootFileName,
+    inputFileName: generation.inputFileName,
+    resultFileName: generation.resultFileName,
+    selectedOption: options.selectedOption,
+    colorHex: options.colorHex,
+    maskInverted: options.maskInverted,
+    hasMask: Boolean(generation.maskStoragePath),
   };
 }
 

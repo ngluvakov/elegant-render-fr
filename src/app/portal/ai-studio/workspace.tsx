@@ -42,6 +42,10 @@ import {
   type AiEditType,
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
+import {
+  GenerationDetailModal,
+  type GenerationDetail,
+} from "./generation-detail-modal";
 
 type GenerationHistoryItem = {
   id: string;
@@ -67,7 +71,15 @@ type GenerationHistoryItem = {
   resultUrl: string | null;
   inputUrl: string | null;
   downloadUrl: string | null;
+  inputDownloadUrl: string | null;
   filesExpired: boolean;
+  rootFileName: string | null;
+  inputFileName: string | null;
+  resultFileName: string | null;
+  selectedOption: string | null;
+  colorHex: string | null;
+  maskInverted: boolean;
+  hasMask: boolean;
 };
 
 type AiStudioState =
@@ -133,7 +145,7 @@ export function AiStudioWorkspace({
           url: initialInput.inputUrl,
           storagePath: initialInput.inputStoragePath,
           mimeType: initialInput.inputMimeType,
-          fileName: "slika-za-obradu",
+          fileName: initialInput.inputFileName ?? "slika-za-obradu",
         }
       : null,
   );
@@ -143,11 +155,12 @@ export function AiStudioWorkspace({
           url: initialCompleted.resultUrl,
           storagePath: initialCompleted.resultStoragePath,
           mimeType: initialCompleted.resultMimeType ?? "image/jpeg",
-          fileName: "ai-result.jpg",
+          fileName: initialCompleted.resultFileName ?? "ai-result.jpg",
           generationId: initialCompleted.id,
         }
       : null,
   );
+  const [openGenerationId, setOpenGenerationId] = useState<string | null>(null);
   const [parentGenerationId, setParentGenerationId] = useState<string | null>(
     initialCompleted?.id ?? null,
   );
@@ -185,7 +198,7 @@ export function AiStudioWorkspace({
         url: latestCompleted.resultUrl,
         storagePath: latestCompleted.resultStoragePath,
         mimeType: latestCompleted.resultMimeType ?? "image/jpeg",
-        fileName: "ai-result.jpg",
+        fileName: latestCompleted.resultFileName ?? "ai-result.jpg",
         generationId: latestCompleted.id,
       });
       setParentGenerationId(latestCompleted.id);
@@ -225,7 +238,7 @@ export function AiStudioWorkspace({
         url: data.generation.resultUrl,
         storagePath: data.generation.resultStoragePath,
         mimeType: data.generation.resultMimeType ?? "image/jpeg",
-        fileName: "ai-result.jpg",
+        fileName: data.generation.resultFileName ?? "ai-result.jpg",
         generationId: data.generation.id,
       });
       setParentGenerationId(data.generation.id);
@@ -298,6 +311,110 @@ export function AiStudioWorkspace({
     setNotice("Rezultat je postavljen kao nova slika za obradu.");
   }, []);
 
+  // Builds the modal payload from a history item. Wrapper so the
+  // workspace doesn't have to know about modal types when wiring clicks.
+  const openGeneration = useCallback((item: GenerationHistoryItem) => {
+    setOpenGenerationId(item.id);
+  }, []);
+
+  const closeGenerationModal = useCallback(() => {
+    setOpenGenerationId(null);
+  }, []);
+
+  const openedGeneration = useMemo<GenerationDetail | null>(() => {
+    if (!openGenerationId) return null;
+    const item = history.find((entry) => entry.id === openGenerationId);
+    if (!item) return null;
+    return {
+      id: item.id,
+      parentGenerationId: item.parentGenerationId,
+      editType: item.editType,
+      provider: item.provider,
+      model: item.model,
+      prompt: item.prompt,
+      styleId: item.styleId,
+      selectedOption: item.selectedOption,
+      colorHex: item.colorHex,
+      maskInverted: item.maskInverted,
+      hasMask: item.hasMask,
+      status: item.status,
+      unitsCharged: item.unitsCharged,
+      freeAttemptIndex: item.freeAttemptIndex,
+      errorMessage: item.errorMessage,
+      createdAt: item.createdAt,
+      completedAt: item.completedAt,
+      inputUrl: item.inputUrl,
+      resultUrl: item.resultUrl,
+      inputDownloadUrl: item.inputDownloadUrl,
+      downloadUrl: item.downloadUrl,
+      rootFileName: item.rootFileName,
+      inputFileName: item.inputFileName,
+      resultFileName: item.resultFileName,
+      filesExpired: item.filesExpired,
+    };
+  }, [openGenerationId, history]);
+
+  const parentResultFileName = useMemo(() => {
+    if (!openedGeneration?.parentGenerationId) return null;
+    return (
+      history.find((entry) => entry.id === openedGeneration.parentGenerationId)
+        ?.resultFileName ?? null
+    );
+  }, [openedGeneration, history]);
+
+  const handleModalUseResult = useCallback(
+    (gen: GenerationDetail) => {
+      if (!gen.resultUrl) return;
+      const item = history.find((entry) => entry.id === gen.id);
+      if (!item || !item.resultStoragePath) return;
+      const nextInput: UploadedInput = {
+        url: gen.resultUrl,
+        storagePath: item.resultStoragePath,
+        mimeType: item.resultMimeType ?? "image/jpeg",
+        fileName: gen.resultFileName ?? "ai-result.jpg",
+        generationId: gen.id,
+      };
+      setCurrentResult(nextInput);
+      setResultAsBaseInput(nextInput);
+      setParentGenerationId(gen.id);
+      setResultUrl(gen.resultUrl);
+      setOpenGenerationId(null);
+    },
+    [history, setResultAsBaseInput],
+  );
+
+  // "Repeat with same settings" — feed the gen's INPUT image back into
+  // the workspace, prefill the controls. parentGenerationId stays set
+  // so the free-retry pool against the paid root applies.
+  const handleModalRepeat = useCallback(
+    (gen: GenerationDetail) => {
+      if (!gen.inputUrl) return;
+      const item = history.find((entry) => entry.id === gen.id);
+      if (!item) return;
+      setBaseInput({
+        url: gen.inputUrl,
+        storagePath: item.inputStoragePath,
+        mimeType: item.inputMimeType,
+        fileName: gen.inputFileName ?? "slika-za-obradu",
+        generationId: gen.parentGenerationId ?? undefined,
+      });
+      setEditType(gen.editType);
+      setProvider(gen.provider);
+      if (gen.styleId) setStyleId(gen.styleId);
+      if (gen.selectedOption) setSelectedOption(gen.selectedOption);
+      if (gen.colorHex) setColorHex(gen.colorHex);
+      setPrompt(gen.prompt);
+      setParentGenerationId(gen.id);
+      setResultUrl(null);
+      setCurrentResult(null);
+      setMaskDirty(false);
+      setEditorResetToken((value) => value + 1);
+      setOpenGenerationId(null);
+      setNotice("Podešavanja su učitana. Pokrenite obradu kada budete spremni.");
+    },
+    [history],
+  );
+
   const handleGenerate = async (maskBlob: Blob | null) => {
     if (!activeInput) {
       setError("Prvo uploadujte fotografiju.");
@@ -328,6 +445,7 @@ export function AiStudioWorkspace({
           provider,
           inputStoragePath: activeInput.storagePath,
           inputMimeType: activeInput.mimeType,
+          inputFileName: activeInput.fileName,
           maskStoragePath,
           prompt,
           styleId: activeEdit.supportsStyles ? styleId : null,
@@ -386,7 +504,15 @@ export function AiStudioWorkspace({
           resultUrl: null,
           inputUrl: activeInput.url,
           downloadUrl: null,
+          inputDownloadUrl: null,
           filesExpired: false,
+          rootFileName: null,
+          inputFileName: activeInput.fileName,
+          resultFileName: null,
+          selectedOption: selectedOption || null,
+          colorHex: activeEdit.supportsColor ? colorHex : null,
+          maskInverted: false,
+          hasMask: Boolean(maskStoragePath),
         },
         ...prev,
       ]);
@@ -487,13 +613,14 @@ export function AiStudioWorkspace({
 
         <HistoryPanel
           history={history}
+          onOpen={openGeneration}
           onUseResult={(item) => {
             if (!item.resultUrl || !item.resultStoragePath || item.filesExpired) return;
             const nextInput = {
               url: item.resultUrl,
               storagePath: item.resultStoragePath,
               mimeType: item.resultMimeType ?? "image/jpeg",
-              fileName: "ai-result.jpg",
+              fileName: item.resultFileName ?? "ai-result.jpg",
               generationId: item.id,
             };
             setCurrentResult(nextInput);
@@ -503,6 +630,15 @@ export function AiStudioWorkspace({
           }}
         />
       </div>
+
+      <GenerationDetailModal
+        open={Boolean(openedGeneration)}
+        generation={openedGeneration}
+        parentResultFileName={parentResultFileName}
+        onClose={closeGenerationModal}
+        onUseResultAsInput={handleModalUseResult}
+        onRepeatWithSameSettings={handleModalRepeat}
+      />
     </div>
   );
 }
@@ -871,35 +1007,29 @@ function AiImageEditor({
             Jedna slika po obradi. Advanced maska je opciona.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {currentResult && (
-            <button
-              type="button"
-              onClick={() => onUseCurrentResult(currentResult)}
-              className={`rounded-lg border px-3 py-2 text-xs font-semibold ${
-                baseInput?.storagePath === currentResult.storagePath
-                  ? "border-accent bg-accent/10 text-accent"
-                  : "border-border/60 text-muted-foreground"
-              }`}
-            >
-              Koristi rezultat kao sliku za obradu
-            </button>
-          )}
-          <Button type="button" variant="outline" onClick={() => fileRef.current?.click()}>
-            <Upload className="h-4 w-4" />
-            Upload
-          </Button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            className="hidden"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) onUpload(file);
-            }}
-          />
-        </div>
+        {currentResult && (
+          <button
+            type="button"
+            onClick={() => onUseCurrentResult(currentResult)}
+            className={`rounded-lg border px-3 py-2 text-xs font-semibold ${
+              baseInput?.storagePath === currentResult.storagePath
+                ? "border-accent bg-accent/10 text-accent"
+                : "border-border/60 text-muted-foreground"
+            }`}
+          >
+            Koristi rezultat kao sliku za obradu
+          </button>
+        )}
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) onUpload(file);
+          }}
+        />
       </div>
 
       {mode === "advanced" && (
@@ -1009,14 +1139,33 @@ function AiImageEditor({
       <div className="mt-4 grid gap-4 xl:grid-cols-2">
         <div className="overflow-auto rounded-2xl border border-border/60 bg-background/50 p-3">
           <div className="mb-2 flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Slika za obradu
-            </p>
-            {baseInput?.generationId && parentGenerationId && (
-              <span className="text-[0.7rem] text-muted-foreground">
-                Iz prethodnog rezultata
-              </span>
-            )}
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Slika za obradu
+              </p>
+              {baseInput?.fileName && (
+                <p className="mt-0.5 truncate font-mono text-[0.68rem] text-foreground/60">
+                  {baseInput.fileName}
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {baseInput?.generationId && parentGenerationId && (
+                <span className="text-[0.7rem] text-muted-foreground">
+                  Iz prethodnog rezultata
+                </span>
+              )}
+              {activeImage && (
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-background/80 px-2 py-1 text-[0.7rem] font-medium text-muted-foreground transition hover:border-accent/40 hover:text-foreground"
+                >
+                  <Upload className="h-3 w-3" />
+                  Promeni sliku
+                </button>
+              )}
+            </div>
           </div>
           {activeImage ? (
             <div
@@ -1151,16 +1300,18 @@ function ToolButton({
 
 function HistoryPanel({
   history,
+  onOpen,
   onUseResult,
 }: {
   history: GenerationHistoryItem[];
+  onOpen: (item: GenerationHistoryItem) => void;
   onUseResult: (item: GenerationHistoryItem) => void;
 }) {
   return (
     <aside className="rounded-2xl border border-border/60 bg-card/80 p-4">
       <h2 className="text-lg font-semibold text-foreground">Istorija</h2>
       <p className="mt-1 text-xs text-muted-foreground">
-        Fajlovi su dostupni 30 dana. Tekstualni zapis ostaje u istoriji.
+        Klikni na obradu za detalje. Fajlovi su dostupni 30 dana.
       </p>
       <div className="mt-4 space-y-3">
         {history.length === 0 && (
@@ -1171,9 +1322,13 @@ function HistoryPanel({
         {history.map((item) => (
           <div
             key={item.id}
-            className="rounded-xl border border-border/50 bg-background/50 p-3"
+            className="rounded-xl border border-border/50 bg-background/50 transition hover:border-accent/40"
           >
-            <div className="flex items-start gap-3">
+            <button
+              type="button"
+              onClick={() => onOpen(item)}
+              className="flex w-full items-start gap-3 rounded-t-xl p-3 text-left"
+            >
               {item.resultUrl && !item.filesExpired ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -1194,6 +1349,11 @@ function HistoryPanel({
                   {new Date(item.createdAt).toLocaleDateString("sr-RS")} ·{" "}
                   {AI_IMAGE_PROVIDERS.find((p) => p.id === item.provider)?.label}
                 </p>
+                {item.resultFileName && (
+                  <p className="mt-0.5 truncate font-mono text-[0.62rem] text-muted-foreground/70">
+                    {item.resultFileName}
+                  </p>
+                )}
                 {(item.status === "queued" || item.status === "processing") && (
                   <p className="mt-1 text-xs text-accent">
                     {item.status === "queued" ? "Čeka obradu" : "Obrada u toku"}
@@ -1210,20 +1370,24 @@ function HistoryPanel({
                   </p>
                 )}
               </div>
-            </div>
+            </button>
             {item.resultUrl && !item.filesExpired && (
-              <div className="mt-3 flex gap-2">
+              <div className="flex gap-2 border-t border-border/30 p-3 pt-2">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => onUseResult(item)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onUseResult(item);
+                  }}
                 >
                   Koristi kao sliku za obradu
                 </Button>
                 <a
                   href={item.downloadUrl ?? `/api/ai-studio/generations/${item.id}/download`}
                   download
+                  onClick={(event) => event.stopPropagation()}
                   className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-card/60 px-3 text-[0.8rem] font-medium"
                 >
                   Download

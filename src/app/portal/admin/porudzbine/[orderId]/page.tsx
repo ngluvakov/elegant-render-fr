@@ -10,6 +10,9 @@ import { StatusTracker } from "@/components/portal/status-tracker";
 import { AdminCommentComposer } from "./admin-comment-composer";
 import { AdminStatusChanger } from "./admin-status-changer";
 import { AdminDeliverableUpload } from "./admin-deliverable-upload";
+import { AdminGrantCreditsPanel } from "./admin-grant-credits-panel";
+import { AdminFreeRevisionPanel } from "./admin-free-revision-panel";
+import { AdminChargesPanel } from "./admin-charges-panel";
 
 export const metadata: Metadata = {
   title: "Admin — Detalji porudžbine",
@@ -28,13 +31,26 @@ export default async function AdminOrderDetailPage({
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     include: {
-      user: { select: { name: true, email: true, phone: true } },
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          aiCreditBalanceUnits: true,
+          aiCreditsExpireAt: true,
+        },
+      },
       items: true,
       files: true,
       statusEvents: { orderBy: { createdAt: "asc" } },
       comments: {
         orderBy: { createdAt: "asc" },
         include: { author: { select: { name: true, email: true } } },
+      },
+      charges: {
+        orderBy: { createdAt: "desc" },
+        include: { items: true },
       },
     },
   });
@@ -83,6 +99,43 @@ export default async function AdminOrderDetailPage({
 
       {/* Admin: change status */}
       <AdminStatusChanger orderId={order.id} currentStatus={order.status} />
+
+      {/* Admin: grants */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <AdminGrantCreditsPanel
+          userId={order.user.id}
+          userName={order.user.name}
+          userEmail={order.user.email}
+          balanceUnits={order.user.aiCreditBalanceUnits}
+          expiresAt={order.user.aiCreditsExpireAt}
+        />
+        <AdminFreeRevisionPanel
+          orderId={order.id}
+          currentStatus={order.status}
+        />
+      </div>
+
+      {/* Admin: ad-hoc charges */}
+      <AdminChargesPanel
+        orderId={order.id}
+        charges={order.charges.map((c) => ({
+          id: c.id,
+          reason: c.reason,
+          totalCents: c.totalCents,
+          status: c.status,
+          paymentProvider: c.paymentProvider,
+          paidAt: c.paidAt,
+          createdAt: c.createdAt,
+          items: c.items.map((it) => ({
+            id: it.id,
+            productId: it.productId,
+            kind: it.kind,
+            label: it.label,
+            amountCents: it.amountCents,
+            quantity: it.quantity,
+          })),
+        }))}
+      />
 
       {/* Two-column */}
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">

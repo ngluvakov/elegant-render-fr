@@ -77,13 +77,35 @@ export default async function AdminPage({
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="font-heading text-3xl text-foreground">
-          Upravljanje platformom
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Sve porudžbine, klijenti i statistika na jednom mestu.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="font-heading text-3xl text-foreground">
+            Upravljanje platformom
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Sve porudžbine, klijenti i statistika na jednom mestu.
+          </p>
+        </div>
+        <nav className="flex items-center gap-2 text-xs">
+          <Link
+            href="/portal/admin/korisnici"
+            className="rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
+          >
+            Korisnici
+          </Link>
+          <Link
+            href="/portal/admin/vr-upiti"
+            className="rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
+          >
+            VR upiti
+          </Link>
+          <Link
+            href="/portal/admin/ai-studio"
+            className="rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
+          >
+            AI Studio
+          </Link>
+        </nav>
       </div>
 
       {/* Stat cards */}

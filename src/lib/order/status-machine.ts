@@ -11,6 +11,10 @@ import type { OrderStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { syncDealStatus } from "@/server/bitrix/sync-status";
 
+// `delivered → in_progress` is an admin-only override for the "free
+// revision" flow: customer asks for a change after delivery, admin
+// approves it at no charge, and the order reopens for work. Only
+// reachable via the admin path; the customer flow has no UI for it.
 const VALID_TRANSITIONS: Record<string, string[]> = {
   draft: ["awaiting_payment", "cancelled"],
   awaiting_payment: ["paid", "cancelled"],
@@ -18,7 +22,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
   in_progress: ["in_review", "cancelled"],
   in_review: ["revision_requested", "delivered"],
   revision_requested: ["in_progress"],
-  delivered: ["closed"],
+  delivered: ["closed", "in_progress"],
   closed: [],
   cancelled: [],
   refunded: [],

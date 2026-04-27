@@ -264,6 +264,168 @@ function configToBullets(config: VrConfig): string {
   return items.map((i) => `<li>${i}</li>`).join("\n");
 }
 
+export async function sendAiCreditsGrantedEmail(args: {
+  to: string;
+  grantedLabel: string;
+  balanceLabel: string;
+  note: string;
+  expiresAt: Date;
+}) {
+  const portalUrl = `${getAuthUrl()}/portal/ai-studio`;
+  const dateLabel = args.expiresAt.toLocaleDateString("sr-RS");
+
+  await send({
+    to: args.to,
+    subject: `Dobili ste ${args.grantedLabel} AI kredita — Elegant Render`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Dodali smo vam AI kredite</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Naš tim vam je dodelio <strong>${escapeHtml(args.grantedLabel)}</strong>.
+          Vaš novi aktivni balans je <strong>${escapeHtml(args.balanceLabel)}</strong>
+          i važi do <strong>${escapeHtml(dateLabel)}</strong>.
+        </p>
+        ${
+          args.note
+            ? `<div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0; color: #1C1A19; line-height: 1.6;"><em>${escapeHtml(args.note)}</em></p>
+        </div>`
+            : ""
+        }
+        <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Otvori AI Studio
+        </a>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}
+
+export async function sendFreeRevisionGrantedEmail(args: {
+  to: string;
+  orderNumber: string;
+  orderId: string;
+  note: string;
+}) {
+  const portalUrl = `${getAuthUrl()}/portal/porudzbine/${args.orderId}`;
+
+  await send({
+    to: args.to,
+    subject: `Odobrena besplatna izmena — porudžbina ${args.orderNumber}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Vaša izmena je odobrena</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Naš tim je odobrio besplatnu izmenu na porudžbini
+          <strong>${escapeHtml(args.orderNumber)}</strong>.
+          Krećemo sa radom — bićete obavešteni kada bude spremno za pregled.
+        </p>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0; color: #1C1A19; line-height: 1.6;"><em>${escapeHtml(args.note)}</em></p>
+        </div>
+        <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Otvori porudžbinu
+        </a>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}
+
+export async function sendAdditionalChargeRequestedEmail(args: {
+  to: string;
+  orderNumber: string;
+  orderId: string;
+  totalCents: number;
+  reason: string;
+  lines: Array<{ label: string; quantity: number; amountCents: number }>;
+}) {
+  const portalUrl = `${getAuthUrl()}/portal/porudzbine/${args.orderId}`;
+  const totalEur = args.totalCents / 100;
+  const linesHtml = args.lines
+    .map((line) => {
+      const subtotal = (line.amountCents * line.quantity) / 100;
+      return `<li>
+        ${escapeHtml(line.label)}
+        ${line.quantity > 1 ? ` × ${line.quantity}` : ""}
+        — <strong>${formatEmailEur(subtotal)}</strong>
+      </li>`;
+    })
+    .join("\n");
+
+  await send({
+    to: args.to,
+    subject: `Dodatna naplata na porudžbini ${args.orderNumber} — ${formatEmailEur(totalEur)}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Dodatna naplata</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Na porudžbini <strong>${escapeHtml(args.orderNumber)}</strong> je
+          formirana dodatna naplata za stavke van prvobitnog dogovora.
+        </p>
+        ${
+          args.reason
+            ? `<div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0; color: #1C1A19; line-height: 1.6;"><em>${escapeHtml(args.reason)}</em></p>
+        </div>`
+            : ""
+        }
+        <ul style="color: #1C1A19; line-height: 1.7; padding-left: 20px;">
+          ${linesHtml}
+        </ul>
+        <p style="color: #1C1A19; font-size: 16px; margin: 16px 0;">
+          <strong>Ukupno za naplatu: ${formatEmailEur(totalEur)}</strong>
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Otvorite porudžbinu u portalu da pregledate stavke i izvršite plaćanje.
+          Dostupne su sve opcije plaćanja kao i kod prvobitne porudžbine.
+        </p>
+        <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Otvori porudžbinu i plati
+        </a>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}
+
+export async function sendAdditionalChargePaidEmail(args: {
+  to: string;
+  orderNumber: string;
+  orderId: string;
+  totalCents: number;
+}) {
+  const portalUrl = `${getAuthUrl()}/portal/porudzbine/${args.orderId}`;
+  const totalEur = args.totalCents / 100;
+
+  await send({
+    to: args.to,
+    subject: `Dodatna naplata plaćena — porudžbina ${args.orderNumber}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Plaćanje primljeno</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Hvala. Vaše plaćanje za dodatnu naplatu na porudžbini
+          <strong>${escapeHtml(args.orderNumber)}</strong> je uspešno primljeno.
+        </p>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0; color: #1C1A19;">
+            <strong>Iznos:</strong> ${formatEmailEur(totalEur)}
+          </p>
+        </div>
+        <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Otvori porudžbinu
+        </a>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendVrInquiryAdminEmail(args: {
   inquiryId: string;
   productLabel: string;

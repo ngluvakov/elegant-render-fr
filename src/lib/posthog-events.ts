@@ -66,6 +66,22 @@ export type EventMap = {
     mode: "scratch" | "existing" | "active";
     where: "cene" | "configurator";
   };
+
+  // Admin operational signals (server-side)
+  admin_credits_granted: { user_id: string; units: number };
+  admin_free_revision_granted: { order_id: string; from_status: string };
+  admin_charge_requested: {
+    order_id: string;
+    charge_id: string;
+    total_cents: number;
+    item_count: number;
+  };
+  additional_charge_paid: {
+    charge_id: string;
+    order_id: string;
+    total_cents: number;
+    provider: "paypal" | "card_mock";
+  };
 };
 
 export type EventName = keyof EventMap;

@@ -36,7 +36,11 @@ import { Prisma } from "@/generated/prisma/client";
 import type { OutboxEventType } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import {
+  sendAdditionalChargePaidEmail,
+  sendAdditionalChargeRequestedEmail,
   sendAiCreditsExpiryReminderEmail,
+  sendAiCreditsGrantedEmail,
+  sendFreeRevisionGrantedEmail,
   sendOrderConfirmationEmail,
   sendPortalAccessEmail,
   sendVrProjectReadyEmail,
@@ -158,6 +162,74 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       expiresAt,
       daysLeft,
     });
+  },
+
+  ai_credits_granted_email: async (payload) => {
+    const to = String(payload.to ?? "");
+    const grantedLabel = String(payload.grantedLabel ?? "");
+    const balanceLabel = String(payload.balanceLabel ?? "");
+    const note = String(payload.note ?? "");
+    const expiresAt = new Date(String(payload.expiresAt ?? ""));
+    if (!to || !grantedLabel || !balanceLabel || Number.isNaN(expiresAt.getTime())) {
+      throw new Error("ai_credits_granted_email: missing required field(s)");
+    }
+    await sendAiCreditsGrantedEmail({
+      to,
+      grantedLabel,
+      balanceLabel,
+      note,
+      expiresAt,
+    });
+  },
+
+  free_revision_granted_email: async (payload) => {
+    const to = String(payload.to ?? "");
+    const orderNumber = String(payload.orderNumber ?? "");
+    const orderId = String(payload.orderId ?? "");
+    const note = String(payload.note ?? "");
+    if (!to || !orderNumber || !orderId) {
+      throw new Error("free_revision_granted_email: missing required field(s)");
+    }
+    await sendFreeRevisionGrantedEmail({ to, orderNumber, orderId, note });
+  },
+
+  additional_charge_requested_email: async (payload) => {
+    const to = String(payload.to ?? "");
+    const orderNumber = String(payload.orderNumber ?? "");
+    const orderId = String(payload.orderId ?? "");
+    const totalCents = Number(payload.totalCents);
+    const reason = String(payload.reason ?? "");
+    const rawLines = payload.lines;
+    if (!to || !orderNumber || !orderId || !Number.isFinite(totalCents) || !Array.isArray(rawLines)) {
+      throw new Error("additional_charge_requested_email: missing required field(s)");
+    }
+    const lines = rawLines.map((raw) => {
+      const line = raw as { label?: unknown; quantity?: unknown; amountCents?: unknown };
+      return {
+        label: String(line.label ?? ""),
+        quantity: Number(line.quantity ?? 1),
+        amountCents: Number(line.amountCents ?? 0),
+      };
+    });
+    await sendAdditionalChargeRequestedEmail({
+      to,
+      orderNumber,
+      orderId,
+      totalCents,
+      reason,
+      lines,
+    });
+  },
+
+  additional_charge_paid_email: async (payload) => {
+    const to = String(payload.to ?? "");
+    const orderNumber = String(payload.orderNumber ?? "");
+    const orderId = String(payload.orderId ?? "");
+    const totalCents = Number(payload.totalCents);
+    if (!to || !orderNumber || !orderId || !Number.isFinite(totalCents)) {
+      throw new Error("additional_charge_paid_email: missing required field(s)");
+    }
+    await sendAdditionalChargePaidEmail({ to, orderNumber, orderId, totalCents });
   },
 };
 

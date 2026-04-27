@@ -1,3 +1,12 @@
+/**
+ * Download endpoint for the INPUT image of an AiGeneration.
+ *
+ * Mirrors the result download endpoint but serves the file used as
+ * input to this generation. For derivatives, that's the parent
+ * generation's result image; for fresh uploads, it's the customer's
+ * original photo. Filename comes from generation.inputFileName, with
+ * the same `obrada-YYYYMMDD-{shortId}` fallback for old rows.
+ */
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -34,10 +43,9 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
     },
     select: {
       id: true,
-      status: true,
-      resultStoragePath: true,
-      resultMimeType: true,
-      resultFileName: true,
+      inputStoragePath: true,
+      inputMimeType: true,
+      inputFileName: true,
       expiresAt: true,
       createdAt: true,
     },
@@ -46,16 +54,13 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
   if (!generation) {
     return NextResponse.json({ error: "AI obrada nije pronađena." }, { status: 404 });
   }
-  if (generation.status !== "completed" || !generation.resultStoragePath) {
-    return NextResponse.json({ error: "Rezultat još nije spreman." }, { status: 409 });
-  }
   if (generation.expiresAt <= new Date()) {
     return NextResponse.json({ error: "Fajl je istekao." }, { status: 410 });
   }
 
   const { data, error } = await getSupabaseAdmin().storage
     .from("order-files")
-    .download(generation.resultStoragePath);
+    .download(generation.inputStoragePath);
 
   if (error || !data) {
     return NextResponse.json(
@@ -64,11 +69,11 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
     );
   }
 
-  const mimeType = generation.resultMimeType ?? data.type ?? "image/jpeg";
+  const mimeType = generation.inputMimeType ?? data.type ?? "image/jpeg";
   const fileName =
-    generation.resultFileName ??
+    generation.inputFileName ??
     fallbackDownloadName({
-      generationId: generation.id,
+      generationId: `${generation.id}-input`,
       createdAt: generation.createdAt,
       mimeType,
     });

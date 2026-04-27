@@ -14,6 +14,7 @@ import { PendingPaymentCard } from "@/components/portal/pending-payment-card";
 import { ItemConfigPanel } from "@/components/portal/item-config-panel";
 import { AddServiceDialog } from "@/components/portal/add-service-dialog";
 import { ReferenceOrderPicker } from "@/components/portal/reference-order-picker";
+import { OrderChargesCard } from "@/components/portal/order-charges-card";
 import { AlertCircle } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -53,6 +54,10 @@ export default async function OrderDetailPage({
       comments: {
         orderBy: { createdAt: "asc" },
         include: { author: { select: { name: true, email: true } } },
+      },
+      charges: {
+        orderBy: { createdAt: "desc" },
+        include: { items: true },
       },
     },
   });
@@ -198,6 +203,23 @@ export default async function OrderDetailPage({
               </div>
             </section>
           )}
+
+          <OrderChargesCard
+            charges={order.charges.map((c) => ({
+              id: c.id,
+              reason: c.reason,
+              totalCents: c.totalCents,
+              status: c.status,
+              paidAt: c.paidAt,
+              createdAt: c.createdAt,
+              items: c.items.map((it) => ({
+                id: it.id,
+                label: it.label,
+                amountCents: it.amountCents,
+                quantity: it.quantity,
+              })),
+            }))}
+          />
 
           {projectStarted && (
             <>

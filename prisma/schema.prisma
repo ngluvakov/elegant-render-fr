@@ -32,6 +32,8 @@ model User {
   comments             OrderComment[]
   aiCreditTransactions AiCreditTransaction[]
   aiGenerations        AiGeneration[]
+  chatFeedback         ChatFeedback[]
+  chargesRequested     OrderCharge[]         @relation("OrderChargeRequestedBy")
 
   @@map("users")
 }
@@ -131,6 +133,7 @@ model Order {
   files             OrderFile[]
   statusEvents      OrderStatusEvent[]
   comments          OrderComment[]
+  charges           OrderCharge[]
   referencedOrder   Order?             @relation("OrderReference", fields: [referencedOrderId], references: [id])
   referencingOrders Order[]            @relation("OrderReference")
 
@@ -219,6 +222,61 @@ model OrderComment {
 
   @@index([orderId, createdAt])
   @@map("order_comments")
+}
+
+// ─── Ad-hoc additional charges ──────────────────────────
+//
+// Out-of-scope work after the original order is paid: a forgotten
+// service, an extra room, an edit beyond the included revisions, or
+// any custom item negotiated by phone/email. Modeled separately from
+// Order because Order.totalCents is immutable (the PayPal capture
+// path relies on the locked-in amount for idempotency). Each charge
+// gets its own payment lifecycle; the customer pays through the same
+// providers as the original checkout.
+
+enum OrderChargeStatus {
+  pending
+  paid
+  cancelled
+}
+
+model OrderCharge {
+  id              String            @id @default(cuid())
+  orderId         String
+  requestedById   String
+  reason          String?           @db.Text
+  totalCents      Int
+  status          OrderChargeStatus @default(pending)
+  paymentProvider PaymentProvider?
+  paymentId       String?
+  paymentStatus   PaymentStatus     @default(pending)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  paidAt          DateTime?
+  cancelledAt     DateTime?
+
+  order       Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  requestedBy User              @relation("OrderChargeRequestedBy", fields: [requestedById], references: [id])
+  items       OrderChargeItem[]
+
+  @@index([orderId, status])
+  @@map("order_charges")
+}
+
+model OrderChargeItem {
+  id          String  @id @default(cuid())
+  chargeId    String
+  productId   String?
+  kind        String
+  label       String
+  amountCents Int
+  quantity    Int     @default(1)
+  configJson  Json?
+
+  charge OrderCharge @relation(fields: [chargeId], references: [id], onDelete: Cascade)
+
+  @@index([chargeId])
+  @@map("order_charge_items")
 }
 
 // ─── Bitrix24 sync log ───────────────────────────────────
@@ -330,6 +388,17 @@ model AiGeneration {
   maskStoragePath     String?
   resultStoragePath   String?
   resultMimeType      String?
+  // Filename tracking — propagated through derivative chains so
+  // downloads carry meaningful names tied to the original upload.
+  // `rootFileName` is the slugified original-upload name; it stays
+  // constant when a result is reused as the input of a new gen.
+  // `inputFileName` is the literal name of the file used as input
+  // for THIS gen (= parent's resultFileName for derivatives).
+  // `resultFileName` is computed deterministically at create time:
+  // `{rootBase}__{editTypeCode}__v{NN}__{YYYYMMDD}.{ext}`.
+  rootFileName        String?
+  inputFileName       String?
+  resultFileName      String?
   unitsCharged        Int
   coveredUnits        Int
   freeAttemptIndex    Int?
@@ -352,6 +421,28 @@ model AiGeneration {
   @@index([paidGenerationId])
   @@index([processingLockUntil])
   @@map("ai_generations")
+}
+
+// ─── Chat feedback ───────────────────────────────────────
+
+model ChatFeedback {
+  id               String   @id @default(cuid())
+  userId           String?
+  sessionId        String?
+  pagePath         String?
+  category         String
+  status           String   @default("new")
+  messageExcerpt   String   @db.Text
+  body             String   @db.Text
+  conversationJson Json?
+  createdAt        DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([category, createdAt])
+  @@index([userId, createdAt])
+  @@map("chat_feedback")
 }
 
 // ─── VR consultation inquiries ───────────────────────────
@@ -396,6 +487,10 @@ enum OutboxEventType {
   portal_access_email
   vr_project_ready_email
   ai_credits_expiry_reminder_email
+  ai_credits_granted_email
+  free_revision_granted_email
+  additional_charge_requested_email
+  additional_charge_paid_email
 }
 
 model OutboxEvent {

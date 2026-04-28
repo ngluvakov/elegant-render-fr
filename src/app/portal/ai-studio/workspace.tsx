@@ -48,6 +48,10 @@ import {
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
 import {
+  useAssistantGuideContext,
+  type AssistantGuideStage,
+} from "@/lib/chat/guide-context";
+import {
   GenerationDetailModal,
   type GenerationDetail,
 } from "./generation-detail-modal";
@@ -196,6 +200,33 @@ export function AiStudioWorkspace({
   const hasPendingJobs = history.some(
     (item) => item.status === "queued" || item.status === "processing",
   );
+  const hasPrompt = prompt.trim().length > 0;
+  const guideStage = useMemo<AssistantGuideStage>(() => {
+    if (balanceUnits < activeEdit.units && !parentGenerationId) {
+      return "no_credits";
+    }
+    if (currentResult || resultUrl) return "has_result";
+    if (activeInput && hasPrompt) return "ready_to_generate";
+    if (activeInput) return "after_upload";
+    return "before_upload";
+  }, [
+    activeEdit.units,
+    activeInput,
+    balanceUnits,
+    currentResult,
+    hasPrompt,
+    parentGenerationId,
+    resultUrl,
+  ]);
+
+  useAssistantGuideContext({
+    page: "ai_studio",
+    stage: guideStage,
+    editType,
+    balanceUnits,
+    hasFiles: Boolean(activeInput),
+    hasPrompt,
+  });
 
   const refreshState = useCallback(async () => {
     const response = await fetch("/api/ai-studio/state", { cache: "no-store" });

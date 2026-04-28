@@ -15,6 +15,7 @@ import { ItemConfigPanel } from "@/components/portal/item-config-panel";
 import { AddServiceDialog } from "@/components/portal/add-service-dialog";
 import { ReferenceOrderPicker } from "@/components/portal/reference-order-picker";
 import { OrderChargesCard } from "@/components/portal/order-charges-card";
+import { OrderAssistantGuideContext } from "@/components/chat/order-guide-context";
 import { AlertCircle } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -107,6 +108,16 @@ export default async function OrderDetailPage({
 
   return (
     <div className="space-y-6">
+      <OrderAssistantGuideContext
+        productIds={serviceItems.map((item) => item.productId)}
+        unconfiguredCount={unconfiguredCount}
+        hasFiles={
+          sourceFiles.length > 0 ||
+          serviceItems.some((item) => item.files.length > 0)
+        }
+        canEditItems={canEditItems}
+      />
+
       {/* Hero */}
       <OrderDetailHero
         orderId={order.id}

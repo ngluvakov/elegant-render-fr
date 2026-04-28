@@ -38,6 +38,21 @@ export type AiEditTypeDefinition = {
   description: string;
   supportsStyles?: boolean;
   supportsColor?: boolean;
+  // Whether the customer can scope the edit with a brush/rect mask.
+  // Atmospheric edits (sky_replacement, day_to_dusk) operate globally
+  // — masking adds nothing — so we hide the Advanced toggle for them.
+  supportsMask?: boolean;
+  // Whether `selectedOption` is multi-valued (CSV of ids). Currently
+  // only item_removal: a customer often wants to remove multiple
+  // categories (furniture + clutter + people) in one pass.
+  multiSelect?: boolean;
+  // Provider that gives the best result/price tradeoff for this edit.
+  // The UI surfaces it as "Preporučeno" and seeds the picker default.
+  recommendedProvider?: AiImageProvider;
+  // Edit-specific placeholder for the prompt textarea so the example
+  // matches the operation (e.g. "ukloni X, Y" for item_removal vs
+  // "dodaj nameštaj…" for staging).
+  promptPlaceholder?: string;
   optionsLabel?: string;
   options?: AiEditOption[];
 };
@@ -61,13 +76,17 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     complexity: "simple",
     units: 1,
     description: "Uklanjanje predmeta, nereda, ljudi, vozila ili sitnih smetnji sa fotografije.",
-    optionsLabel: "Šta uklanjamo",
+    supportsMask: true,
+    multiSelect: true,
+    recommendedProvider: "gemini_flash",
+    promptPlaceholder: "npr. ukloni saobraćajne znake i kese; pažljivo sa senkama na zidu",
+    optionsLabel: "Šta uklanjamo (može više)",
     options: [
-      { id: "furniture", label: "Ukloni nameštaj" },
-      { id: "clutter", label: "Ukloni nered" },
-      { id: "vehicles", label: "Ukloni vozila" },
-      { id: "people", label: "Ukloni ljude" },
-      { id: "surfaces", label: "Očisti zidove/pod" },
+      { id: "furniture", label: "Nameštaj" },
+      { id: "clutter", label: "Nered i sitnice" },
+      { id: "vehicles", label: "Vozila" },
+      { id: "people", label: "Ljudi" },
+      { id: "surfaces", label: "Tragovi sa zidova/poda" },
     ],
   },
   {
@@ -77,6 +96,9 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     complexity: "simple",
     units: 1,
     description: "Pretvaranje dnevne fotografije u večernji ili sutonski prikaz.",
+    supportsMask: false,
+    recommendedProvider: "gemini_flash",
+    promptPlaceholder: "npr. zadržati prirodno osvetljenje na fasadi, suptilan sjaj prozora",
     optionsLabel: "Atmosfera",
     options: [
       { id: "warm-dusk", label: "Topli suton" },
@@ -93,6 +115,9 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     complexity: "simple",
     units: 1,
     description: "Zamena sivog ili oblačnog neba atraktivnijom atmosferom.",
+    supportsMask: false,
+    recommendedProvider: "gemini_flash",
+    promptPlaceholder: "npr. blago osvetljenje, suptilni oblaci, ne menjati boju zgrade",
     optionsLabel: "Nebo",
     options: [
       { id: "clear-blue", label: "Vedro plavo" },
@@ -110,6 +135,9 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     units: 1,
     description: "Brza promena boje zidova uz color picker i dodatne instrukcije.",
     supportsColor: true,
+    supportsMask: true,
+    recommendedProvider: "gemini_flash",
+    promptPlaceholder: "npr. zadrži boju lajsni i ramova, ne dirati nameštaj",
   },
   {
     id: "virtual_staging",
@@ -119,6 +147,9 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     units: 2,
     description: "Dodavanje nameštaja i dekora u praznu ili slabo uređenu prostoriju.",
     supportsStyles: true,
+    supportsMask: true,
+    recommendedProvider: "gemini_pro",
+    promptPlaceholder: "npr. topao moderni nameštaj, drveni patos, sačuvati prozore i osvetljenje",
     optionsLabel: "Tip prostorije",
     options: [
       { id: "living-room", label: "Dnevna soba" },
@@ -138,6 +169,9 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     units: 2,
     description: "Promena materijala, podova, zidova, kuhinje, kupatila ili celog izgleda.",
     supportsStyles: true,
+    supportsMask: true,
+    recommendedProvider: "gemini_pro",
+    promptPlaceholder: "npr. zameni pod hrastovim parketom, ostavi raspored kuhinje",
     optionsLabel: "Šta menjamo",
     options: [
       { id: "floors", label: "Podovi" },
@@ -157,6 +191,9 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     units: 2,
     description: "Promena stila, atmosfere i vizuelnog identiteta postojeće prostorije.",
     supportsStyles: true,
+    supportsMask: true,
+    recommendedProvider: "gemini_pro",
+    promptPlaceholder: "npr. svetli skandinavski stil, zadržati orijentaciju i prozore",
     optionsLabel: "Tip prostorije",
     options: [
       { id: "living-room", label: "Dnevna soba" },
@@ -209,6 +246,32 @@ export function getAiEditType(id: AiEditType): AiEditTypeDefinition {
   const def = AI_EDIT_TYPES.find((item) => item.id === id);
   if (!def) throw new Error(`Unknown AI edit type: ${id}`);
   return def;
+}
+
+// Splits a possibly-CSV selectedOption value into discrete option ids.
+// Multi-select edits store comma-separated; single-select edits store
+// a single id; null/empty returns []. Trims whitespace and drops empty.
+export function parseSelectedOptions(value: string | null | undefined): string[] {
+  if (!value) return [];
+  return value
+    .split(",")
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+}
+
+// Resolves the human-readable label(s) for a generation's selectedOption,
+// supporting both single (string) and multi (CSV) shapes.
+export function formatSelectedOptionLabels(
+  editType: AiEditType,
+  selectedOption: string | null | undefined,
+): string | null {
+  const ids = parseSelectedOptions(selectedOption);
+  if (ids.length === 0) return null;
+  const def = AI_EDIT_TYPES.find((item) => item.id === editType);
+  if (!def?.options) return ids.join(", ");
+  return ids
+    .map((id) => def.options!.find((opt) => opt.id === id)?.label ?? id)
+    .join(", ");
 }
 
 export function getAiProvider(id: AiImageProvider) {

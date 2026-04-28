@@ -64,6 +64,7 @@ export type AiGenerationStatusValue =
 export type SignedAiGeneration = {
   id: string;
   parentGenerationId: string | null;
+  paidGenerationId: string | null;
   editType: AiEditType;
   provider: AiImageProvider;
   model: string;
@@ -71,6 +72,7 @@ export type SignedAiGeneration = {
   styleId: string | null;
   status: AiGenerationStatusValue;
   unitsCharged: number;
+  coveredUnits: number;
   freeAttemptIndex: number | null;
   errorMessage: string | null;
   createdAt: string;
@@ -90,6 +92,10 @@ export type SignedAiGeneration = {
   rootFileName: string | null;
   inputFileName: string | null;
   resultFileName: string | null;
+  // Resolved server-side: parent generation's resultFileName, even if
+  // the parent isn't in the current 24-row history slice. Lets the
+  // detail modal render the breadcrumb without a separate fetch.
+  parentResultFileName: string | null;
   selectedOption: string | null;
   colorHex: string | null;
   maskInverted: boolean;
@@ -606,11 +612,24 @@ async function signGeneration(
     inputUrl = data?.signedUrl ?? null;
   }
 
+  // Resolve parent's resultFileName (for breadcrumb in the modal).
+  // Cheap single-row lookup; could be batched in signGenerations if
+  // it ever shows on a hot path. Same userId guard as elsewhere.
+  let parentResultFileName: string | null = null;
+  if (generation.parentGenerationId) {
+    const parent = await prisma.aiGeneration.findFirst({
+      where: { id: generation.parentGenerationId, userId: generation.userId },
+      select: { resultFileName: true },
+    });
+    parentResultFileName = parent?.resultFileName ?? null;
+  }
+
   const options = parseGenerationOptions(generation.optionsJson);
 
   return {
     id: generation.id,
     parentGenerationId: generation.parentGenerationId,
+    paidGenerationId: generation.paidGenerationId,
     editType: generation.editType,
     provider: generation.provider,
     model: generation.model,
@@ -618,6 +637,7 @@ async function signGeneration(
     styleId: generation.styleId,
     status: generation.status as AiGenerationStatusValue,
     unitsCharged: generation.unitsCharged,
+    coveredUnits: generation.coveredUnits,
     freeAttemptIndex: generation.freeAttemptIndex,
     errorMessage: sanitizeAiStudioError(generation.errorMessage),
     createdAt: generation.createdAt.toISOString(),
@@ -642,6 +662,7 @@ async function signGeneration(
     rootFileName: generation.rootFileName,
     inputFileName: generation.inputFileName,
     resultFileName: generation.resultFileName,
+    parentResultFileName,
     selectedOption: options.selectedOption,
     colorHex: options.colorHex,
     maskInverted: options.maskInverted,

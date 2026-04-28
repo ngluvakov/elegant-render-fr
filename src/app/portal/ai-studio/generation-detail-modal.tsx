@@ -28,10 +28,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  AI_EDIT_TYPES,
   AI_IMAGE_PROVIDERS,
   AI_STYLE_OPTIONS,
   formatCreditsFromUnits,
+  formatSelectedOptionLabels,
   getAiEditType,
   type AiEditType,
   type AiImageProvider,
@@ -62,6 +62,7 @@ export type GenerationDetail = {
   rootFileName: string | null;
   inputFileName: string | null;
   resultFileName: string | null;
+  parentResultFileName: string | null;
   filesExpired: boolean;
 };
 
@@ -92,14 +93,13 @@ function formatDateTime(value: string | null): string {
   });
 }
 
-function findOptionLabel(editType: AiEditType, optionId: string | null): string | null {
-  if (!optionId) return null;
-  const def = AI_EDIT_TYPES.find((t) => t.id === editType);
-  return def?.options?.find((o) => o.id === optionId)?.label ?? optionId;
-}
-
-function findStyleLabel(styleId: string | null): string | null {
-  if (!styleId) return null;
+function findStyleLabel(
+  editType: AiEditType,
+  styleId: string | null,
+): string | null {
+  if (!styleId || styleId === "none") return null;
+  const def = getAiEditType(editType);
+  if (!def.supportsStyles) return null;
   return AI_STYLE_OPTIONS.find((s) => s.id === styleId)?.label ?? styleId;
 }
 
@@ -131,8 +131,11 @@ export function GenerationDetailModal({
   if (!open || !generation) return null;
 
   const editDef = getAiEditType(generation.editType);
-  const optionLabel = findOptionLabel(generation.editType, generation.selectedOption);
-  const styleLabel = findStyleLabel(generation.styleId);
+  const optionLabel = formatSelectedOptionLabels(
+    generation.editType,
+    generation.selectedOption,
+  );
+  const styleLabel = findStyleLabel(generation.editType, generation.styleId);
   const providerLabel = findProviderLabel(generation.provider);
   const canDownloadInput = Boolean(generation.inputDownloadUrl) && !generation.filesExpired;
   const canDownloadResult =
@@ -214,9 +217,20 @@ export function GenerationDetailModal({
               <SettingRow
                 label="Naplata"
                 value={
-                  generation.unitsCharged === 0
-                    ? `Besplatno (pokušaj #${generation.freeAttemptIndex ?? 1})`
-                    : formatCreditsFromUnits(generation.unitsCharged)
+                  generation.unitsCharged === 0 ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.7rem] font-semibold text-[color:var(--color-sage-deep)]">
+                      Besplatan pokušaj #{generation.freeAttemptIndex ?? 1}
+                    </span>
+                  ) : generation.freeAttemptIndex !== null ? (
+                    <span className="text-foreground">
+                      Doplata {formatCreditsFromUnits(generation.unitsCharged)}{" "}
+                      <span className="text-muted-foreground">
+                        · besplatan #{generation.freeAttemptIndex}
+                      </span>
+                    </span>
+                  ) : (
+                    formatCreditsFromUnits(generation.unitsCharged)
+                  )
                 }
               />
               <SettingRow label="Engine" value={`${providerLabel} · ${generation.model}`} />

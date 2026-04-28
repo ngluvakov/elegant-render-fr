@@ -1,5 +1,6 @@
 import {
   AI_STYLE_OPTIONS,
+  formatSelectedOptionLabels,
   getAiEditType,
   type AiEditType,
 } from "./catalog";
@@ -29,8 +30,8 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
   ];
 
   if (edit.optionsLabel && options.selectedOption) {
-    const selected = edit.options?.find((item) => item.id === options.selectedOption);
-    lines.push(`${edit.optionsLabel}: ${selected?.label ?? options.selectedOption}.`);
+    const labels = formatSelectedOptionLabels(options.editType, options.selectedOption);
+    if (labels) lines.push(`${edit.optionsLabel}: ${labels}.`);
   }
 
   if (edit.supportsStyles && style && style.id !== "none") {

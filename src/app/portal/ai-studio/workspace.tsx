@@ -36,11 +36,14 @@ import { EmptyState } from "@/components/portal/empty-state";
 import { cn } from "@/lib/utils";
 import {
   AI_EDIT_TYPES,
+  AI_FREE_REGENERATIONS,
   AI_IMAGE_PROVIDERS,
   AI_STYLE_OPTIONS,
   DEFAULT_AI_PROVIDER,
   formatCreditsFromUnits,
+  formatSelectedOptionLabels,
   getAiEditType,
+  parseSelectedOptions,
   type AiEditType,
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
@@ -52,6 +55,7 @@ import {
 type GenerationHistoryItem = {
   id: string;
   parentGenerationId: string | null;
+  paidGenerationId: string | null;
   editType: AiEditType;
   provider: AiImageProvider;
   model: string;
@@ -59,6 +63,7 @@ type GenerationHistoryItem = {
   styleId: string | null;
   status: "queued" | "processing" | "completed" | "failed";
   unitsCharged: number;
+  coveredUnits: number;
   freeAttemptIndex: number | null;
   errorMessage: string | null;
   createdAt: string;
@@ -78,6 +83,7 @@ type GenerationHistoryItem = {
   rootFileName: string | null;
   inputFileName: string | null;
   resultFileName: string | null;
+  parentResultFileName: string | null;
   selectedOption: string | null;
   colorHex: string | null;
   maskInverted: boolean;
@@ -293,9 +299,17 @@ export function AiStudioWorkspace({
   }, [hasPendingJobs, history]);
 
   useEffect(() => {
-    setSelectedOption(activeEdit.options?.[0]?.id ?? "");
+    // Multi-select edits start with no selection (customer must pick).
+    // Single-select edits seed the first option as before.
+    setSelectedOption(
+      activeEdit.multiSelect ? "" : (activeEdit.options?.[0]?.id ?? ""),
+    );
     if (!activeEdit.supportsStyles) setStyleId("none");
     if (activeEdit.supportsStyles && styleId === "none") setStyleId("modern");
+    // Atmospheric edits operate globally — mask is meaningless. Force
+    // simple mode when the new type doesn't support a mask, otherwise
+    // leave the mode where the customer left it.
+    if (activeEdit.supportsMask === false) setMode("simple");
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editType]);
 
@@ -390,17 +404,25 @@ export function AiStudioWorkspace({
       rootFileName: item.rootFileName,
       inputFileName: item.inputFileName,
       resultFileName: item.resultFileName,
+      parentResultFileName: item.parentResultFileName,
       filesExpired: item.filesExpired,
     };
   }, [openGenerationId, history]);
 
   const parentResultFileName = useMemo(() => {
-    if (!openedGeneration?.parentGenerationId) return null;
+    if (!openedGeneration) return null;
     return (
+      openedGeneration.parentResultFileName ??
       history.find((entry) => entry.id === openedGeneration.parentGenerationId)
-        ?.resultFileName ?? null
+        ?.resultFileName ??
+      null
     );
   }, [openedGeneration, history]);
+
+  const costPreview = useMemo(
+    () => computeCostPreview(history, parentGenerationId, editType),
+    [history, parentGenerationId, editType],
+  );
 
   const handleModalUseResult = useCallback(
     (gen: GenerationDetail) => {
@@ -460,6 +482,13 @@ export function AiStudioWorkspace({
   const handleGenerate = async (maskBlob: Blob | null) => {
     if (!activeInput) {
       setError("Prvo uploadujte fotografiju.");
+      return;
+    }
+    if (
+      activeEdit.multiSelect &&
+      parseSelectedOptions(selectedOption).length === 0
+    ) {
+      setError(`Izaberite barem jednu kategoriju u "${activeEdit.optionsLabel ?? "opcije"}".`);
       return;
     }
     if (!parentGenerationId && balanceUnits < activeEdit.units) {
@@ -524,6 +553,7 @@ export function AiStudioWorkspace({
         {
           id: result.generationId!,
           parentGenerationId,
+          paidGenerationId: null,
           editType,
           provider,
           model:
@@ -533,6 +563,7 @@ export function AiStudioWorkspace({
           styleId: activeEdit.supportsStyles ? styleId : null,
           status: result.status ?? "queued",
           unitsCharged: result.unitsCharged ?? activeEdit.units,
+          coveredUnits: activeEdit.units,
           freeAttemptIndex: result.freeAttemptIndex ?? null,
           errorMessage: null,
           createdAt: now.toISOString(),
@@ -552,6 +583,7 @@ export function AiStudioWorkspace({
           rootFileName: null,
           inputFileName: activeInput.fileName,
           resultFileName: null,
+          parentResultFileName: null,
           selectedOption: selectedOption || null,
           colorHex: activeEdit.supportsColor ? colorHex : null,
           maskInverted: false,
@@ -631,6 +663,7 @@ export function AiStudioWorkspace({
 
           <AiImageEditor
             mode={mode}
+            editType={editType}
             baseInput={baseInput}
             currentResult={currentResult}
             onUseCurrentResult={setResultAsBaseInput}
@@ -642,6 +675,7 @@ export function AiStudioWorkspace({
             parentGenerationId={parentGenerationId}
             resetToken={editorResetToken}
             onMaskDirtyChange={setMaskDirty}
+            costPreview={costPreview}
           />
         </div>
 
@@ -722,7 +756,7 @@ function StudioControls({
                 active={editType === item.id}
                 onClick={() => setEditType(item.id)}
                 title={item.label}
-                subtitle={item.units === 1 ? "0.5 kredita" : "1 kredit"}
+                subtitle={formatCreditsFromUnits(item.units)}
               />
             ))}
           </div>
@@ -732,99 +766,146 @@ function StudioControls({
           <div>
             <ControlLabel>Engine</ControlLabel>
             <div className="mt-2 grid gap-2">
-              {AI_IMAGE_PROVIDERS.map((item) => (
-                <SelectableTile
-                  key={item.id}
-                  active={provider === item.id}
-                  onClick={() => setProvider(item.id)}
-                  title={item.label}
-                  trailing={
-                    provider === item.id ? (
-                      <Check className="h-4 w-4 text-accent" />
-                    ) : null
-                  }
-                />
-              ))}
+              {AI_IMAGE_PROVIDERS.map((item) => {
+                const recommended = edit.recommendedProvider === item.id;
+                return (
+                  <SelectableTile
+                    key={item.id}
+                    active={provider === item.id}
+                    onClick={() => setProvider(item.id)}
+                    title={item.label}
+                    subtitle={recommended ? "Preporučeno za ovu obradu" : undefined}
+                    trailing={
+                      provider === item.id ? (
+                        <Check className="h-4 w-4 text-accent" />
+                      ) : recommended ? (
+                        <span className="rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+                          Preporučeno
+                        </span>
+                      ) : null
+                    }
+                  />
+                );
+              })}
             </div>
           </div>
 
-          <div>
-            <ControlLabel>Mod</ControlLabel>
-            <div className="mt-2 grid grid-cols-2 rounded-xl border border-border/40 bg-card/40 p-1">
-              {(["simple", "advanced"] as ToolMode[]).map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setMode(item)}
-                  className={cn(
-                    "rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
-                    mode === item
-                      ? "bg-accent text-accent-foreground shadow-[0_8px_24px_-12px_rgba(184,131,99,0.45)]"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {item === "simple" ? "Simple" : "Advanced"}
-                </button>
-              ))}
+          {edit.supportsMask !== false && (
+            <div>
+              <ControlLabel>Mod</ControlLabel>
+              <div className="mt-2 grid grid-cols-2 rounded-xl border border-border/40 bg-card/40 p-1">
+                {(["simple", "advanced"] as ToolMode[]).map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setMode(item)}
+                    className={cn(
+                      "rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+                      mode === item
+                        ? "bg-accent text-accent-foreground shadow-[0_8px_24px_-12px_rgba(184,131,99,0.45)]"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {item === "simple" ? "Simple" : "Advanced"}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-1 text-[0.68rem] text-muted-foreground">
+                Advanced otključava masku za precizno označavanje.
+              </p>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="space-y-5">
-          {edit.options && (
-            <div>
-              <ControlLabel>{edit.optionsLabel}</ControlLabel>
-              <select
-                value={selectedOption}
-                onChange={(event) => setSelectedOption(event.target.value)}
-                className="mt-2 h-9 w-full rounded-lg border border-border/40 bg-card/40 px-3 text-sm outline-none transition-colors hover:border-accent/40 focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-ring/50"
-              >
-                {edit.options.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          {edit.options &&
+            (edit.multiSelect ? (
+              <div>
+                <ControlLabel>{edit.optionsLabel}</ControlLabel>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {edit.options.map((item) => {
+                    const ids = parseSelectedOptions(selectedOption);
+                    const isOn = ids.includes(item.id);
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() =>
+                          setSelectedOption(toggleOptionId(selectedOption, item.id))
+                        }
+                        className={cn(
+                          "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                          isOn
+                            ? "border-accent bg-accent/15 text-foreground"
+                            : "border-border/40 bg-card/40 text-muted-foreground hover:border-accent/40 hover:text-foreground",
+                        )}
+                      >
+                        {isOn && <Check className="mr-1 inline-block h-3 w-3 text-accent" />}
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-1 text-[0.68rem] text-muted-foreground">
+                  Označite jednu ili više kategorija.
+                </p>
+              </div>
+            ) : (
+              <div>
+                <ControlLabel>{edit.optionsLabel}</ControlLabel>
+                <select
+                  value={selectedOption}
+                  onChange={(event) => setSelectedOption(event.target.value)}
+                  className="mt-2 h-9 w-full rounded-lg border border-border/40 bg-card/40 px-3 text-sm outline-none transition-colors hover:border-accent/40 focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-ring/50"
+                >
+                  {edit.options.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
 
           {edit.supportsStyles && (
             <div>
               <ControlLabel>Stil</ControlLabel>
               <div className="mt-2 grid grid-cols-2 gap-2">
-                {AI_STYLE_OPTIONS.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setStyleId(item.id)}
-                    className={cn(
-                      "overflow-hidden rounded-xl border text-left text-xs transition-all",
-                      styleId === item.id
-                        ? "border-accent bg-accent/5 shadow-[0_8px_24px_-12px_rgba(184,131,99,0.35)]"
-                        : "border-border/40 bg-card/40 hover:border-accent/40",
-                    )}
-                  >
-                    {item.image && (
-                      <Image
-                        src={item.image}
-                        alt=""
-                        width={160}
-                        height={90}
-                        className="h-16 w-full object-cover"
-                      />
-                    )}
-                    <span
+                {AI_STYLE_OPTIONS.filter((item) => item.id !== "none").map(
+                  (item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setStyleId(item.id)}
                       className={cn(
-                        "block px-2 py-1.5 font-medium",
+                        "overflow-hidden rounded-xl border text-left text-xs transition-all",
                         styleId === item.id
-                          ? "text-foreground"
-                          : "text-muted-foreground",
+                          ? "border-accent bg-accent/5 shadow-[0_8px_24px_-12px_rgba(184,131,99,0.35)]"
+                          : "border-border/40 bg-card/40 hover:border-accent/40",
                       )}
                     >
-                      {item.label}
-                    </span>
-                  </button>
-                ))}
+                      {item.image && (
+                        <Image
+                          src={item.image}
+                          alt=""
+                          width={160}
+                          height={90}
+                          className="h-16 w-full object-cover"
+                        />
+                      )}
+                      <span
+                        className={cn(
+                          "block px-2 py-1.5 font-medium",
+                          styleId === item.id
+                            ? "text-foreground"
+                            : "text-muted-foreground",
+                        )}
+                      >
+                        {item.label}
+                      </span>
+                    </button>
+                  ),
+                )}
               </div>
             </div>
           )}
@@ -855,7 +936,9 @@ function StudioControls({
         <Textarea
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
-          placeholder="Npr. dodaj topao moderni nameštaj, sačuvaj perspektivu i prirodno svetlo..."
+          placeholder={
+            edit.promptPlaceholder ?? "Dodatne instrukcije (opciono)"
+          }
           className="mt-2 min-h-24"
         />
       </div>
@@ -865,6 +948,7 @@ function StudioControls({
 
 function AiImageEditor({
   mode,
+  editType,
   baseInput,
   currentResult,
   onUseCurrentResult,
@@ -876,8 +960,10 @@ function AiImageEditor({
   parentGenerationId,
   resetToken,
   onMaskDirtyChange,
+  costPreview,
 }: {
   mode: ToolMode;
+  editType: AiEditType;
   baseInput: UploadedInput | null;
   currentResult: UploadedInput | null;
   onUseCurrentResult: (value: UploadedInput) => void;
@@ -889,6 +975,7 @@ function AiImageEditor({
   parentGenerationId: string | null;
   resetToken: number;
   onMaskDirtyChange: (dirty: boolean) => void;
+  costPreview: { unitsCharged: number; freeAttemptIndex: number | null } | null;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const maskCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -1343,25 +1430,28 @@ function AiImageEditor({
             Resetuj sve
           </Button>
         )}
-        <Button
-          type="button"
-          variant="accent"
-          size="lg"
-          disabled={pending || !activeImage}
-          onClick={async () => onGenerate(await exportMask())}
-        >
-          {pending ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Generiše…
-            </>
-          ) : (
-            <>
-              <Sparkles className="h-4 w-4" />
-              Generate
-            </>
-          )}
-        </Button>
+        <div className="flex items-center gap-3">
+          <CostPreviewLabel editType={editType} preview={costPreview} />
+          <Button
+            type="button"
+            variant="accent"
+            size="lg"
+            disabled={pending || !activeImage}
+            onClick={async () => onGenerate(await exportMask())}
+          >
+            {pending ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generiše…
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -1447,6 +1537,14 @@ function HistoryPanel({
                     {new Date(item.createdAt).toLocaleDateString("sr-RS")} ·{" "}
                     {AI_IMAGE_PROVIDERS.find((p) => p.id === item.provider)?.label}
                   </p>
+                  {(() => {
+                    const ctx = formatHistoryContext(item);
+                    return ctx ? (
+                      <p className="mt-0.5 truncate text-[0.7rem] text-muted-foreground">
+                        {ctx}
+                      </p>
+                    ) : null;
+                  })()}
                   {item.resultFileName && (
                     <p className="mt-0.5 truncate font-mono text-[0.62rem] text-muted-foreground/70">
                       {item.resultFileName}
@@ -1605,6 +1703,112 @@ function BalanceCard({
       </Link>
     </div>
   );
+}
+
+// Builds a one-line history context string: style + option label(s)
+// when relevant. Returns null when there's nothing meaningful to show
+// (e.g. atmospheric edits without a populated option dropdown).
+function formatHistoryContext(item: GenerationHistoryItem): string | null {
+  const def = getAiEditType(item.editType);
+  const parts: string[] = [];
+  if (
+    def.supportsStyles &&
+    item.styleId &&
+    item.styleId !== "none"
+  ) {
+    const styleLabel = AI_STYLE_OPTIONS.find((s) => s.id === item.styleId)?.label;
+    if (styleLabel) parts.push(styleLabel);
+  }
+  const optionLabel = formatSelectedOptionLabels(item.editType, item.selectedOption);
+  if (optionLabel) parts.push(optionLabel);
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
+function CostPreviewLabel({
+  editType,
+  preview,
+}: {
+  editType: AiEditType;
+  preview: { unitsCharged: number; freeAttemptIndex: number | null } | null;
+}) {
+  const editUnits = getAiEditType(editType).units;
+  if (!preview) {
+    return (
+      <span className="text-xs text-muted-foreground">
+        Naplata:{" "}
+        <strong className="text-foreground">
+          {formatCreditsFromUnits(editUnits)}
+        </strong>
+      </span>
+    );
+  }
+  if (preview.unitsCharged === 0) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-3 py-1 text-xs font-semibold text-[color:var(--color-sage-deep)]">
+        Besplatan pokušaj #{preview.freeAttemptIndex} od {AI_FREE_REGENERATIONS}
+      </span>
+    );
+  }
+  if (preview.freeAttemptIndex !== null) {
+    return (
+      <span className="text-xs text-muted-foreground">
+        Doplata{" "}
+        <strong className="text-foreground">
+          {formatCreditsFromUnits(preview.unitsCharged)}
+        </strong>{" "}
+        · besplatan #{preview.freeAttemptIndex}
+      </span>
+    );
+  }
+  return (
+    <span className="text-xs text-muted-foreground">
+      Naplata:{" "}
+      <strong className="text-foreground">
+        {formatCreditsFromUnits(preview.unitsCharged)}
+      </strong>
+    </span>
+  );
+}
+
+function toggleOptionId(current: string, id: string): string {
+  const ids = parseSelectedOptions(current);
+  const next = ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id];
+  return next.join(",");
+}
+
+// Mirrors the server-side cost calc in startAiStudioGeneration (which
+// is the source of truth) so the customer sees the expected charge —
+// free, partial, or full credit — before clicking Generate. Returns
+// null when there's no parent linkage; falls back to editDef.units in
+// that case at the call site.
+function computeCostPreview(
+  history: GenerationHistoryItem[],
+  parentGenerationId: string | null,
+  editType: AiEditType,
+): { unitsCharged: number; freeAttemptIndex: number | null } | null {
+  if (!parentGenerationId) return null;
+  const parent = history.find((item) => item.id === parentGenerationId);
+  if (!parent || parent.status !== "completed") return null;
+  const paidId = parent.paidGenerationId ?? parent.id;
+  const root = history.find((item) => item.id === paidId);
+  if (!root) return null;
+
+  const freeUsed = history.filter(
+    (item) =>
+      item.paidGenerationId === paidId && item.freeAttemptIndex !== null,
+  ).length;
+  const editUnits = getAiEditType(editType).units;
+
+  if (freeUsed < AI_FREE_REGENERATIONS) {
+    if (editUnits <= root.coveredUnits) {
+      return { unitsCharged: 0, freeAttemptIndex: freeUsed + 1 };
+    }
+    return {
+      unitsCharged: editUnits - root.coveredUnits,
+      freeAttemptIndex: freeUsed + 1,
+    };
+  }
+  return { unitsCharged: editUnits, freeAttemptIndex: null };
 }
 
 async function uploadAiFile(file: File, purpose: "input" | "mask") {

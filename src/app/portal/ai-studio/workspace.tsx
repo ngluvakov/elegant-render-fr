@@ -32,6 +32,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { EmptyState } from "@/components/portal/empty-state";
+import { cn } from "@/lib/utils";
 import {
   AI_EDIT_TYPES,
   AI_IMAGE_PROVIDERS,
@@ -173,6 +175,16 @@ export function AiStudioWorkspace({
   const [maskDirty, setMaskDirty] = useState(false);
   const [editorResetToken, setEditorResetToken] = useState(0);
 
+  // Set when the user clicks "Resetuj sve" — suppresses the next
+  // auto-populate from refreshState / refreshGeneration so the result
+  // doesn't sneak back into the workspace via polling or the focus
+  // listener. Cleared the moment the user actively populates the
+  // workspace again (upload, generate, use-as-input, repeat).
+  const workspaceDismissedRef = useRef(false);
+  const markWorkspaceActive = useCallback(() => {
+    workspaceDismissedRef.current = false;
+  }, []);
+
   const activeEdit = useMemo(() => getAiEditType(editType), [editType]);
   const activeInput = baseInput;
   const hasPendingJobs = history.some(
@@ -189,6 +201,7 @@ export function AiStudioWorkspace({
     setBalanceUnits(nextState.balanceUnits);
     setCreditsExpireAt(nextState.creditsExpireAt);
     setHistory(nextState.generations);
+    if (workspaceDismissedRef.current) return;
     const latestCompleted = nextState.generations.find(
       (item) => item.status === "completed" && item.resultUrl,
     );
@@ -231,7 +244,8 @@ export function AiStudioWorkspace({
     if (
       data.generation.status === "completed" &&
       data.generation.resultUrl &&
-      data.generation.resultStoragePath
+      data.generation.resultStoragePath &&
+      !workspaceDismissedRef.current
     ) {
       setResultUrl(data.generation.resultUrl);
       setCurrentResult({
@@ -285,9 +299,34 @@ export function AiStudioWorkspace({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editType]);
 
+  // Wipes the workspace back to defaults — radna slika, rezultat,
+  // promptovi, kontrole, modal. Ne dira history ni balance. Sets the
+  // dismissed flag so a focus-fired or interval-fired refresh doesn't
+  // immediately re-populate the cleared workspace.
+  const handleClearAll = useCallback(() => {
+    setBaseInput(null);
+    setCurrentResult(null);
+    setResultUrl(null);
+    setParentGenerationId(null);
+    setEditType("virtual_staging");
+    setProvider(DEFAULT_AI_PROVIDER);
+    setSelectedOption("");
+    setStyleId("modern");
+    setColorHex("#f2eee8");
+    setPrompt("");
+    setMode("simple");
+    setMaskDirty(false);
+    setEditorResetToken((value) => value + 1);
+    setOpenGenerationId(null);
+    setError("");
+    setNotice("Radna slika i podešavanja su obrisani.");
+    workspaceDismissedRef.current = true;
+  }, []);
+
   const handleUpload = async (file: File) => {
     setError("");
     setNotice("");
+    markWorkspaceActive();
     const upload = await uploadAiFile(file, "input");
     const url = URL.createObjectURL(file);
     const nextInput = {
@@ -304,12 +343,13 @@ export function AiStudioWorkspace({
   };
 
   const setResultAsBaseInput = useCallback((nextInput: UploadedInput) => {
+    markWorkspaceActive();
     setBaseInput(nextInput);
     if (nextInput.generationId) setParentGenerationId(nextInput.generationId);
     setMaskDirty(false);
     setEditorResetToken((value) => value + 1);
     setNotice("Rezultat je postavljen kao nova slika za obradu.");
-  }, []);
+  }, [markWorkspaceActive]);
 
   // Builds the modal payload from a history item. Wrapper so the
   // workspace doesn't have to know about modal types when wiring clicks.
@@ -367,6 +407,7 @@ export function AiStudioWorkspace({
       if (!gen.resultUrl) return;
       const item = history.find((entry) => entry.id === gen.id);
       if (!item || !item.resultStoragePath) return;
+      markWorkspaceActive();
       const nextInput: UploadedInput = {
         url: gen.resultUrl,
         storagePath: item.resultStoragePath,
@@ -380,7 +421,7 @@ export function AiStudioWorkspace({
       setResultUrl(gen.resultUrl);
       setOpenGenerationId(null);
     },
-    [history, setResultAsBaseInput],
+    [history, setResultAsBaseInput, markWorkspaceActive],
   );
 
   // "Repeat with same settings" — feed the gen's INPUT image back into
@@ -391,6 +432,7 @@ export function AiStudioWorkspace({
       if (!gen.inputUrl) return;
       const item = history.find((entry) => entry.id === gen.id);
       if (!item) return;
+      markWorkspaceActive();
       setBaseInput({
         url: gen.inputUrl,
         storagePath: item.inputStoragePath,
@@ -412,7 +454,7 @@ export function AiStudioWorkspace({
       setOpenGenerationId(null);
       setNotice("Podešavanja su učitana. Pokrenite obradu kada budete spremni.");
     },
-    [history],
+    [history, markWorkspaceActive],
   );
 
   const handleGenerate = async (maskBlob: Blob | null) => {
@@ -428,6 +470,7 @@ export function AiStudioWorkspace({
     setPending(true);
     setError("");
     setNotice("");
+    markWorkspaceActive();
 
     try {
       let maskStoragePath: string | null = null;
@@ -537,32 +580,22 @@ export function AiStudioWorkspace({
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-3xl text-foreground md:text-4xl">
-            AI Studio
+        <div className="min-w-0">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
+            AI Studio · Beta
+          </p>
+          <h1 className="mt-1 font-heading text-3xl text-foreground md:text-4xl">
+            Brza obrada fotografija
           </h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            AI obrada fotografija nekretnina: brz simple mode, precizan advanced
-            mode sa maskama, selekcijom i crtanjem po slici.
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Brz simple mode, precizan advanced mode sa maskama, selekcijom i
+            crtanjem po slici. Krediti važe 12 meseci od poslednje dopune.
           </p>
         </div>
-        <div className="rounded-2xl border border-border/60 bg-card/80 px-4 py-3 text-right">
-          <div className="flex items-center justify-end gap-2 text-sm font-semibold text-foreground">
-            <Coins className="h-4 w-4 text-accent" />
-            {formatCreditsFromUnits(balanceUnits)}
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {creditsExpireAt
-              ? `Dostupno do ${new Date(creditsExpireAt).toLocaleDateString("sr-RS")}`
-              : "Krediti nisu aktivni"}
-          </p>
-          <Link
-            href="/portal/ai-studio/krediti"
-            className="mt-2 inline-flex text-xs font-semibold text-accent hover:underline"
-          >
-            Dopuni kredite
-          </Link>
-        </div>
+        <BalanceCard
+          balanceUnits={balanceUnits}
+          creditsExpireAt={creditsExpireAt}
+        />
       </div>
 
       {error && (
@@ -603,6 +636,7 @@ export function AiStudioWorkspace({
             onUseCurrentResult={setResultAsBaseInput}
             onUpload={handleUpload}
             onGenerate={handleGenerate}
+            onClearAll={handleClearAll}
             pending={pending}
             resultUrl={resultUrl}
             parentGenerationId={parentGenerationId}
@@ -677,72 +711,57 @@ function StudioControls({
   const edit = getAiEditType(editType);
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/80 p-5">
-      <div className="grid gap-4 lg:grid-cols-3">
+    <div className="rounded-2xl border border-border/40 bg-card/60 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
+      <div className="grid gap-5 lg:grid-cols-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Obrada
-          </p>
+          <ControlLabel>Obrada</ControlLabel>
           <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
             {AI_EDIT_TYPES.map((item) => (
-              <button
+              <SelectableTile
                 key={item.id}
-                type="button"
+                active={editType === item.id}
                 onClick={() => setEditType(item.id)}
-                className={`rounded-xl border px-3 py-2 text-left transition ${
-                  editType === item.id
-                    ? "border-accent bg-accent/10"
-                    : "border-border/60 bg-background/50 hover:border-accent/40"
-                }`}
-              >
-                <span className="block text-sm font-semibold text-foreground">
-                  {item.label}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {item.units === 1 ? "0.5 kredita" : "1 kredit"}
-                </span>
-              </button>
+                title={item.label}
+                subtitle={item.units === 1 ? "0.5 kredita" : "1 kredit"}
+              />
             ))}
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Engine
-            </p>
+            <ControlLabel>Engine</ControlLabel>
             <div className="mt-2 grid gap-2">
               {AI_IMAGE_PROVIDERS.map((item) => (
-                <button
+                <SelectableTile
                   key={item.id}
-                  type="button"
+                  active={provider === item.id}
                   onClick={() => setProvider(item.id)}
-                  className={`flex items-center justify-between rounded-xl border px-3 py-2 text-left text-sm transition ${
-                    provider === item.id
-                      ? "border-accent bg-accent/10 text-foreground"
-                      : "border-border/60 bg-background/50 text-muted-foreground hover:border-accent/40"
-                  }`}
-                >
-                  {item.label}
-                  {provider === item.id && <Check className="h-4 w-4 text-accent" />}
-                </button>
+                  title={item.label}
+                  trailing={
+                    provider === item.id ? (
+                      <Check className="h-4 w-4 text-accent" />
+                    ) : null
+                  }
+                />
               ))}
             </div>
           </div>
 
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Mod
-            </p>
-            <div className="mt-2 grid grid-cols-2 rounded-xl border border-border/60 bg-background/50 p-1">
+            <ControlLabel>Mod</ControlLabel>
+            <div className="mt-2 grid grid-cols-2 rounded-xl border border-border/40 bg-card/40 p-1">
               {(["simple", "advanced"] as ToolMode[]).map((item) => (
                 <button
                   key={item}
                   type="button"
                   onClick={() => setMode(item)}
-                  className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
-                    mode === item ? "bg-accent text-white" : "text-muted-foreground"
-                  }`}
+                  className={cn(
+                    "rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+                    mode === item
+                      ? "bg-accent text-accent-foreground shadow-[0_8px_24px_-12px_rgba(184,131,99,0.45)]"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
                 >
                   {item === "simple" ? "Simple" : "Advanced"}
                 </button>
@@ -751,16 +770,14 @@ function StudioControls({
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           {edit.options && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                {edit.optionsLabel}
-              </p>
+              <ControlLabel>{edit.optionsLabel}</ControlLabel>
               <select
                 value={selectedOption}
                 onChange={(event) => setSelectedOption(event.target.value)}
-                className="mt-2 h-9 w-full rounded-lg border border-input bg-background px-3 text-sm outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="mt-2 h-9 w-full rounded-lg border border-border/40 bg-card/40 px-3 text-sm outline-none transition-colors hover:border-accent/40 focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-ring/50"
               >
                 {edit.options.map((item) => (
                   <option key={item.id} value={item.id}>
@@ -773,20 +790,19 @@ function StudioControls({
 
           {edit.supportsStyles && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Stil
-              </p>
+              <ControlLabel>Stil</ControlLabel>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 {AI_STYLE_OPTIONS.map((item) => (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => setStyleId(item.id)}
-                    className={`overflow-hidden rounded-xl border text-left text-xs transition ${
+                    className={cn(
+                      "overflow-hidden rounded-xl border text-left text-xs transition-all",
                       styleId === item.id
-                        ? "border-accent bg-accent/10"
-                        : "border-border/60 bg-background/50"
-                    }`}
+                        ? "border-accent bg-accent/5 shadow-[0_8px_24px_-12px_rgba(184,131,99,0.35)]"
+                        : "border-border/40 bg-card/40 hover:border-accent/40",
+                    )}
                   >
                     {item.image && (
                       <Image
@@ -797,7 +813,14 @@ function StudioControls({
                         className="h-16 w-full object-cover"
                       />
                     )}
-                    <span className="block px-2 py-1.5 text-foreground">
+                    <span
+                      className={cn(
+                        "block px-2 py-1.5 font-medium",
+                        styleId === item.id
+                          ? "text-foreground"
+                          : "text-muted-foreground",
+                      )}
+                    >
                       {item.label}
                     </span>
                   </button>
@@ -808,20 +831,18 @@ function StudioControls({
 
           {edit.supportsColor && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                Boja
-              </p>
+              <ControlLabel>Boja</ControlLabel>
               <div className="mt-2 flex items-center gap-2">
                 <Input
                   type="color"
                   value={colorHex}
                   onChange={(event) => setColorHex(event.target.value)}
-                  className="h-10 w-14 p-1"
+                  className="h-10 w-14 cursor-pointer p-1"
                 />
                 <Input
                   value={colorHex}
                   onChange={(event) => setColorHex(event.target.value)}
-                  className="h-10"
+                  className="h-10 font-mono text-xs"
                 />
               </div>
             </div>
@@ -829,10 +850,8 @@ function StudioControls({
         </div>
       </div>
 
-      <div className="mt-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Prompt
-        </p>
+      <div className="mt-5">
+        <ControlLabel>Prompt</ControlLabel>
         <Textarea
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
@@ -851,6 +870,7 @@ function AiImageEditor({
   onUseCurrentResult,
   onUpload,
   onGenerate,
+  onClearAll,
   pending,
   resultUrl,
   parentGenerationId,
@@ -863,6 +883,7 @@ function AiImageEditor({
   onUseCurrentResult: (value: UploadedInput) => void;
   onUpload: (file: File) => void;
   onGenerate: (mask: Blob | null) => void;
+  onClearAll: () => void;
   pending: boolean;
   resultUrl: string | null;
   parentGenerationId: string | null;
@@ -880,6 +901,7 @@ function AiImageEditor({
   const [rectStart, setRectStart] = useState<{ x: number; y: number } | null>(null);
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
+  const [confirmingClear, setConfirmingClear] = useState(false);
   const activeImage = baseInput;
 
   const resetCanvas = useCallback(() => {
@@ -999,26 +1021,27 @@ function AiImageEditor({
   };
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/80 p-5">
+    <div className="rounded-2xl border border-border/40 bg-card/60 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Radna slika</h2>
+          <h2 className="font-heading text-lg text-foreground">Radna slika</h2>
           <p className="text-sm text-muted-foreground">
             Jedna slika po obradi. Advanced maska je opciona.
           </p>
         </div>
         {currentResult && (
-          <button
+          <Button
             type="button"
-            onClick={() => onUseCurrentResult(currentResult)}
-            className={`rounded-lg border px-3 py-2 text-xs font-semibold ${
+            variant={
               baseInput?.storagePath === currentResult.storagePath
-                ? "border-accent bg-accent/10 text-accent"
-                : "border-border/60 text-muted-foreground"
-            }`}
+                ? "accent"
+                : "outline"
+            }
+            size="sm"
+            onClick={() => onUseCurrentResult(currentResult)}
           >
             Koristi rezultat kao sliku za obradu
-          </button>
+          </Button>
         )}
         <input
           ref={fileRef}
@@ -1137,8 +1160,8 @@ function AiImageEditor({
       )}
 
       <div className="mt-4 grid gap-4 xl:grid-cols-2">
-        <div className="overflow-auto rounded-2xl border border-border/60 bg-background/50 p-3">
-          <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="rounded-2xl border border-border/30 bg-muted/30 p-3">
+          <div className="mb-3 flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Slika za obradu
@@ -1151,25 +1174,26 @@ function AiImageEditor({
             </div>
             <div className="flex items-center gap-2">
               {baseInput?.generationId && parentGenerationId && (
-                <span className="text-[0.7rem] text-muted-foreground">
-                  Iz prethodnog rezultata
+                <span className="rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+                  Iz prethodnog
                 </span>
               )}
               {activeImage && (
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="xs"
                   onClick={() => fileRef.current?.click()}
-                  className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-background/80 px-2 py-1 text-[0.7rem] font-medium text-muted-foreground transition hover:border-accent/40 hover:text-foreground"
                 >
                   <Upload className="h-3 w-3" />
-                  Promeni sliku
-                </button>
+                  Promeni
+                </Button>
               )}
             </div>
           </div>
           {activeImage ? (
             <div
-              className="relative mx-auto max-w-full touch-none overflow-hidden rounded-xl bg-black/5"
+              className="relative mx-auto max-w-full touch-none overflow-hidden rounded-xl bg-foreground/5"
               style={{ width: `${Math.min(100 * zoom, 180)}%` }}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
@@ -1198,75 +1222,145 @@ function AiImageEditor({
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="flex min-h-[420px] w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/70 bg-background/40 text-center transition hover:border-accent/50"
+              className="group flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-xl border border-border/40 bg-card/40 text-center transition-colors hover:border-accent/50 hover:bg-card/60"
             >
-              <ImageIcon className="h-10 w-10 text-muted-foreground/50" />
-              <span className="mt-3 text-sm font-semibold text-foreground">
-                Uploadujte fotografiju
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]">
+                <ImageIcon className="h-5 w-5" />
               </span>
-              <span className="mt-1 text-xs text-muted-foreground">
-                JPG, PNG ili WebP do 50MB
+              <span className="px-6">
+                <span className="block text-base font-semibold text-foreground">
+                  Dodajte fotografiju
+                </span>
+                <span className="mt-1 block max-w-xs text-sm text-muted-foreground">
+                  JPG, PNG ili WebP do 50MB. Ime fajla će se preneti u download.
+                </span>
+              </span>
+              <span className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground shadow-[0_14px_34px_-12px_rgba(159,106,75,0.45)] transition-transform group-hover:translate-y-[-1px]">
+                <Upload className="h-3.5 w-3.5" />
+                Izaberi fajl
               </span>
             </button>
           )}
         </div>
 
-        <div className="rounded-2xl border border-border/60 bg-background/50 p-3">
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Rezultat
-            </p>
+        <div className="rounded-2xl border border-border/30 bg-muted/30 p-3">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Rezultat
+              </p>
+              {currentResult?.fileName && resultUrl && (
+                <p className="mt-0.5 truncate font-mono text-[0.68rem] text-foreground/60">
+                  {currentResult.fileName}
+                </p>
+              )}
+            </div>
+            {resultUrl && currentResult?.generationId && (
+              <a
+                href={`/api/ai-studio/generations/${currentResult.generationId}/download`}
+                download
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.72rem] font-semibold text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
+              >
+                <Download className="h-3 w-3" />
+                Preuzmi
+              </a>
+            )}
           </div>
           {resultUrl ? (
-            <div className="space-y-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={resultUrl}
-                alt="AI rezultat"
-                className="h-auto w-full rounded-xl object-contain"
-              />
-              <a
-                href={
-                  currentResult?.generationId
-                    ? `/api/ai-studio/generations/${currentResult.generationId}/download`
-                    : resultUrl
-                }
-                download
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-foreground px-4 text-sm font-semibold text-background"
-              >
-                <Download className="h-4 w-4" />
-                Preuzmi rezultat
-              </a>
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={resultUrl}
+              alt="AI rezultat"
+              className="block aspect-[4/3] w-full rounded-xl bg-foreground/5 object-contain"
+            />
+          ) : pending ? (
+            <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-xl border border-border/40 bg-card/40 text-center">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+                <Loader2 className="h-5 w-5 animate-spin" />
+              </span>
+              <span className="px-6">
+                <span className="block text-base font-semibold text-foreground">
+                  Generišemo rezultat…
+                </span>
+                <span className="mt-1 block text-sm text-muted-foreground">
+                  Možete ostati na ovoj stranici ili se vratiti kasnije.
+                </span>
+              </span>
             </div>
           ) : (
-            <div className="flex min-h-[420px] flex-col items-center justify-center text-center">
-              <Wand2 className="h-10 w-10 text-muted-foreground/40" />
-              <p className="mt-3 text-sm font-semibold text-foreground">
-                Rezultat će se prikazati ovde
-              </p>
-              <p className="mt-1 max-w-xs text-xs text-muted-foreground">
-                Kredit se rezerviše kada obrada krene. Ako AI obrada tehnički
-                ne uspe, kredit se automatski vraća.
-              </p>
+            <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-xl border border-border/40 bg-card/40 text-center">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+                <Wand2 className="h-5 w-5" />
+              </span>
+              <span className="px-6">
+                <span className="block text-base font-semibold text-foreground">
+                  Rezultat će se prikazati ovde
+                </span>
+                <span className="mt-1 block max-w-xs text-sm text-muted-foreground">
+                  Kredit se rezerviše kada obrada krene. Ako AI tehnički ne uspe, kredit se automatski vraća.
+                </span>
+              </span>
             </div>
           )}
         </div>
       </div>
 
-      <div className="mt-5 flex justify-end">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+        {confirmingClear ? (
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-muted-foreground">
+              Obriši radnu sliku, rezultat i podešavanja?
+            </span>
+            <Button
+              type="button"
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                onClearAll();
+                setConfirmingClear(false);
+              }}
+            >
+              Da, obriši
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setConfirmingClear(false)}
+            >
+              Otkaži
+            </Button>
+          </div>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setConfirmingClear(true)}
+            disabled={pending}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Resetuj sve
+          </Button>
+        )}
         <Button
           type="button"
           variant="accent"
-          size="xl"
+          size="lg"
           disabled={pending || !activeImage}
           onClick={async () => onGenerate(await exportMask())}
         >
           {pending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Generiše…
+            </>
           ) : (
-            <Sparkles className="h-4 w-4" />
+            <>
+              <Sparkles className="h-4 w-4" />
+              Generate
+            </>
           )}
-          Generate
         </Button>
       </div>
     </div>
@@ -1308,96 +1402,208 @@ function HistoryPanel({
   onUseResult: (item: GenerationHistoryItem) => void;
 }) {
   return (
-    <aside className="rounded-2xl border border-border/60 bg-card/80 p-4">
-      <h2 className="text-lg font-semibold text-foreground">Istorija</h2>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Klikni na obradu za detalje. Fajlovi su dostupni 30 dana.
-      </p>
-      <div className="mt-4 space-y-3">
-        {history.length === 0 && (
-          <div className="rounded-xl border border-dashed border-border/70 p-6 text-center text-sm text-muted-foreground">
-            Još nema AI obrada.
-          </div>
-        )}
-        {history.map((item) => (
-          <div
-            key={item.id}
-            className="rounded-xl border border-border/50 bg-background/50 transition hover:border-accent/40"
-          >
-            <button
-              type="button"
-              onClick={() => onOpen(item)}
-              className="flex w-full items-start gap-3 rounded-t-xl p-3 text-left"
+    <aside className="rounded-2xl border border-border/40 bg-card/60 p-4 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
+      <div className="mb-4">
+        <h2 className="font-heading text-lg text-foreground">Istorija</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Klikni na obradu za detalje. Fajlovi su dostupni 30 dana.
+        </p>
+      </div>
+      {history.length === 0 ? (
+        <EmptyState
+          icon={Wand2}
+          heading="Bez obrada"
+          description="Vaše AI obrade će se pojaviti ovde."
+        />
+      ) : (
+        <div className="space-y-3">
+          {history.map((item) => (
+            <div
+              key={item.id}
+              className="overflow-hidden rounded-xl border border-border/40 bg-card/40 transition-colors hover:border-accent/40 hover:bg-card/80"
             >
-              {item.resultUrl && !item.filesExpired ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={item.resultUrl}
-                  alt=""
-                  className="h-16 w-16 rounded-lg object-cover"
-                />
-              ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
-                  <Eraser className="h-5 w-5" />
+              <button
+                type="button"
+                onClick={() => onOpen(item)}
+                className="flex w-full items-start gap-3 p-3 text-left"
+              >
+                {item.resultUrl && !item.filesExpired ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={item.resultUrl}
+                    alt=""
+                    className="h-16 w-16 shrink-0 rounded-xl object-cover"
+                  />
+                ) : (
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-secondary/60 text-muted-foreground">
+                    <Eraser className="h-5 w-5" />
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-foreground">
+                    {getAiEditType(item.editType).label}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(item.createdAt).toLocaleDateString("sr-RS")} ·{" "}
+                    {AI_IMAGE_PROVIDERS.find((p) => p.id === item.provider)?.label}
+                  </p>
+                  {item.resultFileName && (
+                    <p className="mt-0.5 truncate font-mono text-[0.62rem] text-muted-foreground/70">
+                      {item.resultFileName}
+                    </p>
+                  )}
+                  {(item.status === "queued" || item.status === "processing") && (
+                    <p className="mt-1 inline-flex items-center gap-1 text-xs text-accent">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      {item.status === "queued" ? "Čeka obradu" : "Obrada u toku"}
+                    </p>
+                  )}
+                  {item.status === "failed" && (
+                    <p className="mt-1 text-xs text-destructive">
+                      {item.errorMessage ?? "Obrada nije uspela."}
+                    </p>
+                  )}
+                  {item.filesExpired && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Fajl je istekao.
+                    </p>
+                  )}
+                </div>
+              </button>
+              {item.resultUrl && !item.filesExpired && (
+                <div className="flex gap-2 border-t border-border/30 p-3 pt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onUseResult(item);
+                    }}
+                  >
+                    Koristi kao sliku
+                  </Button>
+                  <a
+                    href={item.downloadUrl ?? `/api/ai-studio/generations/${item.id}/download`}
+                    download
+                    onClick={(event) => event.stopPropagation()}
+                    className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.8rem] font-medium text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
+                  >
+                    <Download className="h-3 w-3" />
+                    Preuzmi
+                  </a>
                 </div>
               )}
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-foreground">
-                  {getAiEditType(item.editType).label}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(item.createdAt).toLocaleDateString("sr-RS")} ·{" "}
-                  {AI_IMAGE_PROVIDERS.find((p) => p.id === item.provider)?.label}
-                </p>
-                {item.resultFileName && (
-                  <p className="mt-0.5 truncate font-mono text-[0.62rem] text-muted-foreground/70">
-                    {item.resultFileName}
-                  </p>
-                )}
-                {(item.status === "queued" || item.status === "processing") && (
-                  <p className="mt-1 text-xs text-accent">
-                    {item.status === "queued" ? "Čeka obradu" : "Obrada u toku"}
-                  </p>
-                )}
-                {item.status === "failed" && (
-                  <p className="mt-1 text-xs text-destructive">
-                    {item.errorMessage ?? "Obrada nije uspela."}
-                  </p>
-                )}
-                {item.filesExpired && (
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Fajl je istekao.
-                  </p>
-                )}
-              </div>
-            </button>
-            {item.resultUrl && !item.filesExpired && (
-              <div className="flex gap-2 border-t border-border/30 p-3 pt-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onUseResult(item);
-                  }}
-                >
-                  Koristi kao sliku za obradu
-                </Button>
-                <a
-                  href={item.downloadUrl ?? `/api/ai-studio/generations/${item.id}/download`}
-                  download
-                  onClick={(event) => event.stopPropagation()}
-                  className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-card/60 px-3 text-[0.8rem] font-medium"
-                >
-                  Download
-                </a>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      )}
     </aside>
+  );
+}
+
+function ControlLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+      {children}
+    </p>
+  );
+}
+
+function SelectableTile({
+  active,
+  onClick,
+  title,
+  subtitle,
+  trailing,
+}: {
+  active: boolean;
+  onClick: () => void;
+  title: string;
+  subtitle?: string;
+  trailing?: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-colors",
+        active
+          ? "border-accent bg-accent/10 text-foreground shadow-[0_8px_24px_-12px_rgba(184,131,99,0.35)]"
+          : "border-border/40 bg-card/40 text-muted-foreground hover:border-accent/40 hover:text-foreground",
+      )}
+    >
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-sm font-semibold">{title}</span>
+        {subtitle && (
+          <span
+            className={cn(
+              "mt-0.5 block text-[0.7rem]",
+              active ? "text-foreground/70" : "text-muted-foreground/80",
+            )}
+          >
+            {subtitle}
+          </span>
+        )}
+      </span>
+      {trailing}
+    </button>
+  );
+}
+
+function BalanceCard({
+  balanceUnits,
+  creditsExpireAt,
+}: {
+  balanceUnits: number;
+  creditsExpireAt: string | null;
+}) {
+  // Snap "now" to mount time so the hint is stable through re-renders
+  // and React's purity lint stays happy. Days-left is a hint, not a
+  // stopwatch — refreshing the page will resync if it matters.
+  const [mountedAt] = useState(() => Date.now());
+  const expiresAt = creditsExpireAt ? new Date(creditsExpireAt) : null;
+  const daysLeft = expiresAt
+    ? Math.ceil((expiresAt.getTime() - mountedAt) / (1000 * 60 * 60 * 24))
+    : null;
+  const lowBalance = balanceUnits === 0 || (daysLeft !== null && daysLeft <= 14);
+
+  return (
+    <div
+      className={cn(
+        "rounded-2xl border px-4 py-3 text-right shadow-[0_4px_16px_rgba(28,26,25,0.03)]",
+        lowBalance
+          ? "border-accent/30 bg-accent/5"
+          : "border-[color:var(--color-sage)]/25 bg-[color:var(--color-sage)]/5",
+      )}
+    >
+      <div className="flex items-center justify-end gap-2 text-sm font-semibold text-foreground">
+        <Coins
+          className={cn(
+            "h-4 w-4",
+            lowBalance ? "text-accent" : "text-[color:var(--color-sage-deep)]",
+          )}
+        />
+        {formatCreditsFromUnits(balanceUnits)}
+      </div>
+      <p className="mt-1 text-xs text-muted-foreground">
+        {expiresAt
+          ? `Dostupno do ${expiresAt.toLocaleDateString("sr-RS")}`
+          : "Krediti nisu aktivni"}
+      </p>
+      <Link
+        href="/portal/ai-studio/krediti"
+        className={cn(
+          "mt-2 inline-flex text-xs font-semibold hover:underline",
+          lowBalance
+            ? "text-accent"
+            : "text-[color:var(--color-sage-deep)]",
+        )}
+      >
+        Dopuni kredite
+      </Link>
+    </div>
   );
 }
 

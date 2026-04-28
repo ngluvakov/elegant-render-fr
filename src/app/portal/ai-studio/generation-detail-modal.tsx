@@ -153,8 +153,8 @@ export function GenerationDetailModal({
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-border/60 bg-background shadow-[0_24px_60px_rgba(0,0,0,0.18)]">
-        <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-border/40 bg-background/95 px-6 py-4 backdrop-blur">
+      <div className="relative max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-border/40 bg-card/95 shadow-[0_24px_60px_rgba(28,26,25,0.18)] backdrop-blur">
+        <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-border/40 bg-card/95 px-6 py-4 backdrop-blur">
           <div className="min-w-0">
             <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               {STATUS_LABEL[generation.status]} · {providerLabel}

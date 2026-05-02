@@ -71,7 +71,7 @@ function PortalCreditSummary() {
             </p>
           </div>
           <div className="flex items-center justify-between border-t border-border/50 pt-4">
-            <span className="text-sm text-muted-foreground">Ukupno sa PDV-om</span>
+            <span className="text-sm text-muted-foreground">Ukupno (bez PDV-a)</span>
             <span className="text-2xl font-bold text-foreground">
               {formatCents(calculation.totalCents)}
             </span>

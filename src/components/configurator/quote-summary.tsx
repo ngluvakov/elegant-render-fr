@@ -332,7 +332,8 @@ export function QuoteSummary() {
 
           <p className="mt-3 text-center text-[0.68rem] text-background/30">
             Cene su procene. Konačna ponuda može varirati u zavisnosti od
-            specifičnosti projekta. Sve cene su u EUR sa uračunatim PDV-om.
+            specifičnosti projekta. Sve cene su u EUR, bez PDV-a (PDV se ne
+            obračunava).
           </p>
         </div>
       )}

@@ -224,14 +224,14 @@ export function QuoteSummary() {
                       <strong className="text-[color:var(--color-sage)]">
                         −40%
                       </strong>{" "}
-                      (model postoji)
+                      (eksterijer je već izgrađen u modelu)
                     </li>
                     <li>
                       • Enterijer + 3D osnova sprata → osnova je{" "}
                       <strong className="text-[color:var(--color-sage)]">
                         −70%
                       </strong>{" "}
-                      (geometrija postoji)
+                      (prostor je već modelovan)
                     </li>
                     <li>
                       • Animacija + eksterijer → oba dobijaju popust jer

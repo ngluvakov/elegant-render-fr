@@ -12,7 +12,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import * as Sentry from "@sentry/nextjs";
-import { calculateQuote, type QuoteItem } from "@/lib/catalog/calculate";
+import { priceItems, type QuoteItem } from "@/lib/catalog/calculate";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { isAiCreditProduct } from "@/lib/ai-studio/catalog";
 import { generateOrderNumber } from "@/lib/order/generate-number";
@@ -63,8 +63,11 @@ export async function createOrder(
     }
   }
 
-  // Server-side price verification
-  const calculation = calculateQuote(quoteItems);
+  // Server-side price verification. priceItems is the orchestrator that
+  // routes int-static / int-360 items through their per-floor helpers
+  // (calcInteriorTotal / calcTour360Total) so the order total matches
+  // what the customer saw on /cene exactly.
+  const calculation = priceItems(quoteItems);
 
   if (calculation.total <= 0) {
     return { error: "Ukupna cena mora biti veća od 0." };
@@ -92,26 +95,43 @@ export async function createOrder(
       containsAiCredits,
       customerNote: customerNote || null,
       items: {
-        create: calculation.items.map((item) => ({
-          productId: item.productId,
-          categoryId: quoteItems.find((q) => q.instanceId === item.instanceId)
-            ?.categoryId ?? "",
-          kind: item.kind,
-          productLabel: item.productLabel,
-          categoryLabel: item.categoryLabel,
-          basePriceEur: Math.round(item.basePriceEur),
-          basePriceCents: item.basePriceCents,
-          totalEur: Math.round(item.totalEur),
-          totalCents: item.totalCents,
-          aiCreditQuantity: item.aiCreditQuantity ?? null,
-          aiCreditUnits: item.aiCreditUnits ?? null,
-          addOnsJson: item.addOns,
-          durationSeconds: item.durationSeconds ?? null,
-          durationDiscount: item.durationDiscount ?? null,
-          originalTotalEur: Math.round(item.originalTotalEur),
-          discountPct: item.discountPct,
-          discountReason: item.discountReason,
-        })),
+        create: calculation.items.map((item) => {
+          const sourceQI = quoteItems.find(
+            (q) => q.instanceId === item.instanceId,
+          );
+          // Carry the per-floor config straight onto OrderItem.configJson
+          // so repriceOrder + the portal editor see the same shape the
+          // customer just configured on /cene. Without this, /cene-
+          // originated int-static / int-360 orders booted with empty
+          // configJson and the portal would seed defaults that didn't
+          // match the customer's plan.
+          const configJson =
+            sourceQI?.interiorConfig
+              ? { floors: sourceQI.interiorConfig }
+              : sourceQI?.tour360Config
+                ? sourceQI.tour360Config
+                : undefined;
+          return {
+            productId: item.productId,
+            categoryId: sourceQI?.categoryId ?? "",
+            kind: item.kind,
+            productLabel: item.productLabel,
+            categoryLabel: item.categoryLabel,
+            basePriceEur: Math.round(item.basePriceEur),
+            basePriceCents: item.basePriceCents,
+            totalEur: Math.round(item.totalEur),
+            totalCents: item.totalCents,
+            aiCreditQuantity: item.aiCreditQuantity ?? null,
+            aiCreditUnits: item.aiCreditUnits ?? null,
+            addOnsJson: item.addOns,
+            durationSeconds: item.durationSeconds ?? null,
+            durationDiscount: item.durationDiscount ?? null,
+            originalTotalEur: Math.round(item.originalTotalEur),
+            discountPct: item.discountPct,
+            discountReason: item.discountReason,
+            ...(configJson !== undefined ? { configJson } : {}),
+          };
+        }),
       },
       statusEvents: {
         create: {

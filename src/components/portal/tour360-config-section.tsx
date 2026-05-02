@@ -89,8 +89,8 @@ function floorPricingRows(calc: Tour360FloorCalc) {
   const rows: { label: string; value: number; sub?: string }[] = [
     {
       label: calc.isFirstFloor
-        ? "Bazna cena (prvi sprat, 10 hotspotova + 10 stat. kamera)"
-        : "Bazna cena dodatnog sprata (−30%)",
+        ? "Cena prvog sprata (uključeno 10 hotspotova + 10 stat. kamera)"
+        : "Cena dodatnog sprata (−30%)",
       value: calc.baseCost,
     },
   ];

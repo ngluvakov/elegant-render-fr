@@ -17,6 +17,8 @@ import {
 import { Collapsible } from "@/components/ui/collapsible";
 import { useQuote } from "./quote-context";
 import { AddOnStepper } from "./addon-stepper";
+import { InteriorQuoteEditor } from "./interior-quote-editor";
+import { Tour360QuoteEditor } from "./tour360-quote-editor";
 
 type QuoteItemProps = {
   breakdown: LineItemBreakdown;
@@ -24,16 +26,34 @@ type QuoteItemProps = {
 
 export function QuoteItemCard({ breakdown }: QuoteItemProps) {
   const [expanded, setExpanded] = useState(true);
-  const { items, setAddOnQty, setDuration, removeProduct } = useQuote();
+  const {
+    items,
+    setAddOnQty,
+    setDuration,
+    setInteriorConfig,
+    setTour360Config,
+    removeProduct,
+  } = useQuote();
   const item = items.find((i) => i.instanceId === breakdown.instanceId);
   const result = getConfiguratorProduct(breakdown.productId);
 
   if (!item || !result) return null;
   const { product } = result;
 
-  const hasIncludedAddOns = breakdown.addOns.some(
-    (ao) => ao.includedQty > 0 && ao.quantity > 0,
-  );
+  // int-static / int-360 are configured via per-floor editors that route
+  // pricing through calcInteriorTotal / calcTour360Total — the catalog
+  // addon model doesn't apply, so we suppress the AddOnStepper section
+  // and the "included addons" badges (their data lives in the editor's
+  // breakdown rows instead).
+  const usesInteriorEditor =
+    breakdown.productId === "int-static" && Array.isArray(item.interiorConfig);
+  const usesTour360Editor =
+    breakdown.productId === "int-360" && !!item.tour360Config;
+  const usesSpecialEditor = usesInteriorEditor || usesTour360Editor;
+
+  const hasIncludedAddOns =
+    !usesSpecialEditor &&
+    breakdown.addOns.some((ao) => ao.includedQty > 0 && ao.quantity > 0);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border/60 bg-card/95 transition-shadow">
@@ -180,8 +200,36 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
             </div>
           )}
 
-          {/* Add-on steppers */}
-          {product.addOns.length > 0 && (
+          {/* Per-floor editor for int-static / int-360 (replaces addon steppers) */}
+          {usesInteriorEditor && item.interiorConfig && (
+            <div className="border-t border-border/40 px-5 py-4">
+              <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Konfiguracija
+              </p>
+              <InteriorQuoteEditor
+                floors={item.interiorConfig}
+                onChange={(floors) =>
+                  setInteriorConfig(item.instanceId, floors)
+                }
+              />
+            </div>
+          )}
+          {usesTour360Editor && item.tour360Config && (
+            <div className="border-t border-border/40 px-5 py-4">
+              <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                Konfiguracija
+              </p>
+              <Tour360QuoteEditor
+                config={item.tour360Config}
+                onChange={(config) =>
+                  setTour360Config(item.instanceId, config)
+                }
+              />
+            </div>
+          )}
+
+          {/* Add-on steppers — for products that don't use a special editor */}
+          {!usesSpecialEditor && product.addOns.length > 0 && (
             <div className="border-t border-border/40 px-5 py-4">
               <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 Prilagodi

@@ -269,7 +269,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           },
           {
             id: "ext-aerial-extended",
-            label: "Extended Model (zadnja strana)",
+            label: "Doplata za zadnju stranu (+25%)",
             description: "Jednokratna doplata za prikaz zadnje strane (+25%)",
             priceEur: 105,
             priceType: "fixed",

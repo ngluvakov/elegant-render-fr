@@ -15,11 +15,17 @@ import {
   type ReactNode,
 } from "react";
 import {
-  calculateQuote,
+  priceItems,
   type QuoteItem,
   type QuoteCalculation,
 } from "@/lib/catalog/calculate";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
+import { newFloor, type InteriorFloor } from "@/lib/catalog/interior-config";
+import {
+  newTour360Floor,
+  defaultTourAssembly,
+  type Tour360Config,
+} from "@/lib/catalog/tour360-config";
 import { track } from "@/lib/posthog-events";
 import {
   AI_CREDIT_CATEGORY_ID,
@@ -41,6 +47,16 @@ type QuoteAction =
   | { type: "SET_ADDON_QTY"; instanceId: string; addOnId: string; qty: number }
   | { type: "SET_DURATION"; instanceId: string; seconds: number }
   | { type: "SET_SOURCE_MODE"; instanceId: string; sourceMode: string }
+  | {
+      type: "SET_INTERIOR_CONFIG";
+      instanceId: string;
+      floors: InteriorFloor[];
+    }
+  | {
+      type: "SET_TOUR360_CONFIG";
+      instanceId: string;
+      config: Tour360Config;
+    }
   | { type: "CLEAR_ALL" }
   | { type: "LOAD_ITEMS"; items: QuoteItem[] };
 
@@ -60,6 +76,20 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
       for (const ao of product.addOns) {
         defaultQuantities[ao.id] = ao.includedQty;
       }
+      // int-static and int-360 are priced via per-floor configJson on the
+      // server (calcInteriorTotal / calcTour360Total) rather than catalog
+      // add-ons. Initialize the matching client-side config so /cene's
+      // priceItems() routes pricing through the same canonical helpers
+      // and the math matches what the portal will use post-checkout.
+      const interiorConfig: InteriorFloor[] | undefined =
+        action.productId === "int-static" ? [newFloor(0)] : undefined;
+      const tour360Config: Tour360Config | undefined =
+        action.productId === "int-360"
+          ? {
+              floors: [newTour360Floor(0)],
+              tourAssembly: defaultTourAssembly(),
+            }
+          : undefined;
       return [
         ...state,
         {
@@ -69,6 +99,8 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
           addOnQuantities: defaultQuantities,
           durationSeconds: product.durationConfig?.defaultSeconds,
           ...(action.sourceMode ? { sourceMode: action.sourceMode } : {}),
+          ...(interiorConfig ? { interiorConfig } : {}),
+          ...(tour360Config ? { tour360Config } : {}),
         },
       ];
     }
@@ -119,6 +151,18 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
           ? { ...item, sourceMode: action.sourceMode }
           : item,
       );
+    case "SET_INTERIOR_CONFIG":
+      return state.map((item) =>
+        item.instanceId === action.instanceId
+          ? { ...item, interiorConfig: action.floors }
+          : item,
+      );
+    case "SET_TOUR360_CONFIG":
+      return state.map((item) =>
+        item.instanceId === action.instanceId
+          ? { ...item, tour360Config: action.config }
+          : item,
+      );
     case "CLEAR_ALL":
       return [];
     case "LOAD_ITEMS":
@@ -143,6 +187,8 @@ type QuoteContextValue = {
   setAddOnQty: (instanceId: string, addOnId: string, qty: number) => void;
   setDuration: (instanceId: string, seconds: number) => void;
   setSourceMode: (instanceId: string, sourceMode: string) => void;
+  setInteriorConfig: (instanceId: string, floors: InteriorFloor[]) => void;
+  setTour360Config: (instanceId: string, config: Tour360Config) => void;
   clearAll: () => void;
   loadItems: (items: QuoteItem[]) => void;
   setAiCredits: (credits: number) => void;
@@ -152,7 +198,7 @@ const QuoteContext = createContext<QuoteContextValue | null>(null);
 
 export function QuoteProvider({ children }: { children: ReactNode }) {
   const [items, dispatch] = useReducer(quoteReducer, []);
-  const calculation = useMemo(() => calculateQuote(items), [items]);
+  const calculation = useMemo(() => priceItems(items), [items]);
 
   const addProduct = useCallback(
     (productId: string, categoryId: string, sourceMode?: string) => {
@@ -200,6 +246,16 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "SET_SOURCE_MODE", instanceId, sourceMode }),
     [],
   );
+  const setInteriorConfig = useCallback(
+    (instanceId: string, floors: InteriorFloor[]) =>
+      dispatch({ type: "SET_INTERIOR_CONFIG", instanceId, floors }),
+    [],
+  );
+  const setTour360Config = useCallback(
+    (instanceId: string, config: Tour360Config) =>
+      dispatch({ type: "SET_TOUR360_CONFIG", instanceId, config }),
+    [],
+  );
   const clearAll = useCallback(() => dispatch({ type: "CLEAR_ALL" }), []);
   const loadItems = useCallback(
     (loaded: QuoteItem[]) => dispatch({ type: "LOAD_ITEMS", items: loaded }),
@@ -220,6 +276,8 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       setAddOnQty,
       setDuration,
       setSourceMode,
+      setInteriorConfig,
+      setTour360Config,
       clearAll,
       loadItems,
       setAiCredits,
@@ -232,6 +290,8 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
       setAddOnQty,
       setDuration,
       setSourceMode,
+      setInteriorConfig,
+      setTour360Config,
       clearAll,
       loadItems,
       setAiCredits,

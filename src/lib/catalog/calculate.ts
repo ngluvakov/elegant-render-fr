@@ -6,18 +6,34 @@
  * and cross-service "model-first" discounts (a second pass that applies
  * the best consumes-rule on each item based on sibling items' creates).
  *
+ * priceItems() is the higher-level orchestrator that handles int-static
+ * and int-360 (configured per-floor) by routing them around the addon
+ * model and through calcInteriorTotal / calcTour360Total. It is the
+ * single source of truth shared by /cene's QuoteContext and the server's
+ * repriceOrder.
+ *
  * Used by: server/actions/order (server-side verification), quote-summary,
  *          quote-item, quote-context, checkout-wizard, portal pages
  */
 
 import {
   type ConfiguratorAddOn,
+  type ConfiguratorCategory,
   type ConfiguratorProduct,
   type ConsumeRule,
   type DurationConfig,
   type ModelAsset,
+  getConfiguratorProduct,
   getEffectiveProduct,
 } from "./configurator";
+import {
+  calcInteriorTotal,
+  type InteriorFloor,
+} from "./interior-config";
+import {
+  calcTour360Total,
+  type Tour360Config,
+} from "./tour360-config";
 import {
   AI_CREDIT_PRODUCT_ID,
   calculateAiCreditPurchase,
@@ -43,6 +59,16 @@ export type QuoteItem = {
   // status is still "in production" get a +5pp boost on the resolved
   // discount (capped at 55 %). Only set on externalSources items.
   fromActiveExternalOrder?: boolean;
+  // Per-floor configuration for int-static. When set, priceItems routes
+  // pricing through calcInteriorTotal instead of the catalog addon model
+  // (rooms / cameras / floors thresholded jointly per floor — see
+  // interior-config.ts). Mirrors the OrderItem.configJson.floors shape
+  // so QuoteItem ↔ OrderItem mapping is near-identity.
+  interiorConfig?: InteriorFloor[];
+  // Per-floor configuration for int-360 (rooms with hotspots + static
+  // cameras + tour-assembly toggles). Same role as interiorConfig but
+  // for the 360-tour product, routed through calcTour360Total.
+  tour360Config?: Tour360Config;
 };
 
 export type AddOnBreakdown = {
@@ -463,6 +489,183 @@ export function calculateQuote(
     originalTotal: breakdowns.reduce((sum, b) => sum + b.originalTotalEur, 0),
     originalTotalCents: breakdowns.reduce(
       (sum, b) => sum + b.originalTotalCents,
+      0,
+    ),
+  };
+}
+
+// ─── Special-case per-item pricing (int-static, int-360) ─
+
+export type SpecialItemPricing = {
+  preDiscount: number;
+  totalEur: number;
+  discount: { pct: number; reason: string } | null;
+};
+
+/**
+ * Pure pricing for an int-static item: derive cost from its per-floor
+ * config via calcInteriorTotal, then apply cross-service discount on top.
+ * Shared between /cene's priceItems orchestrator and the server's
+ * repriceOrder so both paths stay in lock-step.
+ */
+export function priceInteriorItem(
+  floors: InteriorFloor[],
+  target: QuoteItem,
+  siblings: QuoteItem[],
+): SpecialItemPricing {
+  const preDiscount = calcInteriorTotal(floors).totalEur;
+  const discount = resolveDiscount(target, siblings);
+  const totalEur = discount
+    ? Math.round(preDiscount * (1 - discount.pct / 100))
+    : preDiscount;
+  return { preDiscount, totalEur, discount };
+}
+
+/**
+ * Pure pricing for an int-360 item: derive cost from its per-floor +
+ * tour-assembly config via calcTour360Total, then apply cross-service
+ * discount on top.
+ */
+export function priceTour360Item(
+  config: Tour360Config,
+  target: QuoteItem,
+  siblings: QuoteItem[],
+): SpecialItemPricing {
+  const preDiscount = calcTour360Total(
+    config.floors,
+    config.tourAssembly,
+  ).totalEur;
+  const discount = resolveDiscount(target, siblings);
+  const totalEur = discount
+    ? Math.round(preDiscount * (1 - discount.pct / 100))
+    : preDiscount;
+  return { preDiscount, totalEur, discount };
+}
+
+function buildSpecialBreakdown(
+  item: QuoteItem,
+  lookup: { product: ConfiguratorProduct; category: ConfiguratorCategory },
+  pricing: SpecialItemPricing,
+): LineItemBreakdown {
+  const { preDiscount, totalEur, discount } = pricing;
+  const discountedBase = discount
+    ? Math.round(preDiscount * (1 - discount.pct / 100))
+    : preDiscount;
+  return {
+    instanceId: item.instanceId,
+    productId: item.productId,
+    productLabel: lookup.product.label,
+    categoryLabel: lookup.category.label,
+    kind: "service",
+    basePriceEur: discountedBase,
+    basePriceCents: discountedBase * 100,
+    // Special items express their breakdown via configJson, not catalog
+    // add-ons — the editor (interior-quote-editor / portal config section)
+    // owns the row-level breakdown UI directly.
+    addOns: [],
+    totalEur,
+    totalCents: totalEur * 100,
+    originalBasePriceEur: preDiscount,
+    originalBasePriceCents: preDiscount * 100,
+    originalTotalEur: preDiscount,
+    originalTotalCents: preDiscount * 100,
+    discountPct: discount?.pct ?? 0,
+    discountReason: discount?.reason ?? null,
+  };
+}
+
+function isConfiguredInterior(item: QuoteItem): boolean {
+  return (
+    item.productId === "int-static" &&
+    Array.isArray(item.interiorConfig) &&
+    item.interiorConfig.length > 0
+  );
+}
+
+function isConfiguredTour360(item: QuoteItem): boolean {
+  return (
+    item.productId === "int-360" &&
+    !!item.tour360Config &&
+    Array.isArray(item.tour360Config.floors) &&
+    item.tour360Config.floors.length > 0
+  );
+}
+
+/**
+ * priceItems — orchestrator that mirrors the server's repriceOrder split.
+ * Standard products go through calculateQuote; int-static and int-360
+ * items with per-floor config get priced via priceInteriorItem /
+ * priceTour360Item. Specials still feed the discount asset inventory so
+ * cross-service discounts on standard siblings see them.
+ *
+ * Use this as the single entry point on the client (QuoteContext) and
+ * for any future server caller that needs total + breakdowns. Keeps
+ * /cene and the portal in lock-step.
+ */
+export function priceItems(
+  items: QuoteItem[],
+  externalSources: QuoteItem[] = [],
+): QuoteCalculation {
+  const interior = items.filter(isConfiguredInterior);
+  const tour360 = items.filter(isConfiguredTour360);
+  const specialIds = new Set(
+    [...interior, ...tour360].map((i) => i.instanceId),
+  );
+  const standard = items.filter((i) => !specialIds.has(i.instanceId));
+
+  // Standard pricing — specials are passed as externalSources so they
+  // contribute to the discount-resolver's asset inventory but do NOT
+  // appear in the standard breakdowns.
+  const standardCalc = calculateQuote(standard, [
+    ...externalSources,
+    ...interior,
+    ...tour360,
+  ]);
+  const breakdownsById = new Map<string, LineItemBreakdown>(
+    standardCalc.items.map((b) => [b.instanceId, b]),
+  );
+
+  const allSiblings = [...items, ...externalSources];
+
+  for (const item of interior) {
+    const lookup = getConfiguratorProduct(item.productId);
+    if (!lookup) continue;
+    const pricing = priceInteriorItem(
+      item.interiorConfig!,
+      item,
+      allSiblings,
+    );
+    breakdownsById.set(
+      item.instanceId,
+      buildSpecialBreakdown(item, lookup, pricing),
+    );
+  }
+
+  for (const item of tour360) {
+    const lookup = getConfiguratorProduct(item.productId);
+    if (!lookup) continue;
+    const pricing = priceTour360Item(item.tour360Config!, item, allSiblings);
+    breakdownsById.set(
+      item.instanceId,
+      buildSpecialBreakdown(item, lookup, pricing),
+    );
+  }
+
+  // Preserve the input order of `items` in the output breakdowns.
+  const orderedBreakdowns = items
+    .map((i) => breakdownsById.get(i.instanceId))
+    .filter((b): b is LineItemBreakdown => !!b);
+
+  return {
+    items: orderedBreakdowns,
+    total: orderedBreakdowns.reduce((s, b) => s + b.totalEur, 0),
+    totalCents: orderedBreakdowns.reduce((s, b) => s + b.totalCents, 0),
+    originalTotal: orderedBreakdowns.reduce(
+      (s, b) => s + b.originalTotalEur,
+      0,
+    ),
+    originalTotalCents: orderedBreakdowns.reduce(
+      (s, b) => s + b.originalTotalCents,
       0,
     ),
   };

@@ -34,7 +34,7 @@ export function PricingBreakdown({
   rows,
   total: totalOverride,
   extras = [],
-  baseLabel = "Bazna cena",
+  baseLabel = "Cena",
   title = "Sastav cene",
 }: Props) {
   const extrasTotal = extras.reduce((s, e) => s + e.eur, 0);
@@ -48,7 +48,9 @@ export function PricingBreakdown({
       ...billableAddOns.map((a) => ({
         label: a.billableQty > 1 ? `${a.label} × ${a.billableQty}` : a.label,
         value: a.totalEur,
-        sub: a.isVolumeRate ? `volumen €${a.unitPriceEur}/kom` : undefined,
+        sub: a.isVolumeRate
+          ? `veća količina €${a.unitPriceEur}/kom`
+          : undefined,
       })),
     ];
     total = breakdown.totalEur + extrasTotal;

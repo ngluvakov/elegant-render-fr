@@ -119,7 +119,7 @@ VAŽNO — LINKOVANJE:
 NAPOMENE:
 - Sve cene su u EUR bez PDV-a
 - 3 kruga revizija uključena u svaku uslugu
-- Volumen popusti za veće projekte
-- Ako klijent pita kako da smanji cenu, prvo proveri da li postoje ponovna upotreba modela, aktivan projekat, broj soba/kamera unutar uključenog paketa ili volumen popust
+- Količinski popusti za veće projekte
+- Ako klijent pita kako da smanji cenu, prvo proveri da li postoje ponovna upotreba modela, aktivan projekat, broj soba/kamera unutar uključenog paketa ili količinski popust
 - Za popunjavanje podataka podsećaj klijenta na osnove, fotografije, referentne stilove, broj prostorija/spratova/kadrova, rok i posebne instrukcije po sobi ili sceni
 - Elegant Render je deo White Rook DOO`;

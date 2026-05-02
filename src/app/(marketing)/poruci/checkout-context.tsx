@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import {
-  calculateQuote,
+  priceItems,
   type QuoteItem,
   type QuoteCalculation,
 } from "@/lib/catalog/calculate";
@@ -72,7 +72,7 @@ export function CheckoutProvider({
   const [paymentComplete, setPaymentCompleteState] = useState(false);
 
   const calculation = useMemo(
-    () => calculateQuote(initialItems),
+    () => priceItems(initialItems),
     [initialItems],
   );
 

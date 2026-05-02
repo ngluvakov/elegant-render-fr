@@ -73,8 +73,8 @@ function floorPricingRows(calc: InteriorFloorCalc) {
   const rows: { label: string; value: number; sub?: string }[] = [
     {
       label: calc.isFirstFloor
-        ? "Bazna cena (prvi sprat, 10 prostorija + 10 rendera)"
-        : "Bazna cena dodatnog sprata (−30%)",
+        ? "Cena prvog sprata (uključeno 10 prostorija + 10 rendera)"
+        : "Cena dodatnog sprata (−30%)",
       value: calc.baseCost,
     },
   ];

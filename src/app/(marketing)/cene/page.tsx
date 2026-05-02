@@ -2,16 +2,30 @@ import type { Metadata } from "next";
 import { Layers, TrendingDown, Zap } from "lucide-react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionKicker } from "@/components/brand/section-kicker";
+import { CategoryPreview } from "@/components/configurator/category-preview";
 import { PricingConfigurator } from "@/components/configurator/pricing-configurator";
+import { getConfiguratorProduct } from "@/lib/catalog/configurator";
+
+// Numbers in the philosophy strip's middle card are pulled live from the
+// catalog so a price change there propagates here automatically — no
+// stale-copy hazard. Falls back to the values current at the time of
+// writing if the addon ever gets renamed (so the page never crashes on
+// a missing lookup).
+const extStaticBaseEur =
+  getConfiguratorProduct("ext-static")?.product.basePriceEur ?? 250;
+const extStaticCamPriceEur =
+  getConfiguratorProduct("ext-static")?.product.addOns.find(
+    (a) => a.id === "ext-static-cam",
+  )?.priceEur ?? 48;
 
 export const metadata: Metadata = {
   title: "Cene",
   description:
-    "Transparentan cenovnik usluga arhitektonske vizuelizacije po Model-First Pricing pravilima. Prva isporuka iz modela nosi pun iznos, svaki sledeći prikaz je znatno povoljniji.",
+    "Transparentan cenovnik usluga arhitektonske vizuelizacije. Prva isporuka iz modela nosi pun iznos, svaki sledeći prikaz iz istog modela je znatno povoljniji.",
   openGraph: {
     title: "Cene — Elegant Render",
     description:
-      "Transparentan cenovnik usluga arhitektonske vizuelizacije po Model-First Pricing pravilima.",
+      "Transparentan cenovnik usluga arhitektonske vizuelizacije. Plaćate model jednom — koristite ga više puta.",
     url: "/cene",
   },
 };
@@ -43,8 +57,8 @@ export default function CenePage() {
               },
               {
                 icon: TrendingDown,
-                title: "Svaki sledeći košta manje",
-                desc: "Svaki dodatni izlaz iz istog modela zahteva manji deo posla. Novi uglovi i varijacije idu po nižoj ceni.",
+                title: "Drugi kadar je znatno jeftiniji",
+                desc: `Render eksterijera sa modelom: €${extStaticBaseEur} (uključuje prvi kadar). Svaki dodatni kadar iste fasade: €${extStaticCamPriceEur}. Plaćate samo novi pogled, ne ponovo ceo model.`,
               },
               {
                 icon: Zap,
@@ -73,7 +87,17 @@ export default function CenePage() {
         </div>
       </section>
 
-      <section className="pb-20 pt-10">
+      {/* Category preview — five "od €X" cards above the configurator. */}
+      <section className="pt-10 pb-2">
+        <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
+          <h2 className="mb-5 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+            Šta vam treba?
+          </h2>
+          <CategoryPreview />
+        </div>
+      </section>
+
+      <section id="configurator" className="scroll-mt-24 pb-20 pt-10">
         <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
           <PricingConfigurator />
         </div>

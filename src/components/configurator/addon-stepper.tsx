@@ -68,14 +68,14 @@ export function AddOnStepper({
           )}
           {billableQty > 0 && (
             <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[0.72rem] font-semibold text-accent">
-              +{billableQty} extra
+              +{billableQty} dodatno
             </span>
           )}
         </div>
         <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
         {isVolumeRate && billableQty > 0 && (
           <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
-            Volumen cena: €{priceEur} po komadu
+            Cena za veću količinu: €{priceEur} po komadu
           </p>
         )}
         {upcomingDiscount && (

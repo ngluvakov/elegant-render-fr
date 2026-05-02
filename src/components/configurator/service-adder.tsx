@@ -1,6 +1,8 @@
 /**
- * ServiceAdder — Category tab bar with browsable product cards and "Dodaj" buttons.
- * Groups services by section and lets users add items to the quote.
+ * ServiceAdder — Customer-facing tab bar with browsable product cards and "Dodaj" buttons.
+ * Five top-level groups (Eksterijer / Enterijer / Planovi / Animacija / Opremanje) that
+ * each map to one or more catalog categories, so internal section codes
+ * ("1.1 — Rendering" etc.) never reach the customer.
  *
  * The animation category is rendered specially: instead of showing the
  * 3 source-mode product variants as separate cards, a single
@@ -12,8 +14,9 @@
  */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowRight, Check, Film, Headphones, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -22,6 +25,10 @@ import {
   type ConfiguratorProduct,
 } from "@/lib/catalog/configurator";
 import {
+  CUSTOMER_GROUPS,
+  type CustomerGroupId,
+} from "@/lib/catalog/customer-groups";
+import {
   ANIM_PRODUCT_ID,
   ANIM_SOURCE_MODES,
   type AnimSourceMode,
@@ -29,99 +36,142 @@ import {
 import { track } from "@/lib/posthog-events";
 import { useQuote } from "./quote-context";
 
-// Group categories by sectionLabel for the tab bar
-function getSectionGroups() {
-  const groups: { label: string; categories: ConfiguratorCategory[] }[] = [];
-  for (const cat of CONFIGURATOR_CATEGORIES) {
-    const existing = groups.find((g) => g.label === cat.sectionLabel);
-    if (existing) {
-      existing.categories.push(cat);
-    } else {
-      groups.push({ label: cat.sectionLabel, categories: [cat] });
-    }
-  }
-  return groups;
+const VALID_GROUP_IDS = new Set<string>(CUSTOMER_GROUPS.map((g) => g.id));
+
+function isValidGroupId(id: string | null): id is CustomerGroupId {
+  return id !== null && VALID_GROUP_IDS.has(id);
 }
 
-const SECTION_GROUPS = getSectionGroups();
-
 export function ServiceAdder() {
-  const [activeCategoryId, setActiveCategoryId] = useState<string>(
-    CONFIGURATOR_CATEGORIES[0].id,
-  );
+  const searchParams = useSearchParams();
+  const groupParam = searchParams.get("group");
+
+  const initialGroupId: CustomerGroupId = isValidGroupId(groupParam)
+    ? groupParam
+    : CUSTOMER_GROUPS[0].id;
+
+  const [activeGroupId, setActiveGroupId] =
+    useState<CustomerGroupId>(initialGroupId);
   const [justAdded, setJustAdded] = useState<string | null>(null);
   const { addProduct } = useQuote();
 
-  const activeCategory = CONFIGURATOR_CATEGORIES.find(
-    (c) => c.id === activeCategoryId,
+  // Sync state when navigation changes the ?group= param (e.g. user clicks a
+  // preview card while already on /cene). State is otherwise local — clicking
+  // a tab here does not push to the URL, so the user's flow isn't dotted with
+  // history entries.
+  useEffect(() => {
+    if (isValidGroupId(groupParam) && groupParam !== activeGroupId) {
+      setActiveGroupId(groupParam);
+    }
+    // intentional: only react to param flips, not internal tab clicks
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupParam]);
+
+  const activeGroup = CUSTOMER_GROUPS.find((g) => g.id === activeGroupId)!;
+  const activeCats = useMemo(
+    () =>
+      CONFIGURATOR_CATEGORIES.filter((c) => activeGroup.catIds.includes(c.id)),
+    [activeGroup],
   );
 
-  const handleAdd = (product: ConfiguratorProduct, sourceMode?: string) => {
-    if (!activeCategory) return;
-    addProduct(product.id, activeCategory.id, sourceMode);
+  const handleAdd = (
+    product: ConfiguratorProduct,
+    categoryId: string,
+    sourceMode?: string,
+  ) => {
+    addProduct(product.id, categoryId, sourceMode);
     setJustAdded(product.id);
     setTimeout(() => setJustAdded(null), 1200);
   };
 
   return (
     <div className="space-y-6">
-      {/* Section tabs — one row per section */}
-      <div className="space-y-3">
-        {SECTION_GROUPS.map((group) => (
-          <div key={group.label}>
-            <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+      {/* Customer-facing group tabs */}
+      <div
+        className="flex flex-wrap gap-1.5"
+        role="tablist"
+        aria-label="Tipovi usluga"
+      >
+        {CUSTOMER_GROUPS.map((group) => {
+          const isActive = group.id === activeGroupId;
+          return (
+            <button
+              key={group.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => {
+                setActiveGroupId(group.id);
+                track("service_group_picked", { group: group.id });
+              }}
+              className={cn(
+                "rounded-lg border px-3 py-2 text-left text-xs font-medium transition-all md:text-sm",
+                isActive
+                  ? "border-accent bg-accent/10 text-foreground shadow-[0_8px_20px_rgba(184,131,99,0.12)]"
+                  : "border-border bg-background/60 text-muted-foreground hover:border-[color:var(--color-border-warm)] hover:bg-background hover:text-foreground",
+              )}
+            >
               {group.label}
-            </p>
-            <div className="flex flex-wrap gap-1.5">
-              {group.categories.map((cat) => {
-                const isActive = cat.id === activeCategoryId;
-                return (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setActiveCategoryId(cat.id)}
-                    className={cn(
-                      "rounded-lg border px-3 py-2 text-left text-xs font-medium transition-all",
-                      isActive
-                        ? "border-accent bg-accent/10 text-foreground shadow-[0_8px_20px_rgba(184,131,99,0.12)]"
-                        : "border-border bg-background/60 text-muted-foreground hover:border-[color:var(--color-border-warm)] hover:bg-background hover:text-foreground",
-                    )}
-                  >
-                    {cat.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Active category description */}
-      {activeCategory && (
-        <p className="text-sm text-muted-foreground">
-          {activeCategory.description}
-        </p>
-      )}
+      <p className="text-sm text-muted-foreground">{activeGroup.blurb}</p>
 
-      {/* Product cards for active category */}
-      {activeCategory && (
-        <div className="space-y-3">
-          {/* Animation category renders one consolidated card with a mode
-              picker; everything else maps catalog products to cards 1:1. */}
-          {activeCategory.id === "animation"
-            ? renderAnimationCard(activeCategory, justAdded, handleAdd)
-            : activeCategory.products.map((product) => {
-                const isAdded = justAdded === product.id;
-                return (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    isAdded={isAdded}
-                    onAdd={() => handleAdd(product)}
-                  />
-                );
-              })}
-        </div>
+      {/* Product cards grouped by catalog subcategory.
+          When the group has only one underlying category, the subcategory
+          header is suppressed to keep the page calm. */}
+      <div className="space-y-6">
+        {activeCats.map((cat) => (
+          <CategoryProducts
+            key={cat.id}
+            category={cat}
+            showHeader={activeCats.length > 1}
+            justAdded={justAdded}
+            onAdd={(product, sourceMode) =>
+              handleAdd(product, cat.id, sourceMode)
+            }
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CategoryProducts({
+  category,
+  showHeader,
+  justAdded,
+  onAdd,
+}: {
+  category: ConfiguratorCategory;
+  showHeader: boolean;
+  justAdded: string | null;
+  onAdd: (product: ConfiguratorProduct, sourceMode?: string) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      {showHeader && (
+        <h3 className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-muted-foreground">
+          {category.label}
+        </h3>
+      )}
+      {category.id === "animation" ? (
+        <AnimationCardWrapper
+          category={category}
+          isAdded={(productId) => justAdded === productId}
+          onAdd={(product, sourceMode) => onAdd(product, sourceMode)}
+        />
+      ) : (
+        category.products.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            isAdded={justAdded === product.id}
+            onAdd={() => onAdd(product)}
+          />
+        ))
       )}
     </div>
   );
@@ -207,15 +257,23 @@ function ProductCard({
   );
 }
 
-function renderAnimationCard(
-  category: ConfiguratorCategory,
-  justAdded: string | null,
-  onAdd: (product: ConfiguratorProduct, sourceMode: string) => void,
-) {
+function AnimationCardWrapper({
+  category,
+  isAdded,
+  onAdd,
+}: {
+  category: ConfiguratorCategory;
+  isAdded: (productId: string) => boolean;
+  onAdd: (product: ConfiguratorProduct, sourceMode: string) => void;
+}) {
   const product = category.products.find((p) => p.id === ANIM_PRODUCT_ID);
   if (!product) return null;
   return (
-    <AnimationCard product={product} isAdded={justAdded === product.id} onAdd={onAdd} />
+    <AnimationCard
+      product={product}
+      isAdded={isAdded(product.id)}
+      onAdd={onAdd}
+    />
   );
 }
 
@@ -314,3 +372,4 @@ function AnimationCard({
     </div>
   );
 }
+

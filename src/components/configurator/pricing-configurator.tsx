@@ -8,12 +8,14 @@
 "use client";
 
 import { Suspense, useEffect, useRef } from "react";
+import { ChevronDown, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { QuoteProvider, useQuote } from "./quote-context";
 import { ServiceAdder } from "./service-adder";
 import { AiCreditAdder } from "./ai-credit-adder";
 import { QuoteItemCard } from "./quote-item";
 import { QuoteSummary } from "./quote-summary";
+import { MobileQuoteBar } from "./mobile-quote-bar";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { loadQuote } from "@/server/actions/quote";
 import { track } from "@/lib/posthog-events";
@@ -84,47 +86,65 @@ function ConfiguratorInner() {
   }, [addProduct]);
 
   return (
-    <div className="grid items-start gap-8 xl:grid-cols-[1fr_400px]">
-      {/* Main column */}
-      <div className="space-y-8">
-        {/* Service browser */}
-        <section>
-          <h2 className="mb-4 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-            Izaberite uslugu
-          </h2>
-          <ServiceAdder />
-        </section>
-
-        <section>
-          <h2 className="mb-4 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-            AI krediti
-          </h2>
-          <AiCreditAdder />
-        </section>
-
-        {/* Added items */}
-        {calculation.items.length > 0 && (
+    <>
+      <div className="grid items-start gap-8 pb-24 xl:grid-cols-[1fr_400px] xl:pb-0">
+        {/* Main column */}
+        <div className="space-y-8">
+          {/* Service browser */}
           <section>
             <h2 className="mb-4 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-              Vaše stavke ({calculation.items.length})
+              Izaberite uslugu
             </h2>
-            <div className="space-y-4">
-              {calculation.items.map((breakdown) => (
-                <QuoteItemCard
-                  key={breakdown.instanceId}
-                  breakdown={breakdown}
-                />
-              ))}
-            </div>
+            <ServiceAdder />
           </section>
-        )}
+
+          {/* Added items */}
+          {calculation.items.length > 0 && (
+            <section>
+              <h2 className="mb-4 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+                Vaše stavke ({calculation.items.length})
+              </h2>
+              <div className="space-y-4">
+                {calculation.items.map((breakdown) => (
+                  <QuoteItemCard
+                    key={breakdown.instanceId}
+                    breakdown={breakdown}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* AI credits — secondary upsell, only after at least one service is added */}
+          {calculation.items.length > 0 && (
+            <section>
+              <details className="group rounded-2xl border border-border/40 bg-card/60 p-5 open:bg-card/80 [&_summary::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
+                  <span className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <Sparkles className="h-4 w-4 text-accent" />
+                    Dodajte AI kredite uz porudžbinu
+                  </span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <div className="mt-4">
+                  <AiCreditAdder />
+                </div>
+              </details>
+            </section>
+          )}
+        </div>
+
+        {/* Sidebar */}
+        <aside
+          id="quote-summary"
+          className="xl:sticky xl:top-24 xl:self-start"
+        >
+          <QuoteSummary />
+        </aside>
       </div>
 
-      {/* Sidebar */}
-      <aside className="xl:sticky xl:top-24 xl:self-start">
-        <QuoteSummary />
-      </aside>
-    </div>
+      <MobileQuoteBar />
+    </>
   );
 }
 

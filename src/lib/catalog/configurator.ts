@@ -140,7 +140,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           {
             requires: "exterior-shell",
             discountPct: 20,
-            reason: "Massing postoji iz situacionog plana",
+            reason: "Osnovni oblik zgrade je već urađen u situacionom planu",
             sourceProducts: ["sp-first"],
           },
           {
@@ -155,7 +155,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         unitLabel: "kompletan model + prvi kadar",
         includes: ["Pun 3D model", "Scena i osvetljenje", "1 kadar uključen"],
         disclaimers: [
-          "Extended Model Surcharge (+25%) se obračunava jednom ako kadar zahteva novu geometriju",
+          "Dodatna geometrija (+25%) se obračunava jednom ako kadar zahteva neviđenu stranu modela",
         ],
         addOns: [
           {
@@ -170,7 +170,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           },
           {
             id: "ext-static-extended",
-            label: "Extended Model Surcharge",
+            label: "Dodatna geometrija (+25%)",
             description: "Jednokratna doplata za geometriju sa neviđene strane (+25%)",
             priceEur: 63,
             priceType: "fixed",
@@ -194,7 +194,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         id: "ext-360",
         creates: ["exterior-shell"],
         consumes: [
-          { requires: "exterior-shell", discountPct: 40, reason: "Model postoji iz statičkog eksterijera" },
+          { requires: "exterior-shell", discountPct: 40, reason: "Model je već izgrađen za prethodni render" },
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
         label: "360 eksterijer",
@@ -202,7 +202,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         unitLabel: "kompletan model + VR izlaz",
         includes: ["Pun 3D model", "VR-ready 360 izlaz", "1 hotspot uključen"],
         disclaimers: [
-          "Extended Model Hotspot (€60) se naplaćuje jednom ako je potrebna nova geometrija",
+          "Dodatna geometrija za hotspot (€60) se naplaćuje jednom ako je potreban pogled iz neviđene strane",
         ],
         addOns: [
           {
@@ -217,7 +217,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           },
           {
             id: "ext-360-extended",
-            label: "Extended Model Hotspot",
+            label: "Dodatna geometrija — hotspot",
             description: "Hotspot koji zahteva neviđenu geometriju (jednokratno)",
             priceEur: 60,
             priceType: "fixed",
@@ -241,7 +241,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         id: "ext-aerial",
         creates: ["exterior-shell"],
         consumes: [
-          { requires: "exterior-shell", discountPct: 35, reason: "Model postoji iz eksterijernog rendera" },
+          { requires: "exterior-shell", discountPct: 35, reason: "Model je već izgrađen za eksterijerni render" },
           { requires: "terrain-model", discountPct: 25, reason: "Okruženje postoji iz situacionog/pejzažnog prikaza" },
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
@@ -254,7 +254,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           "1 ugao uključen",
         ],
         disclaimers: [
-          "Extended Model (+25%) se obračunava jednom za prikaz zadnje strane",
+          "Doplata (+25%) se obračunava jednom za prikaz zadnje strane",
         ],
         addOns: [
           {
@@ -428,7 +428,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           "1 kadar uključen",
         ],
         disclaimers: [
-          "Extended Model Surcharge (+25%) ako je potreban novi teren/sadnja",
+          "Dodatna geometrija (+25%) ako je potreban novi teren/sadnja",
         ],
         addOns: [
           {
@@ -443,7 +443,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           },
           {
             id: "land-extended",
-            label: "Extended Model Surcharge",
+            label: "Dodatna geometrija (+25%)",
             description: "Neviđeni teren/sadnja potrebna (+25%, jednokratno)",
             priceEur: 55,
             priceType: "fixed",
@@ -479,8 +479,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
       {
         id: "fp3d-single",
         consumes: [
-          { requires: "interior-model", discountPct: 70, reason: "Geometrija postoji iz enterijerskog modela" },
-          { requires: "complete-model", discountPct: 70, reason: "Geometrija postoji iz kompletnog modela" },
+          { requires: "interior-model", discountPct: 70, reason: "Prostor je već modelovan u enterijerskom renderu" },
+          { requires: "complete-model", discountPct: 70, reason: "Prostor je već modelovan u kompletnom modelu" },
         ],
         label: "3D osnova jednog nivoa",
         basePriceEur: 29,
@@ -555,7 +555,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
       {
         id: "fp2d-single",
         consumes: [
-          { requires: "interior-model", discountPct: 50, reason: "Raspored postoji iz enterijerskog modela" },
+          { requires: "interior-model", discountPct: 50, reason: "Raspored je već definisan u enterijerskom modelu" },
         ],
         label: "2D osnova jednog nivoa",
         basePriceEur: 20,
@@ -632,7 +632,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         id: "sp-first",
         creates: ["terrain-model", "exterior-shell"],
         consumes: [
-          { requires: "exterior-shell", discountPct: 30, reason: "Model postoji iz eksterijernog rendera" },
+          { requires: "exterior-shell", discountPct: 30, reason: "Model je već izgrađen za eksterijerni render" },
           { requires: "terrain-model", discountPct: 40, reason: "Teren postoji iz pejzažnog prikaza" },
           { requires: "complete-model", discountPct: 35, reason: "Kompletan model već postoji" },
         ],
@@ -668,7 +668,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           {
             id: "sp-phase",
             label: "Fazna varijanta",
-            description: "Faze gradnje — selektivna vidljivost",
+            description: "Prikaz po fazama gradnje — biraju se vidljivi delovi",
             priceEur: 95,
             priceType: "fixed",
             includedQty: 0,
@@ -699,8 +699,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         id: "anim",
         creates: ["complete-model"],
         consumes: [
-          { requires: "exterior-shell", discountPct: 33, reason: "Eksterijerski model postoji" },
-          { requires: "interior-model", discountPct: 33, reason: "Enterijerski model postoji" },
+          { requires: "exterior-shell", discountPct: 33, reason: "Eksterijer je već izgrađen u modelu" },
+          { requires: "interior-model", discountPct: 33, reason: "Enterijer je već izgrađen u modelu" },
           { requires: "terrain-model", discountPct: 20, reason: "Teren postoji iz situacionog prikaza" },
         ],
         label: "Animacija (od nule)",
@@ -767,8 +767,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             // existing mode does NOT create complete-model (it reuses one)
             creates: [],
             consumes: [
-              { requires: "exterior-shell", discountPct: 33, reason: "Eksterijerski model postoji" },
-              { requires: "interior-model", discountPct: 33, reason: "Enterijerski model postoji" },
+              { requires: "exterior-shell", discountPct: 33, reason: "Eksterijer je već izgrađen u modelu" },
+              { requires: "interior-model", discountPct: 33, reason: "Enterijer je već izgrađen u modelu" },
               { requires: "complete-model", discountPct: 47, reason: "Kompletan model već postoji" },
             ],
             addOnsAvailable: ["anim-path", "anim-daynight"],
@@ -807,8 +807,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         id: "vr-existing",
         inquiryOnly: true,
         consumes: [
-          { requires: "exterior-shell", discountPct: 50, reason: "Eksterijerski model postoji" },
-          { requires: "interior-model", discountPct: 50, reason: "Enterijerski model postoji" },
+          { requires: "exterior-shell", discountPct: 50, reason: "Eksterijer je već izgrađen u modelu" },
+          { requires: "interior-model", discountPct: 50, reason: "Enterijer je već izgrađen u modelu" },
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
         label: "VR Walkthrough (postojeći model)",
@@ -848,8 +848,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         inquiryOnly: true,
         creates: ["complete-model"],
         consumes: [
-          { requires: "exterior-shell", discountPct: 50, reason: "Eksterijerski model postoji" },
-          { requires: "interior-model", discountPct: 50, reason: "Enterijerski model postoji" },
+          { requires: "exterior-shell", discountPct: 50, reason: "Eksterijer je već izgrađen u modelu" },
+          { requires: "interior-model", discountPct: 50, reason: "Enterijer je već izgrađen u modelu" },
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
         label: "VR Walkthrough (samostalno)",
@@ -1063,7 +1063,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           {
             id: "dtd-volume",
             label: "Dodatne slike (10+)",
-            description: "Volumen cena po slici",
+            description: "Snižena cena za veću količinu",
             priceEur: 8,
             priceType: "fixed",
             includedQty: 1,

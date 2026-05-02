@@ -66,6 +66,8 @@ export type EventMap = {
     mode: "scratch" | "existing" | "active";
     where: "cene" | "configurator";
   };
+  category_preview_click: { group: string };
+  service_group_picked: { group: string };
 
   // Admin operational signals (server-side)
   admin_credits_granted: { user_id: string; units: number };

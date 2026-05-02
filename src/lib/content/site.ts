@@ -20,8 +20,8 @@ export const SITE = {
 } as const;
 
 export const TRUST_SIGNALS = [
-  "Bez paketa van cenovnika — svaka cena je iz zvaničnog Model-First cenovnika.",
-  "Model-first logika je vidljiva već iznad prevoja, bez skrivenih pravila.",
+  "Bez paketa van cenovnika — svaka cena je iz zvaničnog cenovnika.",
+  "Logika cene je vidljiva već iznad prevoja, bez skrivenih pravila.",
   "Tri runde revizija uključene u svaki projekat po našem standardu.",
 ] as const;
 
@@ -36,7 +36,7 @@ export const PLATFORM_PRINCIPLES = [
   },
   {
     title: "Kako se cena širi",
-    text: "Kada postoji model-first logika, interfejs je objašnjava: prvi izlaz pokriva glavni posao, sledeći izlazi su jeftiniji iz istog modela.",
+    text: "Interfejs jasno pokazuje logiku: prvi izlaz pokriva glavni posao, sledeći izlazi iz istog modela su jeftiniji.",
   },
   {
     title: "Šta šaljem",

@@ -109,7 +109,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {hasIncludedAddOns && (
             <div className="border-t border-border/40 bg-[color:var(--color-sage)]/5 px-5 py-3">
               <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-[color:var(--color-sage-deep)]">
-                Uključeno u baznu cenu
+                Već je uključeno
               </p>
               <div className="flex flex-wrap gap-2">
                 {breakdown.addOns
@@ -167,7 +167,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                 ))}
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
-                Baza: €{product.durationConfig.perSecondEur}/sek ×{" "}
+                €{product.durationConfig.perSecondEur}/sek ×{" "}
                 {item.durationSeconds}s
                 {breakdown.durationDiscount && breakdown.durationDiscount > 0 && (
                   <span className="font-semibold text-[color:var(--color-sage-deep)]">

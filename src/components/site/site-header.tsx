@@ -107,7 +107,7 @@ export function SiteHeader() {
                         Usluge
                       </p>
                       <p className="mt-1 text-sm text-foreground">
-                        Sve iz zvaničnog Model-First cenovnika
+                        Sve iz zvaničnog cenovnika
                       </p>
                     </div>
                     <NavigationMenuLink

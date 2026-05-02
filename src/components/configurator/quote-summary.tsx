@@ -160,7 +160,7 @@ export function QuoteSummary() {
                   {billableAddOns > 0 && (
                     <span className="text-accent">
                       {" "}
-                      + {billableAddOns} extra
+                      + {billableAddOns} {billableAddOns === 1 ? "dodatak" : "dodatnih opcija"}
                     </span>
                   )}
                 </p>

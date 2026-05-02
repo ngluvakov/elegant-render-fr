@@ -51,6 +51,22 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
     breakdown.productId === "int-360" && !!item.tour360Config;
   const usesSpecialEditor = usesInteriorEditor || usesTour360Editor;
 
+  // Cross-service discount metadata for the editor's footer panel. The
+  // editor needs the un-discounted total so it can show the struck price
+  // and the savings line. discountReason / discountPct come straight from
+  // the breakdown the resolver produced.
+  const editorDiscount =
+    breakdown.discountPct > 0 &&
+    breakdown.originalTotalEur > breakdown.totalEur &&
+    breakdown.discountReason
+      ? {
+          pct: breakdown.discountPct,
+          reason: breakdown.discountReason,
+          originalTotalEur: breakdown.originalTotalEur,
+          totalEur: breakdown.totalEur,
+        }
+      : null;
+
   const hasIncludedAddOns =
     !usesSpecialEditor &&
     breakdown.addOns.some((ao) => ao.includedQty > 0 && ao.quantity > 0);
@@ -208,6 +224,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
               </p>
               <InteriorQuoteEditor
                 floors={item.interiorConfig}
+                discount={editorDiscount}
                 onChange={(floors) =>
                   setInteriorConfig(item.instanceId, floors)
                 }
@@ -221,6 +238,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
               </p>
               <Tour360QuoteEditor
                 config={item.tour360Config}
+                discount={editorDiscount}
                 onChange={(config) =>
                   setTour360Config(item.instanceId, config)
                 }

@@ -245,11 +245,18 @@ export function QuoteSummary() {
               </Collapsible>
             </div>
           )}
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex items-center justify-between gap-3">
             <p className="text-sm text-background/60">Procenjena cena</p>
-            <p className="text-2xl font-bold text-background">
-              {formatEur(calculation.total)}
-            </p>
+            <div className="flex flex-col items-end">
+              {calculation.originalTotal > calculation.total && (
+                <p className="text-sm font-normal text-background/40 line-through tabular-nums">
+                  {formatEur(calculation.originalTotal)}
+                </p>
+              )}
+              <p className="text-2xl font-bold text-background tabular-nums">
+                {formatEur(calculation.total)}
+              </p>
+            </div>
           </div>
           <button
             type="button"

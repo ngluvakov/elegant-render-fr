@@ -1,35 +1,42 @@
 /**
- * Tour360QuoteEditor — Slim per-floor configurator for int-360 items on
- * /cene. Mirrors the data shape of the portal's tour360-config-section
+ * Tour360QuoteEditor — Per-room configurator for int-360 items on /cene.
+ * Mirrors the data shape of the portal's tour360-config-section
  * (Tour360Floor[] + TourAssembly) so math runs through calcTour360Total
  * and pricing matches the portal by construction.
  *
- * Surfaces ONLY the fields that affect price for the typical preview:
+ * Surfaces the price-affecting fields:
  *   - floors (add / remove)
- *   - per-floor: rooms count, hotspots-per-room, static-cameras-per-room
- *   - live mini breakdown
+ *   - per-room hotspots + static cameras (each room independently)
+ *   - tour assembly toggles (web tour + floor-plan nav + white-label)
+ *   - cross-service discount panel in the footer when one applies
  *
- * TourAssembly toggles (web tour / floor plan / white label) are
- * deferred to the portal — they ride on the order and are easier to
- * decide once the customer has committed.
+ * Style / time-of-day / season / per-room descriptions / file uploads stay
+ * portal-only — they don't change the price. The white-label option still
+ * needs its logo uploaded later in the portal; here we just bill the fee.
  *
  * Used on: QuoteItemCard for int-360 items (/cene page).
  */
 "use client";
 
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
 import { formatEur } from "@/lib/catalog/calculate";
 import {
   TOUR360_EXTRA_CAMERA_EUR,
   TOUR360_EXTRA_HOTSPOT_EUR,
+  TOUR360_ASSEMBLY_BASE_EUR,
+  TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD,
+  TOUR360_FLOOR_PLAN_NAV_EUR,
+  TOUR360_WHITE_LABEL_EUR,
   calcTour360Total,
   newTour360Floor,
   type Tour360Config,
   type Tour360Floor,
   type Tour360FloorCalc,
   type Tour360Room,
+  type TourAssembly,
 } from "@/lib/catalog/tour360-config";
+import { ItemTotal, type EditorDiscount } from "./interior-quote-editor";
 
 const MAX_FLOORS = 20;
 const MAX_ROOMS_PER_FLOOR = 40;
@@ -39,9 +46,15 @@ const MAX_CAMERAS_PER_ROOM = 10;
 type Props = {
   config: Tour360Config;
   onChange: (next: Tour360Config) => void;
+  /**
+   * Cross-service discount metadata, propagated from the QuoteItemCard so
+   * the footer can show the original (struck) total alongside the
+   * discounted one. Per-floor totals stay un-discounted.
+   */
+  discount?: EditorDiscount | null;
 };
 
-export function Tour360QuoteEditor({ config, onChange }: Props) {
+export function Tour360QuoteEditor({ config, onChange, discount }: Props) {
   const calc = calcTour360Total(config.floors, config.tourAssembly);
 
   const updateFloors = (next: Tour360Floor[]) => {
@@ -54,37 +67,45 @@ export function Tour360QuoteEditor({ config, onChange }: Props) {
     );
   };
 
-  const setRoomCount = (index: number, nextCount: number) => {
-    const clamped = Math.max(0, Math.min(MAX_ROOMS_PER_FLOOR, nextCount));
-    const floor = config.floors[index];
-    const hotspots = hotspotsPerRoom(floor);
-    const cameras = staticCamerasPerRoom(floor);
-    const nextRooms: Tour360Room[] = Array.from({ length: clamped }, (_, i) => {
-      const existing = floor.rooms[i];
-      return existing
-        ? { ...existing }
-        : {
-            name: `Prostorija ${i + 1}`,
-            hotspots,
-            staticCameras: cameras,
-          };
-    });
-    updateFloor(index, { rooms: nextRooms });
+  const addRoom = (floorIdx: number) => {
+    const floor = config.floors[floorIdx];
+    if (floor.rooms.length >= MAX_ROOMS_PER_FLOOR) return;
+    const next: Tour360Room = {
+      name: `Prostorija ${floor.rooms.length + 1}`,
+      hotspots: 1,
+      staticCameras: 0,
+    };
+    updateFloor(floorIdx, { rooms: [...floor.rooms, next] });
   };
 
-  const setHotspotsPerRoom = (index: number, nextHotspots: number) => {
-    const clamped = Math.max(0, Math.min(MAX_HOTSPOTS_PER_ROOM, nextHotspots));
-    const floor = config.floors[index];
-    updateFloor(index, {
-      rooms: floor.rooms.map((r) => ({ ...r, hotspots: clamped })),
+  const removeRoom = (floorIdx: number, roomIdx: number) => {
+    const floor = config.floors[floorIdx];
+    updateFloor(floorIdx, {
+      rooms: floor.rooms.filter((_, i) => i !== roomIdx),
     });
   };
 
-  const setStaticCamerasPerRoom = (index: number, nextCameras: number) => {
-    const clamped = Math.max(0, Math.min(MAX_CAMERAS_PER_ROOM, nextCameras));
-    const floor = config.floors[index];
-    updateFloor(index, {
-      rooms: floor.rooms.map((r) => ({ ...r, staticCameras: clamped })),
+  const setRoomHotspots = (floorIdx: number, roomIdx: number, n: number) => {
+    const clamped = Math.max(0, Math.min(MAX_HOTSPOTS_PER_ROOM, n));
+    const floor = config.floors[floorIdx];
+    updateFloor(floorIdx, {
+      rooms: floor.rooms.map((r, i) =>
+        i === roomIdx ? { ...r, hotspots: clamped } : r,
+      ),
+    });
+  };
+
+  const setRoomStaticCameras = (
+    floorIdx: number,
+    roomIdx: number,
+    n: number,
+  ) => {
+    const clamped = Math.max(0, Math.min(MAX_CAMERAS_PER_ROOM, n));
+    const floor = config.floors[floorIdx];
+    updateFloor(floorIdx, {
+      rooms: floor.rooms.map((r, i) =>
+        i === roomIdx ? { ...r, staticCameras: clamped } : r,
+      ),
     });
   };
 
@@ -98,29 +119,36 @@ export function Tour360QuoteEditor({ config, onChange }: Props) {
     updateFloors(config.floors.filter((_, i) => i !== index));
   };
 
+  const setAssembly = (patch: Partial<TourAssembly>) => {
+    onChange({
+      ...config,
+      tourAssembly: { ...config.tourAssembly, ...patch },
+    });
+  };
+
   return (
     <div className="space-y-4">
       <p className="text-xs leading-relaxed text-muted-foreground">
         Svaki sprat uključuje 10 prostorija + 10 hotspotova + 10 statičkih
         kadrova u baznoj ceni. Iznad praga se obračunavaju dodatni; sledeći
-        spratovi automatski idu po sniženoj ceni (−30%). Web ture i white-label
-        opcije se konfigurišu u portalu posle naručivanja.
+        spratovi automatski idu po sniženoj ceni (−30%).
       </p>
 
       <div className="space-y-3">
         {config.floors.map((floor, idx) => (
-          <FloorRow
+          <FloorPanel
             key={floor.id}
             floor={floor}
             index={idx}
             calc={calc.floors[idx]}
-            canRemove={config.floors.length > 1}
-            onRoomCountChange={(n) => setRoomCount(idx, n)}
-            onHotspotsPerRoomChange={(n) => setHotspotsPerRoom(idx, n)}
-            onStaticCamerasPerRoomChange={(n) =>
-              setStaticCamerasPerRoom(idx, n)
+            canRemoveFloor={config.floors.length > 1}
+            onAddRoom={() => addRoom(idx)}
+            onRemoveRoom={(rIdx) => removeRoom(idx, rIdx)}
+            onSetRoomHotspots={(rIdx, n) => setRoomHotspots(idx, rIdx, n)}
+            onSetRoomStaticCameras={(rIdx, n) =>
+              setRoomStaticCameras(idx, rIdx, n)
             }
-            onRemove={() => removeFloor(idx)}
+            onRemoveFloor={() => removeFloor(idx)}
           />
         ))}
       </div>
@@ -138,56 +166,60 @@ export function Tour360QuoteEditor({ config, onChange }: Props) {
         <p className="text-right text-xs text-muted-foreground">
           {config.floors.length}{" "}
           {config.floors.length === 1 ? "sprat" : "sprata"}
-          <span className="mx-1.5 text-foreground/30">·</span>
-          ukupno{" "}
-          <span className="font-semibold text-foreground">
-            {formatEur(calc.totalEur)}
-          </span>
         </p>
       </div>
+
+      <TourAssemblySection
+        assembly={config.tourAssembly}
+        totalHotspots={calc.totalHotspots}
+        assemblyCost={calc.assembly.totalCost}
+        webTourFree={calc.assembly.freeByHotspotThreshold}
+        onChange={setAssembly}
+      />
+
+      <ItemTotal preDiscountEur={calc.totalEur} discount={discount} />
     </div>
   );
 }
 
-function FloorRow({
+function FloorPanel({
   floor,
   index,
   calc,
-  canRemove,
-  onRoomCountChange,
-  onHotspotsPerRoomChange,
-  onStaticCamerasPerRoomChange,
-  onRemove,
+  canRemoveFloor,
+  onAddRoom,
+  onRemoveRoom,
+  onSetRoomHotspots,
+  onSetRoomStaticCameras,
+  onRemoveFloor,
 }: {
   floor: Tour360Floor;
   index: number;
   calc: Tour360FloorCalc;
-  canRemove: boolean;
-  onRoomCountChange: (n: number) => void;
-  onHotspotsPerRoomChange: (n: number) => void;
-  onStaticCamerasPerRoomChange: (n: number) => void;
-  onRemove: () => void;
+  canRemoveFloor: boolean;
+  onAddRoom: () => void;
+  onRemoveRoom: (roomIdx: number) => void;
+  onSetRoomHotspots: (roomIdx: number, n: number) => void;
+  onSetRoomStaticCameras: (roomIdx: number, n: number) => void;
+  onRemoveFloor: () => void;
 }) {
-  const roomCount = floor.rooms.length;
-  const hotspots = hotspotsPerRoom(floor);
-  const cameras = staticCamerasPerRoom(floor);
-
+  const floorLabel = index === 0 ? "Sprat 1" : `Sprat ${index + 1}`;
   return (
     <div className="rounded-xl border border-border/60 bg-card/60 p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="text-sm font-semibold text-foreground">
-          {index === 0 ? "Sprat 1" : `Sprat ${index + 1}`}
+          {floorLabel}
           {index > 0 && (
             <span className="ml-2 text-[0.68rem] font-medium uppercase tracking-wider text-[color:var(--color-sage-deep)]">
               −30%
             </span>
           )}
         </div>
-        {canRemove && (
+        {canRemoveFloor && (
           <button
             type="button"
-            onClick={onRemove}
-            aria-label={`Ukloni ${index === 0 ? "Sprat 1" : `Sprat ${index + 1}`}`}
+            onClick={onRemoveFloor}
+            aria-label={`Ukloni ${floorLabel}`}
             className="flex h-7 w-7 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors hover:bg-destructive/20"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -195,36 +227,83 @@ function FloorRow({
         )}
       </div>
 
-      <div className="mt-3 grid gap-3 sm:grid-cols-3">
-        <Stepper
-          label="Prostorije"
-          hint="ukupno na ovom spratu"
-          value={roomCount}
-          min={0}
-          max={MAX_ROOMS_PER_FLOOR}
-          onChange={onRoomCountChange}
-        />
-        <Stepper
-          label="Hotspotova po sobi"
-          hint={hotspots === 1 ? "1 hotspot (uobičajeno)" : `${hotspots} po sobi`}
-          value={hotspots}
-          min={0}
-          max={MAX_HOTSPOTS_PER_ROOM}
-          onChange={onHotspotsPerRoomChange}
-          disabled={roomCount === 0}
-        />
-        <Stepper
-          label="Statičkih kadrova po sobi"
-          hint={cameras === 0 ? "bez statičkih" : `${cameras} po sobi`}
-          value={cameras}
-          min={0}
-          max={MAX_CAMERAS_PER_ROOM}
-          onChange={onStaticCamerasPerRoomChange}
-          disabled={roomCount === 0}
-        />
+      <div className="mt-3 space-y-1.5">
+        {floor.rooms.length === 0 && (
+          <p className="rounded-lg bg-background/40 px-3 py-3 text-center text-[0.72rem] text-muted-foreground">
+            Bez prostorija — dodaj prvu da vidiš obračun.
+          </p>
+        )}
+        {floor.rooms.map((room, rIdx) => (
+          <RoomRow
+            key={rIdx}
+            name={room.name || `Prostorija ${rIdx + 1}`}
+            hotspots={room.hotspots ?? 1}
+            staticCameras={room.staticCameras ?? 0}
+            onHotspotsChange={(n) => onSetRoomHotspots(rIdx, n)}
+            onStaticCamerasChange={(n) => onSetRoomStaticCameras(rIdx, n)}
+            onRemove={() => onRemoveRoom(rIdx)}
+          />
+        ))}
+        <button
+          type="button"
+          onClick={onAddRoom}
+          disabled={floor.rooms.length >= MAX_ROOMS_PER_FLOOR}
+          className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/60 bg-transparent px-3 py-2 text-[0.72rem] font-medium text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
+        >
+          <Plus className="h-3 w-3" />
+          Dodaj prostoriju
+        </button>
       </div>
 
       <FloorBreakdown calc={calc} />
+    </div>
+  );
+}
+
+function RoomRow({
+  name,
+  hotspots,
+  staticCameras,
+  onHotspotsChange,
+  onStaticCamerasChange,
+  onRemove,
+}: {
+  name: string;
+  hotspots: number;
+  staticCameras: number;
+  onHotspotsChange: (n: number) => void;
+  onStaticCamerasChange: (n: number) => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-background/60 px-3 py-1.5">
+      <span className="truncate text-xs font-medium text-foreground">
+        {name}
+      </span>
+      <div className="flex flex-shrink-0 flex-wrap items-center gap-2">
+        <CompactStepper
+          label="hotspot"
+          value={hotspots}
+          min={0}
+          max={MAX_HOTSPOTS_PER_ROOM}
+          onChange={onHotspotsChange}
+        />
+        <CompactStepper
+          label="stat. kadar"
+          value={staticCameras}
+          min={0}
+          max={MAX_CAMERAS_PER_ROOM}
+          onChange={onStaticCamerasChange}
+        />
+        <button
+          type="button"
+          onClick={onRemove}
+          aria-label={`Ukloni ${name}`}
+          className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      </div>
     </div>
   );
 }
@@ -276,36 +355,142 @@ function FloorBreakdown({ calc }: { calc: Tour360FloorCalc }) {
   );
 }
 
-function Stepper({
+function TourAssemblySection({
+  assembly,
+  totalHotspots,
+  assemblyCost,
+  webTourFree,
+  onChange,
+}: {
+  assembly: TourAssembly;
+  totalHotspots: number;
+  assemblyCost: number;
+  webTourFree: boolean;
+  onChange: (patch: Partial<TourAssembly>) => void;
+}) {
+  const webOn = assembly.webTourEnabled;
+  const hotspotsToFree = Math.max(
+    0,
+    TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD - totalHotspots,
+  );
+  const baseLabel = webTourFree
+    ? `besplatno (${TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD}+ hotspotova)`
+    : webOn
+      ? `+€${TOUR360_ASSEMBLY_BASE_EUR}${hotspotsToFree > 0 ? ` (besplatno sa još ${hotspotsToFree} hotspot${hotspotsToFree === 1 ? "om" : "ova"})` : ""}`
+      : `+€${TOUR360_ASSEMBLY_BASE_EUR} (besplatno sa ${TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD}+ hotspotova)`;
+
+  return (
+    <div className="rounded-xl border border-border/60 bg-card/60 p-4">
+      <p className="text-[0.72rem] font-bold uppercase tracking-[0.22em] text-muted-foreground">
+        Web tura i brending
+      </p>
+      <p className="mt-1 text-[0.72rem] leading-relaxed text-muted-foreground">
+        Pretvara render u interaktivni viewer koji se može deliti linkom.
+        Bez ovih opcija dobijate samo statične izlaze (panorame i kadrove).
+      </p>
+
+      <div className="mt-3 space-y-2">
+        <ToggleRow
+          label="Web tura — interaktivni viewer"
+          sub={baseLabel}
+          checked={webOn}
+          onChange={(v) =>
+            onChange(
+              v
+                ? { webTourEnabled: true }
+                : {
+                    webTourEnabled: false,
+                    floorPlanNavEnabled: false,
+                    whiteLabelEnabled: false,
+                  },
+            )
+          }
+        />
+        <ToggleRow
+          label="Navigacija po osnovi sprata"
+          sub={`+€${TOUR360_FLOOR_PLAN_NAV_EUR}`}
+          checked={webOn && assembly.floorPlanNavEnabled}
+          disabled={!webOn}
+          onChange={(v) => onChange({ floorPlanNavEnabled: v })}
+          indented
+        />
+        <ToggleRow
+          label="White-label brending"
+          sub={`+€${TOUR360_WHITE_LABEL_EUR} · logo se postavlja u portalu`}
+          checked={webOn && assembly.whiteLabelEnabled}
+          disabled={!webOn}
+          onChange={(v) => onChange({ whiteLabelEnabled: v })}
+          indented
+        />
+      </div>
+
+      {webOn && (
+        <div className="mt-3 flex items-baseline justify-between gap-2 border-t border-border/40 pt-2 text-xs">
+          <span className="font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Web tura ukupno
+          </span>
+          <span className="text-sm font-bold text-foreground tabular-nums">
+            {formatEur(assemblyCost)}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ToggleRow({
   label,
-  hint,
-  value,
-  min,
-  max,
+  sub,
+  checked,
   disabled,
+  indented,
   onChange,
 }: {
   label: string;
-  hint: string;
-  value: number;
-  min: number;
-  max: number;
+  sub: string;
+  checked: boolean;
   disabled?: boolean;
-  onChange: (n: number) => void;
+  indented?: boolean;
+  onChange: (v: boolean) => void;
 }) {
-  const atMin = disabled || value <= min;
-  const atMax = disabled || value >= max;
   return (
     <div
-      className={cn(
-        "flex items-center justify-between gap-2 rounded-lg bg-background/60 px-3 py-2",
-        disabled && "opacity-50",
-      )}
+      className={
+        "flex items-center justify-between gap-3 rounded-lg bg-background/60 px-3 py-2" +
+        (indented ? " ml-4" : "") +
+        (disabled ? " opacity-50" : "")
+      }
     >
       <div className="min-w-0">
         <div className="text-xs font-medium text-foreground">{label}</div>
-        <div className="text-[0.65rem] text-muted-foreground">{hint}</div>
+        <div className="text-[0.65rem] text-muted-foreground">{sub}</div>
       </div>
+      <Switch
+        checked={checked}
+        onCheckedChange={onChange}
+        disabled={disabled}
+      />
+    </div>
+  );
+}
+
+function CompactStepper({
+  label,
+  value,
+  min,
+  max,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (n: number) => void;
+}) {
+  const atMin = value <= min;
+  const atMax = value >= max;
+  return (
+    <div className="flex items-center gap-1.5">
       <div className="flex items-center rounded-md bg-secondary/70">
         <button
           type="button"
@@ -316,7 +501,7 @@ function Stepper({
         >
           <Minus className="h-3 w-3" />
         </button>
-        <span className="w-8 text-center text-sm font-semibold text-foreground tabular-nums">
+        <span className="w-7 text-center text-xs font-semibold text-foreground tabular-nums">
           {value}
         </span>
         <button
@@ -329,27 +514,9 @@ function Stepper({
           <Plus className="h-3 w-3" />
         </button>
       </div>
+      <span className="hidden text-[0.65rem] text-muted-foreground sm:inline">
+        {label}
+      </span>
     </div>
-  );
-}
-
-// Read uniform per-room hotspot count from existing floor state. Defaults
-// to 1 when rooms array is empty so the next room added picks up that
-// sensible baseline. Mirrors the portal's per-room hotspot picker reduced
-// to a single slider — the per-room variance is preserved on round-trip
-// because we only collapse to uniform on /cene's UI surface.
-function hotspotsPerRoom(floor: Tour360Floor): number {
-  if (floor.rooms.length === 0) return 1;
-  return Math.max(
-    0,
-    Math.max(...floor.rooms.map((r) => Math.max(0, r.hotspots || 0))),
-  );
-}
-
-function staticCamerasPerRoom(floor: Tour360Floor): number {
-  if (floor.rooms.length === 0) return 0;
-  return Math.max(
-    0,
-    Math.max(...floor.rooms.map((r) => Math.max(0, r.staticCameras || 0))),
   );
 }

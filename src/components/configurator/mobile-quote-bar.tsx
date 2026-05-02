@@ -17,6 +17,13 @@ export function MobileQuoteBar() {
   if (calculation.items.length === 0) return null;
 
   const hasDiscount = calculation.originalTotal > calculation.total;
+  const savingsPct = hasDiscount
+    ? Math.round(
+        ((calculation.originalTotal - calculation.total) /
+          calculation.originalTotal) *
+          100,
+      )
+    : 0;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/10 bg-foreground text-background shadow-[0_-4px_20px_rgba(28,26,25,0.18)] xl:hidden">
@@ -26,14 +33,19 @@ export function MobileQuoteBar() {
             Procenjena cena · {calculation.items.length}{" "}
             {calculation.items.length === 1 ? "stavka" : "stavki"}
           </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg font-semibold text-background">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <span className="text-lg font-semibold text-background tabular-nums">
               {formatEur(calculation.total)}
             </span>
             {hasDiscount && (
-              <span className="text-xs font-normal text-background/40 line-through">
-                {formatEur(calculation.originalTotal)}
-              </span>
+              <>
+                <span className="text-xs font-normal text-background/40 line-through tabular-nums">
+                  {formatEur(calculation.originalTotal)}
+                </span>
+                <span className="rounded-md bg-[color:var(--color-sage)]/20 px-1.5 py-0.5 text-[0.68rem] font-semibold text-[color:var(--color-sage)]">
+                  −{savingsPct}%
+                </span>
+              </>
             )}
           </div>
         </div>

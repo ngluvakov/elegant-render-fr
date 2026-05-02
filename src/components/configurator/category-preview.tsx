@@ -4,9 +4,10 @@
  * price (derived live from the catalog), and links into the configurator with
  * the matching tab pre-selected.
  *
- * Imagery is designed to fall back to a lucide icon + gradient if the WebP
- * file is not yet shipped, so the page is presentable while artwork is in
- * production.
+ * Visual: still WebP for four of the groups; the animacija card renders a
+ * looping muted MP4 so the card itself shows what the customer is buying.
+ * All cards fall back to a lucide icon + gradient when the asset hasn't
+ * loaded yet.
  *
  * Used on: /cene page (between philosophy strip and PricingConfigurator).
  */
@@ -72,6 +73,7 @@ export function CategoryPreview() {
             blurb={group.blurb}
             startingEur={startingEur}
             imageSrc={group.imageSrc}
+            videoSrc={group.videoSrc}
             icon={visual.icon}
             gradient={visual.gradient}
             onClick={() =>
@@ -91,6 +93,7 @@ function PreviewCard({
   blurb,
   startingEur,
   imageSrc,
+  videoSrc,
   icon: Icon,
   gradient,
   onClick,
@@ -101,11 +104,12 @@ function PreviewCard({
   blurb: string;
   startingEur: number;
   imageSrc: string;
+  videoSrc?: string;
   icon: LucideIcon;
   gradient: string;
   onClick: () => void;
 }) {
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [mediaLoaded, setMediaLoaded] = useState(false);
 
   return (
     <Link
@@ -119,22 +123,40 @@ function PreviewCard({
           gradient,
         )}
       >
-        {/* Fallback icon visible until image loads (or if image missing). */}
+        {/* Fallback icon visible until image / video loads. */}
         <div className="absolute inset-0 flex items-center justify-center">
           <Icon className="h-10 w-10 text-foreground/35" strokeWidth={1.5} />
         </div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imageSrc}
-          alt={label}
-          loading="lazy"
-          onLoad={() => setImageLoaded(true)}
-          onError={() => setImageLoaded(false)}
-          className={cn(
-            "absolute inset-0 h-full w-full object-cover transition-opacity duration-500",
-            imageLoaded ? "opacity-100" : "opacity-0",
-          )}
-        />
+        {videoSrc ? (
+          <video
+            src={videoSrc}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-label={label}
+            onLoadedData={() => setMediaLoaded(true)}
+            onError={() => setMediaLoaded(false)}
+            className={cn(
+              "absolute inset-0 h-full w-full object-cover transition-opacity duration-500",
+              mediaLoaded ? "opacity-100" : "opacity-0",
+            )}
+          />
+        ) : (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={imageSrc}
+            alt={label}
+            loading="lazy"
+            onLoad={() => setMediaLoaded(true)}
+            onError={() => setMediaLoaded(false)}
+            className={cn(
+              "absolute inset-0 h-full w-full object-cover transition-opacity duration-500",
+              mediaLoaded ? "opacity-100" : "opacity-0",
+            )}
+          />
+        )}
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-4">
         <h3 className="text-sm font-semibold text-foreground md:text-base">

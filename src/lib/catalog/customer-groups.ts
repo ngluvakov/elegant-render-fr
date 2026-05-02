@@ -25,6 +25,10 @@ export type CustomerGroup = {
   blurb: string;
   catIds: string[];
   imageSrc: string;
+  // Optional MP4 video to render in place of imageSrc on the preview card.
+  // The animacija group uses this so the card actually animates — matches
+  // what the customer is buying. Other groups stay as still images.
+  videoSrc?: string;
 };
 
 export const CUSTOMER_GROUPS: CustomerGroup[] = [
@@ -59,6 +63,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     blurb: "3D animacije, 360° ture i VR iskustva",
     catIds: ["animation", "vr-experiences"],
     imageSrc: "/artwork/cene-card-animacija.webp",
+    videoSrc: "/artwork/cene-card-animacija.mp4",
   },
   {
     id: "opremanje-renovacija",

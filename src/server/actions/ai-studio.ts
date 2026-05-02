@@ -200,35 +200,45 @@ export async function startAiStudioGeneration(
       where: { id: input.parentGenerationId, userId },
     });
     if (!parent) return { error: "Prethodna obrada nije pronađena." };
-    if (parent.status !== "completed" || !parent.resultStoragePath) {
-      return { error: "Prethodna obrada još nije završena." };
-    }
 
-    paidGenerationId = parent.paidGenerationId ?? parent.id;
-    const root = await prisma.aiGeneration.findFirst({
-      where: { id: paidGenerationId, userId },
-    });
-    if (!root) return { error: "Početna plaćena obrada nije pronađena." };
-    rootCoveredUnits = root.coveredUnits;
+    const parentResultIsInput =
+      parent.resultStoragePath === input.inputStoragePath;
+    const parentInputIsInput = parent.inputStoragePath === input.inputStoragePath;
+    const parentMatchesActualInput = parentResultIsInput || parentInputIsInput;
 
-    // Inherit the root name from the parent chain. Input name for THIS
-    // gen is the parent's resultFileName (since we're processing its
-    // result image), with a fallback when the parent predates naming.
-    if (parent.rootFileName) rootFileName = parent.rootFileName;
-    if (parent.resultFileName) inputFileName = parent.resultFileName;
-
-    const freeUsed = await countFreeAttempts(userId, paidGenerationId);
-    if (freeUsed < AI_FREE_REGENERATIONS) {
-      if (editDef.units <= rootCoveredUnits) {
-        unitsToCharge = 0;
-        coveredUnits = rootCoveredUnits;
-      } else {
-        unitsToCharge = editDef.units - rootCoveredUnits;
-        coveredUnits = editDef.units;
+    if (parentMatchesActualInput) {
+      if (parent.status !== "completed" || !parent.resultStoragePath) {
+        return { error: "Prethodna obrada još nije završena." };
       }
-      freeAttemptIndex = freeUsed + 1;
-    } else {
-      paidGenerationId = null;
+
+      paidGenerationId = parent.paidGenerationId ?? parent.id;
+      const root = await prisma.aiGeneration.findFirst({
+        where: { id: paidGenerationId, userId },
+      });
+      if (!root) return { error: "Početna plaćena obrada nije pronađena." };
+      rootCoveredUnits = root.coveredUnits;
+
+      // Inherit the root only when the actual input belongs to the same
+      // generation chain. A stale parent id with a fresh upload must not
+      // rename the new input or consume the free-retry chain.
+      if (parent.rootFileName) rootFileName = parent.rootFileName;
+      if (parentResultIsInput && parent.resultFileName) {
+        inputFileName = parent.resultFileName;
+      }
+
+      const freeUsed = await countFreeAttempts(userId, paidGenerationId);
+      if (freeUsed < AI_FREE_REGENERATIONS) {
+        if (editDef.units <= rootCoveredUnits) {
+          unitsToCharge = 0;
+          coveredUnits = rootCoveredUnits;
+        } else {
+          unitsToCharge = editDef.units - rootCoveredUnits;
+          coveredUnits = editDef.units;
+        }
+        freeAttemptIndex = freeUsed + 1;
+      } else {
+        paidGenerationId = null;
+      }
     }
   }
 

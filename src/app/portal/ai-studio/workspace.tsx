@@ -135,55 +135,17 @@ export function AiStudioWorkspace({
   const [styleId, setStyleId] = useState("modern");
   const [colorHex, setColorHex] = useState("#f2eee8");
   const [prompt, setPrompt] = useState("");
-  const initialCompleted = useMemo(
-    () =>
-      "generations" in initialState
-        ? initialState.generations.find(
-            (item) => item.status === "completed" && item.resultUrl,
-          )
-        : null,
-    [initialState],
-  );
-  const initialInput = useMemo(
-    () =>
-      "generations" in initialState
-        ? initialState.generations.find((item) => item.inputUrl)
-        : null,
-    [initialState],
-  );
-  const [baseInput, setBaseInput] = useState<UploadedInput | null>(
-    initialInput?.inputUrl
-      ? {
-          url: initialInput.inputUrl,
-          storagePath: initialInput.inputStoragePath,
-          mimeType: initialInput.inputMimeType,
-          fileName: initialInput.inputFileName ?? "slika-za-obradu",
-        }
-      : null,
-  );
-  const [currentResult, setCurrentResult] = useState<UploadedInput | null>(
-    initialCompleted?.resultUrl && initialCompleted.resultStoragePath
-      ? {
-          url: initialCompleted.resultUrl,
-          storagePath: initialCompleted.resultStoragePath,
-          mimeType: initialCompleted.resultMimeType ?? "image/jpeg",
-          fileName: initialCompleted.resultFileName ?? "ai-result.jpg",
-          generationId: initialCompleted.id,
-        }
-      : null,
-  );
+  const [baseInput, setBaseInput] = useState<UploadedInput | null>(null);
+  const [currentResult, setCurrentResult] = useState<UploadedInput | null>(null);
   const [openGenerationId, setOpenGenerationId] = useState<string | null>(null);
-  const [parentGenerationId, setParentGenerationId] = useState<string | null>(
-    initialCompleted?.id ?? null,
-  );
+  const [parentGenerationId, setParentGenerationId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [resultUrl, setResultUrl] = useState<string | null>(
-    initialCompleted?.resultUrl ?? null,
-  );
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [maskDirty, setMaskDirty] = useState(false);
   const [editorResetToken, setEditorResetToken] = useState(0);
+  const baseInputRef = useRef<UploadedInput | null>(null);
 
   // Set when the user clicks "Resetuj sve" — suppresses the next
   // auto-populate from refreshState / refreshGeneration so the result
@@ -200,9 +162,21 @@ export function AiStudioWorkspace({
   const hasPendingJobs = history.some(
     (item) => item.status === "queued" || item.status === "processing",
   );
+  const linkedParentGenerationId = useMemo(() => {
+    if (!parentGenerationId || !activeInput) return null;
+    const parent = history.find((item) => item.id === parentGenerationId);
+    if (!parent) return null;
+    if (
+      activeInput.storagePath === parent.resultStoragePath ||
+      activeInput.storagePath === parent.inputStoragePath
+    ) {
+      return parentGenerationId;
+    }
+    return null;
+  }, [activeInput, history, parentGenerationId]);
   const hasPrompt = prompt.trim().length > 0;
   const guideStage = useMemo<AssistantGuideStage>(() => {
-    if (balanceUnits < activeEdit.units && !parentGenerationId) {
+    if (balanceUnits < activeEdit.units && !linkedParentGenerationId) {
       return "no_credits";
     }
     if (currentResult || resultUrl) return "has_result";
@@ -215,7 +189,7 @@ export function AiStudioWorkspace({
     balanceUnits,
     currentResult,
     hasPrompt,
-    parentGenerationId,
+    linkedParentGenerationId,
     resultUrl,
   ]);
 
@@ -228,6 +202,10 @@ export function AiStudioWorkspace({
     hasPrompt,
   });
 
+  useEffect(() => {
+    baseInputRef.current = baseInput;
+  }, [baseInput]);
+
   const refreshState = useCallback(async () => {
     const response = await fetch("/api/ai-studio/state", { cache: "no-store" });
     const nextState = (await response.json()) as AiStudioState;
@@ -239,9 +217,21 @@ export function AiStudioWorkspace({
     setCreditsExpireAt(nextState.creditsExpireAt);
     setHistory(nextState.generations);
     if (workspaceDismissedRef.current) return;
+    const activeWorkspaceInput = baseInputRef.current;
+    if (!activeWorkspaceInput) return;
     const latestCompleted = nextState.generations.find(
       (item) => item.status === "completed" && item.resultUrl,
     );
+    const latestMatchesWorkspace =
+      latestCompleted &&
+      (latestCompleted.inputStoragePath === activeWorkspaceInput.storagePath ||
+        latestCompleted.parentGenerationId === activeWorkspaceInput.generationId);
+    if (
+      latestCompleted &&
+      !latestMatchesWorkspace
+    ) {
+      return;
+    }
     if (latestCompleted?.resultUrl && latestCompleted.resultStoragePath) {
       setResultUrl(latestCompleted.resultUrl);
       setCurrentResult({
@@ -278,11 +268,18 @@ export function AiStudioWorkspace({
     if (typeof data.balanceUnits === "number") setBalanceUnits(data.balanceUnits);
     if ("creditsExpireAt" in data) setCreditsExpireAt(data.creditsExpireAt ?? null);
 
+    const activeWorkspaceInput = baseInputRef.current;
+    const resultMatchesWorkspace =
+      activeWorkspaceInput &&
+      (data.generation.inputStoragePath === activeWorkspaceInput.storagePath ||
+        data.generation.parentGenerationId === activeWorkspaceInput.generationId);
+
     if (
       data.generation.status === "completed" &&
       data.generation.resultUrl &&
       data.generation.resultStoragePath &&
-      !workspaceDismissedRef.current
+      !workspaceDismissedRef.current &&
+      resultMatchesWorkspace
     ) {
       setResultUrl(data.generation.resultUrl);
       setCurrentResult({
@@ -372,6 +369,7 @@ export function AiStudioWorkspace({
     setError("");
     setNotice("");
     markWorkspaceActive();
+    setParentGenerationId(null);
     const upload = await uploadAiFile(file, "input");
     const url = URL.createObjectURL(file);
     const nextInput = {
@@ -381,7 +379,6 @@ export function AiStudioWorkspace({
       fileName: file.name,
     };
     setBaseInput(nextInput);
-    setParentGenerationId(null);
     setResultUrl(null);
     setCurrentResult(null);
     setEditorResetToken((value) => value + 1);
@@ -451,8 +448,8 @@ export function AiStudioWorkspace({
   }, [openedGeneration, history]);
 
   const costPreview = useMemo(
-    () => computeCostPreview(history, parentGenerationId, editType),
-    [history, parentGenerationId, editType],
+    () => computeCostPreview(history, linkedParentGenerationId, editType),
+    [history, linkedParentGenerationId, editType],
   );
 
   const handleModalUseResult = useCallback(
@@ -522,7 +519,7 @@ export function AiStudioWorkspace({
       setError(`Izaberite barem jednu kategoriju u "${activeEdit.optionsLabel ?? "opcije"}".`);
       return;
     }
-    if (!parentGenerationId && balanceUnits < activeEdit.units) {
+    if (!linkedParentGenerationId && balanceUnits < activeEdit.units) {
       setError("Nemate dovoljno AI kredita. Dopunite balans pre generisanja.");
       return;
     }
@@ -554,7 +551,7 @@ export function AiStudioWorkspace({
           styleId: activeEdit.supportsStyles ? styleId : null,
           selectedOption: selectedOption || null,
           colorHex: activeEdit.supportsColor ? colorHex : null,
-          parentGenerationId,
+          parentGenerationId: linkedParentGenerationId,
         }),
       });
 
@@ -583,7 +580,7 @@ export function AiStudioWorkspace({
       setHistory((prev) => [
         {
           id: result.generationId!,
-          parentGenerationId,
+          parentGenerationId: linkedParentGenerationId,
           paidGenerationId: null,
           editType,
           provider,
@@ -703,7 +700,7 @@ export function AiStudioWorkspace({
             onClearAll={handleClearAll}
             pending={pending}
             resultUrl={resultUrl}
-            parentGenerationId={parentGenerationId}
+            parentGenerationId={linkedParentGenerationId}
             resetToken={editorResetToken}
             onMaskDirtyChange={setMaskDirty}
             costPreview={costPreview}

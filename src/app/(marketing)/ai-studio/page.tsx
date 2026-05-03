@@ -72,6 +72,8 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Čista fotografija",
     prompt:
       "Ukloni kese i kablove pored zida. Sačuvaj pod i senke što prirodnije.",
+    beforeSrc: "/artwork/ai-tool-item_removal-before.webp",
+    afterSrc: "/artwork/ai-tool-item_removal-after.webp",
     gradient: "from-foreground/10 to-foreground/20",
   },
   day_to_dusk: {
@@ -82,6 +84,8 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Sutonski ili noćni kadar",
     prompt:
       "Suptilan plavi sat, topla svetla iz prozora, ne menjati boju fasade.",
+    beforeSrc: "/artwork/ai-tool-day_to_dusk-before.webp",
+    afterSrc: "/artwork/ai-tool-day_to_dusk-after.webp",
     gradient: "from-accent/20 to-[color:var(--color-sage-deep)]/20",
   },
   sky_replacement: {
@@ -92,6 +96,8 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Fotografija sa boljim nebom",
     prompt:
       "Blago oblačno nebo, ne menjati boju zgrade ni ekspoziciju fasade.",
+    beforeSrc: "/artwork/ai-tool-sky_replacement-before.webp",
+    afterSrc: "/artwork/ai-tool-sky_replacement-after.webp",
     gradient: "from-[color:var(--color-sage)]/15 to-[color:var(--color-sage-deep)]/25",
   },
   wall_color_change: {
@@ -102,6 +108,8 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Nova boja zida",
     prompt:
       "Promeni samo zid iza kreveta. Plafon, lajsne i nameštaj ostaju isti.",
+    beforeSrc: "/artwork/ai-tool-wall_color_change-before.webp",
+    afterSrc: "/artwork/ai-tool-wall_color_change-after.webp",
     gradient: "from-accent/15 to-accent/25",
   },
   virtual_staging: {
@@ -112,7 +120,8 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Opremljen prostor",
     prompt:
       "Dnevna soba, topao moderni stil, neutralna paleta, drvo i svetli tekstil.",
-    imageSrc: "/artwork/elegant-render-virtual-staging-scene.webp",
+    beforeSrc: "/artwork/ai-tool-virtual_staging-before.webp",
+    afterSrc: "/artwork/ai-tool-virtual_staging-after.webp",
     gradient: "from-accent/15 to-accent/25",
   },
   virtual_renovation: {
@@ -123,7 +132,8 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Renovirana varijanta",
     prompt:
       "Zameni pod hrastovim parketom, zidovi topla bela, ostavi raspored kuhinje.",
-    imageSrc: "/artwork/cene-card-opremanje-renovacija.webp",
+    beforeSrc: "/artwork/ai-tool-virtual_renovation-before.webp",
+    afterSrc: "/artwork/ai-tool-virtual_renovation-after.webp",
     gradient: "from-[color:var(--color-sage)]/20 to-accent/15",
   },
   room_redesign: {
@@ -134,7 +144,8 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Nova dizajnerska varijanta",
     prompt:
       "Svetli skandinavski stil, manje vizuelnog nereda, zadržati prozore i osnovni raspored.",
-    imageSrc: "/artwork/elegant-render-hero-interior.webp",
+    beforeSrc: "/artwork/ai-tool-room_redesign-before.webp",
+    afterSrc: "/artwork/ai-tool-room_redesign-after.webp",
     gradient: "from-[color:var(--color-sage)]/15 to-foreground/15",
   },
 };

@@ -20,7 +20,7 @@
 
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatPublicPrice } from "@/lib/catalog/display-currency";
 import {
   TOUR360_EXTRA_CAMERA_EUR,
   TOUR360_EXTRA_HOTSPOT_EUR,
@@ -314,19 +314,19 @@ function FloorBreakdown({ calc }: { calc: Tour360FloorCalc }) {
       label: calc.isFirstFloor
         ? "Cena prvog sprata (uključeno 10 prostorija + 10 hotspotova + 10 kadrova)"
         : "Cena dodatnog sprata (−30%)",
-      value: formatEur(calc.baseCost),
+      value: formatPublicPrice(calc.baseCost),
     },
   ];
   if (calc.extraHotspotsCost > 0) {
     rows.push({
-      label: `+${calc.extraHotspots} dodatn${calc.extraHotspots === 1 ? "i hotspot" : "ih hotspotova"} · €${TOUR360_EXTRA_HOTSPOT_EUR}/kom`,
-      value: formatEur(calc.extraHotspotsCost),
+      label: `+${calc.extraHotspots} dodatn${calc.extraHotspots === 1 ? "i hotspot" : "ih hotspotova"} · ${formatPublicPrice(TOUR360_EXTRA_HOTSPOT_EUR)}/kom`,
+      value: formatPublicPrice(calc.extraHotspotsCost),
     });
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
-      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · €${TOUR360_EXTRA_CAMERA_EUR}/kom`,
-      value: formatEur(calc.extraCamerasCost),
+      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(TOUR360_EXTRA_CAMERA_EUR)}/kom`,
+      value: formatPublicPrice(calc.extraCamerasCost),
     });
   }
 
@@ -348,7 +348,7 @@ function FloorBreakdown({ calc }: { calc: Tour360FloorCalc }) {
           Sprat ukupno
         </span>
         <span className="text-sm font-bold text-foreground tabular-nums">
-          {formatEur(calc.floorTotal)}
+          {formatPublicPrice(calc.floorTotal)}
         </span>
       </div>
     </div>
@@ -376,8 +376,8 @@ function TourAssemblySection({
   const baseLabel = webTourFree
     ? `besplatno (${TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD}+ hotspotova)`
     : webOn
-      ? `+€${TOUR360_ASSEMBLY_BASE_EUR}${hotspotsToFree > 0 ? ` (besplatno sa još ${hotspotsToFree} hotspot${hotspotsToFree === 1 ? "om" : "ova"})` : ""}`
-      : `+€${TOUR360_ASSEMBLY_BASE_EUR} (besplatno sa ${TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD}+ hotspotova)`;
+      ? `+${formatPublicPrice(TOUR360_ASSEMBLY_BASE_EUR)}${hotspotsToFree > 0 ? ` (besplatno sa još ${hotspotsToFree} hotspot${hotspotsToFree === 1 ? "om" : "ova"})` : ""}`
+      : `+${formatPublicPrice(TOUR360_ASSEMBLY_BASE_EUR)} (besplatno sa ${TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD}+ hotspotova)`;
 
   return (
     <div className="rounded-xl border border-border/60 bg-card/60 p-4">
@@ -408,7 +408,7 @@ function TourAssemblySection({
         />
         <ToggleRow
           label="Navigacija po osnovi sprata"
-          sub={`+€${TOUR360_FLOOR_PLAN_NAV_EUR}`}
+          sub={`+${formatPublicPrice(TOUR360_FLOOR_PLAN_NAV_EUR)}`}
           checked={webOn && assembly.floorPlanNavEnabled}
           disabled={!webOn}
           onChange={(v) => onChange({ floorPlanNavEnabled: v })}
@@ -416,7 +416,7 @@ function TourAssemblySection({
         />
         <ToggleRow
           label="White-label brending"
-          sub={`+€${TOUR360_WHITE_LABEL_EUR} · logo se postavlja u portalu`}
+          sub={`+${formatPublicPrice(TOUR360_WHITE_LABEL_EUR)} · logo se postavlja u portalu`}
           checked={webOn && assembly.whiteLabelEnabled}
           disabled={!webOn}
           onChange={(v) => onChange({ whiteLabelEnabled: v })}
@@ -430,7 +430,7 @@ function TourAssemblySection({
             Web tura ukupno
           </span>
           <span className="text-sm font-bold text-foreground tabular-nums">
-            {formatEur(assemblyCost)}
+            {formatPublicPrice(assemblyCost)}
           </span>
         </div>
       )}

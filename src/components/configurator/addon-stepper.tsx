@@ -8,6 +8,7 @@
 
 import { Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatPublicPrice, formatPublicPriceText } from "@/lib/catalog/display-currency";
 
 type VolumeRule = { afterQty: number; priceEur: number };
 
@@ -44,7 +45,7 @@ export function AddOnStepper({
   const atMin = quantity <= 0;
 
   // Pre-threshold hint: only surface upcoming DECREASE tiers (real bulk discounts).
-  // Increases (e.g. ext-360-hotspot €48→€53 from 5th) are not advertised proactively.
+  // Increases are not advertised proactively; only real bulk discounts are.
   const upcomingDiscount = !isVolumeRate
     ? volumeRules
         .filter((r) => r.priceEur < basePriceEur && quantity <= r.afterQty)
@@ -72,25 +73,28 @@ export function AddOnStepper({
             </span>
           )}
         </div>
-        <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          {formatPublicPriceText(description)}
+        </p>
         {isVolumeRate && billableQty > 0 && (
           <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
-            Cena za veću količinu: €{priceEur} po komadu
+            Cena za veću količinu: {formatPublicPrice(priceEur)} po komadu
           </p>
         )}
         {upcomingDiscount && (
           <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
-            Od {upcomingDiscount.afterQty + 1}. nadalje: €{upcomingDiscount.priceEur} po komadu
+            Od {upcomingDiscount.afterQty + 1}. nadalje:{" "}
+            {formatPublicPrice(upcomingDiscount.priceEur)} po komadu
             <span className="ml-1 text-muted-foreground">
-              (−€{basePriceEur - upcomingDiscount.priceEur})
+              (-{formatPublicPrice(basePriceEur - upcomingDiscount.priceEur)})
             </span>
           </p>
         )}
       </div>
 
       <div className="flex flex-shrink-0 items-center gap-2">
-        <span className="w-14 text-right text-xs font-medium text-muted-foreground">
-          {priceType === "percent" ? `+${priceEur}%` : `€${priceEur}`}
+        <span className="w-24 text-right text-xs font-medium text-muted-foreground">
+          {priceType === "percent" ? `+${priceEur}%` : formatPublicPrice(priceEur)}
         </span>
         <div className="flex items-center rounded-lg bg-secondary/70">
           <button

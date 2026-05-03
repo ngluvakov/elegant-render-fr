@@ -5,6 +5,7 @@ import { SectionKicker } from "@/components/brand/section-kicker";
 import { CategoryPreview } from "@/components/configurator/category-preview";
 import { PricingConfigurator } from "@/components/configurator/pricing-configurator";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
+import { formatPublicPrice } from "@/lib/catalog/display-currency";
 
 // Numbers in the philosophy strip's middle card are pulled live from the
 // catalog so a price change there propagates here automatically — no
@@ -58,7 +59,7 @@ export default function CenePage() {
               {
                 icon: TrendingDown,
                 title: "Drugi kadar je znatno jeftiniji",
-                desc: `Render eksterijera sa modelom: €${extStaticBaseEur} (uključuje prvi kadar). Svaki dodatni kadar iste fasade: €${extStaticCamPriceEur}. Plaćate samo novi pogled, ne ponovo ceo model.`,
+                desc: `Render eksterijera sa modelom: ${formatPublicPrice(extStaticBaseEur)} (uključuje prvi kadar). Svaki dodatni kadar iste fasade: ${formatPublicPrice(extStaticCamPriceEur)}. Plaćate samo novi pogled, ne ponovo ceo model.`,
               },
               {
                 icon: Zap,
@@ -87,7 +88,7 @@ export default function CenePage() {
         </div>
       </section>
 
-      {/* Category preview — five "od €X" cards above the configurator. */}
+      {/* Category preview — five starting-price cards above the configurator. */}
       <section className="pt-10 pb-2">
         <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
           <h2 className="mb-5 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
@@ -109,7 +110,7 @@ export default function CenePage() {
             <h3 className="text-lg text-foreground">Napomene uz cenovnik</h3>
             <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
               <li>
-                Sve cene su u evrima (EUR), bez PDV-a (PDV se ne obračunava).
+                Sve cene su prikazane u dinarima (RSD), sa uračunatim PDV-om.
               </li>
               <li>
                 Svaki projekat uključuje{" "}

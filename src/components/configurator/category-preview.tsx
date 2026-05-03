@@ -1,5 +1,5 @@
 /**
- * CategoryPreview — Five "od €X" cards rendered above the configurator on /cene.
+ * CategoryPreview — Five starting-price cards rendered above the configurator on /cene.
  * Each card represents a customer-facing service group, shows its starting
  * price (derived live from the catalog), and links into the configurator with
  * the matching tab pre-selected.
@@ -24,12 +24,12 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatEur } from "@/lib/catalog/calculate";
 import {
   CUSTOMER_GROUPS,
   type CustomerGroupId,
   getGroupStartingPriceEur,
 } from "@/lib/catalog/customer-groups";
+import { formatPublicPrice } from "@/lib/catalog/display-currency";
 import { track } from "@/lib/posthog-events";
 
 const GROUP_VISUALS: Record<
@@ -169,7 +169,7 @@ function PreviewCard({
         <p className="mt-auto pt-1 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           od{" "}
           <span className="text-base font-bold normal-case tracking-normal text-foreground">
-            {formatEur(startingEur)}
+            {formatPublicPrice(startingEur)}
           </span>
         </p>
       </div>

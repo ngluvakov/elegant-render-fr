@@ -22,7 +22,10 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Collapsible } from "@/components/ui/collapsible";
 import { useQuickInquiry } from "@/components/inquiry/quick-inquiry-provider";
-import { formatDiscountedPrice, formatEur } from "@/lib/catalog/calculate";
+import {
+  formatPublicDiscountedPrice,
+  formatPublicPrice,
+} from "@/lib/catalog/display-currency";
 import { saveQuote } from "@/server/actions/quote";
 import { track } from "@/lib/posthog-events";
 import { useQuote } from "./quote-context";
@@ -168,7 +171,7 @@ export function QuoteSummary() {
           const billableAddOns = item.addOns.filter(
             (a) => a.billableQty > 0,
           ).length;
-          const { primary, struck } = formatDiscountedPrice(
+          const { primary, struck } = formatPublicDiscountedPrice(
             item.totalEur,
             item.originalTotalEur,
             item.discountPct,
@@ -234,7 +237,7 @@ export function QuoteSummary() {
                   />
                 </button>
                 <p className="font-semibold text-[color:var(--color-sage)]">
-                  −{formatEur(calculation.originalTotal - calculation.total)}
+                  -{formatPublicPrice(calculation.originalTotal - calculation.total)}
                 </p>
               </div>
               <Collapsible open={explainerOpen}>
@@ -277,11 +280,11 @@ export function QuoteSummary() {
             <div className="flex flex-col items-end">
               {calculation.originalTotal > calculation.total && (
                 <p className="text-sm font-normal text-background/40 line-through tabular-nums">
-                  {formatEur(calculation.originalTotal)}
+                  {formatPublicPrice(calculation.originalTotal)}
                 </p>
               )}
               <p className="text-2xl font-bold text-background tabular-nums">
-                {formatEur(calculation.total)}
+                {formatPublicPrice(calculation.total)}
               </p>
             </div>
           </div>
@@ -373,8 +376,8 @@ export function QuoteSummary() {
 
           <p className="mt-3 text-center text-[0.68rem] text-background/30">
             Cene su procene. Konačna ponuda može varirati u zavisnosti od
-            specifičnosti projekta. Sve cene su u EUR, bez PDV-a (PDV se ne
-            obračunava).
+            specifičnosti projekta. Sve cene su prikazane u RSD, sa uračunatim
+            PDV-om.
           </p>
         </div>
       )}

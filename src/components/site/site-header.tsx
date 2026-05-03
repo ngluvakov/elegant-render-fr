@@ -14,6 +14,7 @@ import { ArrowRight, ChevronDown, Menu, User } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
+import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -181,9 +182,13 @@ export function SiteHeader() {
             <User className="mr-1.5 h-3.5 w-3.5" />
             {isLoggedIn ? "Portal" : "Prijavite se"}
           </ButtonLink>
-          <ButtonLink href="/kontakt" size="sm" variant="accent">
+          <QuickInquiryLink
+            size="sm"
+            variant="accent"
+            inquiry={{ source: "site-header", sourceLabel: "Header CTA" }}
+          >
             Pošaljite projekat
-          </ButtonLink>
+          </QuickInquiryLink>
         </div>
 
         {/* Mobile trigger */}
@@ -274,14 +279,18 @@ export function SiteHeader() {
                 <User className="mr-1.5 h-3.5 w-3.5" />
                 {isLoggedIn ? "Portal" : "Prijavite se"}
               </ButtonLink>
-              <ButtonLink
-                href="/kontakt"
+              <QuickInquiryLink
                 onClick={() => setMobileOpen(false)}
+                onOpen={() => setMobileOpen(false)}
                 variant="accent"
                 className="w-full"
+                inquiry={{
+                  source: "mobile-menu",
+                  sourceLabel: "Mobile header CTA",
+                }}
               >
                 Pošaljite projekat
-              </ButtonLink>
+              </QuickInquiryLink>
             </div>
           </SheetContent>
         </Sheet>

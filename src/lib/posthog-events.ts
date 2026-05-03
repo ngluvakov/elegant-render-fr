@@ -59,6 +59,11 @@ export type EventMap = {
     order_number: string;
     price_eur: number;
   };
+  project_inquiry_submitted: {
+    source: string;
+    file_count: number;
+    has_quote_snapshot: boolean;
+  };
 
   // Catalog feature signals (validate per-PR effectiveness)
   staging_type_swapped: { from: "vs-static" | "vs-360"; to: "vs-static" | "vs-360" };

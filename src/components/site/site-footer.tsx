@@ -6,6 +6,7 @@
  */
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/brand-logo";
+import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { NAV_LEGAL, NAV_MAIN, SITE } from "@/lib/content/site";
 
 const FOOTER_SERVICES = [
@@ -141,6 +142,12 @@ export function SiteFooter() {
             <Link href="/kontakt" className="transition hover:text-[#ddb195]">
               Kontakt
             </Link>
+            <QuickInquiryLink
+              className="transition hover:text-[#ddb195]"
+              inquiry={{ source: "site-footer", sourceLabel: "Footer quick inquiry" }}
+            >
+              Brzi upit
+            </QuickInquiryLink>
           </div>
         </div>
       </div>

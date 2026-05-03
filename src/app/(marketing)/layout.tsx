@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { SessionProvider } from "@/components/auth/session-provider";
 import { PostHogIdentifyBridge } from "@/components/posthog-identify-bridge";
 import { ChatWidget } from "@/components/chat/chat-widget";
+import { QuickInquiryProvider } from "@/components/inquiry/quick-inquiry-provider";
 
 export default async function MarketingLayout({
   children,
@@ -25,10 +26,12 @@ export default async function MarketingLayout({
           name: session?.user?.name ?? undefined,
         }}
       />
-      <SiteHeader />
-      <main className="flex flex-1 flex-col">{children}</main>
-      <SiteFooter />
-      <ChatWidget />
+      <QuickInquiryProvider>
+        <SiteHeader />
+        <main className="flex flex-1 flex-col">{children}</main>
+        <SiteFooter />
+        <ChatWidget />
+      </QuickInquiryProvider>
     </SessionProvider>
   );
 }

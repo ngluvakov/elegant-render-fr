@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { SERVICES, type ServiceIcon } from "@/lib/catalog/services";
 import { SITE, TRUST_SIGNALS } from "@/lib/content/site";
 
@@ -396,8 +397,12 @@ export function QuickOrderHero() {
                 </div>
 
                 <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  <Link
-                    href="/kontakt"
+                  <QuickInquiryLink
+                    inquiry={{
+                      source: "home-quick-order",
+                      sourceLabel: "Home quick order panel",
+                      serviceType: selectedService.name,
+                    }}
                     className={cn(
                       buttonVariants({ variant: "accent", size: "sm" }),
                       "rounded-full",
@@ -405,7 +410,7 @@ export function QuickOrderHero() {
                   >
                     Kreni
                     <ArrowRight className="ml-1 h-3 w-3" />
-                  </Link>
+                  </QuickInquiryLink>
                   <Link
                     href={`/usluge/${selectedService.slug}`}
                     className={cn(

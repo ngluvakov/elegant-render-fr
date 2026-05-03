@@ -8,7 +8,6 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import {
   ArrowRight,
   BadgeEuro,
@@ -27,6 +26,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button-link";
+import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 
 // ─── Assets ──────────────────────────────────────────────
 
@@ -485,13 +485,17 @@ export function ServicesShowcase() {
                 </div>
 
                 <div className="flex items-center justify-between border-t border-border/30 pt-4">
-                  <Link
-                    href={`/usluge/${service.slug}`}
+                  <QuickInquiryLink
+                    inquiry={{
+                      source: "services-card",
+                      sourceLabel: service.name,
+                      serviceType: service.name,
+                    }}
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-foreground transition-colors hover:text-accent"
                   >
                     Zatraži ponudu
                     <ChevronRight className="h-4 w-4" />
-                  </Link>
+                  </QuickInquiryLink>
                 </div>
               </div>
             </article>
@@ -542,9 +546,17 @@ export function ServicesShowcase() {
             Otvori puni prikaz
             <ArrowRight className="h-4 w-4" />
           </a>
-          <ButtonLink href="/kontakt" variant="outline" className="rounded-full">
+          <QuickInquiryLink
+            variant="outline"
+            className="rounded-full"
+            inquiry={{
+              source: "services-360-section",
+              sourceLabel: "360 enterijer sekcija",
+              serviceType: "360 enterijeri",
+            }}
+          >
             Zatraži ponudu za 360 enterijer
-          </ButtonLink>
+          </QuickInquiryLink>
         </div>
       </section>
 
@@ -719,14 +731,17 @@ export function ServicesShowcase() {
               okvirnom cenom — besplatno i bez obaveza.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <ButtonLink
-                href="/kontakt"
+              <QuickInquiryLink
                 size="lg"
                 className="rounded-full bg-background text-foreground hover:bg-background/90"
+                inquiry={{
+                  source: "services-final-cta",
+                  sourceLabel: "Usluge final CTA",
+                }}
               >
                 Zatražite ponudu
                 <ArrowRight className="ml-2 h-4 w-4" />
-              </ButtonLink>
+              </QuickInquiryLink>
               <ButtonLink
                 href="/cene"
                 variant="outline"

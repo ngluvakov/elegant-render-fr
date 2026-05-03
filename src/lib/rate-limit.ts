@@ -3,6 +3,7 @@
  * Upstash Redis. Used to protect public write endpoints from spam:
  *
  *   - VR inquiry submit  (5 / hour per IP)
+ *   - Project inquiry submit (5 / hour per IP)
  *   - Checkout createOrder (10 / hour per identifier)
  *   - File upload presigned-URL (60 / hour per identifier)
  *   - Chat / OpenAI proxy (30 / hour per IP)
@@ -16,7 +17,7 @@
  * everything through. Production must set both — Vercel env Production
  * + Preview environments.
  *
- * Used by: server/actions/vr-inquiry, server/actions/order,
+ * Used by: server/actions/vr-inquiry, server/actions/project-inquiry, server/actions/order,
  *          api/checkout/upload-url, api/chat
  */
 import { Ratelimit } from "@upstash/ratelimit";
@@ -50,6 +51,7 @@ function makeLimiter(requests: number, window: `${number} ${"s" | "m" | "h" | "d
 
 export const rateLimiters = {
   vrInquiry: makeLimiter(5, "1 h", "rl:vr-inquiry"),
+  projectInquiry: makeLimiter(5, "1 h", "rl:project-inquiry"),
   checkout: makeLimiter(10, "1 h", "rl:checkout"),
   uploadUrl: makeLimiter(60, "1 h", "rl:upload-url"),
   chat: makeLimiter(30, "1 h", "rl:chat"),

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Layers, TrendingDown, Zap } from "lucide-react";
-import { ButtonLink } from "@/components/ui/button-link";
+import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { CategoryPreview } from "@/components/configurator/category-preview";
 import { PricingConfigurator } from "@/components/configurator/pricing-configurator";
@@ -127,9 +127,16 @@ export default function CenePage() {
               </li>
             </ul>
             <div className="mt-6">
-              <ButtonLink href="/kontakt" size="lg" variant="accent">
+              <QuickInquiryLink
+                size="lg"
+                variant="accent"
+                inquiry={{
+                  source: "pricing-notes",
+                  sourceLabel: "Cene - zatražite procenu",
+                }}
+              >
                 Zatražite procenu
-              </ButtonLink>
+              </QuickInquiryLink>
             </div>
           </div>
         </div>

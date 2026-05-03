@@ -12,6 +12,7 @@ import {
   ExternalLink,
   Headphones,
   ImageIcon,
+  Inbox,
   LayoutDashboard,
   LogOut,
   MessageSquareWarning,
@@ -33,6 +34,12 @@ const CLIENT_NAV = [
 const ADMIN_NAV = [
   { href: "/portal/admin", label: "Admin", icon: Shield, exact: true },
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
+  {
+    href: "/portal/admin/upiti",
+    label: "Upiti",
+    icon: Inbox,
+    exact: false,
+  },
   {
     href: "/portal/admin/vr-upiti",
     label: "VR upiti",

@@ -264,6 +264,91 @@ function configToBullets(config: VrConfig): string {
   return items.map((i) => `<li>${i}</li>`).join("\n");
 }
 
+export async function sendProjectInquiryAdminEmail(args: {
+  inquiryId: string;
+  adminUrl: string;
+  contactName: string;
+  email: string;
+  phone?: string;
+  company?: string;
+  serviceType?: string;
+  budget?: string;
+  deadline?: string;
+  message: string;
+  sourceLabel?: string;
+  fileCount: number;
+}) {
+  await send({
+    to: ADMIN_NOTIFY_EMAIL,
+    subject: `Novi upit za procenu — ${args.contactName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Novi upit za procenu</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          ${escapeHtml(args.contactName)} je poslao/la kratak brief i očekuje
+          predlog usluga sa cenom.
+        </p>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Kontakt:</strong></p>
+          <ul style="margin: 0; padding-left: 18px; color: #1C1A19; line-height: 1.6;">
+            <li>${escapeHtml(args.contactName)}</li>
+            <li><a href="mailto:${escapeHtml(args.email)}">${escapeHtml(args.email)}</a></li>
+            ${args.phone ? `<li>${escapeHtml(args.phone)}</li>` : ""}
+            ${args.company ? `<li>${escapeHtml(args.company)}</li>` : ""}
+          </ul>
+        </div>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Brief:</strong></p>
+          <p style="margin: 0; color: #1C1A19; line-height: 1.7;">
+            ${args.serviceType ? `<strong>Usluga:</strong> ${escapeHtml(args.serviceType)}<br/>` : ""}
+            ${args.budget ? `<strong>Budžet:</strong> ${escapeHtml(args.budget)}<br/>` : ""}
+            ${args.deadline ? `<strong>Rok:</strong> ${escapeHtml(args.deadline)}<br/>` : ""}
+            ${args.sourceLabel ? `<strong>Izvor:</strong> ${escapeHtml(args.sourceLabel)}<br/>` : ""}
+            <strong>Fajlovi:</strong> ${args.fileCount}
+          </p>
+        </div>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Poruka klijenta:</strong></p>
+          <p style="margin: 0; color: #1C1A19; white-space: pre-wrap;">${escapeHtml(args.message)}</p>
+        </div>
+        <a href="${args.adminUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Otvori upit u admin panelu
+        </a>
+        <p style="color: #9ca3af; font-size: 12px;">Upit ID: ${escapeHtml(args.inquiryId)}</p>
+      </div>
+    `,
+  });
+}
+
+export async function sendProjectInquiryCustomerEmail(args: {
+  to: string;
+  contactName: string;
+}) {
+  await send({
+    to: args.to,
+    subject: "Vaš upit je primljen — Elegant Render",
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Hvala na upitu</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Zdravo ${escapeHtml(args.contactName)},
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Primili smo vaš opis projekta. Pregledaćemo materijale i javiti se
+          sa predlogom usluga i okvirnom cenom, obično u roku od
+          <strong>1 radnog dana</strong>.
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Ako želite da dodate još referenci, možete odgovoriti direktno na
+          ovaj email.
+        </p>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendAiCreditsGrantedEmail(args: {
   to: string;
   grantedLabel: string;

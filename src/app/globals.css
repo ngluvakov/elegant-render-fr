@@ -192,6 +192,27 @@
   }
 }
 
+/*
+  --reveal — registered custom property for the AI Studio tool picker's
+  diagonal before/after mask. Registering via @property lets the CSS engine
+  animate the value: when JS resets --reveal on mouseleave, the mask
+  transitions back smoothly. Without registration, --reveal would snap
+  because mask-image isn't animatable as a raw function.
+
+  inherits: true so the parent .before-after-media div drives a single
+  --reveal value that flows down to both the after-image mask and the
+  divider hairline — they're guaranteed to stay in sync.
+
+  Browser support: Chrome 85+, Safari 16.4+, Firefox 128+. Older browsers
+  ignore the registration and snap rather than animate — graceful
+  degradation, the static states still render correctly.
+*/
+@property --reveal {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 50;
+}
+
 @layer components {
   /*
     .section-kicker — small uppercase label with a warm gradient line before it.
@@ -219,6 +240,48 @@
       transparent
     );
     opacity: 0.9;
+  }
+
+  /*
+    .before-after-media / .before-after-after-layer / .before-after-divider —
+    diagonal before/after reveal used by the AI Studio tool picker. The
+    parent `.before-after-media` owns --reveal (0-100); the after-image
+    layer is masked with a 135deg gradient anchored at calc(var(--reveal)
+    * 1%) so everything below the diagonal becomes transparent. The
+    divider draws a thin hairline at the same gradient stop so the
+    customer can see the interactive seam.
+  */
+  .before-after-media {
+    transition: --reveal 180ms ease-out;
+  }
+
+  .before-after-after-layer {
+    mask-image: linear-gradient(
+      135deg,
+      black calc(var(--reveal) * 1%),
+      transparent calc(var(--reveal) * 1%)
+    );
+    -webkit-mask-image: linear-gradient(
+      135deg,
+      black calc(var(--reveal) * 1%),
+      transparent calc(var(--reveal) * 1%)
+    );
+  }
+
+  .before-after-divider {
+    background-image: linear-gradient(
+      135deg,
+      transparent calc((var(--reveal) - 0.4) * 1%),
+      rgba(255, 252, 248, 0.7) calc(var(--reveal) * 1%),
+      transparent calc((var(--reveal) + 0.4) * 1%)
+    );
+    mix-blend-mode: screen;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .before-after-media {
+      transition: none;
+    }
   }
 
   /*

@@ -21,9 +21,9 @@ import {
   Wand2,
   type LucideIcon,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { ButtonLink } from "@/components/ui/button-link";
+import { ToolPickerCard } from "@/components/marketing/ai-studio/tool-picker-card";
 import {
   AI_CREDIT_TIERS,
   AI_CREDIT_UNITS_PER_CREDIT,
@@ -52,7 +52,14 @@ type ToolDetail = {
   input: string;
   output: string;
   prompt: string;
+  /** Single legacy image (kept for tools that have artwork but no
+   *  before/after pair yet). */
   imageSrc?: string;
+  /** Before/after pair — when both are set, the picker card renders a
+   *  diagonal reveal that follows the mouse on desktop and demos itself
+   *  on mobile. Populate per-tool as paired WebPs land in /artwork/. */
+  beforeSrc?: string;
+  afterSrc?: string;
   gradient: string;
 };
 
@@ -303,85 +310,18 @@ function ToolPickerSection() {
                 shortLabel={item.shortLabel}
                 blurb={detail.benefit}
                 imageSrc={detail.imageSrc}
+                beforeSrc={detail.beforeSrc}
+                afterSrc={detail.afterSrc}
                 icon={detail.icon}
                 gradient={detail.gradient}
                 creditsLabel={formatCreditsFromUnits(item.units)}
-                startingEur={startingEur}
+                startingEurLabel={formatStartingEur(startingEur)}
               />
             );
           })}
         </div>
       </div>
     </section>
-  );
-}
-
-function ToolPickerCard({
-  href,
-  label,
-  shortLabel,
-  blurb,
-  imageSrc,
-  icon: Icon,
-  gradient,
-  creditsLabel,
-  startingEur,
-}: {
-  href: string;
-  label: string;
-  shortLabel: string;
-  blurb: string;
-  imageSrc?: string;
-  icon: LucideIcon;
-  gradient: string;
-  creditsLabel: string;
-  startingEur: number;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)]"
-    >
-      <div
-        className={cn(
-          "relative aspect-[4/3] overflow-hidden bg-gradient-to-br",
-          gradient,
-        )}
-      >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Icon className="h-10 w-10 text-foreground/35" strokeWidth={1.5} />
-        </div>
-        {imageSrc && (
-          <Image
-            src={imageSrc}
-            alt={label}
-            fill
-            sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover"
-          />
-        )}
-      </div>
-      <div className="flex flex-1 flex-col gap-1.5 p-4">
-        <h3 className="text-sm font-semibold text-foreground md:text-base">
-          <span className="md:hidden">{shortLabel}</span>
-          <span className="hidden md:inline">{label}</span>
-        </h3>
-        <p className="hidden text-xs leading-snug text-muted-foreground md:line-clamp-2 md:block">
-          {blurb}
-        </p>
-        <div className="mt-auto flex items-baseline justify-between gap-2 pt-1">
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            od{" "}
-            <span className="text-base font-bold normal-case tracking-normal text-foreground">
-              {formatStartingEur(startingEur)}
-            </span>
-          </p>
-          <span className="text-[0.65rem] text-muted-foreground">
-            {creditsLabel}
-          </span>
-        </div>
-      </div>
-    </Link>
   );
 }
 

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
+import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import {
   CATEGORY_LABELS,
   SERVICES,
@@ -151,9 +152,17 @@ export default async function ServiceDetailPage({
       </section>
 
       <div className="mt-14 flex flex-col gap-3 sm:flex-row">
-        <ButtonLink href="/kontakt" size="xl" variant="accent">
+        <QuickInquiryLink
+          size="xl"
+          variant="accent"
+          inquiry={{
+            source: "service-detail",
+            sourceLabel: service.name,
+            serviceType: service.name,
+          }}
+        >
           Pošaljite projekat
-        </ButtonLink>
+        </QuickInquiryLink>
         <ButtonLink href="/cene" size="xl" variant="outline">
           Detaljan cenovnik
         </ButtonLink>

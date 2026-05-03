@@ -21,7 +21,11 @@ import {
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { Collapsible } from "@/components/ui/collapsible";
-import { formatDiscountedPrice, formatEur } from "@/lib/catalog/calculate";
+import { useQuickInquiry } from "@/components/inquiry/quick-inquiry-provider";
+import {
+  formatPublicDiscountedPrice,
+  formatPublicPrice,
+} from "@/lib/catalog/display-currency";
 import { saveQuote } from "@/server/actions/quote";
 import { track } from "@/lib/posthog-events";
 import { useQuote } from "./quote-context";
@@ -37,6 +41,7 @@ export function QuoteSummary() {
   >({ kind: "idle" });
   const hasItems = calculation.items.length > 0;
   const router = useRouter();
+  const { openInquiry } = useQuickInquiry();
 
   const handleOrder = () => {
     sessionStorage.setItem("er-checkout-quote", JSON.stringify(items));
@@ -54,6 +59,31 @@ export function QuoteSummary() {
       total_eur: calculation.total,
     });
     router.push("/portal/nova-porudzbina");
+  };
+
+  const handleInquiryFromQuote = () => {
+    openInquiry({
+      source: "quote-summary",
+      sourceLabel: "Preuzmite moju ponudu",
+      serviceType: "Već izabrane stavke iz konfiguratora",
+      quoteSnapshot: {
+        totalEur: calculation.total,
+        originalTotalEur: calculation.originalTotal,
+        items: calculation.items.map((item) => ({
+          productId: item.productId,
+          productLabel: item.productLabel,
+          categoryLabel: item.categoryLabel,
+          totalEur: item.totalEur,
+          addOns: item.addOns
+            .filter((addOn) => addOn.billableQty > 0)
+            .map((addOn) => ({
+              label: addOn.label,
+              qty: addOn.billableQty,
+              totalEur: addOn.totalEur,
+            })),
+        })),
+      },
+    });
   };
 
   // Empty cart should drop any stale share UI — that link snapshot is no
@@ -141,7 +171,7 @@ export function QuoteSummary() {
           const billableAddOns = item.addOns.filter(
             (a) => a.billableQty > 0,
           ).length;
-          const { primary, struck } = formatDiscountedPrice(
+          const { primary, struck } = formatPublicDiscountedPrice(
             item.totalEur,
             item.originalTotalEur,
             item.discountPct,
@@ -207,7 +237,7 @@ export function QuoteSummary() {
                   />
                 </button>
                 <p className="font-semibold text-[color:var(--color-sage)]">
-                  −{formatEur(calculation.originalTotal - calculation.total)}
+                  -{formatPublicPrice(calculation.originalTotal - calculation.total)}
                 </p>
               </div>
               <Collapsible open={explainerOpen}>
@@ -250,11 +280,11 @@ export function QuoteSummary() {
             <div className="flex flex-col items-end">
               {calculation.originalTotal > calculation.total && (
                 <p className="text-sm font-normal text-background/40 line-through tabular-nums">
-                  {formatEur(calculation.originalTotal)}
+                  {formatPublicPrice(calculation.originalTotal)}
                 </p>
               )}
               <p className="text-2xl font-bold text-background tabular-nums">
-                {formatEur(calculation.total)}
+                {formatPublicPrice(calculation.total)}
               </p>
             </div>
           </div>
@@ -268,6 +298,13 @@ export function QuoteSummary() {
           >
             Naruči
             <ArrowRight className="ml-1.5 h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={handleInquiryFromQuote}
+            className="mt-2 w-full rounded-xl border border-background/15 px-4 py-3 text-sm font-medium text-background/80 transition-colors hover:bg-background/10 hover:text-background"
+          >
+            Neka tim pošalje predlog
           </button>
           <p className="mt-3 text-center text-[0.7rem] text-background/40">
             Bez registracije — naručite u par koraka.{" "}
@@ -339,8 +376,8 @@ export function QuoteSummary() {
 
           <p className="mt-3 text-center text-[0.68rem] text-background/30">
             Cene su procene. Konačna ponuda može varirati u zavisnosti od
-            specifičnosti projekta. Sve cene su u EUR, bez PDV-a (PDV se ne
-            obračunava).
+            specifičnosti projekta. Sve cene su prikazane u RSD, sa uračunatim
+            PDV-om.
           </p>
         </div>
       )}

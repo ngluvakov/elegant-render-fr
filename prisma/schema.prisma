@@ -33,6 +33,7 @@ model User {
   aiCreditTransactions AiCreditTransaction[]
   aiGenerations        AiGeneration[]
   chatFeedback         ChatFeedback[]
+  projectInquiries     ProjectInquiry[]
   chargesRequested     OrderCharge[]         @relation("OrderChargeRequestedBy")
 
   @@map("users")
@@ -443,6 +444,66 @@ model ChatFeedback {
   @@index([category, createdAt])
   @@index([userId, createdAt])
   @@map("chat_feedback")
+}
+
+// ─── General project inquiries ───────────────────────────
+//
+// Pre-sales intake for visitors who do not want to finish the self-serve
+// configurator. These records are CRM leads, not orders; the team reviews
+// the brief and sends a proposal manually from email/Bitrix.
+
+enum ProjectInquiryStatus {
+  pending
+  in_progress
+  proposal_sent
+  converted
+  closed
+}
+
+model ProjectInquiry {
+  id                String               @id @default(cuid())
+  source            String?
+  sourcePath        String?
+  sourceLabel       String?
+  contactName       String
+  email             String
+  phone             String?
+  company           String?
+  serviceType       String?
+  budget            String?
+  deadline          String?
+  message           String               @db.Text
+  quoteSnapshotJson Json?
+  userId            String?
+  status            ProjectInquiryStatus @default(pending)
+  bitrixLeadId      String?              @unique
+  bitrixSyncError   String?              @db.Text
+  bitrixSyncedAt    DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  reviewedAt        DateTime?
+
+  user  User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  files ProjectInquiryFile[]
+
+  @@index([status, createdAt])
+  @@index([email, createdAt])
+  @@map("project_inquiries")
+}
+
+model ProjectInquiryFile {
+  id          String   @id @default(cuid())
+  inquiryId   String
+  fileName    String
+  fileSize    Int
+  mimeType    String
+  storagePath String   @unique
+  uploadedAt  DateTime @default(now())
+
+  inquiry ProjectInquiry @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+
+  @@index([inquiryId])
+  @@map("project_inquiry_files")
 }
 
 // ─── VR consultation inquiries ───────────────────────────

@@ -33,6 +33,7 @@ import {
   ANIM_SOURCE_MODES,
   type AnimSourceMode,
 } from "@/lib/catalog/animation-config";
+import { formatPublicPrice, formatPublicPriceText } from "@/lib/catalog/display-currency";
 import { track } from "@/lib/posthog-events";
 import { useQuote } from "./quote-context";
 
@@ -194,7 +195,7 @@ function ProductCard({
             {product.label}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {product.unitLabel}
+            {formatPublicPriceText(product.unitLabel)}
           </p>
           {product.includes.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
@@ -204,7 +205,7 @@ function ProductCard({
                   className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/12 px-2 py-0.5 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)]"
                 >
                   <Check className="h-3 w-3" />
-                  {inc}
+                  {formatPublicPriceText(inc)}
                 </span>
               ))}
             </div>
@@ -213,8 +214,8 @@ function ProductCard({
         <div className="flex flex-shrink-0 flex-col items-end gap-2">
           <p className="text-xl font-semibold text-foreground">
             {product.durationConfig
-              ? `€${product.durationConfig.perSecondEur}`
-              : `€${product.basePriceEur}`}
+              ? formatPublicPrice(product.durationConfig.perSecondEur)
+              : formatPublicPrice(product.basePriceEur)}
             {product.durationConfig && (
               <span className="text-xs font-normal text-muted-foreground">
                 /sek
@@ -304,7 +305,7 @@ function AnimationCard({
         </div>
         <div className="flex flex-shrink-0 flex-col items-end gap-2">
           <p className="text-xl font-semibold text-foreground">
-            €{perSec}
+            {formatPublicPrice(perSec)}
             <span className="text-xs font-normal text-muted-foreground">
               /sek
             </span>
@@ -336,7 +337,7 @@ function AnimationCard({
                   {m.shortLabel}
                 </span>
                 <span className="text-[0.7rem] font-bold text-accent tabular-nums">
-                  €{m.perSecondEur}/s
+                  {formatPublicPrice(m.perSecondEur)}/s
                 </span>
               </span>
               <span className="text-[0.7rem] leading-snug text-muted-foreground">

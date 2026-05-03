@@ -19,7 +19,7 @@
 "use client";
 
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatPublicPrice } from "@/lib/catalog/display-currency";
 import {
   INT_STATIC_EXTRA_CAMERA_EUR,
   INT_STATIC_EXTRA_ROOM_EUR,
@@ -263,19 +263,19 @@ function FloorBreakdown({ calc }: { calc: InteriorFloorCalc }) {
       label: calc.isFirstFloor
         ? "Cena prvog sprata (uključeno 10 prostorija + 10 kadrova)"
         : "Cena dodatnog sprata (−30%)",
-      value: formatEur(calc.baseCost),
+      value: formatPublicPrice(calc.baseCost),
     },
   ];
   if (calc.extraRoomsCost > 0) {
     rows.push({
-      label: `+${calc.extraRooms} dodatn${calc.extraRooms === 1 ? "a prostorija" : "ih prostorija"} · €${INT_STATIC_EXTRA_ROOM_EUR}/kom`,
-      value: formatEur(calc.extraRoomsCost),
+      label: `+${calc.extraRooms} dodatn${calc.extraRooms === 1 ? "a prostorija" : "ih prostorija"} · ${formatPublicPrice(INT_STATIC_EXTRA_ROOM_EUR)}/kom`,
+      value: formatPublicPrice(calc.extraRoomsCost),
     });
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
-      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · €${INT_STATIC_EXTRA_CAMERA_EUR}/kom`,
-      value: formatEur(calc.extraCamerasCost),
+      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(INT_STATIC_EXTRA_CAMERA_EUR)}/kom`,
+      value: formatPublicPrice(calc.extraCamerasCost),
     });
   }
 
@@ -297,7 +297,7 @@ function FloorBreakdown({ calc }: { calc: InteriorFloorCalc }) {
           Sprat ukupno
         </span>
         <span className="text-sm font-bold text-foreground tabular-nums">
-          {formatEur(calc.floorTotal)}
+          {formatPublicPrice(calc.floorTotal)}
         </span>
       </div>
     </div>
@@ -306,7 +306,7 @@ function FloorBreakdown({ calc }: { calc: InteriorFloorCalc }) {
 
 /**
  * Item-level total + optional cross-service discount panel. Per-floor totals
- * above are accurate to the floor's math (€170 first floor, €120 each
+ * above are accurate to the floor's math (base first floor, discounted
  * additional). The cross-service discount applies to the whole item, not to
  * individual floors, so it lives here at the bottom only.
  */
@@ -328,7 +328,7 @@ export function ItemTotal({
           Ukupno
         </span>
         <span className="text-base font-bold text-foreground tabular-nums">
-          {formatEur(preDiscountEur)}
+          {formatPublicPrice(preDiscountEur)}
         </span>
       </div>
     );
@@ -338,7 +338,7 @@ export function ItemTotal({
     <div className="space-y-2 rounded-xl bg-foreground/5 px-4 py-3 text-xs">
       <div className="flex items-baseline justify-between gap-2 text-muted-foreground">
         <span>Subtotal</span>
-        <span className="tabular-nums">{formatEur(preDiscountEur)}</span>
+        <span className="tabular-nums">{formatPublicPrice(preDiscountEur)}</span>
       </div>
       <div className="flex items-baseline justify-between gap-2 text-[color:var(--color-sage-deep)]">
         <span className="min-w-0 truncate">
@@ -348,7 +348,7 @@ export function ItemTotal({
           </span>
         </span>
         <span className="flex-shrink-0 font-semibold tabular-nums">
-          −{formatEur(savings)}
+          -{formatPublicPrice(savings)}
         </span>
       </div>
       <div className="flex items-baseline justify-between gap-2 border-t border-border/40 pt-2 text-sm">
@@ -356,7 +356,7 @@ export function ItemTotal({
           Ukupno
         </span>
         <span className="text-base font-bold text-foreground tabular-nums">
-          {formatEur(discount!.totalEur)}
+          {formatPublicPrice(discount!.totalEur)}
         </span>
       </div>
     </div>

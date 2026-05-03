@@ -11,9 +11,13 @@ import { Check, ChevronDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import {
-  formatDiscountedPrice,
   type LineItemBreakdown,
 } from "@/lib/catalog/calculate";
+import {
+  formatPublicDiscountedPrice,
+  formatPublicPrice,
+  formatPublicPriceText,
+} from "@/lib/catalog/display-currency";
 import { Collapsible } from "@/components/ui/collapsible";
 import { useQuote } from "./quote-context";
 import { AddOnStepper } from "./addon-stepper";
@@ -97,7 +101,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
         </div>
         <div className="flex items-center gap-3">
           {(() => {
-            const { primary, struck, badge } = formatDiscountedPrice(
+            const { primary, struck, badge } = formatPublicDiscountedPrice(
               breakdown.totalEur,
               breakdown.originalTotalEur,
               breakdown.discountPct,
@@ -206,7 +210,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                 ))}
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
-                €{product.durationConfig.perSecondEur}/sek ×{" "}
+                {formatPublicPrice(product.durationConfig.perSecondEur)}/sek ×{" "}
                 {item.durationSeconds}s
                 {breakdown.durationDiscount && breakdown.durationDiscount > 0 && (
                   <span className="font-semibold text-[color:var(--color-sage-deep)]">
@@ -264,7 +268,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                     <AddOnStepper
                       key={def.id}
                       label={def.label}
-                      description={def.description}
+                      description={formatPublicPriceText(def.description)}
                       quantity={item.addOnQuantities[def.id] ?? def.includedQty}
                       includedQty={def.includedQty}
                       maxQty={def.maxQty}
@@ -291,7 +295,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                   key={d}
                   className="text-[0.68rem] leading-5 text-muted-foreground"
                 >
-                  {d}
+                  {formatPublicPriceText(d)}
                 </p>
               ))}
             </div>

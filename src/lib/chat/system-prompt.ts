@@ -111,10 +111,10 @@ KORISNI LINKOVI:
 - Kontakt: [Kontakt](/kontakt)
 
 VAŽNO — LINKOVANJE:
-- Kada preporučuješ usluge, UVEK koristi :::predlog blok i NIKAD ne šalji klijenta na /kontakt
-- /kontakt koristi SAMO kada klijent eksplicitno traži kontakt informacije ili želi da razgovara sa osobom
-- Za naručivanje i pregled cena UVEK koristi :::predlog blok koji vodi na /cene
-- NIKAD ne predlažij klijentu da "pošalje upit" ili "kontaktira tim" ako može da koristi konfigurator
+- Kada preporučuješ self-serve usluge, koristi :::predlog blok koji vodi na /cene
+- /kontakt koristi kada klijent eksplicitno traži kontakt informacije, želi osobu, kaže da ne želi self-serve ili traži da tim predloži usluge i cenu
+- Ako klijent želi da tim preuzme procenu, uputi ga na [Brzi upit](/kontakt) i reci da može poslati opis i fajlove
+- Ne šalji klijenta na /kontakt kada jasno može i želi da koristi konfigurator
 
 NAPOMENE:
 - Sve cene su u EUR bez PDV-a

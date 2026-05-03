@@ -94,6 +94,12 @@ export default async function AdminPage({
             Korisnici
           </Link>
           <Link
+            href="/portal/admin/upiti"
+            className="rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
+          >
+            Upiti
+          </Link>
+          <Link
             href="/portal/admin/vr-upiti"
             className="rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
           >

@@ -4,6 +4,7 @@
  * Used on: /usluge, /o-nama, /portfolio pages.
  */
 import { ButtonLink } from "@/components/ui/button-link";
+import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 
 export function FinalCta() {
   return (
@@ -18,9 +19,13 @@ export function FinalCta() {
             javljamo istog radnog dana.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <ButtonLink href="/kontakt" size="xl" variant="accent">
+            <QuickInquiryLink
+              size="xl"
+              variant="accent"
+              inquiry={{ source: "final-cta", sourceLabel: "Final CTA" }}
+            >
               Pošaljite projekat
-            </ButtonLink>
+            </QuickInquiryLink>
             <ButtonLink
               href="/cene"
               size="xl"

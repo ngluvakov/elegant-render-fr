@@ -397,7 +397,7 @@ export function QuickOrderHero() {
 
                 <div className="mt-3 grid gap-2 sm:grid-cols-2">
                   <Link
-                    href="/kontakt"
+                    href="/cene#configurator"
                     className={cn(
                       buttonVariants({ variant: "accent", size: "sm" }),
                       "rounded-full",

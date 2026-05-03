@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { Mail, ExternalLink, Pencil } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { ExternalLink, Mail } from "lucide-react";
 import { SectionKicker } from "@/components/brand/section-kicker";
+import { ProjectInquiryForm } from "@/components/inquiry/project-inquiry-form";
 import { SITE } from "@/lib/content/site";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 
 export const metadata: Metadata = {
   title: "Kontakt",
@@ -19,7 +18,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function KontaktPage() {
+export default async function KontaktPage() {
+  const session = await auth();
+  const user = session?.user?.id
+    ? await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { name: true, email: true, phone: true },
+      })
+    : null;
+
   return (
     <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pb-24 pt-20 md:pt-28">
       <SectionKicker>Kontakt</SectionKicker>
@@ -32,61 +39,21 @@ export default function KontaktPage() {
       </p>
 
       <div className="mt-16 grid gap-12 lg:grid-cols-[1.3fr_1fr]">
-        <form className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="name">
-                <Pencil className="h-3 w-3 text-accent/60" />
-                Ime i prezime
-              </Label>
-              <Input id="name" name="name" required autoComplete="name" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">
-                <Pencil className="h-3 w-3 text-accent/60" />
-                Email
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">
-              <Pencil className="h-3 w-3 text-accent/60" />
-              Telefon (opciono)
-            </Label>
-            <Input id="phone" name="phone" type="tel" autoComplete="tel" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="message">
-              <Pencil className="h-3 w-3 text-accent/60" />
-              Opis projekta
-            </Label>
-            <Textarea
-              id="message"
-              name="message"
-              rows={6}
-              placeholder="Tip prostora, broj prostorija, rok, stil koji vam se sviđa…"
-              required
-            />
-          </div>
-          <p className="text-xs text-foreground/55">
-            Slanjem forme pristajete na obradu podataka u skladu sa našom
-            Politikom privatnosti.
-          </p>
-          <Button type="submit" size="lg" disabled>
-            Pošaljite (uskoro)
-          </Button>
-          <p className="text-xs text-foreground/50">
-            Forma će biti aktivna nakon integracije sa Bitrix24 — u međuvremenu
-            nam pišite direktno na {SITE.email}.
-          </p>
-        </form>
+        <div className="rounded-2xl border border-border/60 bg-card/80 p-6 shadow-[0_20px_55px_rgba(28,26,25,0.05)] md:p-8">
+          <ProjectInquiryForm
+            mode="contact"
+            source={{
+              source: "contact-page",
+              sourcePath: "/kontakt",
+              sourceLabel: "Kontakt forma",
+            }}
+            initialContact={{
+              name: user?.name ?? session?.user?.name ?? undefined,
+              email: user?.email ?? session?.user?.email ?? undefined,
+              phone: user?.phone ?? undefined,
+            }}
+          />
+        </div>
 
         <aside className="space-y-8 rounded-xl border border-border/60 bg-secondary/30 p-8">
           <div>

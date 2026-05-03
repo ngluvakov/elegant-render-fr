@@ -8,8 +8,8 @@ import {
   AI_CREDIT_PRODUCT_ID,
   AI_CREDIT_TIERS,
   calculateAiCreditPurchase,
-  formatCents,
 } from "@/lib/ai-studio/catalog";
+import { formatPublicPriceFromCents } from "@/lib/catalog/display-currency";
 import { useQuote } from "./quote-context";
 
 const PRESETS = [10, 25, 50, 100];
@@ -44,10 +44,10 @@ export function AiCreditAdder() {
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold text-foreground">
-            {formatCents(purchase.totalCents)}
+            {formatPublicPriceFromCents(purchase.totalCents)}
           </p>
           <p className="text-xs text-muted-foreground">
-            {formatCents(purchase.centsPerCredit)} po kreditu
+            {formatPublicPriceFromCents(purchase.centsPerCredit)} po kreditu
           </p>
         </div>
       </div>
@@ -72,7 +72,7 @@ export function AiCreditAdder() {
                   {preset} kredita
                 </span>
                 <span className="mt-1 block text-xs text-muted-foreground">
-                  {formatCents(meta.totalCents)}
+                  {formatPublicPriceFromCents(meta.totalCents)}
                 </span>
               </button>
             );
@@ -120,7 +120,8 @@ export function AiCreditAdder() {
               : `${tier.minCredits}+`;
             return (
               <span key={tier.minCredits} className="rounded-full bg-secondary/60 px-2.5 py-1">
-                {label}: {formatCents(tier.centsPerCredit)}/kredit
+                {label}: {formatPublicPriceFromCents(tier.centsPerCredit)}
+                /kredit
               </span>
             );
           })}

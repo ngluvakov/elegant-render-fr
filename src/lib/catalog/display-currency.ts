@@ -66,6 +66,15 @@ export type PublicDiscountedPriceParts = {
   badge: string | null;
 };
 
+export type PublicPricingTerms = {
+  title: string;
+  badge: string;
+  lead: string;
+  bullets: string[];
+  ctaLabel: string;
+  shortNote: string;
+};
+
 export function formatPublicDiscountedPrice(
   totalEur: number,
   originalTotalEur: number,
@@ -97,8 +106,47 @@ export function formatPublicPriceText(
   });
 }
 
+const sharedCommercialTerms = [
+  "Svaki projekat uključuje tri kruga revizija bez dodatne naknade.",
+  "Ako kadar zahteva dodatnu geometriju koja nije vidljiva iz primarnog pogleda, primenjuje se jednokratna doplata od +25% na izradu modela; nakon toga svi kadrovi idu po standardnoj ceni.",
+  "Za veće projekte i stambene komplekse koristimo progresivne popuste. Javite nam se i spremićemo ponudu po meri.",
+];
+
+export function getPublicPricingTerms(
+  currency: DisplayCurrency,
+): PublicPricingTerms {
+  if (currency === "rsd") {
+    return {
+      title: "Napomene za Srbiju",
+      badge: "Srbija - RSD sa PDV-om",
+      lead: "Ovaj prikaz cenovnika je prilagođen klijentima iz Srbije.",
+      bullets: [
+        "Cene su prikazane u dinarima (RSD), sa uračunatim PDV-om.",
+        "RSD iznosi se računaju iz osnovnog EUR cenovnika po podešenom kursu i važećoj PDV stopi.",
+        "Konačna ponuda i račun za klijente iz Srbije prate lokalne uslove naplate i oporezivanja.",
+        ...sharedCommercialTerms,
+      ],
+      ctaLabel: "Zatražite ponudu za Srbiju",
+      shortNote: "Sve cene su prikazane u RSD, sa uračunatim PDV-om.",
+    };
+  }
+
+  return {
+    title: "Napomene za inostranstvo",
+    badge: "Inostranstvo - EUR bez PDV-a",
+    lead: "Ovaj prikaz cenovnika je prilagođen klijentima van Srbije.",
+    bullets: [
+      "Cene su prikazane u evrima (EUR), bez PDV-a.",
+      "Lokalni porezi, takse i eventualni troškovi payment providera nisu deo prikazane osnovne cene.",
+      "Finalni iznos može zavisiti od zemlje naplate, tipa klijenta i načina plaćanja.",
+      ...sharedCommercialTerms,
+    ],
+    ctaLabel: "Zatražite ponudu za inostranstvo",
+    shortNote:
+      "Sve cene su prikazane u EUR, bez PDV-a; lokalni porezi ili takse nisu deo prikazane osnovne cene.",
+  };
+}
+
 export function publicPriceNote(currency: DisplayCurrency): string {
-  return currency === "rsd"
-    ? "Sve cene su prikazane u dinarima (RSD), sa uračunatim PDV-om."
-    : "Sve cene su prikazane u evrima (EUR), bez PDV-a.";
+  return getPublicPricingTerms(currency).shortNote;
 }

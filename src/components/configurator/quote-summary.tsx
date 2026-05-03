@@ -25,6 +25,7 @@ import { useQuickInquiry } from "@/components/inquiry/quick-inquiry-provider";
 import {
   formatPublicDiscountedPrice,
   formatPublicPrice,
+  getPublicPricingTerms,
 } from "@/lib/catalog/display-currency";
 import { saveQuote } from "@/server/actions/quote";
 import { track } from "@/lib/posthog-events";
@@ -41,6 +42,7 @@ export function QuoteSummary() {
     | { kind: "error"; message: string }
   >({ kind: "idle" });
   const hasItems = calculation.items.length > 0;
+  const pricingTerms = getPublicPricingTerms(displayCurrency);
   const router = useRouter();
   const { openInquiry } = useQuickInquiry();
 
@@ -385,10 +387,7 @@ export function QuoteSummary() {
 
           <p className="mt-3 text-center text-[0.68rem] text-background/30">
             Cene su procene. Konačna ponuda može varirati u zavisnosti od
-            specifičnosti projekta.{" "}
-            {displayCurrency === "rsd"
-              ? "Sve cene su prikazane u RSD, sa uračunatim PDV-om."
-              : "Sve cene su prikazane u EUR, bez PDV-a."}
+            specifičnosti projekta. {pricingTerms.shortNote}
           </p>
         </div>
       )}

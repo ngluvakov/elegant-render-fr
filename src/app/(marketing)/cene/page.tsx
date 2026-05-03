@@ -10,7 +10,7 @@ import { StandaloneAiCredits } from "@/components/configurator/standalone-ai-cre
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import {
   formatPublicPrice,
-  publicPriceNote,
+  getPublicPricingTerms,
 } from "@/lib/catalog/display-currency";
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 
@@ -42,6 +42,7 @@ export const dynamic = "force-dynamic";
 
 export default async function CenePage() {
   const displayCurrency = await getPublicDisplayCurrency();
+  const pricingTerms = getPublicPricingTerms(displayCurrency);
 
   return (
     <>
@@ -127,25 +128,23 @@ export default async function CenePage() {
       <section className="pb-24">
         <div className="mx-auto w-full max-w-3xl px-6">
           <div className="rounded-2xl border border-[color:var(--color-border-warm)] bg-secondary/40 p-6 md:p-8">
-            <h3 className="text-lg text-foreground">Napomene uz cenovnik</h3>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h3 className="text-lg text-foreground">
+                  {pricingTerms.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {pricingTerms.lead}
+                </p>
+              </div>
+              <span className="inline-flex w-fit flex-shrink-0 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-accent">
+                {pricingTerms.badge}
+              </span>
+            </div>
             <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
-              <li>
-                {publicPriceNote(displayCurrency)}
-              </li>
-              <li>
-                Svaki projekat uključuje{" "}
-                <strong>tri kruga revizija</strong> bez dodatne naknade.
-              </li>
-              <li>
-                Ukoliko kadar zahteva dodatnu geometriju koja nije vidljiva iz
-                primarnog pogleda, primenjujemo jednokratnu doplatu od{" "}
-                <strong>+25% na izradu modela</strong> — nakon toga svi kadrovi
-                idu po standardnoj ceni.
-              </li>
-              <li>
-                Za veće projekte i stambene komplekse koristimo progresivne
-                popuste. Javite nam se i spremićemo ponudu po meri.
-              </li>
+              {pricingTerms.bullets.map((term) => (
+                <li key={term}>{term}</li>
+              ))}
             </ul>
             <div className="mt-6">
               <QuickInquiryLink
@@ -153,10 +152,10 @@ export default async function CenePage() {
                 variant="accent"
                 inquiry={{
                   source: "pricing-notes",
-                  sourceLabel: "Cene - zatražite procenu",
+                  sourceLabel: `Cene - ${pricingTerms.ctaLabel}`,
                 }}
               >
-                Zatražite procenu
+                {pricingTerms.ctaLabel}
               </QuickInquiryLink>
             </div>
           </div>

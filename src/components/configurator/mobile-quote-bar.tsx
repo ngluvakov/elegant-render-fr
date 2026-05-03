@@ -13,7 +13,7 @@ import { formatPublicPrice } from "@/lib/catalog/display-currency";
 import { useQuote } from "./quote-context";
 
 export function MobileQuoteBar() {
-  const { calculation } = useQuote();
+  const { calculation, displayCurrency } = useQuote();
   if (calculation.items.length === 0) return null;
 
   const hasDiscount = calculation.originalTotal > calculation.total;
@@ -35,12 +35,15 @@ export function MobileQuoteBar() {
           </div>
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <span className="text-lg font-semibold text-background tabular-nums">
-              {formatPublicPrice(calculation.total)}
+              {formatPublicPrice(calculation.total, displayCurrency)}
             </span>
             {hasDiscount && (
               <>
                 <span className="text-xs font-normal text-background/40 line-through tabular-nums">
-                  {formatPublicPrice(calculation.originalTotal)}
+                  {formatPublicPrice(
+                    calculation.originalTotal,
+                    displayCurrency,
+                  )}
                 </span>
                 <span className="rounded-md bg-[color:var(--color-sage)]/20 px-1.5 py-0.5 text-[0.68rem] font-semibold text-[color:var(--color-sage)]">
                   −{savingsPct}%

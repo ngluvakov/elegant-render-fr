@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Layers, TrendingDown, Zap } from "lucide-react";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { CategoryPreview } from "@/components/configurator/category-preview";
 import { PricingConfigurator } from "@/components/configurator/pricing-configurator";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
-import { formatPublicPrice } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPrice,
+  getDisplayCurrencyForCountry,
+  publicPriceNote,
+} from "@/lib/catalog/display-currency";
 
 // Numbers in the philosophy strip's middle card are pulled live from the
 // catalog so a price change there propagates here automatically — no
@@ -31,7 +36,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CenePage() {
+export const dynamic = "force-dynamic";
+
+export default async function CenePage() {
+  const countryCode = (await headers()).get("x-vercel-ip-country");
+  const displayCurrency = getDisplayCurrencyForCountry(countryCode);
+
   return (
     <>
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
@@ -59,7 +69,7 @@ export default function CenePage() {
               {
                 icon: TrendingDown,
                 title: "Drugi kadar je znatno jeftiniji",
-                desc: `Render eksterijera sa modelom: ${formatPublicPrice(extStaticBaseEur)} (uključuje prvi kadar). Svaki dodatni kadar iste fasade: ${formatPublicPrice(extStaticCamPriceEur)}. Plaćate samo novi pogled, ne ponovo ceo model.`,
+                desc: `Render eksterijera sa modelom: ${formatPublicPrice(extStaticBaseEur, displayCurrency)} (uključuje prvi kadar). Svaki dodatni kadar iste fasade: ${formatPublicPrice(extStaticCamPriceEur, displayCurrency)}. Plaćate samo novi pogled, ne ponovo ceo model.`,
               },
               {
                 icon: Zap,
@@ -94,13 +104,13 @@ export default function CenePage() {
           <h2 className="mb-5 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
             Šta vam treba?
           </h2>
-          <CategoryPreview />
+          <CategoryPreview displayCurrency={displayCurrency} />
         </div>
       </section>
 
       <section id="configurator" className="scroll-mt-24 pb-20 pt-10">
         <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
-          <PricingConfigurator />
+          <PricingConfigurator displayCurrency={displayCurrency} />
         </div>
       </section>
 
@@ -110,7 +120,7 @@ export default function CenePage() {
             <h3 className="text-lg text-foreground">Napomene uz cenovnik</h3>
             <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
               <li>
-                Sve cene su prikazane u dinarima (RSD), sa uračunatim PDV-om.
+                {publicPriceNote(displayCurrency)}
               </li>
               <li>
                 Svaki projekat uključuje{" "}

@@ -31,7 +31,8 @@ import { track } from "@/lib/posthog-events";
 import { useQuote } from "./quote-context";
 
 export function QuoteSummary() {
-  const { items, calculation, clearAll, removeProduct } = useQuote();
+  const { items, calculation, clearAll, removeProduct, displayCurrency } =
+    useQuote();
   const [explainerOpen, setExplainerOpen] = useState(false);
   const [shareState, setShareState] = useState<
     | { kind: "idle" }
@@ -175,6 +176,7 @@ export function QuoteSummary() {
             item.totalEur,
             item.originalTotalEur,
             item.discountPct,
+            displayCurrency,
           );
           return (
             <div
@@ -237,7 +239,11 @@ export function QuoteSummary() {
                   />
                 </button>
                 <p className="font-semibold text-[color:var(--color-sage)]">
-                  -{formatPublicPrice(calculation.originalTotal - calculation.total)}
+                  -
+                  {formatPublicPrice(
+                    calculation.originalTotal - calculation.total,
+                    displayCurrency,
+                  )}
                 </p>
               </div>
               <Collapsible open={explainerOpen}>
@@ -280,11 +286,14 @@ export function QuoteSummary() {
             <div className="flex flex-col items-end">
               {calculation.originalTotal > calculation.total && (
                 <p className="text-sm font-normal text-background/40 line-through tabular-nums">
-                  {formatPublicPrice(calculation.originalTotal)}
+                  {formatPublicPrice(
+                    calculation.originalTotal,
+                    displayCurrency,
+                  )}
                 </p>
               )}
               <p className="text-2xl font-bold text-background tabular-nums">
-                {formatPublicPrice(calculation.total)}
+                {formatPublicPrice(calculation.total, displayCurrency)}
               </p>
             </div>
           </div>
@@ -376,8 +385,10 @@ export function QuoteSummary() {
 
           <p className="mt-3 text-center text-[0.68rem] text-background/30">
             Cene su procene. Konačna ponuda može varirati u zavisnosti od
-            specifičnosti projekta. Sve cene su prikazane u RSD, sa uračunatim
-            PDV-om.
+            specifičnosti projekta.{" "}
+            {displayCurrency === "rsd"
+              ? "Sve cene su prikazane u RSD, sa uračunatim PDV-om."
+              : "Sve cene su prikazane u EUR, bez PDV-a."}
           </p>
         </div>
       )}

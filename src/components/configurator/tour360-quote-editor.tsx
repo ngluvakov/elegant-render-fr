@@ -20,7 +20,10 @@
 
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
-import { formatPublicPrice } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPrice,
+  type DisplayCurrency,
+} from "@/lib/catalog/display-currency";
 import {
   TOUR360_EXTRA_CAMERA_EUR,
   TOUR360_EXTRA_HOTSPOT_EUR,
@@ -46,6 +49,7 @@ const MAX_CAMERAS_PER_ROOM = 10;
 type Props = {
   config: Tour360Config;
   onChange: (next: Tour360Config) => void;
+  displayCurrency: DisplayCurrency;
   /**
    * Cross-service discount metadata, propagated from the QuoteItemCard so
    * the footer can show the original (struck) total alongside the
@@ -54,7 +58,12 @@ type Props = {
   discount?: EditorDiscount | null;
 };
 
-export function Tour360QuoteEditor({ config, onChange, discount }: Props) {
+export function Tour360QuoteEditor({
+  config,
+  onChange,
+  discount,
+  displayCurrency,
+}: Props) {
   const calc = calcTour360Total(config.floors, config.tourAssembly);
 
   const updateFloors = (next: Tour360Floor[]) => {
@@ -141,6 +150,7 @@ export function Tour360QuoteEditor({ config, onChange, discount }: Props) {
             floor={floor}
             index={idx}
             calc={calc.floors[idx]}
+            displayCurrency={displayCurrency}
             canRemoveFloor={config.floors.length > 1}
             onAddRoom={() => addRoom(idx)}
             onRemoveRoom={(rIdx) => removeRoom(idx, rIdx)}
@@ -174,10 +184,15 @@ export function Tour360QuoteEditor({ config, onChange, discount }: Props) {
         totalHotspots={calc.totalHotspots}
         assemblyCost={calc.assembly.totalCost}
         webTourFree={calc.assembly.freeByHotspotThreshold}
+        displayCurrency={displayCurrency}
         onChange={setAssembly}
       />
 
-      <ItemTotal preDiscountEur={calc.totalEur} discount={discount} />
+      <ItemTotal
+        preDiscountEur={calc.totalEur}
+        discount={discount}
+        displayCurrency={displayCurrency}
+      />
     </div>
   );
 }
@@ -186,6 +201,7 @@ function FloorPanel({
   floor,
   index,
   calc,
+  displayCurrency,
   canRemoveFloor,
   onAddRoom,
   onRemoveRoom,
@@ -196,6 +212,7 @@ function FloorPanel({
   floor: Tour360Floor;
   index: number;
   calc: Tour360FloorCalc;
+  displayCurrency: DisplayCurrency;
   canRemoveFloor: boolean;
   onAddRoom: () => void;
   onRemoveRoom: (roomIdx: number) => void;
@@ -255,7 +272,7 @@ function FloorPanel({
         </button>
       </div>
 
-      <FloorBreakdown calc={calc} />
+      <FloorBreakdown calc={calc} displayCurrency={displayCurrency} />
     </div>
   );
 }
@@ -308,25 +325,31 @@ function RoomRow({
   );
 }
 
-function FloorBreakdown({ calc }: { calc: Tour360FloorCalc }) {
+function FloorBreakdown({
+  calc,
+  displayCurrency,
+}: {
+  calc: Tour360FloorCalc;
+  displayCurrency: DisplayCurrency;
+}) {
   const rows: { label: string; value: string }[] = [
     {
       label: calc.isFirstFloor
         ? "Cena prvog sprata (uključeno 10 prostorija + 10 hotspotova + 10 kadrova)"
         : "Cena dodatnog sprata (−30%)",
-      value: formatPublicPrice(calc.baseCost),
+      value: formatPublicPrice(calc.baseCost, displayCurrency),
     },
   ];
   if (calc.extraHotspotsCost > 0) {
     rows.push({
-      label: `+${calc.extraHotspots} dodatn${calc.extraHotspots === 1 ? "i hotspot" : "ih hotspotova"} · ${formatPublicPrice(TOUR360_EXTRA_HOTSPOT_EUR)}/kom`,
-      value: formatPublicPrice(calc.extraHotspotsCost),
+      label: `+${calc.extraHotspots} dodatn${calc.extraHotspots === 1 ? "i hotspot" : "ih hotspotova"} · ${formatPublicPrice(TOUR360_EXTRA_HOTSPOT_EUR, displayCurrency)}/kom`,
+      value: formatPublicPrice(calc.extraHotspotsCost, displayCurrency),
     });
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
-      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(TOUR360_EXTRA_CAMERA_EUR)}/kom`,
-      value: formatPublicPrice(calc.extraCamerasCost),
+      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(TOUR360_EXTRA_CAMERA_EUR, displayCurrency)}/kom`,
+      value: formatPublicPrice(calc.extraCamerasCost, displayCurrency),
     });
   }
 
@@ -348,7 +371,7 @@ function FloorBreakdown({ calc }: { calc: Tour360FloorCalc }) {
           Sprat ukupno
         </span>
         <span className="text-sm font-bold text-foreground tabular-nums">
-          {formatPublicPrice(calc.floorTotal)}
+          {formatPublicPrice(calc.floorTotal, displayCurrency)}
         </span>
       </div>
     </div>
@@ -360,12 +383,14 @@ function TourAssemblySection({
   totalHotspots,
   assemblyCost,
   webTourFree,
+  displayCurrency,
   onChange,
 }: {
   assembly: TourAssembly;
   totalHotspots: number;
   assemblyCost: number;
   webTourFree: boolean;
+  displayCurrency: DisplayCurrency;
   onChange: (patch: Partial<TourAssembly>) => void;
 }) {
   const webOn = assembly.webTourEnabled;
@@ -376,8 +401,8 @@ function TourAssemblySection({
   const baseLabel = webTourFree
     ? `besplatno (${TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD}+ hotspotova)`
     : webOn
-      ? `+${formatPublicPrice(TOUR360_ASSEMBLY_BASE_EUR)}${hotspotsToFree > 0 ? ` (besplatno sa još ${hotspotsToFree} hotspot${hotspotsToFree === 1 ? "om" : "ova"})` : ""}`
-      : `+${formatPublicPrice(TOUR360_ASSEMBLY_BASE_EUR)} (besplatno sa ${TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD}+ hotspotova)`;
+      ? `+${formatPublicPrice(TOUR360_ASSEMBLY_BASE_EUR, displayCurrency)}${hotspotsToFree > 0 ? ` (besplatno sa još ${hotspotsToFree} hotspot${hotspotsToFree === 1 ? "om" : "ova"})` : ""}`
+      : `+${formatPublicPrice(TOUR360_ASSEMBLY_BASE_EUR, displayCurrency)} (besplatno sa ${TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD}+ hotspotova)`;
 
   return (
     <div className="rounded-xl border border-border/60 bg-card/60 p-4">
@@ -408,7 +433,10 @@ function TourAssemblySection({
         />
         <ToggleRow
           label="Navigacija po osnovi sprata"
-          sub={`+${formatPublicPrice(TOUR360_FLOOR_PLAN_NAV_EUR)}`}
+          sub={`+${formatPublicPrice(
+            TOUR360_FLOOR_PLAN_NAV_EUR,
+            displayCurrency,
+          )}`}
           checked={webOn && assembly.floorPlanNavEnabled}
           disabled={!webOn}
           onChange={(v) => onChange({ floorPlanNavEnabled: v })}
@@ -416,7 +444,10 @@ function TourAssemblySection({
         />
         <ToggleRow
           label="White-label brending"
-          sub={`+${formatPublicPrice(TOUR360_WHITE_LABEL_EUR)} · logo se postavlja u portalu`}
+          sub={`+${formatPublicPrice(
+            TOUR360_WHITE_LABEL_EUR,
+            displayCurrency,
+          )} · logo se postavlja u portalu`}
           checked={webOn && assembly.whiteLabelEnabled}
           disabled={!webOn}
           onChange={(v) => onChange({ whiteLabelEnabled: v })}
@@ -430,7 +461,7 @@ function TourAssemblySection({
             Web tura ukupno
           </span>
           <span className="text-sm font-bold text-foreground tabular-nums">
-            {formatPublicPrice(assemblyCost)}
+            {formatPublicPrice(assemblyCost, displayCurrency)}
           </span>
         </div>
       )}

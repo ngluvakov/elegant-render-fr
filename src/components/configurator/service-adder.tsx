@@ -33,7 +33,11 @@ import {
   ANIM_SOURCE_MODES,
   type AnimSourceMode,
 } from "@/lib/catalog/animation-config";
-import { formatPublicPrice, formatPublicPriceText } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPrice,
+  formatPublicPriceText,
+  type DisplayCurrency,
+} from "@/lib/catalog/display-currency";
 import { track } from "@/lib/posthog-events";
 import { useQuote } from "./quote-context";
 
@@ -54,7 +58,7 @@ export function ServiceAdder() {
   const [activeGroupId, setActiveGroupId] =
     useState<CustomerGroupId>(initialGroupId);
   const [justAdded, setJustAdded] = useState<string | null>(null);
-  const { addProduct } = useQuote();
+  const { addProduct, displayCurrency } = useQuote();
 
   // Sync state when navigation changes the ?group= param (e.g. user clicks a
   // preview card while already on /cene). State is otherwise local — clicking
@@ -130,6 +134,7 @@ export function ServiceAdder() {
             category={cat}
             showHeader={activeCats.length > 1}
             justAdded={justAdded}
+            displayCurrency={displayCurrency}
             onAdd={(product, sourceMode) =>
               handleAdd(product, cat.id, sourceMode)
             }
@@ -144,11 +149,13 @@ function CategoryProducts({
   category,
   showHeader,
   justAdded,
+  displayCurrency,
   onAdd,
 }: {
   category: ConfiguratorCategory;
   showHeader: boolean;
   justAdded: string | null;
+  displayCurrency: DisplayCurrency;
   onAdd: (product: ConfiguratorProduct, sourceMode?: string) => void;
 }) {
   return (
@@ -162,6 +169,7 @@ function CategoryProducts({
         <AnimationCardWrapper
           category={category}
           isAdded={(productId) => justAdded === productId}
+          displayCurrency={displayCurrency}
           onAdd={(product, sourceMode) => onAdd(product, sourceMode)}
         />
       ) : (
@@ -170,6 +178,7 @@ function CategoryProducts({
             key={product.id}
             product={product}
             isAdded={justAdded === product.id}
+            displayCurrency={displayCurrency}
             onAdd={() => onAdd(product)}
           />
         ))
@@ -181,10 +190,12 @@ function CategoryProducts({
 function ProductCard({
   product,
   isAdded,
+  displayCurrency,
   onAdd,
 }: {
   product: ConfiguratorProduct;
   isAdded: boolean;
+  displayCurrency: DisplayCurrency;
   onAdd: () => void;
 }) {
   return (
@@ -195,7 +206,7 @@ function ProductCard({
             {product.label}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {formatPublicPriceText(product.unitLabel)}
+            {formatPublicPriceText(product.unitLabel, displayCurrency)}
           </p>
           {product.includes.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
@@ -205,7 +216,7 @@ function ProductCard({
                   className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/12 px-2 py-0.5 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)]"
                 >
                   <Check className="h-3 w-3" />
-                  {formatPublicPriceText(inc)}
+                  {formatPublicPriceText(inc, displayCurrency)}
                 </span>
               ))}
             </div>
@@ -214,8 +225,11 @@ function ProductCard({
         <div className="flex flex-shrink-0 flex-col items-end gap-2">
           <p className="text-xl font-semibold text-foreground">
             {product.durationConfig
-              ? formatPublicPrice(product.durationConfig.perSecondEur)
-              : formatPublicPrice(product.basePriceEur)}
+              ? formatPublicPrice(
+                  product.durationConfig.perSecondEur,
+                  displayCurrency,
+                )
+              : formatPublicPrice(product.basePriceEur, displayCurrency)}
             {product.durationConfig && (
               <span className="text-xs font-normal text-muted-foreground">
                 /sek
@@ -261,10 +275,12 @@ function ProductCard({
 function AnimationCardWrapper({
   category,
   isAdded,
+  displayCurrency,
   onAdd,
 }: {
   category: ConfiguratorCategory;
   isAdded: (productId: string) => boolean;
+  displayCurrency: DisplayCurrency;
   onAdd: (product: ConfiguratorProduct, sourceMode: string) => void;
 }) {
   const product = category.products.find((p) => p.id === ANIM_PRODUCT_ID);
@@ -273,6 +289,7 @@ function AnimationCardWrapper({
     <AnimationCard
       product={product}
       isAdded={isAdded(product.id)}
+      displayCurrency={displayCurrency}
       onAdd={onAdd}
     />
   );
@@ -281,10 +298,12 @@ function AnimationCardWrapper({
 function AnimationCard({
   product,
   isAdded,
+  displayCurrency,
   onAdd,
 }: {
   product: ConfiguratorProduct;
   isAdded: boolean;
+  displayCurrency: DisplayCurrency;
   onAdd: (product: ConfiguratorProduct, sourceMode: string) => void;
 }) {
   const [mode, setMode] = useState<AnimSourceMode>("scratch");
@@ -305,7 +324,7 @@ function AnimationCard({
         </div>
         <div className="flex flex-shrink-0 flex-col items-end gap-2">
           <p className="text-xl font-semibold text-foreground">
-            {formatPublicPrice(perSec)}
+            {formatPublicPrice(perSec, displayCurrency)}
             <span className="text-xs font-normal text-muted-foreground">
               /sek
             </span>
@@ -337,7 +356,7 @@ function AnimationCard({
                   {m.shortLabel}
                 </span>
                 <span className="text-[0.7rem] font-bold text-accent tabular-nums">
-                  {formatPublicPrice(m.perSecondEur)}/s
+                  {formatPublicPrice(m.perSecondEur, displayCurrency)}/s
                 </span>
               </span>
               <span className="text-[0.7rem] leading-snug text-muted-foreground">

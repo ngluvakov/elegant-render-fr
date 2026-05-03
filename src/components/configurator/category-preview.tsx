@@ -29,7 +29,10 @@ import {
   type CustomerGroupId,
   getGroupStartingPriceEur,
 } from "@/lib/catalog/customer-groups";
-import { formatPublicPrice } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPrice,
+  type DisplayCurrency,
+} from "@/lib/catalog/display-currency";
 import { track } from "@/lib/posthog-events";
 
 const GROUP_VISUALS: Record<
@@ -58,7 +61,11 @@ const GROUP_VISUALS: Record<
   },
 };
 
-export function CategoryPreview() {
+export function CategoryPreview({
+  displayCurrency,
+}: {
+  displayCurrency: DisplayCurrency;
+}) {
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-5">
       {CUSTOMER_GROUPS.map((group) => {
@@ -76,6 +83,7 @@ export function CategoryPreview() {
             videoSrc={group.videoSrc}
             icon={visual.icon}
             gradient={visual.gradient}
+            displayCurrency={displayCurrency}
             onClick={() =>
               track("category_preview_click", { group: group.id })
             }
@@ -96,6 +104,7 @@ function PreviewCard({
   videoSrc,
   icon: Icon,
   gradient,
+  displayCurrency,
   onClick,
 }: {
   href: string;
@@ -107,6 +116,7 @@ function PreviewCard({
   videoSrc?: string;
   icon: LucideIcon;
   gradient: string;
+  displayCurrency: DisplayCurrency;
   onClick: () => void;
 }) {
   const [mediaLoaded, setMediaLoaded] = useState(false);
@@ -169,7 +179,7 @@ function PreviewCard({
         <p className="mt-auto pt-1 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           od{" "}
           <span className="text-base font-bold normal-case tracking-normal text-foreground">
-            {formatPublicPrice(startingEur)}
+            {formatPublicPrice(startingEur, displayCurrency)}
           </span>
         </p>
       </div>

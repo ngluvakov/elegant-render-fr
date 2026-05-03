@@ -19,7 +19,10 @@
 "use client";
 
 import { Minus, Plus, Trash2 } from "lucide-react";
-import { formatPublicPrice } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPrice,
+  type DisplayCurrency,
+} from "@/lib/catalog/display-currency";
 import {
   INT_STATIC_EXTRA_CAMERA_EUR,
   INT_STATIC_EXTRA_ROOM_EUR,
@@ -45,6 +48,7 @@ export type EditorDiscount = {
 type Props = {
   floors: InteriorFloor[];
   onChange: (next: InteriorFloor[]) => void;
+  displayCurrency: DisplayCurrency;
   /**
    * If a cross-service discount applies to this item, pass it in so the
    * footer can show the original (struck) total alongside the discounted
@@ -54,7 +58,12 @@ type Props = {
   discount?: EditorDiscount | null;
 };
 
-export function InteriorQuoteEditor({ floors, onChange, discount }: Props) {
+export function InteriorQuoteEditor({
+  floors,
+  onChange,
+  discount,
+  displayCurrency,
+}: Props) {
   const calc = calcInteriorTotal(floors);
 
   const updateFloor = (index: number, patch: Partial<InteriorFloor>) => {
@@ -117,6 +126,7 @@ export function InteriorQuoteEditor({ floors, onChange, discount }: Props) {
             floor={floor}
             index={idx}
             calc={calc.floors[idx]}
+            displayCurrency={displayCurrency}
             canRemoveFloor={floors.length > 1}
             onAddRoom={() => addRoom(idx)}
             onRemoveRoom={(rIdx) => removeRoom(idx, rIdx)}
@@ -141,7 +151,11 @@ export function InteriorQuoteEditor({ floors, onChange, discount }: Props) {
         </p>
       </div>
 
-      <ItemTotal preDiscountEur={calc.totalEur} discount={discount} />
+      <ItemTotal
+        preDiscountEur={calc.totalEur}
+        discount={discount}
+        displayCurrency={displayCurrency}
+      />
     </div>
   );
 }
@@ -150,6 +164,7 @@ function FloorPanel({
   floor,
   index,
   calc,
+  displayCurrency,
   canRemoveFloor,
   onAddRoom,
   onRemoveRoom,
@@ -159,6 +174,7 @@ function FloorPanel({
   floor: InteriorFloor;
   index: number;
   calc: InteriorFloorCalc;
+  displayCurrency: DisplayCurrency;
   canRemoveFloor: boolean;
   onAddRoom: () => void;
   onRemoveRoom: (roomIdx: number) => void;
@@ -215,7 +231,7 @@ function FloorPanel({
         </button>
       </div>
 
-      <FloorBreakdown calc={calc} />
+      <FloorBreakdown calc={calc} displayCurrency={displayCurrency} />
     </div>
   );
 }
@@ -257,25 +273,31 @@ function RoomRow({
   );
 }
 
-function FloorBreakdown({ calc }: { calc: InteriorFloorCalc }) {
+function FloorBreakdown({
+  calc,
+  displayCurrency,
+}: {
+  calc: InteriorFloorCalc;
+  displayCurrency: DisplayCurrency;
+}) {
   const rows: { label: string; value: string }[] = [
     {
       label: calc.isFirstFloor
         ? "Cena prvog sprata (uključeno 10 prostorija + 10 kadrova)"
         : "Cena dodatnog sprata (−30%)",
-      value: formatPublicPrice(calc.baseCost),
+      value: formatPublicPrice(calc.baseCost, displayCurrency),
     },
   ];
   if (calc.extraRoomsCost > 0) {
     rows.push({
-      label: `+${calc.extraRooms} dodatn${calc.extraRooms === 1 ? "a prostorija" : "ih prostorija"} · ${formatPublicPrice(INT_STATIC_EXTRA_ROOM_EUR)}/kom`,
-      value: formatPublicPrice(calc.extraRoomsCost),
+      label: `+${calc.extraRooms} dodatn${calc.extraRooms === 1 ? "a prostorija" : "ih prostorija"} · ${formatPublicPrice(INT_STATIC_EXTRA_ROOM_EUR, displayCurrency)}/kom`,
+      value: formatPublicPrice(calc.extraRoomsCost, displayCurrency),
     });
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
-      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(INT_STATIC_EXTRA_CAMERA_EUR)}/kom`,
-      value: formatPublicPrice(calc.extraCamerasCost),
+      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(INT_STATIC_EXTRA_CAMERA_EUR, displayCurrency)}/kom`,
+      value: formatPublicPrice(calc.extraCamerasCost, displayCurrency),
     });
   }
 
@@ -297,7 +319,7 @@ function FloorBreakdown({ calc }: { calc: InteriorFloorCalc }) {
           Sprat ukupno
         </span>
         <span className="text-sm font-bold text-foreground tabular-nums">
-          {formatPublicPrice(calc.floorTotal)}
+          {formatPublicPrice(calc.floorTotal, displayCurrency)}
         </span>
       </div>
     </div>
@@ -313,9 +335,11 @@ function FloorBreakdown({ calc }: { calc: InteriorFloorCalc }) {
 export function ItemTotal({
   preDiscountEur,
   discount,
+  displayCurrency,
 }: {
   preDiscountEur: number;
   discount?: EditorDiscount | null;
+  displayCurrency: DisplayCurrency;
 }) {
   const hasDiscount =
     !!discount && discount.pct > 0 && discount.totalEur < preDiscountEur;
@@ -328,7 +352,7 @@ export function ItemTotal({
           Ukupno
         </span>
         <span className="text-base font-bold text-foreground tabular-nums">
-          {formatPublicPrice(preDiscountEur)}
+          {formatPublicPrice(preDiscountEur, displayCurrency)}
         </span>
       </div>
     );
@@ -338,7 +362,9 @@ export function ItemTotal({
     <div className="space-y-2 rounded-xl bg-foreground/5 px-4 py-3 text-xs">
       <div className="flex items-baseline justify-between gap-2 text-muted-foreground">
         <span>Subtotal</span>
-        <span className="tabular-nums">{formatPublicPrice(preDiscountEur)}</span>
+        <span className="tabular-nums">
+          {formatPublicPrice(preDiscountEur, displayCurrency)}
+        </span>
       </div>
       <div className="flex items-baseline justify-between gap-2 text-[color:var(--color-sage-deep)]">
         <span className="min-w-0 truncate">
@@ -348,7 +374,7 @@ export function ItemTotal({
           </span>
         </span>
         <span className="flex-shrink-0 font-semibold tabular-nums">
-          -{formatPublicPrice(savings)}
+          -{formatPublicPrice(savings, displayCurrency)}
         </span>
       </div>
       <div className="flex items-baseline justify-between gap-2 border-t border-border/40 pt-2 text-sm">
@@ -356,7 +382,7 @@ export function ItemTotal({
           Ukupno
         </span>
         <span className="text-base font-bold text-foreground tabular-nums">
-          {formatPublicPrice(discount!.totalEur)}
+          {formatPublicPrice(discount!.totalEur, displayCurrency)}
         </span>
       </div>
     </div>

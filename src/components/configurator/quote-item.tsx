@@ -32,6 +32,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
   const [expanded, setExpanded] = useState(true);
   const {
     items,
+    displayCurrency,
     setAddOnQty,
     setDuration,
     setInteriorConfig,
@@ -105,6 +106,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
               breakdown.totalEur,
               breakdown.originalTotalEur,
               breakdown.discountPct,
+              displayCurrency,
             );
             return (
               <div className="flex flex-col items-end">
@@ -210,7 +212,11 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                 ))}
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
-                {formatPublicPrice(product.durationConfig.perSecondEur)}/sek ×{" "}
+                {formatPublicPrice(
+                  product.durationConfig.perSecondEur,
+                  displayCurrency,
+                )}
+                /sek ×{" "}
                 {item.durationSeconds}s
                 {breakdown.durationDiscount && breakdown.durationDiscount > 0 && (
                   <span className="font-semibold text-[color:var(--color-sage-deep)]">
@@ -232,6 +238,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
               <InteriorQuoteEditor
                 floors={item.interiorConfig}
                 discount={editorDiscount}
+                displayCurrency={displayCurrency}
                 onChange={(floors) =>
                   setInteriorConfig(item.instanceId, floors)
                 }
@@ -246,6 +253,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
               <Tour360QuoteEditor
                 config={item.tour360Config}
                 discount={editorDiscount}
+                displayCurrency={displayCurrency}
                 onChange={(config) =>
                   setTour360Config(item.instanceId, config)
                 }
@@ -268,7 +276,10 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                     <AddOnStepper
                       key={def.id}
                       label={def.label}
-                      description={formatPublicPriceText(def.description)}
+                      description={formatPublicPriceText(
+                        def.description,
+                        displayCurrency,
+                      )}
                       quantity={item.addOnQuantities[def.id] ?? def.includedQty}
                       includedQty={def.includedQty}
                       maxQty={def.maxQty}
@@ -277,6 +288,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                       priceType={def.priceType}
                       isVolumeRate={aoBreakdown?.isVolumeRate ?? false}
                       volumeRules={def.volumeRules}
+                      displayCurrency={displayCurrency}
                       onChange={(qty) =>
                         setAddOnQty(item.instanceId, def.id, qty)
                       }
@@ -295,7 +307,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                   key={d}
                   className="text-[0.68rem] leading-5 text-muted-foreground"
                 >
-                  {formatPublicPriceText(d)}
+                  {formatPublicPriceText(d, displayCurrency)}
                 </p>
               ))}
             </div>

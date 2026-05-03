@@ -8,7 +8,11 @@
 
 import { Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatPublicPrice, formatPublicPriceText } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPrice,
+  formatPublicPriceText,
+  type DisplayCurrency,
+} from "@/lib/catalog/display-currency";
 
 type VolumeRule = { afterQty: number; priceEur: number };
 
@@ -23,6 +27,7 @@ type AddOnStepperProps = {
   priceType: "fixed" | "percent";
   isVolumeRate: boolean;
   volumeRules: VolumeRule[];
+  displayCurrency: DisplayCurrency;
   onChange: (qty: number) => void;
 };
 
@@ -37,6 +42,7 @@ export function AddOnStepper({
   priceType,
   isVolumeRate,
   volumeRules,
+  displayCurrency,
   onChange,
 }: AddOnStepperProps) {
   const billableQty = Math.max(0, quantity - includedQty);
@@ -74,19 +80,26 @@ export function AddOnStepper({
           )}
         </div>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          {formatPublicPriceText(description)}
+          {formatPublicPriceText(description, displayCurrency)}
         </p>
         {isVolumeRate && billableQty > 0 && (
           <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
-            Cena za veću količinu: {formatPublicPrice(priceEur)} po komadu
+            Cena za veću količinu:{" "}
+            {formatPublicPrice(priceEur, displayCurrency)} po komadu
           </p>
         )}
         {upcomingDiscount && (
           <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
             Od {upcomingDiscount.afterQty + 1}. nadalje:{" "}
-            {formatPublicPrice(upcomingDiscount.priceEur)} po komadu
+            {formatPublicPrice(upcomingDiscount.priceEur, displayCurrency)} po
+            komadu
             <span className="ml-1 text-muted-foreground">
-              (-{formatPublicPrice(basePriceEur - upcomingDiscount.priceEur)})
+              (-
+              {formatPublicPrice(
+                basePriceEur - upcomingDiscount.priceEur,
+                displayCurrency,
+              )}
+              )
             </span>
           </p>
         )}
@@ -94,7 +107,9 @@ export function AddOnStepper({
 
       <div className="flex flex-shrink-0 items-center gap-2">
         <span className="w-24 text-right text-xs font-medium text-muted-foreground">
-          {priceType === "percent" ? `+${priceEur}%` : formatPublicPrice(priceEur)}
+          {priceType === "percent"
+            ? `+${priceEur}%`
+            : formatPublicPrice(priceEur, displayCurrency)}
         </span>
         <div className="flex items-center rounded-lg bg-secondary/70">
           <button

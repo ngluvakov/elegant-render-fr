@@ -15,7 +15,7 @@ import { useQuote } from "./quote-context";
 const PRESETS = [10, 25, 50, 100];
 
 export function AiCreditAdder() {
-  const { setAiCredits, items } = useQuote();
+  const { setAiCredits, items, displayCurrency } = useQuote();
   const existingCredits =
     items.find((item) => item.productId === AI_CREDIT_PRODUCT_ID)
       ?.aiCreditQuantity ?? 0;
@@ -44,10 +44,17 @@ export function AiCreditAdder() {
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold text-foreground">
-            {formatPublicPriceFromCents(purchase.totalCents)}
+            {formatPublicPriceFromCents(
+              purchase.totalCents,
+              displayCurrency,
+            )}
           </p>
           <p className="text-xs text-muted-foreground">
-            {formatPublicPriceFromCents(purchase.centsPerCredit)} po kreditu
+            {formatPublicPriceFromCents(
+              purchase.centsPerCredit,
+              displayCurrency,
+            )}{" "}
+            po kreditu
           </p>
         </div>
       </div>
@@ -72,7 +79,10 @@ export function AiCreditAdder() {
                   {preset} kredita
                 </span>
                 <span className="mt-1 block text-xs text-muted-foreground">
-                  {formatPublicPriceFromCents(meta.totalCents)}
+                  {formatPublicPriceFromCents(
+                    meta.totalCents,
+                    displayCurrency,
+                  )}
                 </span>
               </button>
             );
@@ -120,7 +130,11 @@ export function AiCreditAdder() {
               : `${tier.minCredits}+`;
             return (
               <span key={tier.minCredits} className="rounded-full bg-secondary/60 px-2.5 py-1">
-                {label}: {formatPublicPriceFromCents(tier.centsPerCredit)}
+                {label}:{" "}
+                {formatPublicPriceFromCents(
+                  tier.centsPerCredit,
+                  displayCurrency,
+                )}
                 /kredit
               </span>
             );

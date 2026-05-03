@@ -32,6 +32,7 @@ import {
   AI_CREDIT_PRODUCT_ID,
   isAiCreditProduct,
 } from "@/lib/ai-studio/catalog";
+import type { DisplayCurrency } from "@/lib/catalog/display-currency";
 
 // ─── Actions ─────────────────────────────────────────────
 
@@ -177,6 +178,7 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
 type QuoteContextValue = {
   items: QuoteItem[];
   calculation: QuoteCalculation;
+  displayCurrency: DisplayCurrency;
   dispatch: React.Dispatch<QuoteAction>;
   addProduct: (
     productId: string,
@@ -196,7 +198,13 @@ type QuoteContextValue = {
 
 const QuoteContext = createContext<QuoteContextValue | null>(null);
 
-export function QuoteProvider({ children }: { children: ReactNode }) {
+export function QuoteProvider({
+  children,
+  displayCurrency = "eur",
+}: {
+  children: ReactNode;
+  displayCurrency?: DisplayCurrency;
+}) {
   const [items, dispatch] = useReducer(quoteReducer, []);
   const calculation = useMemo(() => priceItems(items), [items]);
 
@@ -270,6 +278,7 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
     () => ({
       items,
       calculation,
+      displayCurrency,
       dispatch,
       addProduct,
       removeProduct,
@@ -285,6 +294,7 @@ export function QuoteProvider({ children }: { children: ReactNode }) {
     [
       items,
       calculation,
+      displayCurrency,
       addProduct,
       removeProduct,
       setAddOnQty,

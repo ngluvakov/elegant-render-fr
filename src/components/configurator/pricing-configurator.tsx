@@ -17,6 +17,7 @@ import { QuoteItemCard } from "./quote-item";
 import { QuoteSummary } from "./quote-summary";
 import { MobileQuoteBar } from "./mobile-quote-bar";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
+import type { DisplayCurrency } from "@/lib/catalog/display-currency";
 import { loadQuote } from "@/server/actions/quote";
 import { track } from "@/lib/posthog-events";
 
@@ -180,9 +181,13 @@ function ConfiguratorInner() {
   );
 }
 
-export function PricingConfigurator() {
+export function PricingConfigurator({
+  displayCurrency,
+}: {
+  displayCurrency: DisplayCurrency;
+}) {
   return (
-    <QuoteProvider>
+    <QuoteProvider displayCurrency={displayCurrency}>
       <Suspense fallback={null}>
         <ConfiguratorInner />
       </Suspense>

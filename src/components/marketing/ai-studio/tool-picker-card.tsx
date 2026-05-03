@@ -18,8 +18,43 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { type LucideIcon } from "lucide-react";
+import {
+  CloudSun,
+  Eraser,
+  Paintbrush,
+  Palette,
+  Sofa,
+  Sun,
+  Wand2,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+
+/**
+ * Lucide icon components are React functions, so they can't cross the
+ * server → client component boundary as a prop (RSC serialization
+ * forbids passing functions). Page.tsx (server) sends the icon NAME as a
+ * string and we resolve it here on the client side. Add a new key when
+ * a new tool needs an icon.
+ */
+export type ToolPickerIconName =
+  | "eraser"
+  | "sun"
+  | "cloud-sun"
+  | "paintbrush"
+  | "sofa"
+  | "wand"
+  | "palette";
+
+const ICON_MAP: Record<ToolPickerIconName, LucideIcon> = {
+  eraser: Eraser,
+  sun: Sun,
+  "cloud-sun": CloudSun,
+  paintbrush: Paintbrush,
+  sofa: Sofa,
+  wand: Wand2,
+  palette: Palette,
+};
 
 type Props = {
   href: string;
@@ -29,7 +64,7 @@ type Props = {
   imageSrc?: string;
   beforeSrc?: string;
   afterSrc?: string;
-  icon: LucideIcon;
+  iconName: ToolPickerIconName;
   gradient: string;
   creditsLabel: string;
   startingEurLabel: string;
@@ -55,11 +90,12 @@ function BeforeAfterCard({
   blurb,
   beforeSrc,
   afterSrc,
-  icon: Icon,
+  iconName,
   gradient,
   creditsLabel,
   startingEurLabel,
 }: Props) {
+  const Icon = ICON_MAP[iconName];
   const cardRef = useRef<HTMLAnchorElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const animatingRef = useRef(false);
@@ -194,11 +230,12 @@ function FallbackCard({
   shortLabel,
   blurb,
   imageSrc,
-  icon: Icon,
+  iconName,
   gradient,
   creditsLabel,
   startingEurLabel,
 }: Props) {
+  const Icon = ICON_MAP[iconName];
   return (
     <Link
       href={href}

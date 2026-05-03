@@ -23,7 +23,10 @@ import {
 } from "lucide-react";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { ButtonLink } from "@/components/ui/button-link";
-import { ToolPickerCard } from "@/components/marketing/ai-studio/tool-picker-card";
+import {
+  ToolPickerCard,
+  type ToolPickerIconName,
+} from "@/components/marketing/ai-studio/tool-picker-card";
 import {
   AI_CREDIT_TIERS,
   AI_CREDIT_UNITS_PER_CREDIT,
@@ -302,6 +305,22 @@ function HeroSection() {
  * into the portal with the tool pre-selected so the customer can start
  * working in one click.
  */
+/**
+ * Lucide components are functions and can't cross the server → client
+ * boundary as a prop (RSC serialization forbids it). Each tool gets a
+ * stable string key here that the picker resolves to the matching icon
+ * on the client side.
+ */
+const ICON_NAME_BY_TOOL: Record<AiEditType, ToolPickerIconName> = {
+  item_removal: "eraser",
+  day_to_dusk: "sun",
+  sky_replacement: "cloud-sun",
+  wall_color_change: "paintbrush",
+  virtual_staging: "sofa",
+  virtual_renovation: "wand",
+  room_redesign: "palette",
+};
+
 function ToolPickerSection() {
   return (
     <section className="pt-12 pb-2">
@@ -323,7 +342,7 @@ function ToolPickerSection() {
                 imageSrc={detail.imageSrc}
                 beforeSrc={detail.beforeSrc}
                 afterSrc={detail.afterSrc}
-                icon={detail.icon}
+                iconName={ICON_NAME_BY_TOOL[item.id]}
                 gradient={detail.gradient}
                 creditsLabel={formatCreditsFromUnits(item.units)}
                 startingEurLabel={formatStartingEur(startingEur)}

@@ -13,7 +13,8 @@
  */
 "use client";
 
-import { Check, Coins, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { Check, Coins, Minus, Plus, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import {
@@ -27,12 +28,16 @@ import {
 import { useQuote } from "./quote-context";
 
 const PACKAGES = [10, 25, 50, 100] as const;
+const MAX_CUSTOM_CREDITS = 999;
+const DEFAULT_CUSTOM = 15;
 
 export function StandaloneAiCredits() {
   const { items, setAiCredits, displayCurrency } = useQuote();
   const existingCredits =
     items.find((item) => item.productId === AI_CREDIT_PRODUCT_ID)
       ?.aiCreditQuantity ?? 0;
+  const isCustomActive =
+    existingCredits > 0 && !PACKAGES.includes(existingCredits as never);
 
   return (
     <section className="pt-10 pb-2">
@@ -44,8 +49,9 @@ export function StandaloneAiCredits() {
               Treba vam samo brza AI obrada?
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Plaćate samo ono što obradite — od €1 po jednostavnoj obradi.
-              Krediti ostaju aktivni 12 meseci od dopune.
+              Plaćate samo ono što obradite — od{" "}
+              {formatPublicPriceFromCents(100, displayCurrency)} po
+              jednostavnoj obradi. Krediti ostaju aktivni 12 meseci od dopune.
             </p>
           </div>
           <a
@@ -69,13 +75,13 @@ export function StandaloneAiCredits() {
           ))}
         </div>
 
-        {existingCredits > 0 && !PACKAGES.includes(existingCredits as never) && (
-          <p className="mt-3 text-xs text-muted-foreground">
-            U vašoj porudžbini je prilagođeni iznos:{" "}
-            <strong className="text-foreground">{existingCredits} kredita</strong>
-            . Možete ga izmeniti u konfiguratoru ispod.
-          </p>
-        )}
+        <CustomAmountRow
+          key={isCustomActive ? `custom-${existingCredits}` : "custom-default"}
+          existingCredits={existingCredits}
+          isCustomActive={isCustomActive}
+          displayCurrency={displayCurrency}
+          onCommit={(credits) => setAiCredits(credits)}
+        />
       </div>
     </section>
   );
@@ -142,5 +148,122 @@ function PackageCard({
         )}
       </div>
     </button>
+  );
+}
+
+/**
+ * Free-form credit amount for customers who want a number that isn't one
+ * of the preset packages. Mirrors the in-configurator AiCreditAdder's
+ * stepper but as a single inline row to keep the standalone section
+ * compact. Local state isolates the in-progress number from the cart;
+ * the cart commits only on Dodaj/Ažuriraj. The parent key remounts this
+ * row when an external custom credit amount changes.
+ */
+function CustomAmountRow({
+  existingCredits,
+  isCustomActive,
+  displayCurrency,
+  onCommit,
+}: {
+  existingCredits: number;
+  isCustomActive: boolean;
+  displayCurrency: DisplayCurrency;
+  onCommit: (credits: number) => void;
+}) {
+  const [draft, setDraft] = useState<number>(
+    isCustomActive ? existingCredits : DEFAULT_CUSTOM,
+  );
+
+  const clamp = (n: number) =>
+    Math.max(1, Math.min(MAX_CUSTOM_CREDITS, Math.floor(n) || 1));
+  const update = (next: number) => setDraft(clamp(next));
+
+  const purchase = calculateAiCreditPurchase(draft);
+  const isCommitted = isCustomActive && existingCredits === draft;
+
+  return (
+    <div className="mt-4 rounded-2xl border border-border/40 bg-card/60 p-4 md:p-5">
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+        <div>
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Ili unesite tačan broj kredita
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Sistem automatski primenjuje najbolju cenu po količini.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center rounded-lg border border-border/60 bg-background/60">
+            <button
+              type="button"
+              onClick={() => update(draft - 1)}
+              disabled={draft <= 1}
+              aria-label="Smanji broj kredita"
+              className="flex h-9 w-9 items-center justify-center rounded-l-lg transition-colors hover:bg-muted disabled:opacity-30"
+            >
+              <Minus className="h-3.5 w-3.5" />
+            </button>
+            <input
+              type="number"
+              min={1}
+              max={MAX_CUSTOM_CREDITS}
+              value={draft}
+              onChange={(e) => update(Number(e.target.value))}
+              aria-label="Broj kredita"
+              className="h-9 w-16 border-x border-border/60 bg-transparent text-center text-sm font-semibold text-foreground tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+            />
+            <button
+              type="button"
+              onClick={() => update(draft + 1)}
+              disabled={draft >= MAX_CUSTOM_CREDITS}
+              aria-label="Povećaj broj kredita"
+              className="flex h-9 w-9 items-center justify-center rounded-r-lg transition-colors hover:bg-muted disabled:opacity-30"
+            >
+              <Plus className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          <div className="text-right">
+            <div className="text-base font-semibold text-foreground tabular-nums">
+              {formatPublicPriceFromCents(purchase.totalCents, displayCurrency)}
+            </div>
+            <div className="text-[0.65rem] uppercase tracking-[0.14em] text-muted-foreground">
+              {formatPublicPriceFromCents(purchase.centsPerCredit, displayCurrency)}{" "}
+              / kredit
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onCommit(draft)}
+            disabled={isCommitted}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-colors",
+              isCommitted
+                ? "bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]"
+                : "bg-accent text-white hover:bg-accent/90",
+            )}
+          >
+            {isCommitted ? (
+              <>
+                <Check className="h-3 w-3" />
+                U ponudi
+              </>
+            ) : isCustomActive ? (
+              <>
+                <Coins className="h-3 w-3" />
+                Ažuriraj
+              </>
+            ) : (
+              <>
+                <Coins className="h-3 w-3" />
+                Dodaj kredite
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

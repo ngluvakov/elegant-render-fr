@@ -6,8 +6,13 @@
  *
  * Used by: api/chat/route
  */
+import {
+  formatPublicPriceText,
+  publicPriceNote,
+  type DisplayCurrency,
+} from "@/lib/catalog/display-currency";
 
-export const SYSTEM_PROMPT = `Ti si Elegant Render asistent — AI pomoćnik za arhitektonsku vizuelizaciju.
+const BASE_SYSTEM_PROMPT = `Ti si Elegant Render asistent — AI pomoćnik za arhitektonsku vizuelizaciju.
 Tvoj posao je da pomogneš klijentima da izaberu pravu uslugu na osnovu njihovog opisa projekta.
 
 PRAVILA RAZGOVORA:
@@ -123,3 +128,15 @@ NAPOMENE:
 - Ako klijent pita kako da smanji cenu, prvo proveri da li postoje ponovna upotreba modela, aktivan projekat, broj soba/kamera unutar uključenog paketa ili količinski popust
 - Za popunjavanje podataka podsećaj klijenta na osnove, fotografije, referentne stilove, broj prostorija/spratova/kadrova, rok i posebne instrukcije po sobi ili sceni
 - Elegant Render je deo White Rook DOO`;
+
+export function buildSystemPrompt(
+  displayCurrency: DisplayCurrency = "eur",
+): string {
+  return formatPublicPriceText(
+    BASE_SYSTEM_PROMPT.replace(
+      "- Sve cene su u EUR bez PDV-a",
+      `- ${publicPriceNote(displayCurrency)}`,
+    ),
+    displayCurrency,
+  );
+}

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { Layers, TrendingDown, Zap } from "lucide-react";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { SectionKicker } from "@/components/brand/section-kicker";
@@ -8,9 +7,9 @@ import { PricingConfigurator } from "@/components/configurator/pricing-configura
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import {
   formatPublicPrice,
-  getDisplayCurrencyForCountry,
   publicPriceNote,
 } from "@/lib/catalog/display-currency";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 
 // Numbers in the philosophy strip's middle card are pulled live from the
 // catalog so a price change there propagates here automatically — no
@@ -39,8 +38,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function CenePage() {
-  const countryCode = (await headers()).get("x-vercel-ip-country");
-  const displayCurrency = getDisplayCurrencyForCountry(countryCode);
+  const displayCurrency = await getPublicDisplayCurrency();
 
   return (
     <>

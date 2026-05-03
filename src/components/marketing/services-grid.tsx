@@ -15,13 +15,16 @@ import {
   CATEGORY_ORDER,
   getServicesByCategory,
 } from "@/lib/catalog/services";
+import { formatPublicPriceText } from "@/lib/catalog/display-currency";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 
 type ServicesGridProps = {
   /** When true, only show a compact preview (first 2 categories). */
   preview?: boolean;
 };
 
-export function ServicesGrid({ preview = false }: ServicesGridProps) {
+export async function ServicesGrid({ preview = false }: ServicesGridProps) {
+  const displayCurrency = await getPublicDisplayCurrency();
   const categories = preview ? CATEGORY_ORDER.slice(0, 2) : CATEGORY_ORDER;
 
   return (
@@ -81,7 +84,11 @@ export function ServicesGrid({ preview = false }: ServicesGridProps) {
                         </p>
                         <div className="mt-auto flex items-center justify-between pt-4">
                           <span className="text-sm font-medium text-foreground">
-                            od {firstVariant.priceLabel}
+                            od{" "}
+                            {formatPublicPriceText(
+                              firstVariant.priceLabel,
+                              displayCurrency,
+                            )}
                           </span>
                           {service.outsourced && (
                             <Badge

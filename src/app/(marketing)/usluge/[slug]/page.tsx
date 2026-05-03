@@ -10,6 +10,8 @@ import {
   SERVICES,
   getServiceBySlug,
 } from "@/lib/catalog/services";
+import { formatPublicPriceText } from "@/lib/catalog/display-currency";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 
 type Params = Promise<{ slug: string }>;
 
@@ -44,6 +46,7 @@ export default async function ServiceDetailPage({
   const { slug } = await params;
   const service = getServiceBySlug(slug);
   if (!service) notFound();
+  const displayCurrency = await getPublicDisplayCurrency();
 
   return (
     <article className="mx-auto w-full max-w-4xl px-6 pb-24 pt-20 md:pt-28">
@@ -68,7 +71,7 @@ export default async function ServiceDetailPage({
       </p>
 
       <p className="mt-10 text-base leading-7 text-muted-foreground">
-        {service.description}
+        {formatPublicPriceText(service.description, displayCurrency)}
       </p>
 
       <div className="mt-10 rounded-2xl border border-border/70 bg-secondary/40 p-6 md:p-8">
@@ -76,7 +79,7 @@ export default async function ServiceDetailPage({
           Model-first kontekst
         </p>
         <p className="mt-3 text-sm leading-7 text-foreground/85">
-          {service.philosophy}
+          {formatPublicPriceText(service.philosophy, displayCurrency)}
         </p>
       </div>
 
@@ -97,7 +100,10 @@ export default async function ServiceDetailPage({
                     {variant.title}
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {variant.description}
+                    {formatPublicPriceText(
+                      variant.description,
+                      displayCurrency,
+                    )}
                   </p>
                 </div>
                 <div className="md:text-right">
@@ -105,10 +111,16 @@ export default async function ServiceDetailPage({
                     Bazna cena
                   </p>
                   <p className="mt-1 text-3xl text-foreground md:text-4xl">
-                    {variant.priceLabel}
+                    {formatPublicPriceText(
+                      variant.priceLabel,
+                      displayCurrency,
+                    )}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {variant.unitLabel}
+                    {formatPublicPriceText(
+                      variant.unitLabel,
+                      displayCurrency,
+                    )}
                   </p>
                 </div>
               </div>
@@ -119,7 +131,10 @@ export default async function ServiceDetailPage({
                     Uključeno
                   </p>
                   <p className="mt-2 text-sm leading-6 text-foreground/85">
-                    {variant.included}
+                    {formatPublicPriceText(
+                      variant.included,
+                      displayCurrency,
+                    )}
                   </p>
                 </div>
 
@@ -134,7 +149,7 @@ export default async function ServiceDetailPage({
                         className="flex gap-2 text-sm leading-6 text-muted-foreground"
                       >
                         <Check className="mt-1 h-3.5 w-3.5 flex-shrink-0 text-accent" />
-                        {addOn}
+                        {formatPublicPriceText(addOn, displayCurrency)}
                       </li>
                     ))}
                   </ul>
@@ -142,7 +157,7 @@ export default async function ServiceDetailPage({
 
                 {variant.note && (
                   <div className="rounded-lg border border-border bg-secondary/40 p-4 text-sm leading-6 text-muted-foreground">
-                    {variant.note}
+                    {formatPublicPriceText(variant.note, displayCurrency)}
                   </div>
                 )}
               </div>

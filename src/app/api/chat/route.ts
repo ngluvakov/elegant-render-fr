@@ -7,8 +7,9 @@
 
 import OpenAI from "openai";
 import { auth } from "@/lib/auth";
-import { SYSTEM_PROMPT } from "@/lib/chat/system-prompt";
+import { buildSystemPrompt } from "@/lib/chat/system-prompt";
 import { detectChatFeedbackSignal } from "@/lib/chat/feedback";
+import { getDisplayCurrencyForCountry } from "@/lib/catalog/display-currency";
 import { prisma } from "@/lib/db";
 import {
   checkRateLimit,
@@ -104,11 +105,14 @@ export async function POST(request: Request) {
   }
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const displayCurrency = getDisplayCurrencyForCountry(
+    request.headers.get("x-vercel-ip-country"),
+  );
 
   const stream = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: buildSystemPrompt(displayCurrency) },
       ...normalizedMessages.slice(-20), // Keep last 20 messages for context
     ],
     stream: true,

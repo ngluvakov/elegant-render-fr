@@ -5,6 +5,8 @@ import { SessionProvider } from "@/components/auth/session-provider";
 import { PostHogIdentifyBridge } from "@/components/posthog-identify-bridge";
 import { ChatWidget } from "@/components/chat/chat-widget";
 import { QuickInquiryProvider } from "@/components/inquiry/quick-inquiry-provider";
+import { PublicCurrencyProvider } from "@/components/site/public-currency-provider";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 
 export default async function MarketingLayout({
   children,
@@ -16,6 +18,7 @@ export default async function MarketingLayout({
   // in PostHog from the first pageview, not just after they cross
   // into /portal.
   const session = await auth();
+  const displayCurrency = await getPublicDisplayCurrency();
 
   return (
     <SessionProvider>
@@ -26,12 +29,14 @@ export default async function MarketingLayout({
           name: session?.user?.name ?? undefined,
         }}
       />
-      <QuickInquiryProvider>
-        <SiteHeader />
-        <main className="flex flex-1 flex-col">{children}</main>
-        <SiteFooter />
-        <ChatWidget />
-      </QuickInquiryProvider>
+      <PublicCurrencyProvider displayCurrency={displayCurrency}>
+        <QuickInquiryProvider>
+          <SiteHeader />
+          <main className="flex flex-1 flex-col">{children}</main>
+          <SiteFooter />
+          <ChatWidget />
+        </QuickInquiryProvider>
+      </PublicCurrencyProvider>
     </SessionProvider>
   );
 }

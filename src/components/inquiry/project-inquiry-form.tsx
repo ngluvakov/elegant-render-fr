@@ -342,7 +342,7 @@ export function ProjectInquiryForm({
                 id="contact-inquiry-budget"
                 value={budget}
                 onChange={(event) => setBudget(event.target.value)}
-                placeholder="npr. do €500, €500-1000..."
+                placeholder="npr. okvirni budžet ili raspon..."
                 maxLength={80}
               />
             </div>

@@ -45,7 +45,7 @@ export function eurToPublicRsd(amountEur: number): number {
 
 export function formatPublicPrice(
   amountEur: number,
-  currency: DisplayCurrency = "rsd",
+  currency: DisplayCurrency = "eur",
 ): string {
   if (currency === "eur") {
     return eurFormatter.format(amountEur);
@@ -55,7 +55,7 @@ export function formatPublicPrice(
 
 export function formatPublicPriceFromCents(
   cents: number,
-  currency: DisplayCurrency = "rsd",
+  currency: DisplayCurrency = "eur",
 ): string {
   return formatPublicPrice(cents / 100, currency);
 }
@@ -70,7 +70,7 @@ export function formatPublicDiscountedPrice(
   totalEur: number,
   originalTotalEur: number,
   pct: number,
-  currency: DisplayCurrency = "rsd",
+  currency: DisplayCurrency = "eur",
 ): PublicDiscountedPriceParts {
   if (pct <= 0 || totalEur >= originalTotalEur) {
     return {
@@ -88,7 +88,7 @@ export function formatPublicDiscountedPrice(
 
 export function formatPublicPriceText(
   text: string,
-  currency: DisplayCurrency = "rsd",
+  currency: DisplayCurrency = "eur",
 ): string {
   return text.replace(/€\s?(\d+(?:[.,]\d+)?)/g, (_, rawAmount: string) => {
     const amount = Number.parseFloat(rawAmount.replace(",", "."));

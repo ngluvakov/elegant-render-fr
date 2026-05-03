@@ -15,6 +15,7 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
+import { usePublicCurrency } from "@/components/site/public-currency-provider";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -36,6 +37,7 @@ import {
   SERVICES,
   getServicesByCategory,
 } from "@/lib/catalog/services";
+import { formatPublicPriceText } from "@/lib/catalog/display-currency";
 import { cn } from "@/lib/utils";
 
 const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
@@ -49,6 +51,7 @@ const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
 export function SiteHeader() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const displayCurrency = usePublicCurrency();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const isLoggedIn = !!session?.user;
@@ -145,7 +148,11 @@ export function SiteHeader() {
                                 {service.name}
                               </span>
                               <span className="text-[0.72rem] font-medium text-muted-foreground">
-                                od {service.variants[0].priceLabel}
+                                od{" "}
+                                {formatPublicPriceText(
+                                  service.variants[0].priceLabel,
+                                  displayCurrency,
+                                )}
                               </span>
                             </NavigationMenuLink>
                           ))}
@@ -247,7 +254,11 @@ export function SiteHeader() {
                     >
                       <span>{service.name}</span>
                       <span className="text-[0.72rem] text-muted-foreground">
-                        od {service.variants[0].priceLabel}
+                        od{" "}
+                        {formatPublicPriceText(
+                          service.variants[0].priceLabel,
+                          displayCurrency,
+                        )}
                       </span>
                     </Link>
                   ))}

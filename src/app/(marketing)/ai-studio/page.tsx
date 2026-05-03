@@ -32,10 +32,15 @@ import {
   AI_CREDIT_UNITS_PER_CREDIT,
   AI_EDIT_TYPES,
   calculateAiCreditPurchase,
-  formatCents,
   formatCreditsFromUnits,
   type AiEditType,
 } from "@/lib/ai-studio/catalog";
+import {
+  formatPublicPrice,
+  formatPublicPriceFromCents,
+  type DisplayCurrency,
+} from "@/lib/catalog/display-currency";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 
 export const metadata: Metadata = {
   title: "AI Studio",
@@ -237,10 +242,8 @@ const creditPackages = [10, 25, 50, 100];
 const creditTiers = [...AI_CREDIT_TIERS].reverse();
 
 /**
- * Lowest-tier (single-purchase) starting EUR for a tool. Customers buying
- * 1-24 credits pay €2/credit, so 1 unit = 0.5 credit ≈ €1, 2 units ≈ €2.
- * The picker label uses this so "od €X" matches the price they'd actually
- * see at first checkout.
+ * Lowest-tier single-purchase starting price for a tool, stored internally
+ * in EUR because AI credits and checkout remain EUR-based.
  */
 function toolStartingEur(units: number): number {
   const lowestTier = AI_CREDIT_TIERS[AI_CREDIT_TIERS.length - 1];
@@ -248,20 +251,18 @@ function toolStartingEur(units: number): number {
   return (units / AI_CREDIT_UNITS_PER_CREDIT) * eurPerCredit;
 }
 
-function formatStartingEur(eur: number): string {
-  return eur % 1 === 0 ? `€${eur.toFixed(0)}` : `€${eur.toFixed(2)}`;
-}
+export default async function AiStudioLandingPage() {
+  const displayCurrency = await getPublicDisplayCurrency();
 
-export default function AiStudioLandingPage() {
   return (
     <>
-      <HeroSection />
-      <ToolPickerSection />
+      <HeroSection displayCurrency={displayCurrency} />
+      <ToolPickerSection displayCurrency={displayCurrency} />
       <WorkflowSection />
       <ToolsSection />
       <ScenarioSection />
-      <ComparisonSection />
-      <CreditsSection />
+      <ComparisonSection displayCurrency={displayCurrency} />
+      <CreditsSection displayCurrency={displayCurrency} />
       <TipsSection />
       <FaqSection />
       <FinalCtaSection />
@@ -269,7 +270,11 @@ export default function AiStudioLandingPage() {
   );
 }
 
-function HeroSection() {
+function HeroSection({
+  displayCurrency,
+}: {
+  displayCurrency: DisplayCurrency;
+}) {
   return (
     <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
       <SectionKicker>AI Studio</SectionKicker>
@@ -278,8 +283,8 @@ function HeroSection() {
       </h1>
       <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
         Uploadujte fotografiju, izaberite alat i dobijte spreman vizuelni
-        rezultat za oglas, prezentaciju ili proveru ideje. Sedam alata, od €1
-        po obradi.
+        rezultat za oglas, prezentaciju ili proveru ideje. Sedam alata, od{" "}
+        {formatPublicPrice(toolStartingEur(1), displayCurrency)} po obradi.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <ButtonLink href="/portal/ai-studio" variant="accent" size="lg">
@@ -301,7 +306,7 @@ function HeroSection() {
 
 /**
  * Primary entry into the buying flow. Mirrors the `CategoryPreview` pattern
- * from /cene: each card shows the tool's starting EUR and links straight
+ * from /cene: each card shows the tool's starting public price and links straight
  * into the portal with the tool pre-selected so the customer can start
  * working in one click.
  */
@@ -321,7 +326,11 @@ const ICON_NAME_BY_TOOL: Record<AiEditType, ToolPickerIconName> = {
   room_redesign: "palette",
 };
 
-function ToolPickerSection() {
+function ToolPickerSection({
+  displayCurrency,
+}: {
+  displayCurrency: DisplayCurrency;
+}) {
   return (
     <section className="pt-12 pb-2">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
@@ -345,7 +354,10 @@ function ToolPickerSection() {
                 iconName={ICON_NAME_BY_TOOL[item.id]}
                 gradient={detail.gradient}
                 creditsLabel={formatCreditsFromUnits(item.units)}
-                startingEurLabel={formatStartingEur(startingEur)}
+                startingEurLabel={formatPublicPrice(
+                  startingEur,
+                  displayCurrency,
+                )}
               />
             );
           })}
@@ -533,7 +545,11 @@ function ScenarioSection() {
   );
 }
 
-function ComparisonSection() {
+function ComparisonSection({
+  displayCurrency,
+}: {
+  displayCurrency: DisplayCurrency;
+}) {
   return (
     <section className="bg-secondary/35 py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
@@ -554,7 +570,10 @@ function ComparisonSection() {
               "Treba brza vizuelna provera ili testiranje ideje",
               "Treba bolji oglas za nekretninu",
               "Treba čišćenje ili stilizacija postojeće slike",
-              "Cena: od €1 po jednostavnoj obradi",
+              `Cena: od ${formatPublicPrice(
+                toolStartingEur(1),
+                displayCurrency,
+              )} po jednostavnoj obradi`,
             ]}
             accent
           />
@@ -636,7 +655,11 @@ function ComparisonCard({
   );
 }
 
-function CreditsSection() {
+function CreditsSection({
+  displayCurrency,
+}: {
+  displayCurrency: DisplayCurrency;
+}) {
   return (
     <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto grid w-full max-w-[min(96vw,1720px)] gap-8 px-6 lg:grid-cols-[0.75fr_1.25fr]">
@@ -685,10 +708,17 @@ function CreditsSection() {
                   </p>
                   <p className="text-sm text-muted-foreground">kredita</p>
                   <p className="mt-5 text-2xl font-semibold text-foreground">
-                    {formatCents(purchase.totalCents)}
+                    {formatPublicPriceFromCents(
+                      purchase.totalCents,
+                      displayCurrency,
+                    )}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {formatCents(purchase.centsPerCredit)} po kreditu
+                    {formatPublicPriceFromCents(
+                      purchase.centsPerCredit,
+                      displayCurrency,
+                    )}{" "}
+                    po kreditu
                   </p>
                 </div>
               );
@@ -705,7 +735,12 @@ function CreditsSection() {
                   key={tier.minCredits}
                   className="rounded-full bg-secondary px-3 py-1"
                 >
-                  {label}: {formatCents(tier.centsPerCredit)}/kredit
+                  {label}:{" "}
+                  {formatPublicPriceFromCents(
+                    tier.centsPerCredit,
+                    displayCurrency,
+                  )}
+                  /kredit
                 </span>
               );
             })}

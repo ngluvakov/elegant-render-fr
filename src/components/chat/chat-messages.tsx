@@ -12,6 +12,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { ArrowRight, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
+import { usePublicCurrency } from "@/components/site/public-currency-provider";
+import { formatPublicPrice } from "@/lib/catalog/display-currency";
 
 export type ChatMessage = {
   role: "user" | "assistant";
@@ -60,6 +62,7 @@ function parseProposalItems(raw: string[]): ProposalItem[] {
 function ProposalCard({ entries }: { entries: ProposalItem[] }) {
   const router = useRouter();
   const pathname = usePathname();
+  const displayCurrency = usePublicCurrency();
   const isOnCene = pathname === "/cene";
 
   const items = entries
@@ -96,7 +99,10 @@ function ProposalCard({ entries }: { entries: ProposalItem[] }) {
               {item.product!.product.label}
             </span>
             <span className="font-semibold text-foreground">
-              €{item.product!.product.basePriceEur * item.qty}
+              {formatPublicPrice(
+                item.product!.product.basePriceEur * item.qty,
+                displayCurrency,
+              )}
             </span>
           </div>
         ))}

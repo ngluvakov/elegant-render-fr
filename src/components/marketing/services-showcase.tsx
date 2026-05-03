@@ -27,6 +27,8 @@ import {
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
+import { usePublicCurrency } from "@/components/site/public-currency-provider";
+import { formatPublicPrice } from "@/lib/catalog/display-currency";
 
 // ─── Assets ──────────────────────────────────────────────
 
@@ -53,7 +55,7 @@ type FilterKey = "sve" | "renderi" | "osnove" | "360" | "nekretnine";
 type Service = {
   name: string;
   slug: string;
-  price: string;
+  priceEur: number;
   category: Exclude<FilterKey, "sve">;
   short: string;
   audience: string;
@@ -90,7 +92,7 @@ const SERVICES: Service[] = [
   {
     name: "Unutrašnji renderi",
     slug: "unutrasnji-renderi",
-    price: "Od €170",
+    priceEur: 170,
     category: "renderi",
     short: "Vizuelizacija enterijera pre opremanja, renovacije ili prodaje prostora.",
     audience: "Za vlasnike stanova, arhitekte, dizajnere i manje investitore.",
@@ -103,7 +105,7 @@ const SERVICES: Service[] = [
   {
     name: "360° enterijeri",
     slug: "unutrasnji-renderi",
-    price: "Od €295",
+    priceEur: 295,
     category: "360",
     short: "Interaktivni prikaz prostora kroz 360 hotspot scene i dodatne statične kadrove.",
     audience: "Za prezentacije stanova, vila, salona i ugostiteljskih prostora.",
@@ -117,7 +119,7 @@ const SERVICES: Service[] = [
   {
     name: "Spoljašnji renderi",
     slug: "spoljasnji-renderi",
-    price: "Od €250",
+    priceEur: 250,
     category: "renderi",
     short: "Realističan prikaz kuće, zgrade ili fasade sa materijalima i okruženjem.",
     audience: "Za privatne kuće, manje stambene projekte i arhitektonske prezentacije.",
@@ -130,7 +132,7 @@ const SERVICES: Service[] = [
   {
     name: "360° eksterijeri",
     slug: "spoljasnji-renderi",
-    price: "Od €335",
+    priceEur: 335,
     category: "360",
     short: "VR-spreman prikaz eksterijera sa interaktivnim tačkama posmatranja.",
     audience: "Za marketing prodaje kuća, vila i manjih razvojnih projekata.",
@@ -143,7 +145,7 @@ const SERVICES: Service[] = [
   {
     name: "Aerial renderi",
     slug: "spoljasnji-renderi",
-    price: "Od €420",
+    priceEur: 420,
     category: "renderi",
     short: "Pogled iz vazduha za objekte kod kojih je važan širi kontekst parcele i okoline.",
     audience: "Za manje komplekse, parcele, kuće i investitore kojima treba pregled lokacije.",
@@ -156,7 +158,7 @@ const SERVICES: Service[] = [
   {
     name: "Landscape renderi",
     slug: "prikazi-dvorista",
-    price: "Od €220",
+    priceEur: 220,
     category: "renderi",
     short: "Prikaz dvorišta, vrta, parkovskog ili spoljnog uređenja sa vegetacijom i terenom.",
     audience: "Za privatne kuće, vile i projekte gde je važan spoljašnji ambijent.",
@@ -169,7 +171,7 @@ const SERVICES: Service[] = [
   {
     name: "Fotomontaža",
     slug: "fotomontaza",
-    price: "Od €300",
+    priceEur: 300,
     category: "renderi",
     short: "Uklapanje budućeg objekta u realnu fotografiju lokacije radi jasnije prezentacije.",
     audience: "Za arhitekte, manje developere i prezentacije objekata u kontekstu.",
@@ -182,7 +184,7 @@ const SERVICES: Service[] = [
   {
     name: "3D osnove prostora",
     slug: "osnove-prostora",
-    price: "Od €29",
+    priceEur: 29,
     category: "osnove",
     short: "Top-down 3D prikaz rasporeda prostorija, nameštaja i funkcionalne organizacije.",
     audience: "Za oglase, prezentacije stanova i lakše razumevanje rasporeda.",
@@ -195,7 +197,7 @@ const SERVICES: Service[] = [
   {
     name: "2D osnove prostora",
     slug: "osnove-prostora",
-    price: "Od €20",
+    priceEur: 20,
     category: "osnove",
     short: "Čiste i pregledne 2D osnove za marketing materijale, sajtove i oglase.",
     audience: "Za agente, vlasnike stanova i prodajne prezentacije nekretnina.",
@@ -208,7 +210,7 @@ const SERVICES: Service[] = [
   {
     name: "3D site planovi",
     slug: "situacioni-prikazi",
-    price: "Od €350",
+    priceEur: 350,
     category: "osnove",
     short: "Pregled cele parcele sa objektima, pristupima, zelenilom i širim odnosom prostora.",
     audience: "Za kuće, vile, manje komplekse i prodajne brošure projekata.",
@@ -221,7 +223,7 @@ const SERVICES: Service[] = [
   {
     name: "Arhitektonske animacije",
     slug: "animacije-i-ture",
-    price: "Od €225",
+    priceEur: 225,
     category: "360",
     short: "Video walkthrough i flythrough prikaz za snažniji prodajni utisak.",
     audience: "Za projekte kojima statični kadar nije dovoljan da pokaže prostor.",
@@ -234,7 +236,7 @@ const SERVICES: Service[] = [
   {
     name: "360 ture",
     slug: "animacije-i-ture",
-    price: "Od €20",
+    priceEur: 20,
     category: "360",
     short: "Web bazirane ture koje povezuju 360 kadrove u interaktivno iskustvo.",
     audience: "Za oglašavanje, prezentacije nekretnina i prodaju na daljinu.",
@@ -247,7 +249,7 @@ const SERVICES: Service[] = [
   {
     name: "Virtuelno opremanje prostora",
     slug: "virtuelno-opremanje",
-    price: "Od €18",
+    priceEur: 18,
     category: "nekretnine",
     short: "Digitalno opremanje prazne prostorije na osnovu postojeće fotografije.",
     audience: "Za vlasnike nekretnina, agente i investitore koji žele bolji oglas.",
@@ -261,7 +263,7 @@ const SERVICES: Service[] = [
   {
     name: "Virtuelna renovacija prostora",
     slug: "virtuelna-renovacija",
-    price: "Od €66",
+    priceEur: 66,
     category: "nekretnine",
     short: "Prikaz kako bi prostor izgledao nakon adaptacije i promene materijala.",
     audience: "Za kupce nekretnina, vlasnike i dizajnere koji žele jasan pre-posle scenario.",
@@ -275,7 +277,7 @@ const SERVICES: Service[] = [
   {
     name: "Day-to-dusk obrada",
     slug: "dan-u-noc",
-    price: "Od €10",
+    priceEur: 10,
     category: "nekretnine",
     short: "Pretvaranje dnevne fotografije eksterijera u atraktivniji sumrak.",
     audience: "Za oglase kojima treba jači prvi utisak.",
@@ -289,7 +291,7 @@ const SERVICES: Service[] = [
   {
     name: "Uklanjanje elemenata",
     slug: "uklanjanje-elemenata",
-    price: "Od €12",
+    priceEur: 12,
     category: "nekretnine",
     short: "Digitalno uklanjanje nereda i neželjenih objekata sa fotografije prostora.",
     audience: "Za pripremu nekretnine za oglas, izdavanje ili prezentaciju.",
@@ -350,6 +352,7 @@ const COMPARE_SHOWCASE = [
 // ─── Component ───────────────────────────────────────────
 
 export function ServicesShowcase() {
+  const displayCurrency = usePublicCurrency();
   const [activeFilter, setActiveFilter] = useState<FilterKey>("sve");
 
   const filtered = useMemo(
@@ -449,7 +452,9 @@ export function ServicesShowcase() {
 
               {/* Price bar */}
               <div className="flex items-center justify-between border-b border-border/30 bg-secondary/30 px-5 py-3">
-                <span className="text-xl font-bold text-foreground">{service.price}</span>
+                <span className="text-xl font-bold text-foreground">
+                  Od {formatPublicPrice(service.priceEur, displayCurrency)}
+                </span>
                 <span className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
                   Transparentna cena
                 </span>

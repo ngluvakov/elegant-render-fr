@@ -4,6 +4,10 @@ import type {
   AssistantGuidePage,
   AssistantGuideStage,
 } from "@/lib/chat/guide-context";
+import {
+  formatPublicPriceText,
+  type DisplayCurrency,
+} from "@/lib/catalog/display-currency";
 
 export type ChatGuideTip = {
   id: string;
@@ -403,21 +407,35 @@ function dedupeTips(tips: ChatGuideTip[]) {
   });
 }
 
+function formatTipPrices(tips: ChatGuideTip[], currency: DisplayCurrency) {
+  return tips.map((tip) => ({
+    ...tip,
+    body: formatPublicPriceText(tip.body, currency),
+  }));
+}
+
 export function getChatGuideTips(
   pathname: string,
   context?: AssistantGuideContext | null,
+  displayCurrency: DisplayCurrency = "eur",
 ): ChatGuideTip[] {
   if (pathname.startsWith("/kontakt")) {
-    return dedupeTips([
-      ...getContextTips(context),
-      ...CONTACT_TIPS,
-    ]).slice(0, 2);
+    return formatTipPrices(
+      dedupeTips([
+        ...getContextTips(context),
+        ...CONTACT_TIPS,
+      ]).slice(0, 2),
+      displayCurrency,
+    );
   }
 
-  return dedupeTips([
-    ...getContextTips(context),
-    ...getRouteTips(pathname),
-    ...GENERAL_TIPS,
-    ...PRICING_TIPS,
-  ]).slice(0, 7);
+  return formatTipPrices(
+    dedupeTips([
+      ...getContextTips(context),
+      ...getRouteTips(pathname),
+      ...GENERAL_TIPS,
+      ...PRICING_TIPS,
+    ]).slice(0, 7),
+    displayCurrency,
+  );
 }

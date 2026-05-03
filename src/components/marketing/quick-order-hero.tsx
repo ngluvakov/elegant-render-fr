@@ -31,7 +31,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { usePublicCurrency } from "@/components/site/public-currency-provider";
 import { SERVICES, type ServiceIcon } from "@/lib/catalog/services";
+import { formatPublicPriceText } from "@/lib/catalog/display-currency";
 import { SITE, TRUST_SIGNALS } from "@/lib/content/site";
 
 const ICON_MAP: Record<ServiceIcon, LucideIcon> = {
@@ -52,6 +54,7 @@ const ICON_MAP: Record<ServiceIcon, LucideIcon> = {
 const SCROLL_STEP_PX = 220;
 
 export function QuickOrderHero() {
+  const displayCurrency = usePublicCurrency();
   const [selectedServiceSlug, setSelectedServiceSlug] = useState<string>(
     SERVICES[0].slug,
   );
@@ -74,6 +77,8 @@ export function QuickOrderHero() {
   );
 
   const SelectedIcon = ICON_MAP[selectedService.icon];
+  const priceText = (text: string) =>
+    formatPublicPriceText(text, displayCurrency);
 
   const handleServiceChange = (slug: string) => {
     const service = SERVICES.find((s) => s.slug === slug);
@@ -142,7 +147,7 @@ export function QuickOrderHero() {
                       {selectedService.name}
                     </span>
                     <span className="text-[0.72rem] text-muted-foreground">
-                      od {selectedService.variants[0].priceLabel}
+                      od {priceText(selectedService.variants[0].priceLabel)}
                     </span>
                   </div>
                 </div>
@@ -201,7 +206,7 @@ export function QuickOrderHero() {
                     Javni start
                   </p>
                   <p className="mt-2 text-2xl font-semibold text-background">
-                    {selectedService.variants[0].priceLabel}
+                    {priceText(selectedService.variants[0].priceLabel)}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-background/10 bg-background/5 p-4">
@@ -209,7 +214,7 @@ export function QuickOrderHero() {
                     Obračun
                   </p>
                   <p className="mt-2 text-sm leading-6 text-background/85">
-                    {selectedVariant.unitLabel}
+                    {priceText(selectedVariant.unitLabel)}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-background/10 bg-background/5 p-4">
@@ -300,7 +305,7 @@ export function QuickOrderHero() {
                               {service.shortName}
                             </p>
                             <p className="mt-0.5 truncate text-[0.72rem] text-muted-foreground">
-                              od {service.variants[0].priceLabel}
+                              od {priceText(service.variants[0].priceLabel)}
                             </p>
                           </div>
                           {isActive && (
@@ -344,15 +349,15 @@ export function QuickOrderHero() {
                               {variant.title}
                             </p>
                             <p className="mt-1 line-clamp-2 text-[0.68rem] leading-4 text-muted-foreground">
-                              {variant.description}
+                              {priceText(variant.description)}
                             </p>
                           </div>
                           <div className="flex-shrink-0 text-right">
                             <p className="text-[0.82rem] font-semibold text-[color:var(--color-clay-deep)]">
-                              {variant.priceLabel}
+                              {priceText(variant.priceLabel)}
                             </p>
                             <p className="mt-0.5 text-[0.72rem] uppercase tracking-[0.14em] text-muted-foreground">
-                              {variant.unitLabel}
+                              {priceText(variant.unitLabel)}
                             </p>
                           </div>
                         </div>
@@ -381,17 +386,17 @@ export function QuickOrderHero() {
                     Bazna javna cena
                   </p>
                   <p className="mt-1 text-3xl font-semibold text-background">
-                    {selectedVariant.priceLabel}
+                    {priceText(selectedVariant.priceLabel)}
                   </p>
                   <p className="mt-1 text-[0.68rem] leading-5 text-background/70">
-                    {selectedVariant.unitLabel}
+                    {priceText(selectedVariant.unitLabel)}
                   </p>
                 </div>
 
                 <div className="mt-3 text-[0.72rem] leading-5 text-background/80">
                   <p className="font-semibold text-background">Uključeno</p>
                   <p className="mt-1 line-clamp-2 text-background/72">
-                    {selectedVariant.included}
+                    {priceText(selectedVariant.included)}
                   </p>
                 </div>
 

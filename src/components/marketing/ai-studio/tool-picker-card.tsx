@@ -146,7 +146,13 @@ function BeforeAfterCard({
     return () => obs.disconnect();
   }, []);
 
-  const onMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  // Handlers live on the media div (not the wrapping Link) so the reveal
+  // only tracks while the cursor is over the actual image. Hovering the
+  // footer (label / blurb / price) leaves the diagonal at 50% — without
+  // this scope the formula projects the footer's high Y coordinate and
+  // snaps the reveal to an extreme as soon as the cursor enters the
+  // text area.
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (animatingRef.current) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const px = e.clientX - rect.left;
@@ -170,12 +176,12 @@ function BeforeAfterCard({
     <Link
       ref={cardRef}
       href={href}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
       className="group flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)]"
     >
       <div
         ref={mediaRef}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
         className={cn(
           "relative aspect-[4/3] overflow-hidden bg-gradient-to-br",
           "before-after-media",

@@ -8,7 +8,7 @@
 "use client";
 
 import { Suspense, useEffect, useRef } from "react";
-import { ChevronDown, Sparkles } from "lucide-react";
+import { ChevronDown, Plus, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { QuoteProvider, useQuote } from "./quote-context";
 import { ServiceAdder } from "./service-adder";
@@ -85,6 +85,26 @@ function ConfiguratorInner() {
     return () => window.removeEventListener("er-chat-proposal", applyProposal);
   }, [addProduct]);
 
+  // Auto-scroll to the newly-added card when a single item is appended.
+  // Bulk loads (share-token hydration, multi-item chat proposal) change the
+  // count by N>1 — the delta filter skips them so the cursor doesn't strobe.
+  const prevItemCountRef = useRef(0);
+  useEffect(() => {
+    const curr = calculation.items.length;
+    const prev = prevItemCountRef.current;
+    prevItemCountRef.current = curr;
+    if (curr === prev + 1 && curr > 0) {
+      requestAnimationFrame(() => {
+        const els = document.querySelectorAll<HTMLElement>("[data-quote-item]");
+        const last = els[els.length - 1];
+        if (!last) return;
+        last.scrollIntoView({ behavior: "smooth", block: "center" });
+        last.classList.add("flash-new");
+        setTimeout(() => last.classList.remove("flash-new"), 800);
+      });
+    }
+  }, [calculation.items.length]);
+
   return (
     <>
       <div className="grid items-start gap-8 pb-24 xl:grid-cols-[1fr_400px] xl:pb-0">
@@ -112,6 +132,18 @@ function ConfiguratorInner() {
                   />
                 ))}
               </div>
+              <button
+                type="button"
+                onClick={() => {
+                  document
+                    .getElementById("configurator")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-2xl border border-dashed border-border/60 bg-transparent px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent"
+              >
+                <Plus className="h-4 w-4" />
+                Dodaj još jednu uslugu
+              </button>
             </section>
           )}
 

@@ -72,7 +72,10 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
     breakdown.addOns.some((ao) => ao.includedQty > 0 && ao.quantity > 0);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border/60 bg-card/95 transition-shadow">
+    <div
+      data-quote-item={breakdown.instanceId}
+      className="overflow-hidden rounded-2xl border border-border/60 bg-card/95 transition-shadow"
+    >
       {/* Header */}
       <button
         type="button"

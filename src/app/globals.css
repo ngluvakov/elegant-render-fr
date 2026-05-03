@@ -190,6 +190,34 @@
   .scrollbar-warm::-webkit-scrollbar-thumb:hover {
     background-color: var(--color-accent);
   }
+
+  /*
+    .flash-new — brief clay-colored ring pulse used to draw the eye to a
+    just-added quote item card. Triggered by the configurator's auto-scroll
+    effect after a single-item add. Box-shadow expands and fades so the
+    accent doesn't shift layout. Reduced-motion users opt out entirely.
+  */
+  @keyframes er-flash-new {
+    0% {
+      box-shadow: 0 0 0 0 rgba(184, 131, 99, 0);
+    }
+    20% {
+      box-shadow: 0 0 0 6px rgba(184, 131, 99, 0.45);
+    }
+    100% {
+      box-shadow: 0 0 0 12px rgba(184, 131, 99, 0);
+    }
+  }
+
+  .flash-new {
+    animation: er-flash-new 800ms ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flash-new {
+      animation: none;
+    }
+  }
 }
 
 /*

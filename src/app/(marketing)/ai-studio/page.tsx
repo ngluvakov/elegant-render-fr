@@ -21,10 +21,12 @@ import {
   Wand2,
   type LucideIcon,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { ButtonLink } from "@/components/ui/button-link";
 import {
   AI_CREDIT_TIERS,
+  AI_CREDIT_UNITS_PER_CREDIT,
   AI_EDIT_TYPES,
   calculateAiCreditPurchase,
   formatCents,
@@ -50,7 +52,8 @@ type ToolDetail = {
   input: string;
   output: string;
   prompt: string;
-  mediaLabel: string;
+  imageSrc?: string;
+  gradient: string;
 };
 
 const toolDetails: Record<AiEditType, ToolDetail> = {
@@ -62,7 +65,7 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Čista fotografija",
     prompt:
       "Ukloni kese i kablove pored zida. Sačuvaj pod i senke što prirodnije.",
-    mediaLabel: "Clean-up",
+    gradient: "from-foreground/10 to-foreground/20",
   },
   day_to_dusk: {
     icon: Sun,
@@ -72,7 +75,7 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Sutonski ili noćni kadar",
     prompt:
       "Suptilan plavi sat, topla svetla iz prozora, ne menjati boju fasade.",
-    mediaLabel: "Dusk",
+    gradient: "from-accent/20 to-[color:var(--color-sage-deep)]/20",
   },
   sky_replacement: {
     icon: CloudSun,
@@ -82,7 +85,7 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Fotografija sa boljim nebom",
     prompt:
       "Blago oblačno nebo, ne menjati boju zgrade ni ekspoziciju fasade.",
-    mediaLabel: "Sky",
+    gradient: "from-[color:var(--color-sage)]/15 to-[color:var(--color-sage-deep)]/25",
   },
   wall_color_change: {
     icon: Paintbrush,
@@ -92,7 +95,7 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Nova boja zida",
     prompt:
       "Promeni samo zid iza kreveta. Plafon, lajsne i nameštaj ostaju isti.",
-    mediaLabel: "Wall color",
+    gradient: "from-accent/15 to-accent/25",
   },
   virtual_staging: {
     icon: Sofa,
@@ -102,7 +105,8 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Opremljen prostor",
     prompt:
       "Dnevna soba, topao moderni stil, neutralna paleta, drvo i svetli tekstil.",
-    mediaLabel: "Staging",
+    imageSrc: "/artwork/elegant-render-virtual-staging-scene.webp",
+    gradient: "from-accent/15 to-accent/25",
   },
   virtual_renovation: {
     icon: Wand2,
@@ -112,7 +116,8 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Renovirana varijanta",
     prompt:
       "Zameni pod hrastovim parketom, zidovi topla bela, ostavi raspored kuhinje.",
-    mediaLabel: "Renovation",
+    imageSrc: "/artwork/cene-card-opremanje-renovacija.webp",
+    gradient: "from-[color:var(--color-sage)]/20 to-accent/15",
   },
   room_redesign: {
     icon: Palette,
@@ -122,28 +127,10 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Nova dizajnerska varijanta",
     prompt:
       "Svetli skandinavski stil, manje vizuelnog nereda, zadržati prozore i osnovni raspored.",
-    mediaLabel: "Redesign",
+    imageSrc: "/artwork/elegant-render-hero-interior.webp",
+    gradient: "from-[color:var(--color-sage)]/15 to-foreground/15",
   },
 };
-
-const heroImages = [
-  {
-    src: "/artwork/elegant-render-virtual-staging-scene.webp",
-    label: "Virtual staging",
-  },
-  {
-    src: "/artwork/elegant-render-services-before-after-grid.webp",
-    label: "Pre / posle",
-  },
-  {
-    src: "/artwork/elegant-render-hero-interior.webp",
-    label: "Enterijer",
-  },
-  {
-    src: "/artwork/elegant-render-feature-exterior.webp",
-    label: "Eksterijer",
-  },
-];
 
 const workflow = [
   {
@@ -228,10 +215,27 @@ const faq = [
 const creditPackages = [10, 25, 50, 100];
 const creditTiers = [...AI_CREDIT_TIERS].reverse();
 
+/**
+ * Lowest-tier (single-purchase) starting EUR for a tool. Customers buying
+ * 1-24 credits pay €2/credit, so 1 unit = 0.5 credit ≈ €1, 2 units ≈ €2.
+ * The picker label uses this so "od €X" matches the price they'd actually
+ * see at first checkout.
+ */
+function toolStartingEur(units: number): number {
+  const lowestTier = AI_CREDIT_TIERS[AI_CREDIT_TIERS.length - 1];
+  const eurPerCredit = lowestTier.centsPerCredit / 100;
+  return (units / AI_CREDIT_UNITS_PER_CREDIT) * eurPerCredit;
+}
+
+function formatStartingEur(eur: number): string {
+  return eur % 1 === 0 ? `€${eur.toFixed(0)}` : `€${eur.toFixed(2)}`;
+}
+
 export default function AiStudioLandingPage() {
   return (
     <>
       <HeroSection />
+      <ToolPickerSection />
       <WorkflowSection />
       <ToolsSection />
       <ScenarioSection />
@@ -246,115 +250,171 @@ export default function AiStudioLandingPage() {
 
 function HeroSection() {
   return (
-    <section className="relative overflow-hidden">
-      <div className="absolute inset-0">
-        <Image
-          src="/artwork/elegant-render-virtual-staging-scene.webp"
-          alt=""
-          fill
-          priority
-          className="object-cover object-[center_58%]"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(28,26,25,0.86)_0%,rgba(28,26,25,0.62)_42%,rgba(28,26,25,0.26)_100%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background to-transparent" />
+    <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
+      <SectionKicker>AI Studio</SectionKicker>
+      <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
+        AI obrada koja vašu fotografiju pretvori u prodajni vizual
+      </h1>
+      <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+        Uploadujte fotografiju, izaberite alat i dobijte spreman vizuelni
+        rezultat za oglas, prezentaciju ili proveru ideje. Sedam alata, od €1
+        po obradi.
+      </p>
+      <div className="mt-8 flex flex-wrap gap-3">
+        <ButtonLink href="/portal/ai-studio" variant="accent" size="lg">
+          Otvori AI Studio
+          <ArrowRight className="h-4 w-4" />
+        </ButtonLink>
+        <ButtonLink
+          href="/portal/ai-studio/krediti"
+          variant="outline"
+          size="lg"
+        >
+          <Coins className="h-4 w-4" />
+          Kupi kredite
+        </ButtonLink>
       </div>
+    </div>
+  );
+}
 
-      <div className="relative mx-auto flex min-h-[calc(100svh-8rem)] w-full max-w-[min(96vw,1720px)] flex-col justify-center px-6 py-12 md:py-16">
-        <div className="max-w-3xl">
-          <SectionKicker className="[&_span:last-child]:text-white/72">
-            AI Studio
-          </SectionKicker>
-          <h1 className="mt-4 text-4xl leading-[1.02] text-white md:text-6xl lg:text-7xl">
-            Brza AI obrada fotografija za nekretnine
-          </h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/78 md:text-lg">
-            Uploadujte fotografiju, izaberite alat i dobijte spreman vizuelni
-            rezultat za oglas, prezentaciju ili proveru ideje.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <ButtonLink href="/portal/ai-studio" variant="accent" size="lg">
-              Otvori AI Studio
-              <ArrowRight className="h-4 w-4" />
-            </ButtonLink>
-            <ButtonLink
-              href="/portal/ai-studio/krediti"
-              variant="outline"
-              size="lg"
-              className="border-white/45 bg-white/8 text-white hover:bg-white/14"
-            >
-              <Coins className="h-4 w-4" />
-              Kupi kredite
-            </ButtonLink>
-          </div>
-          <div className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-white/72">
-            {[
-              "Simple obrada = 0.5 kredita",
-              "Complex obrada = 1 kredit",
-              "Krediti važe 12 meseci",
-            ].map((item) => (
-              <span key={item} className="inline-flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {heroImages.map((item) => (
-            <div
-              key={item.src}
-              className="overflow-hidden rounded-lg border border-white/20 bg-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.18)] backdrop-blur"
-            >
-              <Image
-                src={item.src}
-                alt=""
-                width={520}
-                height={330}
-                className="aspect-[16/10] w-full object-cover"
+/**
+ * Primary entry into the buying flow. Mirrors the `CategoryPreview` pattern
+ * from /cene: each card shows the tool's starting EUR and links straight
+ * into the portal with the tool pre-selected so the customer can start
+ * working in one click.
+ */
+function ToolPickerSection() {
+  return (
+    <section className="pt-12 pb-2">
+      <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
+        <h2 className="mb-5 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+          Šta želite da uradite?
+        </h2>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4">
+          {AI_EDIT_TYPES.map((item) => {
+            const detail = toolDetails[item.id];
+            const startingEur = toolStartingEur(item.units);
+            return (
+              <ToolPickerCard
+                key={item.id}
+                href={`/portal/ai-studio?tool=${item.id}`}
+                label={item.label}
+                shortLabel={item.shortLabel}
+                blurb={detail.benefit}
+                imageSrc={detail.imageSrc}
+                icon={detail.icon}
+                gradient={detail.gradient}
+                creditsLabel={formatCreditsFromUnits(item.units)}
+                startingEur={startingEur}
               />
-              <div className="px-3 py-2 text-xs font-semibold text-white/80">
-                {item.label}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
 
+function ToolPickerCard({
+  href,
+  label,
+  shortLabel,
+  blurb,
+  imageSrc,
+  icon: Icon,
+  gradient,
+  creditsLabel,
+  startingEur,
+}: {
+  href: string;
+  label: string;
+  shortLabel: string;
+  blurb: string;
+  imageSrc?: string;
+  icon: LucideIcon;
+  gradient: string;
+  creditsLabel: string;
+  startingEur: number;
+}) {
+  return (
+    <Link
+      href={href}
+      className="group flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)]"
+    >
+      <div
+        className={cn(
+          "relative aspect-[4/3] overflow-hidden bg-gradient-to-br",
+          gradient,
+        )}
+      >
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Icon className="h-10 w-10 text-foreground/35" strokeWidth={1.5} />
+        </div>
+        {imageSrc && (
+          <Image
+            src={imageSrc}
+            alt={label}
+            fill
+            sizes="(max-width: 768px) 50vw, 25vw"
+            className="object-cover"
+          />
+        )}
+      </div>
+      <div className="flex flex-1 flex-col gap-1.5 p-4">
+        <h3 className="text-sm font-semibold text-foreground md:text-base">
+          <span className="md:hidden">{shortLabel}</span>
+          <span className="hidden md:inline">{label}</span>
+        </h3>
+        <p className="hidden text-xs leading-snug text-muted-foreground md:line-clamp-2 md:block">
+          {blurb}
+        </p>
+        <div className="mt-auto flex items-baseline justify-between gap-2 pt-1">
+          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            od{" "}
+            <span className="text-base font-bold normal-case tracking-normal text-foreground">
+              {formatStartingEur(startingEur)}
+            </span>
+          </p>
+          <span className="text-[0.65rem] text-muted-foreground">
+            {creditsLabel}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 function WorkflowSection() {
   return (
-    <section className="py-16 md:py-20">
+    <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="max-w-2xl">
           <SectionKicker>Kako radi</SectionKicker>
-          <h2 className="mt-3 text-3xl text-foreground md:text-5xl">
+          <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
             Od fotografije do upotrebljivog vizuala u četiri koraka.
           </h2>
         </div>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {workflow.map((item, index) => (
-            <div
+            <article
               key={item.title}
-              className="rounded-lg border border-border/60 bg-card/80 p-5"
+              className="rounded-2xl border border-border/70 bg-card/80 p-6 shadow-[0_20px_55px_rgba(28,26,25,0.05)]"
             >
               <div className="flex items-start justify-between gap-4">
-                <span className="font-mono text-sm font-semibold text-accent">
+                <span className="text-sm font-semibold text-accent">
                   0{index + 1}
                 </span>
-                <item.icon className="h-5 w-5 text-accent" />
+                <item.icon className="h-5 w-5 text-foreground/60" />
               </div>
               <h3 className="mt-5 text-lg font-semibold text-foreground">
                 {item.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">
                 {item.text}
               </p>
-            </div>
+            </article>
           ))}
         </div>
       </div>
@@ -362,19 +422,27 @@ function WorkflowSection() {
   );
 }
 
+/**
+ * Detailed reference for the seven tools — kept after the picker for
+ * customers who want to read deeper before clicking. Drops the empty
+ * Input/Output mockup boxes from the previous design (they read as
+ * placeholder rather than illustration); each tool's example prompt now
+ * does that job.
+ */
 function ToolsSection() {
   return (
-    <section className="bg-secondary/35 py-16 md:py-20">
+    <section className="bg-secondary/35 py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-3xl">
             <SectionKicker>Alati</SectionKicker>
-            <h2 className="mt-3 text-3xl text-foreground md:text-5xl">
+            <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
               Sedam AI obrada za postojeće fotografije.
             </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
               Svaki alat ima jasan opseg: od brzog čišćenja fotografije do
-              staginga, renovacije i redesign-a prostorije.
+              staginga, renovacije i redesign-a prostorije. Primer prompta
+              ispod svakog alata pokazuje kako da formulišete instrukciju.
             </p>
           </div>
           <Link
@@ -399,32 +467,19 @@ function ToolsSection() {
             return (
               <article
                 key={item.id}
-                className="flex min-h-full flex-col rounded-lg border border-border/60 bg-background p-5"
+                className="flex min-h-full flex-col rounded-2xl border border-border/60 bg-background p-6 shadow-[0_4px_16px_rgba(28,26,25,0.03)]"
               >
-                <div className="rounded-lg border border-dashed border-border/70 bg-secondary/45 p-3">
-                  <div className="flex items-center justify-between gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                    <span>Input</span>
-                    <span>{detail.mediaLabel}</span>
-                    <span>Output</span>
-                  </div>
-                  <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-                    <div className="aspect-[4/3] rounded-md bg-background/75 ring-1 ring-border/50" />
-                    <ArrowRight className="h-4 w-4 text-accent" />
-                    <div className="aspect-[4/3] rounded-md bg-[color:var(--color-sage)]/18 ring-1 ring-[color:var(--color-sage)]/30" />
-                  </div>
-                </div>
-
-                <div className="mt-5 flex items-start justify-between gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/12 text-accent">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/12 text-accent">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="flex flex-wrap justify-end gap-1.5">
-                    <span className="rounded-full bg-accent/10 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-accent">
+                    <span className="rounded-full bg-secondary px-2 py-1 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                       {item.complexity === "simple" ? "Simple" : "Complex"} ·{" "}
                       {formatCreditsFromUnits(item.units)}
                     </span>
                     {capabilities.length > 0 && (
-                      <span className="rounded-full bg-[color:var(--color-sage)]/15 px-2 py-1 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-[color:var(--color-sage-deep)]">
+                      <span className="rounded-full bg-secondary px-2 py-1 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                         {capabilities.join(" · ")}
                       </span>
                     )}
@@ -434,7 +489,7 @@ function ToolsSection() {
                 <h3 className="mt-4 text-xl font-semibold text-foreground">
                   {item.label}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">
                   {detail.benefit}
                 </p>
 
@@ -453,8 +508,8 @@ function ToolsSection() {
                   </p>
                 </div>
 
-                <p className="mt-4 rounded-lg bg-secondary/50 px-3 py-2 text-xs leading-relaxed text-foreground/78">
-                  “{detail.prompt}”
+                <p className="mt-4 rounded-xl bg-secondary/50 px-3 py-2 text-xs leading-relaxed text-foreground/78">
+                  „{detail.prompt}&rdquo;
                 </p>
               </article>
             );
@@ -467,11 +522,11 @@ function ToolsSection() {
 
 function ScenarioSection() {
   return (
-    <section className="py-16 md:py-20">
+    <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="max-w-2xl">
           <SectionKicker>Scenariji</SectionKicker>
-          <h2 className="mt-3 text-3xl text-foreground md:text-5xl">
+          <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
             Tri najčešća razloga za AI obradu.
           </h2>
         </div>
@@ -480,7 +535,7 @@ function ScenarioSection() {
           {scenarios.map((item) => (
             <article
               key={item.title}
-              className="overflow-hidden rounded-lg border border-border/60 bg-card/80"
+              className="overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-[0_4px_16px_rgba(28,26,25,0.03)]"
             >
               <Image
                 src={item.image}
@@ -493,7 +548,7 @@ function ScenarioSection() {
                 <h3 className="text-xl font-semibold text-foreground">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                <p className="mt-2 text-sm leading-7 text-muted-foreground">
                   {item.text}
                 </p>
                 <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-accent">
@@ -510,11 +565,11 @@ function ScenarioSection() {
 
 function ComparisonSection() {
   return (
-    <section className="bg-secondary/35 py-16 md:py-20">
+    <section className="bg-secondary/35 py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="max-w-2xl">
           <SectionKicker>Kada šta koristiti</SectionKicker>
-          <h2 className="mt-3 text-3xl text-foreground md:text-5xl">
+          <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
             AI Studio ili klasičan render?
           </h2>
         </div>
@@ -568,20 +623,20 @@ function ComparisonCard({
   link?: boolean;
 }) {
   return (
-    <article className="rounded-lg border border-border/60 bg-background p-6">
+    <article className="rounded-2xl border border-border/60 bg-background p-6 shadow-[0_4px_16px_rgba(28,26,25,0.03)] md:p-8">
       <div className="flex items-center gap-3">
         <span
           className={
             accent
-              ? "flex h-10 w-10 items-center justify-center rounded-lg bg-accent/12 text-accent"
-              : "flex h-10 w-10 items-center justify-center rounded-lg bg-foreground/8 text-foreground"
+              ? "flex h-10 w-10 items-center justify-center rounded-xl bg-accent/12 text-accent"
+              : "flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/8 text-foreground"
           }
         >
           <Icon className="h-5 w-5" />
         </span>
         <h3 className="text-2xl font-semibold text-foreground">{title}</h3>
       </div>
-      <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+      <p className="mt-4 text-sm leading-7 text-muted-foreground">
         {text}
       </p>
       <ul className="mt-5 space-y-3 text-sm text-foreground/82">
@@ -613,14 +668,14 @@ function ComparisonCard({
 
 function CreditsSection() {
   return (
-    <section className="py-16 md:py-20">
+    <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto grid w-full max-w-[min(96vw,1720px)] gap-8 px-6 lg:grid-cols-[0.75fr_1.25fr]">
         <div>
           <SectionKicker>Krediti</SectionKicker>
-          <h2 className="mt-3 text-3xl text-foreground md:text-5xl">
+          <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
             Kupite koliko vam treba.
           </h2>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-4 text-sm leading-7 text-muted-foreground">
             Krediti važe 12 meseci od poslednje dopune. Veći paketi imaju nižu
             cenu po kreditu, a sistem automatski primenjuje najbolju cenu za
             izabranu količinu.
@@ -653,7 +708,7 @@ function CreditsSection() {
               return (
                 <div
                   key={credits}
-                  className="rounded-lg border border-border/60 bg-card/80 p-5"
+                  className="rounded-2xl border border-border/60 bg-card/80 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]"
                 >
                   <p className="text-4xl font-bold text-foreground">
                     {credits}
@@ -693,11 +748,11 @@ function CreditsSection() {
 
 function TipsSection() {
   return (
-    <section className="bg-secondary/35 py-16 md:py-20">
+    <section className="bg-secondary/35 py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="max-w-2xl">
           <SectionKicker>Saveti</SectionKicker>
-          <h2 className="mt-3 text-3xl text-foreground md:text-5xl">
+          <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
             Za bolji rezultat, recite AI-ju šta treba da ostane isto.
           </h2>
         </div>
@@ -705,12 +760,10 @@ function TipsSection() {
           {tips.map((tip) => (
             <div
               key={tip}
-              className="flex gap-3 rounded-lg border border-border/60 bg-background p-4"
+              className="flex gap-3 rounded-2xl border border-border/60 bg-background p-4 shadow-[0_4px_16px_rgba(28,26,25,0.03)]"
             >
               <Lightbulb className="mt-0.5 h-4 w-4 flex-none text-accent" />
-              <p className="text-sm leading-relaxed text-foreground/82">
-                {tip}
-              </p>
+              <p className="text-sm leading-7 text-foreground/82">{tip}</p>
             </div>
           ))}
         </div>
@@ -721,11 +774,11 @@ function TipsSection() {
 
 function FaqSection() {
   return (
-    <section className="py-16 md:py-20">
+    <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="max-w-2xl">
           <SectionKicker>Česta pitanja</SectionKicker>
-          <h2 className="mt-3 text-3xl text-foreground md:text-5xl">
+          <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
             Sve što treba da znate pre prve obrade.
           </h2>
         </div>
@@ -733,12 +786,12 @@ function FaqSection() {
           {faq.map((item) => (
             <article
               key={item.question}
-              className="rounded-lg border border-border/60 bg-card/80 p-5"
+              className="rounded-2xl border border-border/60 bg-card/80 p-6 shadow-[0_4px_16px_rgba(28,26,25,0.03)]"
             >
               <h3 className="text-lg font-semibold text-foreground">
                 {item.question}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-2 text-sm leading-7 text-muted-foreground">
                 {item.answer}
               </p>
             </article>
@@ -751,16 +804,16 @@ function FaqSection() {
 
 function FinalCtaSection() {
   return (
-    <section className="px-6 pb-20">
-      <div className="mx-auto flex w-full max-w-[min(96vw,1720px)] flex-col items-start justify-between gap-6 rounded-lg bg-foreground p-6 text-background md:flex-row md:items-center md:p-8">
+    <section className="px-6 pb-24">
+      <div className="mx-auto flex w-full max-w-[min(96vw,1720px)] flex-col items-start justify-between gap-6 rounded-2xl bg-foreground p-6 text-background shadow-[0_30px_80px_rgba(28,26,25,0.22)] md:flex-row md:items-center md:p-10">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-background/60">
             AI Studio
           </p>
-          <h2 className="mt-2 text-3xl md:text-4xl">
+          <h2 className="mt-2 text-3xl leading-tight md:text-4xl">
             Spremni za prvu obradu fotografije?
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-background/72">
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-background/72">
             Počnite sa jednom jasnom fotografijom. Ako niste sigurni koji alat
             je pravi, krenite od cilja: očistiti, opremiti, renovirati ili
             promeniti atmosferu.

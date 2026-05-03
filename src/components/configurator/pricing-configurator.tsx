@@ -3,6 +3,14 @@
  * Wraps QuoteProvider context and renders ServiceAdder, QuoteItemCards, and QuoteSummary.
  * Listens for chat proposals (er-chat-proposal event + sessionStorage) to auto-add products.
  *
+ * Two exports:
+ *  - `ConfiguratorBody` — the inner UI without a provider; used when /cene
+ *    needs to wrap several siblings (standalone AI credits section,
+ *    configurator) in a single shared QuoteProvider so credits added in
+ *    either place flow through the same cart.
+ *  - `PricingConfigurator` — body + provider. Standalone usage; kept for
+ *    callers that mount a self-contained configurator.
+ *
  * Used on: /cene (pricing page).
  */
 "use client";
@@ -21,7 +29,7 @@ import type { DisplayCurrency } from "@/lib/catalog/display-currency";
 import { loadQuote } from "@/server/actions/quote";
 import { track } from "@/lib/posthog-events";
 
-function ConfiguratorInner() {
+export function ConfiguratorBody() {
   const { calculation, addProduct, loadItems } = useQuote();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -189,7 +197,7 @@ export function PricingConfigurator({
   return (
     <QuoteProvider displayCurrency={displayCurrency}>
       <Suspense fallback={null}>
-        <ConfiguratorInner />
+        <ConfiguratorBody />
       </Suspense>
     </QuoteProvider>
   );

@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Layers, TrendingDown, Zap } from "lucide-react";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { CategoryPreview } from "@/components/configurator/category-preview";
-import { PricingConfigurator } from "@/components/configurator/pricing-configurator";
+import { ConfiguratorBody } from "@/components/configurator/pricing-configurator";
+import { QuoteProvider } from "@/components/configurator/quote-context";
+import { StandaloneAiCredits } from "@/components/configurator/standalone-ai-credits";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import {
   formatPublicPrice,
@@ -106,11 +109,20 @@ export default async function CenePage() {
         </div>
       </section>
 
-      <section id="configurator" className="scroll-mt-24 pb-20 pt-10">
-        <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
-          <PricingConfigurator displayCurrency={displayCurrency} />
-        </div>
-      </section>
+      {/* StandaloneAiCredits + the configurator share a single QuoteProvider
+          so credits added in the package picker show up immediately in the
+          summary sidebar and the in-configurator <details> disclosure — no
+          handoff plumbing, single cart. */}
+      <QuoteProvider displayCurrency={displayCurrency}>
+        <StandaloneAiCredits />
+        <section id="configurator" className="scroll-mt-24 pb-20 pt-10">
+          <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
+            <Suspense fallback={null}>
+              <ConfiguratorBody />
+            </Suspense>
+          </div>
+        </section>
+      </QuoteProvider>
 
       <section className="pb-24">
         <div className="mx-auto w-full max-w-3xl px-6">

@@ -9,7 +9,10 @@
  * so any catalog price change automatically propagates to the preview.
  */
 
-import { CONFIGURATOR_CATEGORIES } from "./configurator";
+import {
+  CONFIGURATOR_CATEGORIES,
+  type ConfiguratorCategory,
+} from "./configurator";
 
 export type CustomerGroupId =
   | "renderi-eksterijera"
@@ -91,9 +94,12 @@ export const CUSTOMER_GROUP_BY_ID: Record<CustomerGroupId, CustomerGroup> =
  *
  * Always returns the live catalog value — never cache or hardcode.
  */
-export function getGroupStartingPriceEur(group: CustomerGroup): number {
+export function getGroupStartingPriceEur(
+  group: CustomerGroup,
+  categories: ConfiguratorCategory[] = CONFIGURATOR_CATEGORIES,
+): number {
   const prices: number[] = [];
-  for (const cat of CONFIGURATOR_CATEGORIES) {
+  for (const cat of categories) {
     if (!group.catIds.includes(cat.id)) continue;
     for (const product of cat.products) {
       if (product.inquiryOnly) continue;

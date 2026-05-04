@@ -58,7 +58,9 @@ export function ServiceAdder() {
   const [activeGroupId, setActiveGroupId] =
     useState<CustomerGroupId>(initialGroupId);
   const [justAdded, setJustAdded] = useState<string | null>(null);
-  const { addProduct, displayCurrency } = useQuote();
+  const { addProduct, displayCurrency, pricingCatalog, pricingSettings } =
+    useQuote();
+  const categories = pricingCatalog?.categories ?? CONFIGURATOR_CATEGORIES;
 
   // Sync state when navigation changes the ?group= param (e.g. user clicks a
   // preview card while already on /cene). State is otherwise local — clicking
@@ -74,9 +76,8 @@ export function ServiceAdder() {
 
   const activeGroup = CUSTOMER_GROUPS.find((g) => g.id === activeGroupId)!;
   const activeCats = useMemo(
-    () =>
-      CONFIGURATOR_CATEGORIES.filter((c) => activeGroup.catIds.includes(c.id)),
-    [activeGroup],
+    () => categories.filter((c) => activeGroup.catIds.includes(c.id)),
+    [activeGroup, categories],
   );
 
   const handleAdd = (
@@ -135,6 +136,7 @@ export function ServiceAdder() {
             showHeader={activeCats.length > 1}
             justAdded={justAdded}
             displayCurrency={displayCurrency}
+            pricingSettings={pricingSettings}
             onAdd={(product, sourceMode) =>
               handleAdd(product, cat.id, sourceMode)
             }
@@ -150,12 +152,14 @@ function CategoryProducts({
   showHeader,
   justAdded,
   displayCurrency,
+  pricingSettings,
   onAdd,
 }: {
   category: ConfiguratorCategory;
   showHeader: boolean;
   justAdded: string | null;
   displayCurrency: DisplayCurrency;
+  pricingSettings: Parameters<typeof formatPublicPrice>[2];
   onAdd: (product: ConfiguratorProduct, sourceMode?: string) => void;
 }) {
   return (
@@ -170,6 +174,7 @@ function CategoryProducts({
           category={category}
           isAdded={(productId) => justAdded === productId}
           displayCurrency={displayCurrency}
+          pricingSettings={pricingSettings}
           onAdd={(product, sourceMode) => onAdd(product, sourceMode)}
         />
       ) : (
@@ -179,6 +184,7 @@ function CategoryProducts({
             product={product}
             isAdded={justAdded === product.id}
             displayCurrency={displayCurrency}
+            pricingSettings={pricingSettings}
             onAdd={() => onAdd(product)}
           />
         ))
@@ -191,11 +197,13 @@ function ProductCard({
   product,
   isAdded,
   displayCurrency,
+  pricingSettings,
   onAdd,
 }: {
   product: ConfiguratorProduct;
   isAdded: boolean;
   displayCurrency: DisplayCurrency;
+  pricingSettings: Parameters<typeof formatPublicPrice>[2];
   onAdd: () => void;
 }) {
   return (
@@ -206,7 +214,11 @@ function ProductCard({
             {product.label}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            {formatPublicPriceText(product.unitLabel, displayCurrency)}
+            {formatPublicPriceText(
+              product.unitLabel,
+              displayCurrency,
+              pricingSettings,
+            )}
           </p>
           {product.includes.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
@@ -216,7 +228,7 @@ function ProductCard({
                   className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/12 px-2 py-0.5 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)]"
                 >
                   <Check className="h-3 w-3" />
-                  {formatPublicPriceText(inc, displayCurrency)}
+                  {formatPublicPriceText(inc, displayCurrency, pricingSettings)}
                 </span>
               ))}
             </div>
@@ -228,8 +240,13 @@ function ProductCard({
               ? formatPublicPrice(
                   product.durationConfig.perSecondEur,
                   displayCurrency,
+                  pricingSettings,
                 )
-              : formatPublicPrice(product.basePriceEur, displayCurrency)}
+              : formatPublicPrice(
+                  product.basePriceEur,
+                  displayCurrency,
+                  pricingSettings,
+                )}
             {product.durationConfig && (
               <span className="text-xs font-normal text-muted-foreground">
                 /sek
@@ -276,11 +293,13 @@ function AnimationCardWrapper({
   category,
   isAdded,
   displayCurrency,
+  pricingSettings,
   onAdd,
 }: {
   category: ConfiguratorCategory;
   isAdded: (productId: string) => boolean;
   displayCurrency: DisplayCurrency;
+  pricingSettings: Parameters<typeof formatPublicPrice>[2];
   onAdd: (product: ConfiguratorProduct, sourceMode: string) => void;
 }) {
   const product = category.products.find((p) => p.id === ANIM_PRODUCT_ID);
@@ -290,6 +309,7 @@ function AnimationCardWrapper({
       product={product}
       isAdded={isAdded(product.id)}
       displayCurrency={displayCurrency}
+      pricingSettings={pricingSettings}
       onAdd={onAdd}
     />
   );
@@ -299,16 +319,22 @@ function AnimationCard({
   product,
   isAdded,
   displayCurrency,
+  pricingSettings,
   onAdd,
 }: {
   product: ConfiguratorProduct;
   isAdded: boolean;
   displayCurrency: DisplayCurrency;
+  pricingSettings: Parameters<typeof formatPublicPrice>[2];
   onAdd: (product: ConfiguratorProduct, sourceMode: string) => void;
 }) {
   const [mode, setMode] = useState<AnimSourceMode>("scratch");
   const modeMeta = ANIM_SOURCE_MODES.find((m) => m.id === mode);
-  const perSec = modeMeta?.perSecondEur ?? 15;
+  const perSec =
+    product.sourceModeRules?.[mode]?.perSecondEur ??
+    modeMeta?.perSecondEur ??
+    product.durationConfig?.perSecondEur ??
+    15;
 
   return (
     <div className="rounded-2xl border border-border/60 bg-card/80 p-5 transition-shadow hover:shadow-[0_14px_40px_rgba(28,26,25,0.05)]">
@@ -324,7 +350,7 @@ function AnimationCard({
         </div>
         <div className="flex flex-shrink-0 flex-col items-end gap-2">
           <p className="text-xl font-semibold text-foreground">
-            {formatPublicPrice(perSec, displayCurrency)}
+            {formatPublicPrice(perSec, displayCurrency, pricingSettings)}
             <span className="text-xs font-normal text-muted-foreground">
               /sek
             </span>
@@ -356,7 +382,13 @@ function AnimationCard({
                   {m.shortLabel}
                 </span>
                 <span className="text-[0.7rem] font-bold text-accent tabular-nums">
-                  {formatPublicPrice(m.perSecondEur, displayCurrency)}/s
+                  {formatPublicPrice(
+                    product.sourceModeRules?.[m.id]?.perSecondEur ??
+                      m.perSecondEur,
+                    displayCurrency,
+                    pricingSettings,
+                  )}
+                  /s
                 </span>
               </span>
               <span className="text-[0.7rem] leading-snug text-muted-foreground">

@@ -9,7 +9,10 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
+import {
+  CONFIGURATOR_CATEGORIES,
+  type ConfiguratorCategory,
+} from "@/lib/catalog/configurator";
 import { addOrderItem } from "@/server/actions/item-config";
 import { formatEur } from "@/lib/catalog/calculate";
 import { Collapsible } from "@/components/ui/collapsible";
@@ -17,9 +20,11 @@ import { Collapsible } from "@/components/ui/collapsible";
 export function AddServiceDialog({
   orderId,
   existingProductIds,
+  categories = CONFIGURATOR_CATEGORIES,
 }: {
   orderId: string;
   existingProductIds: string[];
+  categories?: ConfiguratorCategory[];
 }) {
   const [open, setOpen] = useState(false);
   const [activeCat, setActiveCat] = useState<string | null>(null);
@@ -29,13 +34,13 @@ export function AddServiceDialog({
   const router = useRouter();
 
   const availableByCategory = useMemo(() => {
-    return CONFIGURATOR_CATEGORIES.map((cat) => ({
+    return categories.map((cat) => ({
       ...cat,
       products: cat.products.filter(
         (p) => !existingProductIds.includes(p.id),
       ),
     })).filter((cat) => cat.products.length > 0);
-  }, [existingProductIds]);
+  }, [existingProductIds, categories]);
 
   const handleAdd = (productId: string) => {
     setAdding(productId);

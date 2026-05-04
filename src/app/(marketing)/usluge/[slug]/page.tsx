@@ -12,6 +12,7 @@ import {
 } from "@/lib/catalog/services";
 import { formatPublicPriceText } from "@/lib/catalog/display-currency";
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 type Params = Promise<{ slug: string }>;
 
@@ -46,7 +47,11 @@ export default async function ServiceDetailPage({
   const { slug } = await params;
   const service = getServiceBySlug(slug);
   if (!service) notFound();
-  const displayCurrency = await getPublicDisplayCurrency();
+  const [displayCurrency, pricingCatalog] = await Promise.all([
+    getPublicDisplayCurrency(),
+    getPublishedPricingCatalog(),
+  ]);
+  const pricingSettings = pricingCatalog.settings;
 
   return (
     <article className="mx-auto w-full max-w-4xl px-6 pb-24 pt-20 md:pt-28">
@@ -71,7 +76,11 @@ export default async function ServiceDetailPage({
       </p>
 
       <p className="mt-10 text-base leading-7 text-muted-foreground">
-        {formatPublicPriceText(service.description, displayCurrency)}
+        {formatPublicPriceText(
+          service.description,
+          displayCurrency,
+          pricingSettings,
+        )}
       </p>
 
       <div className="mt-10 rounded-2xl border border-border/70 bg-secondary/40 p-6 md:p-8">
@@ -79,7 +88,11 @@ export default async function ServiceDetailPage({
           Model-first kontekst
         </p>
         <p className="mt-3 text-sm leading-7 text-foreground/85">
-          {formatPublicPriceText(service.philosophy, displayCurrency)}
+          {formatPublicPriceText(
+            service.philosophy,
+            displayCurrency,
+            pricingSettings,
+          )}
         </p>
       </div>
 
@@ -103,6 +116,7 @@ export default async function ServiceDetailPage({
                     {formatPublicPriceText(
                       variant.description,
                       displayCurrency,
+                      pricingSettings,
                     )}
                   </p>
                 </div>
@@ -114,12 +128,14 @@ export default async function ServiceDetailPage({
                     {formatPublicPriceText(
                       variant.priceLabel,
                       displayCurrency,
+                      pricingSettings,
                     )}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {formatPublicPriceText(
                       variant.unitLabel,
                       displayCurrency,
+                      pricingSettings,
                     )}
                   </p>
                 </div>
@@ -134,6 +150,7 @@ export default async function ServiceDetailPage({
                     {formatPublicPriceText(
                       variant.included,
                       displayCurrency,
+                      pricingSettings,
                     )}
                   </p>
                 </div>
@@ -149,7 +166,11 @@ export default async function ServiceDetailPage({
                         className="flex gap-2 text-sm leading-6 text-muted-foreground"
                       >
                         <Check className="mt-1 h-3.5 w-3.5 flex-shrink-0 text-accent" />
-                        {formatPublicPriceText(addOn, displayCurrency)}
+                        {formatPublicPriceText(
+                          addOn,
+                          displayCurrency,
+                          pricingSettings,
+                        )}
                       </li>
                     ))}
                   </ul>
@@ -157,7 +178,11 @@ export default async function ServiceDetailPage({
 
                 {variant.note && (
                   <div className="rounded-lg border border-border bg-secondary/40 p-4 text-sm leading-6 text-muted-foreground">
-                    {formatPublicPriceText(variant.note, displayCurrency)}
+                    {formatPublicPriceText(
+                      variant.note,
+                      displayCurrency,
+                      pricingSettings,
+                    )}
                   </div>
                 )}
               </div>

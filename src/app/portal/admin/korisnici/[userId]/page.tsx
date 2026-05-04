@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { formatEur } from "@/lib/catalog/calculate";
 import {
@@ -11,6 +12,7 @@ import {
 } from "@/lib/ai-studio/catalog";
 import { statusLabel, statusAccent } from "@/components/portal/status-utils";
 import { AdminGrantCreditsPanel } from "../../porudzbine/[orderId]/admin-grant-credits-panel";
+import { saveUserFinanceAccess } from "@/server/actions/finance";
 
 export const metadata: Metadata = {
   title: "Admin — Korisnik",
@@ -33,27 +35,36 @@ export default async function AdminUserDetailPage({
   params: Params;
 }) {
   const { userId } = await params;
+  const session = await auth();
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: {
-      orders: {
-        orderBy: { createdAt: "desc" },
-        select: {
-          id: true,
-          orderNumber: true,
-          projectName: true,
-          status: true,
-          totalEur: true,
-          createdAt: true,
+  const [user, currentAdmin] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        orders: {
+          orderBy: { createdAt: "desc" },
+          select: {
+            id: true,
+            orderNumber: true,
+            projectName: true,
+            status: true,
+            totalEur: true,
+            createdAt: true,
+          },
+        },
+        aiCreditTransactions: {
+          orderBy: { createdAt: "desc" },
+          take: 50,
         },
       },
-      aiCreditTransactions: {
-        orderBy: { createdAt: "desc" },
-        take: 50,
-      },
-    },
-  });
+    }),
+    session?.user?.id
+      ? prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: { isAdmin: true, canManageFinance: true },
+        })
+      : null,
+  ]);
 
   if (!user) return notFound();
 
@@ -79,6 +90,11 @@ export default async function AdminUserDetailPage({
                 Admin
               </Badge>
             )}
+            {user.canManageFinance && (
+              <Badge className="bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]">
+                Finansije
+              </Badge>
+            )}
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
             {user.email}
@@ -102,6 +118,52 @@ export default async function AdminUserDetailPage({
         balanceUnits={user.aiCreditBalanceUnits}
         expiresAt={user.aiCreditsExpireAt}
       />
+
+      {currentAdmin?.isAdmin && currentAdmin.canManageFinance && (
+        <form
+          action={saveUserFinanceAccess}
+          className="rounded-2xl border border-border/40 bg-card/60 p-5"
+        >
+          <input type="hidden" name="userId" value={user.id} />
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">
+                Administrativni pristup
+              </h3>
+              <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+                Običan admin vodi operativu. Finance admin može da menja cenovnik,
+                popuste, AI pakete i finansijska pravila.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-4">
+              <label className="inline-flex items-center gap-2 text-xs font-medium text-foreground">
+                <input
+                  type="checkbox"
+                  name="isAdmin"
+                  defaultChecked={user.isAdmin}
+                  className="h-4 w-4 rounded border-border"
+                />
+                Admin
+              </label>
+              <label className="inline-flex items-center gap-2 text-xs font-medium text-foreground">
+                <input
+                  type="checkbox"
+                  name="canManageFinance"
+                  defaultChecked={user.canManageFinance}
+                  className="h-4 w-4 rounded border-border"
+                />
+                Finance admin
+              </label>
+              <button
+                type="submit"
+                className="rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-accent/90"
+              >
+                Sačuvaj pristup
+              </button>
+            </div>
+          </div>
+        </form>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-border/40 bg-card/60 p-5">

@@ -31,7 +31,10 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { usePublicCurrency } from "@/components/site/public-currency-provider";
+import {
+  usePublicCurrency,
+  usePublicPricingSettings,
+} from "@/components/site/public-currency-provider";
 import { SERVICES, type ServiceIcon } from "@/lib/catalog/services";
 import { formatPublicPriceText } from "@/lib/catalog/display-currency";
 import { SITE, TRUST_SIGNALS } from "@/lib/content/site";
@@ -55,6 +58,7 @@ const SCROLL_STEP_PX = 220;
 
 export function QuickOrderHero() {
   const displayCurrency = usePublicCurrency();
+  const pricingSettings = usePublicPricingSettings();
   const [selectedServiceSlug, setSelectedServiceSlug] = useState<string>(
     SERVICES[0].slug,
   );
@@ -78,7 +82,7 @@ export function QuickOrderHero() {
 
   const SelectedIcon = ICON_MAP[selectedService.icon];
   const priceText = (text: string) =>
-    formatPublicPriceText(text, displayCurrency);
+    formatPublicPriceText(text, displayCurrency, pricingSettings);
 
   const handleServiceChange = (slug: string) => {
     const service = SERVICES.find((s) => s.slug === slug);

@@ -33,6 +33,8 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
   const {
     items,
     displayCurrency,
+    pricingCatalog,
+    pricingSettings,
     setAddOnQty,
     setDuration,
     setInteriorConfig,
@@ -40,7 +42,10 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
     removeProduct,
   } = useQuote();
   const item = items.find((i) => i.instanceId === breakdown.instanceId);
-  const result = getConfiguratorProduct(breakdown.productId);
+  const result = getConfiguratorProduct(
+    breakdown.productId,
+    pricingCatalog?.categories,
+  );
 
   if (!item || !result) return null;
   const { product } = result;
@@ -107,6 +112,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
               breakdown.originalTotalEur,
               breakdown.discountPct,
               displayCurrency,
+              pricingSettings,
             );
             return (
               <div className="flex flex-col items-end">
@@ -215,6 +221,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                 {formatPublicPrice(
                   product.durationConfig.perSecondEur,
                   displayCurrency,
+                  pricingSettings,
                 )}
                 /sek ×{" "}
                 {item.durationSeconds}s
@@ -239,6 +246,10 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                 floors={item.interiorConfig}
                 discount={editorDiscount}
                 displayCurrency={displayCurrency}
+                pricingSettings={pricingSettings}
+                pricing={
+                  pricingSettings.specialPricing.interior
+                }
                 onChange={(floors) =>
                   setInteriorConfig(item.instanceId, floors)
                 }
@@ -254,6 +265,8 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                 config={item.tour360Config}
                 discount={editorDiscount}
                 displayCurrency={displayCurrency}
+                pricingSettings={pricingSettings}
+                pricing={pricingSettings.specialPricing.tour360}
                 onChange={(config) =>
                   setTour360Config(item.instanceId, config)
                 }
@@ -279,6 +292,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                       description={formatPublicPriceText(
                         def.description,
                         displayCurrency,
+                        pricingSettings,
                       )}
                       quantity={item.addOnQuantities[def.id] ?? def.includedQty}
                       includedQty={def.includedQty}
@@ -289,6 +303,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                       isVolumeRate={aoBreakdown?.isVolumeRate ?? false}
                       volumeRules={def.volumeRules}
                       displayCurrency={displayCurrency}
+                      pricingSettings={pricingSettings}
                       onChange={(qty) =>
                         setAddOnQty(item.instanceId, def.id, qty)
                       }
@@ -307,7 +322,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                   key={d}
                   className="text-[0.68rem] leading-5 text-muted-foreground"
                 >
-                  {formatPublicPriceText(d, displayCurrency)}
+                  {formatPublicPriceText(d, displayCurrency, pricingSettings)}
                 </p>
               ))}
             </div>

@@ -33,6 +33,7 @@ import {
   formatPublicPrice,
   type DisplayCurrency,
 } from "@/lib/catalog/display-currency";
+import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import { track } from "@/lib/posthog-events";
 
 const GROUP_VISUALS: Record<
@@ -63,13 +64,19 @@ const GROUP_VISUALS: Record<
 
 export function CategoryPreview({
   displayCurrency,
+  pricingCatalog,
 }: {
   displayCurrency: DisplayCurrency;
+  pricingCatalog?: ResolvedPricingCatalog;
 }) {
+  const pricingSettings = pricingCatalog?.settings;
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-5">
       {CUSTOMER_GROUPS.map((group) => {
-        const startingEur = getGroupStartingPriceEur(group);
+        const startingEur = getGroupStartingPriceEur(
+          group,
+          pricingCatalog?.categories,
+        );
         const visual = GROUP_VISUALS[group.id];
         return (
           <PreviewCard
@@ -84,6 +91,7 @@ export function CategoryPreview({
             icon={visual.icon}
             gradient={visual.gradient}
             displayCurrency={displayCurrency}
+            pricingSettings={pricingSettings}
             onClick={() =>
               track("category_preview_click", { group: group.id })
             }
@@ -105,6 +113,7 @@ function PreviewCard({
   icon: Icon,
   gradient,
   displayCurrency,
+  pricingSettings,
   onClick,
 }: {
   href: string;
@@ -117,6 +126,7 @@ function PreviewCard({
   icon: LucideIcon;
   gradient: string;
   displayCurrency: DisplayCurrency;
+  pricingSettings: Parameters<typeof formatPublicPrice>[2];
   onClick: () => void;
 }) {
   const [mediaLoaded, setMediaLoaded] = useState(false);
@@ -179,7 +189,11 @@ function PreviewCard({
         <p className="mt-auto pt-1 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           od{" "}
           <span className="text-base font-bold normal-case tracking-normal text-foreground">
-            {formatPublicPrice(startingEur, displayCurrency)}
+            {formatPublicPrice(
+              startingEur,
+              displayCurrency,
+              pricingSettings,
+            )}
           </span>
         </p>
       </div>

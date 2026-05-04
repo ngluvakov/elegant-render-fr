@@ -22,15 +22,15 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import {
   formatPublicPrice,
   type DisplayCurrency,
+  type PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 import {
-  INT_STATIC_EXTRA_CAMERA_EUR,
-  INT_STATIC_EXTRA_ROOM_EUR,
   calcFloor,
   calcInteriorTotal,
   newFloor,
   type InteriorFloor,
   type InteriorFloorCalc,
+  type InteriorPricing,
   type InteriorRoom,
 } from "@/lib/catalog/interior-config";
 
@@ -49,6 +49,8 @@ type Props = {
   floors: InteriorFloor[];
   onChange: (next: InteriorFloor[]) => void;
   displayCurrency: DisplayCurrency;
+  pricingSettings?: PublicPricingFormatSettings;
+  pricing?: InteriorPricing;
   /**
    * If a cross-service discount applies to this item, pass it in so the
    * footer can show the original (struck) total alongside the discounted
@@ -63,8 +65,10 @@ export function InteriorQuoteEditor({
   onChange,
   discount,
   displayCurrency,
+  pricingSettings,
+  pricing,
 }: Props) {
-  const calc = calcInteriorTotal(floors);
+  const calc = calcInteriorTotal(floors, pricing);
 
   const updateFloor = (index: number, patch: Partial<InteriorFloor>) => {
     onChange(floors.map((f, i) => (i === index ? { ...f, ...patch } : f)));
@@ -127,6 +131,8 @@ export function InteriorQuoteEditor({
             index={idx}
             calc={calc.floors[idx]}
             displayCurrency={displayCurrency}
+            pricingSettings={pricingSettings}
+            pricing={pricing}
             canRemoveFloor={floors.length > 1}
             onAddRoom={() => addRoom(idx)}
             onRemoveRoom={(rIdx) => removeRoom(idx, rIdx)}
@@ -155,6 +161,7 @@ export function InteriorQuoteEditor({
         preDiscountEur={calc.totalEur}
         discount={discount}
         displayCurrency={displayCurrency}
+        pricingSettings={pricingSettings}
       />
     </div>
   );
@@ -165,6 +172,8 @@ function FloorPanel({
   index,
   calc,
   displayCurrency,
+  pricingSettings,
+  pricing,
   canRemoveFloor,
   onAddRoom,
   onRemoveRoom,
@@ -175,6 +184,8 @@ function FloorPanel({
   index: number;
   calc: InteriorFloorCalc;
   displayCurrency: DisplayCurrency;
+  pricingSettings?: PublicPricingFormatSettings;
+  pricing?: InteriorPricing;
   canRemoveFloor: boolean;
   onAddRoom: () => void;
   onRemoveRoom: (roomIdx: number) => void;
@@ -231,7 +242,12 @@ function FloorPanel({
         </button>
       </div>
 
-      <FloorBreakdown calc={calc} displayCurrency={displayCurrency} />
+      <FloorBreakdown
+        calc={calc}
+        displayCurrency={displayCurrency}
+        pricingSettings={pricingSettings}
+        pricing={pricing}
+      />
     </div>
   );
 }
@@ -276,28 +292,40 @@ function RoomRow({
 function FloorBreakdown({
   calc,
   displayCurrency,
+  pricingSettings,
+  pricing,
 }: {
   calc: InteriorFloorCalc;
   displayCurrency: DisplayCurrency;
+  pricingSettings?: PublicPricingFormatSettings;
+  pricing?: InteriorPricing;
 }) {
   const rows: { label: string; value: string }[] = [
     {
       label: calc.isFirstFloor
         ? "Cena prvog sprata (uključeno 10 prostorija + 10 kadrova)"
         : "Cena dodatnog sprata (−30%)",
-      value: formatPublicPrice(calc.baseCost, displayCurrency),
+      value: formatPublicPrice(calc.baseCost, displayCurrency, pricingSettings),
     },
   ];
   if (calc.extraRoomsCost > 0) {
     rows.push({
-      label: `+${calc.extraRooms} dodatn${calc.extraRooms === 1 ? "a prostorija" : "ih prostorija"} · ${formatPublicPrice(INT_STATIC_EXTRA_ROOM_EUR, displayCurrency)}/kom`,
-      value: formatPublicPrice(calc.extraRoomsCost, displayCurrency),
+      label: `+${calc.extraRooms} dodatn${calc.extraRooms === 1 ? "a prostorija" : "ih prostorija"} · ${formatPublicPrice(pricing?.extraRoomEur ?? 28, displayCurrency, pricingSettings)}/kom`,
+      value: formatPublicPrice(
+        calc.extraRoomsCost,
+        displayCurrency,
+        pricingSettings,
+      ),
     });
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
-      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(INT_STATIC_EXTRA_CAMERA_EUR, displayCurrency)}/kom`,
-      value: formatPublicPrice(calc.extraCamerasCost, displayCurrency),
+      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(pricing?.extraCameraEur ?? 10, displayCurrency, pricingSettings)}/kom`,
+      value: formatPublicPrice(
+        calc.extraCamerasCost,
+        displayCurrency,
+        pricingSettings,
+      ),
     });
   }
 
@@ -319,7 +347,11 @@ function FloorBreakdown({
           Sprat ukupno
         </span>
         <span className="text-sm font-bold text-foreground tabular-nums">
-          {formatPublicPrice(calc.floorTotal, displayCurrency)}
+          {formatPublicPrice(
+            calc.floorTotal,
+            displayCurrency,
+            pricingSettings,
+          )}
         </span>
       </div>
     </div>
@@ -336,10 +368,12 @@ export function ItemTotal({
   preDiscountEur,
   discount,
   displayCurrency,
+  pricingSettings,
 }: {
   preDiscountEur: number;
   discount?: EditorDiscount | null;
   displayCurrency: DisplayCurrency;
+  pricingSettings?: PublicPricingFormatSettings;
 }) {
   const hasDiscount =
     !!discount && discount.pct > 0 && discount.totalEur < preDiscountEur;
@@ -352,7 +386,7 @@ export function ItemTotal({
           Ukupno
         </span>
         <span className="text-base font-bold text-foreground tabular-nums">
-          {formatPublicPrice(preDiscountEur, displayCurrency)}
+          {formatPublicPrice(preDiscountEur, displayCurrency, pricingSettings)}
         </span>
       </div>
     );
@@ -363,7 +397,7 @@ export function ItemTotal({
       <div className="flex items-baseline justify-between gap-2 text-muted-foreground">
         <span>Subtotal</span>
         <span className="tabular-nums">
-          {formatPublicPrice(preDiscountEur, displayCurrency)}
+          {formatPublicPrice(preDiscountEur, displayCurrency, pricingSettings)}
         </span>
       </div>
       <div className="flex items-baseline justify-between gap-2 text-[color:var(--color-sage-deep)]">
@@ -374,7 +408,7 @@ export function ItemTotal({
           </span>
         </span>
         <span className="flex-shrink-0 font-semibold tabular-nums">
-          -{formatPublicPrice(savings, displayCurrency)}
+          -{formatPublicPrice(savings, displayCurrency, pricingSettings)}
         </span>
       </div>
       <div className="flex items-baseline justify-between gap-2 border-t border-border/40 pt-2 text-sm">
@@ -382,7 +416,11 @@ export function ItemTotal({
           Ukupno
         </span>
         <span className="text-base font-bold text-foreground tabular-nums">
-          {formatPublicPrice(discount!.totalEur, displayCurrency)}
+          {formatPublicPrice(
+            discount!.totalEur,
+            displayCurrency,
+            pricingSettings,
+          )}
         </span>
       </div>
     </div>

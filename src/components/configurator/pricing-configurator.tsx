@@ -26,11 +26,12 @@ import { QuoteSummary } from "./quote-summary";
 import { MobileQuoteBar } from "./mobile-quote-bar";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import type { DisplayCurrency } from "@/lib/catalog/display-currency";
+import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import { loadQuote } from "@/server/actions/quote";
 import { track } from "@/lib/posthog-events";
 
 export function ConfiguratorBody() {
-  const { calculation, addProduct, loadItems } = useQuote();
+  const { calculation, addProduct, loadItems, pricingCatalog } = useQuote();
   const searchParams = useSearchParams();
   const router = useRouter();
   const sharedToken = searchParams.get("q");
@@ -75,7 +76,10 @@ export function ConfiguratorBody() {
           const qty = typeof entry === "string" ? 1 : (entry.qty || 1);
           const sourceMode =
             typeof entry === "string" ? undefined : entry.sourceMode;
-          const result = getConfiguratorProduct(productId);
+          const result = getConfiguratorProduct(
+            productId,
+            pricingCatalog?.categories,
+          );
           if (result) {
             for (let i = 0; i < qty; i++) {
               addProduct(productId, result.category.id, sourceMode);
@@ -92,7 +96,7 @@ export function ConfiguratorBody() {
     // Listen for live events (user clicks "Dodaj" while already on /cene)
     window.addEventListener("er-chat-proposal", applyProposal);
     return () => window.removeEventListener("er-chat-proposal", applyProposal);
-  }, [addProduct]);
+  }, [addProduct, pricingCatalog]);
 
   // Auto-scroll to the newly-added card when a single item is appended.
   // Bulk loads (share-token hydration, multi-item chat proposal) change the
@@ -191,11 +195,16 @@ export function ConfiguratorBody() {
 
 export function PricingConfigurator({
   displayCurrency,
+  pricingCatalog,
 }: {
   displayCurrency: DisplayCurrency;
+  pricingCatalog?: ResolvedPricingCatalog;
 }) {
   return (
-    <QuoteProvider displayCurrency={displayCurrency}>
+    <QuoteProvider
+      displayCurrency={displayCurrency}
+      pricingCatalog={pricingCatalog}
+    >
       <Suspense fallback={null}>
         <ConfiguratorBody />
       </Suspense>

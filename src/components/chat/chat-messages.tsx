@@ -12,7 +12,10 @@ import { useRouter, usePathname } from "next/navigation";
 import { ArrowRight, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
-import { usePublicCurrency } from "@/components/site/public-currency-provider";
+import {
+  usePublicCurrency,
+  usePublicPricingSettings,
+} from "@/components/site/public-currency-provider";
 import { formatPublicPrice } from "@/lib/catalog/display-currency";
 
 export type ChatMessage = {
@@ -63,6 +66,7 @@ function ProposalCard({ entries }: { entries: ProposalItem[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const displayCurrency = usePublicCurrency();
+  const pricingSettings = usePublicPricingSettings();
   const isOnCene = pathname === "/cene";
 
   const items = entries
@@ -102,6 +106,7 @@ function ProposalCard({ entries }: { entries: ProposalItem[] }) {
               {formatPublicPrice(
                 item.product!.product.basePriceEur * item.qty,
                 displayCurrency,
+                pricingSettings,
               )}
             </span>
           </div>

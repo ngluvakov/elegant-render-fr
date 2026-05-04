@@ -11,6 +11,7 @@ import { buildSystemPrompt } from "@/lib/chat/system-prompt";
 import { detectChatFeedbackSignal } from "@/lib/chat/feedback";
 import { getDisplayCurrencyForCountry } from "@/lib/catalog/display-currency";
 import { prisma } from "@/lib/db";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 import {
   checkRateLimit,
   getRequestIdentifier,
@@ -108,11 +109,15 @@ export async function POST(request: Request) {
   const displayCurrency = getDisplayCurrencyForCountry(
     request.headers.get("x-vercel-ip-country"),
   );
+  const pricingCatalog = await getPublishedPricingCatalog();
 
   const stream = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
-      { role: "system", content: buildSystemPrompt(displayCurrency) },
+      {
+        role: "system",
+        content: buildSystemPrompt(displayCurrency, pricingCatalog.settings),
+      },
       ...normalizedMessages.slice(-20), // Keep last 20 messages for context
     ],
     stream: true,

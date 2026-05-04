@@ -13,6 +13,7 @@ import {
   type QuoteItem,
   type QuoteCalculation,
 } from "@/lib/catalog/calculate";
+import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 
 export type UploadedFile = {
   fileName: string;
@@ -54,11 +55,13 @@ export function CheckoutProvider({
   initialName,
   initialEmail,
   children,
+  pricingCatalog,
 }: {
   initialItems: QuoteItem[];
   initialUserId: string | null;
   initialName: string;
   initialEmail: string;
+  pricingCatalog?: ResolvedPricingCatalog;
   children: ReactNode;
 }) {
   const [step, setStep] = useState(initialUserId ? 1 : 0);
@@ -72,8 +75,8 @@ export function CheckoutProvider({
   const [paymentComplete, setPaymentCompleteState] = useState(false);
 
   const calculation = useMemo(
-    () => priceItems(initialItems),
-    [initialItems],
+    () => priceItems(initialItems, [], pricingCatalog),
+    [initialItems, pricingCatalog],
   );
 
   const setCustomer = useCallback((name: string, email: string) => {

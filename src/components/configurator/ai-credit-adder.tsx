@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   AI_CREDIT_PRODUCT_ID,
-  AI_CREDIT_TIERS,
   calculateAiCreditPurchase,
 } from "@/lib/ai-studio/catalog";
 import { formatPublicPriceFromCents } from "@/lib/catalog/display-currency";
@@ -15,12 +14,16 @@ import { useQuote } from "./quote-context";
 const PRESETS = [10, 25, 50, 100];
 
 export function AiCreditAdder() {
-  const { setAiCredits, items, displayCurrency } = useQuote();
+  const { setAiCredits, items, displayCurrency, pricingSettings } = useQuote();
+  const tiers = pricingSettings.aiCreditTiers;
   const existingCredits =
     items.find((item) => item.productId === AI_CREDIT_PRODUCT_ID)
       ?.aiCreditQuantity ?? 0;
   const [credits, setCredits] = useState(existingCredits || 10);
-  const purchase = useMemo(() => calculateAiCreditPurchase(credits), [credits]);
+  const purchase = useMemo(
+    () => calculateAiCreditPurchase(credits, tiers),
+    [credits, tiers],
+  );
 
   const updateCredits = (next: number) => {
     setCredits(Math.max(1, Math.floor(next) || 1));
@@ -47,12 +50,14 @@ export function AiCreditAdder() {
             {formatPublicPriceFromCents(
               purchase.totalCents,
               displayCurrency,
+              pricingSettings,
             )}
           </p>
           <p className="text-xs text-muted-foreground">
             {formatPublicPriceFromCents(
               purchase.centsPerCredit,
               displayCurrency,
+              pricingSettings,
             )}{" "}
             po kreditu
           </p>
@@ -62,7 +67,7 @@ export function AiCreditAdder() {
       <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_220px]">
         <div className="grid gap-2 sm:grid-cols-4">
           {PRESETS.map((preset) => {
-            const meta = calculateAiCreditPurchase(preset);
+            const meta = calculateAiCreditPurchase(preset, tiers);
             const active = credits === preset;
             return (
               <button
@@ -82,6 +87,7 @@ export function AiCreditAdder() {
                   {formatPublicPriceFromCents(
                     meta.totalCents,
                     displayCurrency,
+                    pricingSettings,
                   )}
                 </span>
               </button>
@@ -123,8 +129,8 @@ export function AiCreditAdder() {
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border/50 pt-4">
         <div className="flex flex-wrap gap-2 text-[0.72rem] text-muted-foreground">
-          {AI_CREDIT_TIERS.slice().reverse().map((tier, index) => {
-            const next = AI_CREDIT_TIERS.slice().reverse()[index + 1];
+          {tiers.slice().reverse().map((tier, index) => {
+            const next = tiers.slice().reverse()[index + 1];
             const label = next
               ? `${tier.minCredits}-${next.minCredits - 1}`
               : `${tier.minCredits}+`;
@@ -134,6 +140,7 @@ export function AiCreditAdder() {
                 {formatPublicPriceFromCents(
                   tier.centsPerCredit,
                   displayCurrency,
+                  pricingSettings,
                 )}
                 /kredit
               </span>

@@ -11,7 +11,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { MessageCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { usePublicCurrency } from "@/components/site/public-currency-provider";
+import {
+  usePublicCurrency,
+  usePublicPricingSettings,
+} from "@/components/site/public-currency-provider";
 import { useAssistantGuideSnapshot } from "@/lib/chat/guide-context";
 import { getChatGuideTips } from "@/lib/chat/guide-tips";
 import { ChatMessages, type ChatMessage } from "./chat-messages";
@@ -67,6 +70,7 @@ function loadChatSessionId(): string | null {
 export function ChatWidget() {
   const pathname = usePathname();
   const displayCurrency = usePublicCurrency();
+  const pricingSettings = usePublicPricingSettings();
   const guideContext = useAssistantGuideSnapshot();
   const guideContextKey = JSON.stringify(guideContext ?? null);
   const [open, setOpen] = useState(false);
@@ -78,8 +82,14 @@ export function ChatWidget() {
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const guideTips = useMemo(
-    () => getChatGuideTips(pathname, guideContext, displayCurrency),
-    [displayCurrency, guideContext, pathname],
+    () =>
+      getChatGuideTips(
+        pathname,
+        guideContext,
+        displayCurrency,
+        pricingSettings,
+      ),
+    [displayCurrency, guideContext, pathname, pricingSettings],
   );
   const activeTip =
     guideTips.length > 0 ? guideTips[tipIndex % guideTips.length] : null;

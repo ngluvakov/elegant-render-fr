@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { CheckoutWizard } from "./checkout-wizard";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export const metadata: Metadata = {
   title: "Porudžbina",
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default async function PoruciPage() {
-  const session = await auth();
+  const [session, pricingCatalog] = await Promise.all([
+    auth(),
+    getPublishedPricingCatalog(),
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-6 py-16 md:py-24">
@@ -24,6 +28,7 @@ export default async function PoruciPage() {
         userId={session?.user?.id ?? null}
         userName={session?.user?.name ?? ""}
         userEmail={session?.user?.email ?? ""}
+        pricingCatalog={pricingCatalog}
       />
     </div>
   );

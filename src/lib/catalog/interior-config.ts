@@ -125,6 +125,24 @@ export const INT_STATIC_INCLUDED_CAMERAS = 10;
 export const INT_STATIC_EXTRA_ROOM_EUR = 28;
 export const INT_STATIC_EXTRA_CAMERA_EUR = 10;
 
+export type InteriorPricing = {
+  firstFloorEur: number;
+  extraFloorEur: number;
+  includedRooms: number;
+  includedCameras: number;
+  extraRoomEur: number;
+  extraCameraEur: number;
+};
+
+export const DEFAULT_INTERIOR_PRICING: InteriorPricing = {
+  firstFloorEur: INT_STATIC_FIRST_FLOOR_EUR,
+  extraFloorEur: INT_STATIC_EXTRA_FLOOR_EUR,
+  includedRooms: INT_STATIC_INCLUDED_ROOMS,
+  includedCameras: INT_STATIC_INCLUDED_CAMERAS,
+  extraRoomEur: INT_STATIC_EXTRA_ROOM_EUR,
+  extraCameraEur: INT_STATIC_EXTRA_CAMERA_EUR,
+};
+
 export type InteriorFloorCalc = {
   totalRooms: number;
   totalCameras: number;
@@ -147,6 +165,7 @@ export type InteriorCalc = {
 export function calcFloor(
   floor: InteriorFloor,
   isFirstFloor: boolean,
+  pricing: InteriorPricing = DEFAULT_INTERIOR_PRICING,
 ): InteriorFloorCalc {
   const totalRooms = floor.rooms.length;
   const totalCameras = floor.rooms.reduce(
@@ -154,14 +173,14 @@ export function calcFloor(
     0,
   );
 
-  const extraRooms = Math.max(0, totalRooms - INT_STATIC_INCLUDED_ROOMS);
-  const extraCameras = Math.max(0, totalCameras - INT_STATIC_INCLUDED_CAMERAS);
+  const extraRooms = Math.max(0, totalRooms - pricing.includedRooms);
+  const extraCameras = Math.max(0, totalCameras - pricing.includedCameras);
 
-  const extraRoomsCost = extraRooms * INT_STATIC_EXTRA_ROOM_EUR;
-  const extraCamerasCost = extraCameras * INT_STATIC_EXTRA_CAMERA_EUR;
+  const extraRoomsCost = extraRooms * pricing.extraRoomEur;
+  const extraCamerasCost = extraCameras * pricing.extraCameraEur;
   const baseCost = isFirstFloor
-    ? INT_STATIC_FIRST_FLOOR_EUR
-    : INT_STATIC_EXTRA_FLOOR_EUR;
+    ? pricing.firstFloorEur
+    : pricing.extraFloorEur;
 
   return {
     totalRooms,
@@ -172,13 +191,16 @@ export function calcFloor(
     extraCamerasCost,
     baseCost,
     floorTotal: baseCost + extraRoomsCost + extraCamerasCost,
-    remainingRenders: INT_STATIC_INCLUDED_CAMERAS - totalCameras,
+    remainingRenders: pricing.includedCameras - totalCameras,
     isFirstFloor,
   };
 }
 
-export function calcInteriorTotal(floors: InteriorFloor[]): InteriorCalc {
-  const floorCalcs = floors.map((f, idx) => calcFloor(f, idx === 0));
+export function calcInteriorTotal(
+  floors: InteriorFloor[],
+  pricing: InteriorPricing = DEFAULT_INTERIOR_PRICING,
+): InteriorCalc {
+  const floorCalcs = floors.map((f, idx) => calcFloor(f, idx === 0, pricing));
   return {
     floors: floorCalcs,
     totalEur: floorCalcs.reduce((s, f) => s + f.floorTotal, 0),

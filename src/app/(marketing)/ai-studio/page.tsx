@@ -28,12 +28,11 @@ import {
   type ToolPickerIconName,
 } from "@/components/marketing/ai-studio/tool-picker-card";
 import {
-  AI_CREDIT_TIERS,
-  AI_CREDIT_UNITS_PER_CREDIT,
   AI_EDIT_TYPES,
   calculateAiCreditPurchase,
   formatCreditsFromUnits,
   type AiEditType,
+  type AiCreditTier,
 } from "@/lib/ai-studio/catalog";
 import {
   formatPublicPrice,
@@ -41,6 +40,8 @@ import {
   type DisplayCurrency,
 } from "@/lib/catalog/display-currency";
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import type { PricingSettings } from "@/lib/pricing/catalog";
 
 export const metadata: Metadata = {
   title: "AI Studio",
@@ -239,30 +240,50 @@ const faq = [
 ];
 
 const creditPackages = [10, 25, 50, 100];
-const creditTiers = [...AI_CREDIT_TIERS].reverse();
 
 /**
  * Lowest-tier single-purchase starting price for a tool, stored internally
  * in EUR because AI credits and checkout remain EUR-based.
  */
-function toolStartingEur(units: number): number {
-  const lowestTier = AI_CREDIT_TIERS[AI_CREDIT_TIERS.length - 1];
+function toolStartingEur(
+  units: number,
+  tiers: AiCreditTier[],
+  unitsPerCredit: number,
+): number {
+  const sorted = [...tiers].sort((a, b) => b.minCredits - a.minCredits);
+  const lowestTier = sorted[sorted.length - 1];
   const eurPerCredit = lowestTier.centsPerCredit / 100;
-  return (units / AI_CREDIT_UNITS_PER_CREDIT) * eurPerCredit;
+  return (units / unitsPerCredit) * eurPerCredit;
 }
 
 export default async function AiStudioLandingPage() {
-  const displayCurrency = await getPublicDisplayCurrency();
+  const [displayCurrency, pricingCatalog] = await Promise.all([
+    getPublicDisplayCurrency(),
+    getPublishedPricingCatalog(),
+  ]);
+  const pricingSettings = pricingCatalog.settings;
 
   return (
     <>
-      <HeroSection displayCurrency={displayCurrency} />
-      <ToolPickerSection displayCurrency={displayCurrency} />
+      <HeroSection
+        displayCurrency={displayCurrency}
+        pricingSettings={pricingSettings}
+      />
+      <ToolPickerSection
+        displayCurrency={displayCurrency}
+        pricingSettings={pricingSettings}
+      />
       <WorkflowSection />
       <ToolsSection />
       <ScenarioSection />
-      <ComparisonSection displayCurrency={displayCurrency} />
-      <CreditsSection displayCurrency={displayCurrency} />
+      <ComparisonSection
+        displayCurrency={displayCurrency}
+        pricingSettings={pricingSettings}
+      />
+      <CreditsSection
+        displayCurrency={displayCurrency}
+        pricingSettings={pricingSettings}
+      />
       <TipsSection />
       <FaqSection />
       <FinalCtaSection />
@@ -272,8 +293,10 @@ export default async function AiStudioLandingPage() {
 
 function HeroSection({
   displayCurrency,
+  pricingSettings,
 }: {
   displayCurrency: DisplayCurrency;
+  pricingSettings: PricingSettings;
 }) {
   return (
     <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
@@ -284,7 +307,15 @@ function HeroSection({
       <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
         Uploadujte fotografiju, izaberite alat i dobijte spreman vizuelni
         rezultat za oglas, prezentaciju ili proveru ideje. Sedam alata, od{" "}
-        {formatPublicPrice(toolStartingEur(1), displayCurrency)} po obradi.
+        {formatPublicPrice(
+          toolStartingEur(
+            1,
+            pricingSettings.aiCreditTiers,
+            pricingSettings.aiCreditUnitsPerCredit,
+          ),
+          displayCurrency,
+          pricingSettings,
+        )} po obradi.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <ButtonLink href="/portal/ai-studio" variant="accent" size="lg">
@@ -328,8 +359,10 @@ const ICON_NAME_BY_TOOL: Record<AiEditType, ToolPickerIconName> = {
 
 function ToolPickerSection({
   displayCurrency,
+  pricingSettings,
 }: {
   displayCurrency: DisplayCurrency;
+  pricingSettings: PricingSettings;
 }) {
   return (
     <section className="pt-12 pb-2">
@@ -340,7 +373,11 @@ function ToolPickerSection({
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4">
           {AI_EDIT_TYPES.map((item) => {
             const detail = toolDetails[item.id];
-            const startingEur = toolStartingEur(item.units);
+            const startingEur = toolStartingEur(
+              item.units,
+              pricingSettings.aiCreditTiers,
+              pricingSettings.aiCreditUnitsPerCredit,
+            );
             return (
               <ToolPickerCard
                 key={item.id}
@@ -357,6 +394,7 @@ function ToolPickerSection({
                 startingEurLabel={formatPublicPrice(
                   startingEur,
                   displayCurrency,
+                  pricingSettings,
                 )}
               />
             );
@@ -547,8 +585,10 @@ function ScenarioSection() {
 
 function ComparisonSection({
   displayCurrency,
+  pricingSettings,
 }: {
   displayCurrency: DisplayCurrency;
+  pricingSettings: PricingSettings;
 }) {
   return (
     <section className="bg-secondary/35 py-10 md:py-14 lg:py-20">
@@ -571,8 +611,13 @@ function ComparisonSection({
               "Treba bolji oglas za nekretninu",
               "Treba čišćenje ili stilizacija postojeće slike",
               `Cena: od ${formatPublicPrice(
-                toolStartingEur(1),
+                toolStartingEur(
+                  1,
+                  pricingSettings.aiCreditTiers,
+                  pricingSettings.aiCreditUnitsPerCredit,
+                ),
                 displayCurrency,
+                pricingSettings,
               )} po jednostavnoj obradi`,
             ]}
             accent
@@ -657,9 +702,12 @@ function ComparisonCard({
 
 function CreditsSection({
   displayCurrency,
+  pricingSettings,
 }: {
   displayCurrency: DisplayCurrency;
+  pricingSettings: PricingSettings;
 }) {
+  const creditTiers = [...pricingSettings.aiCreditTiers].reverse();
   return (
     <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto grid w-full max-w-[min(96vw,1720px)] gap-8 px-6 lg:grid-cols-[0.75fr_1.25fr]">
@@ -669,7 +717,7 @@ function CreditsSection({
             Kupite koliko vam treba.
           </h2>
           <p className="mt-4 text-sm leading-7 text-muted-foreground">
-            Krediti važe 12 meseci od poslednje dopune. Veći paketi imaju nižu
+            Krediti važe {pricingSettings.aiCreditExpiresAfterMonths} meseci od poslednje dopune. Veći paketi imaju nižu
             cenu po kreditu, a sistem automatski primenjuje najbolju cenu za
             izabranu količinu.
           </p>
@@ -697,7 +745,10 @@ function CreditsSection({
         <div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {creditPackages.map((credits) => {
-              const purchase = calculateAiCreditPurchase(credits);
+              const purchase = calculateAiCreditPurchase(
+                credits,
+                pricingSettings.aiCreditTiers,
+              );
               return (
                 <div
                   key={credits}
@@ -711,12 +762,14 @@ function CreditsSection({
                     {formatPublicPriceFromCents(
                       purchase.totalCents,
                       displayCurrency,
+                      pricingSettings,
                     )}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {formatPublicPriceFromCents(
                       purchase.centsPerCredit,
                       displayCurrency,
+                      pricingSettings,
                     )}{" "}
                     po kreditu
                   </p>
@@ -739,6 +792,7 @@ function CreditsSection({
                   {formatPublicPriceFromCents(
                     tier.centsPerCredit,
                     displayCurrency,
+                    pricingSettings,
                   )}
                   /kredit
                 </span>

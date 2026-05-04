@@ -37,6 +37,20 @@ export const TOUR_ASSEMBLY_FREE_HOTSPOT_THRESHOLD = 5;
 export const TOUR_FLOOR_PLAN_NAV_EUR = 15;
 export const TOUR_WHITE_LABEL_EUR = 35;
 
+export type TourAssemblyPricing = {
+  baseEur: number;
+  freeHotspotThreshold: number;
+  floorPlanNavEur: number;
+  whiteLabelEur: number;
+};
+
+export const DEFAULT_TOUR_ASSEMBLY_PRICING: TourAssemblyPricing = {
+  baseEur: TOUR_ASSEMBLY_BASE_EUR,
+  freeHotspotThreshold: TOUR_ASSEMBLY_FREE_HOTSPOT_THRESHOLD,
+  floorPlanNavEur: TOUR_FLOOR_PLAN_NAV_EUR,
+  whiteLabelEur: TOUR_WHITE_LABEL_EUR,
+};
+
 export function defaultTourAssembly(): TourAssembly {
   return {
     webTourEnabled: false,
@@ -48,6 +62,7 @@ export function defaultTourAssembly(): TourAssembly {
 export function calcTourAssemblyCost(
   assembly: TourAssembly,
   totalHotspots: number,
+  pricing: TourAssemblyPricing = DEFAULT_TOUR_ASSEMBLY_PRICING,
 ): TourAssemblyCalc {
   if (!assembly.webTourEnabled) {
     return {
@@ -59,12 +74,14 @@ export function calcTourAssemblyCost(
       freeByHotspotThreshold: false,
     };
   }
-  const free = totalHotspots >= TOUR_ASSEMBLY_FREE_HOTSPOT_THRESHOLD;
-  const baseCost = free ? 0 : TOUR_ASSEMBLY_BASE_EUR;
+  const free = totalHotspots >= pricing.freeHotspotThreshold;
+  const baseCost = free ? 0 : pricing.baseEur;
   const floorPlanNavCost = assembly.floorPlanNavEnabled
-    ? TOUR_FLOOR_PLAN_NAV_EUR
+    ? pricing.floorPlanNavEur
     : 0;
-  const whiteLabelCost = assembly.whiteLabelEnabled ? TOUR_WHITE_LABEL_EUR : 0;
+  const whiteLabelCost = assembly.whiteLabelEnabled
+    ? pricing.whiteLabelEur
+    : 0;
   return {
     enabled: true,
     baseCost,

@@ -41,6 +41,10 @@ import {
   formatCents,
   isAiCreditProduct,
 } from "@/lib/ai-studio/catalog";
+import {
+  getPricingSettings,
+  type ResolvedPricingCatalog,
+} from "@/lib/pricing/catalog";
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -278,8 +282,14 @@ function calculateItem(
   };
 }
 
-function calculateAiCreditItem(item: QuoteItem): LineItemBreakdown {
-  const purchase = calculateAiCreditPurchase(item.aiCreditQuantity ?? 1);
+function calculateAiCreditItem(
+  item: QuoteItem,
+  pricingCatalog?: ResolvedPricingCatalog,
+): LineItemBreakdown {
+  const purchase = calculateAiCreditPurchase(
+    item.aiCreditQuantity ?? 1,
+    getPricingSettings(pricingCatalog).aiCreditTiers,
+  );
   const totalEur = centsToEur(purchase.totalCents);
   return {
     instanceId: item.instanceId,
@@ -318,10 +328,15 @@ type AssetSource = {
 // reuses a model) doesn't show up as a creator of complete-model.
 function buildAssetInventory(
   items: QuoteItem[],
+  pricingCatalog?: ResolvedPricingCatalog,
 ): Map<ModelAsset, AssetSource[]> {
   const inv = new Map<ModelAsset, AssetSource[]>();
   items.forEach((item, idx) => {
-    const result = getEffectiveProduct(item.productId, item.sourceMode);
+    const result = getEffectiveProduct(
+      item.productId,
+      item.sourceMode,
+      pricingCatalog?.categories,
+    );
     if (!result?.product.creates) return;
     for (const asset of result.product.creates) {
       const list = inv.get(asset) ?? [];
@@ -367,13 +382,17 @@ function conditionSatisfied(rule: ConsumeRule, target: QuoteItem): boolean {
 export function resolveDiscount(
   target: QuoteItem,
   siblings: QuoteItem[],
+  pricingCatalog?: ResolvedPricingCatalog,
 ): { pct: number; reason: string } | null {
   if (isAiCreditProduct(target.productId)) return null;
-  const product = getEffectiveProduct(target.productId, target.sourceMode)
-    ?.product;
+  const product = getEffectiveProduct(
+    target.productId,
+    target.sourceMode,
+    pricingCatalog?.categories,
+  )?.product;
   if (!product?.consumes || product.consumes.length === 0) return null;
 
-  const inventory = buildAssetInventory(siblings);
+  const inventory = buildAssetInventory(siblings, pricingCatalog);
 
   let best: { pct: number; reason: string } | null = null;
   for (const rule of product.consumes) {
@@ -451,16 +470,21 @@ function applyDiscount(
 export function calculateQuote(
   items: QuoteItem[],
   externalSources: QuoteItem[] = [],
+  pricingCatalog?: ResolvedPricingCatalog,
 ): QuoteCalculation {
   const breakdowns: LineItemBreakdown[] = [];
 
   // Pass 1: per-item breakdown with no cross-service awareness
   for (const item of items) {
     if (isAiCreditProduct(item.productId)) {
-      breakdowns.push(calculateAiCreditItem(item));
+      breakdowns.push(calculateAiCreditItem(item, pricingCatalog));
       continue;
     }
-    const result = getEffectiveProduct(item.productId, item.sourceMode);
+    const result = getEffectiveProduct(
+      item.productId,
+      item.sourceMode,
+      pricingCatalog?.categories,
+    );
     if (!result) continue;
     breakdowns.push(
       calculateItem(item, result.product, result.category.label),
@@ -474,10 +498,13 @@ export function calculateQuote(
     if (breakdown.kind === "ai_credits") continue;
     const target = items.find((i) => i.instanceId === breakdown.instanceId);
     if (!target) continue;
-    const discount = resolveDiscount(target, siblings);
+    const discount = resolveDiscount(target, siblings, pricingCatalog);
     if (!discount) continue;
-    const product = getEffectiveProduct(breakdown.productId, target.sourceMode)
-      ?.product;
+    const product = getEffectiveProduct(
+      breakdown.productId,
+      target.sourceMode,
+      pricingCatalog?.categories,
+    )?.product;
     if (!product) continue;
     applyDiscount(breakdown, product, discount.pct, discount.reason);
   }
@@ -512,9 +539,13 @@ export function priceInteriorItem(
   floors: InteriorFloor[],
   target: QuoteItem,
   siblings: QuoteItem[],
+  pricingCatalog?: ResolvedPricingCatalog,
 ): SpecialItemPricing {
-  const preDiscount = calcInteriorTotal(floors).totalEur;
-  const discount = resolveDiscount(target, siblings);
+  const preDiscount = calcInteriorTotal(
+    floors,
+    getPricingSettings(pricingCatalog).specialPricing.interior,
+  ).totalEur;
+  const discount = resolveDiscount(target, siblings, pricingCatalog);
   const totalEur = discount
     ? Math.round(preDiscount * (1 - discount.pct / 100))
     : preDiscount;
@@ -530,12 +561,14 @@ export function priceTour360Item(
   config: Tour360Config,
   target: QuoteItem,
   siblings: QuoteItem[],
+  pricingCatalog?: ResolvedPricingCatalog,
 ): SpecialItemPricing {
   const preDiscount = calcTour360Total(
     config.floors,
     config.tourAssembly,
+    getPricingSettings(pricingCatalog).specialPricing.tour360,
   ).totalEur;
-  const discount = resolveDiscount(target, siblings);
+  const discount = resolveDiscount(target, siblings, pricingCatalog);
   const totalEur = discount
     ? Math.round(preDiscount * (1 - discount.pct / 100))
     : preDiscount;
@@ -605,6 +638,7 @@ function isConfiguredTour360(item: QuoteItem): boolean {
 export function priceItems(
   items: QuoteItem[],
   externalSources: QuoteItem[] = [],
+  pricingCatalog?: ResolvedPricingCatalog,
 ): QuoteCalculation {
   const interior = items.filter(isConfiguredInterior);
   const tour360 = items.filter(isConfiguredTour360);
@@ -616,11 +650,11 @@ export function priceItems(
   // Standard pricing — specials are passed as externalSources so they
   // contribute to the discount-resolver's asset inventory but do NOT
   // appear in the standard breakdowns.
-  const standardCalc = calculateQuote(standard, [
-    ...externalSources,
-    ...interior,
-    ...tour360,
-  ]);
+  const standardCalc = calculateQuote(
+    standard,
+    [...externalSources, ...interior, ...tour360],
+    pricingCatalog,
+  );
   const breakdownsById = new Map<string, LineItemBreakdown>(
     standardCalc.items.map((b) => [b.instanceId, b]),
   );
@@ -628,12 +662,16 @@ export function priceItems(
   const allSiblings = [...items, ...externalSources];
 
   for (const item of interior) {
-    const lookup = getConfiguratorProduct(item.productId);
+    const lookup = getConfiguratorProduct(
+      item.productId,
+      pricingCatalog?.categories,
+    );
     if (!lookup) continue;
     const pricing = priceInteriorItem(
       item.interiorConfig!,
       item,
       allSiblings,
+      pricingCatalog,
     );
     breakdownsById.set(
       item.instanceId,
@@ -642,9 +680,17 @@ export function priceItems(
   }
 
   for (const item of tour360) {
-    const lookup = getConfiguratorProduct(item.productId);
+    const lookup = getConfiguratorProduct(
+      item.productId,
+      pricingCatalog?.categories,
+    );
     if (!lookup) continue;
-    const pricing = priceTour360Item(item.tour360Config!, item, allSiblings);
+    const pricing = priceTour360Item(
+      item.tour360Config!,
+      item,
+      allSiblings,
+      pricingCatalog,
+    );
     breakdownsById.set(
       item.instanceId,
       buildSpecialBreakdown(item, lookup, pricing),

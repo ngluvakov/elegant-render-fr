@@ -235,7 +235,12 @@ export const AI_IMAGE_PROVIDERS: Array<{
 
 export const DEFAULT_AI_PROVIDER: AiImageProvider = "gemini_flash";
 
-export const AI_CREDIT_TIERS = [
+export type AiCreditTier = {
+  minCredits: number;
+  centsPerCredit: number;
+};
+
+export const AI_CREDIT_TIERS: AiCreditTier[] = [
   { minCredits: 100, centsPerCredit: 150 },
   { minCredits: 50, centsPerCredit: 160 },
   { minCredits: 25, centsPerCredit: 180 },
@@ -285,9 +290,15 @@ export function getAiProviderModel(id: AiImageProvider): string {
   return process.env[provider.modelEnv] || provider.defaultModel;
 }
 
-export function calculateAiCreditPurchase(credits: number) {
+export function calculateAiCreditPurchase(
+  credits: number,
+  tiers: AiCreditTier[] = AI_CREDIT_TIERS,
+) {
   const quantity = Math.max(1, Math.floor(credits));
-  const tier = AI_CREDIT_TIERS.find((item) => quantity >= item.minCredits) ??
+  const sorted = tiers.slice().sort((a, b) => b.minCredits - a.minCredits);
+  const tier =
+    sorted.find((item) => quantity >= item.minCredits) ??
+    sorted[sorted.length - 1] ??
     AI_CREDIT_TIERS[AI_CREDIT_TIERS.length - 1];
   const totalCents = quantity * tier.centsPerCredit;
   return {

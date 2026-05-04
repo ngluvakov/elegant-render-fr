@@ -20,7 +20,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Collapsible } from "@/components/ui/collapsible";
-import { usePublicCurrency } from "@/components/site/public-currency-provider";
+import {
+  usePublicCurrency,
+  usePublicPricingSettings,
+} from "@/components/site/public-currency-provider";
 import { submitVrInquiry } from "@/server/actions/vr-inquiry";
 import { track } from "@/lib/posthog-events";
 import { formatPublicPrice } from "@/lib/catalog/display-currency";
@@ -56,6 +59,7 @@ export function VrInquiryForm({
   products,
 }: Props) {
   const displayCurrency = usePublicCurrency();
+  const pricingSettings = usePublicPricingSettings();
   const [productId, setProductId] = useState<VrProductId>(initialProductId);
   const [contactName, setContactName] = useState(initialContact.name ?? "");
   const [email, setEmail] = useState(initialContact.email ?? "");
@@ -152,7 +156,13 @@ export function VrInquiryForm({
                   {isActive && <Check className="h-4 w-4 text-accent" />}
                 </div>
                 <span className="text-[0.78rem] text-muted-foreground">
-                  Od {formatPublicPrice(p.basePriceEur, displayCurrency)} —
+                  Od{" "}
+                  {formatPublicPrice(
+                    p.basePriceEur,
+                    displayCurrency,
+                    pricingSettings,
+                  )}{" "}
+                  —
                   konsultacija pre izrade
                 </span>
               </button>

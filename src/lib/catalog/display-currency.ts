@@ -2,6 +2,10 @@ const FALLBACK_EUR_TO_RSD_RATE = 117.2;
 const FALLBACK_SERBIA_VAT_RATE = 0.2;
 
 export type DisplayCurrency = "rsd" | "eur";
+export type PublicPricingFormatSettings = {
+  eurToRsdRate: number;
+  serbiaVatRate: number;
+};
 
 function readPublicNumber(name: string, fallback: number): number {
   const raw = process.env[name];
@@ -37,27 +41,35 @@ export function getDisplayCurrencyForCountry(
   return countryCode?.toUpperCase() === "RS" ? "rsd" : "eur";
 }
 
-export function eurToPublicRsd(amountEur: number): number {
+export function eurToPublicRsd(
+  amountEur: number,
+  settings: PublicPricingFormatSettings = {
+    eurToRsdRate: PUBLIC_EUR_TO_RSD_RATE,
+    serbiaVatRate: PUBLIC_SERBIA_VAT_RATE,
+  },
+): number {
   return Math.round(
-    amountEur * PUBLIC_EUR_TO_RSD_RATE * (1 + PUBLIC_SERBIA_VAT_RATE),
+    amountEur * settings.eurToRsdRate * (1 + settings.serbiaVatRate),
   );
 }
 
 export function formatPublicPrice(
   amountEur: number,
   currency: DisplayCurrency = "eur",
+  settings?: PublicPricingFormatSettings,
 ): string {
   if (currency === "eur") {
     return eurFormatter.format(amountEur);
   }
-  return `${rsdFormatter.format(eurToPublicRsd(amountEur))} RSD`;
+  return `${rsdFormatter.format(eurToPublicRsd(amountEur, settings))} RSD`;
 }
 
 export function formatPublicPriceFromCents(
   cents: number,
   currency: DisplayCurrency = "eur",
+  settings?: PublicPricingFormatSettings,
 ): string {
-  return formatPublicPrice(cents / 100, currency);
+  return formatPublicPrice(cents / 100, currency, settings);
 }
 
 export type PublicDiscountedPriceParts = {
@@ -80,17 +92,18 @@ export function formatPublicDiscountedPrice(
   originalTotalEur: number,
   pct: number,
   currency: DisplayCurrency = "eur",
+  settings?: PublicPricingFormatSettings,
 ): PublicDiscountedPriceParts {
   if (pct <= 0 || totalEur >= originalTotalEur) {
     return {
-      primary: formatPublicPrice(totalEur, currency),
+      primary: formatPublicPrice(totalEur, currency, settings),
       struck: null,
       badge: null,
     };
   }
   return {
-    primary: formatPublicPrice(totalEur, currency),
-    struck: formatPublicPrice(originalTotalEur, currency),
+    primary: formatPublicPrice(totalEur, currency, settings),
+    struck: formatPublicPrice(originalTotalEur, currency, settings),
     badge: `-${pct}%`,
   };
 }
@@ -98,11 +111,12 @@ export function formatPublicDiscountedPrice(
 export function formatPublicPriceText(
   text: string,
   currency: DisplayCurrency = "eur",
+  settings?: PublicPricingFormatSettings,
 ): string {
   return text.replace(/€\s?(\d+(?:[.,]\d+)?)/g, (_, rawAmount: string) => {
     const amount = Number.parseFloat(rawAmount.replace(",", "."));
     if (!Number.isFinite(amount)) return _;
-    return formatPublicPrice(amount, currency);
+    return formatPublicPrice(amount, currency, settings);
   });
 }
 

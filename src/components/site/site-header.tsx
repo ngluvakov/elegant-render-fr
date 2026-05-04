@@ -15,7 +15,10 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import { buttonVariants } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
-import { usePublicCurrency } from "@/components/site/public-currency-provider";
+import {
+  usePublicCurrency,
+  usePublicPricingSettings,
+} from "@/components/site/public-currency-provider";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -52,6 +55,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const displayCurrency = usePublicCurrency();
+  const pricingSettings = usePublicPricingSettings();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const isLoggedIn = !!session?.user;
@@ -152,6 +156,7 @@ export function SiteHeader() {
                                 {formatPublicPriceText(
                                   service.variants[0].priceLabel,
                                   displayCurrency,
+                                  pricingSettings,
                                 )}
                               </span>
                             </NavigationMenuLink>
@@ -258,6 +263,7 @@ export function SiteHeader() {
                         {formatPublicPriceText(
                           service.variants[0].priceLabel,
                           displayCurrency,
+                          pricingSettings,
                         )}
                       </span>
                     </Link>

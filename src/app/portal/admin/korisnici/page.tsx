@@ -36,6 +36,7 @@ export default async function AdminUsersPage({
       name: true,
       email: true,
       isAdmin: true,
+      canManageFinance: true,
       aiCreditBalanceUnits: true,
       aiCreditsExpireAt: true,
       createdAt: true,
@@ -99,6 +100,11 @@ export default async function AdminUsersPage({
                 <Badge className="gap-1 bg-accent/10 text-accent">
                   <ShieldCheck className="h-3 w-3" />
                   Admin
+                </Badge>
+              )}
+              {user.canManageFinance && (
+                <Badge className="gap-1 bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]">
+                  Finansije
                 </Badge>
               )}
             </div>

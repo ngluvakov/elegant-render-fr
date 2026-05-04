@@ -13,18 +13,7 @@ import {
   getPublicPricingTerms,
 } from "@/lib/catalog/display-currency";
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
-
-// Numbers in the philosophy strip's middle card are pulled live from the
-// catalog so a price change there propagates here automatically — no
-// stale-copy hazard. Falls back to the values current at the time of
-// writing if the addon ever gets renamed (so the page never crashes on
-// a missing lookup).
-const extStaticBaseEur =
-  getConfiguratorProduct("ext-static")?.product.basePriceEur ?? 250;
-const extStaticCamPriceEur =
-  getConfiguratorProduct("ext-static")?.product.addOns.find(
-    (a) => a.id === "ext-static-cam",
-  )?.priceEur ?? 48;
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export const metadata: Metadata = {
   title: "Cene",
@@ -41,8 +30,16 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function CenePage() {
-  const displayCurrency = await getPublicDisplayCurrency();
+  const [displayCurrency, pricingCatalog] = await Promise.all([
+    getPublicDisplayCurrency(),
+    getPublishedPricingCatalog(),
+  ]);
   const pricingTerms = getPublicPricingTerms(displayCurrency);
+  const extStatic =
+    getConfiguratorProduct("ext-static", pricingCatalog.categories)?.product;
+  const extStaticBaseEur = extStatic?.basePriceEur ?? 250;
+  const extStaticCamPriceEur =
+    extStatic?.addOns.find((a) => a.id === "ext-static-cam")?.priceEur ?? 48;
 
   return (
     <>
@@ -71,7 +68,7 @@ export default async function CenePage() {
               {
                 icon: TrendingDown,
                 title: "Drugi kadar je znatno jeftiniji",
-                desc: `Render eksterijera sa modelom: ${formatPublicPrice(extStaticBaseEur, displayCurrency)} (uključuje prvi kadar). Svaki dodatni kadar iste fasade: ${formatPublicPrice(extStaticCamPriceEur, displayCurrency)}. Plaćate samo novi pogled, ne ponovo ceo model.`,
+                desc: `Render eksterijera sa modelom: ${formatPublicPrice(extStaticBaseEur, displayCurrency, pricingCatalog.settings)} (uključuje prvi kadar). Svaki dodatni kadar iste fasade: ${formatPublicPrice(extStaticCamPriceEur, displayCurrency, pricingCatalog.settings)}. Plaćate samo novi pogled, ne ponovo ceo model.`,
               },
               {
                 icon: Zap,
@@ -106,7 +103,10 @@ export default async function CenePage() {
           <h2 className="mb-5 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
             Šta vam treba?
           </h2>
-          <CategoryPreview displayCurrency={displayCurrency} />
+          <CategoryPreview
+            displayCurrency={displayCurrency}
+            pricingCatalog={pricingCatalog}
+          />
         </div>
       </section>
 
@@ -114,7 +114,10 @@ export default async function CenePage() {
           so credits added in the package picker show up immediately in the
           summary sidebar and the in-configurator <details> disclosure — no
           handoff plumbing, single cart. */}
-      <QuoteProvider displayCurrency={displayCurrency}>
+      <QuoteProvider
+        displayCurrency={displayCurrency}
+        pricingCatalog={pricingCatalog}
+      >
         <StandaloneAiCredits />
         <section id="configurator" className="scroll-mt-24 pb-20 pt-10">
           <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">

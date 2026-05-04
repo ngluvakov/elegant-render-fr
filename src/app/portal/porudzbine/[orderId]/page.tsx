@@ -17,6 +17,7 @@ import { ReferenceOrderPicker } from "@/components/portal/reference-order-picker
 import { OrderChargesCard } from "@/components/portal/order-charges-card";
 import { OrderAssistantGuideContext } from "@/components/chat/order-guide-context";
 import { AlertCircle } from "lucide-react";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export const metadata: Metadata = {
   title: "Detalji porudžbine",
@@ -64,6 +65,7 @@ export default async function OrderDetailPage({
   });
 
   if (!order || order.userId !== session.user.id) return notFound();
+  const pricingCatalog = await getPublishedPricingCatalog();
 
   // Rule 3 picker — list user's paid-or-later orders as referencable.
   const referencableOrders = await prisma.order.findMany({
@@ -209,6 +211,7 @@ export default async function OrderDetailPage({
                   <AddServiceDialog
                     orderId={order.id}
                     existingProductIds={serviceItems.map((i) => i.productId)}
+                    categories={pricingCatalog.categories}
                   />
                 )}
               </div>

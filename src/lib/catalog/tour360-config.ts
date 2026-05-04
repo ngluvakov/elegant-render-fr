@@ -77,9 +77,11 @@ export type {
 } from "./tour-assembly";
 
 import {
+  DEFAULT_TOUR_ASSEMBLY_PRICING,
   calcTourAssemblyCost,
   type TourAssembly,
   type TourAssemblyCalc,
+  type TourAssemblyPricing,
 } from "./tour-assembly";
 
 export type Tour360Config = {
@@ -93,6 +95,26 @@ export const TOUR360_INCLUDED_HOTSPOTS = 10;         // total hotspots / floor
 export const TOUR360_INCLUDED_CAMERAS = 10;          // static cameras / floor
 export const TOUR360_EXTRA_HOTSPOT_EUR = 27;         // 11th+ hotspot per floor
 export const TOUR360_EXTRA_CAMERA_EUR = 10;          // 11th+ static camera
+
+export type Tour360Pricing = {
+  firstFloorEur: number;
+  extraFloorEur: number;
+  includedHotspots: number;
+  includedCameras: number;
+  extraHotspotEur: number;
+  extraCameraEur: number;
+  assembly: TourAssemblyPricing;
+};
+
+export const DEFAULT_TOUR360_PRICING: Tour360Pricing = {
+  firstFloorEur: TOUR360_FIRST_FLOOR_EUR,
+  extraFloorEur: TOUR360_EXTRA_FLOOR_EUR,
+  includedHotspots: TOUR360_INCLUDED_HOTSPOTS,
+  includedCameras: TOUR360_INCLUDED_CAMERAS,
+  extraHotspotEur: TOUR360_EXTRA_HOTSPOT_EUR,
+  extraCameraEur: TOUR360_EXTRA_CAMERA_EUR,
+  assembly: DEFAULT_TOUR_ASSEMBLY_PRICING,
+};
 
 export type Tour360FloorCalc = {
   totalRooms: number;
@@ -120,6 +142,7 @@ export type Tour360Calc = {
 export function calcTour360Floor(
   floor: Tour360Floor,
   isFirstFloor: boolean,
+  pricing: Tour360Pricing = DEFAULT_TOUR360_PRICING,
 ): Tour360FloorCalc {
   const totalRooms = floor.rooms.length;
   const totalHotspots = floor.rooms.reduce(
@@ -131,15 +154,15 @@ export function calcTour360Floor(
     0,
   );
 
-  const extraHotspots = Math.max(0, totalHotspots - TOUR360_INCLUDED_HOTSPOTS);
-  const extraCameras = Math.max(0, totalCameras - TOUR360_INCLUDED_CAMERAS);
+  const extraHotspots = Math.max(0, totalHotspots - pricing.includedHotspots);
+  const extraCameras = Math.max(0, totalCameras - pricing.includedCameras);
 
-  const extraHotspotsCost = extraHotspots * TOUR360_EXTRA_HOTSPOT_EUR;
-  const extraCamerasCost = extraCameras * TOUR360_EXTRA_CAMERA_EUR;
+  const extraHotspotsCost = extraHotspots * pricing.extraHotspotEur;
+  const extraCamerasCost = extraCameras * pricing.extraCameraEur;
 
   const baseCost = isFirstFloor
-    ? TOUR360_FIRST_FLOOR_EUR
-    : TOUR360_EXTRA_FLOOR_EUR;
+    ? pricing.firstFloorEur
+    : pricing.extraFloorEur;
 
   return {
     totalRooms,
@@ -151,8 +174,8 @@ export function calcTour360Floor(
     extraCamerasCost,
     baseCost,
     floorTotal: baseCost + extraHotspotsCost + extraCamerasCost,
-    remainingHotspots: TOUR360_INCLUDED_HOTSPOTS - totalHotspots,
-    remainingCameras: TOUR360_INCLUDED_CAMERAS - totalCameras,
+    remainingHotspots: pricing.includedHotspots - totalHotspots,
+    remainingCameras: pricing.includedCameras - totalCameras,
     isFirstFloor,
   };
 }
@@ -160,10 +183,17 @@ export function calcTour360Floor(
 export function calcTour360Total(
   floors: Tour360Floor[],
   tourAssembly: TourAssembly,
+  pricing: Tour360Pricing = DEFAULT_TOUR360_PRICING,
 ): Tour360Calc {
-  const floorCalcs = floors.map((f, idx) => calcTour360Floor(f, idx === 0));
+  const floorCalcs = floors.map((f, idx) =>
+    calcTour360Floor(f, idx === 0, pricing),
+  );
   const totalHotspots = floorCalcs.reduce((s, f) => s + f.totalHotspots, 0);
-  const assembly = calcTourAssemblyCost(tourAssembly, totalHotspots);
+  const assembly = calcTourAssemblyCost(
+    tourAssembly,
+    totalHotspots,
+    pricing.assembly,
+  );
   return {
     floors: floorCalcs,
     floorCount: floors.length,

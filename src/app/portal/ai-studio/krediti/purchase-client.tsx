@@ -7,10 +7,15 @@ import { Button } from "@/components/ui/button";
 import { AiCreditAdder } from "@/components/configurator/ai-credit-adder";
 import { QuoteProvider, useQuote } from "@/components/configurator/quote-context";
 import { formatCents, formatCreditsFromUnits } from "@/lib/ai-studio/catalog";
+import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 
-export function AiCreditPurchaseClient() {
+export function AiCreditPurchaseClient({
+  pricingCatalog,
+}: {
+  pricingCatalog: ResolvedPricingCatalog;
+}) {
   return (
-    <QuoteProvider>
+    <QuoteProvider pricingCatalog={pricingCatalog}>
       <div className="space-y-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -25,7 +30,8 @@ export function AiCreditPurchaseClient() {
               AI krediti
             </h1>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Krediti se aktiviraju odmah nakon plaćanja i važe 12 meseci.
+              Krediti se aktiviraju odmah nakon plaćanja i važe{" "}
+              {pricingCatalog.settings.aiCreditExpiresAfterMonths} meseci.
               Svaka dopuna produžava rok važenja celog aktivnog balansa.
             </p>
           </div>

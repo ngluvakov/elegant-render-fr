@@ -20,11 +20,11 @@ import { syncCommentToDeal } from "@/server/bitrix/sync-comment";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import {
-  AI_CREDIT_EXPIRES_AFTER_MONTHS,
   addMonths,
   formatCreditsFromUnits,
 } from "@/lib/ai-studio/catalog";
 import { captureServerEvent } from "@/lib/posthog";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export async function requireAdmin() {
   const session = await auth();
@@ -123,7 +123,11 @@ export async function adminGrantAiCredits(args: {
   // user's expireAt to 12 months from now and clears any prior
   // expiry-reminder marks. The active balance — including units the
   // user already had — gets the fresh deadline.
-  const expiresAt = addMonths(new Date(), AI_CREDIT_EXPIRES_AFTER_MONTHS);
+  const pricingCatalog = await getPublishedPricingCatalog();
+  const expiresAt = addMonths(
+    new Date(),
+    pricingCatalog.settings.aiCreditExpiresAfterMonths,
+  );
 
   const result = await prisma.$transaction(async (tx) => {
     const user = await tx.user.update({

@@ -32,8 +32,14 @@ import { track } from "@/lib/posthog-events";
 import { useQuote } from "./quote-context";
 
 export function QuoteSummary() {
-  const { items, calculation, clearAll, removeProduct, displayCurrency } =
-    useQuote();
+  const {
+    items,
+    calculation,
+    clearAll,
+    removeProduct,
+    displayCurrency,
+    pricingSettings,
+  } = useQuote();
   const [explainerOpen, setExplainerOpen] = useState(false);
   const [shareState, setShareState] = useState<
     | { kind: "idle" }
@@ -179,6 +185,7 @@ export function QuoteSummary() {
             item.originalTotalEur,
             item.discountPct,
             displayCurrency,
+            pricingSettings,
           );
           return (
             <div
@@ -245,6 +252,7 @@ export function QuoteSummary() {
                   {formatPublicPrice(
                     calculation.originalTotal - calculation.total,
                     displayCurrency,
+                    pricingSettings,
                   )}
                 </p>
               </div>
@@ -290,12 +298,17 @@ export function QuoteSummary() {
                 <p className="text-sm font-normal text-background/40 line-through tabular-nums">
                   {formatPublicPrice(
                     calculation.originalTotal,
-                    displayCurrency,
-                  )}
+                  displayCurrency,
+                  pricingSettings,
+                )}
                 </p>
               )}
               <p className="text-2xl font-bold text-background tabular-nums">
-                {formatPublicPrice(calculation.total, displayCurrency)}
+                {formatPublicPrice(
+                  calculation.total,
+                  displayCurrency,
+                  pricingSettings,
+                )}
               </p>
             </div>
           </div>

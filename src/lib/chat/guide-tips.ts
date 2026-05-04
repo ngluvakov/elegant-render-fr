@@ -7,6 +7,7 @@ import type {
 import {
   formatPublicPriceText,
   type DisplayCurrency,
+  type PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 
 export type ChatGuideTip = {
@@ -407,10 +408,14 @@ function dedupeTips(tips: ChatGuideTip[]) {
   });
 }
 
-function formatTipPrices(tips: ChatGuideTip[], currency: DisplayCurrency) {
+function formatTipPrices(
+  tips: ChatGuideTip[],
+  currency: DisplayCurrency,
+  pricingSettings?: PublicPricingFormatSettings,
+) {
   return tips.map((tip) => ({
     ...tip,
-    body: formatPublicPriceText(tip.body, currency),
+    body: formatPublicPriceText(tip.body, currency, pricingSettings),
   }));
 }
 
@@ -418,6 +423,7 @@ export function getChatGuideTips(
   pathname: string,
   context?: AssistantGuideContext | null,
   displayCurrency: DisplayCurrency = "eur",
+  pricingSettings?: PublicPricingFormatSettings,
 ): ChatGuideTip[] {
   if (pathname.startsWith("/kontakt")) {
     return formatTipPrices(
@@ -426,6 +432,7 @@ export function getChatGuideTips(
         ...CONTACT_TIPS,
       ]).slice(0, 2),
       displayCurrency,
+      pricingSettings,
     );
   }
 
@@ -437,5 +444,6 @@ export function getChatGuideTips(
       ...PRICING_TIPS,
     ]).slice(0, 7),
     displayCurrency,
+    pricingSettings,
   );
 }

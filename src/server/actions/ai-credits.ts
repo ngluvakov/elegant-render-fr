@@ -2,9 +2,9 @@
 
 import { prisma } from "@/lib/db";
 import {
-  AI_CREDIT_EXPIRES_AFTER_MONTHS,
   addMonths,
 } from "@/lib/ai-studio/catalog";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export async function expireAiCreditsIfNeeded(userId: string) {
   const user = await prisma.user.findUnique({
@@ -72,7 +72,11 @@ export async function applyPurchasedAiCreditsForOrder(orderId: string) {
     (sum, item) => sum + (item.totalCents ?? 0),
     0,
   );
-  const expiresAt = addMonths(new Date(), AI_CREDIT_EXPIRES_AFTER_MONTHS);
+  const pricingCatalog = await getPublishedPricingCatalog();
+  const expiresAt = addMonths(
+    new Date(),
+    pricingCatalog.settings.aiCreditExpiresAfterMonths,
+  );
 
   await prisma.$transaction(async (tx) => {
     const claim = await tx.order.updateMany({

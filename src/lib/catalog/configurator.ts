@@ -1150,8 +1150,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
 
 export function getConfiguratorProduct(
   productId: string,
+  categories: ConfiguratorCategory[] = CONFIGURATOR_CATEGORIES,
 ): { category: ConfiguratorCategory; product: ConfiguratorProduct } | undefined {
-  for (const cat of CONFIGURATOR_CATEGORIES) {
+  for (const cat of categories) {
     for (const prod of cat.products) {
       if (prod.id === productId) return { category: cat, product: prod };
     }
@@ -1166,8 +1167,9 @@ export function getConfiguratorProduct(
 export function getEffectiveProduct(
   productId: string,
   sourceMode: string | null | undefined,
+  categories: ConfiguratorCategory[] = CONFIGURATOR_CATEGORIES,
 ): { category: ConfiguratorCategory; product: ConfiguratorProduct } | undefined {
-  const result = getConfiguratorProduct(productId);
+  const result = getConfiguratorProduct(productId, categories);
   if (!result) return undefined;
   if (!result.product.sourceModeRules || !sourceMode) return result;
   const override = result.product.sourceModeRules[sourceMode];
@@ -1203,8 +1205,9 @@ export function getEffectiveProduct(
 export function getAddOnDef(
   productId: string,
   addOnId: string,
+  categories: ConfiguratorCategory[] = CONFIGURATOR_CATEGORIES,
 ): ConfiguratorAddOn | undefined {
-  const result = getConfiguratorProduct(productId);
+  const result = getConfiguratorProduct(productId, categories);
   if (!result) return undefined;
   return result.product.addOns.find((ao) => ao.id === addOnId);
 }

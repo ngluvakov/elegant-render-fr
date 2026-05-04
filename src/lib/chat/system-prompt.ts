@@ -10,6 +10,7 @@ import {
   formatPublicPriceText,
   publicPriceNote,
   type DisplayCurrency,
+  type PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 
 const BASE_SYSTEM_PROMPT = `Ti si Elegant Render asistent — AI pomoćnik za arhitektonsku vizuelizaciju.
@@ -131,6 +132,7 @@ NAPOMENE:
 
 export function buildSystemPrompt(
   displayCurrency: DisplayCurrency = "eur",
+  pricingSettings?: PublicPricingFormatSettings,
 ): string {
   return formatPublicPriceText(
     BASE_SYSTEM_PROMPT.replace(
@@ -138,5 +140,6 @@ export function buildSystemPrompt(
       `- ${publicPriceNote(displayCurrency)}`,
     ),
     displayCurrency,
+    pricingSettings,
   );
 }

@@ -27,7 +27,10 @@ import {
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
-import { usePublicCurrency } from "@/components/site/public-currency-provider";
+import {
+  usePublicCurrency,
+  usePublicPricingSettings,
+} from "@/components/site/public-currency-provider";
 import { formatPublicPrice } from "@/lib/catalog/display-currency";
 
 // ─── Assets ──────────────────────────────────────────────
@@ -353,6 +356,7 @@ const COMPARE_SHOWCASE = [
 
 export function ServicesShowcase() {
   const displayCurrency = usePublicCurrency();
+  const pricingSettings = usePublicPricingSettings();
   const [activeFilter, setActiveFilter] = useState<FilterKey>("sve");
 
   const filtered = useMemo(
@@ -453,7 +457,12 @@ export function ServicesShowcase() {
               {/* Price bar */}
               <div className="flex items-center justify-between border-b border-border/30 bg-secondary/30 px-5 py-3">
                 <span className="text-xl font-bold text-foreground">
-                  Od {formatPublicPrice(service.priceEur, displayCurrency)}
+                  Od{" "}
+                  {formatPublicPrice(
+                    service.priceEur,
+                    displayCurrency,
+                    pricingSettings,
+                  )}
                 </span>
                 <span className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
                   Transparentna cena

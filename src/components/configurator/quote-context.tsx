@@ -33,6 +33,11 @@ import {
   isAiCreditProduct,
 } from "@/lib/ai-studio/catalog";
 import type { DisplayCurrency } from "@/lib/catalog/display-currency";
+import {
+  getPricingSettings,
+  type PricingSettings,
+  type ResolvedPricingCatalog,
+} from "@/lib/pricing/catalog";
 
 // ─── Actions ─────────────────────────────────────────────
 
@@ -42,11 +47,17 @@ type QuoteAction =
       productId: string;
       categoryId: string;
       sourceMode?: string;
+      pricingCatalog?: ResolvedPricingCatalog;
     }
   | { type: "SET_AI_CREDITS"; credits: number }
   | { type: "REMOVE_PRODUCT"; instanceId: string }
   | { type: "SET_ADDON_QTY"; instanceId: string; addOnId: string; qty: number }
-  | { type: "SET_DURATION"; instanceId: string; seconds: number }
+  | {
+      type: "SET_DURATION";
+      instanceId: string;
+      seconds: number;
+      pricingCatalog?: ResolvedPricingCatalog;
+    }
   | { type: "SET_SOURCE_MODE"; instanceId: string; sourceMode: string }
   | {
       type: "SET_INTERIOR_CONFIG";
@@ -66,7 +77,10 @@ type QuoteAction =
 function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
   switch (action.type) {
     case "ADD_PRODUCT": {
-      const result = getConfiguratorProduct(action.productId);
+      const result = getConfiguratorProduct(
+        action.productId,
+        action.pricingCatalog?.categories,
+      );
       if (!result) return state;
       // Inquiry-only products (currently VR) bypass the cart entirely —
       // they route to a consultation intake page instead. Any attempt to
@@ -139,7 +153,10 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
     case "SET_DURATION":
       return state.map((item) => {
         if (item.instanceId !== action.instanceId) return item;
-        const result = getConfiguratorProduct(item.productId);
+        const result = getConfiguratorProduct(
+          item.productId,
+          action.pricingCatalog?.categories,
+        );
         const min = result?.product.durationConfig?.minSeconds ?? 15;
         return {
           ...item,
@@ -179,6 +196,8 @@ type QuoteContextValue = {
   items: QuoteItem[];
   calculation: QuoteCalculation;
   displayCurrency: DisplayCurrency;
+  pricingCatalog?: ResolvedPricingCatalog;
+  pricingSettings: PricingSettings;
   dispatch: React.Dispatch<QuoteAction>;
   addProduct: (
     productId: string,
@@ -201,19 +220,37 @@ const QuoteContext = createContext<QuoteContextValue | null>(null);
 export function QuoteProvider({
   children,
   displayCurrency = "eur",
+  pricingCatalog,
 }: {
   children: ReactNode;
   displayCurrency?: DisplayCurrency;
+  pricingCatalog?: ResolvedPricingCatalog;
 }) {
   const [items, dispatch] = useReducer(quoteReducer, []);
-  const calculation = useMemo(() => priceItems(items), [items]);
+  const pricingSettings = useMemo(
+    () => getPricingSettings(pricingCatalog),
+    [pricingCatalog],
+  );
+  const calculation = useMemo(
+    () => priceItems(items, [], pricingCatalog),
+    [items, pricingCatalog],
+  );
 
   const addProduct = useCallback(
     (productId: string, categoryId: string, sourceMode?: string) => {
-      const lookup = getConfiguratorProduct(productId);
+      const lookup = getConfiguratorProduct(
+        productId,
+        pricingCatalog?.categories,
+      );
       if (!lookup || lookup.product.inquiryOnly) return;
       const wasEmpty = items.length === 0;
-      dispatch({ type: "ADD_PRODUCT", productId, categoryId, sourceMode });
+      dispatch({
+        type: "ADD_PRODUCT",
+        productId,
+        categoryId,
+        sourceMode,
+        pricingCatalog,
+      });
       if (wasEmpty) {
         track("quote_started", { product_id: productId, category_id: categoryId });
       }
@@ -224,7 +261,7 @@ export function QuoteProvider({
         ...(sourceMode ? { source_mode: sourceMode } : {}),
       });
     },
-    [items],
+    [items, pricingCatalog],
   );
   const removeProduct = useCallback(
     (instanceId: string) => {
@@ -246,8 +283,8 @@ export function QuoteProvider({
   );
   const setDuration = useCallback(
     (instanceId: string, seconds: number) =>
-      dispatch({ type: "SET_DURATION", instanceId, seconds }),
-    [],
+      dispatch({ type: "SET_DURATION", instanceId, seconds, pricingCatalog }),
+    [pricingCatalog],
   );
   const setSourceMode = useCallback(
     (instanceId: string, sourceMode: string) =>
@@ -279,6 +316,8 @@ export function QuoteProvider({
       items,
       calculation,
       displayCurrency,
+      pricingCatalog,
+      pricingSettings,
       dispatch,
       addProduct,
       removeProduct,
@@ -295,6 +334,8 @@ export function QuoteProvider({
       items,
       calculation,
       displayCurrency,
+      pricingCatalog,
+      pricingSettings,
       addProduct,
       removeProduct,
       setAddOnQty,

@@ -17,6 +17,7 @@ import {
 } from "@/lib/catalog/services";
 import { formatPublicPriceText } from "@/lib/catalog/display-currency";
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 type ServicesGridProps = {
   /** When true, only show a compact preview (first 2 categories). */
@@ -24,7 +25,10 @@ type ServicesGridProps = {
 };
 
 export async function ServicesGrid({ preview = false }: ServicesGridProps) {
-  const displayCurrency = await getPublicDisplayCurrency();
+  const [displayCurrency, pricingCatalog] = await Promise.all([
+    getPublicDisplayCurrency(),
+    getPublishedPricingCatalog(),
+  ]);
   const categories = preview ? CATEGORY_ORDER.slice(0, 2) : CATEGORY_ORDER;
 
   return (
@@ -88,6 +92,7 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
                             {formatPublicPriceText(
                               firstVariant.priceLabel,
                               displayCurrency,
+                              pricingCatalog.settings,
                             )}
                           </span>
                           {service.outsourced && (

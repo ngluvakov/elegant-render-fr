@@ -26,7 +26,6 @@ import {
   calcInteriorTotal,
   newFloor,
   makeFloorId,
-  INT_STATIC_FIRST_FLOOR_EUR,
   ROOM_STYLE_IDS,
   STYLE_MODES,
   TIME_OF_DAY_IDS,
@@ -43,7 +42,6 @@ import {
   defaultTourAssembly,
   newTour360Floor,
   sanitizeTourAssembly,
-  TOUR360_FIRST_FLOOR_EUR,
   type Tour360Config,
   type Tour360Floor,
   type Tour360Room,
@@ -120,6 +118,7 @@ import {
   type ExtStaticConfig,
 } from "@/lib/catalog/exterior-config";
 import { calcTourAssemblyCost } from "@/lib/catalog/tour-assembly";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export type ItemConfigResult = {
   error?: string;
@@ -213,6 +212,8 @@ export async function deleteOrderFile(
 // sibling discounts. int-static items keep their calcInteriorTotal-based base
 // total and apply the resolved discount as a flat scalar on top.
 export async function repriceOrder(orderId: string) {
+  const pricingCatalog = await getPublishedPricingCatalog();
+  const specialPricing = pricingCatalog.settings.specialPricing;
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     select: { referencedOrderId: true },
@@ -314,12 +315,16 @@ export async function repriceOrder(orderId: string) {
   const ext360AsSources = quoteItems.filter((qi) =>
     ext360IdsWithConfig.has(qi.instanceId),
   );
-  const calc = calculateQuote(standardItems, [
-    ...externalSources,
-    ...intStaticAsSources,
-    ...tour360AsSources,
-    ...ext360AsSources,
-  ]);
+  const calc = calculateQuote(
+    standardItems,
+    [
+      ...externalSources,
+      ...intStaticAsSources,
+      ...tour360AsSources,
+      ...ext360AsSources,
+    ],
+    pricingCatalog,
+  );
   const breakdownById = new Map(calc.items.map((b) => [b.instanceId, b]));
 
   let orderTotalCents = 0;
@@ -332,7 +337,7 @@ export async function repriceOrder(orderId: string) {
     // Inquiry-only items (e.g. converted VR projects) carry a manually
     // set price agreed during consultation — never recompute from the
     // catalog, just keep the existing totalEur.
-    const lookup = getConfiguratorProduct(i.productId);
+    const lookup = getConfiguratorProduct(i.productId, pricingCatalog.categories);
     if (i.kind === "ai_credits") {
       const bd = breakdownById.get(i.id);
       if (bd) {
@@ -371,10 +376,17 @@ export async function repriceOrder(orderId: string) {
         "floors" in (i.configJson as Record<string, unknown>)
         ? (i.configJson as { floors: InteriorFloor[] }).floors
         : []) as InteriorFloor[];
-      const preDiscount = calcInteriorTotal(floors).totalEur;
+      const preDiscount = calcInteriorTotal(
+        floors,
+        specialPricing.interior,
+      ).totalEur;
       const target = quoteItems.find((q) => q.instanceId === i.id);
       const discount = target
-        ? resolveDiscount(target, [...quoteItems, ...externalSources])
+        ? resolveDiscount(
+            target,
+            [...quoteItems, ...externalSources],
+            pricingCatalog,
+          )
         : null;
       const totalEur = discount
         ? Math.round(preDiscount * (1 - discount.pct / 100))
@@ -402,10 +414,15 @@ export async function repriceOrder(orderId: string) {
       const preDiscount = calcTour360Total(
         cfg.floors,
         cfg.tourAssembly,
+        specialPricing.tour360,
       ).totalEur;
       const target = quoteItems.find((q) => q.instanceId === i.id);
       const discount = target
-        ? resolveDiscount(target, [...quoteItems, ...externalSources])
+        ? resolveDiscount(
+            target,
+            [...quoteItems, ...externalSources],
+            pricingCatalog,
+          )
         : null;
       const totalEur = discount
         ? Math.round(preDiscount * (1 - discount.pct / 100))
@@ -440,7 +457,11 @@ export async function repriceOrder(orderId: string) {
         categoryId: "exterior",
         addOnQuantities: ext360AddOnQuantitiesFor(cfg),
       };
-      const renderingBreakdown = calculateQuote([renderingQI]).items[0];
+      const renderingBreakdown = calculateQuote(
+        [renderingQI],
+        [],
+        pricingCatalog,
+      ).items[0];
       const renderingCost = renderingBreakdown?.totalEur ?? i.totalEur;
       const assemblyCost = calcTourAssemblyCost(
         cfg.tourAssembly ?? {
@@ -449,11 +470,16 @@ export async function repriceOrder(orderId: string) {
           whiteLabelEnabled: false,
         },
         cfg.hotspotCount ?? 1,
+        specialPricing.tourAssembly,
       ).totalCost;
       const preDiscount = renderingCost + assemblyCost;
       const target = quoteItems.find((q) => q.instanceId === i.id);
       const discount = target
-        ? resolveDiscount(target, [...quoteItems, ...externalSources])
+        ? resolveDiscount(
+            target,
+            [...quoteItems, ...externalSources],
+            pricingCatalog,
+          )
         : null;
       const totalEur = discount
         ? Math.round(preDiscount * (1 - discount.pct / 100))
@@ -561,7 +587,8 @@ export async function addOrderItem(
   if (order.items.some((i) => i.productId === productId))
     return { error: "Ova usluga je već u porudžbini." };
 
-  const lookup = getConfiguratorProduct(productId);
+  const pricingCatalog = await getPublishedPricingCatalog();
+  const lookup = getConfiguratorProduct(productId, pricingCatalog.categories);
   if (!lookup) return { error: "Nepoznata usluga." };
   if (lookup.product.inquiryOnly)
     return { error: "Ova usluga zahteva konsultaciju, ne može se dodati u korpu." };
@@ -577,7 +604,7 @@ export async function addOrderItem(
     ...(sourceMode ? { sourceMode } : {}),
   };
 
-  const calc = calculateQuote([quoteItem]);
+  const calc = calculateQuote([quoteItem], [], pricingCatalog);
   const breakdown = calc.items[0];
   if (!breakdown) return { error: "Greška u izračunu." };
 
@@ -625,9 +652,9 @@ export async function addOrderItem(
                                   : undefined;
   const initialTotal =
     productId === "int-static"
-      ? INT_STATIC_FIRST_FLOOR_EUR
+      ? pricingCatalog.settings.specialPricing.interior.firstFloorEur
       : productId === "int-360"
-        ? TOUR360_FIRST_FLOOR_EUR
+        ? pricingCatalog.settings.specialPricing.tour360.firstFloorEur
         : breakdown.totalEur;
 
   await prisma.orderItem.create({

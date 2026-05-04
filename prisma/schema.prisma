@@ -18,6 +18,7 @@ model User {
   passwordHash              String?
   phone                     String?
   isAdmin                   Boolean   @default(false)
+  canManageFinance          Boolean   @default(false)
   bitrixContactId           String?   @unique
   aiCreditBalanceUnits      Int       @default(0)
   aiCreditsExpireAt         DateTime?
@@ -35,6 +36,9 @@ model User {
   chatFeedback         ChatFeedback[]
   projectInquiries     ProjectInquiry[]
   chargesRequested     OrderCharge[]         @relation("OrderChargeRequestedBy")
+  pricingBooksCreated  PricingBook[]         @relation("PricingBookCreatedBy")
+  pricingBooksPublished PricingBook[]        @relation("PricingBookPublishedBy")
+  pricingChangeLogs    PricingChangeLog[]    @relation("PricingChangeLogActor")
 
   @@map("users")
 }
@@ -504,6 +508,154 @@ model ProjectInquiryFile {
 
   @@index([inquiryId])
   @@map("project_inquiry_files")
+}
+
+// ─── Versioned pricing catalog ───────────────────────────
+//
+// EUR excluding VAT is the financial source of truth. Published books
+// feed public pricing, checkout, portal repricing, admin charges and AI
+// credit purchases. Draft books are editable by finance admins only and
+// do not affect live pricing until published.
+
+enum PricingBookStatus {
+  draft
+  published
+  archived
+}
+
+model PricingBook {
+  id            String            @id @default(cuid())
+  name          String
+  status        PricingBookStatus @default(draft)
+  catalogJson   Json
+  settingsJson  Json
+  createdById   String?
+  publishedById String?
+  publishedAt   DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  createdBy   User?               @relation("PricingBookCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  publishedBy User?               @relation("PricingBookPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+  products    PricingProduct[]
+  addOns      PricingAddOn[]
+  discounts   PricingDiscountRule[]
+  durations   PricingDurationRule[]
+  settings    PricingSetting[]
+  changeLogs  PricingChangeLog[]
+
+  @@index([status, publishedAt])
+  @@map("pricing_books")
+}
+
+model PricingProduct {
+  id           String   @id @default(cuid())
+  bookId       String
+  productId    String
+  categoryId   String
+  label        String
+  unitLabel    String
+  basePriceEur Float
+  includesJson Json
+  inquiryOnly  Boolean  @default(false)
+  sortOrder    Int      @default(0)
+  updatedAt    DateTime @updatedAt
+
+  book PricingBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([bookId, productId])
+  @@index([bookId, categoryId])
+  @@map("pricing_products")
+}
+
+model PricingAddOn {
+  id             String   @id @default(cuid())
+  bookId         String
+  productId      String
+  addOnId        String
+  label          String
+  description    String
+  priceEur       Float
+  priceType      String
+  includedQty    Int
+  maxQty         Int?
+  volumeRulesJson Json
+  sortOrder      Int      @default(0)
+  updatedAt      DateTime @updatedAt
+
+  book PricingBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([bookId, productId, addOnId])
+  @@index([bookId, productId])
+  @@map("pricing_add_ons")
+}
+
+model PricingDiscountRule {
+  id                 String   @id @default(cuid())
+  bookId             String
+  ruleId             String
+  productId          String
+  requires           String
+  discountPct        Int
+  reason             String
+  conditionJson      Json?
+  sourceProductsJson Json?
+  sortOrder          Int      @default(0)
+  updatedAt          DateTime @updatedAt
+
+  book PricingBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([bookId, ruleId])
+  @@index([bookId, productId])
+  @@map("pricing_discount_rules")
+}
+
+model PricingDurationRule {
+  id                String   @id @default(cuid())
+  bookId            String
+  productId         String
+  sourceMode        String?
+  minSeconds        Int
+  defaultSeconds    Int
+  maxSeconds        Int?
+  perSecondEur      Float
+  discountTiersJson Json
+  updatedAt         DateTime @updatedAt
+
+  book PricingBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([bookId, productId, sourceMode])
+  @@index([bookId, productId])
+  @@map("pricing_duration_rules")
+}
+
+model PricingSetting {
+  id        String   @id @default(cuid())
+  bookId    String
+  key       String
+  valueJson Json
+  updatedAt DateTime @updatedAt
+
+  book PricingBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@unique([bookId, key])
+  @@map("pricing_settings")
+}
+
+model PricingChangeLog {
+  id        String   @id @default(cuid())
+  bookId    String
+  actorId   String?
+  action    String
+  detailsJson Json?
+  createdAt DateTime @default(now())
+
+  book  PricingBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  actor User?       @relation("PricingChangeLogActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([bookId, createdAt])
+  @@index([actorId, createdAt])
+  @@map("pricing_change_logs")
 }
 
 // ─── VR consultation inquiries ───────────────────────────

@@ -10,10 +10,17 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { calculateQuote, type QuoteItem } from "@/lib/catalog/calculate";
+import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import { createOrder } from "@/server/actions/order";
 import { track } from "@/lib/posthog-events";
 
-export function NewOrderFromQuote({ userId }: { userId: string }) {
+export function NewOrderFromQuote({
+  userId,
+  pricingCatalog,
+}: {
+  userId: string;
+  pricingCatalog: ResolvedPricingCatalog;
+}) {
   const router = useRouter();
   const [error, setError] = useState("");
   const creatingRef = useRef(false);
@@ -46,7 +53,7 @@ export function NewOrderFromQuote({ userId }: { userId: string }) {
         setError(result.error);
         return;
       }
-      const calc = calculateQuote(items);
+      const calc = calculateQuote(items, [], pricingCatalog);
       if (result.orderNumber) {
         track("order_created", {
           order_number: result.orderNumber,
@@ -57,7 +64,7 @@ export function NewOrderFromQuote({ userId }: { userId: string }) {
       sessionStorage.removeItem("er-checkout-quote");
       router.replace(`/portal/porudzbine/${result.orderId}`);
     });
-  }, [userId, router]);
+  }, [userId, router, pricingCatalog]);
 
   if (error) {
     return (

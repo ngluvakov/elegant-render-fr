@@ -24,6 +24,7 @@ import {
 import {
   formatPublicPriceFromCents,
   type DisplayCurrency,
+  type PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 import { useQuote } from "./quote-context";
 
@@ -32,7 +33,8 @@ const MAX_CUSTOM_CREDITS = 999;
 const DEFAULT_CUSTOM = 15;
 
 export function StandaloneAiCredits() {
-  const { items, setAiCredits, displayCurrency } = useQuote();
+  const { items, setAiCredits, displayCurrency, pricingSettings } = useQuote();
+  const tiers = pricingSettings.aiCreditTiers;
   const existingCredits =
     items.find((item) => item.productId === AI_CREDIT_PRODUCT_ID)
       ?.aiCreditQuantity ?? 0;
@@ -50,8 +52,9 @@ export function StandaloneAiCredits() {
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               Plaćate samo ono što obradite — od{" "}
-              {formatPublicPriceFromCents(100, displayCurrency)} po
-              jednostavnoj obradi. Krediti ostaju aktivni 12 meseci od dopune.
+              {formatPublicPriceFromCents(100, displayCurrency, pricingSettings)} po
+              jednostavnoj obradi. Krediti ostaju aktivni{" "}
+              {pricingSettings.aiCreditExpiresAfterMonths} meseci od dopune.
             </p>
           </div>
           <a
@@ -70,6 +73,8 @@ export function StandaloneAiCredits() {
               credits={credits}
               isActive={existingCredits === credits}
               displayCurrency={displayCurrency}
+              pricingSettings={pricingSettings}
+              tiers={tiers}
               onSelect={() => setAiCredits(credits)}
             />
           ))}
@@ -80,6 +85,8 @@ export function StandaloneAiCredits() {
           existingCredits={existingCredits}
           isCustomActive={isCustomActive}
           displayCurrency={displayCurrency}
+          pricingSettings={pricingSettings}
+          tiers={tiers}
           onCommit={(credits) => setAiCredits(credits)}
         />
       </div>
@@ -91,14 +98,18 @@ function PackageCard({
   credits,
   isActive,
   displayCurrency,
+  pricingSettings,
+  tiers,
   onSelect,
 }: {
   credits: number;
   isActive: boolean;
   displayCurrency: DisplayCurrency;
+  pricingSettings?: PublicPricingFormatSettings;
+  tiers: Parameters<typeof calculateAiCreditPurchase>[1];
   onSelect: () => void;
 }) {
-  const purchase = calculateAiCreditPurchase(credits);
+  const purchase = calculateAiCreditPurchase(credits, tiers);
   return (
     <button
       type="button"
@@ -120,10 +131,18 @@ function PackageCard({
       </div>
       <div className="mt-4">
         <div className="text-xl font-semibold text-foreground tabular-nums">
-          {formatPublicPriceFromCents(purchase.totalCents, displayCurrency)}
+          {formatPublicPriceFromCents(
+            purchase.totalCents,
+            displayCurrency,
+            pricingSettings,
+          )}
         </div>
         <div className="text-[0.7rem] uppercase tracking-[0.16em] text-muted-foreground">
-          {formatPublicPriceFromCents(purchase.centsPerCredit, displayCurrency)}{" "}
+          {formatPublicPriceFromCents(
+            purchase.centsPerCredit,
+            displayCurrency,
+            pricingSettings,
+          )}{" "}
           / kredit
         </div>
       </div>
@@ -163,11 +182,15 @@ function CustomAmountRow({
   existingCredits,
   isCustomActive,
   displayCurrency,
+  pricingSettings,
+  tiers,
   onCommit,
 }: {
   existingCredits: number;
   isCustomActive: boolean;
   displayCurrency: DisplayCurrency;
+  pricingSettings?: PublicPricingFormatSettings;
+  tiers: Parameters<typeof calculateAiCreditPurchase>[1];
   onCommit: (credits: number) => void;
 }) {
   const [draft, setDraft] = useState<number>(
@@ -178,7 +201,7 @@ function CustomAmountRow({
     Math.max(1, Math.min(MAX_CUSTOM_CREDITS, Math.floor(n) || 1));
   const update = (next: number) => setDraft(clamp(next));
 
-  const purchase = calculateAiCreditPurchase(draft);
+  const purchase = calculateAiCreditPurchase(draft, tiers);
   const isCommitted = isCustomActive && existingCredits === draft;
 
   return (
@@ -226,10 +249,18 @@ function CustomAmountRow({
 
           <div className="text-right">
             <div className="text-base font-semibold text-foreground tabular-nums">
-              {formatPublicPriceFromCents(purchase.totalCents, displayCurrency)}
+              {formatPublicPriceFromCents(
+                purchase.totalCents,
+                displayCurrency,
+                pricingSettings,
+              )}
             </div>
             <div className="text-[0.65rem] uppercase tracking-[0.14em] text-muted-foreground">
-              {formatPublicPriceFromCents(purchase.centsPerCredit, displayCurrency)}{" "}
+              {formatPublicPriceFromCents(
+                purchase.centsPerCredit,
+                displayCurrency,
+                pricingSettings,
+              )}{" "}
               / kredit
             </div>
           </div>

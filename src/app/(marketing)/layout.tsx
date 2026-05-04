@@ -7,6 +7,7 @@ import { ChatWidget } from "@/components/chat/chat-widget";
 import { QuickInquiryProvider } from "@/components/inquiry/quick-inquiry-provider";
 import { PublicCurrencyProvider } from "@/components/site/public-currency-provider";
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export default async function MarketingLayout({
   children,
@@ -17,8 +18,11 @@ export default async function MarketingLayout({
   // pages (e.g. logged-in customer revisiting /cene) are identified
   // in PostHog from the first pageview, not just after they cross
   // into /portal.
-  const session = await auth();
-  const displayCurrency = await getPublicDisplayCurrency();
+  const [session, displayCurrency, pricingCatalog] = await Promise.all([
+    auth(),
+    getPublicDisplayCurrency(),
+    getPublishedPricingCatalog(),
+  ]);
 
   return (
     <SessionProvider>
@@ -29,7 +33,10 @@ export default async function MarketingLayout({
           name: session?.user?.name ?? undefined,
         }}
       />
-      <PublicCurrencyProvider displayCurrency={displayCurrency}>
+      <PublicCurrencyProvider
+        displayCurrency={displayCurrency}
+        pricingSettings={pricingCatalog.settings}
+      >
         <QuickInquiryProvider>
           <SiteHeader />
           <main className="flex flex-1 flex-col">{children}</main>

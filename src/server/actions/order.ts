@@ -24,6 +24,7 @@ import {
 import { repriceOrder } from "@/server/actions/item-config";
 import { syncNewDeal } from "@/server/bitrix/sync-deal";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export type OrderResult = {
   error?: string;
@@ -51,9 +52,10 @@ export async function createOrder(
   // Defensive: inquiry-only products (VR) must never enter the order /
   // payment flow. They route to /usluge/vr/konsultacija from /cene; if
   // one slips through (tampered cart, stale URL), refuse the order.
+  const pricingCatalog = await getPublishedPricingCatalog();
   for (const qi of quoteItems) {
     if (isAiCreditProduct(qi.productId)) continue;
-    const lookup = getConfiguratorProduct(qi.productId);
+    const lookup = getConfiguratorProduct(qi.productId, pricingCatalog.categories);
     if (!lookup) return { error: "Nepoznata stavka u ponudi." };
     if (lookup?.product.inquiryOnly) {
       return {
@@ -67,7 +69,7 @@ export async function createOrder(
   // routes int-static / int-360 items through their per-floor helpers
   // (calcInteriorTotal / calcTour360Total) so the order total matches
   // what the customer saw on /cene exactly.
-  const calculation = priceItems(quoteItems);
+  const calculation = priceItems(quoteItems, [], pricingCatalog);
 
   if (calculation.total <= 0) {
     return { error: "Ukupna cena mora biti veća od 0." };

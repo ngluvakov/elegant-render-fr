@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type QuoteItem } from "@/lib/catalog/calculate";
+import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import { ButtonLink } from "@/components/ui/button-link";
 import { requestPortalAccessAction } from "@/server/actions/auth";
 import { CheckoutProvider, useCheckout } from "./checkout-context";
@@ -213,10 +214,12 @@ export function CheckoutWizard({
   userId,
   userName,
   userEmail,
+  pricingCatalog,
 }: {
   userId: string | null;
   userName: string;
   userEmail: string;
+  pricingCatalog?: ResolvedPricingCatalog;
 }) {
   const router = useRouter();
   const [quoteItems, setQuoteItems] = useState<QuoteItem[] | null>(null);
@@ -253,6 +256,7 @@ export function CheckoutWizard({
       initialUserId={userId}
       initialName={userName}
       initialEmail={userEmail}
+      pricingCatalog={pricingCatalog}
     >
       <WizardInner />
     </CheckoutProvider>

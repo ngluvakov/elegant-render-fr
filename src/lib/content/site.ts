@@ -25,6 +25,46 @@ export const TRUST_SIGNALS = [
   "Tri runde revizija uključene u svaki projekat po našem standardu.",
 ] as const;
 
+export type IsoCertification = {
+  id: "iso-9001" | "iso-27001" | "iso-50001";
+  code: string;
+  domain: string;
+  description: string;
+  certNumber?: string;
+  verifyUrl?: string;
+};
+
+export const CERTIFIER = {
+  name: "TÜV",
+  fullName: "TÜV — Technischer Überwachungsverein",
+  description:
+    "TÜV je nemačko sertifikaciono telo sa višedecenijskom tradicijom, prepoznato globalno kao jedan od najstrožih nezavisnih ocenjivača kvaliteta i bezbednosti. Sertifikati izdati od strane TÜV-a smatraju se najprestižnijim u industriji i podrazumevaju redovne nezavisne audit-e.",
+} as const;
+
+export const ISO_CERTIFICATIONS: IsoCertification[] = [
+  {
+    id: "iso-9001",
+    code: "ISO 9001:2015",
+    domain: "Upravljanje kvalitetom",
+    description:
+      "Standard koji definiše zahteve za sistem upravljanja kvalitetom procesa i isporuke usluga. Naš tok rada — od preuzimanja materijala, preko revizija, do isporuke finalnih rendera — usklađen je sa ovim standardom, što znači predvidiv kvalitet i dosledan rezultat na svakom projektu.",
+  },
+  {
+    id: "iso-27001",
+    code: "ISO/IEC 27001",
+    domain: "Informaciona bezbednost",
+    description:
+      "Standard za upravljanje informacionom bezbednošću. Vaše datoteke (osnove prostora, fotografije i lični podaci u portalu) tretiramo po sertifikovanim procedurama: kontrolisani pristup, šifrovanje u tranzitu, definisana retencija i procesi za reagovanje na incidente. Ovaj standard je i osnov naše GDPR usklađenosti.",
+  },
+  {
+    id: "iso-50001",
+    code: "ISO 50001",
+    domain: "Energetski menadžment",
+    description:
+      "Standard za sistemsko upravljanje energetskom efikasnošću. Naš render kapacitet i interna infrastruktura prate i optimizuju potrošnju energije, što smanjuje ekološki otisak digitalne arhitektonske produkcije.",
+  },
+];
+
 export const PLATFORM_PRINCIPLES = [
   {
     title: "Šta kupujem",
@@ -59,6 +99,7 @@ export const NAV_LEGAL: NavItem[] = [
   { href: "/pravno/privatnost", label: "Politika privatnosti" },
   { href: "/pravno/uslovi", label: "Uslovi korišćenja" },
   { href: "/pravno/kolacici", label: "Politika kolačića" },
+  { href: "/pravno/sertifikati", label: "Sertifikati i standardi" },
 ];
 
 export const ORDERING_STEPS = [
@@ -118,4 +159,28 @@ export const FAQ_ITEMS = [
       "Za stambene komplekse, veće investitorske projekte i serije rendera iz istog modela koristimo progresivne popuste. Kontaktirajte nas i pripremićemo ponudu koja odgovara obimu posla.",
   },
 ] as const;
+
+export function buildOrganizationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE.name,
+    alternateName: SITE.longName,
+    url: SITE.url,
+    email: SITE.email,
+    sameAs: [SITE.instagram],
+    parentOrganization: {
+      "@type": "Organization",
+      name: SITE.parentCompany,
+    },
+    hasCredential: ISO_CERTIFICATIONS.map((cert) => ({
+      "@type": "EducationalOccupationalCredential",
+      credentialCategory: `${cert.code} (${cert.domain})`,
+      recognizedBy: {
+        "@type": "Organization",
+        name: CERTIFIER.name,
+      },
+    })),
+  };
+}
 

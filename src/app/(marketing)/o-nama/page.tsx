@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { SectionKicker } from "@/components/brand/section-kicker";
-import { SITE } from "@/lib/content/site";
+import { CERTIFIER, ISO_CERTIFICATIONS, SITE } from "@/lib/content/site";
 
 export const metadata: Metadata = {
   title: "O nama",
@@ -54,6 +55,31 @@ export default function ONamaPage() {
             sadržajima. Elegant Render je tržišno prilagođen, pristupačniji i
             direktniji kanal za krajnje kupce — svi projekti se izvode u istom
             timu i po istim kvalitativnim standardima.
+          </p>
+        </div>
+
+        <div className="mt-6 rounded-xl border border-border/60 bg-secondary/30 p-8">
+          <h2 className="text-2xl text-foreground">Sertifikati i standardi</h2>
+          <p className="mt-4 text-base leading-relaxed text-foreground/75">
+            Naš proces počiva na tri međunarodna ISO standarda, sertifikovana
+            od strane <strong>{CERTIFIER.name}</strong> —{" "}
+            {ISO_CERTIFICATIONS.map((cert, idx) => (
+              <span key={cert.id}>
+                <strong>{cert.code}</strong> ({cert.domain.toLowerCase()})
+                {idx < ISO_CERTIFICATIONS.length - 1
+                  ? idx === ISO_CERTIFICATIONS.length - 2
+                    ? " i "
+                    : ", "
+                  : ""}
+              </span>
+            ))}
+            . Detaljnije o svakom standardu i o {CERTIFIER.name}-u:{" "}
+            <Link
+              href="/pravno/sertifikati"
+              className="text-foreground underline-offset-4 hover:underline"
+            >
+              Pogledajte sertifikate →
+            </Link>
           </p>
         </div>
       </article>

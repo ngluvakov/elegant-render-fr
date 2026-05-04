@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { SectionKicker } from "@/components/brand/section-kicker";
-import { SITE } from "@/lib/content/site";
+import { CERTIFIER, SITE } from "@/lib/content/site";
 
 export const metadata: Metadata = {
   title: "Politika privatnosti",
@@ -28,6 +29,21 @@ export default function PrivatnostPage() {
           obavezuje se da će sa svim podacima postupati u skladu sa važećim
           propisima Republike Srbije i Opštom uredbom EU o zaštiti podataka
           (GDPR).
+        </p>
+        <p>
+          Sistem upravljanja informacionom bezbednošću sertifikovan je po
+          standardu <strong>ISO/IEC 27001</strong> od strane{" "}
+          <strong>{CERTIFIER.name}</strong>, što našu GDPR usklađenost
+          potkrepljuje konkretnim procedurama: kontrolisanim pristupom,
+          šifrovanjem u tranzitu, definisanom retencijom i procesima za
+          reagovanje na incidente. Detaljnije o našim sertifikatima:{" "}
+          <Link
+            href="/pravno/sertifikati"
+            className="text-foreground underline-offset-4 hover:underline"
+          >
+            /pravno/sertifikati
+          </Link>
+          .
         </p>
         <p className="italic text-foreground/60">
           Kompletna politika privatnosti biće objavljena pre javnog lansiranja

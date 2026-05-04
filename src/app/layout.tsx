@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { SITE } from "@/lib/content/site";
+import { SITE, buildOrganizationJsonLd } from "@/lib/content/site";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-heading",
@@ -46,6 +46,12 @@ export default function RootLayout({
       className={cn("h-full antialiased", cormorant.variable, manrope.variable)}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(buildOrganizationJsonLd()),
+          }}
+        />
         {children}
       </body>
     </html>

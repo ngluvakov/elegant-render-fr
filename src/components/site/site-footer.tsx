@@ -7,7 +7,13 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
-import { NAV_LEGAL, NAV_MAIN, SITE } from "@/lib/content/site";
+import {
+  CERTIFIER,
+  ISO_CERTIFICATIONS,
+  NAV_LEGAL,
+  NAV_MAIN,
+  SITE,
+} from "@/lib/content/site";
 
 const FOOTER_SERVICES = [
   { href: "/usluge/unutrasnji-renderi", label: "Unutrašnji renderi" },
@@ -120,6 +126,26 @@ export function SiteFooter() {
               className="mt-6 inline-flex items-center rounded-full bg-[#b88363] px-5 py-3 text-sm font-medium text-white shadow-[0_18px_40px_rgba(184,131,99,0.28)] transition hover:bg-[#9f6a4b]"
             >
               Otvori kalkulaciju i narudžbinu
+            </Link>
+          </div>
+        </div>
+
+        <div className="border-b border-white/10 py-5">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-white/45">
+            Sertifikati i standardi
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-white/55">
+            {ISO_CERTIFICATIONS.map((cert) => (
+              <span key={cert.id}>
+                {cert.code}{" "}
+                <span className="text-white/35">· {CERTIFIER.name}</span>
+              </span>
+            ))}
+            <Link
+              href="/pravno/sertifikati"
+              className="ml-auto text-white/65 transition hover:text-[#ddb195]"
+            >
+              O sertifikatima →
             </Link>
           </div>
         </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { ConsentBanner } from "@/components/site/consent-banner";
 import { SITE, buildOrganizationJsonLd } from "@/lib/content/site";
 
 const cormorant = Cormorant_Garamond({
@@ -53,6 +54,7 @@ export default function RootLayout({
           }}
         />
         {children}
+        <ConsentBanner />
       </body>
     </html>
   );

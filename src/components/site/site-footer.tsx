@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
+import { ConsentSettingsLink } from "@/components/site/consent-settings-link";
 import {
   CERTIFIER,
   ISO_CERTIFICATIONS,
@@ -182,6 +183,7 @@ export function SiteFooter() {
                 {item.label}
               </Link>
             ))}
+            <ConsentSettingsLink className="transition hover:text-[#ddb195]" />
             <Link href="/kontakt" className="transition hover:text-[#ddb195]">
               Kontakt
             </Link>

@@ -32,6 +32,7 @@ import {
   usePublicPricingSettings,
 } from "@/components/site/public-currency-provider";
 import { formatPublicPrice } from "@/lib/catalog/display-currency";
+import { SERVICES_PAGE_FAQS } from "@/lib/content/site";
 
 // ─── Assets ──────────────────────────────────────────────
 
@@ -323,25 +324,6 @@ const SCENARIOS = [
   {
     title: "Treba mi interaktivnija prezentacija",
     answer: "360 ture, 360 renderi i animacije daju bolji osećaj kretanja i prostora.",
-  },
-];
-
-const FAQS = [
-  {
-    q: "Kako da znam koja usluga mi je potrebna?",
-    a: "Dovoljno je da pošaljete fotografije, plan ili kratko objašnjenje cilja. Na osnovu toga predlažemo najlogičniju uslugu i okvir cene.",
-  },
-  {
-    q: "Da li su cene konačne?",
-    a: "Na stranici su prikazane početne cene. Konačna cena zavisi od obima, broja kadrova, nivoa detalja i ulaznih materijala.",
-  },
-  {
-    q: "Koliko korekcija je uključeno?",
-    a: "Tri kruga korekcija su uključena u osnovnu cenu svake usluge, osim ako se radi o promeni obima projekta.",
-  },
-  {
-    q: "Da li radite samo za Srbiju?",
-    a: "Elegant Render je primarno fokusiran na Srbiju i region, ali je struktura usluge spremna i za druga tržišta.",
   },
 ];
 
@@ -711,22 +693,22 @@ export function ServicesShowcase() {
           </h2>
         </div>
         <div className="space-y-3">
-          {FAQS.map((item) => (
+          {SERVICES_PAGE_FAQS.map((item) => (
             <details
-              key={item.q}
+              key={item.question}
               className="group overflow-hidden rounded-2xl border border-border/40 bg-card/80 px-5 py-4"
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left">
                 <span className="flex items-center gap-3 text-base font-semibold text-foreground">
                   <CircleHelp className="h-4 w-4 flex-shrink-0 text-accent" />
-                  {item.q}
+                  {item.question}
                 </span>
                 <span className="text-sm text-muted-foreground transition-transform group-open:rotate-45">
                   +
                 </span>
               </summary>
               <p className="pt-3 text-sm leading-relaxed text-muted-foreground">
-                {item.a}
+                {item.answer}
               </p>
             </details>
           ))}

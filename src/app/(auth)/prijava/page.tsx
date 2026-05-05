@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { SignInForm } from "./sign-in-form";
 
 export const metadata: Metadata = {
   title: "Prijava",
   description: "Prijavite se na svoj Elegant Render nalog.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default function PrijavaPage() {

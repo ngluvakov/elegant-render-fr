@@ -3,16 +3,13 @@ import Link from "next/link";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { IMPRINT, SITE, formatAddress } from "@/lib/content/site";
+import { createPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Uslovi korišćenja",
   description: `Uslovi korišćenja sajta i usluga ${SITE.name} — predmet ugovora, cene, isporuka, povlačenje, odgovornost.`,
-  openGraph: {
-    title: "Uslovi korišćenja — Elegant Render",
-    description: `Uslovi korišćenja ${SITE.name}.`,
-    url: "/pravno/uslovi",
-  },
-};
+  path: "/pravno/uslovi",
+});
 
 const LAST_UPDATED = "2026-05-06";
 

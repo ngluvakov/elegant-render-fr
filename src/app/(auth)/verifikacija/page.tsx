@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { verifyEmailAction } from "@/server/actions/auth";
 import { ButtonLink } from "@/components/ui/button-link";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Verifikacija emaila",
-  robots: { index: false, follow: false },
+  robots: NO_INDEX_ROBOTS,
 };
 
 type SearchParams = Promise<{ token?: string }>;

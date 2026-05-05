@@ -2,21 +2,22 @@ import type { Metadata } from "next";
 import { ExternalLink, Mail } from "lucide-react";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { ProjectInquiryForm } from "@/components/inquiry/project-inquiry-form";
+import { JsonLd } from "@/components/seo/json-ld";
 import { SITE } from "@/lib/content/site";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import {
+  buildBreadcrumbJsonLd,
+  buildWebPageJsonLd,
+  createPublicMetadata,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Kontakt",
   description:
     "Javite nam se. Pošaljite kratak opis projekta i vratićemo se obično istog radnog dana.",
-  openGraph: {
-    title: "Kontakt — Elegant Render",
-    description:
-      "Javite nam se. Pošaljite kratak opis projekta i vratićemo se obično istog radnog dana.",
-    url: "/kontakt",
-  },
-};
+  path: "/kontakt",
+});
 
 export default async function KontaktPage() {
   const session = await auth();
@@ -29,6 +30,29 @@ export default async function KontaktPage() {
 
   return (
     <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pb-24 pt-20 md:pt-28">
+      <JsonLd
+        data={[
+          buildWebPageJsonLd({
+            path: "/kontakt",
+            name: "Kontakt",
+            description:
+              "Kontakt forma za render enterijera, eksterijera, 3D osnove, virtuelno opremanje i AI obradu fotografija nekretnina.",
+          }),
+          buildBreadcrumbJsonLd([
+            { name: "Početna", path: "/" },
+            { name: "Kontakt", path: "/kontakt" },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "ContactPage",
+            name: "Kontakt - Elegant Render",
+            url: `${SITE.url}/kontakt`,
+            mainEntity: {
+              "@id": `${SITE.url}/#organization`,
+            },
+          },
+        ]}
+      />
       <SectionKicker>Kontakt</SectionKicker>
       <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
         Javite nam se

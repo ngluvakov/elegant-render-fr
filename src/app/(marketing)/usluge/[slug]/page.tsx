@@ -5,6 +5,7 @@ import { ArrowLeft, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
+import { JsonLd } from "@/components/seo/json-ld";
 import {
   CATEGORY_LABELS,
   SERVICES,
@@ -13,6 +14,12 @@ import {
 import { formatPublicPriceText } from "@/lib/catalog/display-currency";
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import {
+  buildBreadcrumbJsonLd,
+  buildServiceJsonLd,
+  buildWebPageJsonLd,
+  createPublicMetadata,
+} from "@/lib/seo";
 
 type Params = Promise<{ slug: string }>;
 
@@ -28,15 +35,13 @@ export async function generateMetadata({
   const { slug } = await params;
   const service = getServiceBySlug(slug);
   if (!service) return {};
-  return {
+  return createPublicMetadata({
     title: service.name,
     description: service.description,
-    openGraph: {
-      title: `${service.name} — Elegant Render`,
-      description: service.description,
-      url: `/usluge/${slug}`,
-    },
-  };
+    path: `/usluge/${slug}`,
+    image: service.asset,
+    imageAlt: service.name,
+  });
 }
 
 export default async function ServiceDetailPage({
@@ -55,6 +60,21 @@ export default async function ServiceDetailPage({
 
   return (
     <article className="mx-auto w-full max-w-4xl px-6 pb-24 pt-20 md:pt-28">
+      <JsonLd
+        data={[
+          buildWebPageJsonLd({
+            path: `/usluge/${service.slug}`,
+            name: service.name,
+            description: service.description,
+          }),
+          buildBreadcrumbJsonLd([
+            { name: "Početna", path: "/" },
+            { name: "Usluge", path: "/usluge" },
+            { name: service.name, path: `/usluge/${service.slug}` },
+          ]),
+          buildServiceJsonLd(service),
+        ]}
+      />
       <Link
         href="/usluge"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -95,6 +115,15 @@ export default async function ServiceDetailPage({
           )}
         </p>
       </div>
+
+      <section className="mt-10 grid gap-4 md:grid-cols-3">
+        <InfoBlock title="Kada koristiti" text={service.highlight} />
+        <InfoBlock title="Šta poslati" text={service.materials} />
+        <InfoBlock
+          title="Šta dobijate"
+          text={`${service.variants[0].included} Dodatni obim se računa kroz javne doplate iz cenovnika.`}
+        />
+      </section>
 
       <section className="mt-14 space-y-6">
         <h2 className="text-2xl text-foreground md:text-3xl">
@@ -208,5 +237,16 @@ export default async function ServiceDetailPage({
         </ButtonLink>
       </div>
     </article>
+  );
+}
+
+function InfoBlock({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="rounded-xl border border-border/70 bg-card/75 p-5">
+      <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        {title}
+      </h2>
+      <p className="mt-3 text-sm leading-7 text-foreground/80">{text}</p>
+    </div>
   );
 }

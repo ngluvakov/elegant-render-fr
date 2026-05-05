@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { ResetPasswordForm } from "./reset-password-form";
 
 export const metadata: Metadata = {
   title: "Nova lozinka",
   description: "Postavite novu lozinku za vaš nalog.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 type SearchParams = Promise<{ token?: string }>;

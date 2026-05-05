@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { ForgotPasswordForm } from "./forgot-password-form";
 
 export const metadata: Metadata = {
   title: "Zaboravljena lozinka",
   description: "Zatražite link za resetovanje lozinke.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default function ZaboravljenaLozinkaPage() {

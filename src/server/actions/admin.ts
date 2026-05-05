@@ -19,6 +19,7 @@ import type { OrderStatus } from "@/generated/prisma/client";
 import { syncCommentToDeal } from "@/server/bitrix/sync-comment";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
 import { enqueueOutboxEvent } from "@/lib/outbox";
+import { recordAuditLog } from "@/lib/audit";
 import {
   addMonths,
   formatCreditsFromUnits,
@@ -57,6 +58,13 @@ export async function adminCreateComment(orderId: string, body: string) {
     });
   });
 
+  await recordAuditLog({
+    action: "order.comment_create",
+    entityType: "Order",
+    entityId: orderId,
+    metadata: { commentId: comment.id, length: body.trim().length },
+  });
+
   return { success: true };
 }
 
@@ -67,8 +75,27 @@ export async function adminTransitionOrder(
 ) {
   const admin = await requireAdmin();
 
+  // Capture the from-status before transition so the audit trail
+  // doesn't depend on reading it after the row has been moved.
+  const before = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { status: true },
+  });
+
   try {
     await transitionOrder(orderId, toStatus as OrderStatus, admin.id, note);
+
+    await recordAuditLog({
+      action: "order.transition",
+      entityType: "Order",
+      entityId: orderId,
+      metadata: {
+        from: before?.status ?? null,
+        to: toStatus,
+        note: note ?? null,
+      },
+    });
+
     return { success: true };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Greška" };
@@ -100,6 +127,13 @@ export async function adminUploadDeliverable(
       tags: { area: "bitrix", flow: "sync-file-deliverable" },
       extra: { fileId: file.id, orderId },
     });
+  });
+
+  await recordAuditLog({
+    action: "order.deliverable_upload",
+    entityType: "Order",
+    entityId: orderId,
+    metadata: { fileId: file.id, fileName, fileSize, mimeType },
   });
 
   return { success: true };
@@ -178,6 +212,18 @@ export async function adminGrantAiCredits(args: {
     distinctId: `user:${args.userId}`,
     event: "admin_credits_granted",
     properties: { user_id: args.userId, units },
+  });
+
+  await recordAuditLog({
+    action: "ai_credits.grant",
+    entityType: "User",
+    entityId: args.userId,
+    metadata: {
+      units,
+      note,
+      balanceAfterUnits: result.balanceAfterUnits,
+      expiresAt: expiresAt.toISOString(),
+    },
   });
 
   return result;
@@ -261,6 +307,13 @@ export async function adminGrantFreeRevision(args: {
     distinctId: `user:${order.userId}`,
     event: "admin_free_revision_granted",
     properties: { order_id: order.id, from_status: order.status },
+  });
+
+  await recordAuditLog({
+    action: "order.free_revision_grant",
+    entityType: "Order",
+    entityId: order.id,
+    metadata: { fromStatus: order.status, note },
   });
 
   return { success: true };

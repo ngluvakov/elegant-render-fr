@@ -39,8 +39,36 @@ model User {
   pricingBooksCreated  PricingBook[]         @relation("PricingBookCreatedBy")
   pricingBooksPublished PricingBook[]        @relation("PricingBookPublishedBy")
   pricingChangeLogs    PricingChangeLog[]    @relation("PricingChangeLogActor")
+  auditLogs            AuditLog[]            @relation("AuditLogActor")
 
   @@map("users")
+}
+
+/// Forensically-stable record of consequential admin and system actions.
+/// Required by ISO 27001:2022 control set (A.8.15 Logging) and by GDPR
+/// Art. 32 (security of processing). Inserted by recordAuditLog() in
+/// src/lib/audit.ts; failure to log never breaks the underlying action.
+///
+/// actorEmail is captured at log time even though we have a relation —
+/// when a user is deleted we want the trail to remain readable.
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorEmail String?
+  action     String
+  entityType String?
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  actor User? @relation("AuditLogActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+  @@index([entityType, entityId])
+  @@index([action, createdAt])
+  @@map("audit_logs")
 }
 
 model Account {

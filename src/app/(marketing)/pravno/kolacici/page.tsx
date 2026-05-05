@@ -4,16 +4,13 @@ import { SectionKicker } from "@/components/brand/section-kicker";
 import { ConsentSettingsLink } from "@/components/site/consent-settings-link";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { IMPRINT, SITE } from "@/lib/content/site";
+import { createPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Politika kolačića",
   description: `Koje kolačiće i slične tehnologije koristi ${SITE.name} i kako da kontrolišete svoj izbor.`,
-  openGraph: {
-    title: "Politika kolačića — Elegant Render",
-    description: `Politika kolačića ${SITE.name}.`,
-    url: "/pravno/kolacici",
-  },
-};
+  path: "/pravno/kolacici",
+});
 
 const LAST_UPDATED = "2026-05-06";
 

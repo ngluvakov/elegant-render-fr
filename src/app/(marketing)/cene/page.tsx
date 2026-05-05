@@ -3,11 +3,18 @@ import { Suspense } from "react";
 import { Layers, TrendingDown, Zap } from "lucide-react";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { SectionKicker } from "@/components/brand/section-kicker";
+import { JsonLd } from "@/components/seo/json-ld";
 import { CategoryPreview } from "@/components/configurator/category-preview";
 import { ConfiguratorBody } from "@/components/configurator/pricing-configurator";
 import { QuoteProvider } from "@/components/configurator/quote-context";
 import { StandaloneAiCredits } from "@/components/configurator/standalone-ai-credits";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
+import {
+  buildBreadcrumbJsonLd,
+  buildOfferCatalogJsonLd,
+  buildWebPageJsonLd,
+  createPublicMetadata,
+} from "@/lib/seo";
 import {
   formatPublicPrice,
   getPublicPricingTerms,
@@ -15,17 +22,13 @@ import {
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Cene",
   description:
     "Transparentan cenovnik usluga arhitektonske vizuelizacije. Prva isporuka iz modela nosi pun iznos, svaki sledeći prikaz iz istog modela je znatno povoljniji.",
-  openGraph: {
-    title: "Cene — Elegant Render",
-    description:
-      "Transparentan cenovnik usluga arhitektonske vizuelizacije. Plaćate model jednom — koristite ga više puta.",
-    url: "/cene",
-  },
-};
+  path: "/cene",
+  image: "/artwork/cene-card-enterijer.webp",
+});
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +46,21 @@ export default async function CenePage() {
 
   return (
     <>
+      <JsonLd
+        data={[
+          buildWebPageJsonLd({
+            path: "/cene",
+            name: "Cene arhitektonske vizuelizacije",
+            description:
+              "Transparentan cenovnik rendera, 3D osnova, virtuelnog opremanja, 360 tura i AI kredita.",
+          }),
+          buildBreadcrumbJsonLd([
+            { name: "Početna", path: "/" },
+            { name: "Cene", path: "/cene" },
+          ]),
+          buildOfferCatalogJsonLd(pricingCatalog.categories),
+        ]}
+      />
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
         <SectionKicker>Cene</SectionKicker>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">

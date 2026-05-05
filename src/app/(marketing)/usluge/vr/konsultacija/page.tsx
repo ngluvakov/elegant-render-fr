@@ -16,19 +16,15 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import type { VrProductId } from "@/lib/catalog/vr-config";
+import { createPublicMetadata } from "@/lib/seo";
 import { VrInquiryForm } from "./inquiry-form";
 
-export const metadata: Metadata = {
-  title: "VR konsultacija — Elegant Render",
+export const metadata: Metadata = createPublicMetadata({
+  title: "VR konsultacija",
   description:
     "Zatražite konsultaciju za VR walkthrough. Tim se javlja u roku od 1 radnog dana sa predlogom opsega i tehničkih detalja.",
-  openGraph: {
-    title: "VR konsultacija — Elegant Render",
-    description:
-      "Zatražite konsultaciju za VR walkthrough. Tim se javlja u roku od 1 radnog dana.",
-    url: "/usluge/vr/konsultacija",
-  },
-};
+  path: "/usluge/vr/konsultacija",
+});
 
 const VALID_VR_IDS: VrProductId[] = ["vr-existing", "vr-standalone"];
 

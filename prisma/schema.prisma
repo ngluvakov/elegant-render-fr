@@ -24,6 +24,12 @@ model User {
   aiCreditsExpireAt         DateTime?
   aiCreditsReminder30SentAt DateTime?
   aiCreditsReminder7SentAt  DateTime?
+  // GDPR Art. 17 erasure request. Set when the user clicks "Obriši
+  // nalog" in the profile; admin reconciles within 30 days. Hard
+  // deletion is constrained by the Zakon o računovodstvu 10-year
+  // invoice retention rule, so processing is anonymization, not row
+  // delete. Field is null for the vast majority of users.
+  deletionRequestedAt       DateTime?
   createdAt                 DateTime  @default(now())
   updatedAt                 DateTime  @updatedAt
 

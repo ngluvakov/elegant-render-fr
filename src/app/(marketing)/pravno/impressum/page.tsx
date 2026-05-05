@@ -2,16 +2,13 @@ import type { Metadata } from "next";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { IMPRINT, SITE, formatAddress } from "@/lib/content/site";
+import { createPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Impressum",
   description: `Pravni podaci pravnog lica koje stoji iza ${SITE.name} — naziv, sedište, registarski podaci, kontakt.`,
-  openGraph: {
-    title: "Impressum — Elegant Render",
-    description: `Pravni podaci pravnog lica koje stoji iza ${SITE.name}.`,
-    url: "/pravno/impressum",
-  },
-};
+  path: "/pravno/impressum",
+});
 
 export default function ImpressumPage() {
   return (

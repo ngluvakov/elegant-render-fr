@@ -217,15 +217,92 @@ export const FAQ_ITEMS = [
   },
 ] as const;
 
+export const SERVICES_PAGE_FAQS = [
+  {
+    question: "Kako da znam koja usluga mi je potrebna?",
+    answer:
+      "Dovoljno je da pošaljete fotografije, plan ili kratko objašnjenje cilja. Na osnovu toga predlažemo najlogičniju uslugu i okvir cene.",
+  },
+  {
+    question: "Da li su cene konačne?",
+    answer:
+      "Na stranici su prikazane početne cene. Konačna cena zavisi od obima, broja kadrova, nivoa detalja i ulaznih materijala.",
+  },
+  {
+    question: "Koliko korekcija je uključeno?",
+    answer:
+      "Tri kruga korekcija su uključena u osnovnu cenu svake usluge, osim ako se radi o promeni obima projekta.",
+  },
+  {
+    question: "Da li radite samo za Srbiju?",
+    answer:
+      "Elegant Render je primarno fokusiran na Srbiju i region, ali je struktura usluge spremna i za druga tržišta.",
+  },
+] as const;
+
+export const AI_STUDIO_FAQS = [
+  {
+    question: "Da li AI Studio pravi 3D render?",
+    answer:
+      "Ne. AI Studio obrađuje postojeće fotografije. Ako prostor ne postoji ili treba potpuno kontrolisan arhitektonski prikaz, bolji izbor je klasičan render.",
+  },
+  {
+    question: "Kada treba koristiti masku?",
+    answer:
+      "Masku koristite kada želite da se izmena desi samo na delu slike: veći predmet, određeni zid, deo poda ili zona prostorije.",
+  },
+  {
+    question: "Koja je razlika između staginga, renovacije i redesign-a?",
+    answer:
+      "Staging dodaje opremu u prazan prostor. Renovacija menja materijale i elemente prostora. Redesign menja stil i atmosferu postojeće sobe.",
+  },
+  {
+    question: "Da li rezultat mogu ponovo da obradim?",
+    answer:
+      "Da. Rezultat može da postane nova ulazna slika za malu korekciju ili nastavak dorade.",
+  },
+] as const;
+
 export function buildOrganizationJsonLd() {
   return {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": ["Organization", "ProfessionalService", "LocalBusiness"],
+    "@id": `${SITE.url}/#organization`,
     name: SITE.name,
     alternateName: SITE.longName,
+    legalName: IMPRINT.legalName,
     url: SITE.url,
+    logo: `${SITE.url}/branding/elegant-render-logo-with-padding.png`,
+    image: `${SITE.url}/artwork/elegant-render-hero-interior.webp`,
+    description: SITE.description,
     email: SITE.email,
+    taxID: IMPRINT.taxId,
+    foundingDate: IMPRINT.foundedAt,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: IMPRINT.street,
+      postalCode: IMPRINT.postalCode,
+      addressLocality: IMPRINT.city,
+      addressCountry: "RS",
+    },
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: SITE.email,
+        availableLanguage: ["sr-Latn", "en"],
+      },
+    ],
     sameAs: [SITE.instagram],
+    areaServed: ["RS", "EU", "Worldwide"],
+    currenciesAccepted: "EUR, RSD",
+    priceRange: "€€",
+    serviceType: [
+      "Arhitektonska vizuelizacija",
+      "3D renderi",
+      "Virtuelno opremanje",
+      "AI obrada fotografija nekretnina",
+    ],
     parentOrganization: {
       "@type": "Organization",
       name: SITE.parentCompany,

@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { SectionKicker } from "@/components/brand/section-kicker";
+import { createPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Portfolio",
   description:
     "Izbor naših projekata — enterijera, eksterijera, virtuelnog opremanja i adaptacija prostora.",
-  openGraph: {
-    title: "Portfolio — Elegant Render",
-    description:
-      "Izbor naših projekata — enterijera, eksterijera, virtuelnog opremanja i adaptacija prostora.",
-    url: "/portfolio",
-  },
-};
+  path: "/portfolio",
+  noIndex: true,
+});
 
 const PLACEHOLDERS = Array.from({ length: 9 }, (_, i) => i + 1);
 

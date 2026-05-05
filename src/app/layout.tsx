@@ -3,7 +3,9 @@ import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ConsentBanner } from "@/components/site/consent-banner";
+import { JsonLd } from "@/components/seo/json-ld";
 import { SITE, buildOrganizationJsonLd } from "@/lib/content/site";
+import { INDEXABLE_ROBOTS, SEO } from "@/lib/seo";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-heading",
@@ -25,14 +27,28 @@ export const metadata: Metadata = {
   },
   description: SITE.description,
   metadataBase: new URL(SITE.url),
-  robots: { index: false, follow: false },
+  robots: INDEXABLE_ROBOTS,
   openGraph: {
     title: `${SITE.name} — ${SITE.tagline}`,
     description: SITE.description,
     url: SITE.url,
     siteName: SITE.name,
-    locale: "sr_Latn_RS",
+    locale: SEO.locale,
     type: "website",
+    images: [
+      {
+        url: "/artwork/elegant-render-hero-interior.webp",
+        width: 1200,
+        height: 630,
+        alt: `${SITE.name} arhitektonska vizuelizacija`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE.name} — ${SITE.tagline}`,
+    description: SITE.description,
+    images: ["/artwork/elegant-render-hero-interior.webp"],
   },
 };
 
@@ -43,16 +59,11 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="sr-Latn"
+      lang={SEO.htmlLang}
       className={cn("h-full antialiased", cormorant.variable, manrope.variable)}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(buildOrganizationJsonLd()),
-          }}
-        />
+        <JsonLd data={buildOrganizationJsonLd()} />
         {children}
         <ConsentBanner />
       </body>

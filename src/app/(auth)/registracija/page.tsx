@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { SignUpForm } from "./sign-up-form";
 
 export const metadata: Metadata = {
   title: "Registracija",
   description: "Napravite Elegant Render nalog — besplatno.",
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default function RegistracijaPage() {

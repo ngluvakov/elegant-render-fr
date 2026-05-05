@@ -4,16 +4,13 @@ import Link from "next/link";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { CERTIFIER, ISO_CERTIFICATIONS, SITE } from "@/lib/content/site";
+import { createPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "O nama",
   description: `${SITE.name} je B2C podbrend kompanije ${SITE.parentCompany} za arhitektonsku vizuelizaciju — sa transparentnim cenama i brzim procesom.`,
-  openGraph: {
-    title: "O nama — Elegant Render",
-    description: `${SITE.name} je B2C podbrend kompanije ${SITE.parentCompany} za arhitektonsku vizuelizaciju — sa transparentnim cenama i brzim procesom.`,
-    url: "/o-nama",
-  },
-};
+  path: "/o-nama",
+});
 
 export default function ONamaPage() {
   return (

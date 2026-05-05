@@ -55,6 +55,10 @@ export const rateLimiters = {
   checkout: makeLimiter(10, "1 h", "rl:checkout"),
   uploadUrl: makeLimiter(60, "1 h", "rl:upload-url"),
   chat: makeLimiter(30, "1 h", "rl:chat"),
+  // GDPR Art. 20 portability download. Loose enough for legitimate
+  // retries (3/hour), tight enough to blunt scraping if a session
+  // cookie leaks.
+  accountExport: makeLimiter(3, "1 h", "rl:account-export"),
 } as const;
 
 export type RateLimiterKey = keyof typeof rateLimiters;

@@ -8,16 +8,13 @@ import {
   SITE,
   formatAddress,
 } from "@/lib/content/site";
+import { createPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Politika privatnosti",
   description: `Politika privatnosti ${SITE.name} — kako obrađujemo lične podatke korisnika, koja prava imate i kome se obraćate.`,
-  openGraph: {
-    title: "Politika privatnosti — Elegant Render",
-    description: `Politika privatnosti ${SITE.name}.`,
-    url: "/pravno/privatnost",
-  },
-};
+  path: "/pravno/privatnost",
+});
 
 const LAST_UPDATED = "2026-05-06";
 

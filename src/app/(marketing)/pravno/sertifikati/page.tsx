@@ -3,16 +3,15 @@ import Image from "next/image";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { CERTIFIER, ISO_CERTIFICATIONS, SITE } from "@/lib/content/site";
+import { createPublicMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "Sertifikati i standardi",
   description: `${SITE.name} posluje po sertifikovanim ISO standardima 9001:2015, 27001 i 50001 — sertifikovano od strane ${CERTIFIER.name}.`,
-  openGraph: {
-    title: "Sertifikati i standardi — Elegant Render",
-    description: `${SITE.name} posluje po sertifikovanim ISO standardima 9001:2015, 27001 i 50001 — sertifikovano od strane ${CERTIFIER.name}.`,
-    url: "/pravno/sertifikati",
-  },
-};
+  path: "/pravno/sertifikati",
+  image: CERTIFIER.badgeAsset.src,
+  imageAlt: CERTIFIER.badgeAsset.alt,
+});
 
 export default function SertifikatiPage() {
   return (

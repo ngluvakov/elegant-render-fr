@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { ButtonLink } from "@/components/ui/button-link";
+import { JsonLd } from "@/components/seo/json-ld";
 import {
   ToolPickerCard,
   type ToolPickerIconName,
@@ -42,18 +43,23 @@ import {
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 import type { PricingSettings } from "@/lib/pricing/catalog";
+import { AI_STUDIO_FAQS } from "@/lib/content/site";
+import {
+  SEO,
+  absoluteUrl,
+  buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
+  buildWebPageJsonLd,
+  createPublicMetadata,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPublicMetadata({
   title: "AI Studio",
   description:
     "Brza AI obrada fotografija nekretnina: uklanjanje elemenata, dan-u-noć, zamena neba, boja zidova, staging, renovacija i redesign.",
-  openGraph: {
-    title: "AI Studio — Elegant Render",
-    description:
-      "Uploadujte fotografiju, izaberite AI alat i dobijte rezultat za oglas, prezentaciju ili proveru ideje.",
-    url: "/ai-studio",
-  },
-};
+  path: "/ai-studio",
+  image: "/artwork/ai-tool-virtual_staging-after.webp",
+});
 
 type ToolDetail = {
   icon: LucideIcon;
@@ -216,29 +222,6 @@ const tips = [
   "Ako je rezultat blizu dobrog, koristite ga kao novi ulaz i tražite malu korekciju.",
 ];
 
-const faq = [
-  {
-    question: "Da li AI Studio pravi 3D render?",
-    answer:
-      "Ne. AI Studio obrađuje postojeće fotografije. Ako prostor ne postoji ili treba potpuno kontrolisan arhitektonski prikaz, bolji izbor je klasičan render.",
-  },
-  {
-    question: "Kada treba koristiti masku?",
-    answer:
-      "Masku koristite kada želite da se izmena desi samo na delu slike: veći predmet, određeni zid, deo poda ili zona prostorije.",
-  },
-  {
-    question: "Koja je razlika između staginga, renovacije i redesign-a?",
-    answer:
-      "Staging dodaje opremu u prazan prostor. Renovacija menja materijale i elemente prostora. Redesign menja stil i atmosferu postojeće sobe.",
-  },
-  {
-    question: "Da li rezultat mogu ponovo da obradim?",
-    answer:
-      "Da. Rezultat može da postane nova ulazna slika za malu korekciju ili nastavak dorade.",
-  },
-];
-
 const creditPackages = [10, 25, 50, 100];
 
 /**
@@ -265,6 +248,46 @@ export default async function AiStudioLandingPage() {
 
   return (
     <>
+      <JsonLd
+        data={[
+          buildWebPageJsonLd({
+            path: "/ai-studio",
+            name: "AI Studio za obradu fotografija nekretnina",
+            description:
+              "AI alati za uklanjanje elemenata, dan-u-noć, zamenu neba, virtuelno opremanje, renovaciju i redesign prostora.",
+          }),
+          buildBreadcrumbJsonLd([
+            { name: "Početna", path: "/" },
+            { name: "AI Studio", path: "/ai-studio" },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: "AI Studio",
+            serviceType: "AI obrada fotografija nekretnina",
+            url: absoluteUrl("/ai-studio"),
+            provider: {
+              "@id": SEO.organizationId,
+            },
+            offers: {
+              "@type": "OfferCatalog",
+              name: "AI alati",
+              itemListElement: AI_EDIT_TYPES.map((item) => ({
+                "@type": "Offer",
+                name: item.label,
+                description: toolDetails[item.id].benefit,
+                priceCurrency: "EUR",
+                price: toolStartingEur(
+                  item.units,
+                  pricingSettings.aiCreditTiers,
+                  pricingSettings.aiCreditUnitsPerCredit,
+                ),
+              })),
+            },
+          },
+          buildFaqJsonLd(AI_STUDIO_FAQS),
+        ]}
+      />
       <HeroSection
         displayCurrency={displayCurrency}
         pricingSettings={pricingSettings}
@@ -842,7 +865,7 @@ function FaqSection() {
           </h2>
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-2">
-          {faq.map((item) => (
+          {AI_STUDIO_FAQS.map((item) => (
             <article
               key={item.question}
               className="rounded-2xl border border-border/60 bg-card/80 p-6 shadow-[0_4px_16px_rgba(28,26,25,0.03)]"

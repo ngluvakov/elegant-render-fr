@@ -7,11 +7,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { magicLinkSignInAction } from "@/server/actions/auth";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { AutoSubmitMagicLink } from "./auto-submit";
 
 export const metadata: Metadata = {
   title: "Pristup portalu",
-  robots: { index: false, follow: false },
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default async function PortalPristupPage({

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { formatEur } from "@/lib/catalog/calculate";
@@ -14,6 +15,7 @@ export function StepReview() {
   } = useCheckout();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [waiveWithdrawal, setWaiveWithdrawal] = useState(false);
   const requiresUpload = calculation.items.some((item) => item.kind === "service");
 
   const handleProceed = async () => {
@@ -21,11 +23,20 @@ export function StepReview() {
       setError("Korisnik nije identifikovan. Vratite se na prvi korak.");
       return;
     }
+    if (!waiveWithdrawal) {
+      setError("Pre nastavka morate potvrditi saglasnost ispod.");
+      return;
+    }
 
     setPending(true);
     setError("");
 
-    const result = await createOrder(userId, quoteItems, customerNote);
+    const result = await createOrder(
+      userId,
+      quoteItems,
+      customerNote,
+      new Date(),
+    );
 
     if (result.error) {
       setError(result.error);
@@ -131,6 +142,39 @@ export function StepReview() {
         </div>
       </div>
 
+      {/* Distance-selling withdrawal waiver. Per Zakon o zaštiti potrošača
+          čl. 28 / EU CRD čl. 16(m), digital services that begin before
+          the 14-day window elapses require the customer's explicit
+          waiver of the withdrawal right. Without checking, the proceed
+          button is disabled. The checkout server action also enforces
+          this server-side. */}
+      <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border/60 bg-card/80 p-5 md:p-6">
+        <input
+          type="checkbox"
+          checked={waiveWithdrawal}
+          onChange={(e) => setWaiveWithdrawal(e.target.checked)}
+          className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer accent-accent"
+          aria-describedby="waive-withdrawal-help"
+        />
+        <span className="text-sm leading-relaxed text-foreground/80">
+          <strong className="text-foreground">
+            Saglasan/saglasna sam da izrada počinje odmah po plaćanju
+          </strong>{" "}
+          i razumem da time gubim pravo na povlačenje od 14 dana po članu
+          16(m) Direktive (EU) 2011/83 i članu 28. Zakona o zaštiti
+          potrošača Republike Srbije.{" "}
+          <Link
+            href="/pravno/uslovi"
+            target="_blank"
+            className="text-foreground underline-offset-4 hover:underline"
+            id="waive-withdrawal-help"
+          >
+            Više u Uslovima korišćenja
+          </Link>
+          .
+        </span>
+      </label>
+
       <div className="flex justify-between">
         <Button variant="outline" onClick={() => setStep(requiresUpload ? 1 : 0)}>
           Nazad
@@ -139,7 +183,7 @@ export function StepReview() {
           variant="accent"
           size="lg"
           onClick={handleProceed}
-          disabled={pending}
+          disabled={pending || !waiveWithdrawal}
         >
           {pending ? "Kreiranje…" : "Nastavi na plaćanje"}
         </Button>

@@ -126,6 +126,12 @@ model Order {
   containsAiCredits  Boolean          @default(false)
   aiCreditsAppliedAt DateTime?
   customerNote       String?          @db.Text
+  // Customer's explicit waiver of the 14-day distance-selling withdrawal
+  // right per Zakon o zaštiti potrošača čl. 28 / EU CRD čl. 16(m).
+  // Required for digital services started before the 14-day period
+  // elapses; null means the right is still active and the order
+  // shouldn't have started production yet.
+  withdrawalWaivedAt DateTime?
   // Rule 3: reference a prior paid order so its model assets feed
   // discount resolution on this order. Nullable; enforced same-user via
   // server action.

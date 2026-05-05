@@ -36,9 +36,21 @@ export async function createOrder(
   userId: string,
   quoteItems: QuoteItem[],
   customerNote?: string,
+  withdrawalWaivedAt?: Date | null,
 ): Promise<OrderResult> {
   if (!userId) return { error: "Korisnik nije identifikovan." };
   if (!quoteItems.length) return { error: "Ponuda je prazna." };
+  if (!withdrawalWaivedAt) {
+    // EU CRD čl. 16(m) / Zakon o zaštiti potrošača čl. 28: digital
+    // services started before the 14-day window expires require an
+    // explicit waiver. The checkout review step gates the submit
+    // button on this checkbox, so this branch should only fire on a
+    // tampered client.
+    return {
+      error:
+        "Pre potvrde porudžbine morate prihvatiti da izrada počinje odmah i da time gubite pravo na povlačenje od 14 dana.",
+    };
+  }
 
   // Rate-limit before any DB writes. createOrder is reachable from
   // /poruci by anyone (guest or logged-in), so a tampered client could
@@ -96,6 +108,7 @@ export async function createOrder(
       premiumTotalEur: Math.round(premiumTotalEur),
       containsAiCredits,
       customerNote: customerNote || null,
+      withdrawalWaivedAt,
       items: {
         create: calculation.items.map((item) => {
           const sourceQI = quoteItems.find(

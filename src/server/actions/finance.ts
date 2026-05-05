@@ -26,6 +26,49 @@ type FinanceAdmin = {
   canManageFinance: boolean;
 };
 
+export type PricingDraftVisualPatch =
+  | {
+      kind: "product";
+      productId: string;
+      label: string;
+      unitLabel: string;
+      basePriceEur: number;
+      includes: string[];
+      inquiryOnly: boolean;
+    }
+  | {
+      kind: "addon";
+      productId: string;
+      addOnId: string;
+      label: string;
+      description: string;
+      priceEur: number;
+      includedQty: number;
+      maxQty: number | null;
+      volumeRules: VolumeRule[];
+    }
+  | {
+      kind: "discount";
+      productId: string;
+      ruleIndex: number;
+      discountPct: number;
+      reason: string;
+    }
+  | {
+      kind: "duration";
+      productId: string;
+      sourceMode: string | null;
+      minSeconds: number;
+      defaultSeconds: number;
+      maxSeconds: number | null;
+      perSecondEur: number;
+      discountTiers: DurationConfig["discountTiers"];
+    }
+  | {
+      kind: "settings";
+      settings: PricingSettings;
+    };
+
 export async function requireFinanceAdmin(): Promise<FinanceAdmin> {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Not authenticated");
@@ -134,6 +177,97 @@ export async function savePricingDraftChange(formData: FormData) {
   );
 
   revalidateFinancePaths();
+}
+
+export async function savePricingDraftVisualPatch(
+  patch: PricingDraftVisualPatch,
+) {
+  const admin = await requireFinanceAdmin();
+  const normalized = normalizeVisualPatch(patch);
+
+  const draft = await updatePricingDraft(
+    admin.id,
+    (categories, settings) => {
+      if (normalized.kind === "product") {
+        return {
+          categories: updateProduct(categories, normalized.productId, {
+            label: normalized.label,
+            unitLabel: normalized.unitLabel,
+            basePriceEur: normalized.basePriceEur,
+            includes: normalized.includes,
+            inquiryOnly: normalized.inquiryOnly,
+          }),
+          settings,
+        };
+      }
+
+      if (normalized.kind === "addon") {
+        return {
+          categories: updateAddOn(
+            categories,
+            normalized.productId,
+            normalized.addOnId,
+            {
+              label: normalized.label,
+              description: normalized.description,
+              priceEur: normalized.priceEur,
+              includedQty: normalized.includedQty,
+              maxQty: normalized.maxQty,
+              volumeRules: normalized.volumeRules,
+            },
+          ),
+          settings,
+        };
+      }
+
+      if (normalized.kind === "discount") {
+        return {
+          categories: updateDiscountRule(
+            categories,
+            normalized.productId,
+            normalized.ruleIndex,
+            {
+              discountPct: normalized.discountPct,
+              reason: normalized.reason,
+            },
+          ),
+          settings,
+        };
+      }
+
+      if (normalized.kind === "duration") {
+        return {
+          categories: updateDurationRule(
+            categories,
+            normalized.productId,
+            normalized.sourceMode,
+            {
+              minSeconds: normalized.minSeconds,
+              defaultSeconds: normalized.defaultSeconds,
+              maxSeconds: normalized.maxSeconds,
+              perSecondEur: normalized.perSecondEur,
+              discountTiers: normalized.discountTiers,
+            },
+          ),
+          settings,
+        };
+      }
+
+      return {
+        categories,
+        settings: normalized.settings,
+      };
+    },
+    {
+      kind: normalized.kind,
+      productId: "productId" in normalized ? normalized.productId : null,
+      addOnId: "addOnId" in normalized ? normalized.addOnId : null,
+      source: "visual_workbench",
+    },
+  );
+
+  revalidateFinancePaths();
+  return draft;
 }
 
 export async function publishPricingBook() {
@@ -345,4 +479,263 @@ function jsonValue<T>(raw: string, fallback: T): T {
   } catch {
     throw new Error("JSON podešavanje nije ispravno.");
   }
+}
+
+function normalizeVisualPatch(
+  patch: PricingDraftVisualPatch,
+): PricingDraftVisualPatch {
+  if (patch.kind === "product") {
+    return {
+      kind: "product",
+      productId: requiredText(patch.productId, "productId"),
+      label: requiredText(patch.label, "Naziv"),
+      unitLabel: requiredText(patch.unitLabel, "Unit label"),
+      basePriceEur: positiveNumber(patch.basePriceEur, "Osnovna cena"),
+      includes: patch.includes
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .slice(0, 12),
+      inquiryOnly: Boolean(patch.inquiryOnly),
+    };
+  }
+
+  if (patch.kind === "addon") {
+    return {
+      kind: "addon",
+      productId: requiredText(patch.productId, "productId"),
+      addOnId: requiredText(patch.addOnId, "addOnId"),
+      label: requiredText(patch.label, "Naziv dodatka"),
+      description: patch.description.trim(),
+      priceEur: nonNegativeNumber(patch.priceEur, "Cena dodatka"),
+      includedQty: nonNegativeInteger(patch.includedQty, "Uključeno"),
+      maxQty:
+        patch.maxQty === null
+          ? null
+          : positiveInteger(patch.maxQty, "Maksimalna količina"),
+      volumeRules: normalizeVolumeRules(patch.volumeRules),
+    };
+  }
+
+  if (patch.kind === "discount") {
+    return {
+      kind: "discount",
+      productId: requiredText(patch.productId, "productId"),
+      ruleIndex: nonNegativeInteger(patch.ruleIndex, "Indeks popusta"),
+      discountPct: percent(patch.discountPct, "Popust"),
+      reason: requiredText(patch.reason, "Razlog popusta"),
+    };
+  }
+
+  if (patch.kind === "duration") {
+    const minSeconds = positiveInteger(patch.minSeconds, "Minimum sekundi");
+    const defaultSeconds = positiveInteger(
+      patch.defaultSeconds,
+      "Default sekundi",
+    );
+    const maxSeconds =
+      patch.maxSeconds === null
+        ? null
+        : positiveInteger(patch.maxSeconds, "Maksimum sekundi");
+    if (defaultSeconds < minSeconds) {
+      throw new Error("Default trajanje ne može biti manje od minimuma.");
+    }
+    if (maxSeconds !== null && maxSeconds < defaultSeconds) {
+      throw new Error("Maksimum trajanja ne može biti manji od default trajanja.");
+    }
+    return {
+      kind: "duration",
+      productId: requiredText(patch.productId, "productId"),
+      sourceMode: patch.sourceMode ? patch.sourceMode.trim() : null,
+      minSeconds,
+      defaultSeconds,
+      maxSeconds,
+      perSecondEur: positiveNumber(patch.perSecondEur, "Cena po sekundi"),
+      discountTiers: normalizeDurationTiers(patch.discountTiers),
+    };
+  }
+
+  return {
+    kind: "settings",
+    settings: normalizeSettingsPatch(patch.settings),
+  };
+}
+
+function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
+  return {
+    eurToRsdRate: positiveNumber(settings.eurToRsdRate, "EUR/RSD kurs"),
+    serbiaVatRate: percentRatio(settings.serbiaVatRate, "PDV Srbija"),
+    aiCreditUnitsPerCredit: positiveInteger(
+      settings.aiCreditUnitsPerCredit,
+      "AI jedinice po kreditu",
+    ),
+    aiCreditExpiresAfterMonths: positiveInteger(
+      settings.aiCreditExpiresAfterMonths,
+      "AI expiry meseci",
+    ),
+    aiCreditTiers: settings.aiCreditTiers
+      .map((tier) => ({
+        minCredits: positiveInteger(tier.minCredits, "Minimum kredita"),
+        centsPerCredit: positiveInteger(
+          tier.centsPerCredit,
+          "Cena po kreditu u centima",
+        ),
+      }))
+      .sort((a, b) => b.minCredits - a.minCredits),
+    specialPricing: {
+      interior: {
+        firstFloorEur: positiveNumber(
+          settings.specialPricing.interior.firstFloorEur,
+          "Enterijer prvi sprat",
+        ),
+        extraFloorEur: positiveNumber(
+          settings.specialPricing.interior.extraFloorEur,
+          "Enterijer dodatni sprat",
+        ),
+        includedRooms: nonNegativeInteger(
+          settings.specialPricing.interior.includedRooms,
+          "Enterijer uključene prostorije",
+        ),
+        includedCameras: nonNegativeInteger(
+          settings.specialPricing.interior.includedCameras,
+          "Enterijer uključeni kadrovi",
+        ),
+        extraRoomEur: positiveNumber(
+          settings.specialPricing.interior.extraRoomEur,
+          "Enterijer doplata prostorije",
+        ),
+        extraCameraEur: positiveNumber(
+          settings.specialPricing.interior.extraCameraEur,
+          "Enterijer doplata kadra",
+        ),
+      },
+      tour360: {
+        firstFloorEur: positiveNumber(
+          settings.specialPricing.tour360.firstFloorEur,
+          "360 prvi sprat",
+        ),
+        extraFloorEur: positiveNumber(
+          settings.specialPricing.tour360.extraFloorEur,
+          "360 dodatni sprat",
+        ),
+        includedHotspots: nonNegativeInteger(
+          settings.specialPricing.tour360.includedHotspots,
+          "360 uključeni hotspotovi",
+        ),
+        includedCameras: nonNegativeInteger(
+          settings.specialPricing.tour360.includedCameras,
+          "360 uključeni kadrovi",
+        ),
+        extraHotspotEur: positiveNumber(
+          settings.specialPricing.tour360.extraHotspotEur,
+          "360 doplata hotspota",
+        ),
+        extraCameraEur: positiveNumber(
+          settings.specialPricing.tour360.extraCameraEur,
+          "360 doplata kadra",
+        ),
+        assembly: {
+          baseEur: nonNegativeNumber(
+            settings.specialPricing.tour360.assembly.baseEur,
+            "Tour assembly baza",
+          ),
+          freeHotspotThreshold: nonNegativeInteger(
+            settings.specialPricing.tour360.assembly.freeHotspotThreshold,
+            "Tour assembly free hotspot prag",
+          ),
+          floorPlanNavEur: nonNegativeNumber(
+            settings.specialPricing.tour360.assembly.floorPlanNavEur,
+            "Tour floorplan navigacija",
+          ),
+          whiteLabelEur: nonNegativeNumber(
+            settings.specialPricing.tour360.assembly.whiteLabelEur,
+            "Tour white-label",
+          ),
+        },
+      },
+      tourAssembly: {
+        baseEur: nonNegativeNumber(
+          settings.specialPricing.tourAssembly.baseEur,
+          "Tour assembly baza",
+        ),
+        freeHotspotThreshold: nonNegativeInteger(
+          settings.specialPricing.tourAssembly.freeHotspotThreshold,
+          "Tour assembly free hotspot prag",
+        ),
+        floorPlanNavEur: nonNegativeNumber(
+          settings.specialPricing.tourAssembly.floorPlanNavEur,
+          "Tour floorplan navigacija",
+        ),
+        whiteLabelEur: nonNegativeNumber(
+          settings.specialPricing.tourAssembly.whiteLabelEur,
+          "Tour white-label",
+        ),
+      },
+    },
+  };
+}
+
+function normalizeVolumeRules(rules: VolumeRule[]): VolumeRule[] {
+  return rules
+    .map((rule) => ({
+      afterQty: nonNegativeInteger(rule.afterQty, "Volume prag"),
+      priceEur: nonNegativeNumber(rule.priceEur, "Volume cena"),
+    }))
+    .sort((a, b) => a.afterQty - b.afterQty);
+}
+
+function normalizeDurationTiers(
+  tiers: DurationConfig["discountTiers"],
+): DurationConfig["discountTiers"] {
+  return tiers
+    .map((tier) => ({
+      minSec: positiveInteger(tier.minSec, "Duration min"),
+      maxSec:
+        tier.maxSec === null || tier.maxSec === undefined
+          ? Infinity
+          : positiveInteger(tier.maxSec, "Duration max"),
+      discountPct: percent(tier.discountPct, "Duration popust"),
+    }))
+    .sort((a, b) => a.minSec - b.minSec);
+}
+
+function requiredText(value: string, label: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) throw new Error(`${label} je obavezno polje.`);
+  return trimmed;
+}
+
+function nonNegativeNumber(value: number, label: string): number {
+  if (!Number.isFinite(value) || value < 0) {
+    throw new Error(`${label} mora biti 0 ili veće.`);
+  }
+  return value;
+}
+
+function positiveNumber(value: number, label: string): number {
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new Error(`${label} mora biti veće od nule.`);
+  }
+  return value;
+}
+
+function nonNegativeInteger(value: number, label: string): number {
+  return Math.floor(nonNegativeNumber(value, label));
+}
+
+function positiveInteger(value: number, label: string): number {
+  return Math.floor(positiveNumber(value, label));
+}
+
+function percent(value: number, label: string): number {
+  if (!Number.isFinite(value) || value < 0 || value > 100) {
+    throw new Error(`${label} mora biti između 0 i 100.`);
+  }
+  return Math.round(value);
+}
+
+function percentRatio(value: number, label: string): number {
+  if (!Number.isFinite(value) || value < 0 || value > 1) {
+    throw new Error(`${label} mora biti decimalno između 0 i 1.`);
+  }
+  return value;
 }

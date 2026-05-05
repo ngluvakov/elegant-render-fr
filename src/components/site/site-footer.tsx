@@ -11,10 +11,12 @@ import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { ConsentSettingsLink } from "@/components/site/consent-settings-link";
 import {
   CERTIFIER,
+  IMPRINT,
   ISO_CERTIFICATIONS,
   NAV_LEGAL,
   NAV_MAIN,
   SITE,
+  formatAddress,
 } from "@/lib/content/site";
 
 const FOOTER_SERVICES = [
@@ -166,6 +168,19 @@ export function SiteFooter() {
               O sertifikatima →
             </Link>
           </div>
+        </div>
+
+        {/* Imprint snippet — full legal name + address + registry numbers
+            visible on every page, per Zakon o elektronskoj trgovini čl. 7.
+            The /pravno/impressum page has the complete legal identity. */}
+        <div className="border-b border-white/10 py-5 text-xs leading-relaxed text-white/55">
+          <p>
+            <strong className="text-white/75">{IMPRINT.legalName}</strong>
+            {" · "}
+            {formatAddress()}
+            {" · "}MB {IMPRINT.registryNumber}
+            {" · "}PIB {IMPRINT.taxId}
+          </p>
         </div>
 
         <div className="flex flex-col gap-4 pt-6 text-xs text-white/45 md:flex-row md:items-center md:justify-between">

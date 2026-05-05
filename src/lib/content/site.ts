@@ -19,6 +19,40 @@ export const SITE = {
   instagram: "https://www.instagram.com/elegantrender",
 } as const;
 
+/**
+ * Pravni identitet pravnog lica — koristi se na /pravno/impressum, u
+ * footer-u i u JSON-LD Organization schema-u. Vrednosti dolaze iz APR
+ * registra (https://pretraga.apr.gov.rs). Telefon i ime zakonskog
+ * zastupnika su opcioni — Zakon o elektronskoj trgovini čl. 7 zahteva
+ * naziv, sedište, registarski podaci i "podatak koji omogućava brzo i
+ * direktno uspostavljanje veze" — email zadovoljava poslednji uslov.
+ */
+export const IMPRINT = {
+  legalName:
+    "DRUŠTVO ZA GRAFIČKI DIZAJN PROIZVODNJU TRGOVINU I USLUGE WHITE ROOK DOO KOVAČICA",
+  shortName: "White Rook DOO",
+  street: "JNA 25",
+  postalCode: "26210",
+  city: "Kovačica",
+  country: "Srbija",
+  taxId: "110339214", // PIB
+  registryNumber: "21339393", // matični broj
+  activityCode: "7410", // Specijalizovane dizajnerske delatnosti
+  foundedAt: "2017-11-22",
+  size: "Malo preduzeće",
+  email: "kontakt@elegantrender.rs",
+  privacyEmail: "kontakt@elegantrender.rs",
+  euRepresentative: null as null | {
+    name: string;
+    address: string;
+    email: string;
+  },
+} as const;
+
+export function formatAddress(): string {
+  return `${IMPRINT.street}, ${IMPRINT.postalCode} ${IMPRINT.city}, ${IMPRINT.country}`;
+}
+
 export const TRUST_SIGNALS = [
   "Bez paketa van cenovnika — svaka cena je iz zvaničnog cenovnika.",
   "Logika cene je vidljiva već iznad prevoja, bez skrivenih pravila.",
@@ -118,6 +152,7 @@ export const NAV_MAIN: NavItem[] = [
 ];
 
 export const NAV_LEGAL: NavItem[] = [
+  { href: "/pravno/impressum", label: "Impressum" },
   { href: "/pravno/privatnost", label: "Politika privatnosti" },
   { href: "/pravno/uslovi", label: "Uslovi korišćenja" },
   { href: "/pravno/kolacici", label: "Politika kolačića" },

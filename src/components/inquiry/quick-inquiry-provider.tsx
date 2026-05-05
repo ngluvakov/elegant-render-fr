@@ -18,6 +18,7 @@ import {
   ProjectInquiryForm,
   type InquiryFormSource,
 } from "@/components/inquiry/project-inquiry-form";
+import { track } from "@/lib/posthog-events";
 
 type QuickInquiryContextValue = {
   openInquiry: (source?: InquiryFormSource) => void;
@@ -32,6 +33,10 @@ export function QuickInquiryProvider({ children }: { children: ReactNode }) {
   const value = useMemo<QuickInquiryContextValue>(
     () => ({
       openInquiry: (nextSource) => {
+        track("quick_inquiry_opened", {
+          source: nextSource?.source ?? "quick-inquiry",
+          ...(nextSource?.sourcePath ? { source_path: nextSource.sourcePath } : {}),
+        });
         setSource(nextSource);
         setOpen(true);
       },

@@ -157,7 +157,9 @@ export default function KolaciciPage() {
             .
           </p>
           <p>
-            Bez vašeg pristanka, kolačići i tehnologije iz kategorija{" "}
+            Vercel Web Analytics i Speed Insights koristimo za osnovnu,
+            agregatnu metriku poseta i performansi bez postavljanja kolačića u
+            vaš pretraživač. Bez vašeg pristanka, tehnologije iz kategorija{" "}
             <em>Analitika</em> i <em>Snimanje sesija</em> se ne aktiviraju —
             PostHog i Sentry se inicijalizuju tek nakon vaše izričite
             saglasnosti.
@@ -170,19 +172,34 @@ export default function KolaciciPage() {
           entries={NECESSARY}
         />
 
+        <Section title="4. Osnovna metrika bez kolačića">
+          <p>
+            Na Vercelu pratimo agregatne signale kao što su broj pregleda
+            stranica, izvor posete, zemlja na nivou geolokacije i Core Web
+            Vitals performanse po ruti. Ovaj sloj ne koristi kolačiće,
+            localStorage, sessionStorage ili snimanje sesija.
+          </p>
+          <p>
+            Detaljnije ponašanje korisnika, funnel događaji, izveštaji o
+            greškama i snimanje sesija ostaju odvojeni: PostHog i Sentry se
+            uključuju samo ako izaberete analitiku, a snimanje sesija samo ako
+            posebno uključite tu opciju.
+          </p>
+        </Section>
+
         <CookieCategorySection
-          title="4. Analitika"
+          title="5. Analitika"
           subtitle="Anonimne statistike koje nam pomažu da popravimo iskustvo. Aktiviraju se tek uz saglasnost."
           entries={ANALYTICS}
         />
 
         <CookieCategorySection
-          title="5. Snimanje sesija"
+          title="6. Snimanje sesija"
           subtitle="Anonimna snimanja kretanja po stranicama, posebno korisna oko grešaka. Tekstualni unosi i osetljive forme se maskiraju. Aktiviraju se uz zasebnu saglasnost."
           entries={RECORDING}
         />
 
-        <Section title="6. Kontrola u pretraživaču">
+        <Section title="7. Kontrola u pretraživaču">
           <p>
             Pored banner-a na sajtu, sve kolačiće možete da pregledate i
             obrišete u podešavanjima vašeg pretraživača. Linkovi ka
@@ -232,7 +249,7 @@ export default function KolaciciPage() {
           </ul>
         </Section>
 
-        <Section title="7. Više informacija">
+        <Section title="8. Više informacija">
           <p>
             Detalji o tome kako obrađujemo lične podatke i kome se obraćate
             ako imate pitanja nalaze se u{" "}

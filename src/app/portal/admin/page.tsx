@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  AlertCircle,
   Briefcase,
   CheckCircle2,
   Clock,
@@ -67,10 +66,6 @@ export default async function AdminPage({
     ["paid", "in_progress", "in_review", "revision_requested"].includes(o.status),
   ).length;
 
-  const awaitingCount = allOrders.filter((o) =>
-    ["draft", "awaiting_payment"].includes(o.status),
-  ).length;
-
   const completedCount = allOrders.filter((o) =>
     ["delivered", "closed"].includes(o.status),
   ).length;
@@ -110,6 +105,12 @@ export default async function AdminPage({
             className="rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
           >
             AI Studio
+          </Link>
+          <Link
+            href="/portal/admin/analitika"
+            className="rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
+          >
+            Analitika
           </Link>
           <Link
             href="/portal/admin/finansije/cenovnik"

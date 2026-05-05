@@ -126,9 +126,9 @@ export function ConsentBanner() {
             Kolačići i privatnost
           </h2>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-            Koristimo neophodne kolačiće za rad sajta. Uz vašu saglasnost,
-            prikupljamo i anonimne analitičke podatke koji nam pomažu da
-            popravimo iskustvo.{" "}
+            Koristimo neophodne kolačiće za rad sajta. Dodatnu analitiku i
+            snimanje sesija uključujemo samo uz vašu saglasnost, da bismo
+            popravili iskustvo.{" "}
             <Link
               href="/pravno/kolacici"
               className="text-foreground underline-offset-4 hover:underline"

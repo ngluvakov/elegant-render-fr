@@ -73,12 +73,24 @@ export function ProjectInquiryForm({
   >({ kind: "idle" });
   const [pending, setPending] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const contactFormStartedRef = useRef(false);
 
   const totalUploaded = files.reduce((sum, file) => sum + file.fileSize, 0);
   const totalUploading = uploading.reduce(
     (sum, file) => sum + (file.error ? 0 : file.file.size),
     0,
   );
+  const resolvedSource =
+    source?.source ?? (mode === "contact" ? "contact-page" : "quick-inquiry");
+
+  const trackContactFormStarted = () => {
+    if (mode !== "contact" || contactFormStartedRef.current) return;
+    contactFormStartedRef.current = true;
+    track("contact_form_started", {
+      source: resolvedSource,
+      ...(source?.sourcePath ? { source_path: source.sourcePath } : {}),
+    });
+  };
 
   const resetForAnother = () => {
     setDraftId(createDraftId());
@@ -205,7 +217,7 @@ export function ProjectInquiryForm({
       budget: budget.trim() || undefined,
       deadline: deadline.trim() || undefined,
       message,
-      source: source?.source ?? (mode === "contact" ? "contact-page" : "quick-inquiry"),
+      source: resolvedSource,
       sourcePath: source?.sourcePath,
       sourceLabel: source?.sourceLabel,
       quoteSnapshot: source?.quoteSnapshot,
@@ -219,7 +231,7 @@ export function ProjectInquiryForm({
     }
 
     track("project_inquiry_submitted", {
-      source: source?.source ?? (mode === "contact" ? "contact-page" : "quick-inquiry"),
+      source: resolvedSource,
       file_count: files.length,
       has_quote_snapshot: Boolean(source?.quoteSnapshot),
     });
@@ -255,7 +267,7 @@ export function ProjectInquiryForm({
   }
 
   return (
-    <form onSubmit={submit} className="space-y-6">
+    <form onSubmit={submit} onFocusCapture={trackContactFormStarted} className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor={`${mode}-inquiry-name`}>

@@ -28,8 +28,13 @@ export const SITE = {
  * direktno uspostavljanje veze" — email zadovoljava poslednji uslov.
  */
 export const IMPRINT = {
+  // Title case for display. APR registers in all-caps as a typesetting
+  // convention; capitalization is not part of the legal identity. Use
+  // shortName ("White Rook DOO") on customer-facing surfaces and reserve
+  // legalName for legal pages where the formal registered identity is
+  // surfaced (impressum, privacy controller block, terms provider block).
   legalName:
-    "DRUŠTVO ZA GRAFIČKI DIZAJN PROIZVODNJU TRGOVINU I USLUGE WHITE ROOK DOO KOVAČICA",
+    "Društvo za grafički dizajn, proizvodnju, trgovinu i usluge, White Rook DOO Kovačica",
   shortName: "White Rook DOO",
   street: "JNA 25",
   postalCode: "26210",

@@ -170,12 +170,12 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Imprint snippet — full legal name + address + registry numbers
+        {/* Imprint snippet — short name + address + registry numbers
             visible on every page, per Zakon o elektronskoj trgovini čl. 7.
-            The /pravno/impressum page has the complete legal identity. */}
+            The /pravno/impressum page surfaces the full registered name. */}
         <div className="border-b border-white/10 py-5 text-xs leading-relaxed text-white/55">
           <p>
-            <strong className="text-white/75">{IMPRINT.legalName}</strong>
+            <strong className="text-white/75">{IMPRINT.shortName}</strong>
             {" · "}
             {formatAddress()}
             {" · "}MB {IMPRINT.registryNumber}

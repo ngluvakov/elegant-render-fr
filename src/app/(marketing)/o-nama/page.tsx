@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { SectionKicker } from "@/components/brand/section-kicker";
@@ -60,27 +61,43 @@ export default function ONamaPage() {
 
         <div className="mt-6 rounded-xl border border-border/60 bg-secondary/30 p-8">
           <h2 className="text-2xl text-foreground">Sertifikati i standardi</h2>
-          <p className="mt-4 text-base leading-relaxed text-foreground/75">
-            Naš proces počiva na tri međunarodna ISO standarda, sertifikovana
-            od strane <strong>{CERTIFIER.name}</strong> —{" "}
-            {ISO_CERTIFICATIONS.map((cert, idx) => (
-              <span key={cert.id}>
-                <strong>{cert.code}</strong> ({cert.domain.toLowerCase()})
-                {idx < ISO_CERTIFICATIONS.length - 1
-                  ? idx === ISO_CERTIFICATIONS.length - 2
-                    ? " i "
-                    : ", "
-                  : ""}
-              </span>
-            ))}
-            . Detaljnije o svakom standardu i o {CERTIFIER.name}-u:{" "}
+          <div className="mt-5 grid gap-6 md:grid-cols-[1fr_auto] md:items-start">
+            <p className="text-base leading-relaxed text-foreground/75">
+              Naš proces počiva na tri međunarodna ISO standarda, sertifikovana
+              od strane <strong>{CERTIFIER.name}</strong> —{" "}
+              {ISO_CERTIFICATIONS.map((cert, idx) => (
+                <span key={cert.id}>
+                  <strong>{cert.code}</strong> ({cert.domain.toLowerCase()})
+                  {idx < ISO_CERTIFICATIONS.length - 1
+                    ? idx === ISO_CERTIFICATIONS.length - 2
+                      ? " i "
+                      : ", "
+                    : ""}
+                </span>
+              ))}
+              . Detaljnije o svakom standardu i o {CERTIFIER.name}-u:{" "}
+              <Link
+                href="/pravno/sertifikati"
+                className="text-foreground underline-offset-4 hover:underline"
+              >
+                Pogledajte sertifikate →
+              </Link>
+            </p>
             <Link
               href="/pravno/sertifikati"
-              className="text-foreground underline-offset-4 hover:underline"
+              aria-label={`${CERTIFIER.name} sertifikat — pogledaj detalje`}
+              className="self-center justify-self-center transition hover:opacity-90 md:self-start md:justify-self-end"
             >
-              Pogledajte sertifikate →
+              <Image
+                src={CERTIFIER.badgeAsset.src}
+                alt={CERTIFIER.badgeAsset.alt}
+                width={CERTIFIER.badgeAsset.width}
+                height={CERTIFIER.badgeAsset.height}
+                sizes="(max-width: 768px) 60vw, 200px"
+                className="h-auto w-[200px] max-w-full"
+              />
             </Link>
-          </p>
+          </div>
         </div>
       </article>
       <FinalCta />

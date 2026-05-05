@@ -4,6 +4,7 @@
  *
  * Used on: marketing layout (all public pages).
  */
+import Image from "next/image";
 import Link from "next/link";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
@@ -134,7 +135,23 @@ export function SiteFooter() {
           <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-white/45">
             Sertifikati i standardi
           </p>
-          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-white/55">
+          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-white/55">
+            {/* Badge has white surround on its own — wrap in a tight white
+                card so the silver bevel and TÜV blue read cleanly on the
+                dark footer surface. */}
+            <Link
+              href="/pravno/sertifikati"
+              aria-label={`${CERTIFIER.name} sertifikat — sertifikati i standardi`}
+              className="inline-flex shrink-0 rounded-md bg-white p-1.5 transition hover:opacity-90"
+            >
+              <Image
+                src={CERTIFIER.badgeAsset.src}
+                alt=""
+                width={CERTIFIER.badgeAsset.width}
+                height={CERTIFIER.badgeAsset.height}
+                className="h-9 w-auto"
+              />
+            </Link>
             {ISO_CERTIFICATIONS.map((cert) => (
               <span key={cert.id}>
                 {cert.code}{" "}

@@ -32,7 +32,7 @@ export default function PrivatnostPage() {
         </p>
         <p>
           Sistem upravljanja informacionom bezbednošću sertifikovan je po
-          standardu <strong>ISO/IEC 27001</strong> od strane{" "}
+          standardu <strong>ISO/IEC 27001:2022</strong> od strane{" "}
           <strong>{CERTIFIER.name}</strong>, što našu GDPR usklađenost
           potkrepljuje konkretnim procedurama: kontrolisanim pristupom,
           šifrovanjem u tranzitu, definisanom retencijom i procesima za

@@ -170,8 +170,8 @@ export function QuickOrderHero() {
               </div>
             </div>
 
-            {/* Trust signals — 3 col on desktop, 1 col on mobile */}
-            <div className="grid gap-4 md:grid-cols-3">
+            {/* Trust signals — 4 col on xl, 2 col on md, 1 col on mobile */}
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
               {TRUST_SIGNALS.map((signal) => (
                 <div
                   key={signal}

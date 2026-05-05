@@ -23,6 +23,7 @@ export const TRUST_SIGNALS = [
   "Bez paketa van cenovnika — svaka cena je iz zvaničnog cenovnika.",
   "Logika cene je vidljiva već iznad prevoja, bez skrivenih pravila.",
   "Tri runde revizija uključene u svaki projekat po našem standardu.",
+  "Sertifikovano TÜV Rheinland — ISO 9001:2015, ISO/IEC 27001:2022, ISO 50001:2018.",
 ] as const;
 
 export type IsoCertification = {
@@ -35,11 +36,26 @@ export type IsoCertification = {
 };
 
 export const CERTIFIER = {
-  name: "TÜV",
-  fullName: "TÜV — Technischer Überwachungsverein",
+  name: "TÜV Rheinland",
+  fullName: "TÜV Rheinland — nemačko sertifikaciono telo",
   description:
-    "TÜV je nemačko sertifikaciono telo sa višedecenijskom tradicijom, prepoznato globalno kao jedan od najstrožih nezavisnih ocenjivača kvaliteta i bezbednosti. Sertifikati izdati od strane TÜV-a smatraju se najprestižnijim u industriji i podrazumevaju redovne nezavisne audit-e.",
+    "TÜV Rheinland je jedno od najstarijih i najuglednijih svetskih sertifikacionih tela, sa sedištem u Kelnu i prisustvom u preko 50 zemalja. Sertifikati koje izdaje smatraju se referencom u industriji i podrazumevaju redovne nezavisne audit-e — ne jednokratnu izjavu, već kontinuirano održavan sistem.",
+  // Combined Testmark badge issued for all three standards under a single ID.
+  // Source: hi-res CMYK PNG/PDF from TÜV's certification package, converted
+  // to sRGB WebP for web (1600px wide, ~65KB).
+  badgeAsset: {
+    src: "/legal/tuv-rheinland-certified.webp",
+    pdfSrc: "/legal/tuv-rheinland-certified.pdf",
+    width: 1600,
+    height: 590,
+    alt: "TÜV Rheinland CERTIFIED — ISO 9001:2015, ISO/IEC 27001:2022, ISO 50001:2018, ID 9000025319",
+  },
 } as const;
+
+const TUV_RHEINLAND_CERT_ID = "9000025319";
+// Certipedia is TÜV Rheinland's public certificate registry. The URL on
+// the badge QR code resolves here for all three standards (combined cert).
+const TUV_RHEINLAND_VERIFY_URL = `https://www.certipedia.com/quality_marks/${TUV_RHEINLAND_CERT_ID}?locale=en`;
 
 export const ISO_CERTIFICATIONS: IsoCertification[] = [
   {
@@ -48,20 +64,26 @@ export const ISO_CERTIFICATIONS: IsoCertification[] = [
     domain: "Upravljanje kvalitetom",
     description:
       "Standard koji definiše zahteve za sistem upravljanja kvalitetom procesa i isporuke usluga. Naš tok rada — od preuzimanja materijala, preko revizija, do isporuke finalnih rendera — usklađen je sa ovim standardom, što znači predvidiv kvalitet i dosledan rezultat na svakom projektu.",
+    certNumber: TUV_RHEINLAND_CERT_ID,
+    verifyUrl: TUV_RHEINLAND_VERIFY_URL,
   },
   {
     id: "iso-27001",
-    code: "ISO/IEC 27001",
+    code: "ISO/IEC 27001:2022",
     domain: "Informaciona bezbednost",
     description:
       "Standard za upravljanje informacionom bezbednošću. Vaše datoteke (osnove prostora, fotografije i lični podaci u portalu) tretiramo po sertifikovanim procedurama: kontrolisani pristup, šifrovanje u tranzitu, definisana retencija i procesi za reagovanje na incidente. Ovaj standard je i osnov naše GDPR usklađenosti.",
+    certNumber: TUV_RHEINLAND_CERT_ID,
+    verifyUrl: TUV_RHEINLAND_VERIFY_URL,
   },
   {
     id: "iso-50001",
-    code: "ISO 50001",
+    code: "ISO 50001:2018",
     domain: "Energetski menadžment",
     description:
       "Standard za sistemsko upravljanje energetskom efikasnošću. Naš render kapacitet i interna infrastruktura prate i optimizuju potrošnju energije, što smanjuje ekološki otisak digitalne arhitektonske produkcije.",
+    certNumber: TUV_RHEINLAND_CERT_ID,
+    verifyUrl: TUV_RHEINLAND_VERIFY_URL,
   },
 ];
 

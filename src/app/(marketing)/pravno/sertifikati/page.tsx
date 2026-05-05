@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { CERTIFIER, ISO_CERTIFICATIONS, SITE } from "@/lib/content/site";
@@ -22,6 +23,18 @@ export default function SertifikatiPage() {
           Sertifikati i standardi
         </h1>
 
+        <div className="mt-10 flex justify-center rounded-2xl border border-border/60 bg-card/60 p-6 md:p-10">
+          <Image
+            src={CERTIFIER.badgeAsset.src}
+            alt={CERTIFIER.badgeAsset.alt}
+            width={CERTIFIER.badgeAsset.width}
+            height={CERTIFIER.badgeAsset.height}
+            sizes="(max-width: 768px) 90vw, 520px"
+            className="h-auto w-full max-w-[520px]"
+            priority
+          />
+        </div>
+
         <div className="mt-10 space-y-6 text-base leading-relaxed text-foreground/75">
           <p>
             {SITE.name} posluje po tri međunarodna ISO standarda, sertifikovana od
@@ -29,6 +42,20 @@ export default function SertifikatiPage() {
             isporuke, bezbednost vaših podataka i energetsku efikasnost
             produkcije — tri ose poverenja koje su nam važne i koje znače
             konkretne procedure, ne samo izjave.
+          </p>
+          <p className="text-sm text-foreground/65">
+            Sertifikat pokriva sva tri standarda pod istim ID-em (
+            <strong className="text-foreground/85">9000025319</strong>) i izdat je
+            od strane {CERTIFIER.name}. Originalni dokument možete preuzeti{" "}
+            <a
+              href={CERTIFIER.badgeAsset.pdfSrc}
+              target="_blank"
+              rel="noreferrer"
+              className="text-foreground underline-offset-4 hover:underline"
+            >
+              ovde (PDF)
+            </a>
+            .
           </p>
         </div>
 

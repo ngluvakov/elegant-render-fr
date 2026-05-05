@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { ProfileForm } from "./profile-form";
+import { PrivacyActions } from "./privacy-actions";
 
 export const metadata: Metadata = {
   title: "Profil",
@@ -15,7 +16,13 @@ export default async function ProfilPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { name: true, email: true, phone: true, passwordHash: true },
+    select: {
+      name: true,
+      email: true,
+      phone: true,
+      passwordHash: true,
+      deletionRequestedAt: true,
+    },
   });
 
   if (!user) return null;
@@ -37,6 +44,10 @@ export default async function ProfilPage() {
         defaultEmail={user.email}
         defaultPhone={user.phone ?? ""}
         hasPassword={hasPassword}
+      />
+
+      <PrivacyActions
+        deletionRequestedAt={user.deletionRequestedAt?.toISOString() ?? null}
       />
     </div>
   );

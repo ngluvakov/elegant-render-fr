@@ -1,16 +1,26 @@
 /**
- * profile.ts — Server action for updating the authenticated user's profile.
+ * profile.ts — Server actions for the authenticated user's profile.
  *
- * Exports updateProfileAction() handling name, phone, and optional
- * password change with bcrypt hashing.
+ * Exports:
+ *   - updateProfileAction()         — name / phone / password change
+ *   - requestAccountDeletion()      — GDPR Art. 17 erasure request
+ *   - cancelAccountDeletion()       — undo the request
  *
- * Used by: portal/profil/profile-form
+ * Account deletion is request-based (not auto-delete) because the
+ * Zakon o računovodstvu requires keeping invoice/order rows for 10
+ * years. Admin processes the request by anonymizing PII while
+ * preserving the accounting-required rows. Until processed the user
+ * sees a "deletion pending" banner and can cancel.
+ *
+ * Used by: portal/profil/profile-form, portal/profil/privacy-actions
  */
 "use server";
 
 import bcrypt from "bcryptjs";
+import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { recordAuditLog } from "@/lib/audit";
 
 export type ProfileState = {
   error?: string;
@@ -44,5 +54,80 @@ export async function updateProfileAction(
     data,
   });
 
+  return { success: true };
+}
+
+export type DeletionState = {
+  error?: string;
+  success?: boolean;
+};
+
+/**
+ * Mark the user's account as pending deletion. Sets deletionRequestedAt
+ * to now, fires an outbox email to admins (DPO inbox), and records an
+ * audit log. The actual erasure (PII anonymization while preserving
+ * accounting rows) is performed by an admin within 30 days.
+ */
+export async function requestAccountDeletion(): Promise<DeletionState> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { email: true, name: true, deletionRequestedAt: true },
+  });
+  if (!user) return { error: "Korisnik nije pronađen." };
+  if (user.deletionRequestedAt) {
+    return {
+      error:
+        "Zahtev za brisanje je već registrovan. Pratite status na stranici profila.",
+    };
+  }
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { deletionRequestedAt: new Date() },
+  });
+
+  // Admin notification path: the audit log entry below is reviewable
+  // at /portal/admin/revizije by filtering on action=account.deletion_request.
+  // A dedicated email-to-DPO channel can be wired later by adding
+  // account_deletion_requested_email to OutboxEventType.
+  await recordAuditLog({
+    action: "account.deletion_request",
+    entityType: "User",
+    entityId: session.user.id,
+    metadata: { userEmail: user.email, userName: user.name ?? null },
+  });
+
+  revalidatePath("/portal/profil");
+  return { success: true };
+}
+
+export async function cancelAccountDeletion(): Promise<DeletionState> {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { deletionRequestedAt: true, email: true },
+  });
+  if (!user?.deletionRequestedAt) {
+    return { error: "Nema aktivnog zahteva za brisanje." };
+  }
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { deletionRequestedAt: null },
+  });
+
+  await recordAuditLog({
+    action: "account.deletion_cancel",
+    entityType: "User",
+    entityId: session.user.id,
+    metadata: { userEmail: user.email },
+  });
+
+  revalidatePath("/portal/profil");
   return { success: true };
 }

@@ -23,6 +23,7 @@ import {
 } from "@/lib/rate-limit";
 import { repriceOrder } from "@/server/actions/item-config";
 import { syncNewDeal } from "@/server/bitrix/sync-deal";
+import { enforceCleanScan } from "@/lib/file-scan";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
@@ -293,6 +294,21 @@ export async function confirmFileUpload(
   mimeType: string,
   storagePath: string,
 ) {
+  // ISO 27001 A.8.7. Sync AV scan before any DB row is created — an
+  // infected upload never enters our system. enforceCleanScan handles
+  // delete-from-storage + audit log on failure.
+  const scan = await enforceCleanScan({
+    storagePath,
+    fileName,
+    fileSize,
+    mimeType,
+    entityType: "Order",
+    entityId: orderId,
+  });
+  if (!scan.ok) {
+    return { error: scan.userError };
+  }
+
   const file = await prisma.orderFile.create({
     data: {
       orderId,
@@ -301,6 +317,8 @@ export async function confirmFileUpload(
       mimeType,
       storagePath,
       kind: "source",
+      scanStatus: "clean",
+      scannedAt: new Date(),
     },
   });
 
@@ -310,4 +328,6 @@ export async function confirmFileUpload(
       extra: { fileId: file.id, orderId: file.orderId ?? null },
     });
   });
+
+  return { success: true };
 }

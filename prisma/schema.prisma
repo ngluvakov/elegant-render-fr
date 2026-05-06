@@ -231,6 +231,15 @@ model OrderFile {
   storagePath    String
   bitrix24FileId String?
   uploadedAt     DateTime @default(now())
+  // Antivirus scan state. ISO 27001 control A.8.7. Synchronously
+  // scanned at upload-confirm time via Cloudmersive; rows are only
+  // created when the scan returns clean. Pre-scan-era rows have null
+  // values. scanThreats stays empty for clean rows; populated when an
+  // older flow stored an infected file (defense in depth, not used by
+  // current pipeline since infected uploads never reach the DB).
+  scanStatus     String?
+  scannedAt      DateTime?
+  scanThreats    String[]
 
   order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderItem OrderItem? @relation(fields: [orderItemId], references: [id])
@@ -543,6 +552,12 @@ model ProjectInquiryFile {
   mimeType    String
   storagePath String   @unique
   uploadedAt  DateTime @default(now())
+  // Antivirus scan state — see OrderFile for semantics. Same scan
+  // pipeline runs before submitProjectInquiry creates rows; an
+  // infected file fails the whole inquiry submission.
+  scanStatus  String?
+  scannedAt   DateTime?
+  scanThreats String[]
 
   inquiry ProjectInquiry @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
 

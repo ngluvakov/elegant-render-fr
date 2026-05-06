@@ -5,6 +5,7 @@ import { Prisma, type AiGeneration } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { enforceCleanScan } from "@/lib/file-scan";
 import {
   AI_FILE_RETENTION_DAYS,
   AI_FREE_REGENERATIONS,
@@ -171,6 +172,35 @@ export async function startAiStudioGeneration(
   }
   if (input.maskStoragePath && !ownsAiStudioPath(userId, input.maskStoragePath)) {
     return { error: "Maska nije dostupna za ovaj nalog." };
+  }
+
+  // ISO 27001 A.8.7. Scan fresh client uploads before passing them to
+  // the AI provider. Skip when the input is a derivative — its parent's
+  // input was scanned at the root, and our own generated results don't
+  // come from outside the system. enforceCleanScan handles delete +
+  // audit log on infected/error.
+  if (!input.parentGenerationId) {
+    const inputScan = await enforceCleanScan({
+      storagePath: input.inputStoragePath,
+      fileName: input.inputFileName ?? "ai-input",
+      fileSize: 0,
+      mimeType: "application/octet-stream",
+      entityType: "AiStudioInput",
+      entityId: userId,
+    });
+    if (!inputScan.ok) return { error: inputScan.userError };
+
+    if (input.maskStoragePath) {
+      const maskScan = await enforceCleanScan({
+        storagePath: input.maskStoragePath,
+        fileName: "ai-mask",
+        fileSize: 0,
+        mimeType: "application/octet-stream",
+        entityType: "AiStudioInput",
+        entityId: userId,
+      });
+      if (!maskScan.ok) return { error: maskScan.userError };
+    }
   }
 
   const editDef = getAiEditType(input.editType);

@@ -50,7 +50,14 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
 
         if (!uploadRes.ok) throw new Error("Upload nije uspeo");
 
-        await confirmFileUpload(orderId, file.name, file.size, file.type, storagePath);
+        const result = await confirmFileUpload(
+          orderId,
+          file.name,
+          file.size,
+          file.type,
+          storagePath,
+        );
+        if (result?.error) throw new Error(result.error);
         setUploading((prev) => prev.filter((u) => u.file !== file));
         router.refresh();
       } catch (err) {

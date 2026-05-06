@@ -22,6 +22,7 @@ import {
   type AddOnBreakdown,
 } from "@/lib/catalog/calculate";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
+import { enforceCleanScan } from "@/lib/file-scan";
 import {
   calcInteriorTotal,
   newFloor,
@@ -169,6 +170,19 @@ export async function confirmItemFileUpload(
   const session = await auth();
   if (!session?.user?.id) return { error: "Niste prijavljeni." };
 
+  // ISO 27001 A.8.7. Sync AV scan before any DB row is created — an
+  // infected upload never enters our system. enforceCleanScan handles
+  // delete-from-storage + audit log on failure.
+  const scan = await enforceCleanScan({
+    storagePath,
+    fileName,
+    fileSize,
+    mimeType,
+    entityType: "Order",
+    entityId: orderId,
+  });
+  if (!scan.ok) return { error: scan.userError };
+
   await prisma.orderFile.create({
     data: {
       orderId,
@@ -179,6 +193,8 @@ export async function confirmItemFileUpload(
       fileSize,
       mimeType,
       storagePath,
+      scanStatus: "clean",
+      scannedAt: new Date(),
     },
   });
 

@@ -19,6 +19,11 @@ import {
   type ProjectInquiryFileInput,
 } from "@/lib/project-inquiry";
 import {
+  UPLOADS_BUCKET,
+  deleteStorageObject,
+  enforceCleanScan,
+} from "@/lib/file-scan";
+import {
   checkRateLimit,
   getServerActionIdentifier,
   rateLimitMessage,
@@ -168,8 +173,47 @@ export async function submitProjectInquiry(
   const files = validateFiles(input.files, draftId);
   if ("error" in files) return files;
 
+  // ISO 27001 A.8.7. Sync AV scan all attached files in parallel
+  // before creating any DB rows. If ANY file is infected or scanning
+  // is unavailable, refuse the whole inquiry — better than ending up
+  // with a half-submitted record. enforceCleanScan handles
+  // delete-from-storage + audit logging for the bad file; the others
+  // get cleaned up here in the rejection branch.
+  if (files.length > 0) {
+    const scanResults = await Promise.all(
+      files.map((f) =>
+        enforceCleanScan({
+          storagePath: f.storagePath,
+          fileName: f.fileName,
+          fileSize: f.fileSize,
+          mimeType: f.mimeType,
+          entityType: "ProjectInquiryDraft",
+          entityId: draftId,
+        }),
+      ),
+    );
+    const failed = scanResults.find((r) => !r.ok);
+    if (failed && !failed.ok) {
+      // Best-effort cleanup of any other files in the same inquiry —
+      // they were uploaded together and only make sense as a set.
+      await Promise.allSettled(
+        scanResults.map((result, idx) => {
+          if (result.ok) {
+            return deleteStorageObject({
+              bucket: UPLOADS_BUCKET,
+              path: files[idx].storagePath,
+            });
+          }
+          return Promise.resolve();
+        }),
+      );
+      return { error: failed.userError };
+    }
+  }
+
   const session = await auth();
   const quoteSnapshot = sanitizeQuoteSnapshot(input.quoteSnapshot);
+  const scannedAt = new Date();
 
   const inquiry = await prisma.projectInquiry.create({
     data: {
@@ -192,6 +236,8 @@ export async function submitProjectInquiry(
           fileSize: file.fileSize,
           mimeType: file.mimeType,
           storagePath: file.storagePath,
+          scanStatus: "clean",
+          scannedAt,
         })),
       },
     },

@@ -72,9 +72,20 @@ export function StepUpload() {
           throw new Error("Upload nije uspeo");
         }
 
-        // Confirm in DB if we have an orderId
+        // Confirm in DB if we have an orderId. Server-side AV scan
+        // runs inside confirmFileUpload — if it flags the file, the
+        // upload is rejected and storage is cleaned up by the server.
         if (orderId) {
-          await confirmFileUpload(orderId, file.name, file.size, file.type, storagePath);
+          const result = await confirmFileUpload(
+            orderId,
+            file.name,
+            file.size,
+            file.type,
+            storagePath,
+          );
+          if (result?.error) {
+            throw new Error(result.error);
+          }
         }
 
         addFile({

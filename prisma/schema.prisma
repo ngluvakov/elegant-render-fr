@@ -190,6 +190,15 @@ model Order {
   companyMb          String?
   companyAddress     String?          @db.Text
   companyCountryCode String?
+  // Invoice issuance — populated once, immediately after the payment
+  // provider confirms `paymentStatus = completed`. invoiceNumber is
+  // allocated atomically per calendar year via InvoiceCounter and is
+  // unique across all orders (no gaps within a year). invoicePdfPath
+  // is the Supabase storage path under bucket `order-files`, format
+  // `invoices/{year}/{number}.pdf`.
+  invoiceNumber      String?          @unique
+  invoiceIssuedAt    DateTime?
+  invoicePdfPath     String?
   // Rule 3: reference a prior paid order so its model assets feed
   // discount resolution on this order. Nullable; enforced same-user via
   // server action.
@@ -783,6 +792,19 @@ enum OutboxEventType {
   free_revision_granted_email
   additional_charge_requested_email
   additional_charge_paid_email
+  invoice_issued_email
+}
+
+/// Atomic per-year invoice counter. One row per calendar year; the
+/// row is upsert-incremented inside allocateInvoiceNumber() in
+/// src/lib/invoice-number.ts. Concurrent calls on the same year row
+/// serialize on the row's update lock so seq stays gap-free.
+model InvoiceCounter {
+  year      Int      @id
+  seq       Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@map("invoice_counters")
 }
 
 model OutboxEvent {

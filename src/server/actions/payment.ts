@@ -20,6 +20,7 @@ import {
 import { processMockCardPaymentCents } from "@/lib/payment/mock-card";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { applyPurchasedAiCreditsForOrder } from "@/server/actions/ai-credits";
+import { issueInvoice } from "@/server/actions/issue-invoice";
 
 export type PaymentResult = {
   error?: string;
@@ -56,6 +57,20 @@ async function finishSuccessfulPayment(
       undefined,
       "AI krediti aktivirani — porudžbina zatvorena",
     );
+  }
+
+  // Issue the legal invoice. Best-effort: a failure here doesn't
+  // reverse the payment (funds are already captured by the provider),
+  // and issueInvoice is idempotent on retry — calling it again on an
+  // order that already has invoiceNumber returns the existing one.
+  // Errors surface to Sentry + audit log inside issueInvoice itself.
+  try {
+    await issueInvoice(orderId);
+  } catch (err) {
+    Sentry.captureException(err, {
+      tags: { area: "invoice", flow: "post-payment-hook" },
+      extra: { orderId },
+    });
   }
 
   if (enqueueEmail) {

@@ -1,0 +1,424 @@
+/**
+ * invoice-pdf.tsx — Server-side PDF rendering for issued invoices.
+ *
+ * Three layouts driven off Order.buyerType:
+ *   - individual       → fiscal-style, PDV iskazan, sve na srpskom
+ *   - company_rs       → faktura sa PIB-om primaoca, napomena o SEF-u
+ *   - company_foreign  → invoice na engleskom, "VAT (reverse charge)",
+ *                        čl. 24/25 ZPDV referenca
+ *
+ * Rendered with @react-pdf/renderer's `renderToBuffer()` so the call
+ * site can pipe straight to Supabase. The structure is one
+ * <InvoiceDocument /> with branching at the section level — keeps all
+ * three variants in one file so they share spacing, typography, and
+ * the issuer block.
+ *
+ * Used by: src/server/actions/issue-invoice.ts
+ */
+
+import {
+  Document,
+  Page,
+  StyleSheet,
+  Text,
+  View,
+  renderToBuffer,
+} from "@react-pdf/renderer";
+import { IMPRINT, SITE, formatAddress } from "@/lib/content/site";
+
+export type InvoiceLineItem = {
+  description: string;
+  quantity: number;
+  unitPriceNetCents: number;
+  vatRate: number; // 0 or 0.2
+};
+
+export type InvoiceData = {
+  invoiceNumber: string;
+  issueDate: Date;
+  serviceDate: Date;
+  buyerType: "individual" | "company_rs" | "company_foreign";
+  recipient: {
+    name: string;
+    address: string;
+    taxId?: string | null;
+    mb?: string | null;
+    countryCode?: string | null;
+    email?: string | null;
+  };
+  items: InvoiceLineItem[];
+  currency: "RSD" | "EUR";
+  paymentMethod: string;
+};
+
+const COLORS = {
+  fg: "#1c1a19",
+  muted: "#6e655d",
+  border: "#d8cec4",
+  surface: "#fbf6ee",
+  accent: "#b88363",
+};
+
+const styles = StyleSheet.create({
+  page: {
+    padding: 48,
+    fontSize: 10,
+    color: COLORS.fg,
+    fontFamily: "Helvetica",
+  },
+  h1: { fontSize: 20, fontFamily: "Helvetica-Bold", marginBottom: 4 },
+  number: { fontSize: 10, color: COLORS.muted },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    borderBottom: `1pt solid ${COLORS.border}`,
+    paddingBottom: 12,
+  },
+  metaCol: { textAlign: "right" },
+  metaPair: { flexDirection: "row", gap: 18, marginTop: 2 },
+  metaLabel: { color: COLORS.muted, width: 90, textAlign: "right" },
+  metaValue: { fontFamily: "Helvetica-Bold" },
+  partyGrid: {
+    flexDirection: "row",
+    gap: 24,
+    marginTop: 18,
+  },
+  partyBlock: { flex: 1 },
+  partyLabel: {
+    fontSize: 8,
+    color: COLORS.muted,
+    textTransform: "uppercase",
+    letterSpacing: 1.4,
+    marginBottom: 4,
+  },
+  partyName: { fontFamily: "Helvetica-Bold", marginBottom: 1 },
+  partyText: { lineHeight: 1.5 },
+  partyMono: {
+    fontFamily: "Courier",
+    fontSize: 9,
+    marginTop: 2,
+  },
+  itemsTable: { marginTop: 24 },
+  thead: {
+    flexDirection: "row",
+    borderBottom: `1pt solid ${COLORS.border}`,
+    paddingBottom: 6,
+  },
+  th: {
+    fontSize: 8,
+    color: COLORS.muted,
+    textTransform: "uppercase",
+    letterSpacing: 1.2,
+  },
+  trow: {
+    flexDirection: "row",
+    paddingVertical: 8,
+    borderBottom: `0.5pt solid ${COLORS.border}`,
+  },
+  tcellDesc: { flex: 4, paddingRight: 8 },
+  tcellQty: { width: 36, textAlign: "right" },
+  tcellPrice: { width: 70, textAlign: "right" },
+  tcellVat: { width: 50, textAlign: "right", color: COLORS.muted },
+  tcellTotal: { width: 80, textAlign: "right", fontFamily: "Helvetica-Bold" },
+  totalsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: 240,
+    marginTop: 8,
+    marginLeft: "auto",
+  },
+  totalsLabel: { color: COLORS.muted },
+  totalsValue: { fontFamily: "Helvetica-Bold", textAlign: "right" },
+  grandTotal: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: 240,
+    marginTop: 8,
+    paddingTop: 8,
+    borderTop: `1pt solid ${COLORS.border}`,
+    marginLeft: "auto",
+  },
+  grandLabel: { fontSize: 11, fontFamily: "Helvetica-Bold" },
+  grandValue: {
+    fontSize: 13,
+    fontFamily: "Helvetica-Bold",
+    textAlign: "right",
+  },
+  notes: {
+    marginTop: 28,
+    padding: 12,
+    backgroundColor: COLORS.surface,
+    borderRadius: 4,
+    lineHeight: 1.5,
+  },
+  notesLine: { marginBottom: 4 },
+  paymentLine: {
+    marginTop: 8,
+    paddingTop: 6,
+    borderTop: `0.5pt dashed ${COLORS.border}`,
+  },
+  footer: {
+    position: "absolute",
+    bottom: 24,
+    left: 48,
+    right: 48,
+    fontSize: 8,
+    color: COLORS.muted,
+    textAlign: "center",
+    borderTop: `0.5pt solid ${COLORS.border}`,
+    paddingTop: 8,
+  },
+});
+
+function formatMoney(cents: number, currency: "RSD" | "EUR"): string {
+  const value = cents / 100;
+  if (currency === "RSD") {
+    return `${value.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`;
+  }
+  return `€${value.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+function formatDate(date: Date, locale: "sr-Latn-RS" | "en-GB"): string {
+  return date.toLocaleDateString(locale, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+const STRINGS = {
+  individual: {
+    title: "RAČUN",
+    issuer: "Izdavalac",
+    recipient: "Kupac",
+    issueDate: "Datum izdavanja",
+    serviceDate: "Datum prometa",
+    description: "Opis",
+    qty: "Količina",
+    unitNet: "Jed. cena",
+    vat: "PDV",
+    lineTotal: "Osnovica",
+    subtotal: "Osnovica",
+    vatTotal: "PDV (20%)",
+    grand: "Ukupno za uplatu",
+    paymentLabel: "Način plaćanja",
+  },
+  company_rs: {
+    title: "RAČUN",
+    issuer: "Izdavalac",
+    recipient: "Primalac",
+    issueDate: "Datum izdavanja",
+    serviceDate: "Datum prometa",
+    description: "Opis",
+    qty: "Količina",
+    unitNet: "Jed. cena",
+    vat: "PDV",
+    lineTotal: "Osnovica",
+    subtotal: "Osnovica",
+    vatTotal: "PDV (20%)",
+    grand: "Ukupno za uplatu",
+    paymentLabel: "Način plaćanja",
+  },
+  company_foreign: {
+    title: "INVOICE",
+    issuer: "Issuer",
+    recipient: "Recipient",
+    issueDate: "Issue date",
+    serviceDate: "Service date",
+    description: "Description",
+    qty: "Qty",
+    unitNet: "Unit net",
+    vat: "VAT",
+    lineTotal: "Net total",
+    subtotal: "Subtotal",
+    vatTotal: "VAT",
+    grand: "Total due",
+    paymentLabel: "Payment method",
+  },
+} as const;
+
+export async function renderInvoicePdf(data: InvoiceData): Promise<Buffer> {
+  const buffer = await renderToBuffer(<InvoiceDocument data={data} />);
+  return buffer;
+}
+
+function InvoiceDocument({ data }: { data: InvoiceData }) {
+  const t = STRINGS[data.buyerType];
+  const locale = data.buyerType === "company_foreign" ? "en-GB" : "sr-Latn-RS";
+
+  const subtotalCents = data.items.reduce(
+    (sum, it) => sum + it.quantity * it.unitPriceNetCents,
+    0,
+  );
+  const vatCents = data.items.reduce(
+    (sum, it) => sum + it.quantity * it.unitPriceNetCents * it.vatRate,
+    0,
+  );
+  const totalCents = subtotalCents + vatCents;
+
+  const notes = buildNotes(data);
+
+  return (
+    <Document
+      title={`${t.title} ${data.invoiceNumber}`}
+      author={IMPRINT.shortName}
+      creator={SITE.name}
+    >
+      <Page size="A4" style={styles.page}>
+        {/* Header */}
+        <View style={styles.headerRow}>
+          <View>
+            <Text style={styles.h1}>{t.title}</Text>
+            <Text style={styles.number}>br. {data.invoiceNumber}</Text>
+          </View>
+          <View style={styles.metaCol}>
+            <View style={styles.metaPair}>
+              <Text style={styles.metaLabel}>{t.issueDate}</Text>
+              <Text style={styles.metaValue}>{formatDate(data.issueDate, locale)}</Text>
+            </View>
+            <View style={styles.metaPair}>
+              <Text style={styles.metaLabel}>{t.serviceDate}</Text>
+              <Text style={styles.metaValue}>{formatDate(data.serviceDate, locale)}</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Issuer + Recipient */}
+        <View style={styles.partyGrid}>
+          <View style={styles.partyBlock}>
+            <Text style={styles.partyLabel}>{t.issuer}</Text>
+            <Text style={styles.partyName}>{IMPRINT.shortName}</Text>
+            <Text style={styles.partyText}>{IMPRINT.legalName}</Text>
+            <Text style={styles.partyText}>{formatAddress()}</Text>
+            <Text style={styles.partyMono}>
+              MB {IMPRINT.registryNumber} · PIB {IMPRINT.taxId}
+            </Text>
+            <Text style={styles.partyText}>{IMPRINT.email}</Text>
+          </View>
+          <View style={styles.partyBlock}>
+            <Text style={styles.partyLabel}>{t.recipient}</Text>
+            <Text style={styles.partyName}>{data.recipient.name}</Text>
+            <Text style={styles.partyText}>{data.recipient.address}</Text>
+            {data.recipient.taxId && data.buyerType === "company_rs" && (
+              <Text style={styles.partyMono}>
+                PIB {data.recipient.taxId}
+                {data.recipient.mb ? ` · MB ${data.recipient.mb}` : ""}
+              </Text>
+            )}
+            {data.recipient.taxId && data.buyerType === "company_foreign" && (
+              <Text style={styles.partyMono}>VAT ID {data.recipient.taxId}</Text>
+            )}
+            {data.recipient.countryCode &&
+              data.buyerType === "company_foreign" && (
+                <Text style={styles.partyText}>
+                  Country: {data.recipient.countryCode}
+                </Text>
+              )}
+            {data.recipient.email && (
+              <Text style={styles.partyText}>{data.recipient.email}</Text>
+            )}
+          </View>
+        </View>
+
+        {/* Items */}
+        <View style={styles.itemsTable}>
+          <View style={styles.thead}>
+            <Text style={[styles.th, styles.tcellDesc]}>{t.description}</Text>
+            <Text style={[styles.th, styles.tcellQty]}>{t.qty}</Text>
+            <Text style={[styles.th, styles.tcellPrice]}>{t.unitNet}</Text>
+            <Text style={[styles.th, styles.tcellVat]}>{t.vat}</Text>
+            <Text style={[styles.th, styles.tcellTotal]}>{t.lineTotal}</Text>
+          </View>
+          {data.items.map((it, idx) => {
+            const lineNet = it.quantity * it.unitPriceNetCents;
+            return (
+              <View key={idx} style={styles.trow}>
+                <Text style={styles.tcellDesc}>{it.description}</Text>
+                <Text style={styles.tcellQty}>{it.quantity}</Text>
+                <Text style={styles.tcellPrice}>
+                  {formatMoney(it.unitPriceNetCents, data.currency)}
+                </Text>
+                <Text style={styles.tcellVat}>
+                  {it.vatRate > 0 ? `${Math.round(it.vatRate * 100)}%` : "—"}
+                </Text>
+                <Text style={styles.tcellTotal}>
+                  {formatMoney(lineNet, data.currency)}
+                </Text>
+              </View>
+            );
+          })}
+        </View>
+
+        {/* Totals */}
+        <View style={styles.totalsRow}>
+          <Text style={styles.totalsLabel}>{t.subtotal}</Text>
+          <Text style={styles.totalsValue}>
+            {formatMoney(subtotalCents, data.currency)}
+          </Text>
+        </View>
+        {vatCents > 0 ? (
+          <View style={styles.totalsRow}>
+            <Text style={styles.totalsLabel}>{t.vatTotal}</Text>
+            <Text style={styles.totalsValue}>
+              {formatMoney(vatCents, data.currency)}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.totalsRow}>
+            <Text style={styles.totalsLabel}>{t.vatTotal}</Text>
+            <Text style={styles.totalsLabel}>— (reverse charge)</Text>
+          </View>
+        )}
+        <View style={styles.grandTotal}>
+          <Text style={styles.grandLabel}>{t.grand}</Text>
+          <Text style={styles.grandValue}>
+            {formatMoney(totalCents, data.currency)}
+          </Text>
+        </View>
+
+        {/* Notes + payment */}
+        <View style={styles.notes}>
+          {notes.map((n, i) => (
+            <Text key={i} style={styles.notesLine}>
+              {n}
+            </Text>
+          ))}
+          <Text style={styles.paymentLine}>
+            <Text style={{ fontFamily: "Helvetica-Bold" }}>
+              {t.paymentLabel}:{" "}
+            </Text>
+            {data.paymentMethod}
+          </Text>
+        </View>
+
+        <Text style={styles.footer} fixed>
+          {IMPRINT.legalName} · {formatAddress()} · MB{" "}
+          {IMPRINT.registryNumber} · PIB {IMPRINT.taxId} · {SITE.email}
+        </Text>
+      </Page>
+    </Document>
+  );
+}
+
+function buildNotes(data: InvoiceData): string[] {
+  if (data.buyerType === "individual") {
+    return [
+      "PDV obračunat po stopi 20% i uračunat u prikazane iznose.",
+      "Hvala na poverenju — prijem i potvrdu uplate dobićete posebnim mejlom.",
+    ];
+  }
+  if (data.buyerType === "company_rs") {
+    return [
+      "Faktura je takođe poslata kroz Sistem elektronskih faktura (SEF) na osnovu PIB-a primaoca.",
+      "PDV iskazan po stopi 20% — ulazni PDV se može odbiti u skladu sa Zakonom o PDV-u.",
+    ];
+  }
+  return [
+    "Reverse charge — VAT is not charged on this invoice. Place of supply is outside the Republic of Serbia (čl. 24/25 ZPDV; equivalent to EU VAT Directive 2006/112/EZ Art. 44 / 196).",
+    "Buyer is responsible for accounting VAT in their own jurisdiction.",
+  ];
+}

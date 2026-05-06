@@ -41,10 +41,13 @@ import {
   sendAiCreditsExpiryReminderEmail,
   sendAiCreditsGrantedEmail,
   sendFreeRevisionGrantedEmail,
+  sendInvoiceIssuedEmail,
   sendOrderConfirmationEmail,
   sendPortalAccessEmail,
   sendVrProjectReadyEmail,
 } from "@/lib/email";
+import { getSupabaseAdmin } from "@/lib/supabase";
+import { UPLOADS_BUCKET } from "@/lib/file-scan";
 
 // ─── Producer ────────────────────────────────────────────
 
@@ -230,6 +233,37 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       throw new Error("additional_charge_paid_email: missing required field(s)");
     }
     await sendAdditionalChargePaidEmail({ to, orderNumber, orderId, totalCents });
+  },
+
+  invoice_issued_email: async (payload) => {
+    const to = String(payload.to ?? "");
+    const invoiceNumber = String(payload.invoiceNumber ?? "");
+    const totalEur = Number(payload.totalEur);
+    const pdfPath = String(payload.pdfPath ?? "");
+    if (!to || !invoiceNumber || !pdfPath || !Number.isFinite(totalEur)) {
+      throw new Error("invoice_issued_email: missing required field(s)");
+    }
+    // Pull the rendered PDF straight from Supabase storage. We
+    // re-download per send so a retry after a transient Resend outage
+    // still has the right content even if the order/invoice was
+    // updated in between (rare).
+    const supabase = getSupabaseAdmin();
+    const download = await supabase.storage
+      .from(UPLOADS_BUCKET)
+      .download(pdfPath);
+    if (download.error || !download.data) {
+      throw new Error(
+        `invoice_issued_email: download failed for ${pdfPath}: ${download.error?.message ?? "no data"}`,
+      );
+    }
+    const arrayBuffer = await download.data.arrayBuffer();
+    const pdfBuffer = Buffer.from(arrayBuffer);
+    await sendInvoiceIssuedEmail({
+      to,
+      invoiceNumber,
+      totalEur,
+      pdfBuffer,
+    });
   },
 };
 

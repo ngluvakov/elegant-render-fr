@@ -40,12 +40,25 @@ function getResend(): Resend {
   return _resend;
 }
 
-async function send(args: { to: string; subject: string; html: string }) {
+async function send(args: {
+  to: string;
+  subject: string;
+  html: string;
+  attachments?: Array<{ filename: string; content: Buffer }>;
+}) {
   const { error } = await getResend().emails.send({
     from: FROM,
     to: args.to,
     subject: args.subject,
     html: args.html,
+    ...(args.attachments?.length
+      ? {
+          attachments: args.attachments.map((a) => ({
+            filename: a.filename,
+            content: a.content,
+          })),
+        }
+      : {}),
   });
   if (error) {
     throw new Error(`Resend: ${error.name ?? "send_failed"} — ${error.message}`);
@@ -183,6 +196,50 @@ export async function sendOrderConfirmationEmail(
         <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
       </div>
     `,
+  });
+}
+
+/**
+ * Issued-invoice notification with the rendered PDF as an attachment.
+ * Triggered from the invoice_issued_email outbox handler after
+ * issueInvoice() finishes. Customer receives one email per order with
+ * the legal document attached.
+ */
+export async function sendInvoiceIssuedEmail(args: {
+  to: string;
+  invoiceNumber: string;
+  totalEur: number;
+  pdfBuffer: Buffer;
+}) {
+  const portalUrl = `${getAuthUrl()}/portal`;
+  const filename = `racun-${args.invoiceNumber}.pdf`;
+
+  await send({
+    to: args.to,
+    subject: `Račun ${args.invoiceNumber} — Elegant Render`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Vaš račun</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          U prilogu je račun broj <strong>${escapeHtml(args.invoiceNumber)}</strong> za porudžbinu koju ste upravo platili.
+        </p>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0; color: #1C1A19; font-size: 14px;">
+            <strong>Broj računa:</strong> ${escapeHtml(args.invoiceNumber)}<br/>
+            <strong>Iznos:</strong> ${formatEmailEur(args.totalEur)}
+          </p>
+        </div>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Status porudžbine i preuzete materijale pratite u portalu.
+        </p>
+        <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Otvorite portal
+        </a>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+    attachments: [{ filename, content: args.pdfBuffer }],
   });
 }
 

@@ -269,6 +269,90 @@ export default async function AdminOrderDetailPage({
               <p className="mt-2 text-xs text-foreground/80">{order.customerNote}</p>
             </div>
           )}
+
+          {/* Buyer identity (Phase A.1). For individual orders only the
+              type label appears so the absence of company info is
+              visually clear at a glance. */}
+          <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+            <h3 className="text-sm font-semibold text-foreground">Tip kupca</h3>
+            <p className="mt-2 text-xs uppercase tracking-wider text-muted-foreground">
+              {order.buyerType === "company_rs"
+                ? "Firma — Srbija"
+                : order.buyerType === "company_foreign"
+                  ? "Firma — inostranstvo"
+                  : "Fizičko lice"}
+            </p>
+            {order.buyerType !== "individual" && (
+              <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
+                {order.companyName && (
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="w-24 text-muted-foreground">Naziv:</dt>
+                    <dd className="font-medium text-foreground">{order.companyName}</dd>
+                  </div>
+                )}
+                {order.companyAddress && (
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="w-24 text-muted-foreground">Adresa:</dt>
+                    <dd className="text-foreground">{order.companyAddress}</dd>
+                  </div>
+                )}
+                {order.companyTaxId && (
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="w-24 text-muted-foreground">
+                      {order.buyerType === "company_rs" ? "PIB:" : "VAT ID:"}
+                    </dt>
+                    <dd className="font-mono text-foreground">{order.companyTaxId}</dd>
+                  </div>
+                )}
+                {order.companyMb && (
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="w-24 text-muted-foreground">MB:</dt>
+                    <dd className="font-mono text-foreground">{order.companyMb}</dd>
+                  </div>
+                )}
+                {order.companyCountryCode && (
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="w-24 text-muted-foreground">Država:</dt>
+                    <dd className="font-mono text-foreground">{order.companyCountryCode}</dd>
+                  </div>
+                )}
+              </dl>
+            )}
+          </div>
+
+          {/* Invoice (Phase A.2). Shows up only after the payment hook
+              has run; for unpaid orders the section is hidden. */}
+          {order.invoiceNumber && order.invoiceIssuedAt && (
+            <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+              <h3 className="text-sm font-semibold text-foreground">Faktura</h3>
+              <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="w-24 text-muted-foreground">Broj:</dt>
+                  <dd className="font-mono text-foreground">{order.invoiceNumber}</dd>
+                </div>
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="w-24 text-muted-foreground">Izdata:</dt>
+                  <dd className="text-foreground">
+                    {new Date(order.invoiceIssuedAt).toLocaleString("sr-Latn-RS", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </dd>
+                </div>
+              </dl>
+              <a
+                href={`/api/portal/invoice/${order.id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-[0.78rem] font-medium text-background transition hover:opacity-90"
+              >
+                Preuzmi PDF
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>

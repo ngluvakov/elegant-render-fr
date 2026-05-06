@@ -3,12 +3,16 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { formatEur } from "@/lib/catalog/calculate";
 import { track } from "@/lib/posthog-events";
 import {
   validateBuyerInfo,
   type BuyerType,
 } from "@/lib/buyer-validation";
+import {
+  formatPublicPrice,
+  type PublicPricingFormatSettings,
+} from "@/lib/catalog/display-currency";
+import { COUNTRIES } from "@/lib/iso-countries";
 import { useCheckout, type BuyerInfoState } from "../checkout-context";
 import { createOrder } from "@/server/actions/order";
 
@@ -39,11 +43,22 @@ export function StepReview() {
     calculation, quoteItems, userId, customerNote,
     uploadedFiles, setOrderId, setStep,
     buyerInfo, setBuyerInfo,
+    displayCurrency, pricingCatalog,
   } = useCheckout();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const [waiveWithdrawal, setWaiveWithdrawal] = useState(false);
   const requiresUpload = calculation.items.some((item) => item.kind === "service");
+
+  const pricingSettings: PublicPricingFormatSettings | undefined = pricingCatalog
+    ? {
+        eurToRsdRate: pricingCatalog.settings.eurToRsdRate,
+        serbiaVatRate: pricingCatalog.settings.serbiaVatRate,
+      }
+    : undefined;
+
+  const fmt = (eur: number) =>
+    formatPublicPrice(eur, displayCurrency, pricingSettings);
 
   const buyerError = useMemo(
     () => validateBuyerInfo(buyerInfo),
@@ -136,12 +151,12 @@ export function StepReview() {
                     .filter((ao) => ao.billableQty > 0)
                     .map((ao) => (
                       <p key={ao.addOnId} className="mt-1 text-xs text-accent">
-                        + {ao.billableQty}× {ao.label} ({formatEur(ao.totalEur)})
+                        + {ao.billableQty}× {ao.label} ({fmt(ao.totalEur)})
                       </p>
                     ))}
                 </div>
                 <p className="flex-shrink-0 text-base font-semibold text-foreground">
-                  {formatEur(item.totalEur)}
+                  {fmt(item.totalEur)}
                 </p>
               </div>
             </div>
@@ -177,12 +192,25 @@ export function StepReview() {
           </div>
         )}
 
-        {/* Total */}
-        <div className="mt-8 flex items-center justify-between border-t border-border/40 pt-4">
-          <p className="text-lg font-semibold text-foreground">Ukupno</p>
-          <p className="text-2xl font-bold text-foreground">
-            {formatEur(calculation.total)}
-          </p>
+        {/* Totals — currency-aware. For RS visitors we break out
+            osnovica + PDV + ukupno because that's how customers
+            (especially B2B) expect to see it. For foreign visitors
+            it's a single EUR line — the "no VAT" notice goes on the
+            issued PDF anyway. */}
+        <div className="mt-8 border-t border-border/40 pt-4">
+          {displayCurrency === "rsd" ? (
+            <RsdTotalsBreakdown
+              totalEur={calculation.total}
+              settings={pricingSettings}
+            />
+          ) : (
+            <div className="flex items-center justify-between">
+              <p className="text-lg font-semibold text-foreground">Ukupno</p>
+              <p className="text-2xl font-bold text-foreground">
+                {fmt(calculation.total)}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -217,9 +245,6 @@ export function StepReview() {
                     onChange={() =>
                       updateBuyer({
                         buyerType: opt.value,
-                        // Clear company fields when switching to individual,
-                        // and preserve them when switching between the two
-                        // company variants so the customer doesn't lose work.
                         ...(opt.value === "individual"
                           ? {
                               companyName: "",
@@ -286,16 +311,10 @@ export function StepReview() {
             )}
             {buyerInfo.buyerType === "company_foreign" && (
               <>
-                <Field
-                  label="Država (ISO kod)"
-                  required
+                <CountrySelect
                   value={buyerInfo.companyCountryCode}
-                  hint="2 velika slova (npr. DE, FR, IT)"
-                  maxLength={2}
-                  onChange={(v) =>
-                    updateBuyer({
-                      companyCountryCode: v.toUpperCase().replace(/[^A-Z]/g, ""),
-                    })
+                  onChange={(code) =>
+                    updateBuyer({ companyCountryCode: code })
                   }
                 />
                 <Field
@@ -318,36 +337,28 @@ export function StepReview() {
         )}
       </div>
 
-      {/* Distance-selling withdrawal waiver. Per Zakon o zaštiti potrošača
-          čl. 28 / EU CRD čl. 16(m), digital services that begin before
-          the 14-day window elapses require the customer's explicit
-          waiver of the withdrawal right. Without checking, the proceed
-          button is disabled. The checkout server action also enforces
-          this server-side. */}
-      <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border/60 bg-card/80 p-5 md:p-6">
+      {/* Distance-selling withdrawal waiver. EU CRD čl. 16(m) + Zakon o
+          zaštiti potrošača čl. 28 require an express, opt-in consent
+          here — pre-checked or implicit doesn't satisfy the law. We
+          keep the click but compress the visual weight: tight inline
+          row, small text, link-out for legal detail. */}
+      <label className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-border/40 bg-card/40 px-4 py-2.5">
         <input
           type="checkbox"
           checked={waiveWithdrawal}
           onChange={(e) => setWaiveWithdrawal(e.target.checked)}
-          className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer accent-accent"
-          aria-describedby="waive-withdrawal-help"
+          className="h-3.5 w-3.5 flex-shrink-0 cursor-pointer accent-accent"
         />
-        <span className="text-sm leading-relaxed text-foreground/80">
-          <strong className="text-foreground">
-            Saglasan/saglasna sam da izrada počinje odmah po plaćanju
-          </strong>{" "}
-          i razumem da time gubim pravo na povlačenje od 14 dana po članu
-          16(m) Direktive (EU) 2011/83 i članu 28. Zakona o zaštiti
-          potrošača Republike Srbije.{" "}
+        <span className="text-xs leading-relaxed text-muted-foreground">
+          Pristajem da izrada počne odmah i da time odustajem od 14-dnevnog
+          povlačenja.{" "}
           <Link
             href="/pravno/uslovi"
             target="_blank"
-            className="text-foreground underline-offset-4 hover:underline"
-            id="waive-withdrawal-help"
+            className="text-foreground/80 underline-offset-4 hover:underline"
           >
-            Više u Uslovima korišćenja
+            Detalji
           </Link>
-          .
         </span>
       </label>
 
@@ -365,6 +376,94 @@ export function StepReview() {
         </Button>
       </div>
     </div>
+  );
+}
+
+function RsdTotalsBreakdown({
+  totalEur,
+  settings,
+}: {
+  totalEur: number;
+  settings: PublicPricingFormatSettings | undefined;
+}) {
+  // formatPublicPrice for RSD already adds VAT. Reverse-engineer net
+  // and VAT slices for the breakdown — the exact same math the
+  // invoice generator uses, so what the customer sees here matches
+  // what lands in their PDF.
+  const grossLine = formatPublicPrice(totalEur, "rsd", settings);
+  const netLine = formatPublicPrice(
+    totalEur,
+    "rsd",
+    settings
+      ? {
+          eurToRsdRate: settings.eurToRsdRate,
+          serbiaVatRate: 0,
+        }
+      : undefined,
+  );
+  const vatRate = settings?.serbiaVatRate ?? 0.2;
+  const vatLine = formatPublicPrice(
+    totalEur,
+    "rsd",
+    settings
+      ? {
+          eurToRsdRate: settings.eurToRsdRate * vatRate,
+          serbiaVatRate: 0,
+        }
+      : undefined,
+  );
+
+  return (
+    <div className="space-y-1.5 text-sm">
+      <div className="flex justify-between text-muted-foreground">
+        <span>Osnovica</span>
+        <span className="tabular-nums">{netLine}</span>
+      </div>
+      <div className="flex justify-between text-muted-foreground">
+        <span>PDV ({Math.round(vatRate * 100)}%)</span>
+        <span className="tabular-nums">{vatLine}</span>
+      </div>
+      <div className="flex items-baseline justify-between border-t border-border/30 pt-2">
+        <span className="text-base font-semibold text-foreground">Ukupno</span>
+        <span className="text-xl font-bold text-foreground tabular-nums">
+          {grossLine}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function CountrySelect({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (code: string) => void;
+}) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-xs font-medium text-foreground">
+        Država <span className="ml-1 text-destructive">*</span>
+      </span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
+      >
+        <option value="">— Odaberite —</option>
+        {COUNTRIES.map((c) =>
+          c.code === "" ? (
+            <option key="separator" disabled>
+              {c.label}
+            </option>
+          ) : (
+            <option key={c.code} value={c.code}>
+              {c.label} ({c.code})
+            </option>
+          ),
+        )}
+      </select>
+    </label>
   );
 }
 

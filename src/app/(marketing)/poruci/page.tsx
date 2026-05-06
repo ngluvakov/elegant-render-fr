@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { CheckoutWizard } from "./checkout-wizard";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 
 export const metadata: Metadata = {
   title: "Porudžbina",
@@ -10,9 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default async function PoruciPage() {
-  const [session, pricingCatalog] = await Promise.all([
+  const [session, pricingCatalog, displayCurrency] = await Promise.all([
     auth(),
     getPublishedPricingCatalog(),
+    getPublicDisplayCurrency(),
   ]);
 
   return (
@@ -29,6 +31,7 @@ export default async function PoruciPage() {
         userName={session?.user?.name ?? ""}
         userEmail={session?.user?.email ?? ""}
         pricingCatalog={pricingCatalog}
+        displayCurrency={displayCurrency}
       />
     </div>
   );

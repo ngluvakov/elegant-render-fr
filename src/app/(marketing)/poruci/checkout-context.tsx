@@ -15,6 +15,7 @@ import {
 } from "@/lib/catalog/calculate";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import type { BuyerType } from "@/lib/buyer-validation";
+import type { DisplayCurrency } from "@/lib/catalog/display-currency";
 
 export type BuyerInfoState = {
   buyerType: BuyerType;
@@ -54,6 +55,8 @@ export type CheckoutState = {
   uploadedFiles: UploadedFile[];
   paymentComplete: boolean;
   buyerInfo: BuyerInfoState;
+  displayCurrency: DisplayCurrency;
+  pricingCatalog?: ResolvedPricingCatalog;
 };
 
 type CheckoutContextValue = CheckoutState & {
@@ -77,12 +80,14 @@ export function CheckoutProvider({
   initialEmail,
   children,
   pricingCatalog,
+  displayCurrency,
 }: {
   initialItems: QuoteItem[];
   initialUserId: string | null;
   initialName: string;
   initialEmail: string;
   pricingCatalog?: ResolvedPricingCatalog;
+  displayCurrency: DisplayCurrency;
   children: ReactNode;
 }) {
   const [step, setStep] = useState(initialUserId ? 1 : 0);
@@ -133,6 +138,8 @@ export function CheckoutProvider({
       uploadedFiles,
       paymentComplete,
       buyerInfo,
+      displayCurrency,
+      pricingCatalog,
       setStep,
       setCustomer,
       setCustomerNote,
@@ -147,6 +154,7 @@ export function CheckoutProvider({
       step, initialItems, calculation, orderId, userId, initiallySignedIn,
       customerName, customerEmail, customerNote,
       uploadedFiles, paymentComplete, buyerInfo,
+      displayCurrency, pricingCatalog,
       setCustomer, addFile, removeFile, setBuyerInfo,
     ],
   );

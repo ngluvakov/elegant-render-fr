@@ -77,6 +77,17 @@ const dashboardLinks: DashboardLink[] = [
     note: "Za proveru deploy-a i runtime logova.",
   },
   {
+    title: "Google Analytics 4",
+    description: "GA4 dashboard za post-live merenje organskog i kampanjskog saobraćaja.",
+    envName: "GOOGLE_ANALYTICS_DASHBOARD_URL",
+    href: dashboardUrl("GOOGLE_ANALYTICS_DASHBOARD_URL"),
+    icon: BarChart3,
+    note:
+      process.env.NEXT_PUBLIC_GA4_ENABLED === "true"
+        ? "Tag je aktivan samo posle analytics consent-a."
+        : "Pripremljeno; tag je isključen do live puštanja.",
+  },
+  {
     title: "Google Search Console",
     description: "Indeksiranje, search queries, pozicije, sitemap i tehnički SEO signali.",
     envName: "GOOGLE_SEARCH_CONSOLE_URL",
@@ -96,6 +107,10 @@ const dashboardLinks: DashboardLink[] = [
 
 export default function AdminAnalyticsPage() {
   const configuredCount = dashboardLinks.filter((item) => item.href).length;
+  const ga4Enabled = process.env.NEXT_PUBLIC_GA4_ENABLED === "true";
+  const ga4MeasurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID?.trim() ?? "";
+  const ga4MeasurementReady = /^G-[A-Z0-9]+$/.test(ga4MeasurementId);
+  const ga4DashboardReady = Boolean(dashboardUrl("GOOGLE_ANALYTICS_DASHBOARD_URL"));
 
   return (
     <div className="space-y-8">
@@ -166,6 +181,64 @@ export default function AdminAnalyticsPage() {
             Za SEO i UX prioritete koristiti Speed Insights: spore javne rute
             direktno utiču na konverziju i organski reach.
           </p>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-border/40 bg-card/80 p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">
+              GA4 priprema za live
+            </h2>
+            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Google Analytics 4 je spreman u kodu, ali se ne učitava dok nije
+              eksplicitno uključen env prekidačem i dok posetilac ne prihvati
+              analitiku.
+            </p>
+          </div>
+          <Badge
+            className={
+              ga4Enabled
+                ? "bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]"
+                : "bg-secondary text-muted-foreground"
+            }
+          >
+            {ga4Enabled ? "GA4 uključen" : "GA4 isključen do live-a"}
+          </Badge>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          <ReadinessItem
+            ready={ga4MeasurementReady}
+            title="Measurement ID"
+            detail={
+              ga4MeasurementReady
+                ? "NEXT_PUBLIC_GA4_MEASUREMENT_ID je podešen."
+                : "Dodati GA4 Web Data Stream ID, format G-XXXXXXXXXX."
+            }
+          />
+          <ReadinessItem
+            ready={ga4DashboardReady}
+            title="Dashboard link"
+            detail={
+              ga4DashboardReady
+                ? "GOOGLE_ANALYTICS_DASHBOARD_URL je podešen."
+                : "Dodati GA4 dashboard URL za brzi admin pristup."
+            }
+          />
+          <ReadinessItem
+            ready
+            title="Consent gating"
+            detail="GA4 komponenta se učitava tek nakon analytics saglasnosti."
+          />
+          <ReadinessItem
+            ready={!ga4Enabled}
+            title="Pre-live stanje"
+            detail={
+              ga4Enabled
+                ? "Aktivno je uključeno; proveriti da li je domen već live."
+                : "Ispravno: tag je pripremljen, ali ne meri test posete."
+            }
+          />
         </div>
       </section>
     </div>
@@ -250,5 +323,37 @@ function DashboardCard({ item }: { item: DashboardLink }) {
     >
       {content}
     </a>
+  );
+}
+
+function ReadinessItem({
+  ready,
+  title,
+  detail,
+}: {
+  ready: boolean;
+  title: string;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-xl border border-border/40 bg-background/50 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+            {detail}
+          </p>
+        </div>
+        <Badge
+          className={
+            ready
+              ? "bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]"
+              : "bg-secondary text-muted-foreground"
+          }
+        >
+          {ready ? "OK" : "Čeka"}
+        </Badge>
+      </div>
+    </div>
   );
 }

@@ -26,6 +26,11 @@ import { syncNewDeal } from "@/server/bitrix/sync-deal";
 import { enforceCleanScan } from "@/lib/file-scan";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import { recordAuditLog } from "@/lib/audit";
+import {
+  validateBuyerInfo,
+  type BuyerInfoInput,
+} from "@/lib/buyer-validation";
 
 export type OrderResult = {
   error?: string;
@@ -38,6 +43,7 @@ export async function createOrder(
   quoteItems: QuoteItem[],
   customerNote?: string,
   withdrawalWaivedAt?: Date | null,
+  buyerInfo?: BuyerInfoInput,
 ): Promise<OrderResult> {
   if (!userId) return { error: "Korisnik nije identifikovan." };
   if (!quoteItems.length) return { error: "Ponuda je prazna." };
@@ -52,6 +58,13 @@ export async function createOrder(
         "Pre potvrde porudžbine morate prihvatiti da izrada počinje odmah i da time gubite pravo na povlačenje od 14 dana.",
     };
   }
+
+  // Buyer-info validation runs server-side regardless of client checks.
+  // For B2C, buyerInfo may be undefined or { buyerType: "individual" } —
+  // both are accepted; the row defaults buyerType to 'individual'.
+  const buyer = buyerInfo ?? { buyerType: "individual" as const };
+  const buyerError = validateBuyerInfo(buyer);
+  if (buyerError) return { error: buyerError };
 
   // Rate-limit before any DB writes. createOrder is reachable from
   // /poruci by anyone (guest or logged-in), so a tampered client could
@@ -110,6 +123,13 @@ export async function createOrder(
       containsAiCredits,
       customerNote: customerNote || null,
       withdrawalWaivedAt,
+      buyerType: buyer.buyerType,
+      companyName: buyer.companyName?.trim() || null,
+      companyTaxId: buyer.companyTaxId?.trim() || null,
+      companyMb: buyer.companyMb?.trim() || null,
+      companyAddress: buyer.companyAddress?.trim() || null,
+      companyCountryCode:
+        buyer.companyCountryCode?.trim().toUpperCase() || null,
       items: {
         create: calculation.items.map((item) => {
           const sourceQI = quoteItems.find(
@@ -168,6 +188,21 @@ export async function createOrder(
       });
     });
   }
+
+  // Forensic trail of who chose which buyer identity. Helpful when SEF
+  // / ESIR pipelines start firing and we need to backtrack from an
+  // invoice mismatch to the original checkout choice.
+  await recordAuditLog({
+    action: "order.created_with_buyer_info",
+    entityType: "Order",
+    entityId: order.id,
+    metadata: {
+      buyerType: order.buyerType,
+      hasCompanyTaxId: Boolean(order.companyTaxId),
+      hasCompanyMb: Boolean(order.companyMb),
+      countryCode: order.companyCountryCode ?? null,
+    },
+  });
 
   return { orderId: order.id, orderNumber: order.orderNumber };
 }

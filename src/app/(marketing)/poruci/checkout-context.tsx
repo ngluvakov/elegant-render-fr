@@ -14,6 +14,25 @@ import {
   type QuoteCalculation,
 } from "@/lib/catalog/calculate";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
+import type { BuyerType } from "@/lib/buyer-validation";
+
+export type BuyerInfoState = {
+  buyerType: BuyerType;
+  companyName: string;
+  companyTaxId: string;
+  companyMb: string;
+  companyAddress: string;
+  companyCountryCode: string;
+};
+
+const EMPTY_BUYER_INFO: BuyerInfoState = {
+  buyerType: "individual",
+  companyName: "",
+  companyTaxId: "",
+  companyMb: "",
+  companyAddress: "",
+  companyCountryCode: "",
+};
 
 export type UploadedFile = {
   fileName: string;
@@ -34,6 +53,7 @@ export type CheckoutState = {
   customerNote: string;
   uploadedFiles: UploadedFile[];
   paymentComplete: boolean;
+  buyerInfo: BuyerInfoState;
 };
 
 type CheckoutContextValue = CheckoutState & {
@@ -45,6 +65,7 @@ type CheckoutContextValue = CheckoutState & {
   addFile: (file: UploadedFile) => void;
   removeFile: (storagePath: string) => void;
   setPaymentComplete: () => void;
+  setBuyerInfo: (next: BuyerInfoState) => void;
 };
 
 const CheckoutContext = createContext<CheckoutContextValue | null>(null);
@@ -73,6 +94,8 @@ export function CheckoutProvider({
   const [customerNote, setCustomerNote] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [paymentComplete, setPaymentCompleteState] = useState(false);
+  const [buyerInfo, setBuyerInfoState] =
+    useState<BuyerInfoState>(EMPTY_BUYER_INFO);
 
   const calculation = useMemo(
     () => priceItems(initialItems, [], pricingCatalog),
@@ -92,6 +115,10 @@ export function CheckoutProvider({
     setUploadedFiles((prev) => prev.filter((f) => f.storagePath !== storagePath));
   }, []);
 
+  const setBuyerInfo = useCallback((next: BuyerInfoState) => {
+    setBuyerInfoState(next);
+  }, []);
+
   const value = useMemo<CheckoutContextValue>(
     () => ({
       step,
@@ -105,6 +132,7 @@ export function CheckoutProvider({
       customerNote,
       uploadedFiles,
       paymentComplete,
+      buyerInfo,
       setStep,
       setCustomer,
       setCustomerNote,
@@ -113,12 +141,13 @@ export function CheckoutProvider({
       addFile,
       removeFile,
       setPaymentComplete: () => setPaymentCompleteState(true),
+      setBuyerInfo,
     }),
     [
       step, initialItems, calculation, orderId, userId, initiallySignedIn,
       customerName, customerEmail, customerNote,
-      uploadedFiles, paymentComplete,
-      setCustomer, addFile, removeFile,
+      uploadedFiles, paymentComplete, buyerInfo,
+      setCustomer, addFile, removeFile, setBuyerInfo,
     ],
   );
 

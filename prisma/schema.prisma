@@ -132,6 +132,16 @@ enum OrderStatus {
   refunded
 }
 
+/// Tip kupca za potrebe izdavanja računa.
+/// - `individual`     fizičko lice (B2C) — fiskalni račun preko ESIR-a
+/// - `company_rs`     privredno društvo u Srbiji — e-faktura kroz SEF
+/// - `company_foreign` strana firma — PDF faktura, oslobođenje od PDV-a
+enum BuyerType {
+  individual
+  company_rs
+  company_foreign
+}
+
 enum PaymentStatus {
   pending
   completed
@@ -166,6 +176,20 @@ model Order {
   // elapses; null means the right is still active and the order
   // shouldn't have started production yet.
   withdrawalWaivedAt DateTime?
+  // Buyer identity for invoicing. Defaults to `individual` so existing
+  // and untouched orders behave as before. company_* values are only
+  // populated when the customer explicitly chose "Firma" in checkout
+  // and provided the legally-required fields. Reading these:
+  //   companyTaxId  — PIB for company_rs, VAT ID / local tax ID for
+  //                   company_foreign (interpret via companyCountryCode).
+  //   companyMb     — matični broj, only meaningful for company_rs.
+  //   companyCountryCode — ISO-3166-1 alpha-2; null for individual.
+  buyerType          BuyerType        @default(individual)
+  companyName        String?
+  companyTaxId       String?
+  companyMb          String?
+  companyAddress     String?          @db.Text
+  companyCountryCode String?
   // Rule 3: reference a prior paid order so its model assets feed
   // discount resolution on this order. Nullable; enforced same-user via
   // server action.

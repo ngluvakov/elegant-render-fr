@@ -59,10 +59,40 @@ export type EventMap = {
     order_number: string;
     price_eur: number;
   };
+  quick_inquiry_opened: { source: string; source_path?: string };
+  contact_form_started: { source: string; source_path?: string };
   project_inquiry_submitted: {
     source: string;
     file_count: number;
     has_quote_snapshot: boolean;
+  };
+
+  // AI Studio
+  ai_generation_started: {
+    edit_type: string;
+    provider: string;
+    mode: "simple" | "advanced";
+    has_mask: boolean;
+    has_style: boolean;
+    has_selected_option: boolean;
+    has_color: boolean;
+    is_regeneration: boolean;
+    units_charged: number;
+  };
+  ai_generation_completed: {
+    edit_type: string;
+    provider: string;
+    has_mask: boolean;
+    is_regeneration: boolean;
+    units_charged: number;
+  };
+  ai_generation_failed: {
+    edit_type: string;
+    provider: string;
+    has_mask: boolean;
+    is_regeneration: boolean;
+    units_charged: number;
+    error_kind?: "processing" | "unknown";
   };
 
   // Catalog feature signals (validate per-PR effectiveness)

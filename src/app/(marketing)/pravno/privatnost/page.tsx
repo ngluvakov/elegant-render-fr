@@ -107,7 +107,8 @@ export default function PrivatnostPage() {
             <li>
               <strong>Tehnički podaci:</strong> IP adresa, podaci o uređaju i
               pretraživaču, datumi i vreme zahteva, log-ovi grešaka — koriste
-              se za bezbednost, ispravljanje grešaka i sprečavanje zloupotrebe.
+              se za bezbednost, ispravljanje grešaka, agregatno merenje
+              performansi i sprečavanje zloupotrebe.
             </li>
             <li>
               <strong>Kolačići i slične tehnologije:</strong> opisani u zasebnom
@@ -143,8 +144,9 @@ export default function PrivatnostPage() {
             <li>
               <strong>Legitimni interes</strong> (čl. 12. st. 1. tač. 6. ZZPL /
               čl. 6 ⒡ GDPR) — bezbednost sistema, sprečavanje zloupotrebe,
-              osnovno izveštavanje o greškama bez ličnih identifikatora,
-              vođenje internih evidencija.
+              osnovna agregatna metrika posećenosti i performansi bez
+              kolačića, osnovno izveštavanje o greškama bez ličnih
+              identifikatora, vođenje internih evidencija.
             </li>
             <li>
               <strong>Zakonska obaveza</strong> (čl. 12. st. 1. tač. 3. ZZPL /
@@ -175,7 +177,7 @@ export default function PrivatnostPage() {
                 <ProcessorRow
                   name="Vercel Inc."
                   location="SAD / EU"
-                  purpose="Hosting aplikacije i isporuka stranica."
+                  purpose="Hosting aplikacije, isporuka stranica i agregatna Web Analytics / Speed Insights metrika bez kolačića."
                 />
                 <ProcessorRow
                   name="Supabase Inc."

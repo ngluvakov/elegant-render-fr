@@ -51,6 +51,7 @@ import {
   useAssistantGuideContext,
   type AssistantGuideStage,
 } from "@/lib/chat/guide-context";
+import { track } from "@/lib/posthog-events";
 import {
   GenerationDetailModal,
   type GenerationDetail,
@@ -153,8 +154,34 @@ export function AiStudioWorkspace({
   // listener. Cleared the moment the user actively populates the
   // workspace again (upload, generate, use-as-input, repeat).
   const workspaceDismissedRef = useRef(false);
+  const trackedGenerationOutcomesRef = useRef<Set<string>>(new Set());
   const markWorkspaceActive = useCallback(() => {
     workspaceDismissedRef.current = false;
+  }, []);
+
+  const trackGenerationOutcome = useCallback((generation: GenerationHistoryItem) => {
+    if (generation.status !== "completed" && generation.status !== "failed") return;
+    const key = `${generation.id}:${generation.status}`;
+    if (trackedGenerationOutcomesRef.current.has(key)) return;
+    trackedGenerationOutcomesRef.current.add(key);
+
+    const baseProperties = {
+      edit_type: generation.editType,
+      provider: generation.provider,
+      has_mask: generation.hasMask,
+      is_regeneration: Boolean(generation.parentGenerationId),
+      units_charged: generation.unitsCharged,
+    };
+
+    if (generation.status === "completed") {
+      track("ai_generation_completed", baseProperties);
+      return;
+    }
+
+    track("ai_generation_failed", {
+      ...baseProperties,
+      error_kind: generation.errorMessage ? "processing" : "unknown",
+    });
   }, []);
 
   const activeEdit = useMemo(() => getAiEditType(editType), [editType]);
@@ -262,6 +289,8 @@ export function AiStudioWorkspace({
     }
     if (!data.generation) return;
 
+    trackGenerationOutcome(data.generation);
+
     setHistory((prev) =>
       prev.map((item) => (item.id === data.generation?.id ? data.generation : item)),
     );
@@ -295,7 +324,7 @@ export function AiStudioWorkspace({
     if (data.generation.status === "failed") {
       setError(data.generation.errorMessage ?? "AI obrada nije uspela.");
     }
-  }, []);
+  }, [trackGenerationOutcome]);
 
   useEffect(() => {
     const intervalId = window.setInterval(
@@ -572,6 +601,18 @@ export function AiStudioWorkspace({
         setError("AI obrada nije pokrenuta.");
         return;
       }
+
+      track("ai_generation_started", {
+        edit_type: editType,
+        provider,
+        mode,
+        has_mask: Boolean(maskStoragePath),
+        has_style: Boolean(activeEdit.supportsStyles && styleId !== "none"),
+        has_selected_option: Boolean(selectedOption),
+        has_color: Boolean(activeEdit.supportsColor),
+        is_regeneration: Boolean(linkedParentGenerationId),
+        units_charged: result.unitsCharged ?? activeEdit.units,
+      });
 
       if (typeof result.balanceUnits === "number") {
         setBalanceUnits(result.balanceUnits);

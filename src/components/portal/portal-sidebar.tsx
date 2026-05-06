@@ -9,6 +9,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BarChart3,
   ExternalLink,
   Headphones,
   ImageIcon,
@@ -33,6 +34,12 @@ const CLIENT_NAV = [
 
 const ADMIN_NAV = [
   { href: "/portal/admin", label: "Admin", icon: Shield, exact: true },
+  {
+    href: "/portal/admin/analitika",
+    label: "Analitika",
+    icon: BarChart3,
+    exact: false,
+  },
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
   {
     href: "/portal/admin/upiti",

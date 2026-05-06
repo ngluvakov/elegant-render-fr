@@ -5,6 +5,7 @@ import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ConsentBanner } from "@/components/site/consent-banner";
+import { GoogleAnalyticsPostLaunch } from "@/components/analytics/google-analytics-post-launch";
 import { JsonLd } from "@/components/seo/json-ld";
 import { SITE, buildOrganizationJsonLd } from "@/lib/content/site";
 import { INDEXABLE_ROBOTS, SEO } from "@/lib/seo";
@@ -70,6 +71,7 @@ export default function RootLayout({
         <ConsentBanner />
         <Analytics />
         <SpeedInsights />
+        <GoogleAnalyticsPostLaunch />
       </body>
     </html>
   );

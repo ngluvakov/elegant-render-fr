@@ -119,6 +119,12 @@ export default async function AdminPage({
             Finansije
           </Link>
           <Link
+            href="/portal/admin/finansije/izvoz"
+            className="rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
+          >
+            Izvoz računa
+          </Link>
+          <Link
             href="/portal/admin/revizije"
             className="rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
           >

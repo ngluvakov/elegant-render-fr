@@ -23,7 +23,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: "/prijava",
   },
   providers: [
-    Google,
+    Google({
+      // Auto-link a Google sign-in to an existing User row when the
+      // Google email matches. Without this, a customer who first
+      // signed up with email/password (or was created passwordless
+      // via inquiry/VR conversion) hits OAuthAccountNotLinked when
+      // they later try Google. Google's email verification is
+      // authoritative — they confirm ownership before issuing the
+      // id_token — so linking by email is safe in this context.
+      // The "dangerous" name in the option is for providers that
+      // don't verify email; Google does.
+      allowDangerousEmailAccountLinking: true,
+    }),
     Credentials({
       id: "credentials",
       name: "Email",

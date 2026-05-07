@@ -290,6 +290,42 @@ export async function sendProformaIssuedEmail(args: {
   });
 }
 
+export async function sendInquiryConvertedEmail(args: {
+  to: string;
+  contactName: string;
+  inquirySubject: string | null;
+}) {
+  const greeting = args.contactName ? `, ${args.contactName}` : "";
+  const subjectLine = args.inquirySubject
+    ? `o vašem upitu „${args.inquirySubject}”`
+    : "o vašem upitu";
+
+  await send({
+    to: args.to,
+    subject: "Pregledali smo vaš upit — uskoro stiže predračun",
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Pozdrav${escapeHtml(greeting)},</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Hvala vam što ste se javili. Pregledali smo poruku ${escapeHtml(subjectLine)}
+          i pripremamo predračun (proforma) sa instrukcijama za uplatu na žiro-račun.
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Predračun ćete dobiti zasebnim e-mailom u toku narednog radnog dana, sa
+          PDF dokumentom i tačnim podacima za uplatu (IBAN, poziv na broj).
+          Po prijemu uplate izdajemo konačnu fakturu i započinjemo rad.
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Ukoliko imate dodatna pitanja u međuvremenu, slobodno odgovorite na
+          ovaj e-mail — javljamo se isti dan.
+        </p>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}
+
 // ─── VR consultation inquiries ───────────────────────────
 
 function escapeHtml(s: string): string {

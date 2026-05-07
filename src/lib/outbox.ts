@@ -41,6 +41,7 @@ import {
   sendAiCreditsExpiryReminderEmail,
   sendAiCreditsGrantedEmail,
   sendFreeRevisionGrantedEmail,
+  sendInquiryConvertedEmail,
   sendInvoiceIssuedEmail,
   sendOrderConfirmationEmail,
   sendPortalAccessEmail,
@@ -300,6 +301,18 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       dueDate,
       pdfBuffer,
     });
+  },
+
+  inquiry_converted_email: async (payload) => {
+    const to = String(payload.to ?? "");
+    const contactName = String(payload.contactName ?? "");
+    const inquirySubject = payload.inquirySubject
+      ? String(payload.inquirySubject)
+      : null;
+    if (!to) {
+      throw new Error("inquiry_converted_email: missing required field 'to'");
+    }
+    await sendInquiryConvertedEmail({ to, contactName, inquirySubject });
   },
 };
 

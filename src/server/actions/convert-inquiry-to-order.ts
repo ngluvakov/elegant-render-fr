@@ -23,6 +23,7 @@ import { prisma } from "@/lib/db";
 import { recordAuditLog } from "@/lib/audit";
 import { requireAdmin } from "@/server/actions/admin";
 import { generateOrderNumber } from "@/lib/order/generate-number";
+import { enqueueOutboxEvent } from "@/lib/outbox";
 
 export type ConvertInquiryResult =
   | { ok: true; orderId: string; orderNumber: string }
@@ -114,6 +115,23 @@ export async function convertInquiryToOrder(
       });
 
       return created;
+    });
+
+    // Heads-up email to the customer so they know their inquiry was
+    // received and a predračun is being prepared. Idempotent on the
+    // (inquiry, order) pair so a stuck UI / replayed action can't
+    // double-mail. PDF-less — the predračun email comes separately
+    // when admin clicks "Izdaj predračun".
+    await enqueueOutboxEvent({
+      type: "inquiry_converted_email",
+      payload: {
+        to: inquiry.email,
+        contactName: inquiry.contactName,
+        inquirySubject: inquiry.serviceType ?? null,
+        orderId: order.id,
+        inquiryId,
+      },
+      idempotencyKey: `inquiry_converted_email:${inquiryId}:${order.id}`,
     });
 
     await recordAuditLog({

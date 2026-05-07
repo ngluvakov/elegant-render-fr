@@ -827,6 +827,7 @@ enum OutboxEventType {
   additional_charge_paid_email
   invoice_issued_email
   proforma_issued_email
+  inquiry_converted_email
 }
 
 /// Atomic per-year invoice counter. One row per calendar year; the

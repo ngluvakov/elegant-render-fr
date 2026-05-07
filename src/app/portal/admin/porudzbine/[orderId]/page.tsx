@@ -8,6 +8,7 @@ import { formatEur } from "@/lib/catalog/calculate";
 import { statusLabel, statusAccent } from "@/components/portal/status-utils";
 import { StatusTracker } from "@/components/portal/status-tracker";
 import { AdminCommentComposer } from "./admin-comment-composer";
+import { AdminProformaButton } from "./admin-proforma-button";
 import { AdminStatusChanger } from "./admin-status-changer";
 import { AdminDeliverableUpload } from "./admin-deliverable-upload";
 import { AdminGrantCreditsPanel } from "./admin-grant-credits-panel";
@@ -317,6 +318,71 @@ export default async function AdminOrderDetailPage({
                   </div>
                 )}
               </dl>
+            )}
+          </div>
+
+          {/* Predračun (proforma) — wire-transfer flow. Always visible
+              so admin can issue/re-issue. The first issuance flips
+              paymentMethod to wire_transfer; switching the order back
+              to online_payment is a separate (currently manual) admin
+              concern. */}
+          <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+            <h3 className="text-sm font-semibold text-foreground">Predračun</h3>
+            {order.proformaNumber && order.proformaIssuedAt ? (
+              <>
+                <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="w-24 text-muted-foreground">Broj:</dt>
+                    <dd className="font-mono text-foreground">
+                      {order.proformaNumber}
+                    </dd>
+                  </div>
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="w-24 text-muted-foreground">Izdat:</dt>
+                    <dd className="text-foreground">
+                      {new Date(order.proformaIssuedAt).toLocaleString(
+                        "sr-Latn-RS",
+                        {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        },
+                      )}
+                    </dd>
+                  </div>
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="w-24 text-muted-foreground">Način:</dt>
+                    <dd className="text-foreground">
+                      {order.paymentMethod === "wire_transfer"
+                        ? "Plaćanje po fakturi (žiro-račun)"
+                        : "Online plaćanje"}
+                    </dd>
+                  </div>
+                </dl>
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <a
+                    href={`/api/portal/proforma/${order.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-secondary"
+                  >
+                    Preuzmi PDF
+                  </a>
+                  <AdminProformaButton orderId={order.id} alreadyIssued />
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Predračun nije izdat. Kliknite ispod da generišete dokument
+                  i pošaljete kupcu na e-poštu sa instrukcijama za uplatu.
+                </p>
+                <div className="mt-3">
+                  <AdminProformaButton orderId={order.id} alreadyIssued={false} />
+                </div>
+              </>
             )}
           </div>
 

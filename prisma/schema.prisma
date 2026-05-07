@@ -154,6 +154,17 @@ enum PaymentProvider {
   card_mock
 }
 
+/// How the customer is expected to pay this order.
+/// - `online_payment` (default): card / PayPal at checkout. Konačni račun
+///   issued automatically by finishSuccessfulPayment hook.
+/// - `wire_transfer`: admin-issued offer flow. Predračun (proforma) is
+///   sent to customer; once funds land, admin marks paid → triggers
+///   the same finishSuccessfulPayment → konačni račun pipeline.
+enum PaymentMethod {
+  online_payment
+  wire_transfer
+}
+
 model Order {
   id                 String           @id @default(cuid())
   orderNumber        String           @unique
@@ -199,6 +210,15 @@ model Order {
   invoiceNumber      String?          @unique
   invoiceIssuedAt    DateTime?
   invoicePdfPath     String?
+  paymentMethod      PaymentMethod    @default(online_payment)
+  // Predračun (proforma) issuance — populated when admin clicks
+  // "Izdaj predračun" on a wire_transfer order. The proforma is NOT
+  // a tax document; it's a payment instruction. The legal konačni
+  // račun is created later via the existing invoice pipeline once
+  // funds land. Format `P-{year}-{seq}` (e.g. P-2026-0001).
+  proformaNumber     String?          @unique
+  proformaIssuedAt   DateTime?
+  proformaPdfPath    String?
   // Rule 3: reference a prior paid order so its model assets feed
   // discount resolution on this order. Nullable; enforced same-user via
   // server action.
@@ -793,6 +813,7 @@ enum OutboxEventType {
   additional_charge_requested_email
   additional_charge_paid_email
   invoice_issued_email
+  proforma_issued_email
 }
 
 /// Atomic per-year invoice counter. One row per calendar year; the
@@ -805,6 +826,19 @@ model InvoiceCounter {
   updatedAt DateTime @updatedAt
 
   @@map("invoice_counters")
+}
+
+/// Atomic per-year proforma (predračun) counter. Same row-lock
+/// serialization pattern as InvoiceCounter; numbers are issued as
+/// `P-{year}-{seq}` so the prefix never collides with invoice
+/// numbers and the accountant sees at a glance which document
+/// type a number belongs to.
+model ProformaCounter {
+  year      Int      @id
+  seq       Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@map("proforma_counters")
 }
 
 model OutboxEvent {

@@ -52,6 +52,16 @@ export const IMPRINT = {
     address: string;
     email: string;
   },
+  // Bank account info that lands on predračun (proforma) PDFs as the
+  // payment instruction. Currently a placeholder — fill in real
+  // values when wire-transfer flow goes live (you can leave any
+  // single field empty and the PDF will skip its row).
+  bank: {
+    name: "Banca Intesa AD Beograd",
+    iban: "RS35 1600 0000 0000 0000 00", // REPLACE with real IBAN
+    swift: "DBDBRSBG",
+    accountNumber: "160-0000000000-00", // domaći račun za RSD uplate
+  },
 } as const;
 
 export function formatAddress(): string {

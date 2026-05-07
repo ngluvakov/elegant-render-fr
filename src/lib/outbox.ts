@@ -44,6 +44,7 @@ import {
   sendInvoiceIssuedEmail,
   sendOrderConfirmationEmail,
   sendPortalAccessEmail,
+  sendProformaIssuedEmail,
   sendVrProjectReadyEmail,
 } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabase";
@@ -262,6 +263,41 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       to,
       invoiceNumber,
       totalEur,
+      pdfBuffer,
+    });
+  },
+
+  proforma_issued_email: async (payload) => {
+    const to = String(payload.to ?? "");
+    const proformaNumber = String(payload.proformaNumber ?? "");
+    const totalEur = Number(payload.totalEur);
+    const pdfPath = String(payload.pdfPath ?? "");
+    const dueDate = new Date(String(payload.dueDate ?? ""));
+    if (
+      !to ||
+      !proformaNumber ||
+      !pdfPath ||
+      !Number.isFinite(totalEur) ||
+      Number.isNaN(dueDate.getTime())
+    ) {
+      throw new Error("proforma_issued_email: missing required field(s)");
+    }
+    const supabase = getSupabaseAdmin();
+    const download = await supabase.storage
+      .from(UPLOADS_BUCKET)
+      .download(pdfPath);
+    if (download.error || !download.data) {
+      throw new Error(
+        `proforma_issued_email: download failed for ${pdfPath}: ${download.error?.message ?? "no data"}`,
+      );
+    }
+    const arrayBuffer = await download.data.arrayBuffer();
+    const pdfBuffer = Buffer.from(arrayBuffer);
+    await sendProformaIssuedEmail({
+      to,
+      proformaNumber,
+      totalEur,
+      dueDate,
       pdfBuffer,
     });
   },

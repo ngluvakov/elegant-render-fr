@@ -243,6 +243,53 @@ export async function sendInvoiceIssuedEmail(args: {
   });
 }
 
+/**
+ * Predračun (proforma) notification with the rendered PDF as an
+ * attachment + bank instructions in the body. Triggered from the
+ * proforma_issued_email outbox handler after issueProforma() finishes.
+ */
+export async function sendProformaIssuedEmail(args: {
+  to: string;
+  proformaNumber: string;
+  totalEur: number;
+  dueDate: Date;
+  pdfBuffer: Buffer;
+}) {
+  const filename = `predracun-${args.proformaNumber}.pdf`;
+  const dueDateLabel = args.dueDate.toLocaleDateString("sr-Latn-RS", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  await send({
+    to: args.to,
+    subject: `Predračun ${args.proformaNumber} — Elegant Render`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Predračun za uplatu</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          U prilogu je predračun broj <strong>${escapeHtml(args.proformaNumber)}</strong>.
+          Po prijemu uplate izdaćemo konačni račun (faktura) i započeti rad.
+        </p>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0; color: #1C1A19; font-size: 14px;">
+            <strong>Broj predračuna:</strong> ${escapeHtml(args.proformaNumber)}<br/>
+            <strong>Iznos:</strong> ${formatEmailEur(args.totalEur)}<br/>
+            <strong>Rok plaćanja:</strong> ${dueDateLabel}
+          </p>
+        </div>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Detaljne instrukcije za uplatu (IBAN, poziv na broj) nalaze se u priloženom PDF dokumentu.
+        </p>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+    attachments: [{ filename, content: args.pdfBuffer }],
+  });
+}
+
 // ─── VR consultation inquiries ───────────────────────────
 
 function escapeHtml(s: string): string {

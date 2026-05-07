@@ -12,6 +12,7 @@ import { AdminProformaButton } from "./admin-proforma-button";
 import { AdminMarkPaidButton } from "./admin-mark-paid-button";
 import { AdminRetryInvoiceButton } from "./admin-retry-invoice-button";
 import { AdminVerifyVatButton } from "./admin-verify-vat-button";
+import { AdminActivityTimeline } from "./admin-activity-timeline";
 import { AdminStatusChanger } from "./admin-status-changer";
 import { AdminDeliverableUpload } from "./admin-deliverable-upload";
 import { AdminGrantCreditsPanel } from "./admin-grant-credits-panel";
@@ -201,6 +202,13 @@ export default async function AdminOrderDetailPage({
 
         {/* Right: files + items */}
         <div className="space-y-6">
+          {/* Chronological activity timeline (status events + audit
+              log filtered to this order) — gives admin a single
+              place to see what happened, in what order, and who did
+              it, without piecing together status changes + invoice
+              + proforma + vat panels separately. */}
+          <AdminActivityTimeline orderId={order.id} />
+
           {/* Deliverables upload */}
           <AdminDeliverableUpload orderId={order.id} />
 

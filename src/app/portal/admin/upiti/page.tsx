@@ -88,7 +88,14 @@ export default async function ProjectInquiriesPage({
       where,
       orderBy: { createdAt: "desc" },
       take: 100,
-      include: { files: true },
+      include: {
+        files: true,
+        convertedOrders: {
+          orderBy: { createdAt: "asc" },
+          select: { id: true, orderNumber: true, status: true },
+          take: 1,
+        },
+      },
     }),
     prisma.projectInquiry.groupBy({
       by: ["status"],
@@ -271,6 +278,23 @@ export default async function ProjectInquiriesPage({
                       {snapshot}
                     </pre>
                   </details>
+                )}
+
+                {inquiry.convertedOrders.length > 0 && (
+                  <div className="mt-4 rounded-md border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/8 px-3 py-2">
+                    <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+                      Konvertovano u porudžbinu
+                    </p>
+                    <a
+                      href={`/portal/admin/porudzbine/${inquiry.convertedOrders[0].id}`}
+                      className="mt-1 inline-flex items-center gap-1.5 text-xs font-medium text-foreground hover:underline"
+                    >
+                      {inquiry.convertedOrders[0].orderNumber}
+                      <span className="text-muted-foreground">
+                        · {inquiry.convertedOrders[0].status}
+                      </span>
+                    </a>
+                  </div>
                 )}
 
                 <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border/30 pt-3 text-xs">

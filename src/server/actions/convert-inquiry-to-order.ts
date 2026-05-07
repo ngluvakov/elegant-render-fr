@@ -102,6 +102,7 @@ export async function convertInquiryToOrder(
           customerNote,
           totalEur: 0,
           totalCents: 0,
+          sourceInquiryId: inquiryId,
         },
         select: { id: true, orderNumber: true },
       });

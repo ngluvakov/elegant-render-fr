@@ -56,6 +56,15 @@ export default async function AdminOrderDetailPage({
         orderBy: { createdAt: "desc" },
         include: { items: true },
       },
+      sourceInquiry: {
+        select: {
+          id: true,
+          serviceType: true,
+          createdAt: true,
+          message: true,
+          _count: { select: { files: true } },
+        },
+      },
     },
   });
 
@@ -271,6 +280,55 @@ export default async function AdminOrderDetailPage({
             <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
               <h3 className="text-sm font-semibold text-foreground">Napomena klijenta</h3>
               <p className="mt-2 text-xs text-foreground/80">{order.customerNote}</p>
+            </div>
+          )}
+
+          {/* Source inquiry — present when this order was spawned by
+              convertInquiryToOrder. Surfaces a one-click link back to
+              the original inquiry so admin can re-read context or
+              grab attached files without searching. */}
+          {order.sourceInquiry && (
+            <div className="rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/5 p-5">
+              <h3 className="text-sm font-semibold text-foreground">
+                Iz upita
+              </h3>
+              <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="w-20 text-muted-foreground">Tip:</dt>
+                  <dd className="text-foreground">
+                    {order.sourceInquiry.serviceType ?? "—"}
+                  </dd>
+                </div>
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="w-20 text-muted-foreground">Stigao:</dt>
+                  <dd className="text-foreground">
+                    {new Date(order.sourceInquiry.createdAt).toLocaleString(
+                      "sr-Latn-RS",
+                      {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      },
+                    )}
+                  </dd>
+                </div>
+                {order.sourceInquiry._count.files > 0 && (
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="w-20 text-muted-foreground">Fajlovi:</dt>
+                    <dd className="text-foreground">
+                      {order.sourceInquiry._count.files} priloženo na upitu
+                    </dd>
+                  </div>
+                )}
+              </dl>
+              <Link
+                href={`/portal/admin/upiti?highlight=${order.sourceInquiry.id}`}
+                className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-secondary"
+              >
+                Otvori upit
+              </Link>
             </div>
           )}
 

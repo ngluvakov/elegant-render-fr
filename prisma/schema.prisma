@@ -236,6 +236,13 @@ model Order {
   // discount resolution on this order. Nullable; enforced same-user via
   // server action.
   referencedOrderId  String?
+  // Set by convertInquiryToOrder when an admin converts a
+  // ProjectInquiry into a draft. Lets the admin order detail page
+  // surface a "Iz upita …" link back to the source so context like
+  // attached files and the original message stays one click away
+  // even after the customerNote ages. Nullable for all orders that
+  // came in via the regular checkout flow.
+  sourceInquiryId    String?
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
 
@@ -247,7 +254,9 @@ model Order {
   charges           OrderCharge[]
   referencedOrder   Order?             @relation("OrderReference", fields: [referencedOrderId], references: [id])
   referencingOrders Order[]            @relation("OrderReference")
+  sourceInquiry     ProjectInquiry?    @relation("InquiryConversion", fields: [sourceInquiryId], references: [id], onDelete: SetNull)
 
+  @@index([sourceInquiryId])
   @@map("orders")
 }
 
@@ -604,6 +613,12 @@ model ProjectInquiry {
 
   user  User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
   files ProjectInquiryFile[]
+  // Set when an admin converts this inquiry into one or more orders
+  // via convertInquiryToOrder. Multiple orders are theoretically
+  // possible (re-conversion after a misclick + cancel) but only the
+  // most recent one is interesting; admin detail page links to the
+  // first by createdAt for stability.
+  convertedOrders Order[]            @relation("InquiryConversion")
 
   @@index([status, createdAt])
   @@index([email, createdAt])

@@ -497,10 +497,18 @@ export default async function AdminOrderDetailPage({
             ) : (
               <>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Predračun nije izdat. Kliknite ispod da generišete dokument
-                  i pošaljete kupcu na e-poštu sa instrukcijama za uplatu.
+                  Predračun nije izdat. Pregledajte PDF da proverite
+                  podatke pre nego što ga pošaljete kupcu na e-poštu.
                 </p>
-                <div className="mt-3">
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <a
+                    href={`/api/admin/proforma-preview/${order.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-secondary"
+                  >
+                    Pregled PDF-a
+                  </a>
                   <AdminProformaButton orderId={order.id} alreadyIssued={false} />
                 </div>
               </>

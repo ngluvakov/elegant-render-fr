@@ -26,10 +26,11 @@ import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { recordAuditLog } from "@/lib/audit";
 import { allocateProformaNumber } from "@/lib/proforma-number";
-import { renderProformaPdf, type ProformaData } from "@/lib/proforma-pdf";
+import { renderProformaPdf } from "@/lib/proforma-pdf";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { UPLOADS_BUCKET } from "@/lib/file-scan";
 import { requireAdmin } from "@/server/actions/admin";
+import { buildProformaDataForOrder } from "@/lib/proforma-data-builder";
 
 export type IssueProformaResult =
   | { ok: true; proformaNumber: string }
@@ -61,27 +62,13 @@ export async function issueProforma(orderId: string): Promise<IssueProformaResul
       return { ok: true, proformaNumber: order.proformaNumber };
     }
 
-    const buyerType = order.buyerType;
-    const isExport = buyerType === "company_foreign";
-    const currency: "RSD" | "EUR" = isExport ? "EUR" : "RSD";
-
-    const recipient = buildRecipient(order);
-    const items = order.items
-      .filter((it) => it.totalCents != null && it.totalCents > 0)
-      .map((it) => {
-        const totalCents = it.totalCents ?? Math.round(it.totalEur * 100);
-        const unitNet = isExport
-          ? totalCents
-          : Math.round(totalCents / 1.2);
-        return {
-          description: it.productLabel,
-          quantity: 1,
-          unitPriceNetCents: unitNet,
-          vatRate: isExport ? 0 : 0.2,
-        };
-      });
-
-    if (items.length === 0) {
+    // Cheap pre-flight: refuse before burning a counter slot if the
+    // order has no billable items. The full builder runs again below
+    // with the real number.
+    const billable = order.items.filter(
+      (it) => it.totalCents != null && it.totalCents > 0,
+    );
+    if (billable.length === 0) {
       return { ok: false, reason: "no_billable_items" };
     }
 
@@ -92,16 +79,15 @@ export async function issueProforma(orderId: string): Promise<IssueProformaResul
     const year = now.getFullYear();
     const allocation = await allocateProformaNumber(year);
 
-    const proformaData: ProformaData = {
+    const built = buildProformaDataForOrder(order, {
       proformaNumber: allocation.formatted,
       issueDate: now,
       dueDate,
-      buyerType,
-      recipient,
-      items,
-      currency,
-      paymentReference: order.orderNumber,
-    };
+    });
+    if (!built.ok) return { ok: false, reason: built.reason };
+    const proformaData = built.data;
+    const buyerType = proformaData.buyerType;
+    const currency = proformaData.currency;
 
     const pdfBuffer = await renderProformaPdf(proformaData);
 
@@ -179,28 +165,3 @@ export async function issueProforma(orderId: string): Promise<IssueProformaResul
   }
 }
 
-function buildRecipient(order: {
-  buyerType: "individual" | "company_rs" | "company_foreign";
-  companyName: string | null;
-  companyTaxId: string | null;
-  companyMb: string | null;
-  companyAddress: string | null;
-  companyCountryCode: string | null;
-  user: { name: string | null; email: string | null };
-}): ProformaData["recipient"] {
-  if (order.buyerType === "individual") {
-    return {
-      name: order.user.name ?? order.user.email ?? "Kupac",
-      address: "—",
-      email: order.user.email,
-    };
-  }
-  return {
-    name: order.companyName ?? "—",
-    address: order.companyAddress ?? "—",
-    taxId: order.companyTaxId,
-    mb: order.companyMb,
-    countryCode: order.companyCountryCode,
-    email: order.user.email,
-  };
-}

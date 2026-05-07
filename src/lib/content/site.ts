@@ -7,6 +7,15 @@
  * Used by: layout.tsx, site-header, site-footer, marketing pages,
  *          legal pages, robots.ts, sitemap.ts
  */
+// Canonical site URL used by absoluteUrl(), robots.ts, sitemap.ts,
+// and the JSON-LD Organization schema below. Env-driven with a
+// fallback so the production build always resolves a real URL even
+// if NEXT_PUBLIC_SITE_URL isn't set. Setting the env var explicitly
+// is useful for non-prod environments (preview branches that should
+// look at a different host) without touching code.
+const RESOLVED_SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://elegantrender.rs";
+
 export const SITE = {
   name: "Elegant Render",
   longName: "Elegant Render Platform",
@@ -14,7 +23,7 @@ export const SITE = {
   tagline: "Lep prikaz. Jasna cena. Lakša odluka.",
   description:
     "Ručno izrađeni renderi, virtuelno opremanje i vizuelne adaptacije prostora. Biraš uslugu, odmah vidiš baznu cenu iz cenovnika i kako se cena širi — bez izmišljenih paketa.",
-  url: "https://elegantrender.rs",
+  url: RESOLVED_SITE_URL,
   email: "kontakt@elegantrender.rs",
   instagram: "https://www.instagram.com/elegantrender",
 } as const;
@@ -274,7 +283,7 @@ export const AI_STUDIO_FAQS = [
   {
     question: "Kada koristim dodavanje objekta u enterijer?",
     answer:
-      "Kada imate fotografiju prostora i posebnu sliku konkretnog objekta koji želite da proverite u tom enterijeru. Rezultat je vizuelna provera uklapanja, ne garancija kataloški identičnog proizvoda.",
+      "Kada imate fotografiju prostora i posebne slike konkretnog objekta koji želite da dodate ili kojim želite da zamenite postojeći komad. Možete dodati više uglova istog objekta, a za zamenu se maskom označava komad koji menjamo.",
   },
   {
     question: "Da li rezultat mogu ponovo da obradim?",

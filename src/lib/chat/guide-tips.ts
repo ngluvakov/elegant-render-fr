@@ -96,7 +96,7 @@ const AI_STUDIO_ROUTE_TIPS: ChatGuideTip[] = [
     id: "ai-object-reference",
     label: "Objekat kao referenca",
     body:
-      "Za dodavanje objekta treba vam fotografija prostora i odvojena slika objekta koji ubacujete.",
+      "Za dodavanje ili zamenu objekta treba vam fotografija prostora i jedna ili više slika istog objekta koji ubacujete.",
   },
 ];
 
@@ -180,7 +180,7 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
     id: "ai-before-upload",
     label: "Pre uploada",
     body:
-      "Uploadujte jasnu fotografiju. Za staging i renovaciju najbolji su široki kadrovi; za dodavanje objekta treba i posebna slika objekta.",
+      "Uploadujte jasnu fotografiju. Za staging i renovaciju najbolji su široki kadrovi; za dodavanje ili zamenu objekta dodajte i posebne slike tog objekta.",
     pages: ["ai_studio"],
     stages: ["before_upload"],
     priority: 100,
@@ -205,9 +205,9 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
   },
   {
     id: "ai-object-insertion",
-    label: "Dodavanje objekta",
+    label: "Objekat u enterijeru",
     body:
-      "Uploadujte jasnu sliku objekta i napišite gde treba da stoji. Maska pomaže ako je pozicija bitna.",
+      "Dodajte do 5 uglova istog objekta. Za zamenu postojećeg komada obavezno maskom označite šta menjamo.",
     pages: ["ai_studio"],
     editTypes: ["object_insertion"],
     priority: 90,

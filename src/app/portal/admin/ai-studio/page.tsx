@@ -12,6 +12,7 @@ export default async function AdminAiStudioPage() {
   const generations = await prisma.aiGeneration.findMany({
     include: {
       user: { select: { name: true, email: true } },
+      referenceImages: { orderBy: { sortOrder: "asc" } },
     },
     orderBy: { createdAt: "desc" },
     take: 80,
@@ -22,7 +23,7 @@ export default async function AdminAiStudioPage() {
     generations.map(async (generation) => {
       let resultUrl: string | null = null;
       let inputUrl: string | null = null;
-      let referenceUrl: string | null = null;
+      let referenceUrls: string[] = [];
       if (generation.expiresAt > now) {
         if (generation.resultStoragePath) {
           const { data } = await getSupabaseAdmin().storage
@@ -36,14 +37,24 @@ export default async function AdminAiStudioPage() {
             .createSignedUrl(generation.inputStoragePath, 60 * 30);
           inputUrl = data?.signedUrl ?? null;
         }
-        if (generation.referenceStoragePath) {
-          const { data } = await getSupabaseAdmin().storage
-            .from("order-files")
-            .createSignedUrl(generation.referenceStoragePath, 60 * 30);
-          referenceUrl = data?.signedUrl ?? null;
-        }
+        const references =
+          generation.referenceImages.length > 0
+            ? generation.referenceImages
+            : generation.referenceStoragePath
+              ? [{ storagePath: generation.referenceStoragePath }]
+              : [];
+        referenceUrls = (
+          await Promise.all(
+            references.map(async (reference) => {
+              const { data } = await getSupabaseAdmin().storage
+                .from("order-files")
+                .createSignedUrl(reference.storagePath, 60 * 30);
+              return data?.signedUrl ?? null;
+            }),
+          )
+        ).filter((url): url is string => Boolean(url));
       }
-      return { generation, resultUrl, inputUrl, referenceUrl };
+      return { generation, resultUrl, inputUrl, referenceUrls };
     }),
   );
 
@@ -74,7 +85,7 @@ export default async function AdminAiStudioPage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ generation, resultUrl, inputUrl, referenceUrl }) => (
+              {rows.map(({ generation, resultUrl, inputUrl, referenceUrls }) => (
                 <tr
                   key={generation.id}
                   className="border-b border-border/40 last:border-b-0"
@@ -144,17 +155,19 @@ export default async function AdminAiStudioPage() {
                           Rezultat
                         </a>
                       )}
-                      {referenceUrl && (
+                      {referenceUrls.length > 0 && (
                         <a
-                          href={referenceUrl}
+                          href={referenceUrls[0]}
                           target="_blank"
                           rel="noreferrer"
                           className="text-xs font-medium text-accent hover:underline"
                         >
-                          Objekat
+                          {referenceUrls.length > 1
+                            ? `Objekti (${referenceUrls.length})`
+                            : "Objekat"}
                         </a>
                       )}
-                      {!inputUrl && !resultUrl && (
+                      {!inputUrl && !resultUrl && referenceUrls.length === 0 && (
                         <span className="text-xs text-muted-foreground">
                           Isteklo
                         </span>

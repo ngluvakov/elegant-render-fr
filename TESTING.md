@@ -215,13 +215,14 @@ Kompletna checklist za end-to-end testiranje cele platforme.
 - [ ] Two-column layout na order detail se stekuje vertikalno
 
 ### 5.10 AI Studio
-- [ ] Postojećih 7 alata rade bez drugog upload panela i šalju samo osnovnu sliku
-- [ ] "Dodavanje objekta u enterijer" prikazuje upload za osnovnu sliku i upload za objekat
-- [ ] Generate je blokiran dok ne postoje obe slike
-- [ ] Obrada bez maske čuva rezultat, istoriju i download linkove
-- [ ] Obrada sa Advanced maskom koristi masku kao zonu postavljanja objekta
-- [ ] Detalj obrade prikazuje osnovnu sliku, objekat i rezultat
-- [ ] "Ponovi sa istim podešavanjima" vraća i referentnu sliku objekta
+- [ ] Postojećih 7 alata rade bez reference panela i šalju samo osnovnu sliku
+- [ ] "Dodavanje objekta u enterijer" prikazuje upload enterijera i manji panel "Objekat / uglovi" u istom redu na desktopu
+- [ ] Generate je blokiran dok ne postoje osnovna slika i bar jedna referentna slika objekta
+- [ ] Dodavanje objekta radi sa 1 referencom bez maske i čuva rezultat, istoriju i download linkove
+- [ ] Multi-angle flow prihvata do 5 slika istog objekta i prikazuje ih u detalju obrade
+- [ ] "Zameni postojeći" automatski koristi Advanced mode i blokira Generate dok maska nije nacrtana
+- [ ] Obrada sa Advanced maskom koristi masku kao zonu postavljanja ili komad koji se menja
+- [ ] "Ponovi sa istim podešavanjima" vraća sve referentne slike objekta i režim dodavanja/zamene
 
 ---
 

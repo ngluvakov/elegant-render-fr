@@ -173,12 +173,12 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     complexity: "complex",
     units: 2,
     description:
-      "Ubacivanje objekta iz referentne slike u postojeći enterijer uz usklađivanje perspektive, svetla i senki.",
+      "Dodavanje ili zamena komada nameštaja/dekora iz jedne ili više referentnih slika uz usklađivanje perspektive, svetla i senki.",
     supportsMask: true,
     requiresReferenceImage: true,
     recommendedProvider: "gemini_pro",
     promptPlaceholder:
-      "npr. postavi fotelju pored prozora; uskladi skalu, pravac svetla i senku na podu",
+      "npr. postavi fotelju pored prozora ili zameni postojeću stolicu; uskladi skalu, svetlo i senku",
     optionsLabel: "Tip objekta",
     options: [
       { id: "furniture", label: "Nameštaj" },

@@ -166,6 +166,7 @@ async function removeExpiredGenerationFiles(now: Date) {
   const expired = await prisma.aiGeneration.findMany({
     where: { expiresAt: { lt: now } },
     select: {
+      id: true,
       inputStoragePath: true,
       maskStoragePath: true,
       referenceStoragePath: true,
@@ -173,6 +174,14 @@ async function removeExpiredGenerationFiles(now: Date) {
     },
     take: 500,
   });
+  const expiredIds = expired.map((generation) => generation.id);
+  const expiredReferenceImages =
+    expiredIds.length > 0
+      ? await prisma.aiGenerationReferenceImage.findMany({
+          where: { generationId: { in: expiredIds } },
+          select: { storagePath: true },
+        })
+      : [];
 
   const candidates = new Set<string>();
   for (const generation of expired) {
@@ -182,6 +191,9 @@ async function removeExpiredGenerationFiles(now: Date) {
       candidates.add(generation.referenceStoragePath);
     }
     if (generation.resultStoragePath) candidates.add(generation.resultStoragePath);
+  }
+  for (const reference of expiredReferenceImages) {
+    candidates.add(reference.storagePath);
   }
 
   if (candidates.size === 0) return 0;
@@ -204,6 +216,13 @@ async function removeExpiredGenerationFiles(now: Date) {
       resultStoragePath: true,
     },
   });
+  const activeReferenceImages = await prisma.aiGenerationReferenceImage.findMany({
+    where: {
+      storagePath: { in: paths },
+      generation: { expiresAt: { gte: now } },
+    },
+    select: { storagePath: true },
+  });
 
   for (const generation of stillActive) {
     candidates.delete(generation.inputStoragePath);
@@ -212,6 +231,9 @@ async function removeExpiredGenerationFiles(now: Date) {
       candidates.delete(generation.referenceStoragePath);
     }
     if (generation.resultStoragePath) candidates.delete(generation.resultStoragePath);
+  }
+  for (const reference of activeReferenceImages) {
+    candidates.delete(reference.storagePath);
   }
 
   const removable = [...candidates];

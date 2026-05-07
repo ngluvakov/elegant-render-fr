@@ -5,6 +5,8 @@ import {
   type AiEditType,
 } from "./catalog";
 
+type ObjectEditMode = "insert" | "replace";
+
 export type AiPromptOptions = {
   editType: AiEditType;
   userPrompt: string;
@@ -13,8 +15,10 @@ export type AiPromptOptions = {
   colorHex?: string | null;
   hasMask?: boolean;
   maskInverted?: boolean;
+  objectMode?: ObjectEditMode | null;
   ratioLabel?: string;
   hasReferenceImage?: boolean;
+  referenceImageCount?: number;
 };
 
 export function buildAiEditPrompt(options: AiPromptOptions): string {
@@ -52,11 +56,23 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
   }
 
   if (edit.requiresReferenceImage && options.hasReferenceImage) {
+    const referenceCount = Math.max(1, options.referenceImageCount ?? 1);
+    const lastImageNumber = referenceCount + 1;
     lines.push(
-      "Two input images are provided. Image 1 is the interior scene to preserve. Image 2 is the reference object to insert into Image 1.",
-      "Use Image 2 as the object identity/material reference, but adapt its scale, perspective, lighting, color temperature, contact shadows, and occlusion so it belongs naturally in Image 1.",
-      "Do not redesign the room or add unrelated furniture. Insert only the referenced object unless the user explicitly asks for tiny supporting placement details such as a natural shadow.",
+      referenceCount === 1
+        ? "Two input images are provided. Image 1 is the interior scene to preserve. Image 2 is the primary reference object."
+        : `Multiple input images are provided. Image 1 is the interior scene to preserve. Images 2-${lastImageNumber} are different angles/details of the same reference object; Image 2 is primary.`,
+      "Use the reference image(s) for object identity, form, material, proportions, and visible details, but adapt scale, perspective, lighting, color temperature, contact shadows, and occlusion so the object belongs naturally in Image 1.",
     );
+    if (options.objectMode === "replace") {
+      lines.push(
+        "Replace the existing masked furniture/decor item with the referenced object. Remove the original item cleanly and preserve the rest of the room.",
+      );
+    } else {
+      lines.push(
+        "Add the referenced object into the scene. Do not redesign the room or add unrelated furniture unless the user explicitly asks for tiny supporting placement details such as a natural shadow.",
+      );
+    }
   }
 
   if (options.ratioLabel) {

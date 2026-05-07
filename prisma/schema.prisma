@@ -545,7 +545,8 @@ model AiGeneration {
   processingLockUntil DateTime?
   attemptCount        Int                @default(0)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  referenceImages AiGenerationReferenceImage[]
 
   @@unique([paidGenerationId, freeAttemptIndex])
   @@index([userId, createdAt])
@@ -554,6 +555,22 @@ model AiGeneration {
   @@index([paidGenerationId])
   @@index([processingLockUntil])
   @@map("ai_generations")
+}
+
+model AiGenerationReferenceImage {
+  id           String   @id @default(cuid())
+  generationId String
+  sortOrder    Int
+  storagePath  String
+  mimeType     String
+  fileName     String?
+  createdAt    DateTime @default(now())
+
+  generation AiGeneration @relation(fields: [generationId], references: [id], onDelete: Cascade)
+
+  @@unique([generationId, sortOrder])
+  @@index([storagePath])
+  @@map("ai_generation_reference_images")
 }
 
 // ─── Chat feedback ───────────────────────────────────────

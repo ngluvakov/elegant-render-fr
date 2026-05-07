@@ -2,7 +2,7 @@
 
 ## 1. Sta je AI Studio
 
-AI Studio je deo Elegant Render platforme za brzu obradu fotografija nekretnina i prostora. Korisnik uploaduje fotografiju, izabere tip obrade, opcije i eventualno stil, dopise instrukcije i dobija gotovu sliku koju moze da preuzme ili koristi kao novi ulaz za sledecu obradu. Kod dodavanja objekta u enterijer dodaje se i druga slika sa objektom.
+AI Studio je deo Elegant Render platforme za brzu obradu fotografija nekretnina i prostora. Korisnik uploaduje fotografiju, izabere tip obrade, opcije i eventualno stil, dopise instrukcije i dobija gotovu sliku koju moze da preuzme ili koristi kao novi ulaz za sledecu obradu. Kod dodavanja objekta u enterijer korisnik dodaje jednu ili vise slika istog objekta, a moze i da zameni postojeci komad maskom.
 
 AI Studio nije zamena za kompletan 3D render ili arhitektonski projekat. Njegova uloga je da ubrza manje i srednje vizuelne intervencije na postojecim fotografijama:
 
@@ -11,7 +11,7 @@ AI Studio nije zamena za kompletan 3D render ili arhitektonski projekat. Njegova
 - zamena neba,
 - promena boje zidova,
 - virtuelno opremanje praznog prostora,
-- dodavanje konkretnog objekta u enterijer,
+- dodavanje ili zamena konkretnog objekta u enterijeru,
 - vizuelna renovacija,
 - redizajn postojece prostorije.
 
@@ -22,7 +22,7 @@ Glavna vrednost za klijenta je brzina: moze da testira ideju, popravi fotografij
 1. Korisnik ulazi u AI Studio.
 2. AI Studio pocinje prazno: istorija postoji, ali radna slika se ne popunjava automatski.
 3. Korisnik uploaduje sliku ili iz istorije klikne na rezultat koji zeli da koristi.
-4. Bira tip obrade. Za "Dodavanje objekta u enterijer" dodaje i drugu sliku sa objektom.
+4. Bira tip obrade. Za "Dodavanje objekta u enterijer" dodaje jednu ili vise slika istog objekta.
 5. Bira engine, opcije i stil ako postoje.
 6. Po potrebi ukljucuje Advanced mode i crta masku.
 7. Upisuje instrukciju.
@@ -51,7 +51,7 @@ Preporuceno:
 
 Limit u interfejsu:
 
-- jedna osnovna slika po obradi; za "Dodavanje objekta u enterijer" dodaje se i jedna referentna slika objekta,
+- jedna osnovna slika po obradi; za "Dodavanje objekta u enterijer" dodaje se 1-5 referentnih slika istog objekta,
 - fajl do 50 MB.
 
 ### Izlazni fajl
@@ -137,7 +137,7 @@ U samom workspace-u engine moze da ostane kao naprednija kontrola, uz oznaku "Pr
 | Zamena neba | Simple | 0.5 kredita | Ne | Ne | Popravka loseg neba |
 | Promena boje zidova | Simple | 0.5 kredita | Da | Ne | Brza provera boje |
 | Virtuelno opremanje | Complex | 1 kredit | Da | Da | Prazni ili slabo uredjeni prostori |
-| Dodavanje objekta u enterijer | Complex | 1 kredit | Da | Ne | Provera konkretnog komada namestaja/dekora u prostoru |
+| Dodavanje objekta u enterijer | Complex | 1 kredit | Da | Ne | Dodavanje ili zamena konkretnog komada namestaja/dekora u prostoru |
 | Virtuelna renovacija | Complex | 1 kredit | Da | Da | Materijali, podovi, kuhinje, kupatila |
 | Redizajn prostorije | Complex | 1 kredit | Da | Da | Promena stila i atmosfere postojece sobe |
 
@@ -437,7 +437,7 @@ Najbolja poruka:
 
 ### Sta radi
 
-Ubacuje objekat iz druge, referentne slike u postojecu fotografiju enterijera. Cilj je da se proveri kako konkretan komad namestaja, rasvete, dekora, biljke, umetnosti ili uredjaja vizuelno stoji u prostoru.
+Ubacuje objekat iz jedne ili vise referentnih slika u postojecu fotografiju enterijera, ili zamenjuje postojeci komad oznacen maskom. Cilj je da se proveri kako konkretan komad namestaja, rasvete, dekora, biljke, umetnosti ili uredjaja vizuelno stoji u prostoru.
 
 ### Kada je korisna
 
@@ -451,7 +451,8 @@ Ubacuje objekat iz druge, referentne slike u postojecu fotografiju enterijera. C
 Obavezno:
 
 - jedna fotografija enterijera,
-- jedna fotografija objekta koji se ubacuje.
+- jedna do pet fotografija istog objekta koji se ubacuje ili koristi za zamenu.
+- za zamenu: maskom oznacen postojeci komad i mala zona senke/kontakta.
 
 Tip objekta:
 
@@ -470,7 +471,7 @@ Opcionalno:
 
 ### Output
 
-Jedna fotografija enterijera sa uklopljenim objektom. Sistem pokusava da sacuva identitet, materijal i proporciju objekta, ali rezultat treba komunicirati kao vizuelnu proveru uklapanja, ne kao garanciju kataloski identicnog proizvoda.
+Jedna fotografija enterijera sa uklopljenim ili zamenjenim objektom. Sistem pokusava da sacuva identitet, materijal i proporciju objekta, ali rezultat treba komunicirati kao vizuelnu proveru uklapanja, ne kao garanciju kataloski identicnog proizvoda.
 
 ### Najbolji promptovi
 
@@ -486,11 +487,11 @@ Lose:
 
 ### Napomene za dizajn stranice
 
-Ovu uslugu treba jasno razlikovati od staginga: ne oprema celu prostoriju, nego ubacuje jedan konkretan referentni objekat.
+Ovu uslugu treba jasno razlikovati od staginga: ne oprema celu prostoriju, nego dodaje ili zamenjuje jedan konkretan referentni objekat.
 
 Najbolja poruka:
 
-"Proverite kako konkretan objekat izgleda u realnom prostoru."
+"Proverite kako konkretan objekat izgleda u realnom prostoru ili njime zamenite postojeci komad."
 
 ## 11. Usluga: Virtuelna renovacija
 
@@ -826,10 +827,10 @@ Cena: 1 kredit.
 
 ### Dodavanje objekta u enterijer
 
-Ubacite konkretan objekat iz referentne slike u postojeći enterijer.
+Ubacite konkretan objekat iz referentnih slika u postojeći enterijer ili zamenite postojeći komad.
 
-Input: fotografija enterijera + fotografija objekta + tip objekta.
-Output: objekat uklopljen u prostor.
+Input: fotografija enterijera + 1-5 fotografija istog objekta + tip objekta; za zamenu i maska.
+Output: objekat dodat u prostor ili postojeći komad zamenjen referencom.
 Cena: 1 kredit.
 
 ### Virtuelna renovacija

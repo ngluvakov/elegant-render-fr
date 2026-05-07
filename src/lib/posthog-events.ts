@@ -77,6 +77,8 @@ export type EventMap = {
     has_selected_option: boolean;
     has_color: boolean;
     has_reference_image: boolean;
+    reference_image_count?: number;
+    object_mode?: "insert" | "replace" | null;
     is_regeneration: boolean;
     units_charged: number;
   };

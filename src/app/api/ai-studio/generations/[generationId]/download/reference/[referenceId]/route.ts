@@ -1,0 +1,92 @@
+/**
+ * Download endpoint for one reference object angle used by object insertion.
+ */
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import { getSupabaseAdmin } from "@/lib/supabase";
+import {
+  contentDispositionFileName,
+  fallbackDownloadName,
+} from "@/lib/ai-studio/naming";
+
+type DownloadRouteContext = {
+  params: Promise<{ generationId: string; referenceId: string }>;
+};
+
+export async function GET(_request: Request, { params }: DownloadRouteContext) {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) {
+    return NextResponse.json({ error: "Niste prijavljeni." }, { status: 401 });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { isAdmin: true },
+  });
+  if (!user) {
+    return NextResponse.json({ error: "Korisnik nije pronađen." }, { status: 404 });
+  }
+
+  const { generationId, referenceId } = await params;
+  const reference = await prisma.aiGenerationReferenceImage.findFirst({
+    where: {
+      id: referenceId,
+      generationId,
+      ...(user.isAdmin ? {} : { generation: { userId } }),
+    },
+    select: {
+      id: true,
+      storagePath: true,
+      mimeType: true,
+      fileName: true,
+      generation: {
+        select: {
+          id: true,
+          expiresAt: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+
+  if (!reference) {
+    return NextResponse.json(
+      { error: "Referentna slika nije pronađena." },
+      { status: 404 },
+    );
+  }
+  if (reference.generation.expiresAt <= new Date()) {
+    return NextResponse.json({ error: "Fajl je istekao." }, { status: 410 });
+  }
+
+  const { data, error } = await getSupabaseAdmin().storage
+    .from("order-files")
+    .download(reference.storagePath);
+
+  if (error || !data) {
+    return NextResponse.json(
+      { error: error?.message ?? "Fajl nije pronađen." },
+      { status: 404 },
+    );
+  }
+
+  const mimeType = reference.mimeType ?? data.type ?? "image/jpeg";
+  const fileName =
+    reference.fileName ??
+    fallbackDownloadName({
+      generationId: `${reference.generation.id}-reference-${reference.id}`,
+      createdAt: reference.generation.createdAt,
+      mimeType,
+    });
+  const bytes = await data.arrayBuffer();
+
+  return new Response(bytes, {
+    headers: {
+      "Content-Type": mimeType,
+      "Content-Disposition": contentDispositionFileName(fileName),
+      "Cache-Control": "private, no-store",
+    },
+  });
+}

@@ -1,7 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { Prisma, type AiGeneration } from "@/generated/prisma/client";
+import {
+  Prisma,
+  type AiGeneration,
+  type AiGenerationReferenceImage,
+} from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
@@ -41,6 +45,19 @@ import {
 
 const AI_GENERATION_LOCK_MS = 10 * 60 * 1000;
 const AI_GENERATION_MAX_ATTEMPTS = 2;
+const AI_STUDIO_MAX_REFERENCE_IMAGES = 5;
+
+type ObjectEditMode = "insert" | "replace";
+type StoredReferenceImage = Pick<
+  AiGenerationReferenceImage,
+  "id" | "sortOrder" | "storagePath" | "mimeType" | "fileName"
+>;
+
+export type AiStudioReferenceImageInput = {
+  storagePath: string;
+  mimeType: string;
+  fileName?: string | null;
+};
 
 export type AiStudioGenerateInput = {
   editType: AiEditType;
@@ -48,11 +65,13 @@ export type AiStudioGenerateInput = {
   inputStoragePath: string;
   inputMimeType: string;
   inputFileName?: string | null;
+  referenceImages?: AiStudioReferenceImageInput[] | null;
   referenceStoragePath?: string | null;
   referenceMimeType?: string | null;
   referenceFileName?: string | null;
   maskStoragePath?: string | null;
   maskInverted?: boolean;
+  objectMode?: ObjectEditMode | null;
   prompt: string;
   styleId?: string | null;
   selectedOption?: string | null;
@@ -90,6 +109,7 @@ export type SignedAiGeneration = {
   referenceStoragePath: string | null;
   referenceMimeType: string | null;
   referenceFileName: string | null;
+  referenceImages: SignedAiGenerationReferenceImage[];
   resultStoragePath: string | null;
   resultMimeType: string | null;
   resultUrl: string | null;
@@ -109,7 +129,18 @@ export type SignedAiGeneration = {
   selectedOption: string | null;
   colorHex: string | null;
   maskInverted: boolean;
+  objectMode: ObjectEditMode;
   hasMask: boolean;
+};
+
+export type SignedAiGenerationReferenceImage = {
+  id: string;
+  sortOrder: number;
+  storagePath: string;
+  mimeType: string;
+  fileName: string | null;
+  url: string | null;
+  downloadUrl: string | null;
 };
 
 export type AiStudioStartResult = {
@@ -133,6 +164,7 @@ type GenerationOptions = {
   selectedOption: string | null;
   colorHex: string | null;
   maskInverted: boolean;
+  objectMode: ObjectEditMode;
 };
 
 export async function getAiStudioState() {
@@ -175,26 +207,39 @@ export async function startAiStudioGeneration(
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return { error: "Niste prijavljeni." };
+  const referenceImages = normalizeReferenceImageInputs(input);
+  const objectMode: ObjectEditMode =
+    input.editType === "object_insertion" && input.objectMode === "replace"
+      ? "replace"
+      : "insert";
 
   if (!ownsAiStudioPath(userId, input.inputStoragePath)) {
     return { error: "Ulazna slika nije dostupna za ovaj nalog." };
   }
-  if (
-    input.referenceStoragePath &&
-    !ownsAiStudioPath(userId, input.referenceStoragePath)
-  ) {
-    return { error: "Slika objekta nije dostupna za ovaj nalog." };
+  if (referenceImages.length > AI_STUDIO_MAX_REFERENCE_IMAGES) {
+    return { error: "Možete dodati najviše 5 slika objekta po obradi." };
+  }
+  for (const reference of referenceImages) {
+    if (!ownsAiStudioPath(userId, reference.storagePath)) {
+      return { error: "Slika objekta nije dostupna za ovaj nalog." };
+    }
   }
   if (input.maskStoragePath && !ownsAiStudioPath(userId, input.maskStoragePath)) {
     return { error: "Maska nije dostupna za ovaj nalog." };
   }
 
   const editDef = getAiEditType(input.editType);
-  if (editDef.requiresReferenceImage && !input.referenceStoragePath) {
+  if (editDef.requiresReferenceImage && referenceImages.length === 0) {
     return { error: "Dodajte sliku objekta koji želite da ubacite u enterijer." };
   }
-  if (!editDef.requiresReferenceImage && input.referenceStoragePath) {
+  if (!editDef.requiresReferenceImage && referenceImages.length > 0) {
     return { error: "Referentna slika objekta je dostupna samo za alat za dodavanje objekta." };
+  }
+  if (objectMode === "replace" && !input.maskStoragePath) {
+    return {
+      error:
+        "Za zamenu komada označite maskom šta menjamo, uključujući malu zonu senke/kontakta.",
+    };
   }
 
   // ISO 27001 A.8.7. Scan fresh client uploads before passing them to
@@ -213,30 +258,28 @@ export async function startAiStudioGeneration(
     });
     if (!inputScan.ok) return { error: inputScan.userError };
 
-    if (input.maskStoragePath) {
-      const maskScan = await enforceCleanScan({
-        storagePath: input.maskStoragePath,
-        fileName: "ai-mask",
-        fileSize: 0,
-        mimeType: "application/octet-stream",
-        entityType: "AiStudioInput",
-        entityId: userId,
-      });
-      if (!maskScan.ok) return { error: maskScan.userError };
-    }
   }
 
-  if (input.referenceStoragePath) {
-    const knownReference = await prisma.aiGeneration.findFirst({
-      where: { userId, referenceStoragePath: input.referenceStoragePath },
-      select: { id: true },
+  if (input.maskStoragePath) {
+    const maskScan = await enforceCleanScan({
+      storagePath: input.maskStoragePath,
+      fileName: "ai-mask",
+      fileSize: 0,
+      mimeType: "application/octet-stream",
+      entityType: "AiStudioInput",
+      entityId: userId,
     });
+    if (!maskScan.ok) return { error: maskScan.userError };
+  }
+
+  for (const reference of referenceImages) {
+    const knownReference = await findKnownReferenceImage(userId, reference.storagePath);
     if (!knownReference) {
       const referenceScan = await enforceCleanScan({
-        storagePath: input.referenceStoragePath,
-        fileName: input.referenceFileName ?? "ai-reference",
+        storagePath: reference.storagePath,
+        fileName: reference.fileName ?? "ai-reference",
         fileSize: 0,
-        mimeType: input.referenceMimeType ?? "application/octet-stream",
+        mimeType: reference.mimeType,
         entityType: "AiStudioInput",
         entityId: userId,
       });
@@ -342,14 +385,26 @@ export async function startAiStudioGeneration(
           selectedOption: input.selectedOption ?? null,
           colorHex: input.colorHex ?? null,
           maskInverted: input.maskInverted === true,
+          objectMode,
         },
         status: "queued",
         inputStoragePath: input.inputStoragePath,
         inputMimeType: input.inputMimeType,
-        referenceStoragePath: input.referenceStoragePath || null,
-        referenceMimeType: input.referenceMimeType || null,
-        referenceFileName: input.referenceFileName || null,
+        referenceStoragePath: referenceImages[0]?.storagePath ?? null,
+        referenceMimeType: referenceImages[0]?.mimeType ?? null,
+        referenceFileName: referenceImages[0]?.fileName ?? null,
         maskStoragePath: input.maskStoragePath || null,
+        referenceImages:
+          referenceImages.length > 0
+            ? {
+                create: referenceImages.map((reference, index) => ({
+                  sortOrder: index,
+                  storagePath: reference.storagePath,
+                  mimeType: reference.mimeType,
+                  fileName: reference.fileName ?? null,
+                })),
+              }
+            : undefined,
         rootFileName,
         inputFileName,
         resultFileName,
@@ -515,12 +570,13 @@ export async function recoverAiStudioGenerationJobs(userId?: string) {
 async function runGenerationProcessing(generation: AiGeneration) {
   const editDef = getAiEditType(generation.editType);
   const options = parseGenerationOptions(generation.optionsJson);
+  const referenceRows = await resolveGenerationReferenceImages(generation);
 
-  const [image, reference, mask] = await Promise.all([
+  const [image, references, mask] = await Promise.all([
     downloadStorageFile(generation.inputStoragePath),
-    generation.referenceStoragePath
-      ? downloadStorageFile(generation.referenceStoragePath)
-      : null,
+    Promise.all(
+      referenceRows.map((reference) => downloadStorageFile(reference.storagePath)),
+    ),
     generation.maskStoragePath
       ? downloadStorageFile(generation.maskStoragePath)
       : null,
@@ -529,9 +585,12 @@ async function runGenerationProcessing(generation: AiGeneration) {
   const originalDims = await getImageDimensions(image.buffer);
   const target = pickProviderTarget(originalDims, generation.provider);
   const preparedImage = await prepareInputForProvider(image.buffer, target);
-  const preparedReference = reference
-    ? await prepareReferenceForProvider(reference.buffer, target)
-    : undefined;
+  const preparedReferences = await Promise.all(
+    references.map(async (reference) => ({
+      image: await prepareReferenceForProvider(reference.buffer, target),
+      mimeType: "image/jpeg",
+    })),
+  );
   const preparedMask = mask
     ? await prepareMaskForProvider(mask.buffer, target)
     : undefined;
@@ -544,8 +603,10 @@ async function runGenerationProcessing(generation: AiGeneration) {
     colorHex: options.colorHex,
     hasMask: Boolean(mask),
     maskInverted: options.maskInverted,
+    objectMode: options.objectMode,
     ratioLabel: target.ratioLabel,
-    hasReferenceImage: Boolean(reference),
+    hasReferenceImage: references.length > 0,
+    referenceImageCount: references.length,
   });
 
   const output = await generateAiEdit({
@@ -553,8 +614,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
     prompt: fullPrompt,
     image: preparedImage,
     imageMimeType: "image/jpeg",
-    referenceImage: preparedReference,
-    referenceMimeType: preparedReference ? "image/jpeg" : undefined,
+    referenceImages: preparedReferences,
     mask: preparedMask,
     maskMimeType: preparedMask ? "image/png" : undefined,
     target,
@@ -683,6 +743,60 @@ async function failAiGeneration(generation: AiGeneration, message: string) {
   revalidatePath("/portal/ai-studio");
 }
 
+async function resolveGenerationReferenceImages(
+  generation: AiGeneration,
+): Promise<StoredReferenceImage[]> {
+  const rows = await prisma.aiGenerationReferenceImage.findMany({
+    where: { generationId: generation.id },
+    orderBy: { sortOrder: "asc" },
+    select: {
+      id: true,
+      sortOrder: true,
+      storagePath: true,
+      mimeType: true,
+      fileName: true,
+    },
+  });
+  if (rows.length > 0) return rows;
+  if (!generation.referenceStoragePath) return [];
+  return [
+    {
+      id: "legacy-primary",
+      sortOrder: 0,
+      storagePath: generation.referenceStoragePath,
+      mimeType: generation.referenceMimeType ?? "image/jpeg",
+      fileName: generation.referenceFileName,
+    },
+  ];
+}
+
+async function signReferenceImages(
+  generation: AiGeneration,
+  isFileActive: boolean,
+): Promise<SignedAiGenerationReferenceImage[]> {
+  const references = await resolveGenerationReferenceImages(generation);
+  return Promise.all(
+    references.map(async (reference) => {
+      let url: string | null = null;
+      if (isFileActive) {
+        const { data } = await getSupabaseAdmin().storage
+          .from("order-files")
+          .createSignedUrl(reference.storagePath, 60 * 30);
+        url = data?.signedUrl ?? null;
+      }
+      return {
+        ...reference,
+        url,
+        downloadUrl: isFileActive
+          ? reference.id === "legacy-primary"
+            ? `/api/ai-studio/generations/${generation.id}/download/reference`
+            : `/api/ai-studio/generations/${generation.id}/download/reference/${reference.id}`
+          : null,
+      };
+    }),
+  );
+}
+
 async function signGeneration(
   generation: AiGeneration,
 ): Promise<SignedAiGeneration> {
@@ -705,12 +819,8 @@ async function signGeneration(
     inputUrl = data?.signedUrl ?? null;
   }
 
-  if (isFileActive && generation.referenceStoragePath) {
-    const { data } = await getSupabaseAdmin().storage
-      .from("order-files")
-      .createSignedUrl(generation.referenceStoragePath, 60 * 30);
-    referenceUrl = data?.signedUrl ?? null;
-  }
+  const referenceImages = await signReferenceImages(generation, isFileActive);
+  referenceUrl = referenceImages[0]?.url ?? null;
 
   // Resolve parent's resultFileName (for breadcrumb in the modal).
   // Cheap single-row lookup; could be batched in signGenerations if
@@ -750,6 +860,7 @@ async function signGeneration(
     referenceStoragePath: generation.referenceStoragePath,
     referenceMimeType: generation.referenceMimeType,
     referenceFileName: generation.referenceFileName,
+    referenceImages,
     resultStoragePath: generation.resultStoragePath,
     resultMimeType: generation.resultMimeType,
     resultUrl,
@@ -763,9 +874,10 @@ async function signGeneration(
       ? `/api/ai-studio/generations/${generation.id}/download/input`
       : null,
     referenceDownloadUrl:
-      isFileActive && generation.referenceStoragePath
+      referenceImages[0]?.downloadUrl ??
+      (isFileActive && generation.referenceStoragePath
         ? `/api/ai-studio/generations/${generation.id}/download/reference`
-        : null,
+        : null),
     filesExpired: !isFileActive,
     rootFileName: generation.rootFileName,
     inputFileName: generation.inputFileName,
@@ -774,6 +886,7 @@ async function signGeneration(
     selectedOption: options.selectedOption,
     colorHex: options.colorHex,
     maskInverted: options.maskInverted,
+    objectMode: options.objectMode,
     hasMask: Boolean(generation.maskStoragePath),
   };
 }
@@ -790,7 +903,12 @@ async function countFreeAttempts(userId: string, paidGenerationId: string) {
 
 function parseGenerationOptions(value: Prisma.JsonValue | null): GenerationOptions {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return { selectedOption: null, colorHex: null, maskInverted: false };
+    return {
+      selectedOption: null,
+      colorHex: null,
+      maskInverted: false,
+      objectMode: "insert",
+    };
   }
 
   const data = value as Record<string, unknown>;
@@ -799,7 +917,54 @@ function parseGenerationOptions(value: Prisma.JsonValue | null): GenerationOptio
       typeof data.selectedOption === "string" ? data.selectedOption : null,
     colorHex: typeof data.colorHex === "string" ? data.colorHex : null,
     maskInverted: data.maskInverted === true,
+    objectMode: data.objectMode === "replace" ? "replace" : "insert",
   };
+}
+
+function normalizeReferenceImageInputs(
+  input: AiStudioGenerateInput,
+): AiStudioReferenceImageInput[] {
+  const fromArray = Array.isArray(input.referenceImages)
+    ? input.referenceImages
+    : [];
+  const references =
+    fromArray.length > 0
+      ? fromArray
+      : input.referenceStoragePath
+        ? [
+            {
+              storagePath: input.referenceStoragePath,
+              mimeType: input.referenceMimeType ?? "application/octet-stream",
+              fileName: input.referenceFileName ?? null,
+            },
+          ]
+        : [];
+
+  const seen = new Set<string>();
+  const normalized: AiStudioReferenceImageInput[] = [];
+  for (const reference of references) {
+    if (!reference?.storagePath || seen.has(reference.storagePath)) continue;
+    seen.add(reference.storagePath);
+    normalized.push({
+      storagePath: reference.storagePath,
+      mimeType: reference.mimeType || "application/octet-stream",
+      fileName: reference.fileName ?? null,
+    });
+  }
+  return normalized;
+}
+
+async function findKnownReferenceImage(userId: string, storagePath: string) {
+  return prisma.aiGeneration.findFirst({
+    where: {
+      userId,
+      OR: [
+        { referenceStoragePath: storagePath },
+        { referenceImages: { some: { storagePath } } },
+      ],
+    },
+    select: { id: true },
+  });
 }
 
 function ownsAiStudioPath(userId: string, storagePath: string) {

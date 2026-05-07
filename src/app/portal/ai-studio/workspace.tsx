@@ -19,6 +19,7 @@ import {
   Eraser,
   ImageIcon,
   Loader2,
+  Plus,
   RectangleHorizontal,
   RotateCcw,
   RotateCw,
@@ -26,6 +27,7 @@ import {
   Trash2,
   Upload,
   Wand2,
+  X,
   ZoomIn,
   type LucideIcon,
 } from "lucide-react";
@@ -81,6 +83,7 @@ type GenerationHistoryItem = {
   referenceStoragePath: string | null;
   referenceMimeType: string | null;
   referenceFileName: string | null;
+  referenceImages: ReferenceImageItem[];
   resultStoragePath: string | null;
   resultMimeType: string | null;
   resultUrl: string | null;
@@ -97,7 +100,18 @@ type GenerationHistoryItem = {
   selectedOption: string | null;
   colorHex: string | null;
   maskInverted: boolean;
+  objectMode: ObjectEditMode;
   hasMask: boolean;
+};
+
+type ReferenceImageItem = {
+  id: string;
+  sortOrder: number;
+  storagePath: string;
+  mimeType: string;
+  fileName: string | null;
+  url: string | null;
+  downloadUrl: string | null;
 };
 
 type AiStudioState =
@@ -119,6 +133,9 @@ type UploadedInput = {
 
 type ToolMode = "simple" | "advanced";
 type MaskTool = "brush" | "rect";
+type ObjectEditMode = "insert" | "replace";
+
+const MAX_OBJECT_REFERENCE_IMAGES = 5;
 
 export function AiStudioWorkspace({
   initialState,
@@ -142,7 +159,8 @@ export function AiStudioWorkspace({
   const [colorHex, setColorHex] = useState("#f2eee8");
   const [prompt, setPrompt] = useState("");
   const [baseInput, setBaseInput] = useState<UploadedInput | null>(null);
-  const [referenceInput, setReferenceInput] = useState<UploadedInput | null>(null);
+  const [referenceInputs, setReferenceInputs] = useState<UploadedInput[]>([]);
+  const [objectMode, setObjectMode] = useState<ObjectEditMode>("insert");
   const [currentResult, setCurrentResult] = useState<UploadedInput | null>(null);
   const [openGenerationId, setOpenGenerationId] = useState<string | null>(null);
   const [parentGenerationId, setParentGenerationId] = useState<string | null>(null);
@@ -377,6 +395,10 @@ export function AiStudioWorkspace({
     );
     if (!activeEdit.supportsStyles) setStyleId("none");
     if (activeEdit.supportsStyles && styleId === "none") setStyleId("modern");
+    if (!activeEdit.requiresReferenceImage) {
+      setReferenceInputs([]);
+      setObjectMode("insert");
+    }
     // Atmospheric edits operate globally — mask is meaningless. Force
     // simple mode when the new type doesn't support a mask, otherwise
     // leave the mode where the customer left it.
@@ -384,13 +406,20 @@ export function AiStudioWorkspace({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editType]);
 
+  useEffect(() => {
+    if (editType === "object_insertion" && objectMode === "replace") {
+      setMode("advanced");
+    }
+  }, [editType, objectMode]);
+
   // Wipes the workspace back to defaults — radna slika, rezultat,
   // promptovi, kontrole, modal. Ne dira history ni balance. Sets the
   // dismissed flag so a focus-fired or interval-fired refresh doesn't
   // immediately re-populate the cleared workspace.
   const handleClearAll = useCallback(() => {
     setBaseInput(null);
-    setReferenceInput(null);
+    setReferenceInputs([]);
+    setObjectMode("insert");
     setCurrentResult(null);
     setResultUrl(null);
     setParentGenerationId(null);
@@ -428,18 +457,37 @@ export function AiStudioWorkspace({
     setEditorResetToken((value) => value + 1);
   };
 
-  const handleReferenceUpload = async (file: File) => {
+  const handleReferenceUpload = async (files: File[]) => {
     setError("");
     setNotice("");
     markWorkspaceActive();
-    const upload = await uploadAiFile(file, "reference");
-    setReferenceInput({
-      url: URL.createObjectURL(file),
-      storagePath: upload.storagePath,
-      mimeType: file.type,
-      fileName: file.name,
-    });
+    if (files.length === 0) return;
+    const remaining = MAX_OBJECT_REFERENCE_IMAGES - referenceInputs.length;
+    if (remaining <= 0) {
+      setError("Možete dodati najviše 5 slika objekta po obradi.");
+      return;
+    }
+    const selected = files.slice(0, remaining);
+    if (files.length > remaining) {
+      setNotice(`Dodato je ${remaining} slika. Maksimum je 5 uglova objekta.`);
+    }
+    const uploads = await Promise.all(
+      selected.map(async (file) => {
+        const upload = await uploadAiFile(file, "reference");
+        return {
+          url: URL.createObjectURL(file),
+          storagePath: upload.storagePath,
+          mimeType: file.type,
+          fileName: file.name,
+        };
+      }),
+    );
+    setReferenceInputs((prev) => [...prev, ...uploads]);
   };
+
+  const handleReferenceRemove = useCallback((index: number) => {
+    setReferenceInputs((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
+  }, []);
 
   const setResultAsBaseInput = useCallback((nextInput: UploadedInput) => {
     markWorkspaceActive();
@@ -474,6 +522,7 @@ export function AiStudioWorkspace({
       styleId: item.styleId,
       selectedOption: item.selectedOption,
       colorHex: item.colorHex,
+      objectMode: item.objectMode ?? "insert",
       maskInverted: item.maskInverted,
       hasMask: item.hasMask,
       status: item.status,
@@ -484,6 +533,7 @@ export function AiStudioWorkspace({
       completedAt: item.completedAt,
       inputUrl: item.inputUrl,
       referenceUrl: item.referenceUrl,
+      referenceImages: item.referenceImages ?? [],
       resultUrl: item.resultUrl,
       inputDownloadUrl: item.inputDownloadUrl,
       referenceDownloadUrl: item.referenceDownloadUrl,
@@ -550,17 +600,33 @@ export function AiStudioWorkspace({
         fileName: gen.inputFileName ?? "slika-za-obradu",
         generationId: gen.parentGenerationId ?? undefined,
       });
-      setReferenceInput(
-        gen.referenceUrl && item.referenceStoragePath
-          ? {
-              url: gen.referenceUrl,
-              storagePath: item.referenceStoragePath,
-              mimeType: item.referenceMimeType ?? "image/jpeg",
-              fileName: gen.referenceFileName ?? "objekat-za-ubacivanje",
-            }
-          : null,
+      setReferenceInputs(
+        gen.referenceImages.length > 0
+          ? gen.referenceImages
+              .filter((reference) => reference.url)
+              .map((reference) => ({
+                url: reference.url!,
+                storagePath: reference.storagePath,
+                mimeType: reference.mimeType,
+                fileName:
+                  reference.fileName ??
+                  (reference.sortOrder === 0
+                    ? "objekat-za-ubacivanje"
+                    : `objekat-ugao-${reference.sortOrder + 1}`),
+              }))
+          : gen.referenceUrl && item.referenceStoragePath
+            ? [
+                {
+                  url: gen.referenceUrl,
+                  storagePath: item.referenceStoragePath,
+                  mimeType: item.referenceMimeType ?? "image/jpeg",
+                  fileName: gen.referenceFileName ?? "objekat-za-ubacivanje",
+                },
+              ]
+            : [],
       );
       setEditType(gen.editType);
+      setObjectMode(gen.objectMode);
       setProvider(gen.provider);
       if (gen.styleId) setStyleId(gen.styleId);
       if (gen.selectedOption) setSelectedOption(gen.selectedOption);
@@ -582,8 +648,18 @@ export function AiStudioWorkspace({
       setError("Prvo uploadujte fotografiju.");
       return;
     }
-    if (needsReferenceImage && !referenceInput) {
+    if (needsReferenceImage && referenceInputs.length === 0) {
       setError("Dodajte sliku objekta koji želite da ubacite u enterijer.");
+      return;
+    }
+    if (
+      editType === "object_insertion" &&
+      objectMode === "replace" &&
+      (!maskBlob || mode !== "advanced" || !maskDirty)
+    ) {
+      setError(
+        "Za zamenu komada označite maskom šta menjamo, uključujući malu zonu senke/kontakta.",
+      );
       return;
     }
     if (
@@ -620,12 +696,24 @@ export function AiStudioWorkspace({
           inputStoragePath: activeInput.storagePath,
           inputMimeType: activeInput.mimeType,
           inputFileName: activeInput.fileName,
-          referenceStoragePath: needsReferenceImage
-            ? referenceInput?.storagePath
+          referenceImages: needsReferenceImage
+            ? referenceInputs.map((reference) => ({
+                storagePath: reference.storagePath,
+                mimeType: reference.mimeType,
+                fileName: reference.fileName,
+              }))
             : null,
-          referenceMimeType: needsReferenceImage ? referenceInput?.mimeType : null,
-          referenceFileName: needsReferenceImage ? referenceInput?.fileName : null,
+          referenceStoragePath: needsReferenceImage
+            ? referenceInputs[0]?.storagePath
+            : null,
+          referenceMimeType: needsReferenceImage
+            ? referenceInputs[0]?.mimeType
+            : null,
+          referenceFileName: needsReferenceImage
+            ? referenceInputs[0]?.fileName
+            : null,
           maskStoragePath,
+          objectMode: editType === "object_insertion" ? objectMode : null,
           prompt,
           styleId: activeEdit.supportsStyles ? styleId : null,
           selectedOption: selectedOption || null,
@@ -660,7 +748,9 @@ export function AiStudioWorkspace({
         has_style: Boolean(activeEdit.supportsStyles && styleId !== "none"),
         has_selected_option: Boolean(selectedOption),
         has_color: Boolean(activeEdit.supportsColor),
-        has_reference_image: Boolean(needsReferenceImage && referenceInput),
+        has_reference_image: Boolean(needsReferenceImage && referenceInputs.length > 0),
+        reference_image_count: needsReferenceImage ? referenceInputs.length : 0,
+        object_mode: editType === "object_insertion" ? objectMode : null,
         is_regeneration: Boolean(linkedParentGenerationId),
         units_charged: result.unitsCharged ?? activeEdit.units,
       });
@@ -694,19 +784,30 @@ export function AiStudioWorkspace({
           inputStoragePath: activeInput.storagePath,
           inputMimeType: activeInput.mimeType,
           referenceStoragePath: needsReferenceImage
-            ? referenceInput?.storagePath ?? null
+            ? referenceInputs[0]?.storagePath ?? null
             : null,
           referenceMimeType: needsReferenceImage
-            ? referenceInput?.mimeType ?? null
+            ? referenceInputs[0]?.mimeType ?? null
             : null,
           referenceFileName: needsReferenceImage
-            ? referenceInput?.fileName ?? null
+            ? referenceInputs[0]?.fileName ?? null
             : null,
+          referenceImages: needsReferenceImage
+            ? referenceInputs.map((reference, index) => ({
+                id: `local-reference-${index}`,
+                sortOrder: index,
+                storagePath: reference.storagePath,
+                mimeType: reference.mimeType,
+                fileName: reference.fileName,
+                url: reference.url,
+                downloadUrl: null,
+              }))
+            : [],
           resultStoragePath: null,
           resultMimeType: null,
           resultUrl: null,
           inputUrl: activeInput.url,
-          referenceUrl: needsReferenceImage ? referenceInput?.url ?? null : null,
+          referenceUrl: needsReferenceImage ? referenceInputs[0]?.url ?? null : null,
           downloadUrl: null,
           inputDownloadUrl: null,
           referenceDownloadUrl: null,
@@ -718,6 +819,7 @@ export function AiStudioWorkspace({
           selectedOption: selectedOption || null,
           colorHex: activeEdit.supportsColor ? colorHex : null,
           maskInverted: false,
+          objectMode: editType === "object_insertion" ? objectMode : "insert",
           hasMask: Boolean(maskStoragePath),
         },
         ...prev,
@@ -790,23 +892,28 @@ export function AiStudioWorkspace({
             setColorHex={setColorHex}
             prompt={prompt}
             setPrompt={setPrompt}
+            objectMode={objectMode}
           />
 
           <AiImageEditor
             mode={mode}
             editType={editType}
             baseInput={baseInput}
-            referenceInput={referenceInput}
+            referenceInputs={referenceInputs}
+            objectMode={objectMode}
+            onObjectModeChange={setObjectMode}
             currentResult={currentResult}
             onUseCurrentResult={setResultAsBaseInput}
             onUpload={handleUpload}
             onReferenceUpload={handleReferenceUpload}
+            onReferenceRemove={handleReferenceRemove}
             onGenerate={handleGenerate}
             onClearAll={handleClearAll}
             pending={pending}
             resultUrl={resultUrl}
             parentGenerationId={linkedParentGenerationId}
             resetToken={editorResetToken}
+            maskDirty={maskDirty}
             onMaskDirtyChange={setMaskDirty}
             costPreview={costPreview}
           />
@@ -859,6 +966,7 @@ function StudioControls({
   setColorHex,
   prompt,
   setPrompt,
+  objectMode,
 }: {
   mode: ToolMode;
   setMode: (mode: ToolMode) => void;
@@ -874,6 +982,7 @@ function StudioControls({
   setColorHex: (value: string) => void;
   prompt: string;
   setPrompt: (value: string) => void;
+  objectMode: ObjectEditMode;
 }) {
   const edit = getAiEditType(editType);
 
@@ -927,25 +1036,34 @@ function StudioControls({
             <div>
               <ControlLabel>Mod</ControlLabel>
               <div className="mt-2 grid grid-cols-2 rounded-xl border border-border/40 bg-card/40 p-1">
-                {(["simple", "advanced"] as ToolMode[]).map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    onClick={() => setMode(item)}
-                    className={cn(
-                      "rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
-                      mode === item
-                        ? "bg-accent text-accent-foreground shadow-[0_8px_24px_-12px_rgba(184,131,99,0.45)]"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {item === "simple" ? "Simple" : "Advanced"}
-                  </button>
-                ))}
+                {(["simple", "advanced"] as ToolMode[]).map((item) => {
+                  const disabled =
+                    edit.requiresReferenceImage &&
+                    objectMode === "replace" &&
+                    item === "simple";
+                  return (
+                    <button
+                      key={item}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => setMode(item)}
+                      className={cn(
+                        "rounded-lg px-3 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-45",
+                        mode === item
+                          ? "bg-accent text-accent-foreground shadow-[0_8px_24px_-12px_rgba(184,131,99,0.45)]"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {item === "simple" ? "Simple" : "Advanced"}
+                    </button>
+                  );
+                })}
               </div>
               <p className="mt-1 text-[0.68rem] text-muted-foreground">
                 {edit.requiresReferenceImage
-                  ? "Advanced maskom označava zonu gde objekat treba da se pojavi."
+                  ? objectMode === "replace"
+                    ? "Advanced maskom označava komad koji menjamo, uključujući malu zonu senke/kontakta."
+                    : "Advanced maskom označava zonu gde objekat treba da se pojavi."
                   : "Advanced otključava masku za precizno označavanje."}
               </p>
             </div>
@@ -1085,34 +1203,42 @@ function AiImageEditor({
   mode,
   editType,
   baseInput,
-  referenceInput,
+  referenceInputs,
+  objectMode,
   currentResult,
   onUseCurrentResult,
   onUpload,
   onReferenceUpload,
+  onReferenceRemove,
+  onObjectModeChange,
   onGenerate,
   onClearAll,
   pending,
   resultUrl,
   parentGenerationId,
   resetToken,
+  maskDirty,
   onMaskDirtyChange,
   costPreview,
 }: {
   mode: ToolMode;
   editType: AiEditType;
   baseInput: UploadedInput | null;
-  referenceInput: UploadedInput | null;
+  referenceInputs: UploadedInput[];
+  objectMode: ObjectEditMode;
   currentResult: UploadedInput | null;
   onUseCurrentResult: (value: UploadedInput) => void;
   onUpload: (file: File) => void;
-  onReferenceUpload: (file: File) => void;
+  onReferenceUpload: (files: File[]) => void;
+  onReferenceRemove: (index: number) => void;
+  onObjectModeChange: (mode: ObjectEditMode) => void;
   onGenerate: (mask: Blob | null) => void;
   onClearAll: () => void;
   pending: boolean;
   resultUrl: string | null;
   parentGenerationId: string | null;
   resetToken: number;
+  maskDirty: boolean;
   onMaskDirtyChange: (dirty: boolean) => void;
   costPreview: { unitsCharged: number; freeAttemptIndex: number | null } | null;
 }) {
@@ -1132,6 +1258,8 @@ function AiImageEditor({
   const activeImage = baseInput;
   const edit = getAiEditType(editType);
   const needsReferenceImage = edit.requiresReferenceImage === true;
+  const needsReplacementMask =
+    editType === "object_insertion" && objectMode === "replace";
 
   const resetCanvas = useCallback(() => {
     const canvas = maskCanvasRef.current;
@@ -1256,7 +1384,7 @@ function AiImageEditor({
           <h2 className="font-heading text-lg text-foreground">Radna slika</h2>
           <p className="text-sm text-muted-foreground">
             {needsReferenceImage
-              ? "Dodajte fotografiju enterijera i sliku objekta. Advanced maska označava poziciju."
+              ? "Dodajte fotografiju enterijera i 1-5 slika istog objekta. Advanced maska označava poziciju ili komad za zamenu."
               : "Jedna slika po obradi. Advanced maska je opciona."}
           </p>
         </div>
@@ -1288,13 +1416,47 @@ function AiImageEditor({
           ref={referenceFileRef}
           type="file"
           accept="image/jpeg,image/png,image/webp"
+          multiple
           className="hidden"
           onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) onReferenceUpload(file);
+            const files = Array.from(event.target.files ?? []);
+            if (files.length > 0) onReferenceUpload(files);
+            event.currentTarget.value = "";
           }}
         />
       </div>
+
+      {needsReferenceImage && (
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/40 bg-background/50 p-2">
+          <div className="grid grid-cols-2 rounded-lg bg-card/50 p-1">
+            {(
+              [
+                ["insert", "Dodaj objekat"],
+                ["replace", "Zameni postojeći"],
+              ] as const
+            ).map(([modeId, label]) => (
+              <button
+                key={modeId}
+                type="button"
+                onClick={() => onObjectModeChange(modeId)}
+                className={cn(
+                  "rounded-md px-3 py-2 text-xs font-semibold transition-colors sm:text-sm",
+                  objectMode === modeId
+                    ? "bg-accent text-accent-foreground shadow-[0_8px_24px_-12px_rgba(184,131,99,0.45)]"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="min-w-[220px] flex-1 text-xs text-muted-foreground">
+            {objectMode === "replace"
+              ? "Advanced maska je obavezna: označite komad koji menjamo i malu zonu kontakta."
+              : "Prva slika objekta je primarna, dodatne slike služe za uglove i detalje."}
+          </p>
+        </div>
+      )}
 
       {mode === "advanced" && (
         <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-border/50 bg-background/50 p-2">
@@ -1400,62 +1562,14 @@ function AiImageEditor({
         </div>
       )}
 
-      {needsReferenceImage && (
-        <div className="mt-4 rounded-2xl border border-border/30 bg-muted/30 p-3">
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Objekat za ubacivanje
-              </p>
-              {referenceInput?.fileName && (
-                <p className="mt-0.5 truncate font-mono text-[0.68rem] text-foreground/60">
-                  {referenceInput.fileName}
-                </p>
-              )}
-            </div>
-            {referenceInput && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="xs"
-                onClick={() => referenceFileRef.current?.click()}
-              >
-                <Upload className="h-3 w-3" />
-                Promeni
-              </Button>
-            )}
-          </div>
-          {referenceInput ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={referenceInput.url}
-              alt="Objekat za ubacivanje"
-              className="block max-h-[360px] w-full rounded-xl bg-foreground/5 object-contain"
-              draggable={false}
-            />
-          ) : (
-            <button
-              type="button"
-              onClick={() => referenceFileRef.current?.click()}
-              className="group flex aspect-[16/7] w-full flex-col items-center justify-center gap-3 rounded-xl border border-border/40 bg-card/40 text-center transition-colors hover:border-accent/50 hover:bg-card/60"
-            >
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent/10 text-accent">
-                <Upload className="h-5 w-5" />
-              </span>
-              <span className="px-6">
-                <span className="block text-base font-semibold text-foreground">
-                  Dodajte sliku objekta
-                </span>
-                <span className="mt-1 block max-w-md text-sm text-muted-foreground">
-                  Ubacujemo samo ovaj objekat u enterijer, uz prilagođavanje perspektive, svetla i senke.
-                </span>
-              </span>
-            </button>
-          )}
-        </div>
-      )}
-
-      <div className="mt-4 grid gap-4 xl:grid-cols-2">
+      <div
+        className={cn(
+          "mt-4 grid gap-4",
+          needsReferenceImage
+            ? "xl:grid-cols-[minmax(0,1.35fr)_minmax(260px,0.65fr)]"
+            : "xl:grid-cols-2",
+        )}
+      >
         <div className="rounded-2xl border border-border/30 bg-muted/30 p-3">
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="min-w-0">
@@ -1539,7 +1653,21 @@ function AiImageEditor({
           )}
         </div>
 
-        <div className="rounded-2xl border border-border/30 bg-muted/30 p-3">
+        {needsReferenceImage && (
+          <ReferenceImagesPanel
+            references={referenceInputs}
+            pending={pending}
+            onAdd={() => referenceFileRef.current?.click()}
+            onRemove={onReferenceRemove}
+          />
+        )}
+
+        <div
+          className={cn(
+            "rounded-2xl border border-border/30 bg-muted/30 p-3",
+            needsReferenceImage && "xl:col-span-2",
+          )}
+        >
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -1645,7 +1773,12 @@ function AiImageEditor({
             type="button"
             variant="accent"
             size="lg"
-            disabled={pending || !activeImage || (needsReferenceImage && !referenceInput)}
+            disabled={
+              pending ||
+              !activeImage ||
+              (needsReferenceImage && referenceInputs.length === 0) ||
+              (needsReplacementMask && !maskDirty)
+            }
             onClick={async () => onGenerate(await exportMask())}
           >
             {pending ? (
@@ -1662,6 +1795,100 @@ function AiImageEditor({
           </Button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ReferenceImagesPanel({
+  references,
+  pending,
+  onAdd,
+  onRemove,
+}: {
+  references: UploadedInput[];
+  pending: boolean;
+  onAdd: () => void;
+  onRemove: (index: number) => void;
+}) {
+  const canAdd = references.length < MAX_OBJECT_REFERENCE_IMAGES;
+
+  return (
+    <div className="rounded-2xl border border-border/30 bg-muted/30 p-3">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            Objekat / uglovi
+          </p>
+          <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
+            {references.length}/{MAX_OBJECT_REFERENCE_IMAGES} slika
+          </p>
+        </div>
+        {canAdd && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="xs"
+            onClick={onAdd}
+            disabled={pending}
+          >
+            <Plus className="h-3 w-3" />
+            Dodaj ugao
+          </Button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 xl:grid-cols-1 2xl:grid-cols-2">
+        {references.map((reference, index) => (
+          <div
+            key={reference.storagePath}
+            className="relative overflow-hidden rounded-xl border border-border/40 bg-card/50"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={reference.url}
+              alt={index === 0 ? "Primarna slika objekta" : `Ugao objekta ${index + 1}`}
+              className="aspect-square w-full object-contain"
+              draggable={false}
+            />
+            <div className="absolute left-1.5 top-1.5 rounded-full bg-card/90 px-2 py-0.5 text-[0.62rem] font-semibold text-foreground shadow-sm">
+              {index === 0 ? "Primarna" : `Ugao ${index + 1}`}
+            </div>
+            <button
+              type="button"
+              onClick={() => onRemove(index)}
+              disabled={pending}
+              className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-foreground/75 text-background transition-colors hover:bg-destructive disabled:opacity-50"
+              aria-label={`Ukloni sliku objekta ${index + 1}`}
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+            <p className="truncate px-2 py-1.5 font-mono text-[0.62rem] text-muted-foreground">
+              {reference.fileName}
+            </p>
+          </div>
+        ))}
+
+        {canAdd && (
+          <button
+            type="button"
+            onClick={onAdd}
+            disabled={pending}
+            className="group flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/50 bg-card/40 p-3 text-center transition-colors hover:border-accent/50 hover:bg-card/60 disabled:opacity-50"
+          >
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <Upload className="h-4 w-4" />
+            </span>
+            <span className="text-xs font-semibold text-foreground">
+              {references.length === 0 ? "Dodajte objekat" : "Dodaj ugao"}
+            </span>
+          </button>
+        )}
+      </div>
+
+      <p className="mt-3 text-[0.68rem] leading-relaxed text-muted-foreground">
+        Prva slika je primarna referenca. Dodatne slike koristite za bočne
+        uglove, poleđinu ili detalj materijala istog objekta.
+      </p>
     </div>
   );
 }

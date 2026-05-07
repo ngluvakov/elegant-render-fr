@@ -47,6 +47,7 @@ export type GenerationDetail = {
   styleId: string | null;
   selectedOption: string | null;
   colorHex: string | null;
+  objectMode: "insert" | "replace";
   maskInverted: boolean;
   hasMask: boolean;
   status: "queued" | "processing" | "completed" | "failed";
@@ -57,6 +58,7 @@ export type GenerationDetail = {
   completedAt: string | null;
   inputUrl: string | null;
   referenceUrl: string | null;
+  referenceImages: ReferenceImageDetail[];
   resultUrl: string | null;
   inputDownloadUrl: string | null;
   referenceDownloadUrl: string | null;
@@ -67,6 +69,16 @@ export type GenerationDetail = {
   resultFileName: string | null;
   parentResultFileName: string | null;
   filesExpired: boolean;
+};
+
+type ReferenceImageDetail = {
+  id: string;
+  sortOrder: number;
+  storagePath: string;
+  mimeType: string;
+  fileName: string | null;
+  url: string | null;
+  downloadUrl: string | null;
 };
 
 type Props = {
@@ -147,6 +159,22 @@ export function GenerationDetailModal({
     !generation.filesExpired;
   const canUseResult = canDownloadResult && Boolean(generation.resultUrl);
   const isDerivative = Boolean(generation.parentGenerationId);
+  const referenceImages =
+    generation.referenceImages.length > 0
+      ? generation.referenceImages
+      : generation.referenceUrl
+        ? [
+            {
+              id: "legacy-primary",
+              sortOrder: 0,
+              storagePath: "",
+              mimeType: "image/jpeg",
+              fileName: generation.referenceFileName,
+              url: generation.referenceUrl,
+              downloadUrl: generation.referenceDownloadUrl,
+            },
+          ]
+        : [];
 
   return (
     <div
@@ -188,7 +216,7 @@ export function GenerationDetailModal({
 
           <div
             className={
-              generation.referenceUrl
+              referenceImages.length > 0
                 ? "grid gap-4 md:grid-cols-2 lg:grid-cols-3"
                 : "grid gap-4 md:grid-cols-2"
             }
@@ -201,17 +229,9 @@ export function GenerationDetailModal({
               emptyHint="Originalni upload"
               fileExpired={generation.filesExpired}
             />
-            {generation.referenceUrl && (
-              <ImagePane
-                title="Objekat za ubacivanje"
-                fileName={generation.referenceFileName}
-                url={generation.referenceUrl}
-                downloadUrl={
-                  generation.referenceDownloadUrl && !generation.filesExpired
-                    ? generation.referenceDownloadUrl
-                    : null
-                }
-                emptyHint="Referentni objekat"
+            {referenceImages.length > 0 && (
+              <ReferenceImagesPane
+                references={referenceImages}
                 fileExpired={generation.filesExpired}
               />
             )}
@@ -257,6 +277,16 @@ export function GenerationDetailModal({
                 }
               />
               <SettingRow label="Engine" value={`${providerLabel} · ${generation.model}`} />
+              {generation.editType === "object_insertion" && (
+                <SettingRow
+                  label="Objekat"
+                  value={
+                    generation.objectMode === "replace"
+                      ? "Zamena postojećeg komada"
+                      : "Dodavanje objekta"
+                  }
+                />
+              )}
               <SettingRow
                 label="Mod"
                 value={generation.hasMask ? "Advanced (sa maskom)" : "Simple"}
@@ -390,6 +420,78 @@ function ImagePane({
             <span className="px-4">{emptyHint}</span>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function ReferenceImagesPane({
+  references,
+  fileExpired,
+}: {
+  references: ReferenceImageDetail[];
+  fileExpired: boolean;
+}) {
+  return (
+    <div className="rounded-2xl border border-border/40 bg-card/60 p-3">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Objekat / uglovi
+          </p>
+          <p className="mt-0.5 text-[0.68rem] text-foreground/70">
+            {references.length} {references.length === 1 ? "slika" : "slika"}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        {references.map((reference, index) => (
+          <div
+            key={reference.id}
+            className="overflow-hidden rounded-xl border border-border/30 bg-background/60"
+          >
+            {reference.url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={reference.url}
+                alt={index === 0 ? "Primarna slika objekta" : `Ugao objekta ${index + 1}`}
+                className="block aspect-square w-full object-contain"
+                draggable={false}
+              />
+            ) : (
+              <div className="flex aspect-square flex-col items-center justify-center gap-2 text-center text-xs text-muted-foreground">
+                {fileExpired ? (
+                  <Clock className="h-5 w-5 text-muted-foreground/40" />
+                ) : (
+                  <CheckCircle2 className="h-5 w-5 text-muted-foreground/30" />
+                )}
+              </div>
+            )}
+            <div className="flex items-center justify-between gap-2 px-2 py-1.5">
+              <div className="min-w-0">
+                <p className="text-[0.62rem] font-semibold text-foreground">
+                  {index === 0 ? "Primarna" : `Ugao ${index + 1}`}
+                </p>
+                {reference.fileName && (
+                  <p className="truncate font-mono text-[0.58rem] text-muted-foreground">
+                    {reference.fileName}
+                  </p>
+                )}
+              </div>
+              {reference.downloadUrl && !fileExpired && (
+                <a
+                  href={reference.downloadUrl}
+                  download
+                  className="inline-flex h-7 shrink-0 items-center justify-center rounded-md bg-foreground px-2 text-background"
+                  aria-label={`Preuzmi sliku objekta ${index + 1}`}
+                >
+                  <Download className="h-3 w-3" />
+                </a>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

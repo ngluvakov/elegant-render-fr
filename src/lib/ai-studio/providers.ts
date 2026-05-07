@@ -10,6 +10,7 @@ export type AiEditProviderInput = {
   prompt: string;
   image: Buffer;
   imageMimeType: string;
+  referenceImages?: Array<{ image: Buffer; mimeType: string }>;
   referenceImage?: Buffer;
   referenceMimeType?: string;
   mask?: Buffer;
@@ -124,18 +125,22 @@ async function generateWithGemini(
       },
     },
   ];
+  const references = getReferenceImages(input);
 
-  if (input.referenceImage) {
-    parts.push(
-      { text: "Image 2: reference object to insert into Image 1." },
-      {
-        inline_data: {
-          mime_type: input.referenceMimeType ?? "image/jpeg",
-          data: input.referenceImage.toString("base64"),
-        },
+  references.forEach((reference, index) => {
+    parts.push({
+      text:
+        index === 0
+          ? `Image ${index + 2}: primary reference view of the object.`
+          : `Image ${index + 2}: additional angle/detail view of the same object.`,
+    });
+    parts.push({
+      inline_data: {
+        mime_type: reference.mimeType,
+        data: reference.image.toString("base64"),
       },
-    );
-  }
+    });
+  });
 
   if (input.mask) {
     parts.push({ text: "Mask for Image 1. Transparent pixels indicate the edit area." });
@@ -213,11 +218,13 @@ async function generateWithOpenAi(
       type: input.imageMimeType,
     }),
   ];
+  const references = getReferenceImages(input);
 
-  if (input.referenceImage) {
+  for (let index = 0; index < references.length; index++) {
+    const reference = references[index];
     images.push(
-      await toFile(new Uint8Array(input.referenceImage), "object-reference.jpg", {
-        type: input.referenceMimeType ?? "image/jpeg",
+      await toFile(new Uint8Array(reference.image), `object-reference-${index + 1}.jpg`, {
+        type: reference.mimeType,
       }),
     );
   }
@@ -241,7 +248,7 @@ async function generateWithOpenAi(
         ...(mask ? { mask } : {}),
         size: input.target?.openaiSize ?? "auto",
         output_format: "png",
-        ...(input.referenceImage ? { input_fidelity: "high" as const } : {}),
+        ...(references.length > 0 ? { input_fidelity: "high" as const } : {}),
       },
       { timeout: AI_PROVIDER_TIMEOUT_MS },
     );
@@ -288,6 +295,19 @@ async function generateWithOpenAi(
   }
 
   throw new Error("OpenAI nije vratio sliku.");
+}
+
+function getReferenceImages(
+  input: AiEditProviderInput,
+): Array<{ image: Buffer; mimeType: string }> {
+  if (input.referenceImages?.length) return input.referenceImages;
+  if (!input.referenceImage) return [];
+  return [
+    {
+      image: input.referenceImage,
+      mimeType: input.referenceMimeType ?? "image/jpeg",
+    },
+  ];
 }
 
 function getProviderAttempts(provider: AiImageProvider): AiImageProvider[] {

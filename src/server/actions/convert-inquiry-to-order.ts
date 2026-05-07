@@ -25,6 +25,8 @@ import { requireAdmin } from "@/server/actions/admin";
 import { generateOrderNumber } from "@/lib/order/generate-number";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { forwardInquiryFiles } from "@/server/actions/forward-inquiry-files";
+import { parseInquirySnapshotItems } from "@/server/actions/inquiry-snapshot-items";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export type ConvertInquiryResult =
   | { ok: true; orderId: string; orderNumber: string }
@@ -90,6 +92,19 @@ export async function convertInquiryToOrder(
 
     const orderNumber = generateOrderNumber();
 
+    // Map any configurator snapshot on the inquiry into seed items.
+    // Inquiries that came in from a contact form (no snapshot) yield
+    // an empty list — admin adds items manually via add-service flow.
+    const catalog = await getPublishedPricingCatalog();
+    const itemSeeds = parseInquirySnapshotItems(
+      inquiry.quoteSnapshotJson,
+      catalog,
+    );
+    const seedTotalEur = itemSeeds.reduce(
+      (sum, item) => sum + item.totalEur,
+      0,
+    );
+
     const order = await prisma.$transaction(async (tx) => {
       const created = await tx.order.create({
         data: {
@@ -101,9 +116,21 @@ export async function convertInquiryToOrder(
           buyerType,
           companyName: inquiry.company ?? null,
           customerNote,
-          totalEur: 0,
-          totalCents: 0,
+          totalEur: seedTotalEur,
+          totalCents: seedTotalEur * 100,
           sourceInquiryId: inquiryId,
+          items: {
+            create: itemSeeds.map((seed) => ({
+              productId: seed.productId,
+              productLabel: seed.productLabel,
+              categoryId: seed.categoryId,
+              categoryLabel: seed.categoryLabel,
+              basePriceEur: seed.basePriceEur,
+              totalEur: seed.totalEur,
+              kind: "service" as const,
+              addOnsJson: [],
+            })),
+          },
         },
         select: { id: true, orderNumber: true },
       });
@@ -151,6 +178,8 @@ export async function convertInquiryToOrder(
         orderNumber: order.orderNumber,
         userId,
         actorId: admin.id,
+        itemsSeeded: itemSeeds.length,
+        seedTotalEur,
         filesForwarded: forwardResult.forwarded,
         filesSkipped: forwardResult.skipped,
         fileErrors: forwardResult.errors,

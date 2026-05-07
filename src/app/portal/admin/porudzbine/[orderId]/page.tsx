@@ -10,6 +10,7 @@ import { StatusTracker } from "@/components/portal/status-tracker";
 import { AdminCommentComposer } from "./admin-comment-composer";
 import { AdminProformaButton } from "./admin-proforma-button";
 import { AdminMarkPaidButton } from "./admin-mark-paid-button";
+import { AdminRetryInvoiceButton } from "./admin-retry-invoice-button";
 import { AdminStatusChanger } from "./admin-status-changer";
 import { AdminDeliverableUpload } from "./admin-deliverable-upload";
 import { AdminGrantCreditsPanel } from "./admin-grant-credits-panel";
@@ -390,6 +391,26 @@ export default async function AdminOrderDetailPage({
               </>
             )}
           </div>
+
+          {/* Invoice failure recovery — payment landed but the
+              post-payment hook didn't produce an invoiceNumber. Lets
+              admin re-run the pipeline (Supabase outage, PDF render
+              error, etc.). issueInvoice is idempotent. */}
+          {order.paymentStatus === "completed" && !order.invoiceNumber && (
+            <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-5">
+              <h3 className="text-sm font-semibold text-foreground">
+                Faktura — nije izdata
+              </h3>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Porudžbina je plaćena ali konačni račun nije generisan
+                (post-payment hook nije uspeo). Pokušajte ponovo —
+                idempotentno je, neće duplirati račun.
+              </p>
+              <div className="mt-3">
+                <AdminRetryInvoiceButton orderId={order.id} />
+              </div>
+            </div>
+          )}
 
           {/* Invoice (Phase A.2). Shows up only after the payment hook
               has run; for unpaid orders the section is hidden. */}

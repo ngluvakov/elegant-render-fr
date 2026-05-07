@@ -24,6 +24,7 @@ import { recordAuditLog } from "@/lib/audit";
 import { requireAdmin } from "@/server/actions/admin";
 import { generateOrderNumber } from "@/lib/order/generate-number";
 import { enqueueOutboxEvent } from "@/lib/outbox";
+import { forwardInquiryFiles } from "@/server/actions/forward-inquiry-files";
 
 export type ConvertInquiryResult =
   | { ok: true; orderId: string; orderNumber: string }
@@ -118,6 +119,12 @@ export async function convertInquiryToOrder(
       return created;
     });
 
+    // Forward attached inquiry files into the order's source files
+    // bucket so admin can see them next to the items configurator.
+    // Best-effort: failures are logged but don't roll back the order
+    // (the "Iz upita" link from #105 still gets admin to the originals).
+    const forwardResult = await forwardInquiryFiles(inquiryId, order.id);
+
     // Heads-up email to the customer so they know their inquiry was
     // received and a predračun is being prepared. Idempotent on the
     // (inquiry, order) pair so a stuck UI / replayed action can't
@@ -144,6 +151,9 @@ export async function convertInquiryToOrder(
         orderNumber: order.orderNumber,
         userId,
         actorId: admin.id,
+        filesForwarded: forwardResult.forwarded,
+        filesSkipped: forwardResult.skipped,
+        fileErrors: forwardResult.errors,
       },
     });
 

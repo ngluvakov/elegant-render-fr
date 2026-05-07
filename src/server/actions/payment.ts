@@ -32,7 +32,7 @@ function getOrderAmountCents(order: { totalEur: number; totalCents: number | nul
   return order.totalCents ?? order.totalEur * 100;
 }
 
-async function finishSuccessfulPayment(
+export async function finishSuccessfulPayment(
   orderId: string,
   options: { enqueueEmail?: boolean } = {},
 ) {

@@ -9,6 +9,7 @@ import { statusLabel, statusAccent } from "@/components/portal/status-utils";
 import { StatusTracker } from "@/components/portal/status-tracker";
 import { AdminCommentComposer } from "./admin-comment-composer";
 import { AdminProformaButton } from "./admin-proforma-button";
+import { AdminMarkPaidButton } from "./admin-mark-paid-button";
 import { AdminStatusChanger } from "./admin-status-changer";
 import { AdminDeliverableUpload } from "./admin-deliverable-upload";
 import { AdminGrantCreditsPanel } from "./admin-grant-credits-panel";
@@ -371,6 +372,10 @@ export default async function AdminOrderDetailPage({
                     Preuzmi PDF
                   </a>
                   <AdminProformaButton orderId={order.id} alreadyIssued />
+                  {order.paymentMethod === "wire_transfer" &&
+                    order.paymentStatus !== "completed" && (
+                      <AdminMarkPaidButton orderId={order.id} />
+                    )}
                 </div>
               </>
             ) : (

@@ -59,6 +59,11 @@ export const rateLimiters = {
   // retries (3/hour), tight enough to blunt scraping if a session
   // cookie leaks.
   accountExport: makeLimiter(3, "1 h", "rl:account-export"),
+  // Public VIES verification triggered from checkout. VIES itself
+  // is rate-limited globally, so we cap aggressive client-side
+  // typing/retry loops at 15/hour per identifier to keep our
+  // outbound budget healthy.
+  viesPublic: makeLimiter(15, "1 h", "rl:vies-public"),
 } as const;
 
 export type RateLimiterKey = keyof typeof rateLimiters;

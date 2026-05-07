@@ -15,6 +15,7 @@ import {
 import { COUNTRIES } from "@/lib/iso-countries";
 import { useCheckout, type BuyerInfoState } from "../checkout-context";
 import { createOrder } from "@/server/actions/order";
+import { CompanyVatVerifier } from "../company-vat-verifier";
 
 const BUYER_TYPE_OPTIONS: Array<{
   value: BuyerType;
@@ -317,16 +318,22 @@ export function StepReview() {
                     updateBuyer({ companyCountryCode: code })
                   }
                 />
-                <Field
-                  label="VAT ID / Tax ID (opciono)"
-                  value={buyerInfo.companyTaxId}
-                  hint="npr. DE123456789"
-                  onChange={(v) =>
-                    updateBuyer({
-                      companyTaxId: v.toUpperCase().replace(/[^A-Z0-9]/g, ""),
-                    })
-                  }
-                />
+                <div>
+                  <Field
+                    label="VAT ID / Tax ID (opciono)"
+                    value={buyerInfo.companyTaxId}
+                    hint="npr. DE123456789"
+                    onChange={(v) =>
+                      updateBuyer({
+                        companyTaxId: v.toUpperCase().replace(/[^A-Z0-9]/g, ""),
+                      })
+                    }
+                  />
+                  <CompanyVatVerifier
+                    countryCode={buyerInfo.companyCountryCode}
+                    vatNumber={buyerInfo.companyTaxId}
+                  />
+                </div>
               </>
             )}
           </div>

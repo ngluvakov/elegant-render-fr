@@ -11,6 +11,7 @@ import { DeliverablesCard } from "@/components/portal/deliverables-card";
 import { OrderSummaryCard } from "@/components/portal/order-summary-card";
 import { ReworkRequestCard } from "@/components/portal/rework-request-card";
 import { PendingPaymentCard } from "@/components/portal/pending-payment-card";
+import { ProformaCard } from "@/components/portal/proforma-card";
 import { ItemConfigPanel } from "@/components/portal/item-config-panel";
 import { AddServiceDialog } from "@/components/portal/add-service-dialog";
 import { ReferenceOrderPicker } from "@/components/portal/reference-order-picker";
@@ -250,13 +251,26 @@ export default async function OrderDetailPage({
 
         {/* Right: utility panel */}
         <div className="space-y-6">
-          {(order.status === "draft" || order.status === "awaiting_payment") && (
-            <PendingPaymentCard
-              orderId={order.id}
-              totalEur={order.totalEur}
-              totalCents={order.totalCents}
-            />
-          )}
+          {order.proformaNumber &&
+            order.proformaIssuedAt &&
+            order.paymentStatus !== "completed" && (
+              <ProformaCard
+                orderId={order.id}
+                orderNumber={order.orderNumber}
+                proformaNumber={order.proformaNumber}
+                proformaIssuedAt={order.proformaIssuedAt}
+                totalEur={order.totalEur}
+                totalCents={order.totalCents}
+              />
+            )}
+          {(order.status === "draft" || order.status === "awaiting_payment") &&
+            order.paymentMethod !== "wire_transfer" && (
+              <PendingPaymentCard
+                orderId={order.id}
+                totalEur={order.totalEur}
+                totalCents={order.totalCents}
+              />
+            )}
           <DeliverablesCard files={deliverableFiles} orderId={order.id} />
           {order.invoiceNumber && order.invoiceIssuedAt && (
             <div className="rounded-2xl border border-border/40 bg-card/60 p-5 md:p-6">

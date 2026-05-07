@@ -11,6 +11,7 @@ export type AiEditType =
   | "sky_replacement"
   | "wall_color_change"
   | "virtual_staging"
+  | "object_insertion"
   | "virtual_renovation"
   | "room_redesign";
 
@@ -46,6 +47,10 @@ export type AiEditTypeDefinition = {
   // only item_removal: a customer often wants to remove multiple
   // categories (furniture + clutter + people) in one pass.
   multiSelect?: boolean;
+  // Whether this edit needs a second customer-uploaded reference image.
+  // Used by object_insertion, where image 1 is the scene and image 2 is
+  // the object to merge into that scene.
+  requiresReferenceImage?: boolean;
   // Provider that gives the best result/price tradeoff for this edit.
   // The UI surfaces it as "Preporučeno" and seeds the picker default.
   recommendedProvider?: AiImageProvider;
@@ -158,6 +163,30 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
       { id: "dining-room", label: "Trpezarija" },
       { id: "office", label: "Kancelarija" },
       { id: "terrace", label: "Terasa/eksterijer" },
+      { id: "other", label: "Drugo" },
+    ],
+  },
+  {
+    id: "object_insertion",
+    label: "Dodavanje objekta u enterijer",
+    shortLabel: "Object Insert",
+    complexity: "complex",
+    units: 2,
+    description:
+      "Ubacivanje objekta iz referentne slike u postojeći enterijer uz usklađivanje perspektive, svetla i senki.",
+    supportsMask: true,
+    requiresReferenceImage: true,
+    recommendedProvider: "gemini_pro",
+    promptPlaceholder:
+      "npr. postavi fotelju pored prozora; uskladi skalu, pravac svetla i senku na podu",
+    optionsLabel: "Tip objekta",
+    options: [
+      { id: "furniture", label: "Nameštaj" },
+      { id: "decor", label: "Dekor" },
+      { id: "lighting", label: "Rasveta" },
+      { id: "appliance", label: "Uređaj" },
+      { id: "plant", label: "Biljka" },
+      { id: "artwork", label: "Umetnost" },
       { id: "other", label: "Drugo" },
     ],
   },

@@ -92,6 +92,12 @@ const AI_STUDIO_ROUTE_TIPS: ChatGuideTip[] = [
     body:
       "Kod AI obrade napišite šta sme da se menja, a šta mora da ostane isto.",
   },
+  {
+    id: "ai-object-reference",
+    label: "Objekat kao referenca",
+    body:
+      "Za dodavanje objekta treba vam fotografija prostora i odvojena slika objekta koji ubacujete.",
+  },
 ];
 
 const CREDIT_TIPS: ChatGuideTip[] = [
@@ -174,7 +180,7 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
     id: "ai-before-upload",
     label: "Pre uploada",
     body:
-      "Uploadujte jednu jasnu fotografiju. Za staging i renovaciju najbolji su široki kadrovi bez jakog motion blur-a.",
+      "Uploadujte jasnu fotografiju. Za staging i renovaciju najbolji su široki kadrovi; za dodavanje objekta treba i posebna slika objekta.",
     pages: ["ai_studio"],
     stages: ["before_upload"],
     priority: 100,
@@ -195,6 +201,15 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
       "Navedite namenu sobe, stil, paletu i šta ne želite da se pojavi u prostoru.",
     pages: ["ai_studio"],
     editTypes: ["virtual_staging"],
+    priority: 90,
+  },
+  {
+    id: "ai-object-insertion",
+    label: "Dodavanje objekta",
+    body:
+      "Uploadujte jasnu sliku objekta i napišite gde treba da stoji. Maska pomaže ako je pozicija bitna.",
+    pages: ["ai_studio"],
+    editTypes: ["object_insertion"],
     priority: 90,
   },
   {

@@ -94,6 +94,21 @@ export async function prepareMaskForProvider(
     .toBuffer();
 }
 
+export async function prepareReferenceForProvider(
+  buffer: Buffer,
+  target: ProviderTarget,
+): Promise<Buffer> {
+  return sharp(buffer)
+    .rotate()
+    .resize(target.width, target.height, {
+      fit: "inside",
+      withoutEnlargement: true,
+      kernel: sharp.kernel.lanczos3,
+    })
+    .jpeg({ quality: 92 })
+    .toBuffer();
+}
+
 export async function composeWithMask({
   original,
   aiResult,

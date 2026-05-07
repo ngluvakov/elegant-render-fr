@@ -56,11 +56,14 @@ export type GenerationDetail = {
   createdAt: string;
   completedAt: string | null;
   inputUrl: string | null;
+  referenceUrl: string | null;
   resultUrl: string | null;
   inputDownloadUrl: string | null;
+  referenceDownloadUrl: string | null;
   downloadUrl: string | null;
   rootFileName: string | null;
   inputFileName: string | null;
+  referenceFileName: string | null;
   resultFileName: string | null;
   parentResultFileName: string | null;
   filesExpired: boolean;
@@ -183,7 +186,13 @@ export function GenerationDetailModal({
             </div>
           )}
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div
+            className={
+              generation.referenceUrl
+                ? "grid gap-4 md:grid-cols-2 lg:grid-cols-3"
+                : "grid gap-4 md:grid-cols-2"
+            }
+          >
             <ImagePane
               title="Slika za obradu"
               fileName={generation.inputFileName}
@@ -192,6 +201,20 @@ export function GenerationDetailModal({
               emptyHint="Originalni upload"
               fileExpired={generation.filesExpired}
             />
+            {generation.referenceUrl && (
+              <ImagePane
+                title="Objekat za ubacivanje"
+                fileName={generation.referenceFileName}
+                url={generation.referenceUrl}
+                downloadUrl={
+                  generation.referenceDownloadUrl && !generation.filesExpired
+                    ? generation.referenceDownloadUrl
+                    : null
+                }
+                emptyHint="Referentni objekat"
+                fileExpired={generation.filesExpired}
+              />
+            )}
             <ImagePane
               title="Rezultat"
               fileName={generation.resultFileName}

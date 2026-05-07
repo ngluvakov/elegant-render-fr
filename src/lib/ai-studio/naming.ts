@@ -20,6 +20,7 @@ const EDIT_TYPE_CODES: Record<AiEditType, string> = {
   sky_replacement: "sky",
   wall_color_change: "wall",
   virtual_staging: "staging",
+  object_insertion: "object",
   virtual_renovation: "renov",
   room_redesign: "redesign",
 };

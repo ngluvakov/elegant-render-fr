@@ -22,6 +22,7 @@ export default async function AdminAiStudioPage() {
     generations.map(async (generation) => {
       let resultUrl: string | null = null;
       let inputUrl: string | null = null;
+      let referenceUrl: string | null = null;
       if (generation.expiresAt > now) {
         if (generation.resultStoragePath) {
           const { data } = await getSupabaseAdmin().storage
@@ -35,8 +36,14 @@ export default async function AdminAiStudioPage() {
             .createSignedUrl(generation.inputStoragePath, 60 * 30);
           inputUrl = data?.signedUrl ?? null;
         }
+        if (generation.referenceStoragePath) {
+          const { data } = await getSupabaseAdmin().storage
+            .from("order-files")
+            .createSignedUrl(generation.referenceStoragePath, 60 * 30);
+          referenceUrl = data?.signedUrl ?? null;
+        }
       }
-      return { generation, resultUrl, inputUrl };
+      return { generation, resultUrl, inputUrl, referenceUrl };
     }),
   );
 
@@ -67,7 +74,7 @@ export default async function AdminAiStudioPage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ generation, resultUrl, inputUrl }) => (
+              {rows.map(({ generation, resultUrl, inputUrl, referenceUrl }) => (
                 <tr
                   key={generation.id}
                   className="border-b border-border/40 last:border-b-0"
@@ -135,6 +142,16 @@ export default async function AdminAiStudioPage() {
                           className="text-xs font-medium text-accent hover:underline"
                         >
                           Rezultat
+                        </a>
+                      )}
+                      {referenceUrl && (
+                        <a
+                          href={referenceUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs font-medium text-accent hover:underline"
+                        >
+                          Objekat
                         </a>
                       )}
                       {!inputUrl && !resultUrl && (

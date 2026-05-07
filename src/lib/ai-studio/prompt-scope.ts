@@ -79,6 +79,16 @@ const SERVICE_SCOPE_TERMS: Record<AiEditType, TermGroup[]> = {
       terms: ["renovir", "renovate", "replace floor", "promeni pod", "rusenje", "sruši zid", "remove wall"],
     },
   ],
+  object_insertion: [
+    {
+      label: "virtuelno opremanje cele prostorije",
+      terms: ["opremi celu", "furnish the room", "stage the room", "staging cele", "dodaj sav namestaj"],
+    },
+    {
+      label: "renovacija/redizajn",
+      terms: ["renovir", "renovate", "renovation", "redesign", "redizajn", "promeni stil", "change style"],
+    },
+  ],
   virtual_renovation: [
     {
       label: "uklanjanje sitnih elemenata",

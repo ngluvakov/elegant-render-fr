@@ -470,6 +470,7 @@ enum AiEditType {
   sky_replacement
   wall_color_change
   virtual_staging
+  object_insertion
   virtual_renovation
   room_redesign
 }
@@ -515,6 +516,9 @@ model AiGeneration {
   inputStoragePath    String
   inputMimeType       String
   maskStoragePath     String?
+  referenceStoragePath String?
+  referenceMimeType   String?
+  referenceFileName   String?
   resultStoragePath   String?
   resultMimeType      String?
   // Filename tracking — propagated through derivative chains so

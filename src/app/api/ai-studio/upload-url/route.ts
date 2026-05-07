@@ -34,7 +34,12 @@ export async function POST(request: Request) {
   }
 
   const sanitized = String(fileName).replace(/[^a-zA-Z0-9._-]/g, "_");
-  const folder = purpose === "mask" ? "masks" : "inputs";
+  const folder =
+    purpose === "mask"
+      ? "masks"
+      : purpose === "reference"
+        ? "references"
+        : "inputs";
   const storagePath = `ai-studio/${userId}/${folder}/${crypto.randomUUID()}-${sanitized}`;
 
   const { data, error } = await getSupabaseAdmin().storage

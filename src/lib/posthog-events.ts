@@ -76,6 +76,7 @@ export type EventMap = {
     has_style: boolean;
     has_selected_option: boolean;
     has_color: boolean;
+    has_reference_image: boolean;
     is_regeneration: boolean;
     units_charged: number;
   };

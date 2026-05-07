@@ -27,6 +27,7 @@ import {
   pickProviderTarget,
   prepareInputForProvider,
   prepareMaskForProvider,
+  prepareReferenceForProvider,
   resizeToOriginal,
 } from "@/lib/ai-studio/image-processing";
 import { buildAiEditPrompt } from "@/lib/ai-studio/prompts";
@@ -47,6 +48,9 @@ export type AiStudioGenerateInput = {
   inputStoragePath: string;
   inputMimeType: string;
   inputFileName?: string | null;
+  referenceStoragePath?: string | null;
+  referenceMimeType?: string | null;
+  referenceFileName?: string | null;
   maskStoragePath?: string | null;
   maskInverted?: boolean;
   prompt: string;
@@ -83,12 +87,17 @@ export type SignedAiGeneration = {
   expiresAt: string;
   inputStoragePath: string;
   inputMimeType: string;
+  referenceStoragePath: string | null;
+  referenceMimeType: string | null;
+  referenceFileName: string | null;
   resultStoragePath: string | null;
   resultMimeType: string | null;
   resultUrl: string | null;
   inputUrl: string | null;
+  referenceUrl: string | null;
   downloadUrl: string | null;
   inputDownloadUrl: string | null;
+  referenceDownloadUrl: string | null;
   filesExpired: boolean;
   rootFileName: string | null;
   inputFileName: string | null;
@@ -170,8 +179,22 @@ export async function startAiStudioGeneration(
   if (!ownsAiStudioPath(userId, input.inputStoragePath)) {
     return { error: "Ulazna slika nije dostupna za ovaj nalog." };
   }
+  if (
+    input.referenceStoragePath &&
+    !ownsAiStudioPath(userId, input.referenceStoragePath)
+  ) {
+    return { error: "Slika objekta nije dostupna za ovaj nalog." };
+  }
   if (input.maskStoragePath && !ownsAiStudioPath(userId, input.maskStoragePath)) {
     return { error: "Maska nije dostupna za ovaj nalog." };
+  }
+
+  const editDef = getAiEditType(input.editType);
+  if (editDef.requiresReferenceImage && !input.referenceStoragePath) {
+    return { error: "Dodajte sliku objekta koji želite da ubacite u enterijer." };
+  }
+  if (!editDef.requiresReferenceImage && input.referenceStoragePath) {
+    return { error: "Referentna slika objekta je dostupna samo za alat za dodavanje objekta." };
   }
 
   // ISO 27001 A.8.7. Scan fresh client uploads before passing them to
@@ -203,7 +226,24 @@ export async function startAiStudioGeneration(
     }
   }
 
-  const editDef = getAiEditType(input.editType);
+  if (input.referenceStoragePath) {
+    const knownReference = await prisma.aiGeneration.findFirst({
+      where: { userId, referenceStoragePath: input.referenceStoragePath },
+      select: { id: true },
+    });
+    if (!knownReference) {
+      const referenceScan = await enforceCleanScan({
+        storagePath: input.referenceStoragePath,
+        fileName: input.referenceFileName ?? "ai-reference",
+        fileSize: 0,
+        mimeType: input.referenceMimeType ?? "application/octet-stream",
+        entityType: "AiStudioInput",
+        entityId: userId,
+      });
+      if (!referenceScan.ok) return { error: referenceScan.userError };
+    }
+  }
+
   const prompt = input.prompt.trim();
   const scopeError = validateAiPromptScope({
     editType: input.editType,
@@ -306,6 +346,9 @@ export async function startAiStudioGeneration(
         status: "queued",
         inputStoragePath: input.inputStoragePath,
         inputMimeType: input.inputMimeType,
+        referenceStoragePath: input.referenceStoragePath || null,
+        referenceMimeType: input.referenceMimeType || null,
+        referenceFileName: input.referenceFileName || null,
         maskStoragePath: input.maskStoragePath || null,
         rootFileName,
         inputFileName,
@@ -473,8 +516,11 @@ async function runGenerationProcessing(generation: AiGeneration) {
   const editDef = getAiEditType(generation.editType);
   const options = parseGenerationOptions(generation.optionsJson);
 
-  const [image, mask] = await Promise.all([
+  const [image, reference, mask] = await Promise.all([
     downloadStorageFile(generation.inputStoragePath),
+    generation.referenceStoragePath
+      ? downloadStorageFile(generation.referenceStoragePath)
+      : null,
     generation.maskStoragePath
       ? downloadStorageFile(generation.maskStoragePath)
       : null,
@@ -483,6 +529,9 @@ async function runGenerationProcessing(generation: AiGeneration) {
   const originalDims = await getImageDimensions(image.buffer);
   const target = pickProviderTarget(originalDims, generation.provider);
   const preparedImage = await prepareInputForProvider(image.buffer, target);
+  const preparedReference = reference
+    ? await prepareReferenceForProvider(reference.buffer, target)
+    : undefined;
   const preparedMask = mask
     ? await prepareMaskForProvider(mask.buffer, target)
     : undefined;
@@ -496,6 +545,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
     hasMask: Boolean(mask),
     maskInverted: options.maskInverted,
     ratioLabel: target.ratioLabel,
+    hasReferenceImage: Boolean(reference),
   });
 
   const output = await generateAiEdit({
@@ -503,6 +553,8 @@ async function runGenerationProcessing(generation: AiGeneration) {
     prompt: fullPrompt,
     image: preparedImage,
     imageMimeType: "image/jpeg",
+    referenceImage: preparedReference,
+    referenceMimeType: preparedReference ? "image/jpeg" : undefined,
     mask: preparedMask,
     maskMimeType: preparedMask ? "image/png" : undefined,
     target,
@@ -637,6 +689,7 @@ async function signGeneration(
   const isFileActive = generation.expiresAt > new Date();
   let resultUrl: string | null = null;
   let inputUrl: string | null = null;
+  let referenceUrl: string | null = null;
 
   if (isFileActive && generation.resultStoragePath) {
     const { data } = await getSupabaseAdmin().storage
@@ -650,6 +703,13 @@ async function signGeneration(
       .from("order-files")
       .createSignedUrl(generation.inputStoragePath, 60 * 30);
     inputUrl = data?.signedUrl ?? null;
+  }
+
+  if (isFileActive && generation.referenceStoragePath) {
+    const { data } = await getSupabaseAdmin().storage
+      .from("order-files")
+      .createSignedUrl(generation.referenceStoragePath, 60 * 30);
+    referenceUrl = data?.signedUrl ?? null;
   }
 
   // Resolve parent's resultFileName (for breadcrumb in the modal).
@@ -687,10 +747,14 @@ async function signGeneration(
     expiresAt: generation.expiresAt.toISOString(),
     inputStoragePath: generation.inputStoragePath,
     inputMimeType: generation.inputMimeType,
+    referenceStoragePath: generation.referenceStoragePath,
+    referenceMimeType: generation.referenceMimeType,
+    referenceFileName: generation.referenceFileName,
     resultStoragePath: generation.resultStoragePath,
     resultMimeType: generation.resultMimeType,
     resultUrl,
     inputUrl,
+    referenceUrl,
     downloadUrl:
       isFileActive && generation.resultStoragePath
         ? `/api/ai-studio/generations/${generation.id}/download`
@@ -698,6 +762,10 @@ async function signGeneration(
     inputDownloadUrl: isFileActive
       ? `/api/ai-studio/generations/${generation.id}/download/input`
       : null,
+    referenceDownloadUrl:
+      isFileActive && generation.referenceStoragePath
+        ? `/api/ai-studio/generations/${generation.id}/download/reference`
+        : null,
     filesExpired: !isFileActive,
     rootFileName: generation.rootFileName,
     inputFileName: generation.inputFileName,

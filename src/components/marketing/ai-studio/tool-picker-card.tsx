@@ -19,6 +19,7 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
+  Armchair,
   CloudSun,
   Eraser,
   Paintbrush,
@@ -43,6 +44,7 @@ export type ToolPickerIconName =
   | "cloud-sun"
   | "paintbrush"
   | "sofa"
+  | "armchair"
   | "wand"
   | "palette";
 
@@ -52,6 +54,7 @@ const ICON_MAP: Record<ToolPickerIconName, LucideIcon> = {
   "cloud-sun": CloudSun,
   paintbrush: Paintbrush,
   sofa: Sofa,
+  armchair: Armchair,
   wand: Wand2,
   palette: Palette,
 };
@@ -102,7 +105,7 @@ function BeforeAfterCard({
 
   /**
    * Set --reveal directly on the DOM (no React state) so mouse-move
-   * doesn't trigger React renders — perf matters with 7 cards on screen.
+   * doesn't trigger React renders — perf matters with 8 cards on screen.
    */
   const setReveal = (value: number) => {
     const el = mediaRef.current;

@@ -14,6 +14,7 @@ export type AiPromptOptions = {
   hasMask?: boolean;
   maskInverted?: boolean;
   ratioLabel?: string;
+  hasReferenceImage?: boolean;
 };
 
 export function buildAiEditPrompt(options: AiPromptOptions): string {
@@ -47,6 +48,14 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
       options.maskInverted
         ? "A mask is provided. The opaque area indicates the region to edit; preserve transparent areas as much as possible."
         : "A mask is provided. The transparent area indicates the region to edit; preserve opaque areas as much as possible.",
+    );
+  }
+
+  if (edit.requiresReferenceImage && options.hasReferenceImage) {
+    lines.push(
+      "Two input images are provided. Image 1 is the interior scene to preserve. Image 2 is the reference object to insert into Image 1.",
+      "Use Image 2 as the object identity/material reference, but adapt its scale, perspective, lighting, color temperature, contact shadows, and occlusion so it belongs naturally in Image 1.",
+      "Do not redesign the room or add unrelated furniture. Insert only the referenced object unless the user explicitly asks for tiny supporting placement details such as a natural shadow.",
     );
   }
 

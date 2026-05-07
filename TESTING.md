@@ -214,6 +214,15 @@ Kompletna checklist za end-to-end testiranje cele platforme.
 - [ ] Sve stranice su čitljive na malom ekranu
 - [ ] Two-column layout na order detail se stekuje vertikalno
 
+### 5.10 AI Studio
+- [ ] Postojećih 7 alata rade bez drugog upload panela i šalju samo osnovnu sliku
+- [ ] "Dodavanje objekta u enterijer" prikazuje upload za osnovnu sliku i upload za objekat
+- [ ] Generate je blokiran dok ne postoje obe slike
+- [ ] Obrada bez maske čuva rezultat, istoriju i download linkove
+- [ ] Obrada sa Advanced maskom koristi masku kao zonu postavljanja objekta
+- [ ] Detalj obrade prikazuje osnovnu sliku, objekat i rezultat
+- [ ] "Ponovi sa istim podešavanjima" vraća i referentnu sliku objekta
+
 ---
 
 ## 6. Admin panel

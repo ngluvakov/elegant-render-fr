@@ -168,6 +168,7 @@ async function removeExpiredGenerationFiles(now: Date) {
     select: {
       inputStoragePath: true,
       maskStoragePath: true,
+      referenceStoragePath: true,
       resultStoragePath: true,
     },
     take: 500,
@@ -177,6 +178,9 @@ async function removeExpiredGenerationFiles(now: Date) {
   for (const generation of expired) {
     candidates.add(generation.inputStoragePath);
     if (generation.maskStoragePath) candidates.add(generation.maskStoragePath);
+    if (generation.referenceStoragePath) {
+      candidates.add(generation.referenceStoragePath);
+    }
     if (generation.resultStoragePath) candidates.add(generation.resultStoragePath);
   }
 
@@ -189,12 +193,14 @@ async function removeExpiredGenerationFiles(now: Date) {
       OR: [
         { inputStoragePath: { in: paths } },
         { maskStoragePath: { in: paths } },
+        { referenceStoragePath: { in: paths } },
         { resultStoragePath: { in: paths } },
       ],
     },
     select: {
       inputStoragePath: true,
       maskStoragePath: true,
+      referenceStoragePath: true,
       resultStoragePath: true,
     },
   });
@@ -202,6 +208,9 @@ async function removeExpiredGenerationFiles(now: Date) {
   for (const generation of stillActive) {
     candidates.delete(generation.inputStoragePath);
     if (generation.maskStoragePath) candidates.delete(generation.maskStoragePath);
+    if (generation.referenceStoragePath) {
+      candidates.delete(generation.referenceStoragePath);
+    }
     if (generation.resultStoragePath) candidates.delete(generation.resultStoragePath);
   }
 

@@ -2,7 +2,7 @@
 
 ## 1. Sta je AI Studio
 
-AI Studio je deo Elegant Render platforme za brzu obradu fotografija nekretnina i prostora. Korisnik uploaduje jednu fotografiju, izabere tip obrade, opcije i eventualno stil, dopise instrukcije i dobija gotovu sliku koju moze da preuzme ili koristi kao novi ulaz za sledecu obradu.
+AI Studio je deo Elegant Render platforme za brzu obradu fotografija nekretnina i prostora. Korisnik uploaduje fotografiju, izabere tip obrade, opcije i eventualno stil, dopise instrukcije i dobija gotovu sliku koju moze da preuzme ili koristi kao novi ulaz za sledecu obradu. Kod dodavanja objekta u enterijer dodaje se i druga slika sa objektom.
 
 AI Studio nije zamena za kompletan 3D render ili arhitektonski projekat. Njegova uloga je da ubrza manje i srednje vizuelne intervencije na postojecim fotografijama:
 
@@ -11,6 +11,7 @@ AI Studio nije zamena za kompletan 3D render ili arhitektonski projekat. Njegova
 - zamena neba,
 - promena boje zidova,
 - virtuelno opremanje praznog prostora,
+- dodavanje konkretnog objekta u enterijer,
 - vizuelna renovacija,
 - redizajn postojece prostorije.
 
@@ -21,7 +22,7 @@ Glavna vrednost za klijenta je brzina: moze da testira ideju, popravi fotografij
 1. Korisnik ulazi u AI Studio.
 2. AI Studio pocinje prazno: istorija postoji, ali radna slika se ne popunjava automatski.
 3. Korisnik uploaduje sliku ili iz istorije klikne na rezultat koji zeli da koristi.
-4. Bira tip obrade.
+4. Bira tip obrade. Za "Dodavanje objekta u enterijer" dodaje i drugu sliku sa objektom.
 5. Bira engine, opcije i stil ako postoje.
 6. Po potrebi ukljucuje Advanced mode i crta masku.
 7. Upisuje instrukciju.
@@ -50,7 +51,7 @@ Preporuceno:
 
 Limit u interfejsu:
 
-- jedna slika po obradi,
+- jedna osnovna slika po obradi; za "Dodavanje objekta u enterijer" dodaje se i jedna referentna slika objekta,
 - fajl do 50 MB.
 
 ### Izlazni fajl
@@ -136,6 +137,7 @@ U samom workspace-u engine moze da ostane kao naprednija kontrola, uz oznaku "Pr
 | Zamena neba | Simple | 0.5 kredita | Ne | Ne | Popravka loseg neba |
 | Promena boje zidova | Simple | 0.5 kredita | Da | Ne | Brza provera boje |
 | Virtuelno opremanje | Complex | 1 kredit | Da | Da | Prazni ili slabo uredjeni prostori |
+| Dodavanje objekta u enterijer | Complex | 1 kredit | Da | Ne | Provera konkretnog komada namestaja/dekora u prostoru |
 | Virtuelna renovacija | Complex | 1 kredit | Da | Da | Materijali, podovi, kuhinje, kupatila |
 | Redizajn prostorije | Complex | 1 kredit | Da | Da | Promena stila i atmosfere postojece sobe |
 
@@ -431,7 +433,66 @@ Najbolja poruka:
 
 "Prazan prostor pretvorite u prostor koji kupac odmah razume."
 
-## 10. Usluga: Virtuelna renovacija
+## 10. Usluga: Dodavanje objekta u enterijer
+
+### Sta radi
+
+Ubacuje objekat iz druge, referentne slike u postojecu fotografiju enterijera. Cilj je da se proveri kako konkretan komad namestaja, rasvete, dekora, biljke, umetnosti ili uredjaja vizuelno stoji u prostoru.
+
+### Kada je korisna
+
+- Klijent ima fotografiju prostora i fotografiju konkretnog proizvoda.
+- Treba proveriti skalu, stil i vizuelno uklapanje pre kupovine ili prezentacije.
+- Dizajner zeli brz mockup bez kompletnog 3D modelovanja.
+- Agent ili vlasnik zeli da pokaze potencijal jednog akcentnog elementa.
+
+### Inputi
+
+Obavezno:
+
+- jedna fotografija enterijera,
+- jedna fotografija objekta koji se ubacuje.
+
+Tip objekta:
+
+- namestaj,
+- dekor,
+- rasveta,
+- uredjaj,
+- biljka,
+- umetnost,
+- drugo.
+
+Opcionalno:
+
+- prompt,
+- advanced maska za zonu postavljanja.
+
+### Output
+
+Jedna fotografija enterijera sa uklopljenim objektom. Sistem pokusava da sacuva identitet, materijal i proporciju objekta, ali rezultat treba komunicirati kao vizuelnu proveru uklapanja, ne kao garanciju kataloski identicnog proizvoda.
+
+### Najbolji promptovi
+
+Dobro:
+
+- "Postavi fotelju pored prozora. Uskladi skalu, pravac svetla i senku na podu."
+- "Dodaj lampu na komodu, bez promene ostatka sobe i bez dodatnog dekora."
+
+Lose:
+
+- "Sredi sobu sa ovim."
+- "Dodaj sve kao u drugoj slici."
+
+### Napomene za dizajn stranice
+
+Ovu uslugu treba jasno razlikovati od staginga: ne oprema celu prostoriju, nego ubacuje jedan konkretan referentni objekat.
+
+Najbolja poruka:
+
+"Proverite kako konkretan objekat izgleda u realnom prostoru."
+
+## 11. Usluga: Virtuelna renovacija
 
 ### Sta radi
 
@@ -493,7 +554,7 @@ Najbolja poruka:
 
 "Pokazite potencijal renovacije pre nego sto donesete skupe odluke."
 
-## 11. Usluga: Redizajn prostorije
+## 12. Usluga: Redizajn prostorije
 
 ### Sta radi
 
@@ -561,7 +622,7 @@ Najbolja poruka:
 
 "Vidite kako isti prostor moze da izgleda u potpuno drugom stilu."
 
-## 12. Sta treba prikazati na AI Studio stranici
+## 13. Sta treba prikazati na AI Studio stranici
 
 ### Hero sekcija
 
@@ -651,7 +712,7 @@ Objasniti jasno:
 - Za uklanjanje vecih predmeta koristite masku.
 - Ako je rezultat blizu dobrog, koristite ga kao novu ulaznu sliku i trazite malu korekciju.
 
-## 13. Ton komunikacije
+## 14. Ton komunikacije
 
 Ton treba da bude:
 
@@ -677,7 +738,7 @@ Koristiti:
 - "vizuelna provera",
 - "pre/posle prikaz".
 
-## 14. Predlog navigacije stranice
+## 15. Predlog navigacije stranice
 
 1. Hero sa before/after primerom.
 2. Kratak workflow.
@@ -691,7 +752,7 @@ Koristiti:
 7. FAQ.
 8. CTA za ulazak u AI Studio.
 
-## 15. FAQ pitanja za stranicu
+## 16. FAQ pitanja za stranicu
 
 ### Da li AI Studio pravi 3D render?
 
@@ -721,7 +782,7 @@ Da. Rezultat moze da se koristi kao nova ulazna slika za malu korekciju ili nast
 
 AI Studio fajlovi se cuvaju 30 dana.
 
-## 16. Kratke kartice za dizajn
+## 17. Kratke kartice za dizajn
 
 ### Uklanjanje elemenata
 
@@ -761,6 +822,14 @@ Dodajte namestaj i dekor u prazan prostor.
 
 Input: fotografija + tip sobe + stil.
 Output: opremljen prostor.
+Cena: 1 kredit.
+
+### Dodavanje objekta u enterijer
+
+Ubacite konkretan objekat iz referentne slike u postojeći enterijer.
+
+Input: fotografija enterijera + fotografija objekta + tip objekta.
+Output: objekat uklopljen u prostor.
 Cena: 1 kredit.
 
 ### Virtuelna renovacija

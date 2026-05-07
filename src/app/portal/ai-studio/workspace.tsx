@@ -78,12 +78,17 @@ type GenerationHistoryItem = {
   expiresAt: string;
   inputStoragePath: string;
   inputMimeType: string;
+  referenceStoragePath: string | null;
+  referenceMimeType: string | null;
+  referenceFileName: string | null;
   resultStoragePath: string | null;
   resultMimeType: string | null;
   resultUrl: string | null;
   inputUrl: string | null;
+  referenceUrl: string | null;
   downloadUrl: string | null;
   inputDownloadUrl: string | null;
+  referenceDownloadUrl: string | null;
   filesExpired: boolean;
   rootFileName: string | null;
   inputFileName: string | null;
@@ -137,6 +142,7 @@ export function AiStudioWorkspace({
   const [colorHex, setColorHex] = useState("#f2eee8");
   const [prompt, setPrompt] = useState("");
   const [baseInput, setBaseInput] = useState<UploadedInput | null>(null);
+  const [referenceInput, setReferenceInput] = useState<UploadedInput | null>(null);
   const [currentResult, setCurrentResult] = useState<UploadedInput | null>(null);
   const [openGenerationId, setOpenGenerationId] = useState<string | null>(null);
   const [parentGenerationId, setParentGenerationId] = useState<string | null>(null);
@@ -186,6 +192,7 @@ export function AiStudioWorkspace({
 
   const activeEdit = useMemo(() => getAiEditType(editType), [editType]);
   const activeInput = baseInput;
+  const needsReferenceImage = activeEdit.requiresReferenceImage === true;
   const hasPendingJobs = history.some(
     (item) => item.status === "queued" || item.status === "processing",
   );
@@ -232,6 +239,13 @@ export function AiStudioWorkspace({
   useEffect(() => {
     baseInputRef.current = baseInput;
   }, [baseInput]);
+
+  useEffect(() => {
+    const requestedTool = new URLSearchParams(window.location.search).get("tool");
+    if (isAiEditTypeId(requestedTool)) {
+      setEditType(requestedTool);
+    }
+  }, []);
 
   const refreshState = useCallback(async () => {
     const response = await fetch("/api/ai-studio/state", { cache: "no-store" });
@@ -376,6 +390,7 @@ export function AiStudioWorkspace({
   // immediately re-populate the cleared workspace.
   const handleClearAll = useCallback(() => {
     setBaseInput(null);
+    setReferenceInput(null);
     setCurrentResult(null);
     setResultUrl(null);
     setParentGenerationId(null);
@@ -411,6 +426,19 @@ export function AiStudioWorkspace({
     setResultUrl(null);
     setCurrentResult(null);
     setEditorResetToken((value) => value + 1);
+  };
+
+  const handleReferenceUpload = async (file: File) => {
+    setError("");
+    setNotice("");
+    markWorkspaceActive();
+    const upload = await uploadAiFile(file, "reference");
+    setReferenceInput({
+      url: URL.createObjectURL(file),
+      storagePath: upload.storagePath,
+      mimeType: file.type,
+      fileName: file.name,
+    });
   };
 
   const setResultAsBaseInput = useCallback((nextInput: UploadedInput) => {
@@ -455,11 +483,14 @@ export function AiStudioWorkspace({
       createdAt: item.createdAt,
       completedAt: item.completedAt,
       inputUrl: item.inputUrl,
+      referenceUrl: item.referenceUrl,
       resultUrl: item.resultUrl,
       inputDownloadUrl: item.inputDownloadUrl,
+      referenceDownloadUrl: item.referenceDownloadUrl,
       downloadUrl: item.downloadUrl,
       rootFileName: item.rootFileName,
       inputFileName: item.inputFileName,
+      referenceFileName: item.referenceFileName,
       resultFileName: item.resultFileName,
       parentResultFileName: item.parentResultFileName,
       filesExpired: item.filesExpired,
@@ -519,6 +550,16 @@ export function AiStudioWorkspace({
         fileName: gen.inputFileName ?? "slika-za-obradu",
         generationId: gen.parentGenerationId ?? undefined,
       });
+      setReferenceInput(
+        gen.referenceUrl && item.referenceStoragePath
+          ? {
+              url: gen.referenceUrl,
+              storagePath: item.referenceStoragePath,
+              mimeType: item.referenceMimeType ?? "image/jpeg",
+              fileName: gen.referenceFileName ?? "objekat-za-ubacivanje",
+            }
+          : null,
+      );
       setEditType(gen.editType);
       setProvider(gen.provider);
       if (gen.styleId) setStyleId(gen.styleId);
@@ -539,6 +580,10 @@ export function AiStudioWorkspace({
   const handleGenerate = async (maskBlob: Blob | null) => {
     if (!activeInput) {
       setError("Prvo uploadujte fotografiju.");
+      return;
+    }
+    if (needsReferenceImage && !referenceInput) {
+      setError("Dodajte sliku objekta koji želite da ubacite u enterijer.");
       return;
     }
     if (
@@ -575,6 +620,11 @@ export function AiStudioWorkspace({
           inputStoragePath: activeInput.storagePath,
           inputMimeType: activeInput.mimeType,
           inputFileName: activeInput.fileName,
+          referenceStoragePath: needsReferenceImage
+            ? referenceInput?.storagePath
+            : null,
+          referenceMimeType: needsReferenceImage ? referenceInput?.mimeType : null,
+          referenceFileName: needsReferenceImage ? referenceInput?.fileName : null,
           maskStoragePath,
           prompt,
           styleId: activeEdit.supportsStyles ? styleId : null,
@@ -610,6 +660,7 @@ export function AiStudioWorkspace({
         has_style: Boolean(activeEdit.supportsStyles && styleId !== "none"),
         has_selected_option: Boolean(selectedOption),
         has_color: Boolean(activeEdit.supportsColor),
+        has_reference_image: Boolean(needsReferenceImage && referenceInput),
         is_regeneration: Boolean(linkedParentGenerationId),
         units_charged: result.unitsCharged ?? activeEdit.units,
       });
@@ -642,12 +693,23 @@ export function AiStudioWorkspace({
           expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           inputStoragePath: activeInput.storagePath,
           inputMimeType: activeInput.mimeType,
+          referenceStoragePath: needsReferenceImage
+            ? referenceInput?.storagePath ?? null
+            : null,
+          referenceMimeType: needsReferenceImage
+            ? referenceInput?.mimeType ?? null
+            : null,
+          referenceFileName: needsReferenceImage
+            ? referenceInput?.fileName ?? null
+            : null,
           resultStoragePath: null,
           resultMimeType: null,
           resultUrl: null,
           inputUrl: activeInput.url,
+          referenceUrl: needsReferenceImage ? referenceInput?.url ?? null : null,
           downloadUrl: null,
           inputDownloadUrl: null,
+          referenceDownloadUrl: null,
           filesExpired: false,
           rootFileName: null,
           inputFileName: activeInput.fileName,
@@ -734,9 +796,11 @@ export function AiStudioWorkspace({
             mode={mode}
             editType={editType}
             baseInput={baseInput}
+            referenceInput={referenceInput}
             currentResult={currentResult}
             onUseCurrentResult={setResultAsBaseInput}
             onUpload={handleUpload}
+            onReferenceUpload={handleReferenceUpload}
             onGenerate={handleGenerate}
             onClearAll={handleClearAll}
             pending={pending}
@@ -880,7 +944,9 @@ function StudioControls({
                 ))}
               </div>
               <p className="mt-1 text-[0.68rem] text-muted-foreground">
-                Advanced otključava masku za precizno označavanje.
+                {edit.requiresReferenceImage
+                  ? "Advanced maskom označava zonu gde objekat treba da se pojavi."
+                  : "Advanced otključava masku za precizno označavanje."}
               </p>
             </div>
           )}
@@ -1019,9 +1085,11 @@ function AiImageEditor({
   mode,
   editType,
   baseInput,
+  referenceInput,
   currentResult,
   onUseCurrentResult,
   onUpload,
+  onReferenceUpload,
   onGenerate,
   onClearAll,
   pending,
@@ -1034,9 +1102,11 @@ function AiImageEditor({
   mode: ToolMode;
   editType: AiEditType;
   baseInput: UploadedInput | null;
+  referenceInput: UploadedInput | null;
   currentResult: UploadedInput | null;
   onUseCurrentResult: (value: UploadedInput) => void;
   onUpload: (file: File) => void;
+  onReferenceUpload: (file: File) => void;
   onGenerate: (mask: Blob | null) => void;
   onClearAll: () => void;
   pending: boolean;
@@ -1047,6 +1117,7 @@ function AiImageEditor({
   costPreview: { unitsCharged: number; freeAttemptIndex: number | null } | null;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const referenceFileRef = useRef<HTMLInputElement>(null);
   const maskCanvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const [tool, setTool] = useState<MaskTool>("brush");
@@ -1059,6 +1130,8 @@ function AiImageEditor({
   const [redoStack, setRedoStack] = useState<string[]>([]);
   const [confirmingClear, setConfirmingClear] = useState(false);
   const activeImage = baseInput;
+  const edit = getAiEditType(editType);
+  const needsReferenceImage = edit.requiresReferenceImage === true;
 
   const resetCanvas = useCallback(() => {
     const canvas = maskCanvasRef.current;
@@ -1182,7 +1255,9 @@ function AiImageEditor({
         <div>
           <h2 className="font-heading text-lg text-foreground">Radna slika</h2>
           <p className="text-sm text-muted-foreground">
-            Jedna slika po obradi. Advanced maska je opciona.
+            {needsReferenceImage
+              ? "Dodajte fotografiju enterijera i sliku objekta. Advanced maska označava poziciju."
+              : "Jedna slika po obradi. Advanced maska je opciona."}
           </p>
         </div>
         {currentResult && (
@@ -1207,6 +1282,16 @@ function AiImageEditor({
           onChange={(event) => {
             const file = event.target.files?.[0];
             if (file) onUpload(file);
+          }}
+        />
+        <input
+          ref={referenceFileRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) onReferenceUpload(file);
           }}
         />
       </div>
@@ -1312,6 +1397,61 @@ function AiImageEditor({
             <CircleDashed className="h-3.5 w-3.5" />
             Invert
           </Button>
+        </div>
+      )}
+
+      {needsReferenceImage && (
+        <div className="mt-4 rounded-2xl border border-border/30 bg-muted/30 p-3">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Objekat za ubacivanje
+              </p>
+              {referenceInput?.fileName && (
+                <p className="mt-0.5 truncate font-mono text-[0.68rem] text-foreground/60">
+                  {referenceInput.fileName}
+                </p>
+              )}
+            </div>
+            {referenceInput && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="xs"
+                onClick={() => referenceFileRef.current?.click()}
+              >
+                <Upload className="h-3 w-3" />
+                Promeni
+              </Button>
+            )}
+          </div>
+          {referenceInput ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={referenceInput.url}
+              alt="Objekat za ubacivanje"
+              className="block max-h-[360px] w-full rounded-xl bg-foreground/5 object-contain"
+              draggable={false}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => referenceFileRef.current?.click()}
+              className="group flex aspect-[16/7] w-full flex-col items-center justify-center gap-3 rounded-xl border border-border/40 bg-card/40 text-center transition-colors hover:border-accent/50 hover:bg-card/60"
+            >
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent/10 text-accent">
+                <Upload className="h-5 w-5" />
+              </span>
+              <span className="px-6">
+                <span className="block text-base font-semibold text-foreground">
+                  Dodajte sliku objekta
+                </span>
+                <span className="mt-1 block max-w-md text-sm text-muted-foreground">
+                  Ubacujemo samo ovaj objekat u enterijer, uz prilagođavanje perspektive, svetla i senke.
+                </span>
+              </span>
+            </button>
+          )}
         </div>
       )}
 
@@ -1505,7 +1645,7 @@ function AiImageEditor({
             type="button"
             variant="accent"
             size="lg"
-            disabled={pending || !activeImage}
+            disabled={pending || !activeImage || (needsReferenceImage && !referenceInput)}
             onClick={async () => onGenerate(await exportMask())}
           >
             {pending ? (
@@ -1845,6 +1985,10 @@ function toggleOptionId(current: string, id: string): string {
   return next.join(",");
 }
 
+function isAiEditTypeId(value: string | null): value is AiEditType {
+  return Boolean(value && AI_EDIT_TYPES.some((item) => item.id === value));
+}
+
 // Mirrors the server-side cost calc in startAiStudioGeneration (which
 // is the source of truth) so the customer sees the expected charge —
 // free, partial, or full credit — before clicking Generate. Returns
@@ -1880,7 +2024,7 @@ function computeCostPreview(
   return { unitsCharged: editUnits, freeAttemptIndex: null };
 }
 
-async function uploadAiFile(file: File, purpose: "input" | "mask") {
+async function uploadAiFile(file: File, purpose: "input" | "mask" | "reference") {
   const urlRes = await fetch("/api/ai-studio/upload-url", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

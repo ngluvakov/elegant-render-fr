@@ -1,3 +1,4 @@
+import OpenAI, { toFile } from "openai";
 import { getAiProviderModel, type AiImageProvider } from "./catalog";
 import type { ProviderTarget } from "./image-processing";
 
@@ -9,6 +10,8 @@ export type AiEditProviderInput = {
   prompt: string;
   image: Buffer;
   imageMimeType: string;
+  referenceImage?: Buffer;
+  referenceMimeType?: string;
   mask?: Buffer;
   maskMimeType?: string;
   target?: ProviderTarget;
@@ -53,6 +56,18 @@ class AiProviderError extends Error {
     this.publicMessage = publicMessage;
     this.fallbackAllowed = fallbackAllowed;
   }
+}
+
+let openAiClient: OpenAI | null = null;
+
+function getOpenAiClient() {
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error("OPENAI_API_KEY nije konfigurisan.");
+  }
+  if (!openAiClient) {
+    openAiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return openAiClient;
 }
 
 export async function generateAiEdit(
@@ -101,6 +116,7 @@ async function generateWithGemini(
   const model = getAiProviderModel(provider);
   const parts: Array<Record<string, unknown>> = [
     { text: input.prompt },
+    { text: "Image 1: interior scene to edit." },
     {
       inline_data: {
         mime_type: input.imageMimeType,
@@ -109,7 +125,20 @@ async function generateWithGemini(
     },
   ];
 
+  if (input.referenceImage) {
+    parts.push(
+      { text: "Image 2: reference object to insert into Image 1." },
+      {
+        inline_data: {
+          mime_type: input.referenceMimeType ?? "image/jpeg",
+          data: input.referenceImage.toString("base64"),
+        },
+      },
+    );
+  }
+
   if (input.mask) {
+    parts.push({ text: "Mask for Image 1. Transparent pixels indicate the edit area." });
     parts.push({
       inline_data: {
         mime_type: input.maskMimeType ?? "image/png",
@@ -177,57 +206,61 @@ async function generateWithGemini(
 async function generateWithOpenAi(
   input: AiEditProviderInput,
 ): Promise<AiEditProviderOutput> {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY nije konfigurisan.");
-  }
-
   const model = getAiProviderModel("openai");
+  const client = getOpenAiClient();
+  const images = [
+    await toFile(new Uint8Array(input.image), "scene.jpg", {
+      type: input.imageMimeType,
+    }),
+  ];
 
-  const form = new FormData();
-  form.append("model", model);
-  form.append("prompt", input.prompt);
-  form.append(
-    "image",
-    new Blob([new Uint8Array(input.image)], { type: input.imageMimeType }),
-    "input.png",
-  );
-  form.append("size", input.target?.openaiSize ?? "auto");
-
-  if (input.mask) {
-    form.append(
-      "mask",
-      new Blob([new Uint8Array(input.mask)], {
-        type: input.maskMimeType ?? "image/png",
+  if (input.referenceImage) {
+    images.push(
+      await toFile(new Uint8Array(input.referenceImage), "object-reference.jpg", {
+        type: input.referenceMimeType ?? "image/jpeg",
       }),
-      "mask.png",
     );
   }
 
-  const res = await fetchWithTimeout(
-    "https://api.openai.com/v1/images/edits",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: form,
-    },
-    { provider: "openai", model },
-  );
+  const mask = input.mask
+    ? await toFile(new Uint8Array(input.mask), "mask.png", {
+        type: input.maskMimeType ?? "image/png",
+      })
+    : undefined;
 
-  if (!res.ok) {
-    const body = await readResponseText(res);
+  let data: {
+    id?: string;
+    data?: Array<{ b64_json?: string | null; url?: string | null }>;
+  };
+  try {
+    data = await client.images.edit(
+      {
+        model,
+        prompt: input.prompt,
+        image: images.length === 1 ? images[0] : images,
+        ...(mask ? { mask } : {}),
+        size: input.target?.openaiSize ?? "auto",
+        output_format: "png",
+        ...(input.referenceImage ? { input_fidelity: "high" as const } : {}),
+      },
+      { timeout: AI_PROVIDER_TIMEOUT_MS },
+    );
+  } catch (err) {
+    const status =
+      typeof err === "object" && err !== null && "status" in err
+        ? Number((err as { status?: unknown }).status)
+        : undefined;
+    const body = err instanceof Error ? err.message : String(err);
     throw new AiProviderError({
       provider: "openai",
       model,
-      status: res.status,
-      message: `OpenAI image edit failed: ${res.status} ${body}`,
-      publicMessage: getPublicProviderMessage("openai", res.status, body),
+      status,
+      message: `OpenAI image edit failed: ${status ?? "unknown"} ${body}`,
+      publicMessage: getPublicProviderMessage("openai", status ?? 500, body),
       fallbackAllowed: false,
     });
   }
 
-  const data = await res.json();
   const item = data.data?.[0];
   if (item?.b64_json) {
     return {

@@ -272,6 +272,11 @@ export const AI_STUDIO_FAQS = [
       "Staging dodaje opremu u prazan prostor. Renovacija menja materijale i elemente prostora. Redesign menja stil i atmosferu postojeće sobe.",
   },
   {
+    question: "Kada koristim dodavanje objekta u enterijer?",
+    answer:
+      "Kada imate fotografiju prostora i posebnu sliku konkretnog objekta koji želite da proverite u tom enterijeru. Rezultat je vizuelna provera uklapanja, ne garancija kataloški identičnog proizvoda.",
+  },
+  {
     question: "Da li rezultat mogu ponovo da obradim?",
     answer:
       "Da. Rezultat može da postane nova ulazna slika za malu korekciju ili nastavak dorade.",

@@ -97,8 +97,9 @@ export default function PrivatnostPage() {
             </li>
             <li>
               <strong>Pri korišćenju AI Studija:</strong> ulazne slike i
-              tekstualni prompts koje šaljete, izlazne slike koje generišemo,
-              metapodaci o transakciji (broj kredita, vreme).
+              referentne slike objekata, tekstualni prompts koje šaljete,
+              izlazne slike koje generišemo, metapodaci o transakciji (broj
+              kredita, vreme).
             </li>
             <li>
               <strong>Pri komunikaciji preko chat asistenta:</strong> sadržaj

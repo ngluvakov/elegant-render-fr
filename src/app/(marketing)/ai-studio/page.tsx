@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
+  Armchair,
   Brush,
   CheckCircle2,
   CircleDollarSign,
@@ -56,7 +57,7 @@ import {
 export const metadata: Metadata = createPublicMetadata({
   title: "AI Studio",
   description:
-    "Brza AI obrada fotografija nekretnina: uklanjanje elemenata, dan-u-noć, zamena neba, boja zidova, staging, renovacija i redesign.",
+    "Brza AI obrada fotografija nekretnina: uklanjanje elemenata, dan-u-noć, zamena neba, boja zidova, staging, dodavanje objekta, renovacija i redesign.",
   path: "/ai-studio",
   image: "/artwork/ai-tool-virtual_staging-after.webp",
 });
@@ -139,6 +140,16 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     afterSrc: "/artwork/ai-tool-virtual_staging-after.webp",
     gradient: "from-accent/15 to-accent/25",
   },
+  object_insertion: {
+    icon: Armchair,
+    benefit:
+      "Ubacite konkretan komad nameštaja, rasvete ili dekora u postojeći enterijer.",
+    input: "Fotografija enterijera + slika objekta",
+    output: "Objekat uklopljen u prostor",
+    prompt:
+      "Postavi fotelju pored prozora. Uskladi skalu, pravac svetla i senku na podu.",
+    gradient: "from-[color:var(--color-sage)]/20 to-foreground/15",
+  },
   virtual_renovation: {
     icon: Wand2,
     benefit:
@@ -174,7 +185,7 @@ const workflow = [
   {
     icon: Sparkles,
     title: "Izaberite AI alat",
-    text: "Od brzih korekcija do staginga, renovacije i redesign-a.",
+    text: "Od brzih korekcija do staginga, dodavanja objekta, renovacije i redesign-a.",
   },
   {
     icon: Brush,
@@ -217,6 +228,7 @@ const tips = [
   "Napišite šta mora da ostane isto: prozori, raspored, pod, materijali.",
   "Ne tražite više nepovezanih stvari u jednoj rečenici.",
   "Za staging navedite namenu sobe, stil i paletu boja.",
+  "Za dodavanje objekta uploadujte jasnu sliku objekta i napišite gde treba da stoji.",
   "Za renovaciju odvojite materijale, nameštaj i osvetljenje.",
   "Za uklanjanje većih predmeta koristite masku u Advanced mode-u.",
   "Ako je rezultat blizu dobrog, koristite ga kao novi ulaz i tražite malu korekciju.",
@@ -254,7 +266,7 @@ export default async function AiStudioLandingPage() {
             path: "/ai-studio",
             name: "AI Studio za obradu fotografija nekretnina",
             description:
-              "AI alati za uklanjanje elemenata, dan-u-noć, zamenu neba, virtuelno opremanje, renovaciju i redesign prostora.",
+              "AI alati za uklanjanje elemenata, dan-u-noć, zamenu neba, virtuelno opremanje, dodavanje objekta, renovaciju i redesign prostora.",
           }),
           buildBreadcrumbJsonLd([
             { name: "Početna", path: "/" },
@@ -329,7 +341,7 @@ function HeroSection({
       </h1>
       <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
         Uploadujte fotografiju, izaberite alat i dobijte spreman vizuelni
-        rezultat za oglas, prezentaciju ili proveru ideje. Sedam alata, od{" "}
+        rezultat za oglas, prezentaciju ili proveru ideje. Osam alata, od{" "}
         {formatPublicPrice(
           toolStartingEur(
             1,
@@ -376,6 +388,7 @@ const ICON_NAME_BY_TOOL: Record<AiEditType, ToolPickerIconName> = {
   sky_replacement: "cloud-sun",
   wall_color_change: "paintbrush",
   virtual_staging: "sofa",
+  object_insertion: "armchair",
   virtual_renovation: "wand",
   room_redesign: "palette",
 };
@@ -466,7 +479,7 @@ function WorkflowSection() {
 }
 
 /**
- * Detailed reference for the seven tools — kept after the picker for
+ * Detailed reference for the eight tools — kept after the picker for
  * customers who want to read deeper before clicking. Drops the empty
  * Input/Output mockup boxes from the previous design (they read as
  * placeholder rather than illustration); each tool's example prompt now
@@ -480,11 +493,11 @@ function ToolsSection() {
           <div className="max-w-3xl">
             <SectionKicker>Alati</SectionKicker>
             <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
-              Sedam AI obrada za postojeće fotografije.
+              Osam AI obrada za postojeće fotografije.
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
               Svaki alat ima jasan opseg: od brzog čišćenja fotografije do
-              staginga, renovacije i redesign-a prostorije. Primer prompta
+              staginga, dodavanja objekta, renovacije i redesign-a prostorije. Primer prompta
               ispod svakog alata pokazuje kako da formulišete instrukciju.
             </p>
           </div>

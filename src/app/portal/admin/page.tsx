@@ -41,7 +41,13 @@ export default async function AdminPage({
     where.items = { some: { categoryLabel: { contains: usluga, mode: "insensitive" } } };
   }
 
-  const [orders, allOrders, uniqueUsers] = await Promise.all([
+  const [
+    orders,
+    allOrders,
+    uniqueUsers,
+    pendingInquiriesCount,
+    failedOutboxCount,
+  ] = await Promise.all([
     prisma.order.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -55,6 +61,8 @@ export default async function AdminPage({
       select: { status: true, totalEur: true, paymentStatus: true },
     }),
     prisma.user.count({ where: { orders: { some: {} } } }),
+    prisma.projectInquiry.count({ where: { status: "pending" } }),
+    prisma.outboxEvent.count({ where: { status: "failed" } }),
   ]);
 
   // Stats from all orders (not filtered)
@@ -90,9 +98,14 @@ export default async function AdminPage({
           </Link>
           <Link
             href="/portal/admin/upiti"
-            className="rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
           >
             Upiti
+            {pendingInquiriesCount > 0 && (
+              <span className="inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-accent px-1.5 text-[0.62rem] font-bold text-background">
+                {pendingInquiriesCount}
+              </span>
+            )}
           </Link>
           <Link
             href="/portal/admin/vr-upiti"
@@ -132,9 +145,14 @@ export default async function AdminPage({
           </Link>
           <Link
             href="/portal/admin/outbox"
-            className="rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border/40 bg-card/80 px-3 py-1.5 font-medium text-foreground transition-colors hover:border-border"
           >
             Outbox
+            {failedOutboxCount > 0 && (
+              <span className="inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-destructive px-1.5 text-[0.62rem] font-bold text-background">
+                {failedOutboxCount}
+              </span>
+            )}
           </Link>
         </nav>
       </div>

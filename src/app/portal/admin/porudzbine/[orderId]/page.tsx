@@ -11,6 +11,7 @@ import { AdminCommentComposer } from "./admin-comment-composer";
 import { AdminProformaButton } from "./admin-proforma-button";
 import { AdminMarkPaidButton } from "./admin-mark-paid-button";
 import { AdminRetryInvoiceButton } from "./admin-retry-invoice-button";
+import { AdminVerifyVatButton } from "./admin-verify-vat-button";
 import { AdminStatusChanger } from "./admin-status-changer";
 import { AdminDeliverableUpload } from "./admin-deliverable-upload";
 import { AdminGrantCreditsPanel } from "./admin-grant-credits-panel";
@@ -321,6 +322,54 @@ export default async function AdminOrderDetailPage({
                 )}
               </dl>
             )}
+
+            {/* VIES VAT verification — only for company_foreign. Shows
+                the verified badge if a successful check ran, and the
+                trigger button so admin can (re)check before issuing
+                an export invoice with 0% VAT (čl. 24 ZPDV). */}
+            {order.buyerType === "company_foreign" &&
+              order.companyTaxId &&
+              order.companyCountryCode && (
+                <div className="mt-4 border-t border-border/40 pt-4">
+                  {order.vatVerifiedAt ? (
+                    <div className="space-y-2">
+                      <div className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10 px-3 py-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)]">
+                        ✓ VIES verifikovan{" "}
+                        <span className="font-normal text-muted-foreground">
+                          ·{" "}
+                          {new Date(order.vatVerifiedAt).toLocaleDateString(
+                            "sr-Latn-RS",
+                            {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            },
+                          )}
+                        </span>
+                      </div>
+                      {order.vatVerifiedName &&
+                        order.vatVerifiedName !== order.companyName && (
+                          <p className="text-[0.72rem] text-muted-foreground">
+                            VIES naziv:{" "}
+                            <span className="text-foreground">
+                              {order.vatVerifiedName}
+                            </span>{" "}
+                            (razlikuje se od unetog)
+                          </p>
+                        )}
+                      <AdminVerifyVatButton orderId={order.id} />
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-[0.78rem] text-muted-foreground">
+                        VAT ID nije verifikovan kroz VIES. Pre izdavanja
+                        izvozne fakture preporučljivo je proveriti.
+                      </p>
+                      <AdminVerifyVatButton orderId={order.id} />
+                    </div>
+                  )}
+                </div>
+              )}
           </div>
 
           {/* Predračun (proforma) — wire-transfer flow. Always visible

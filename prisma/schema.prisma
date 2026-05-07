@@ -202,6 +202,18 @@ model Order {
   companyMb          String?
   companyAddress     String?          @db.Text
   companyCountryCode String?
+  // VIES (VAT Information Exchange System) verification snapshot for
+  // company_foreign orders. Populated when admin clicks "Proveri VAT
+  // (VIES)" on the order detail. Stored as a snapshot — VIES queries
+  // are point-in-time and the EU REST result includes a requestId we
+  // keep as forensic proof of when the check ran.
+  //   vatVerifiedAt    — when the lookup succeeded (null = not checked)
+  //   vatVerifiedName  — name returned by VIES at lookup time. May
+  //                      diverge from companyName if customer mistyped.
+  //   vatRequestId     — VIES requestId, retained for audit/dispute use
+  vatVerifiedAt      DateTime?
+  vatVerifiedName    String?
+  vatRequestId       String?
   // Invoice issuance — populated once, immediately after the payment
   // provider confirms `paymentStatus = completed`. invoiceNumber is
   // allocated atomically per calendar year via InvoiceCounter and is

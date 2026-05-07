@@ -18,14 +18,19 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-type SearchParams = Promise<{ status?: string; q?: string; usluga?: string }>;
+type SearchParams = Promise<{
+  status?: string;
+  q?: string;
+  usluga?: string;
+  placanje?: string;
+}>;
 
 export default async function AdminPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  const { status, q, usluga } = await searchParams;
+  const { status, q, usluga, placanje } = await searchParams;
 
   // Build filter
   const where: Record<string, unknown> = {};
@@ -39,6 +44,9 @@ export default async function AdminPage({
   }
   if (usluga) {
     where.items = { some: { categoryLabel: { contains: usluga, mode: "insensitive" } } };
+  }
+  if (placanje === "online_payment" || placanje === "wire_transfer") {
+    where.paymentMethod = placanje;
   }
 
   const [
@@ -222,7 +230,7 @@ export default async function AdminPage({
       {/* Results count */}
       <p className="text-xs text-muted-foreground">
         {orders.length} rezultat{orders.length === 1 ? "" : "a"}
-        {(status || q || usluga) && " za izabrane filtere"}
+        {(status || q || usluga || placanje) && " za izabrane filtere"}
       </p>
 
       {/* Orders table */}

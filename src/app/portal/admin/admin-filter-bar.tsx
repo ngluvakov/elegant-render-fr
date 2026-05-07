@@ -67,6 +67,16 @@ export function AdminFilterBar() {
           <option key={type} value={type}>{type}</option>
         ))}
       </select>
+      <select
+        value={searchParams.get("placanje") ?? ""}
+        onChange={(e) => updateParam("placanje", e.target.value)}
+        className="h-9 rounded-lg border border-border bg-background px-3 text-sm text-foreground"
+        title="Filter po načinu plaćanja"
+      >
+        <option value="">Sva plaćanja</option>
+        <option value="online_payment">Online (PayPal/kartica)</option>
+        <option value="wire_transfer">Žiro-račun (predračun)</option>
+      </select>
     </div>
   );
 }

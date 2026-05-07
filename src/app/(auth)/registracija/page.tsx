@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { SignUpForm } from "./sign-up-form";
 
@@ -8,7 +10,14 @@ export const metadata: Metadata = {
   robots: NO_INDEX_ROBOTS,
 };
 
-export default function RegistracijaPage() {
+export default async function RegistracijaPage() {
+  // Already signed in → /portal. Same rationale as the sign-in page:
+  // clicking the Google button on registration while authenticated
+  // would link that Google account to the current session user
+  // instead of creating a fresh signup.
+  const session = await auth();
+  if (session?.user?.id) redirect("/portal");
+
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
       <div className="w-full max-w-md">

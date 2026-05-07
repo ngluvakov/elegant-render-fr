@@ -5,7 +5,10 @@ import { Check, CreditCard, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { formatEur } from "@/lib/catalog/calculate";
+import {
+  formatPublicPrice,
+  type PublicPricingFormatSettings,
+} from "@/lib/catalog/display-currency";
 import { track } from "@/lib/posthog-events";
 import { useCheckout } from "../checkout-context";
 import { PayPalButtons } from "../paypal-buttons";
@@ -14,10 +17,31 @@ import {
 } from "@/server/actions/payment";
 
 export function StepPayment() {
-  const { orderId, calculation, setPaymentComplete, setStep } = useCheckout();
+  const {
+    orderId,
+    calculation,
+    setPaymentComplete,
+    setStep,
+    displayCurrency,
+    pricingCatalog,
+  } = useCheckout();
   const [method, setMethod] = useState<"paypal" | "card">("paypal");
   const [cardPending, setCardPending] = useState(false);
   const [error, setError] = useState("");
+
+  // Mirror step-review: RS visitors see the total converted to RSD
+  // (with VAT) using the catalog's published rate; everyone else
+  // sees the canonical EUR figure stored on the order. PostHog
+  // tracking stays on EUR as the source-of-truth currency.
+  const pricingSettings: PublicPricingFormatSettings | undefined =
+    pricingCatalog
+      ? {
+          eurToRsdRate: pricingCatalog.settings.eurToRsdRate,
+          serbiaVatRate: pricingCatalog.settings.serbiaVatRate,
+        }
+      : undefined;
+  const formatTotal = (eur: number) =>
+    formatPublicPrice(eur, displayCurrency, pricingSettings);
 
   if (!orderId) {
     return (
@@ -59,7 +83,7 @@ export function StepPayment() {
         <p className="mt-2 text-sm text-muted-foreground">
           Ukupno za plaćanje:{" "}
           <strong className="text-foreground">
-            {formatEur(calculation.total)}
+            {formatTotal(calculation.total)}
           </strong>
         </p>
 
@@ -166,7 +190,7 @@ export function StepPayment() {
               onClick={handleMockCard}
               disabled={cardPending}
             >
-              {cardPending ? "Obrada…" : `Plati ${formatEur(calculation.total)}`}
+              {cardPending ? "Obrada…" : `Plati ${formatTotal(calculation.total)}`}
             </Button>
           </div>
         )}

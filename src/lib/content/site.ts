@@ -281,7 +281,7 @@ export const AI_STUDIO_FAQS = [
       "Staging dodaje opremu u prazan prostor. Renovacija menja materijale i elemente prostora. Redesign menja stil i atmosferu postojeće sobe.",
   },
   {
-    question: "Kada koristim dodavanje objekta u enterijer?",
+    question: "Kada koristim dodavanje ili zamenu objekta?",
     answer:
       "Kada imate fotografiju prostora i posebne slike konkretnog objekta koji želite da dodate ili kojim želite da zamenite postojeći komad. Možete dodati više uglova istog objekta, a za zamenu se maskom označava komad koji menjamo.",
   },

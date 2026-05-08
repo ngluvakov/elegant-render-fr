@@ -168,8 +168,8 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
   },
   {
     id: "object_insertion",
-    label: "Dodavanje objekta u enterijer",
-    shortLabel: "Object Insert",
+    label: "Dodavanje ili zamena objekta",
+    shortLabel: "Object Insert/Replace",
     complexity: "complex",
     units: 2,
     description:

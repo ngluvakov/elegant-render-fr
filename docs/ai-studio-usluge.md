@@ -22,7 +22,7 @@ Glavna vrednost za klijenta je brzina: moze da testira ideju, popravi fotografij
 1. Korisnik ulazi u AI Studio.
 2. AI Studio pocinje prazno: istorija postoji, ali radna slika se ne popunjava automatski.
 3. Korisnik uploaduje sliku ili iz istorije klikne na rezultat koji zeli da koristi.
-4. Bira tip obrade. Za "Dodavanje objekta u enterijer" dodaje jednu ili vise slika istog objekta.
+4. Bira tip obrade. Za "Dodavanje ili zamena objekta" dodaje jednu ili vise slika istog objekta.
 5. Bira engine, opcije i stil ako postoje.
 6. Po potrebi ukljucuje Advanced mode i crta masku.
 7. Upisuje instrukciju.
@@ -51,7 +51,7 @@ Preporuceno:
 
 Limit u interfejsu:
 
-- jedna osnovna slika po obradi; za "Dodavanje objekta u enterijer" dodaje se 1-5 referentnih slika istog objekta,
+- jedna osnovna slika po obradi; za "Dodavanje ili zamena objekta" dodaje se 1-5 referentnih slika istog objekta,
 - fajl do 50 MB.
 
 ### Izlazni fajl
@@ -137,7 +137,7 @@ U samom workspace-u engine moze da ostane kao naprednija kontrola, uz oznaku "Pr
 | Zamena neba | Simple | 0.5 kredita | Ne | Ne | Popravka loseg neba |
 | Promena boje zidova | Simple | 0.5 kredita | Da | Ne | Brza provera boje |
 | Virtuelno opremanje | Complex | 1 kredit | Da | Da | Prazni ili slabo uredjeni prostori |
-| Dodavanje objekta u enterijer | Complex | 1 kredit | Da | Ne | Dodavanje ili zamena konkretnog komada namestaja/dekora u prostoru |
+| Dodavanje ili zamena objekta | Complex | 1 kredit | Da | Ne | Dodavanje ili zamena konkretnog komada namestaja/dekora u prostoru |
 | Virtuelna renovacija | Complex | 1 kredit | Da | Da | Materijali, podovi, kuhinje, kupatila |
 | Redizajn prostorije | Complex | 1 kredit | Da | Da | Promena stila i atmosfere postojece sobe |
 
@@ -433,7 +433,7 @@ Najbolja poruka:
 
 "Prazan prostor pretvorite u prostor koji kupac odmah razume."
 
-## 10. Usluga: Dodavanje objekta u enterijer
+## 10. Usluga: Dodavanje ili zamena objekta
 
 ### Sta radi
 
@@ -825,7 +825,7 @@ Input: fotografija + tip sobe + stil.
 Output: opremljen prostor.
 Cena: 1 kredit.
 
-### Dodavanje objekta u enterijer
+### Dodavanje ili zamena objekta
 
 Ubacite konkretan objekat iz referentnih slika u postojeći enterijer ili zamenite postojeći komad.
 

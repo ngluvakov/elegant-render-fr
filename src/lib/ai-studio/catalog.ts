@@ -83,7 +83,7 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     description: "Uklanjanje predmeta, nereda, ljudi, vozila ili sitnih smetnji sa fotografije.",
     supportsMask: true,
     multiSelect: true,
-    recommendedProvider: "gemini_flash",
+    recommendedProvider: "gemini_pro",
     promptPlaceholder: "npr. ukloni saobraćajne znake i kese; pažljivo sa senkama na zidu",
     optionsLabel: "Šta uklanjamo (može više)",
     options: [
@@ -102,7 +102,7 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     units: 1,
     description: "Pretvaranje dnevne fotografije u večernji ili sutonski prikaz.",
     supportsMask: false,
-    recommendedProvider: "gemini_flash",
+    recommendedProvider: "gemini_pro",
     promptPlaceholder: "npr. zadržati prirodno osvetljenje na fasadi, suptilan sjaj prozora",
     optionsLabel: "Atmosfera",
     options: [
@@ -121,7 +121,7 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     units: 1,
     description: "Zamena sivog ili oblačnog neba atraktivnijom atmosferom.",
     supportsMask: false,
-    recommendedProvider: "gemini_flash",
+    recommendedProvider: "gemini_pro",
     promptPlaceholder: "npr. blago osvetljenje, suptilni oblaci, ne menjati boju zgrade",
     optionsLabel: "Nebo",
     options: [
@@ -141,7 +141,7 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     description: "Brza promena boje zidova uz color picker i dodatne instrukcije.",
     supportsColor: true,
     supportsMask: true,
-    recommendedProvider: "gemini_flash",
+    recommendedProvider: "gemini_pro",
     promptPlaceholder: "npr. zadrži boju lajsni i ramova, ne dirati nameštaj",
   },
   {
@@ -256,13 +256,22 @@ export const AI_IMAGE_PROVIDERS: Array<{
   },
   {
     id: "openai",
-    label: "GPT Image 1.5",
+    label: "GPT Image 2",
     modelEnv: "AI_STUDIO_OPENAI_MODEL",
-    defaultModel: "gpt-image-1.5",
+    defaultModel: "gpt-image-2",
   },
 ];
 
-export const DEFAULT_AI_PROVIDER: AiImageProvider = "gemini_flash";
+export const ACTIVE_AI_IMAGE_PROVIDER_IDS: AiImageProvider[] = [
+  "gemini_pro",
+  "openai",
+];
+
+export const ACTIVE_AI_IMAGE_PROVIDERS = AI_IMAGE_PROVIDERS.filter((provider) =>
+  ACTIVE_AI_IMAGE_PROVIDER_IDS.includes(provider.id),
+);
+
+export const DEFAULT_AI_PROVIDER: AiImageProvider = "gemini_pro";
 
 export type AiCreditTier = {
   minCredits: number;
@@ -312,6 +321,10 @@ export function getAiProvider(id: AiImageProvider) {
   const provider = AI_IMAGE_PROVIDERS.find((item) => item.id === id);
   if (!provider) throw new Error(`Unknown AI provider: ${id}`);
   return provider;
+}
+
+export function isActiveAiProvider(id: AiImageProvider): boolean {
+  return ACTIVE_AI_IMAGE_PROVIDER_IDS.includes(id);
 }
 
 export function getAiProviderModel(id: AiImageProvider): string {

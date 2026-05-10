@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type DragEvent,
   type PointerEvent,
 } from "react";
 import Image from "next/image";
@@ -40,11 +41,13 @@ import {
   AI_EDIT_TYPES,
   AI_FREE_REGENERATIONS,
   AI_IMAGE_PROVIDERS,
+  ACTIVE_AI_IMAGE_PROVIDERS,
   AI_STYLE_OPTIONS,
   DEFAULT_AI_PROVIDER,
   formatCreditsFromUnits,
   formatSelectedOptionLabels,
   getAiEditType,
+  isActiveAiProvider,
   parseSelectedOptions,
   type AiEditType,
   type AiImageProvider,
@@ -136,6 +139,8 @@ type MaskTool = "brush" | "rect";
 type ObjectEditMode = "insert" | "replace";
 
 const MAX_OBJECT_REFERENCE_IMAGES = 5;
+const MAX_AI_UPLOAD_BYTES = 50 * 1024 * 1024;
+const AI_UPLOAD_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export function AiStudioWorkspace({
   initialState,
@@ -388,6 +393,7 @@ export function AiStudioWorkspace({
   }, [hasPendingJobs, history]);
 
   useEffect(() => {
+    if (!isActiveAiProvider(provider)) setProvider(DEFAULT_AI_PROVIDER);
     // Multi-select edits start with no selection (customer must pick).
     // Single-select edits seed the first option as before.
     setSelectedOption(
@@ -441,20 +447,29 @@ export function AiStudioWorkspace({
   const handleUpload = async (file: File) => {
     setError("");
     setNotice("");
+    const validationError = validateAiImageFile(file);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
     markWorkspaceActive();
     setParentGenerationId(null);
-    const upload = await uploadAiFile(file, "input");
-    const url = URL.createObjectURL(file);
-    const nextInput = {
-      url,
-      storagePath: upload.storagePath,
-      mimeType: file.type,
-      fileName: file.name,
-    };
-    setBaseInput(nextInput);
-    setResultUrl(null);
-    setCurrentResult(null);
-    setEditorResetToken((value) => value + 1);
+    try {
+      const upload = await uploadAiFile(file, "input");
+      const url = URL.createObjectURL(file);
+      const nextInput = {
+        url,
+        storagePath: upload.storagePath,
+        mimeType: file.type,
+        fileName: file.name,
+      };
+      setBaseInput(nextInput);
+      setResultUrl(null);
+      setCurrentResult(null);
+      setEditorResetToken((value) => value + 1);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload nije uspeo.");
+    }
   };
 
   const handleReferenceUpload = async (files: File[]) => {
@@ -462,6 +477,11 @@ export function AiStudioWorkspace({
     setNotice("");
     markWorkspaceActive();
     if (files.length === 0) return;
+    const invalid = files.find((file) => validateAiImageFile(file));
+    if (invalid) {
+      setError(validateAiImageFile(invalid) ?? "Fajl nije podržan.");
+      return;
+    }
     const remaining = MAX_OBJECT_REFERENCE_IMAGES - referenceInputs.length;
     if (remaining <= 0) {
       setError("Možete dodati najviše 5 slika objekta po obradi.");
@@ -471,18 +491,27 @@ export function AiStudioWorkspace({
     if (files.length > remaining) {
       setNotice(`Dodato je ${remaining} slika. Maksimum je 5 uglova objekta.`);
     }
-    const uploads = await Promise.all(
-      selected.map(async (file) => {
-        const upload = await uploadAiFile(file, "reference");
-        return {
-          url: URL.createObjectURL(file),
-          storagePath: upload.storagePath,
-          mimeType: file.type,
-          fileName: file.name,
-        };
-      }),
-    );
-    setReferenceInputs((prev) => [...prev, ...uploads]);
+    try {
+      const uploads = await Promise.all(
+        selected.map(async (file) => {
+          const upload = await uploadAiFile(file, "reference");
+          return {
+            url: URL.createObjectURL(file),
+            storagePath: upload.storagePath,
+            mimeType: file.type,
+            fileName: file.name,
+          };
+        }),
+      );
+      setReferenceInputs((prev) => [...prev, ...uploads]);
+      if (referenceInputs.length + uploads.length > 1) {
+        setNotice(
+          "Prva slika objekta je autoritativna. Dodatne slike koristimo samo kao pomoćne uglove; ako se razlikuju, AI treba da prati prvu.",
+        );
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload slike objekta nije uspeo.");
+    }
   };
 
   const handleReferenceRemove = useCallback((index: number) => {
@@ -627,7 +656,7 @@ export function AiStudioWorkspace({
       );
       setEditType(gen.editType);
       setObjectMode(gen.objectMode);
-      setProvider(gen.provider);
+      setProvider(isActiveAiProvider(gen.provider) ? gen.provider : DEFAULT_AI_PROVIDER);
       if (gen.styleId) setStyleId(gen.styleId);
       if (gen.selectedOption) setSelectedOption(gen.selectedOption);
       if (gen.colorHex) setColorHex(gen.colorHex);
@@ -676,7 +705,13 @@ export function AiStudioWorkspace({
 
     setPending(true);
     setError("");
-    setNotice("");
+    const objectInsertWithoutMask =
+      editType === "object_insertion" && objectMode === "insert" && !maskDirty;
+    setNotice(
+      objectInsertWithoutMask
+        ? "Generišemo bez maske: AI sam bira poziciju objekta, pa rezultat može biti manje predvidljiv."
+        : "",
+    );
     markWorkspaceActive();
 
     try {
@@ -1008,7 +1043,7 @@ function StudioControls({
           <div>
             <ControlLabel>Engine</ControlLabel>
             <div className="mt-2 grid gap-2">
-              {AI_IMAGE_PROVIDERS.map((item) => {
+              {ACTIVE_AI_IMAGE_PROVIDERS.map((item) => {
                 const recommended = edit.recommendedProvider === item.id;
                 return (
                   <SelectableTile
@@ -1062,8 +1097,8 @@ function StudioControls({
               <p className="mt-1 text-[0.68rem] text-muted-foreground">
                 {edit.requiresReferenceImage
                   ? objectMode === "replace"
-                    ? "Advanced maskom označava komad koji menjamo, uključujući malu zonu senke/kontakta."
-                    : "Advanced maskom označava zonu gde objekat treba da se pojavi."
+                    ? "Označite komad koji menjamo, uključujući malu zonu senke/kontakta; maska ne mora biti savršena."
+                    : "Maska je smernica za poziciju; AI može blago proširiti zonu zbog senke, kontakta i prirodnog uklapanja."
                   : "Advanced otključava masku za precizno označavanje."}
               </p>
             </div>
@@ -1260,6 +1295,7 @@ function AiImageEditor({
   const needsReferenceImage = edit.requiresReferenceImage === true;
   const needsReplacementMask =
     editType === "object_insertion" && objectMode === "replace";
+  const [baseDragOver, setBaseDragOver] = useState(false);
 
   const resetCanvas = useCallback(() => {
     const canvas = maskCanvasRef.current;
@@ -1377,6 +1413,19 @@ function AiImageEditor({
     );
   };
 
+  const getDroppedFiles = (event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    return Array.from(event.dataTransfer.files ?? []);
+  };
+
+  const handleBaseDrop = (event: DragEvent<HTMLDivElement>) => {
+    setBaseDragOver(false);
+    const [file] = getDroppedFiles(event);
+    if (pending) return;
+    if (file) onUpload(file);
+  };
+
   return (
     <div className="rounded-2xl border border-border/40 bg-card/60 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1384,7 +1433,7 @@ function AiImageEditor({
           <h2 className="font-heading text-lg text-foreground">Radna slika</h2>
           <p className="text-sm text-muted-foreground">
             {needsReferenceImage
-              ? "Dodajte fotografiju enterijera i 1-5 slika istog objekta. Advanced maska označava poziciju ili komad za zamenu."
+              ? "Dodajte fotografiju enterijera i 1-5 slika istog objekta. Maska je smernica za poziciju ili komad za zamenu."
               : "Jedna slika po obradi. Advanced maska je opciona."}
           </p>
         </div>
@@ -1452,8 +1501,8 @@ function AiImageEditor({
           </div>
           <p className="min-w-[220px] flex-1 text-xs text-muted-foreground">
             {objectMode === "replace"
-              ? "Advanced maska je obavezna: označite komad koji menjamo i malu zonu kontakta."
-              : "Prva slika objekta je primarna, dodatne slike služe za uglove i detalje."}
+              ? "Advanced maska je obavezna: označite komad koji menjamo i malu zonu kontakta; ne mora biti savršena."
+              : "Maska je poželjna za preciznu poziciju. Bez maske AI sam bira mesto i rezultat može biti manje predvidljiv."}
           </p>
         </div>
       )}
@@ -1570,7 +1619,18 @@ function AiImageEditor({
             : "xl:grid-cols-2",
         )}
       >
-        <div className="rounded-2xl border border-border/30 bg-muted/30 p-3">
+        <div
+          className={cn(
+            "rounded-2xl border border-border/30 bg-muted/30 p-3 transition-colors",
+            baseDragOver && "border-accent/60 bg-accent/5",
+          )}
+          onDragOver={(event) => {
+            event.preventDefault();
+            if (!pending) setBaseDragOver(true);
+          }}
+          onDragLeave={() => setBaseDragOver(false)}
+          onDrop={handleBaseDrop}
+        >
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -1642,7 +1702,7 @@ function AiImageEditor({
                   Dodajte fotografiju
                 </span>
                 <span className="mt-1 block max-w-xs text-sm text-muted-foreground">
-                  JPG, PNG ili WebP do 50MB. Ime fajla će se preneti u download.
+                  Prevucite fajl ovde ili izaberite JPG, PNG ili WebP do 50MB.
                 </span>
               </span>
               <span className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground shadow-[0_14px_34px_-12px_rgba(159,106,75,0.45)] transition-transform group-hover:translate-y-[-1px]">
@@ -1658,6 +1718,7 @@ function AiImageEditor({
             references={referenceInputs}
             pending={pending}
             onAdd={() => referenceFileRef.current?.click()}
+            onAddFiles={onReferenceUpload}
             onRemove={onReferenceRemove}
           />
         )}
@@ -1803,17 +1864,41 @@ function ReferenceImagesPanel({
   references,
   pending,
   onAdd,
+  onAddFiles,
   onRemove,
 }: {
   references: UploadedInput[];
   pending: boolean;
   onAdd: () => void;
+  onAddFiles: (files: File[]) => void;
   onRemove: (index: number) => void;
 }) {
   const canAdd = references.length < MAX_OBJECT_REFERENCE_IMAGES;
+  const [dragOver, setDragOver] = useState(false);
+
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDragOver(false);
+    if (pending) return;
+    const files = Array.from(event.dataTransfer.files ?? []);
+    if (files.length > 0) onAddFiles(files);
+  };
 
   return (
-    <div className="rounded-2xl border border-border/30 bg-muted/30 p-3">
+    <div
+      className={cn(
+        "rounded-2xl border border-border/30 bg-muted/30 p-3 transition-colors",
+        dragOver && "border-accent/60 bg-accent/5",
+      )}
+      onDragOver={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!pending) setDragOver(true);
+      }}
+      onDragLeave={() => setDragOver(false)}
+      onDrop={handleDrop}
+    >
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -1886,8 +1971,9 @@ function ReferenceImagesPanel({
       </div>
 
       <p className="mt-3 text-[0.68rem] leading-relaxed text-muted-foreground">
-        Prva slika je primarna referenca. Dodatne slike koristite za bočne
-        uglove, poleđinu ili detalj materijala istog objekta.
+        Prva slika je autoritativna. Dodatne slike koristite samo za bočne
+        uglove, poleđinu ili detalj materijala istog objekta; ako se razlikuju,
+        AI treba da prati prvu.
       </p>
     </div>
   );
@@ -2281,4 +2367,14 @@ async function uploadAiFile(file: File, purpose: "input" | "mask" | "reference")
   if (!uploadRes.ok) throw new Error("Upload nije uspeo.");
 
   return { storagePath };
+}
+
+function validateAiImageFile(file: File): string | null {
+  if (!AI_UPLOAD_MIME_TYPES.includes(file.type)) {
+    return "Dozvoljeni su JPG, PNG i WebP fajlovi.";
+  }
+  if (file.size > MAX_AI_UPLOAD_BYTES) {
+    return "Fajl je prevelik (max 50MB).";
+  }
+  return null;
 }

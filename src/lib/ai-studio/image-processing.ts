@@ -79,6 +79,25 @@ export async function prepareInputForProvider(
     .toBuffer();
 }
 
+export async function prepareObjectInputForProvider(
+  buffer: Buffer,
+): Promise<{ image: Buffer; width: number; height: number }> {
+  const image = await sharp(buffer)
+    .rotate()
+    .resize(2048, 2048, {
+      fit: "inside",
+      withoutEnlargement: true,
+      kernel: sharp.kernel.lanczos3,
+    })
+    .jpeg({ quality: 92 })
+    .toBuffer();
+  const metadata = await sharp(image).metadata();
+  if (!metadata.width || !metadata.height) {
+    throw new Error("Dimenzije slike nisu dostupne.");
+  }
+  return { image, width: metadata.width, height: metadata.height };
+}
+
 export async function prepareMaskForProvider(
   buffer: Buffer,
   target: ProviderTarget,
@@ -90,6 +109,40 @@ export async function prepareMaskForProvider(
       position: "center",
       kernel: sharp.kernel.nearest,
     })
+    .png()
+    .toBuffer();
+}
+
+export async function prepareObjectMaskForProvider(
+  buffer: Buffer,
+  dims: Dimensions,
+): Promise<Buffer> {
+  const normalized = await sharp(buffer)
+    .ensureAlpha()
+    .resize(dims.width, dims.height, {
+      fit: "fill",
+      kernel: sharp.kernel.nearest,
+    })
+    .png()
+    .toBuffer();
+  const radius = Math.max(10, Math.round(Math.min(dims.width, dims.height) * 0.018));
+  const editAlpha = await sharp(normalized)
+    .extractChannel("alpha")
+    .negate()
+    .blur(radius)
+    .png()
+    .toBuffer();
+  const maskAlpha = await sharp(editAlpha).negate().png().toBuffer();
+
+  return sharp({
+    create: {
+      width: dims.width,
+      height: dims.height,
+      channels: 3,
+      background: { r: 0, g: 0, b: 0 },
+    },
+  })
+    .joinChannel(maskAlpha)
     .png()
     .toBuffer();
 }
@@ -115,12 +168,14 @@ export async function composeWithMask({
   mask,
   originalDims,
   maskInverted = false,
+  softenMask = false,
 }: {
   original: Buffer;
   aiResult: Buffer;
   mask: Buffer;
   originalDims: Dimensions;
   maskInverted?: boolean;
+  softenMask?: boolean;
 }): Promise<Buffer> {
   const normalizedOriginal = await sharp(original)
     .rotate()
@@ -149,9 +204,13 @@ export async function composeWithMask({
     })
     .extractChannel("alpha");
 
-  const editAlpha = await (maskInverted ? maskAlpha : maskAlpha.negate())
-    .png()
-    .toBuffer();
+  let editAlphaPipeline = maskInverted ? maskAlpha : maskAlpha.negate();
+  if (softenMask) {
+    const radius = Math.max(10, Math.round(Math.min(originalDims.width, originalDims.height) * 0.018));
+    editAlphaPipeline = editAlphaPipeline.blur(radius);
+  }
+
+  const editAlpha = await editAlphaPipeline.png().toBuffer();
 
   const maskedResult = await sharp(resizedResult)
     .removeAlpha()

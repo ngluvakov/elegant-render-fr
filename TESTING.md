@@ -218,10 +218,12 @@ Kompletna checklist za end-to-end testiranje cele platforme.
 - [ ] Postojećih 7 alata rade bez reference panela i šalju samo osnovnu sliku
 - [ ] "Dodavanje ili zamena objekta" prikazuje upload enterijera i manji panel "Objekat / uglovi" u istom redu na desktopu
 - [ ] Generate je blokiran dok ne postoje osnovna slika i bar jedna referentna slika objekta
-- [ ] Dodavanje objekta radi sa 1 referencom bez maske i čuva rezultat, istoriju i download linkove
+- [ ] Dodavanje objekta radi sa 1 referencom bez maske, prikazuje upozorenje o manje predvidljivom rezultatu i čuva rezultat, istoriju i download linkove
 - [ ] Multi-angle flow prihvata do 5 slika istog objekta i prikazuje ih u detalju obrade
 - [ ] "Zameni postojeći" automatski koristi Advanced mode i blokira Generate dok maska nije nacrtana
-- [ ] Obrada sa Advanced maskom koristi masku kao zonu postavljanja ili komad koji se menja
+- [ ] Obrada sa Advanced maskom koristi masku kao soft smernicu i čuva ostatak originalne slike
+- [ ] Drag-and-drop radi za osnovnu sliku i panel "Objekat / uglovi"
+- [ ] Engine picker prikazuje samo Nano Banana Pro i GPT Image 2
 - [ ] "Ponovi sa istim podešavanjima" vraća sve referentne slike objekta i režim dodavanja/zamene
 
 ---

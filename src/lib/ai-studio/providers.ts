@@ -311,9 +311,7 @@ function getReferenceImages(
 }
 
 function getProviderAttempts(provider: AiImageProvider): AiImageProvider[] {
-  if (provider === "gemini_pro") return ["gemini_pro", "gemini_flash", "openai"];
-  if (provider === "gemini_flash") return ["gemini_flash", "openai"];
-  return ["openai"];
+  return [provider];
 }
 
 function isProviderConfigured(provider: AiImageProvider): boolean {
@@ -357,7 +355,7 @@ function getPublicProviderMessage(
     lowerBody.includes("resource_exhausted")
   ) {
     return provider === "gemini"
-      ? "Google AI engine trenutno nema raspoloživ quota za ovu obradu. Pokušavamo drugi engine, a ako se ponovi izaberite Nano Banana ili GPT Image."
+      ? "Google AI engine trenutno nema raspoloživ quota za ovu obradu. Pokušajte ponovo malo kasnije ili izaberite GPT Image 2."
       : "OpenAI engine trenutno nema raspoloživ quota za ovu obradu. Pokušajte ponovo malo kasnije ili izaberite drugi engine.";
   }
   if (status === 401 || status === 403) {

@@ -207,7 +207,7 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
     id: "ai-object-insertion",
     label: "Objekat u enterijeru",
     body:
-      "Dodajte do 5 uglova istog objekta. Za zamenu postojećeg komada obavezno maskom označite šta menjamo.",
+      "Prva slika objekta je glavna. Maska je poželjna za dodavanje, a obavezna za zamenu; bez maske AI sam bira poziciju.",
     pages: ["ai_studio"],
     editTypes: ["object_insertion"],
     priority: 90,

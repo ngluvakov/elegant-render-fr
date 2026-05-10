@@ -17,6 +17,7 @@ import {
   formatCreditsFromUnits,
   getAiEditType,
   getAiProviderModel,
+  isActiveAiProvider,
   type AiEditType,
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
@@ -31,6 +32,8 @@ import {
   pickProviderTarget,
   prepareInputForProvider,
   prepareMaskForProvider,
+  prepareObjectInputForProvider,
+  prepareObjectMaskForProvider,
   prepareReferenceForProvider,
   resizeToOriginal,
 } from "@/lib/ai-studio/image-processing";
@@ -207,6 +210,12 @@ export async function startAiStudioGeneration(
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return { error: "Niste prijavljeni." };
+  if (!isActiveAiProvider(input.provider)) {
+    return {
+      error:
+        "Izabrani AI engine više nije dostupan za nove obrade. Izaberite Nano Banana Pro ili GPT Image 2.",
+    };
+  }
   const referenceImages = normalizeReferenceImageInputs(input);
   const objectMode: ObjectEditMode =
     input.editType === "object_insertion" && input.objectMode === "replace"
@@ -584,7 +593,12 @@ async function runGenerationProcessing(generation: AiGeneration) {
 
   const originalDims = await getImageDimensions(image.buffer);
   const target = pickProviderTarget(originalDims, generation.provider);
-  const preparedImage = await prepareInputForProvider(image.buffer, target);
+  const isObjectEdit = generation.editType === "object_insertion";
+  const objectInput = isObjectEdit
+    ? await prepareObjectInputForProvider(image.buffer)
+    : null;
+  const preparedImage =
+    objectInput?.image ?? (await prepareInputForProvider(image.buffer, target));
   const preparedReferences = await Promise.all(
     references.map(async (reference) => ({
       image: await prepareReferenceForProvider(reference.buffer, target),
@@ -592,7 +606,12 @@ async function runGenerationProcessing(generation: AiGeneration) {
     })),
   );
   const preparedMask = mask
-    ? await prepareMaskForProvider(mask.buffer, target)
+    ? isObjectEdit && objectInput
+      ? await prepareObjectMaskForProvider(mask.buffer, {
+          width: objectInput.width,
+          height: objectInput.height,
+        })
+      : await prepareMaskForProvider(mask.buffer, target)
     : undefined;
 
   const fullPrompt = buildAiEditPrompt({
@@ -604,7 +623,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
     hasMask: Boolean(mask),
     maskInverted: options.maskInverted,
     objectMode: options.objectMode,
-    ratioLabel: target.ratioLabel,
+    ratioLabel: isObjectEdit ? undefined : target.ratioLabel,
     hasReferenceImage: references.length > 0,
     referenceImageCount: references.length,
   });
@@ -617,7 +636,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
     referenceImages: preparedReferences,
     mask: preparedMask,
     maskMimeType: preparedMask ? "image/png" : undefined,
-    target,
+    target: isObjectEdit ? undefined : target,
   });
 
   const finalImage = mask
@@ -627,6 +646,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
         mask: mask.buffer,
         originalDims,
         maskInverted: options.maskInverted,
+        softenMask: isObjectEdit,
       })
     : await resizeToOriginal(output.image, originalDims);
 

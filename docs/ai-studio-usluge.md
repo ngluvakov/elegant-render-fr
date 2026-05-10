@@ -118,11 +118,12 @@ Stil je smer, ne garancija tacnog kataloskog proizvoda. Za najbolje rezultate tr
 
 ### Engine izbor
 
-AI Studio trenutno ima tri engine opcije:
+AI Studio trenutno nudi dve engine opcije za nove obrade:
 
-- Nano Banana,
 - Nano Banana Pro,
-- GPT Image 1.5.
+- GPT Image 2.
+
+Stari Nano Banana engine ostaje samo zbog istorije ranijih obrada i ne nudi se za nove generacije.
 
 Za dizajn javne stranice engine ne mora biti u prvom planu. Za vecinu korisnika vaznije je pitanje: "Koji alat mi treba?" nego "Koji model radi obradu?"
 
@@ -467,7 +468,9 @@ Tip objekta:
 Opcionalno:
 
 - prompt,
-- advanced maska za zonu postavljanja.
+- advanced maska za zonu postavljanja pri dodavanju objekta.
+
+Kod dodavanja bez maske AI sam bira poziciju na osnovu instrukcije i scene, pa rezultat moze biti manje predvidljiv. Kod dodavanja sa maskom, maska je smernica, ne stroga ivica: dozvoljeno je malo prosirenje za senku, kontakt, nogare, rucke, odraz ili prirodno uklapanje. Prva referentna slika je autoritativna; dodatne slike se tretiraju samo kao pomocni uglovi istog objekta.
 
 ### Output
 

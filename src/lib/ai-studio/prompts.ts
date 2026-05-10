@@ -47,11 +47,15 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
     lines.push(`Target wall color: ${options.colorHex}.`);
   }
 
+  const isObjectEdit = options.editType === "object_insertion";
+
   if (options.hasMask) {
     lines.push(
-      options.maskInverted
-        ? "A mask is provided. The opaque area indicates the region to edit; preserve transparent areas as much as possible."
-        : "A mask is provided. The transparent area indicates the region to edit; preserve opaque areas as much as possible.",
+      isObjectEdit
+        ? "A mask is provided for Image 1 as a soft guide, not a surgical edge. Work around the indicated area and allow only small logical extension for scale, contact shadows, legs, handles, reflections, occlusion, and natural integration."
+        : options.maskInverted
+          ? "A mask is provided. The opaque area indicates the region to edit; preserve transparent areas as much as possible."
+          : "A mask is provided. The transparent area indicates the region to edit; preserve opaque areas as much as possible.",
     );
   }
 
@@ -63,14 +67,19 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
         ? "Two input images are provided. Image 1 is the interior scene to preserve. Image 2 is the primary reference object."
         : `Multiple input images are provided. Image 1 is the interior scene to preserve. Images 2-${lastImageNumber} are different angles/details of the same reference object; Image 2 is primary.`,
       "Use the reference image(s) for object identity, form, material, proportions, and visible details, but adapt scale, perspective, lighting, color temperature, contact shadows, and occlusion so the object belongs naturally in Image 1.",
+      "Image 2 is authoritative. Use Images 3-N only as supporting angle/detail references of the same object; if any later reference conflicts in object model, color, shape, or material, ignore the conflicting later reference and follow Image 2.",
+      "Image 1 must remain the same photograph and the same frame. Do not crop, zoom, pan, rotate, change camera viewpoint, redesign the room, alter walls, windows, floors, existing furniture, lighting, or composition outside the object integration area.",
     );
     if (options.objectMode === "replace") {
       lines.push(
-        "Replace the existing masked furniture/decor item with the referenced object. Remove the original item cleanly and preserve the rest of the room.",
+        "Replace the existing masked furniture/decor item with the referenced object. Remove the original item cleanly, preserve the rest of the room, and keep the replacement centered on the user's marked item even if the user prompt is short.",
       );
     } else {
       lines.push(
-        "Add the referenced object into the scene. Do not redesign the room or add unrelated furniture unless the user explicitly asks for tiny supporting placement details such as a natural shadow.",
+        options.hasMask
+          ? "Add the referenced object around the masked placement guide. The mask can be slightly expanded only for a believable footprint, shadow, contact, and occlusion."
+          : "Add the referenced object into the most logical location from the user's instruction and scene context. No mask was provided, so choose a plausible placement without changing the rest of the room.",
+        "Do not add unrelated furniture unless the user explicitly asks for tiny supporting placement details such as a natural shadow.",
       );
     }
   }

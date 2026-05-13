@@ -18,6 +18,8 @@ export type ProviderTarget = {
   openaiSize: "1024x1024" | "1024x1536" | "1536x1024";
 };
 
+export type ObjectMaskMode = "source_object" | "placement_guide";
+
 const GEMINI_TARGETS = [
   { ratioLabel: "9:16", width: 768, height: 1344 },
   { ratioLabel: "2:3", width: 832, height: 1248 },
@@ -55,6 +57,101 @@ function createRgbaFromRgbAndAlpha(rgb: Buffer, alpha: Buffer): Buffer {
     rgba[rgbaOffset + 3] = alpha[index];
   }
   return rgba;
+}
+
+function createObjectWorkZoneAlpha({
+  maskAlpha,
+  dims,
+  maskInverted,
+  mode,
+}: {
+  maskAlpha: Buffer;
+  dims: Dimensions;
+  maskInverted: boolean;
+  mode: ObjectMaskMode;
+}): Buffer {
+  let minX = dims.width;
+  let minY = dims.height;
+  let maxX = -1;
+  let maxY = -1;
+
+  for (let index = 0; index < maskAlpha.length; index++) {
+    const selected = maskInverted ? maskAlpha[index] > 10 : maskAlpha[index] < 245;
+    if (!selected) continue;
+    const x = index % dims.width;
+    const y = Math.floor(index / dims.width);
+    minX = Math.min(minX, x);
+    minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x);
+    maxY = Math.max(maxY, y);
+  }
+
+  const alpha = Buffer.alloc(dims.width * dims.height);
+  if (maxX < minX || maxY < minY) return alpha;
+
+  const bboxWidth = maxX - minX + 1;
+  const bboxHeight = maxY - minY + 1;
+  const bboxMaxSide = Math.max(bboxWidth, bboxHeight);
+  const shortSide = Math.min(dims.width, dims.height);
+  const padding =
+    mode === "source_object"
+      ? Math.min(
+          shortSide * 0.28,
+          Math.max(bboxMaxSide * 0.25, shortSide * 0.04),
+        )
+      : Math.min(
+          shortSide * 0.22,
+          Math.max(bboxMaxSide * 0.18, shortSide * 0.035),
+        );
+  const x0 = Math.max(0, Math.floor(minX - padding));
+  const y0 = Math.max(0, Math.floor(minY - padding));
+  const x1 = Math.min(dims.width, Math.ceil(maxX + 1 + padding));
+  const y1 = Math.min(dims.height, Math.ceil(maxY + 1 + padding));
+
+  for (let y = y0; y < y1; y++) {
+    alpha.fill(255, y * dims.width + x0, y * dims.width + x1);
+  }
+
+  return alpha;
+}
+
+async function createObjectSoftWorkZoneAlpha({
+  mask,
+  dims,
+  maskInverted,
+  mode,
+}: {
+  mask: Buffer;
+  dims: Dimensions;
+  maskInverted: boolean;
+  mode: ObjectMaskMode;
+}): Promise<Buffer> {
+  const normalizedMaskAlpha = await sharp(mask)
+    .ensureAlpha()
+    .resize(dims.width, dims.height, {
+      fit: "fill",
+      kernel: sharp.kernel.nearest,
+    })
+    .extractChannel("alpha")
+    .raw()
+    .toBuffer();
+  const workZoneAlpha = createObjectWorkZoneAlpha({
+    maskAlpha: normalizedMaskAlpha,
+    dims,
+    maskInverted,
+    mode,
+  });
+  const feather = Math.max(
+    12,
+    Math.round(Math.min(dims.width, dims.height) * 0.018),
+  );
+
+  return sharp(workZoneAlpha, {
+    raw: { width: dims.width, height: dims.height, channels: 1 },
+  })
+    .blur(feather)
+    .raw()
+    .toBuffer();
 }
 
 export async function getImageDimensions(buffer: Buffer): Promise<Dimensions> {
@@ -173,22 +270,14 @@ export async function prepareMaskForProvider(
 export async function prepareObjectMaskForProvider(
   buffer: Buffer,
   dims: Dimensions,
+  mode: ObjectMaskMode = "placement_guide",
 ): Promise<Buffer> {
-  const normalized = await sharp(buffer)
-    .ensureAlpha()
-    .resize(dims.width, dims.height, {
-      fit: "fill",
-      kernel: sharp.kernel.nearest,
-    })
-    .png()
-    .toBuffer();
-  const radius = Math.max(10, Math.round(Math.min(dims.width, dims.height) * 0.018));
-  const editAlpha = await sharp(normalized)
-    .extractChannel("alpha")
-    .negate()
-    .blur(radius)
-    .raw()
-    .toBuffer();
+  const editAlpha = await createObjectSoftWorkZoneAlpha({
+    mask: buffer,
+    dims,
+    maskInverted: false,
+    mode,
+  });
   const maskAlpha = await sharp(editAlpha, {
     raw: { width: dims.width, height: dims.height, channels: 1 },
   })
@@ -220,8 +309,8 @@ export async function prepareReferenceForProvider(
 
 export async function prepareObjectReferenceForProvider(
   buffer: Buffer,
-): Promise<Buffer> {
-  return sharp(buffer)
+): Promise<{ image: Buffer; mimeType: string }> {
+  const image = await sharp(buffer)
     .rotate()
     .resize(2048, 2048, {
       fit: "inside",
@@ -229,11 +318,9 @@ export async function prepareObjectReferenceForProvider(
       kernel: sharp.kernel.lanczos3,
     })
     .keepIccProfile()
-    .jpeg({
-      quality: 95,
-      chromaSubsampling: "4:4:4",
-    })
+    .png({ quality: 95 })
     .toBuffer();
+  return { image, mimeType: "image/png" };
 }
 
 export async function composeWithMask({
@@ -244,6 +331,7 @@ export async function composeWithMask({
   maskInverted = false,
   softenMask = false,
   expandMask = false,
+  objectMaskMode,
 }: {
   original: Buffer;
   aiResult: Buffer;
@@ -252,6 +340,7 @@ export async function composeWithMask({
   maskInverted?: boolean;
   softenMask?: boolean;
   expandMask?: boolean;
+  objectMaskMode?: ObjectMaskMode;
 }): Promise<Buffer> {
   const normalizedOriginal = await sharp(original)
     .rotate()
@@ -284,8 +373,17 @@ export async function composeWithMask({
     })
     .extractChannel("alpha");
 
+  const editAlphaFromObjectWorkZone = objectMaskMode
+    ? await createObjectSoftWorkZoneAlpha({
+        mask,
+        dims: originalDims,
+        maskInverted,
+        mode: objectMaskMode,
+      })
+    : null;
+
   let editAlphaPipeline = maskInverted ? maskAlpha : maskAlpha.negate();
-  if (expandMask) {
+  if (!editAlphaFromObjectWorkZone && expandMask) {
     const expansion = Math.min(
       220,
       Math.max(32, Math.round(Math.min(originalDims.width, originalDims.height) * 0.06)),
@@ -300,7 +398,8 @@ export async function composeWithMask({
     editAlphaPipeline = editAlphaPipeline.blur(radius);
   }
 
-  const editAlpha = await editAlphaPipeline.raw().toBuffer();
+  const editAlpha =
+    editAlphaFromObjectWorkZone ?? (await editAlphaPipeline.raw().toBuffer());
 
   const maskedResult = await sharp(
     createRgbaFromRgbAndAlpha(resizedResultRgb, editAlpha),

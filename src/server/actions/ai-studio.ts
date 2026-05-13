@@ -1,5 +1,6 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import {
   Prisma,
@@ -28,6 +29,7 @@ import {
 import { sanitizeAiStudioError } from "@/lib/ai-studio/errors";
 import {
   composeWithMask,
+  type ObjectMaskMode,
   normalizeInputImage,
   pickProviderTarget,
   prepareInputForProvider,
@@ -50,6 +52,9 @@ import {
 const AI_GENERATION_LOCK_MS = 10 * 60 * 1000;
 const AI_GENERATION_MAX_ATTEMPTS = 2;
 const AI_STUDIO_MAX_REFERENCE_IMAGES = 5;
+const AI_REFERENCE_PREPARATION_UNIT_COST = 1;
+const AI_REFERENCE_PREPARATION_PROVIDER: AiImageProvider = "gemini_flash";
+const AI_REFERENCE_PREPARATION_MODEL = "gemini-2.5-flash-image";
 
 type ObjectEditMode = "insert" | "replace";
 type StoredReferenceImage = Pick<
@@ -61,6 +66,22 @@ export type AiStudioReferenceImageInput = {
   storagePath: string;
   mimeType: string;
   fileName?: string | null;
+};
+
+export type AiStudioPrepareReferencesInput = {
+  references: AiStudioReferenceImageInput[];
+};
+
+export type SignedPreparedReferenceImage = AiStudioReferenceImageInput & {
+  url: string;
+  isPreparedReference: true;
+};
+
+export type AiStudioPrepareReferencesResult = {
+  error?: string;
+  preparedReferences?: SignedPreparedReferenceImage[];
+  unitsCharged?: number;
+  balanceUnits?: number;
 };
 
 export type AiStudioGenerateInput = {
@@ -206,6 +227,184 @@ export async function getAiStudioState() {
   };
 }
 
+export async function prepareAiStudioReferences(
+  input: AiStudioPrepareReferencesInput,
+): Promise<AiStudioPrepareReferencesResult> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return { error: "Niste prijavljeni." };
+
+  const references = normalizePrepareReferenceInputs(input.references);
+  if (references.length === 0) {
+    return { error: "Dodajte bar jednu referentnu sliku objekta." };
+  }
+  if (references.length > AI_STUDIO_MAX_REFERENCE_IMAGES) {
+    return { error: "Možete pripremiti najviše 5 slika objekta po obradi." };
+  }
+  for (const reference of references) {
+    if (!ownsAiStudioPath(userId, reference.storagePath)) {
+      return { error: "Slika objekta nije dostupna za ovaj nalog." };
+    }
+  }
+
+  await expireAiCreditsIfNeeded(userId);
+
+  const unpreparedReferences = references.filter(
+    (reference) => !isPreparedReferenceInput(reference),
+  );
+  const unitsToCharge =
+    unpreparedReferences.length * AI_REFERENCE_PREPARATION_UNIT_COST;
+
+  if (unitsToCharge > 0) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { aiCreditBalanceUnits: true },
+    });
+    if (!user) return { error: "Korisnik nije pronađen." };
+    if (user.aiCreditBalanceUnits < unitsToCharge) {
+      return {
+        error: `Nemate dovoljno AI kredita za pripremu reference. Potrebno je ${formatCreditsFromUnits(unitsToCharge)}.`,
+        balanceUnits: user.aiCreditBalanceUnits,
+      };
+    }
+  }
+
+  for (const reference of references) {
+    if (isSystemPreparedReferencePath(reference.storagePath)) continue;
+    const knownReference = await findKnownReferenceImage(userId, reference.storagePath);
+    if (knownReference) continue;
+    const referenceScan = await enforceCleanScan({
+      storagePath: reference.storagePath,
+      fileName: reference.fileName ?? "ai-reference",
+      fileSize: 0,
+      mimeType: reference.mimeType,
+      entityType: "AiStudioInput",
+      entityId: userId,
+    });
+    if (!referenceScan.ok) return { error: referenceScan.userError };
+  }
+
+  const preparedOutputs = new Map<
+    string,
+    { buffer: Buffer; mimeType: string; fileName: string }
+  >();
+
+  for (const reference of unpreparedReferences) {
+    try {
+      const source = await downloadStorageFile(reference.storagePath);
+      const preparedInput = await prepareObjectReferenceForProvider(source.buffer);
+      const output = await generateAiEdit({
+        provider: AI_REFERENCE_PREPARATION_PROVIDER,
+        model: AI_REFERENCE_PREPARATION_MODEL,
+        prompt: buildReferencePreparationPrompt(reference.fileName),
+        image: preparedInput.image,
+        imageMimeType: preparedInput.mimeType,
+        imageRoleText:
+          "Image 1: reference photo containing the product/object that must be isolated.",
+      });
+      const mimeType = normalizeImageMimeType(output.mimeType);
+      preparedOutputs.set(reference.storagePath, {
+        buffer: output.image,
+        mimeType,
+        fileName: composePreparedReferenceFileName(reference.fileName, mimeType),
+      });
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Reference preprocessing failed.";
+      console.error("[AI Studio] Reference preparation failed", {
+        userId,
+        storagePath: reference.storagePath,
+        message: message.length > 1500 ? `${message.slice(0, 1500)}...` : message,
+      });
+      return {
+        error:
+          "Priprema reference nije uspela. Probajte čistiju sliku objekta ili ručni crop.",
+      };
+    }
+  }
+
+  let balanceUnits: number | undefined;
+  if (unitsToCharge > 0) {
+    const spend = await spendAiCreditUnits({
+      userId,
+      units: unitsToCharge,
+      note: "AI Studio priprema reference",
+    });
+    if (spend.error) {
+      return { error: spend.error, balanceUnits: spend.balanceAfterUnits };
+    }
+    balanceUnits = spend.balanceAfterUnits;
+  } else {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { aiCreditBalanceUnits: true },
+    });
+    balanceUnits = user?.aiCreditBalanceUnits ?? 0;
+  }
+
+  const uploadedPaths: string[] = [];
+  try {
+    const preparedReferences: SignedPreparedReferenceImage[] = [];
+    for (const reference of references) {
+      if (isPreparedReferenceInput(reference)) {
+        preparedReferences.push(await signPreparedReference(reference));
+        continue;
+      }
+
+      const prepared = preparedOutputs.get(reference.storagePath);
+      if (!prepared) {
+        throw new Error("Pripremljena referenca nije pronađena.");
+      }
+      const storagePath = composePreparedReferenceStoragePath({
+        userId,
+        fileName: prepared.fileName,
+      });
+      const { error: uploadError } = await getSupabaseAdmin().storage
+        .from("order-files")
+        .upload(storagePath, prepared.buffer, {
+          contentType: prepared.mimeType,
+          upsert: true,
+        });
+      if (uploadError) throw new Error(uploadError.message);
+      uploadedPaths.push(storagePath);
+      preparedReferences.push(
+        await signPreparedReference({
+          storagePath,
+          mimeType: prepared.mimeType,
+          fileName: prepared.fileName,
+        }),
+      );
+    }
+
+    return {
+      preparedReferences,
+      unitsCharged: unitsToCharge,
+      balanceUnits,
+    };
+  } catch (err) {
+    if (uploadedPaths.length > 0) {
+      await getSupabaseAdmin().storage.from("order-files").remove(uploadedPaths);
+    }
+    if (unitsToCharge > 0) {
+      await refundAiCreditUnits({
+        userId,
+        units: unitsToCharge,
+        note: "AI Studio refund: priprema reference nije sačuvana",
+      });
+    }
+    const message =
+      err instanceof Error ? err.message : "Prepared reference upload failed.";
+    console.error("[AI Studio] Prepared reference upload failed", {
+      userId,
+      message: message.length > 1500 ? `${message.slice(0, 1500)}...` : message,
+    });
+    return {
+      error:
+        "Pripremljena referenca nije mogla da se sačuva. Kredit je vraćen, pokušajte ponovo.",
+    };
+  }
+}
+
 export async function startAiStudioGeneration(
   input: AiStudioGenerateInput,
 ): Promise<AiStudioStartResult> {
@@ -255,7 +454,16 @@ export async function startAiStudioGeneration(
   if (objectMode === "replace" && !input.maskStoragePath) {
     return {
       error:
-        "Za zamenu označite celu zonu gde novi objekat treba da stane, uključujući senku i kontakt.",
+        "Za zamenu označite postojeći komad koji menjamo. Maska ne mora biti savršena.",
+    };
+  }
+  if (
+    input.editType === "object_insertion" &&
+    objectMode === "replace" &&
+    referenceImages.some((reference) => !isPreparedReferenceInput(reference))
+  ) {
+    return {
+      error: "Pripremite referentne slike objekta pre zamene.",
     };
   }
 
@@ -290,6 +498,7 @@ export async function startAiStudioGeneration(
   }
 
   for (const reference of referenceImages) {
+    if (isSystemPreparedReferencePath(reference.storagePath)) continue;
     const knownReference = await findKnownReferenceImage(userId, reference.storagePath);
     if (!knownReference) {
       const referenceScan = await enforceCleanScan({
@@ -605,22 +814,30 @@ async function runGenerationProcessing(generation: AiGeneration) {
   const objectInput = isObjectEdit
     ? await prepareObjectInputForProvider(normalizedInput.image)
     : null;
+  const objectMaskMode: ObjectMaskMode =
+    options.objectMode === "replace" ? "source_object" : "placement_guide";
   const preparedImage =
     objectInput?.image ?? (await prepareInputForProvider(normalizedInput.image, target));
   const preparedReferences = await Promise.all(
-    references.map(async (reference) => ({
-      image: isObjectEdit
-        ? await prepareObjectReferenceForProvider(reference.buffer)
-        : await prepareReferenceForProvider(reference.buffer, target),
-      mimeType: "image/jpeg",
-    })),
+    references.map(async (reference) =>
+      isObjectEdit
+        ? prepareObjectReferenceForProvider(reference.buffer)
+        : {
+            image: await prepareReferenceForProvider(reference.buffer, target),
+            mimeType: "image/jpeg",
+          },
+    ),
   );
   const preparedMask = mask
     ? isObjectEdit && objectInput
-      ? await prepareObjectMaskForProvider(mask.buffer, {
-          width: objectInput.width,
-          height: objectInput.height,
-        })
+      ? await prepareObjectMaskForProvider(
+          mask.buffer,
+          {
+            width: objectInput.width,
+            height: objectInput.height,
+          },
+          objectMaskMode,
+        )
       : await prepareMaskForProvider(mask.buffer, target)
     : undefined;
 
@@ -658,7 +875,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
         originalDims,
         maskInverted: options.maskInverted,
         softenMask: isObjectEdit,
-        expandMask: isObjectEdit,
+        objectMaskMode: isObjectEdit ? objectMaskMode : undefined,
       })
     : await resizeToOriginal(output.image, originalDims);
 
@@ -953,6 +1170,37 @@ function parseGenerationOptions(value: Prisma.JsonValue | null): GenerationOptio
   };
 }
 
+function buildReferencePreparationPrompt(fileName: string | null | undefined): string {
+  const label = fileName?.trim() ? `Reference file: ${fileName.trim()}.` : null;
+  return [
+    "Prepare this product/object reference for a later interior replacement composite.",
+    label,
+    "Isolate only the single main object/product. Remove hands, arms, people, clothing, hangers, tags, packaging, background rooms, floors, walls, tables, props, and any unrelated objects.",
+    "Return a tight crop around the object with a small natural margin. Preserve the object's true shape, material, color, texture, hardware, seams, and proportions.",
+    "Prefer a transparent PNG background. If transparency is not possible, use a plain neutral light gray background with no shadows or scene context.",
+    "Do not stylize, redesign, rotate dramatically, add new details, or change the object identity. Return one clean object reference image only, with no text.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function normalizePrepareReferenceInputs(
+  references: AiStudioReferenceImageInput[] | null | undefined,
+): AiStudioReferenceImageInput[] {
+  const seen = new Set<string>();
+  const normalized: AiStudioReferenceImageInput[] = [];
+  for (const reference of Array.isArray(references) ? references : []) {
+    if (!reference?.storagePath || seen.has(reference.storagePath)) continue;
+    seen.add(reference.storagePath);
+    normalized.push({
+      storagePath: reference.storagePath,
+      mimeType: reference.mimeType || "application/octet-stream",
+      fileName: reference.fileName ?? null,
+    });
+  }
+  return normalized;
+}
+
 function normalizeReferenceImageInputs(
   input: AiStudioGenerateInput,
 ): AiStudioReferenceImageInput[] {
@@ -984,6 +1232,74 @@ function normalizeReferenceImageInputs(
     });
   }
   return normalized;
+}
+
+function isPreparedReferenceInput(reference: AiStudioReferenceImageInput): boolean {
+  return (
+    isSystemPreparedReferencePath(reference.storagePath) ||
+    isManualCroppedReferenceFileName(reference.fileName)
+  );
+}
+
+function isSystemPreparedReferencePath(storagePath: string): boolean {
+  return /\/prepared-references\//.test(storagePath);
+}
+
+function isManualCroppedReferenceFileName(
+  fileName: string | null | undefined,
+): boolean {
+  return /(?:^|[-_])crop\.(?:jpe?g|png|webp)$/i.test(fileName ?? "");
+}
+
+function normalizeImageMimeType(mimeType: string | null | undefined): string {
+  if (mimeType === "image/jpeg" || mimeType === "image/png" || mimeType === "image/webp") {
+    return mimeType;
+  }
+  return "image/png";
+}
+
+function extensionForMimeType(mimeType: string): "jpg" | "png" | "webp" {
+  if (mimeType === "image/jpeg") return "jpg";
+  if (mimeType === "image/webp") return "webp";
+  return "png";
+}
+
+function composePreparedReferenceFileName(
+  fileName: string | null | undefined,
+  mimeType: string,
+): string {
+  const source = slugifyFileName(fileName ?? "objekat.png");
+  const dot = source.lastIndexOf(".");
+  const base = dot > 0 ? source.slice(0, dot) : source;
+  return `${base}-prepared.${extensionForMimeType(mimeType)}`;
+}
+
+function composePreparedReferenceStoragePath({
+  userId,
+  fileName,
+}: {
+  userId: string;
+  fileName: string;
+}): string {
+  return `ai-studio/${userId}/prepared-references/${randomUUID()}-${slugifyFileName(fileName)}`;
+}
+
+async function signPreparedReference(
+  reference: AiStudioReferenceImageInput,
+): Promise<SignedPreparedReferenceImage> {
+  const { data, error } = await getSupabaseAdmin().storage
+    .from("order-files")
+    .createSignedUrl(reference.storagePath, 60 * 30);
+  if (error || !data?.signedUrl) {
+    throw new Error(error?.message ?? "Pripremljena referenca nije dostupna.");
+  }
+  return {
+    storagePath: reference.storagePath,
+    mimeType: reference.mimeType,
+    fileName: reference.fileName ?? null,
+    url: data.signedUrl,
+    isPreparedReference: true,
+  };
 }
 
 async function findKnownReferenceImage(userId: string, storagePath: string) {

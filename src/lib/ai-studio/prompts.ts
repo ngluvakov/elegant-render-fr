@@ -53,7 +53,9 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
   if (options.hasMask) {
     lines.push(
       isObjectEdit
-        ? "A mask is provided for Image 1 as a soft guide, not a surgical edge. Work around the indicated area and allow only small logical extension for scale, contact shadows, legs, handles, reflections, occlusion, and natural integration."
+        ? options.objectMode === "replace"
+          ? "A mask is provided for Image 1 as a soft source-object guide, not a surgical edge. The marked area indicates the existing object to remove; it is not the exact boundary or size of the replacement object. Work locally around that object and allow logical extension for scale, contact shadows, legs, handles, reflections, occlusion, and natural integration."
+          : "A mask is provided for Image 1 as an approximate placement guide, not a surgical edge. Add the object near the indicated area and allow only small logical extension for scale, contact shadows, legs, handles, reflections, occlusion, and natural integration."
         : options.maskInverted
           ? "A mask is provided. The opaque area indicates the region to edit; preserve transparent areas as much as possible."
           : "A mask is provided. The transparent area indicates the region to edit; preserve opaque areas as much as possible.",
@@ -74,7 +76,7 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
     );
     if (options.objectMode === "replace") {
       lines.push(
-        "Replace within the user's marked placement zone with the referenced object. The mask marks the full zone where the new object should fit, not only the old object. Remove the original item cleanly, preserve the rest of the room, and keep the replacement centered on the marked placement zone even if the user prompt is short.",
+        "Replace the user's marked existing furniture/decor item with the referenced object. Remove the original item cleanly. The replacement may extend beyond the exact mask if needed for realistic proportions, feet/legs, handles, shadows, contact with the floor or wall, and perspective. Preserve the rest of the room outside the local replacement zone.",
       );
     } else {
       lines.push(

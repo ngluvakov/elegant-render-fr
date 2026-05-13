@@ -138,6 +138,7 @@ type UploadedInput = {
   mimeType: string;
   fileName: string;
   generationId?: string | null;
+  isPreparedReference?: boolean;
 };
 
 type ToolMode = "simple" | "advanced";
@@ -187,12 +188,15 @@ export function AiStudioWorkspace({
   const [parentGenerationId, setParentGenerationId] = useState<string | null>(null);
   const [activeGenerationId, setActiveGenerationId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [preparingReferences, setPreparingReferences] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [maskDirty, setMaskDirty] = useState(false);
   const [editorResetToken, setEditorResetToken] = useState(0);
   const baseInputRef = useRef<UploadedInput | null>(null);
+  const activeGenerationIdRef = useRef<string | null>(null);
+  const resultSuppressedForInputPathRef = useRef<string | null>(null);
 
   // Set when the user clicks "Resetuj sve" — suppresses the next
   // auto-populate from refreshState / refreshGeneration so the result
@@ -234,6 +238,13 @@ export function AiStudioWorkspace({
   const activeEngine = useMemo(() => getAiImageEngine(engineId), [engineId]);
   const activeInput = baseInput;
   const needsReferenceImage = activeEdit.requiresReferenceImage === true;
+  const unpreparedReferenceCount = useMemo(
+    () =>
+      editType === "object_insertion" && objectMode === "replace"
+        ? referenceInputs.filter((reference) => !isPreparedReference(reference)).length
+        : 0,
+    [editType, objectMode, referenceInputs],
+  );
   const hasPendingJobs = history.some(
     (item) => item.status === "queued" || item.status === "processing",
   );
@@ -280,6 +291,7 @@ export function AiStudioWorkspace({
         activeInput,
         needsReferenceImage,
         referenceCount: referenceInputs.length,
+        unpreparedReferenceCount,
         editType,
         objectMode,
         maskDirty,
@@ -303,6 +315,7 @@ export function AiStudioWorkspace({
       pending,
       referenceInputs.length,
       selectedOption,
+      unpreparedReferenceCount,
     ],
   );
   const guideStage = useMemo<AssistantGuideStage>(() => {
@@ -340,6 +353,10 @@ export function AiStudioWorkspace({
   }, [baseInput]);
 
   useEffect(() => {
+    activeGenerationIdRef.current = activeGenerationId;
+  }, [activeGenerationId]);
+
+  useEffect(() => {
     const requestedTool = new URLSearchParams(window.location.search).get("tool");
     if (isAiEditTypeId(requestedTool)) {
       setEditType(requestedTool);
@@ -359,6 +376,23 @@ export function AiStudioWorkspace({
     if (workspaceDismissedRef.current) return;
     const activeWorkspaceInput = baseInputRef.current;
     if (!activeWorkspaceInput) return;
+    const activeId = activeGenerationIdRef.current;
+    const activeFromState = activeId
+      ? nextState.generations.find((item) => item.id === activeId)
+      : null;
+    if (
+      activeFromState?.status === "queued" ||
+      activeFromState?.status === "processing" ||
+      activeFromState?.status === "failed"
+    ) {
+      return;
+    }
+    if (
+      resultSuppressedForInputPathRef.current &&
+      resultSuppressedForInputPathRef.current === activeWorkspaceInput.storagePath
+    ) {
+      return;
+    }
     const latestCompleted = nextState.generations.find(
       (item) => item.status === "completed" && item.resultUrl,
     );
@@ -434,6 +468,7 @@ export function AiStudioWorkspace({
       });
       setParentGenerationId(data.generation.id);
       setActiveGenerationId(data.generation.id);
+      resultSuppressedForInputPathRef.current = null;
       setNotice("AI obrada je završena.");
     }
     if (data.generation.status === "failed") {
@@ -521,6 +556,7 @@ export function AiStudioWorkspace({
     setError("");
     setNotice("Radna slika i podešavanja su obrisani.");
     workspaceDismissedRef.current = true;
+    resultSuppressedForInputPathRef.current = null;
   }, []);
 
   const handleUpload = async (file: File) => {
@@ -532,6 +568,7 @@ export function AiStudioWorkspace({
       return;
     }
     markWorkspaceActive();
+    resultSuppressedForInputPathRef.current = null;
     setParentGenerationId(null);
     setActiveGenerationId(null);
     try {
@@ -581,6 +618,7 @@ export function AiStudioWorkspace({
             storagePath: upload.storagePath,
             mimeType: file.type,
             fileName: file.name,
+            isPreparedReference: isPreparedReferenceFileName(file.name),
           };
         }),
       );
@@ -630,6 +668,7 @@ export function AiStudioWorkspace({
                   storagePath: upload.storagePath,
                   mimeType: file.type,
                   fileName: file.name,
+                  isPreparedReference: true,
                 }
               : reference,
           ),
@@ -651,8 +690,93 @@ export function AiStudioWorkspace({
     [markWorkspaceActive],
   );
 
+  const handlePrepareReferences = useCallback(async () => {
+    if (referenceInputs.length === 0) {
+      setError("Dodajte bar jednu sliku objekta.");
+      return;
+    }
+    const unprepared = referenceInputs.filter(
+      (reference) => !isPreparedReference(reference),
+    );
+    if (unprepared.length === 0) {
+      setNotice("Reference su već pripremljene za zamenu.");
+      return;
+    }
+    if (balanceUnits < unprepared.length) {
+      setError(
+        `Nemate dovoljno AI kredita za pripremu reference. Potrebno je ${formatCreditsFromUnits(unprepared.length)}.`,
+      );
+      return;
+    }
+
+    try {
+      setPreparingReferences(true);
+      setError("");
+      setNotice("");
+      markWorkspaceActive();
+
+      const response = await fetch("/api/ai-studio/references/prepare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          references: referenceInputs.map((reference) => ({
+            storagePath: reference.storagePath,
+            mimeType: reference.mimeType,
+            fileName: reference.fileName,
+          })),
+        }),
+      });
+      const result = (await response.json()) as {
+        error?: string;
+        preparedReferences?: Array<UploadedInput & { isPreparedReference: true }>;
+        unitsCharged?: number;
+        balanceUnits?: number;
+      };
+
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      if (!result.preparedReferences?.length) {
+        setError("Reference nisu pripremljene. Pokušajte ponovo.");
+        return;
+      }
+
+      setReferenceInputs(
+        result.preparedReferences.map((reference) => ({
+          url: reference.url,
+          storagePath: reference.storagePath,
+          mimeType: reference.mimeType,
+          fileName: reference.fileName ?? "objekat-prepared.png",
+          isPreparedReference: true,
+        })),
+      );
+      if (typeof result.balanceUnits === "number") {
+        setBalanceUnits(result.balanceUnits);
+      }
+      setNotice(
+        (result.unitsCharged ?? 0) > 0
+          ? `Reference su pripremljene. Naplaćeno je ${formatCreditsFromUnits(result.unitsCharged ?? 0)}.`
+          : "Reference su već bile pripremljene, bez dodatne naplate.",
+      );
+      track("ai_reference_prepared", {
+        reference_count: referenceInputs.length,
+        units_charged: result.unitsCharged ?? 0,
+      });
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Priprema reference trenutno nije uspela.",
+      );
+    } finally {
+      setPreparingReferences(false);
+    }
+  }, [balanceUnits, markWorkspaceActive, referenceInputs]);
+
   const setResultAsBaseInput = useCallback((nextInput: UploadedInput) => {
     markWorkspaceActive();
+    resultSuppressedForInputPathRef.current = null;
     setBaseInput(nextInput);
     if (nextInput.generationId) setParentGenerationId(nextInput.generationId);
     setActiveGenerationId(null);
@@ -757,6 +881,7 @@ export function AiStudioWorkspace({
       const item = history.find((entry) => entry.id === gen.id);
       if (!item) return;
       markWorkspaceActive();
+      resultSuppressedForInputPathRef.current = item.inputStoragePath;
       setBaseInput({
         url: gen.inputUrl,
         storagePath: item.inputStoragePath,
@@ -777,6 +902,10 @@ export function AiStudioWorkspace({
                   (reference.sortOrder === 0
                     ? "objekat-za-ubacivanje"
                     : `objekat-ugao-${reference.sortOrder + 1}`),
+                isPreparedReference: isPreparedReference({
+                  storagePath: reference.storagePath,
+                  fileName: reference.fileName ?? null,
+                }),
               }))
           : gen.referenceUrl && item.referenceStoragePath
             ? [
@@ -785,6 +914,10 @@ export function AiStudioWorkspace({
                   storagePath: item.referenceStoragePath,
                   mimeType: item.referenceMimeType ?? "image/jpeg",
                   fileName: gen.referenceFileName ?? "objekat-za-ubacivanje",
+                  isPreparedReference: isPreparedReference({
+                    storagePath: item.referenceStoragePath,
+                    fileName: gen.referenceFileName ?? null,
+                  }),
                 },
               ]
             : [],
@@ -824,10 +957,18 @@ export function AiStudioWorkspace({
     if (
       editType === "object_insertion" &&
       objectMode === "replace" &&
+      unpreparedReferenceCount > 0
+    ) {
+      setError("Pripremite referentne slike objekta pre zamene.");
+      return;
+    }
+    if (
+      editType === "object_insertion" &&
+      objectMode === "replace" &&
       (!maskBlob || mode !== "advanced" || !maskDirty)
     ) {
       setError(
-        "Za zamenu označite celu zonu gde novi objekat treba da stane, uključujući senku i kontakt sa podom/zidom.",
+        "Za zamenu označite postojeći komad koji menjamo. Maska ne mora biti savršena; sistem će proširiti lokalnu zonu za novi objekat, senku i kontakt.",
       );
       return;
     }
@@ -845,6 +986,9 @@ export function AiStudioWorkspace({
 
     setPending(true);
     setError("");
+    setResultUrl(null);
+    setCurrentResult(null);
+    resultSuppressedForInputPathRef.current = activeInput.storagePath;
     const objectInsertWithoutMask =
       editType === "object_insertion" && objectMode === "insert" && !maskDirty;
     setNotice(
@@ -1086,6 +1230,7 @@ export function AiStudioWorkspace({
             onReferenceRemove={handleReferenceRemove}
             onReferenceMakePrimary={handleReferenceMakePrimary}
             onReferenceCrop={handleReferenceCrop}
+            onPrepareReferences={handlePrepareReferences}
             onGenerate={handleGenerate}
             onClearAll={handleClearAll}
             pending={pending}
@@ -1097,6 +1242,8 @@ export function AiStudioWorkspace({
             onMaskDirtyChange={setMaskDirty}
             costPreview={costPreview}
             readiness={readiness}
+            balanceUnits={balanceUnits}
+            preparingReferences={preparingReferences}
           />
         </div>
 
@@ -1249,7 +1396,7 @@ function StudioControls({
               <p className="mt-1 text-[0.68rem] text-muted-foreground">
                 {edit.requiresReferenceImage
                   ? objectMode === "replace"
-                    ? "Označite celu zonu gde novi objekat treba da stane, uključujući senku/kontakt; maska ne mora biti savršena."
+                    ? "Označite postojeći komad koji menjamo; sistem će proširiti lokalnu zonu za novi objekat, senku i kontakt."
                     : "Maska je smernica za poziciju; AI može blago proširiti zonu zbog senke, kontakta i prirodnog uklapanja."
                   : "Advanced otključava masku za precizno označavanje."}
               </p>
@@ -1399,6 +1546,7 @@ function AiImageEditor({
   onReferenceRemove,
   onReferenceMakePrimary,
   onReferenceCrop,
+  onPrepareReferences,
   onObjectModeChange,
   onGenerate,
   onClearAll,
@@ -1411,6 +1559,8 @@ function AiImageEditor({
   onMaskDirtyChange,
   costPreview,
   readiness,
+  balanceUnits,
+  preparingReferences,
 }: {
   mode: ToolMode;
   editType: AiEditType;
@@ -1424,6 +1574,7 @@ function AiImageEditor({
   onReferenceRemove: (index: number) => void;
   onReferenceMakePrimary: (index: number) => void;
   onReferenceCrop: (index: number, file: File) => void;
+  onPrepareReferences: () => void;
   onObjectModeChange: (mode: ObjectEditMode) => void;
   onGenerate: (mask: Blob | null) => void;
   onClearAll: () => void;
@@ -1436,6 +1587,8 @@ function AiImageEditor({
   onMaskDirtyChange: (dirty: boolean) => void;
   costPreview: { unitsCharged: number; freeAttemptIndex: number | null } | null;
   readiness: StudioReadiness;
+  balanceUnits: number;
+  preparingReferences: boolean;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const referenceFileRef = useRef<HTMLInputElement>(null);
@@ -1451,7 +1604,18 @@ function AiImageEditor({
     y: number;
     radius: number;
   } | null>(null);
-  const [rectStart, setRectStart] = useState<{ x: number; y: number } | null>(null);
+  const [rectStart, setRectStart] = useState<{
+    x: number;
+    y: number;
+    displayX: number;
+    displayY: number;
+  } | null>(null);
+  const [rectPreview, setRectPreview] = useState<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
   const [confirmingClear, setConfirmingClear] = useState(false);
@@ -1519,6 +1683,16 @@ function AiImageEditor({
     };
   };
 
+  const buildRectPreview = (
+    start: { displayX: number; displayY: number },
+    end: { displayX: number; displayY: number },
+  ) => ({
+    left: Math.min(start.displayX, end.displayX),
+    top: Math.min(start.displayY, end.displayY),
+    width: Math.abs(end.displayX - start.displayX),
+    height: Math.abs(end.displayY - start.displayY),
+  });
+
   const drawBrush = (x: number, y: number) => {
     const canvas = maskCanvasRef.current;
     const ctx = canvas?.getContext("2d");
@@ -1544,7 +1718,10 @@ function AiImageEditor({
     pushUndo();
     setDrawing(true);
     if (tool === "brush") drawBrush(pos.x, pos.y);
-    if (tool === "rect") setRectStart(pos);
+    if (tool === "rect") {
+      setRectStart(pos);
+      setRectPreview(buildRectPreview(pos, pos));
+    }
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
@@ -1556,6 +1733,10 @@ function AiImageEditor({
         y: pos.displayY,
         radius: pos.displayRadius,
       });
+    }
+    if (drawing && tool === "rect" && rectStart && pos) {
+      setRectPreview(buildRectPreview(rectStart, pos));
+      return;
     }
     if (!drawing || tool !== "brush") return;
     if (pos) drawBrush(pos.x, pos.y);
@@ -1578,10 +1759,12 @@ function AiImageEditor({
     }
     setDrawing(false);
     setRectStart(null);
+    setRectPreview(null);
   };
 
   const handlePointerLeave = (event: PointerEvent<HTMLDivElement>) => {
     setBrushPreview(null);
+    setRectPreview(null);
     handlePointerUp(event);
   };
 
@@ -1707,7 +1890,7 @@ function AiImageEditor({
           </div>
           <p className="min-w-[220px] flex-1 text-xs text-muted-foreground">
             {objectMode === "replace"
-              ? "Advanced maska je obavezna: označite celu zonu gde novi objekat treba da stane, uključujući senku/kontakt."
+              ? "Advanced maska je obavezna: označite postojeći komad koji menjamo. Maska ne mora biti savršena."
               : "Maska je poželjna za preciznu poziciju. Bez maske AI sam bira mesto i rezultat može biti manje predvidljiv."}
           </p>
         </div>
@@ -1715,12 +1898,21 @@ function AiImageEditor({
 
       {mode === "advanced" && (
         <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-border/50 bg-background/50 p-2">
-          <ToolButton active={tool === "brush"} onClick={() => setTool("brush")} icon={Brush} label="Brush" />
+          <ToolButton
+            active={tool === "brush"}
+            onClick={() => {
+              setTool("brush");
+              setRectPreview(null);
+            }}
+            icon={Brush}
+            label="Brush"
+          />
           <ToolButton
             active={tool === "rect"}
             onClick={() => {
               setTool("rect");
               setBrushPreview(null);
+              setRectPreview(null);
             }}
             icon={RectangleHorizontal}
             label="Pravougaonik"
@@ -1908,6 +2100,18 @@ function AiImageEditor({
                   pointerEvents: "none",
                 }}
               />
+              {mode === "advanced" && tool === "rect" && rectPreview && (
+                <span
+                  className="pointer-events-none absolute rounded-sm border border-dashed border-white/95 bg-accent/20 shadow-[0_0_0_1px_rgba(184,80,70,0.85),0_0_18px_rgba(184,80,70,0.2)]"
+                  style={{
+                    left: rectPreview.left,
+                    top: rectPreview.top,
+                    width: rectPreview.width,
+                    height: rectPreview.height,
+                  }}
+                  aria-hidden="true"
+                />
+              )}
               {mode === "advanced" && tool === "brush" && brushPreview && (
                 <span
                   className="pointer-events-none absolute rounded-full border border-white/90 bg-accent/10 shadow-[0_0_0_1px_rgba(184,80,70,0.75),0_0_18px_rgba(184,80,70,0.25)]"
@@ -1950,12 +2154,16 @@ function AiImageEditor({
         {needsReferenceImage && (
           <ReferenceImagesPanel
             references={referenceInputs}
+            objectMode={objectMode}
             pending={pending}
+            preparing={preparingReferences}
+            balanceUnits={balanceUnits}
             onAdd={() => referenceFileRef.current?.click()}
             onAddFiles={onReferenceUpload}
             onRemove={onReferenceRemove}
             onMakePrimary={onReferenceMakePrimary}
             onCrop={onReferenceCrop}
+            onPrepare={onPrepareReferences}
           />
         )}
 
@@ -1970,13 +2178,13 @@ function AiImageEditor({
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Rezultat
               </p>
-              {currentResult?.fileName && resultUrl && (
+              {currentResult?.fileName && resultUrl && !processingLabel && (
                 <p className="mt-0.5 truncate font-mono text-[0.68rem] text-foreground/60">
                   {currentResult.fileName}
                 </p>
               )}
             </div>
-            {resultUrl && currentResult?.generationId && (
+            {resultUrl && currentResult?.generationId && !processingLabel && (
               <a
                 href={`/api/ai-studio/generations/${currentResult.generationId}/download`}
                 download
@@ -1987,7 +2195,12 @@ function AiImageEditor({
               </a>
             )}
           </div>
-          {resultUrl ? (
+          {processingLabel ? (
+            <ProcessingResultPreview
+              label={processingLabel}
+              style={previewFrameStyle}
+            />
+          ) : resultUrl ? (
             <div
               className="mx-auto max-h-[620px] w-full overflow-hidden rounded-xl bg-foreground/5"
               style={previewFrameStyle}
@@ -1999,11 +2212,6 @@ function AiImageEditor({
                 className="block h-full w-full object-contain"
               />
             </div>
-          ) : processingLabel ? (
-            <ProcessingResultPreview
-              label={processingLabel}
-              style={previewFrameStyle}
-            />
           ) : processingError ? (
             <div className="flex min-h-[180px] w-full flex-col items-center justify-center gap-3 rounded-xl border border-destructive/30 bg-destructive/10 text-center">
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-destructive/10 text-destructive">
@@ -2155,32 +2363,47 @@ function ProcessingResultPreview({
 
 function ReferenceImagesPanel({
   references,
+  objectMode,
   pending,
+  preparing,
+  balanceUnits,
   onAdd,
   onAddFiles,
   onRemove,
   onMakePrimary,
   onCrop,
+  onPrepare,
 }: {
   references: UploadedInput[];
+  objectMode: ObjectEditMode;
   pending: boolean;
+  preparing: boolean;
+  balanceUnits: number;
   onAdd: () => void;
   onAddFiles: (files: File[]) => void;
   onRemove: (index: number) => void;
   onMakePrimary: (index: number) => void;
   onCrop: (index: number, file: File) => void;
+  onPrepare: () => void;
 }) {
+  const busy = pending || preparing;
   const canAdd = references.length < MAX_OBJECT_REFERENCE_IMAGES;
   const [dragOver, setDragOver] = useState(false);
   const [cropIndex, setCropIndex] = useState<number | null>(null);
   const cropReference =
     cropIndex !== null ? references[cropIndex] ?? null : null;
+  const unpreparedCount =
+    objectMode === "replace"
+      ? references.filter((reference) => !isPreparedReference(reference)).length
+      : 0;
+  const prepareUnits = unpreparedCount;
+  const canPrepare = unpreparedCount > 0 && !busy && balanceUnits >= prepareUnits;
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
     setDragOver(false);
-    if (pending) return;
+    if (busy) return;
     const files = Array.from(event.dataTransfer.files ?? []);
     if (files.length > 0) onAddFiles(files);
   };
@@ -2194,7 +2417,7 @@ function ReferenceImagesPanel({
       onDragOver={(event) => {
         event.preventDefault();
         event.stopPropagation();
-        if (!pending) setDragOver(true);
+        if (!busy) setDragOver(true);
       }}
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
@@ -2214,13 +2437,65 @@ function ReferenceImagesPanel({
             variant="ghost"
             size="xs"
             onClick={onAdd}
-            disabled={pending}
+            disabled={busy}
           >
             <Plus className="h-3 w-3" />
             Dodaj ugao
           </Button>
         )}
       </div>
+
+      {objectMode === "replace" && references.length > 0 && (
+        <div
+          className={cn(
+            "mb-3 rounded-xl border px-3 py-2 text-xs",
+            unpreparedCount > 0
+              ? "border-amber-300/50 bg-amber-50 text-amber-950"
+              : "border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]",
+          )}
+        >
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="font-semibold">
+                {unpreparedCount > 0
+                  ? "Pripremite reference pre zamene"
+                  : "Reference su spremne za zamenu"}
+              </p>
+              <p className="mt-0.5">
+                {unpreparedCount > 0
+                  ? `Auto-priprema izoluje objekat i košta ${formatCreditsFromUnits(prepareUnits)}.`
+                  : "Glavna obrada će koristiti očišćene/cropovane slike objekta."}
+              </p>
+            </div>
+            {unpreparedCount > 0 && (
+              <Button
+                type="button"
+                variant="accent"
+                size="sm"
+                onClick={onPrepare}
+                disabled={!canPrepare}
+              >
+                {preparing ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Pripremamo…
+                  </>
+                ) : (
+                  <>
+                    <Crop className="h-3.5 w-3.5" />
+                    Pripremi reference
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+          {unpreparedCount > 0 && balanceUnits < prepareUnits && (
+            <p className="mt-2 text-[0.68rem] font-semibold">
+              Nedostaje kredita za pripremu.
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 gap-2 xl:grid-cols-1 2xl:grid-cols-2">
         {references.map((reference, index) => (
@@ -2238,10 +2513,20 @@ function ReferenceImagesPanel({
             <div className="absolute left-1.5 top-1.5 rounded-full bg-card/90 px-2 py-0.5 text-[0.62rem] font-semibold text-foreground shadow-sm">
               {index === 0 ? "Primarna" : `Ugao ${index + 1}`}
             </div>
+            <div
+              className={cn(
+                "absolute bottom-10 left-1.5 rounded-full px-2 py-0.5 text-[0.58rem] font-semibold shadow-sm",
+                isPreparedReference(reference)
+                  ? "bg-[color:var(--color-sage)]/90 text-white"
+                  : "bg-amber-500/90 text-white",
+              )}
+            >
+              {isPreparedReference(reference) ? "Spremno" : "Pripremiti"}
+            </div>
             <button
               type="button"
               onClick={() => onRemove(index)}
-              disabled={pending}
+              disabled={busy}
               className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-foreground/75 text-background transition-colors hover:bg-destructive disabled:opacity-50"
               aria-label={`Ukloni sliku objekta ${index + 1}`}
             >
@@ -2254,7 +2539,7 @@ function ReferenceImagesPanel({
               <button
                 type="button"
                 onClick={() => setCropIndex(index)}
-                disabled={pending}
+                disabled={busy}
                 className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-md border border-border/40 bg-background/70 px-2 text-[0.62rem] font-semibold text-foreground transition-colors hover:border-accent/40 disabled:opacity-50"
               >
                 <Crop className="h-3 w-3" />
@@ -2264,7 +2549,7 @@ function ReferenceImagesPanel({
                 <button
                   type="button"
                   onClick={() => onMakePrimary(index)}
-                  disabled={pending}
+                  disabled={busy}
                   className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-md border border-border/40 bg-background/70 px-2 text-[0.62rem] font-semibold text-foreground transition-colors hover:border-accent/40 disabled:opacity-50"
                 >
                   <Star className="h-3 w-3" />
@@ -2279,7 +2564,7 @@ function ReferenceImagesPanel({
           <button
             type="button"
             onClick={onAdd}
-            disabled={pending}
+            disabled={busy}
             className="group flex aspect-square flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border/50 bg-card/40 p-3 text-center transition-colors hover:border-accent/50 hover:bg-card/60 disabled:opacity-50"
           >
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
@@ -2293,9 +2578,8 @@ function ReferenceImagesPanel({
       </div>
 
       <p className="mt-3 text-[0.68rem] leading-relaxed text-muted-foreground">
-        Prva slika je autoritativna. Dodatne slike koristite samo za bočne
-        uglove, poleđinu ili detalj materijala istog objekta; ako se razlikuju,
-        AI treba da prati prvu.
+        Prva slika je autoritativna. Za zamenu koristite crop ili auto-pripremu
+        svake reference; dodatni uglovi služe samo za detalje istog objekta.
       </p>
 
       <ReferenceCropModal
@@ -2890,6 +3174,7 @@ function buildAiStudioReadiness({
   activeInput,
   needsReferenceImage,
   referenceCount,
+  unpreparedReferenceCount,
   editType,
   objectMode,
   maskDirty,
@@ -2903,6 +3188,7 @@ function buildAiStudioReadiness({
   activeInput: UploadedInput | null;
   needsReferenceImage: boolean;
   referenceCount: number;
+  unpreparedReferenceCount: number;
   editType: AiEditType;
   objectMode: ObjectEditMode;
   maskDirty: boolean;
@@ -2922,8 +3208,16 @@ function buildAiStudioReadiness({
   if (needsReferenceImage && referenceCount === 0) {
     blockers.push("Dodajte bar jednu sliku objekta.");
   }
+  if (
+    editType === "object_insertion" &&
+    objectMode === "replace" &&
+    referenceCount > 0 &&
+    unpreparedReferenceCount > 0
+  ) {
+    blockers.push("Pripremite referentne slike objekta pre zamene.");
+  }
   if (editType === "object_insertion" && objectMode === "replace" && !maskDirty) {
-    blockers.push("Označite maskom celu zonu gde novi objekat treba da stane.");
+    blockers.push("Označite maskom postojeći komad koji menjamo.");
   }
   if (
     activeEdit.multiSelect &&
@@ -2987,6 +3281,24 @@ function toggleOptionId(current: string, id: string): string {
 
 function isAiEditTypeId(value: string | null): value is AiEditType {
   return Boolean(value && AI_EDIT_TYPES.some((item) => item.id === value));
+}
+
+function isPreparedReference(
+  reference: {
+    storagePath: string;
+    fileName?: string | null;
+    isPreparedReference?: boolean;
+  },
+): boolean {
+  return (
+    reference.isPreparedReference === true ||
+    reference.storagePath.includes("/prepared-references/") ||
+    isPreparedReferenceFileName(reference.fileName)
+  );
+}
+
+function isPreparedReferenceFileName(fileName: string | null | undefined): boolean {
+  return /(?:^|[-_])(?:crop|prepared)\.(?:jpe?g|png|webp)$/i.test(fileName ?? "");
 }
 
 // Mirrors the server-side cost calc in startAiStudioGeneration (which

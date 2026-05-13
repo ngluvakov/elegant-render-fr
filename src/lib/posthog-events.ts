@@ -99,6 +99,10 @@ export type EventMap = {
     units_charged: number;
     error_kind?: "processing" | "unknown";
   };
+  ai_reference_prepared: {
+    reference_count: number;
+    units_charged: number;
+  };
 
   // Catalog feature signals (validate per-PR effectiveness)
   staging_type_swapped: { from: "vs-static" | "vs-360"; to: "vs-static" | "vs-360" };

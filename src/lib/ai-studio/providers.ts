@@ -11,6 +11,7 @@ export type AiEditProviderInput = {
   prompt: string;
   image: Buffer;
   imageMimeType: string;
+  imageRoleText?: string;
   referenceImages?: Array<{ image: Buffer; mimeType: string }>;
   referenceImage?: Buffer;
   referenceMimeType?: string;
@@ -116,9 +117,10 @@ async function generateWithGemini(
   if (!apiKey) throw new Error("GEMINI_API_KEY nije konfigurisan.");
 
   const model = input.model;
+  const imageRoleText = input.imageRoleText ?? "Image 1: interior scene to edit.";
   const parts: Array<Record<string, unknown>> = [
     { text: input.prompt },
-    { text: "Image 1: interior scene to edit." },
+    { text: imageRoleText },
     {
       inline_data: {
         mime_type: input.imageMimeType,
@@ -227,9 +229,13 @@ async function generateWithOpenAi(
   for (let index = 0; index < references.length; index++) {
     const reference = references[index];
     images.push(
-      await toFile(new Uint8Array(reference.image), `object-reference-${index + 1}.jpg`, {
-        type: reference.mimeType,
-      }),
+      await toFile(
+        new Uint8Array(reference.image),
+        `object-reference-${index + 1}.${imageExtension(reference.mimeType)}`,
+        {
+          type: reference.mimeType,
+        },
+      ),
     );
   }
 
@@ -322,6 +328,12 @@ function getReferenceImages(
       mimeType: input.referenceMimeType ?? "image/jpeg",
     },
   ];
+}
+
+function imageExtension(mimeType: string): "jpg" | "png" | "webp" {
+  if (mimeType === "image/png") return "png";
+  if (mimeType === "image/webp") return "webp";
+  return "jpg";
 }
 
 function getProviderAttempts(provider: AiImageProvider): AiImageProvider[] {

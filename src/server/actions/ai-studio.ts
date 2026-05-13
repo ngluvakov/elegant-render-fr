@@ -28,7 +28,7 @@ import {
 import { sanitizeAiStudioError } from "@/lib/ai-studio/errors";
 import {
   composeWithMask,
-  getImageDimensions,
+  normalizeInputImage,
   pickProviderTarget,
   prepareInputForProvider,
   prepareMaskForProvider,
@@ -591,14 +591,15 @@ async function runGenerationProcessing(generation: AiGeneration) {
       : null,
   ]);
 
-  const originalDims = await getImageDimensions(image.buffer);
+  const normalizedInput = await normalizeInputImage(image.buffer);
+  const originalDims = normalizedInput.dimensions;
   const target = pickProviderTarget(originalDims, generation.provider);
   const isObjectEdit = generation.editType === "object_insertion";
   const objectInput = isObjectEdit
-    ? await prepareObjectInputForProvider(image.buffer)
+    ? await prepareObjectInputForProvider(normalizedInput.image)
     : null;
   const preparedImage =
-    objectInput?.image ?? (await prepareInputForProvider(image.buffer, target));
+    objectInput?.image ?? (await prepareInputForProvider(normalizedInput.image, target));
   const preparedReferences = await Promise.all(
     references.map(async (reference) => ({
       image: await prepareReferenceForProvider(reference.buffer, target),
@@ -641,7 +642,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
 
   const finalImage = mask
     ? await composeWithMask({
-        original: image.buffer,
+        original: normalizedInput.image,
         aiResult: output.image,
         mask: mask.buffer,
         originalDims,

@@ -220,6 +220,18 @@
   }
 }
 
+@keyframes ai-result-scan {
+  0% {
+    transform: translateX(-120%);
+  }
+  50% {
+    transform: translateX(120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
 /*
   --reveal — registered custom property for the AI Studio tool picker's
   diagonal before/after mask. Registering via @property lets the CSS engine

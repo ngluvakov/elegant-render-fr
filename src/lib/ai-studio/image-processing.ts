@@ -6,6 +6,11 @@ export type Dimensions = {
   height: number;
 };
 
+export type NormalizedImage = {
+  image: Buffer;
+  dimensions: Dimensions;
+};
+
 export type ProviderTarget = {
   width: number;
   height: number;
@@ -24,12 +29,64 @@ const GEMINI_TARGETS = [
   { ratioLabel: "21:9", width: 1536, height: 672 },
 ] as const;
 
+function createBlackRgbaWithAlpha(alpha: Buffer): Buffer {
+  const rgba = Buffer.allocUnsafe(alpha.length * 4);
+  for (let index = 0; index < alpha.length; index++) {
+    const offset = index * 4;
+    rgba[offset] = 0;
+    rgba[offset + 1] = 0;
+    rgba[offset + 2] = 0;
+    rgba[offset + 3] = alpha[index];
+  }
+  return rgba;
+}
+
+function createRgbaFromRgbAndAlpha(rgb: Buffer, alpha: Buffer): Buffer {
+  if (rgb.length !== alpha.length * 3) {
+    throw new Error("RGB i alpha kanal nemaju iste dimenzije.");
+  }
+  const rgba = Buffer.allocUnsafe(alpha.length * 4);
+  for (let index = 0; index < alpha.length; index++) {
+    const rgbOffset = index * 3;
+    const rgbaOffset = index * 4;
+    rgba[rgbaOffset] = rgb[rgbOffset];
+    rgba[rgbaOffset + 1] = rgb[rgbOffset + 1];
+    rgba[rgbaOffset + 2] = rgb[rgbOffset + 2];
+    rgba[rgbaOffset + 3] = alpha[index];
+  }
+  return rgba;
+}
+
 export async function getImageDimensions(buffer: Buffer): Promise<Dimensions> {
-  const metadata = await sharp(buffer).rotate().metadata();
+  const metadata = await sharp(buffer).metadata();
+  const width = metadata.autoOrient?.width ?? metadata.width;
+  const height = metadata.autoOrient?.height ?? metadata.height;
+  if (!width || !height) {
+    throw new Error("Dimenzije slike nisu dostupne.");
+  }
+  return { width, height };
+}
+
+export async function normalizeInputImage(buffer: Buffer): Promise<NormalizedImage> {
+  const image = await sharp(buffer)
+    .rotate()
+    .keepIccProfile()
+    .jpeg({
+      quality: 96,
+      chromaSubsampling: "4:4:4",
+    })
+    .toBuffer();
+  const metadata = await sharp(image).metadata();
   if (!metadata.width || !metadata.height) {
     throw new Error("Dimenzije slike nisu dostupne.");
   }
-  return { width: metadata.width, height: metadata.height };
+  return {
+    image,
+    dimensions: {
+      width: metadata.width,
+      height: metadata.height,
+    },
+  };
 }
 
 export function pickProviderTarget(
@@ -130,19 +187,18 @@ export async function prepareObjectMaskForProvider(
     .extractChannel("alpha")
     .negate()
     .blur(radius)
-    .png()
+    .raw()
     .toBuffer();
-  const maskAlpha = await sharp(editAlpha).negate().png().toBuffer();
-
-  return sharp({
-    create: {
-      width: dims.width,
-      height: dims.height,
-      channels: 3,
-      background: { r: 0, g: 0, b: 0 },
-    },
+  const maskAlpha = await sharp(editAlpha, {
+    raw: { width: dims.width, height: dims.height, channels: 1 },
   })
-    .joinChannel(maskAlpha)
+    .negate()
+    .raw()
+    .toBuffer();
+
+  return sharp(createBlackRgbaWithAlpha(maskAlpha), {
+    raw: { width: dims.width, height: dims.height, channels: 4 },
+  })
     .png()
     .toBuffer();
 }
@@ -183,17 +239,21 @@ export async function composeWithMask({
       fit: "fill",
       kernel: sharp.kernel.lanczos3,
     })
-    .jpeg({ quality: 94 })
+    .keepIccProfile()
+    .jpeg({
+      quality: 96,
+      chromaSubsampling: "4:4:4",
+    })
     .toBuffer();
 
-  const resizedResult = await sharp(aiResult)
+  const resizedResultRgb = await sharp(aiResult)
     .rotate()
     .resize(originalDims.width, originalDims.height, {
       fit: "fill",
       kernel: sharp.kernel.lanczos3,
     })
     .removeAlpha()
-    .png()
+    .raw()
     .toBuffer();
 
   const maskAlpha = sharp(mask)
@@ -206,21 +266,35 @@ export async function composeWithMask({
 
   let editAlphaPipeline = maskInverted ? maskAlpha : maskAlpha.negate();
   if (softenMask) {
-    const radius = Math.max(10, Math.round(Math.min(originalDims.width, originalDims.height) * 0.018));
+    const radius = Math.max(
+      10,
+      Math.round(Math.min(originalDims.width, originalDims.height) * 0.018),
+    );
     editAlphaPipeline = editAlphaPipeline.blur(radius);
   }
 
-  const editAlpha = await editAlphaPipeline.png().toBuffer();
+  const editAlpha = await editAlphaPipeline.raw().toBuffer();
 
-  const maskedResult = await sharp(resizedResult)
-    .removeAlpha()
-    .joinChannel(editAlpha)
+  const maskedResult = await sharp(
+    createRgbaFromRgbAndAlpha(resizedResultRgb, editAlpha),
+    {
+      raw: {
+        width: originalDims.width,
+        height: originalDims.height,
+        channels: 4,
+      },
+    },
+  )
     .png()
     .toBuffer();
 
   return sharp(normalizedOriginal)
     .composite([{ input: maskedResult, blend: "over" }])
-    .jpeg({ quality: 94 })
+    .keepIccProfile()
+    .jpeg({
+      quality: 96,
+      chromaSubsampling: "4:4:4",
+    })
     .toBuffer();
 }
 
@@ -234,6 +308,10 @@ export async function resizeToOriginal(
       fit: "fill",
       kernel: sharp.kernel.lanczos3,
     })
-    .jpeg({ quality: 94 })
+    .keepIccProfile()
+    .jpeg({
+      quality: 96,
+      chromaSubsampling: "4:4:4",
+    })
     .toBuffer();
 }

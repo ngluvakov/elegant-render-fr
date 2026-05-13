@@ -93,6 +93,15 @@ export function ChatWidget() {
   );
   const activeTip =
     guideTips.length > 0 ? guideTips[tipIndex % guideTips.length] : null;
+  const missingItems = guideContext?.missingItems ?? [];
+  const readinessWarnings = guideContext?.readinessWarnings ?? [];
+  const hasReadinessAttention =
+    missingItems.length > 0 || readinessWarnings.length > 0;
+  const showGuideBubble =
+    !open &&
+    hydrated &&
+    Boolean(activeTip || hasReadinessAttention) &&
+    (!guideDismissed || hasReadinessAttention);
 
   // Load persisted state after hydration
   useEffect(() => {
@@ -224,22 +233,61 @@ export function ChatWidget() {
         )}
       </button>
 
-      {!open && hydrated && !guideDismissed && activeTip && (
-        <div className="fixed bottom-[4.75rem] right-4 z-40 w-[min(19rem,calc(100vw-5.25rem))] rounded-2xl border border-border/50 bg-background/95 px-3.5 py-3 pr-9 text-foreground shadow-[0_14px_42px_rgba(28,26,25,0.14)] backdrop-blur animate-in fade-in slide-in-from-bottom-2 duration-300 after:absolute after:-bottom-1.5 after:right-5 after:h-3 after:w-3 after:rotate-45 after:border-b after:border-r after:border-border/50 after:bg-background/95 sm:bottom-24 sm:right-6 sm:w-80 sm:px-4">
-          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-accent">
-            {activeTip.label}
-          </p>
-          <p className="mt-1 text-[0.78rem] leading-snug text-foreground/85 sm:text-xs">
-            {activeTip.body}
-          </p>
-          <button
-            type="button"
-            onClick={dismissGuide}
-            className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            aria-label="Sakrij savete asistenta"
+      {showGuideBubble && (
+        <div
+          className={cn(
+            "fixed bottom-[4.75rem] right-4 z-40 w-[min(19rem,calc(100vw-5.25rem))] rounded-2xl border px-3.5 py-3 pr-9 text-foreground shadow-[0_14px_42px_rgba(28,26,25,0.14)] backdrop-blur animate-in fade-in slide-in-from-bottom-2 duration-300 after:absolute after:-bottom-1.5 after:right-5 after:h-3 after:w-3 after:rotate-45 after:border-b after:border-r sm:bottom-24 sm:right-6 sm:w-80 sm:px-4",
+            missingItems.length > 0
+              ? "border-[color:var(--color-ember)]/55 bg-[color:var(--color-sand-soft)]/95 after:border-[color:var(--color-ember)]/55 after:bg-[color:var(--color-sand-soft)]/95"
+              : readinessWarnings.length > 0
+                ? "border-accent/45 bg-background/95 after:border-accent/45 after:bg-background/95"
+                : "border-border/50 bg-background/95 after:border-border/50 after:bg-background/95",
+          )}
+        >
+          <p
+            className={cn(
+              "text-[0.68rem] font-semibold uppercase tracking-[0.14em]",
+              missingItems.length > 0
+                ? "text-[color:var(--color-ember-deep)]"
+                : "text-accent",
+            )}
           >
-            <X className="h-3.5 w-3.5" />
-          </button>
+            {missingItems.length > 0
+              ? "Nedostaje za obradu"
+              : activeTip?.label ?? "AI Studio"}
+          </p>
+          {activeTip && (
+            <p className="mt-1 text-[0.78rem] leading-snug text-foreground/85 sm:text-xs">
+              {activeTip.body}
+            </p>
+          )}
+          {missingItems.length > 0 && (
+            <ul className="mt-2 space-y-1 text-[0.76rem] leading-snug text-foreground/90 sm:text-xs">
+              {missingItems.map((item) => (
+                <li key={item} className="flex gap-1.5">
+                  <span aria-hidden="true">-</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {missingItems.length === 0 && readinessWarnings.length > 0 && (
+            <div className="mt-2 space-y-1 text-[0.76rem] leading-snug text-[color:var(--color-ember-deep)] sm:text-xs">
+              {readinessWarnings.map((item) => (
+                <p key={item}>{item}</p>
+              ))}
+            </div>
+          )}
+          {!hasReadinessAttention && (
+            <button
+              type="button"
+              onClick={dismissGuide}
+              className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              aria-label="Sakrij savete asistenta"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       )}
 

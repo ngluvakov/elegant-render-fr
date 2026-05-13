@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type DragEvent,
   type PointerEvent,
 } from "react";
@@ -13,6 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Brush,
+  AlertTriangle,
   Check,
   CircleDashed,
   Coins,
@@ -138,6 +140,15 @@ type ToolMode = "simple" | "advanced";
 type MaskTool = "brush" | "rect";
 type ObjectEditMode = "insert" | "replace";
 
+type StudioReadiness = {
+  canGenerate: boolean;
+  blockers: string[];
+  warnings: string[];
+  buttonLabel: string;
+  primaryMessage: string | null;
+  tone: "ready" | "warning" | "blocked" | "processing";
+};
+
 const MAX_OBJECT_REFERENCE_IMAGES = 5;
 const MAX_AI_UPLOAD_BYTES = 50 * 1024 * 1024;
 const AI_UPLOAD_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -169,6 +180,7 @@ export function AiStudioWorkspace({
   const [currentResult, setCurrentResult] = useState<UploadedInput | null>(null);
   const [openGenerationId, setOpenGenerationId] = useState<string | null>(null);
   const [parentGenerationId, setParentGenerationId] = useState<string | null>(null);
+  const [activeGenerationId, setActiveGenerationId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -232,6 +244,61 @@ export function AiStudioWorkspace({
     return null;
   }, [activeInput, history, parentGenerationId]);
   const hasPrompt = prompt.trim().length > 0;
+  const activeGeneration = useMemo(
+    () =>
+      activeGenerationId
+        ? history.find((item) => item.id === activeGenerationId) ?? null
+        : null,
+    [activeGenerationId, history],
+  );
+  const activeGenerationPendingHydration =
+    Boolean(activeGenerationId) && !activeGeneration && !resultUrl;
+  const activeGenerationProcessing =
+    activeGenerationPendingHydration ||
+    activeGeneration?.status === "queued" ||
+    activeGeneration?.status === "processing";
+  const processingLabel = pending
+    ? "Pokrećemo obradu…"
+    : activeGeneration?.status === "queued"
+      ? "Obrada je u redu čekanja…"
+      : activeGenerationProcessing
+        ? "Obrada u toku…"
+        : null;
+  const processingError =
+    activeGeneration?.status === "failed"
+      ? activeGeneration.errorMessage ?? "AI obrada nije uspela."
+      : null;
+  const readiness = useMemo(
+    () =>
+      buildAiStudioReadiness({
+        activeInput,
+        needsReferenceImage,
+        referenceCount: referenceInputs.length,
+        editType,
+        objectMode,
+        maskDirty,
+        activeEdit,
+        selectedOption,
+        balanceUnits,
+        linkedParentGenerationId,
+        pending,
+        processing: activeGenerationProcessing,
+      }),
+    [
+      activeEdit,
+      activeGenerationProcessing,
+      activeInput,
+      balanceUnits,
+      editType,
+      linkedParentGenerationId,
+      maskDirty,
+      needsReferenceImage,
+      objectMode,
+      pending,
+      referenceInputs.length,
+      selectedOption,
+    ],
+  );
   const guideStage = useMemo<AssistantGuideStage>(() => {
     if (balanceUnits < activeEdit.units && !linkedParentGenerationId) {
       return "no_credits";
@@ -257,6 +324,9 @@ export function AiStudioWorkspace({
     balanceUnits,
     hasFiles: Boolean(activeInput),
     hasPrompt,
+    missingItems: readiness.blockers,
+    readinessWarnings: readiness.warnings,
+    canGenerate: readiness.canGenerate,
   });
 
   useEffect(() => {
@@ -306,6 +376,7 @@ export function AiStudioWorkspace({
         generationId: latestCompleted.id,
       });
       setParentGenerationId(latestCompleted.id);
+      setActiveGenerationId(latestCompleted.id);
     }
   }, []);
 
@@ -356,9 +427,11 @@ export function AiStudioWorkspace({
         generationId: data.generation.id,
       });
       setParentGenerationId(data.generation.id);
+      setActiveGenerationId(data.generation.id);
       setNotice("AI obrada je završena.");
     }
     if (data.generation.status === "failed") {
+      setActiveGenerationId(data.generation.id);
       setError(data.generation.errorMessage ?? "AI obrada nije uspela.");
     }
   }, [trackGenerationOutcome]);
@@ -429,6 +502,7 @@ export function AiStudioWorkspace({
     setCurrentResult(null);
     setResultUrl(null);
     setParentGenerationId(null);
+    setActiveGenerationId(null);
     setEditType("virtual_staging");
     setProvider(DEFAULT_AI_PROVIDER);
     setSelectedOption("");
@@ -454,6 +528,7 @@ export function AiStudioWorkspace({
     }
     markWorkspaceActive();
     setParentGenerationId(null);
+    setActiveGenerationId(null);
     try {
       const upload = await uploadAiFile(file, "input");
       const url = URL.createObjectURL(file);
@@ -466,6 +541,7 @@ export function AiStudioWorkspace({
       setBaseInput(nextInput);
       setResultUrl(null);
       setCurrentResult(null);
+      setActiveGenerationId(null);
       setEditorResetToken((value) => value + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload nije uspeo.");
@@ -522,6 +598,7 @@ export function AiStudioWorkspace({
     markWorkspaceActive();
     setBaseInput(nextInput);
     if (nextInput.generationId) setParentGenerationId(nextInput.generationId);
+    setActiveGenerationId(null);
     setMaskDirty(false);
     setEditorResetToken((value) => value + 1);
     setNotice("Rezultat je postavljen kao nova slika za obradu.");
@@ -608,6 +685,7 @@ export function AiStudioWorkspace({
       setResultAsBaseInput(nextInput);
       setParentGenerationId(gen.id);
       setResultUrl(gen.resultUrl);
+      setActiveGenerationId(null);
       setOpenGenerationId(null);
     },
     [history, setResultAsBaseInput, markWorkspaceActive],
@@ -664,6 +742,7 @@ export function AiStudioWorkspace({
       setParentGenerationId(gen.id);
       setResultUrl(null);
       setCurrentResult(null);
+      setActiveGenerationId(null);
       setMaskDirty(false);
       setEditorResetToken((value) => value + 1);
       setOpenGenerationId(null);
@@ -673,6 +752,10 @@ export function AiStudioWorkspace({
   );
 
   const handleGenerate = async (maskBlob: Blob | null) => {
+    if (!readiness.canGenerate) {
+      setError(readiness.primaryMessage ?? "Proverite šta nedostaje pre generisanja.");
+      return;
+    }
     if (!activeInput) {
       setError("Prvo uploadujte fotografiju.");
       return;
@@ -774,6 +857,7 @@ export function AiStudioWorkspace({
         setError("AI obrada nije pokrenuta.");
         return;
       }
+      setActiveGenerationId(result.generationId);
 
       track("ai_generation_started", {
         edit_type: editType,
@@ -945,12 +1029,14 @@ export function AiStudioWorkspace({
             onGenerate={handleGenerate}
             onClearAll={handleClearAll}
             pending={pending}
+            processingLabel={processingLabel}
+            processingError={processingError}
             resultUrl={resultUrl}
             parentGenerationId={linkedParentGenerationId}
             resetToken={editorResetToken}
-            maskDirty={maskDirty}
             onMaskDirtyChange={setMaskDirty}
             costPreview={costPreview}
+            readiness={readiness}
           />
         </div>
 
@@ -1249,12 +1335,14 @@ function AiImageEditor({
   onGenerate,
   onClearAll,
   pending,
+  processingLabel,
+  processingError,
   resultUrl,
   parentGenerationId,
   resetToken,
-  maskDirty,
   onMaskDirtyChange,
   costPreview,
+  readiness,
 }: {
   mode: ToolMode;
   editType: AiEditType;
@@ -1270,12 +1358,14 @@ function AiImageEditor({
   onGenerate: (mask: Blob | null) => void;
   onClearAll: () => void;
   pending: boolean;
+  processingLabel: string | null;
+  processingError: string | null;
   resultUrl: string | null;
   parentGenerationId: string | null;
   resetToken: number;
-  maskDirty: boolean;
   onMaskDirtyChange: (dirty: boolean) => void;
   costPreview: { unitsCharged: number; freeAttemptIndex: number | null } | null;
+  readiness: StudioReadiness;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const referenceFileRef = useRef<HTMLInputElement>(null);
@@ -1293,9 +1383,16 @@ function AiImageEditor({
   const activeImage = baseInput;
   const edit = getAiEditType(editType);
   const needsReferenceImage = edit.requiresReferenceImage === true;
-  const needsReplacementMask =
-    editType === "object_insertion" && objectMode === "replace";
   const [baseDragOver, setBaseDragOver] = useState(false);
+  const [imageFrame, setImageFrame] = useState<{
+    url: string;
+    width: number;
+    height: number;
+  } | null>(null);
+  const imageDims =
+    imageFrame && imageFrame.url === activeImage?.url
+      ? { width: imageFrame.width, height: imageFrame.height }
+      : null;
 
   const resetCanvas = useCallback(() => {
     const canvas = maskCanvasRef.current;
@@ -1425,6 +1522,15 @@ function AiImageEditor({
     if (pending) return;
     if (file) onUpload(file);
   };
+  const previewFrameStyle = imageDims
+    ? {
+        aspectRatio: `${imageDims.width} / ${imageDims.height}`,
+        maxWidth: `min(100%, ${Math.max(
+          260,
+          Math.round((imageDims.width / imageDims.height) * 620),
+        )}px)`,
+      }
+    : { aspectRatio: "4 / 3", maxWidth: "100%" };
 
   return (
     <div className="rounded-2xl border border-border/40 bg-card/60 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
@@ -1676,7 +1782,14 @@ function AiImageEditor({
                 src={activeImage.url}
                 alt="Radna slika"
                 className="block h-auto w-full select-none"
-                onLoad={resetCanvas}
+                onLoad={(event) => {
+                  setImageFrame({
+                    url: activeImage.url,
+                    width: event.currentTarget.naturalWidth,
+                    height: event.currentTarget.naturalHeight,
+                  });
+                  resetCanvas();
+                }}
                 draggable={false}
               />
               <canvas
@@ -1752,37 +1865,47 @@ function AiImageEditor({
             )}
           </div>
           {resultUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={resultUrl}
-              alt="AI rezultat"
-              className="block aspect-[4/3] w-full rounded-xl bg-foreground/5 object-contain"
+            <div
+              className="mx-auto max-h-[620px] w-full overflow-hidden rounded-xl bg-foreground/5"
+              style={previewFrameStyle}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={resultUrl}
+                alt="AI rezultat"
+                className="block h-full w-full object-contain"
+              />
+            </div>
+          ) : processingLabel ? (
+            <ProcessingResultPreview
+              label={processingLabel}
+              style={previewFrameStyle}
             />
-          ) : pending ? (
-            <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-xl border border-border/40 bg-card/40 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
-                <Loader2 className="h-5 w-5 animate-spin" />
+          ) : processingError ? (
+            <div className="flex min-h-[180px] w-full flex-col items-center justify-center gap-3 rounded-xl border border-destructive/30 bg-destructive/10 text-center">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                <AlertTriangle className="h-5 w-5" />
               </span>
               <span className="px-6">
-                <span className="block text-base font-semibold text-foreground">
-                  Generišemo rezultat…
+                <span className="block text-sm font-semibold text-destructive">
+                  Obrada nije uspela
                 </span>
-                <span className="mt-1 block text-sm text-muted-foreground">
-                  Možete ostati na ovoj stranici ili se vratiti kasnije.
+                <span className="mt-1 block text-xs text-destructive/80">
+                  {processingError}
                 </span>
               </span>
             </div>
           ) : (
-            <div className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-xl border border-border/40 bg-card/40 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
-                <Wand2 className="h-5 w-5" />
+            <div className="flex min-h-[176px] w-full flex-col items-center justify-center gap-3 rounded-xl border border-border/40 bg-card/40 text-center">
+              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-accent">
+                <Wand2 className="h-4 w-4" />
               </span>
               <span className="px-6">
-                <span className="block text-base font-semibold text-foreground">
+                <span className="block text-sm font-semibold text-foreground">
                   Rezultat će se prikazati ovde
                 </span>
-                <span className="mt-1 block max-w-xs text-sm text-muted-foreground">
-                  Kredit se rezerviše kada obrada krene. Ako AI tehnički ne uspe, kredit se automatski vraća.
+                <span className="mt-1 block max-w-xs text-xs text-muted-foreground">
+                  Kada pokrenete obradu, ovde se odmah prikazuje status.
                 </span>
               </span>
             </div>
@@ -1835,26 +1958,73 @@ function AiImageEditor({
             variant="accent"
             size="lg"
             disabled={
-              pending ||
-              !activeImage ||
-              (needsReferenceImage && referenceInputs.length === 0) ||
-              (needsReplacementMask && !maskDirty)
+              !readiness.canGenerate
             }
             onClick={async () => onGenerate(await exportMask())}
           >
             {pending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Generiše…
+                Pokrećemo…
+              </>
+            ) : processingLabel ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Obrada u toku…
               </>
             ) : (
               <>
                 <Sparkles className="h-4 w-4" />
-                Generate
+                Generiši
               </>
             )}
           </Button>
         </div>
+      </div>
+      {readiness.primaryMessage && (
+        <p
+          className={cn(
+            "mt-2 text-right text-xs",
+            readiness.tone === "blocked"
+              ? "text-destructive"
+              : readiness.tone === "warning"
+                ? "text-[color:var(--color-ember-deep)]"
+                : "text-muted-foreground",
+          )}
+        >
+          {readiness.primaryMessage}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function ProcessingResultPreview({
+  label,
+  style,
+}: {
+  label: string;
+  style?: CSSProperties;
+}) {
+  return (
+    <div
+      className="relative mx-auto flex max-h-[620px] min-h-[220px] w-full overflow-hidden rounded-xl border border-accent/30 bg-card/50 text-center"
+      style={style}
+    >
+      <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_0%,rgba(184,131,99,0.16)_38%,transparent_76%)] animate-[ai-result-scan_2.2s_ease-in-out_infinite]" />
+      <div className="absolute inset-x-6 top-1/2 h-px bg-gradient-to-r from-transparent via-accent/45 to-transparent" />
+      <div className="relative z-10 m-auto flex flex-col items-center gap-3 px-6">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+          <Loader2 className="h-5 w-5 animate-spin" />
+        </span>
+        <span>
+          <span className="block text-base font-semibold text-foreground">
+            {label}
+          </span>
+          <span className="mt-1 block max-w-xs text-sm text-muted-foreground">
+            Originalni kadar ostaje osnova; rezultat će se pojaviti čim AI obrada završi.
+          </span>
+        </span>
       </div>
     </div>
   );
@@ -2290,6 +2460,99 @@ function CostPreviewLabel({
       </strong>
     </span>
   );
+}
+
+function buildAiStudioReadiness({
+  activeInput,
+  needsReferenceImage,
+  referenceCount,
+  editType,
+  objectMode,
+  maskDirty,
+  activeEdit,
+  selectedOption,
+  balanceUnits,
+  linkedParentGenerationId,
+  pending,
+  processing,
+}: {
+  activeInput: UploadedInput | null;
+  needsReferenceImage: boolean;
+  referenceCount: number;
+  editType: AiEditType;
+  objectMode: ObjectEditMode;
+  maskDirty: boolean;
+  activeEdit: ReturnType<typeof getAiEditType>;
+  selectedOption: string;
+  balanceUnits: number;
+  linkedParentGenerationId: string | null;
+  pending: boolean;
+  processing: boolean;
+}): StudioReadiness {
+  const blockers: string[] = [];
+  const warnings: string[] = [];
+
+  if (!activeInput) {
+    blockers.push("Dodajte fotografiju za obradu.");
+  }
+  if (needsReferenceImage && referenceCount === 0) {
+    blockers.push("Dodajte bar jednu sliku objekta.");
+  }
+  if (editType === "object_insertion" && objectMode === "replace" && !maskDirty) {
+    blockers.push("Označite maskom komad koji menjamo.");
+  }
+  if (
+    activeEdit.multiSelect &&
+    parseSelectedOptions(selectedOption).length === 0
+  ) {
+    blockers.push(`Izaberite barem jednu kategoriju u "${activeEdit.optionsLabel ?? "opcije"}".`);
+  }
+  if (!linkedParentGenerationId && balanceUnits < activeEdit.units) {
+    blockers.push("Dopunite AI kredite pre generisanja.");
+  }
+
+  if (
+    editType === "object_insertion" &&
+    objectMode === "insert" &&
+    activeInput &&
+    referenceCount > 0 &&
+    !maskDirty
+  ) {
+    warnings.push(
+      "Maska nije obavezna, ali bez nje AI sam bira poziciju i rezultat može biti manje predvidljiv.",
+    );
+  }
+  if (editType === "object_insertion" && referenceCount > 1) {
+    warnings.push(
+      "Prva slika objekta je glavna; dodatne slike se tretiraju samo kao pomoćni uglovi.",
+    );
+  }
+
+  const tone: StudioReadiness["tone"] = pending || processing
+    ? "processing"
+    : blockers.length > 0
+      ? "blocked"
+      : warnings.length > 0
+        ? "warning"
+        : "ready";
+  const primaryMessage = pending
+    ? "Pokrećemo obradu…"
+    : processing
+      ? "Obrada je u toku…"
+      : blockers[0] ?? warnings[0] ?? null;
+
+  return {
+    canGenerate: blockers.length === 0 && !pending && !processing,
+    blockers,
+    warnings,
+    buttonLabel: pending
+      ? "Pokrećemo…"
+      : processing
+        ? "Obrada u toku…"
+        : "Generiši",
+    primaryMessage,
+    tone,
+  };
 }
 
 function toggleOptionId(current: string, id: string): string {

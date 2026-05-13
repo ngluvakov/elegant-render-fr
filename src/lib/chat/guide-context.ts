@@ -34,6 +34,9 @@ export type AssistantGuideContext = {
   hasFiles?: boolean;
   hasPrompt?: boolean;
   balanceUnits?: number;
+  missingItems?: string[];
+  readinessWarnings?: string[];
+  canGenerate?: boolean;
 };
 
 type Listener = () => void;
@@ -49,10 +52,18 @@ function normalizeContext(
   const productIds = context.productIds
     ? Array.from(new Set(context.productIds.filter(Boolean))).sort()
     : undefined;
+  const missingItems = context.missingItems
+    ? Array.from(new Set(context.missingItems.filter(Boolean)))
+    : undefined;
+  const readinessWarnings = context.readinessWarnings
+    ? Array.from(new Set(context.readinessWarnings.filter(Boolean)))
+    : undefined;
 
   return {
     ...context,
     productIds,
+    missingItems,
+    readinessWarnings,
   };
 }
 

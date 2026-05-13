@@ -16,9 +16,9 @@ import {
   addDays,
   formatCreditsFromUnits,
   getAiEditType,
-  getAiProviderModel,
-  isActiveAiProvider,
+  resolveAiImageEngine,
   type AiEditType,
+  type AiImageEngineId,
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
 import {
@@ -34,6 +34,7 @@ import {
   prepareMaskForProvider,
   prepareObjectInputForProvider,
   prepareObjectMaskForProvider,
+  prepareObjectReferenceForProvider,
   prepareReferenceForProvider,
   resizeToOriginal,
 } from "@/lib/ai-studio/image-processing";
@@ -64,7 +65,8 @@ export type AiStudioReferenceImageInput = {
 
 export type AiStudioGenerateInput = {
   editType: AiEditType;
-  provider: AiImageProvider;
+  engineId?: AiImageEngineId | null;
+  provider?: AiImageProvider | null;
   inputStoragePath: string;
   inputMimeType: string;
   inputFileName?: string | null;
@@ -210,12 +212,18 @@ export async function startAiStudioGeneration(
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return { error: "Niste prijavljeni." };
-  if (!isActiveAiProvider(input.provider)) {
+  const engine = resolveAiImageEngine({
+    engineId: input.engineId,
+    provider: input.provider,
+  });
+  if (!engine?.isActive) {
     return {
       error:
-        "Izabrani AI engine više nije dostupan za nove obrade. Izaberite Nano Banana Pro ili GPT Image 2.",
+        "Izabrani AI engine nije dostupan za nove obrade. Izaberite jedan od ponuđenih engine-a.",
     };
   }
+  const provider = engine.provider;
+  const model = engine.model;
   const referenceImages = normalizeReferenceImageInputs(input);
   const objectMode: ObjectEditMode =
     input.editType === "object_insertion" && input.objectMode === "replace"
@@ -247,7 +255,7 @@ export async function startAiStudioGeneration(
   if (objectMode === "replace" && !input.maskStoragePath) {
     return {
       error:
-        "Za zamenu komada označite maskom šta menjamo, uključujući malu zonu senke/kontakta.",
+        "Za zamenu označite celu zonu gde novi objekat treba da stane, uključujući senku i kontakt.",
     };
   }
 
@@ -304,7 +312,6 @@ export async function startAiStudioGeneration(
   });
   if (scopeError) return { error: scopeError };
 
-  const model = getAiProviderModel(input.provider);
   const now = new Date();
   const expiresAt = addDays(now, AI_FILE_RETENTION_DAYS);
   let unitsToCharge = editDef.units;
@@ -386,7 +393,7 @@ export async function startAiStudioGeneration(
         parentGenerationId: input.parentGenerationId ?? null,
         paidGenerationId,
         editType: input.editType,
-        provider: input.provider,
+        provider,
         model,
         prompt,
         styleId: input.styleId || null,
@@ -602,7 +609,9 @@ async function runGenerationProcessing(generation: AiGeneration) {
     objectInput?.image ?? (await prepareInputForProvider(normalizedInput.image, target));
   const preparedReferences = await Promise.all(
     references.map(async (reference) => ({
-      image: await prepareReferenceForProvider(reference.buffer, target),
+      image: isObjectEdit
+        ? await prepareObjectReferenceForProvider(reference.buffer)
+        : await prepareReferenceForProvider(reference.buffer, target),
       mimeType: "image/jpeg",
     })),
   );
@@ -631,6 +640,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
 
   const output = await generateAiEdit({
     provider: generation.provider,
+    model: generation.model,
     prompt: fullPrompt,
     image: preparedImage,
     imageMimeType: "image/jpeg",
@@ -648,6 +658,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
         originalDims,
         maskInverted: options.maskInverted,
         softenMask: isObjectEdit,
+        expandMask: isObjectEdit,
       })
     : await resizeToOriginal(output.image, originalDims);
 

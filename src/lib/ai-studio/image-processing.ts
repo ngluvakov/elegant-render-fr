@@ -218,6 +218,24 @@ export async function prepareReferenceForProvider(
     .toBuffer();
 }
 
+export async function prepareObjectReferenceForProvider(
+  buffer: Buffer,
+): Promise<Buffer> {
+  return sharp(buffer)
+    .rotate()
+    .resize(2048, 2048, {
+      fit: "inside",
+      withoutEnlargement: true,
+      kernel: sharp.kernel.lanczos3,
+    })
+    .keepIccProfile()
+    .jpeg({
+      quality: 95,
+      chromaSubsampling: "4:4:4",
+    })
+    .toBuffer();
+}
+
 export async function composeWithMask({
   original,
   aiResult,
@@ -225,6 +243,7 @@ export async function composeWithMask({
   originalDims,
   maskInverted = false,
   softenMask = false,
+  expandMask = false,
 }: {
   original: Buffer;
   aiResult: Buffer;
@@ -232,6 +251,7 @@ export async function composeWithMask({
   originalDims: Dimensions;
   maskInverted?: boolean;
   softenMask?: boolean;
+  expandMask?: boolean;
 }): Promise<Buffer> {
   const normalizedOriginal = await sharp(original)
     .rotate()
@@ -265,6 +285,13 @@ export async function composeWithMask({
     .extractChannel("alpha");
 
   let editAlphaPipeline = maskInverted ? maskAlpha : maskAlpha.negate();
+  if (expandMask) {
+    const expansion = Math.min(
+      220,
+      Math.max(32, Math.round(Math.min(originalDims.width, originalDims.height) * 0.06)),
+    );
+    editAlphaPipeline = editAlphaPipeline.threshold(12).dilate(expansion);
+  }
   if (softenMask) {
     const radius = Math.max(
       10,

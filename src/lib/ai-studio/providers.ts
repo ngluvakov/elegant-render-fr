@@ -7,6 +7,7 @@ const AI_PROVIDER_RETRY_DELAY_MS = 1_200;
 
 export type AiEditProviderInput = {
   provider: AiImageProvider;
+  model: string;
   prompt: string;
   image: Buffer;
   imageMimeType: string;
@@ -114,7 +115,7 @@ async function generateWithGemini(
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY nije konfigurisan.");
 
-  const model = getAiProviderModel(provider);
+  const model = input.model;
   const parts: Array<Record<string, unknown>> = [
     { text: input.prompt },
     { text: "Image 1: interior scene to edit." },
@@ -131,8 +132,8 @@ async function generateWithGemini(
     parts.push({
       text:
         index === 0
-          ? `Image ${index + 2}: primary reference view of the object.`
-          : `Image ${index + 2}: additional angle/detail view of the same object.`,
+          ? `Image ${index + 2}: primary cropped reference of the object.`
+          : `Image ${index + 2}: additional cropped angle/detail view of the same object.`,
     });
     parts.push({
       inline_data: {
@@ -143,7 +144,10 @@ async function generateWithGemini(
   });
 
   if (input.mask) {
-    parts.push({ text: "Mask for Image 1. Transparent pixels indicate the edit area." });
+    parts.push({
+      text:
+        "Soft mask guide for Image 1. Transparent pixels indicate the intended work area; use only a small logical expansion for contact, shadow, legs, handles, reflections, and natural integration.",
+    });
     parts.push({
       inline_data: {
         mime_type: input.maskMimeType ?? "image/png",
@@ -197,7 +201,7 @@ async function generateWithGemini(
   );
   const inlineData = imagePart?.inlineData ?? imagePart?.inline_data;
   const base64 = inlineData?.data;
-  if (!base64) throw new Error("Gemini nije vratio sliku.");
+  if (!base64) throw noImageReturnedError(provider, model);
 
   return {
     image: Buffer.from(base64, "base64"),
@@ -211,7 +215,7 @@ async function generateWithGemini(
 async function generateWithOpenAi(
   input: AiEditProviderInput,
 ): Promise<AiEditProviderOutput> {
-  const model = getAiProviderModel("openai");
+  const model = input.model;
   const client = getOpenAiClient();
   const images = [
     await toFile(new Uint8Array(input.image), "scene.jpg", {
@@ -284,7 +288,17 @@ async function generateWithOpenAi(
       {},
       { provider: "openai", model },
     );
-    if (!imageRes.ok) throw new Error("OpenAI result URL nije dostupan.");
+    if (!imageRes.ok) {
+      throw new AiProviderError({
+        provider: "openai",
+        model,
+        status: imageRes.status,
+        message: `OpenAI result URL was not accessible: ${imageRes.status}`,
+        publicMessage:
+          "AI provider nije uspeo da vrati sliku. Probajte sa čistijom referencom, širom maskom ili drugim engine-om.",
+        fallbackAllowed: false,
+      });
+    }
     return {
       image: Buffer.from(await imageRes.arrayBuffer()),
       mimeType: imageRes.headers.get("content-type") ?? "image/png",
@@ -294,7 +308,7 @@ async function generateWithOpenAi(
     };
   }
 
-  throw new Error("OpenAI nije vratio sliku.");
+  throw noImageReturnedError("openai", model);
 }
 
 function getReferenceImages(
@@ -355,7 +369,7 @@ function getPublicProviderMessage(
     lowerBody.includes("resource_exhausted")
   ) {
     return provider === "gemini"
-      ? "Google AI engine trenutno nema raspoloživ quota za ovu obradu. Pokušajte ponovo malo kasnije ili izaberite GPT Image 2."
+      ? "Google AI engine trenutno nema raspoloživ quota za ovu obradu. Pokušajte ponovo malo kasnije ili izaberite drugi engine."
       : "OpenAI engine trenutno nema raspoloživ quota za ovu obradu. Pokušajte ponovo malo kasnije ili izaberite drugi engine.";
   }
   if (status === 401 || status === 403) {
@@ -368,6 +382,21 @@ function getPublicProviderMessage(
     return "AI provider trenutno ne odgovara stabilno. Pokušajte ponovo za nekoliko minuta.";
   }
   return "AI obrada nije uspela. Proverite sliku i prompt, pa pokušajte ponovo.";
+}
+
+function noImageReturnedError(
+  provider: AiImageProvider,
+  model: string,
+): AiProviderError {
+  return new AiProviderError({
+    provider,
+    model,
+    status: 502,
+    message: `${provider} did not return an image payload.`,
+    publicMessage:
+      "AI provider nije vratio sliku ni posle ponovnog pokušaja. Probajte sa čistijom referencom, širom maskom ili drugim engine-om.",
+    fallbackAllowed: false,
+  });
 }
 
 async function readResponseText(res: Response): Promise<string> {

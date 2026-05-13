@@ -18,6 +18,7 @@ import {
   Check,
   CircleDashed,
   Coins,
+  Crop,
   Download,
   Eraser,
   ImageIcon,
@@ -27,6 +28,7 @@ import {
   RotateCcw,
   RotateCw,
   Sparkles,
+  Star,
   Trash2,
   Upload,
   Wand2,
@@ -42,16 +44,18 @@ import { cn } from "@/lib/utils";
 import {
   AI_EDIT_TYPES,
   AI_FREE_REGENERATIONS,
-  AI_IMAGE_PROVIDERS,
-  ACTIVE_AI_IMAGE_PROVIDERS,
+  ACTIVE_AI_IMAGE_ENGINES,
   AI_STYLE_OPTIONS,
-  DEFAULT_AI_PROVIDER,
+  DEFAULT_AI_ENGINE_ID,
   formatCreditsFromUnits,
   formatSelectedOptionLabels,
   getAiEditType,
-  isActiveAiProvider,
+  getAiEngineIdForGeneration,
+  getAiEngineLabelForGeneration,
+  getAiImageEngine,
   parseSelectedOptions,
   type AiEditType,
+  type AiImageEngineId,
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
 import {
@@ -169,7 +173,8 @@ export function AiStudioWorkspace({
   );
   const [mode, setMode] = useState<ToolMode>("simple");
   const [editType, setEditType] = useState<AiEditType>("virtual_staging");
-  const [provider, setProvider] = useState<AiImageProvider>(DEFAULT_AI_PROVIDER);
+  const [engineId, setEngineId] =
+    useState<AiImageEngineId>(DEFAULT_AI_ENGINE_ID);
   const [selectedOption, setSelectedOption] = useState("");
   const [styleId, setStyleId] = useState("modern");
   const [colorHex, setColorHex] = useState("#f2eee8");
@@ -226,6 +231,7 @@ export function AiStudioWorkspace({
   }, []);
 
   const activeEdit = useMemo(() => getAiEditType(editType), [editType]);
+  const activeEngine = useMemo(() => getAiImageEngine(engineId), [engineId]);
   const activeInput = baseInput;
   const needsReferenceImage = activeEdit.requiresReferenceImage === true;
   const hasPendingJobs = history.some(
@@ -466,7 +472,6 @@ export function AiStudioWorkspace({
   }, [hasPendingJobs, history]);
 
   useEffect(() => {
-    if (!isActiveAiProvider(provider)) setProvider(DEFAULT_AI_PROVIDER);
     // Multi-select edits start with no selection (customer must pick).
     // Single-select edits seed the first option as before.
     setSelectedOption(
@@ -504,7 +509,7 @@ export function AiStudioWorkspace({
     setParentGenerationId(null);
     setActiveGenerationId(null);
     setEditType("virtual_staging");
-    setProvider(DEFAULT_AI_PROVIDER);
+    setEngineId(DEFAULT_AI_ENGINE_ID);
     setSelectedOption("");
     setStyleId("modern");
     setColorHex("#f2eee8");
@@ -593,6 +598,58 @@ export function AiStudioWorkspace({
   const handleReferenceRemove = useCallback((index: number) => {
     setReferenceInputs((prev) => prev.filter((_, itemIndex) => itemIndex !== index));
   }, []);
+
+  const handleReferenceMakePrimary = useCallback((index: number) => {
+    setReferenceInputs((prev) => {
+      const selected = prev[index];
+      if (!selected) return prev;
+      return [selected, ...prev.filter((_, itemIndex) => itemIndex !== index)];
+    });
+    setNotice(
+      "Izabrana slika je postavljena kao glavna referenca. Ostale slike se koriste samo kao pomoćni uglovi.",
+    );
+  }, []);
+
+  const handleReferenceCrop = useCallback(
+    async (index: number, file: File) => {
+      setError("");
+      setNotice("");
+      const validationError = validateAiImageFile(file);
+      if (validationError) {
+        setError(validationError);
+        throw new Error(validationError);
+      }
+      markWorkspaceActive();
+      try {
+        const upload = await uploadAiFile(file, "reference");
+        setReferenceInputs((prev) =>
+          prev.map((reference, itemIndex) =>
+            itemIndex === index
+              ? {
+                  url: URL.createObjectURL(file),
+                  storagePath: upload.storagePath,
+                  mimeType: file.type,
+                  fileName: file.name,
+                }
+              : reference,
+          ),
+        );
+        setNotice(
+          index === 0
+            ? "Primarna referenca je zamenjena cropom objekta."
+            : "Ugao objekta je zamenjen cropom.",
+        );
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Crop reference nije mogao da se uploaduje.";
+        setError(message);
+        throw new Error(message);
+      }
+    },
+    [markWorkspaceActive],
+  );
 
   const setResultAsBaseInput = useCallback((nextInput: UploadedInput) => {
     markWorkspaceActive();
@@ -734,7 +791,7 @@ export function AiStudioWorkspace({
       );
       setEditType(gen.editType);
       setObjectMode(gen.objectMode);
-      setProvider(isActiveAiProvider(gen.provider) ? gen.provider : DEFAULT_AI_PROVIDER);
+      setEngineId(getAiEngineIdForGeneration(gen.provider, gen.model));
       if (gen.styleId) setStyleId(gen.styleId);
       if (gen.selectedOption) setSelectedOption(gen.selectedOption);
       if (gen.colorHex) setColorHex(gen.colorHex);
@@ -770,7 +827,7 @@ export function AiStudioWorkspace({
       (!maskBlob || mode !== "advanced" || !maskDirty)
     ) {
       setError(
-        "Za zamenu komada označite maskom šta menjamo, uključujući malu zonu senke/kontakta.",
+        "Za zamenu označite celu zonu gde novi objekat treba da stane, uključujući senku i kontakt sa podom/zidom.",
       );
       return;
     }
@@ -810,7 +867,8 @@ export function AiStudioWorkspace({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           editType,
-          provider,
+          engineId,
+          provider: activeEngine.provider,
           inputStoragePath: activeInput.storagePath,
           inputMimeType: activeInput.mimeType,
           inputFileName: activeInput.fileName,
@@ -861,7 +919,9 @@ export function AiStudioWorkspace({
 
       track("ai_generation_started", {
         edit_type: editType,
-        provider,
+        provider: activeEngine.provider,
+        engine_id: engineId,
+        model: activeEngine.model,
         mode,
         has_mask: Boolean(maskStoragePath),
         has_style: Boolean(activeEdit.supportsStyles && styleId !== "none"),
@@ -884,10 +944,8 @@ export function AiStudioWorkspace({
           parentGenerationId: linkedParentGenerationId,
           paidGenerationId: null,
           editType,
-          provider,
-          model:
-            AI_IMAGE_PROVIDERS.find((item) => item.id === provider)?.label ??
-            provider,
+          provider: activeEngine.provider,
+          model: activeEngine.model,
           prompt,
           styleId: activeEdit.supportsStyles ? styleId : null,
           status: result.status ?? "queued",
@@ -1001,8 +1059,8 @@ export function AiStudioWorkspace({
             setMode={setMode}
             editType={editType}
             setEditType={setEditType}
-            provider={provider}
-            setProvider={setProvider}
+            engineId={engineId}
+            setEngineId={setEngineId}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             styleId={styleId}
@@ -1026,6 +1084,8 @@ export function AiStudioWorkspace({
             onUpload={handleUpload}
             onReferenceUpload={handleReferenceUpload}
             onReferenceRemove={handleReferenceRemove}
+            onReferenceMakePrimary={handleReferenceMakePrimary}
+            onReferenceCrop={handleReferenceCrop}
             onGenerate={handleGenerate}
             onClearAll={handleClearAll}
             pending={pending}
@@ -1077,8 +1137,8 @@ function StudioControls({
   setMode,
   editType,
   setEditType,
-  provider,
-  setProvider,
+  engineId,
+  setEngineId,
   selectedOption,
   setSelectedOption,
   styleId,
@@ -1093,8 +1153,8 @@ function StudioControls({
   setMode: (mode: ToolMode) => void;
   editType: AiEditType;
   setEditType: (type: AiEditType) => void;
-  provider: AiImageProvider;
-  setProvider: (provider: AiImageProvider) => void;
+  engineId: AiImageEngineId;
+  setEngineId: (engineId: AiImageEngineId) => void;
   selectedOption: string;
   setSelectedOption: (value: string) => void;
   styleId: string;
@@ -1129,17 +1189,23 @@ function StudioControls({
           <div>
             <ControlLabel>Engine</ControlLabel>
             <div className="mt-2 grid gap-2">
-              {ACTIVE_AI_IMAGE_PROVIDERS.map((item) => {
-                const recommended = edit.recommendedProvider === item.id;
+              {ACTIVE_AI_IMAGE_ENGINES.map((item) => {
+                const recommended = edit.recommendedProvider === item.provider;
                 return (
                   <SelectableTile
                     key={item.id}
-                    active={provider === item.id}
-                    onClick={() => setProvider(item.id)}
+                    active={engineId === item.id}
+                    onClick={() => setEngineId(item.id)}
                     title={item.label}
-                    subtitle={recommended ? "Preporučeno za ovu obradu" : undefined}
+                    subtitle={
+                      item.isExperimental
+                        ? "Eksperimentalno"
+                        : recommended
+                          ? "Preporučeno za ovu obradu"
+                          : item.model
+                    }
                     trailing={
-                      provider === item.id ? (
+                      engineId === item.id ? (
                         <Check className="h-4 w-4 text-accent" />
                       ) : recommended ? (
                         <span className="rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
@@ -1183,7 +1249,7 @@ function StudioControls({
               <p className="mt-1 text-[0.68rem] text-muted-foreground">
                 {edit.requiresReferenceImage
                   ? objectMode === "replace"
-                    ? "Označite komad koji menjamo, uključujući malu zonu senke/kontakta; maska ne mora biti savršena."
+                    ? "Označite celu zonu gde novi objekat treba da stane, uključujući senku/kontakt; maska ne mora biti savršena."
                     : "Maska je smernica za poziciju; AI može blago proširiti zonu zbog senke, kontakta i prirodnog uklapanja."
                   : "Advanced otključava masku za precizno označavanje."}
               </p>
@@ -1331,6 +1397,8 @@ function AiImageEditor({
   onUpload,
   onReferenceUpload,
   onReferenceRemove,
+  onReferenceMakePrimary,
+  onReferenceCrop,
   onObjectModeChange,
   onGenerate,
   onClearAll,
@@ -1354,6 +1422,8 @@ function AiImageEditor({
   onUpload: (file: File) => void;
   onReferenceUpload: (files: File[]) => void;
   onReferenceRemove: (index: number) => void;
+  onReferenceMakePrimary: (index: number) => void;
+  onReferenceCrop: (index: number, file: File) => void;
   onObjectModeChange: (mode: ObjectEditMode) => void;
   onGenerate: (mask: Blob | null) => void;
   onClearAll: () => void;
@@ -1376,6 +1446,11 @@ function AiImageEditor({
   const [maskOpacity, setMaskOpacity] = useState(0.55);
   const [zoom, setZoom] = useState(1);
   const [drawing, setDrawing] = useState(false);
+  const [brushPreview, setBrushPreview] = useState<{
+    x: number;
+    y: number;
+    radius: number;
+  } | null>(null);
   const [rectStart, setRectStart] = useState<{ x: number; y: number } | null>(null);
   const [undoStack, setUndoStack] = useState<string[]>([]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
@@ -1433,9 +1508,14 @@ function AiImageEditor({
     const canvas = maskCanvasRef.current;
     if (!canvas) return null;
     const rect = event.currentTarget.getBoundingClientRect();
+    const displayX = event.clientX - rect.left;
+    const displayY = event.clientY - rect.top;
     return {
-      x: ((event.clientX - rect.left) / rect.width) * canvas.width,
-      y: ((event.clientY - rect.top) / rect.height) * canvas.height,
+      x: (displayX / rect.width) * canvas.width,
+      y: (displayY / rect.height) * canvas.height,
+      displayX,
+      displayY,
+      displayRadius: Math.max(4, brushSize * (rect.width / canvas.width)),
     };
   };
 
@@ -1454,6 +1534,13 @@ function AiImageEditor({
     if (mode !== "advanced") return;
     const pos = pointerToCanvas(event);
     if (!pos) return;
+    if (tool === "brush") {
+      setBrushPreview({
+        x: pos.displayX,
+        y: pos.displayY,
+        radius: pos.displayRadius,
+      });
+    }
     pushUndo();
     setDrawing(true);
     if (tool === "brush") drawBrush(pos.x, pos.y);
@@ -1461,8 +1548,16 @@ function AiImageEditor({
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (!drawing || tool !== "brush") return;
+    if (mode !== "advanced") return;
     const pos = pointerToCanvas(event);
+    if (pos && tool === "brush") {
+      setBrushPreview({
+        x: pos.displayX,
+        y: pos.displayY,
+        radius: pos.displayRadius,
+      });
+    }
+    if (!drawing || tool !== "brush") return;
     if (pos) drawBrush(pos.x, pos.y);
   };
 
@@ -1483,6 +1578,11 @@ function AiImageEditor({
     }
     setDrawing(false);
     setRectStart(null);
+  };
+
+  const handlePointerLeave = (event: PointerEvent<HTMLDivElement>) => {
+    setBrushPreview(null);
+    handlePointerUp(event);
   };
 
   const exportMask = async () => {
@@ -1607,7 +1707,7 @@ function AiImageEditor({
           </div>
           <p className="min-w-[220px] flex-1 text-xs text-muted-foreground">
             {objectMode === "replace"
-              ? "Advanced maska je obavezna: označite komad koji menjamo i malu zonu kontakta; ne mora biti savršena."
+              ? "Advanced maska je obavezna: označite celu zonu gde novi objekat treba da stane, uključujući senku/kontakt."
               : "Maska je poželjna za preciznu poziciju. Bez maske AI sam bira mesto i rezultat može biti manje predvidljiv."}
           </p>
         </div>
@@ -1616,7 +1716,15 @@ function AiImageEditor({
       {mode === "advanced" && (
         <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-border/50 bg-background/50 p-2">
           <ToolButton active={tool === "brush"} onClick={() => setTool("brush")} icon={Brush} label="Brush" />
-          <ToolButton active={tool === "rect"} onClick={() => setTool("rect")} icon={RectangleHorizontal} label="Pravougaonik" />
+          <ToolButton
+            active={tool === "rect"}
+            onClick={() => {
+              setTool("rect");
+              setBrushPreview(null);
+            }}
+            icon={RectangleHorizontal}
+            label="Pravougaonik"
+          />
           <label className="flex items-center gap-2 text-xs text-muted-foreground">
             Brush
             <input
@@ -1774,7 +1882,7 @@ function AiImageEditor({
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
-              onPointerLeave={handlePointerUp}
+              onPointerLeave={handlePointerLeave}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -1800,6 +1908,19 @@ function AiImageEditor({
                   pointerEvents: "none",
                 }}
               />
+              {mode === "advanced" && tool === "brush" && brushPreview && (
+                <span
+                  className="pointer-events-none absolute rounded-full border border-white/90 bg-accent/10 shadow-[0_0_0_1px_rgba(184,80,70,0.75),0_0_18px_rgba(184,80,70,0.25)]"
+                  style={{
+                    left: brushPreview.x,
+                    top: brushPreview.y,
+                    width: brushPreview.radius * 2,
+                    height: brushPreview.radius * 2,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                  aria-hidden="true"
+                />
+              )}
             </div>
           ) : (
             <button
@@ -1833,6 +1954,8 @@ function AiImageEditor({
             onAdd={() => referenceFileRef.current?.click()}
             onAddFiles={onReferenceUpload}
             onRemove={onReferenceRemove}
+            onMakePrimary={onReferenceMakePrimary}
+            onCrop={onReferenceCrop}
           />
         )}
 
@@ -2036,15 +2159,22 @@ function ReferenceImagesPanel({
   onAdd,
   onAddFiles,
   onRemove,
+  onMakePrimary,
+  onCrop,
 }: {
   references: UploadedInput[];
   pending: boolean;
   onAdd: () => void;
   onAddFiles: (files: File[]) => void;
   onRemove: (index: number) => void;
+  onMakePrimary: (index: number) => void;
+  onCrop: (index: number, file: File) => void;
 }) {
   const canAdd = references.length < MAX_OBJECT_REFERENCE_IMAGES;
   const [dragOver, setDragOver] = useState(false);
+  const [cropIndex, setCropIndex] = useState<number | null>(null);
+  const cropReference =
+    cropIndex !== null ? references[cropIndex] ?? null : null;
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -2120,6 +2250,28 @@ function ReferenceImagesPanel({
             <p className="truncate px-2 py-1.5 font-mono text-[0.62rem] text-muted-foreground">
               {reference.fileName}
             </p>
+            <div className="flex gap-1 px-2 pb-2">
+              <button
+                type="button"
+                onClick={() => setCropIndex(index)}
+                disabled={pending}
+                className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-md border border-border/40 bg-background/70 px-2 text-[0.62rem] font-semibold text-foreground transition-colors hover:border-accent/40 disabled:opacity-50"
+              >
+                <Crop className="h-3 w-3" />
+                Iseci
+              </button>
+              {index > 0 && (
+                <button
+                  type="button"
+                  onClick={() => onMakePrimary(index)}
+                  disabled={pending}
+                  className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-md border border-border/40 bg-background/70 px-2 text-[0.62rem] font-semibold text-foreground transition-colors hover:border-accent/40 disabled:opacity-50"
+                >
+                  <Star className="h-3 w-3" />
+                  Glavna
+                </button>
+              )}
+            </div>
           </div>
         ))}
 
@@ -2145,8 +2297,280 @@ function ReferenceImagesPanel({
         uglove, poleđinu ili detalj materijala istog objekta; ako se razlikuju,
         AI treba da prati prvu.
       </p>
+
+      <ReferenceCropModal
+        reference={cropReference}
+        onClose={() => setCropIndex(null)}
+        onSave={async (file) => {
+          if (cropIndex === null) return;
+          await onCrop(cropIndex, file);
+          setCropIndex(null);
+        }}
+      />
     </div>
   );
+}
+
+type CropRect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+function ReferenceCropModal({
+  reference,
+  onClose,
+  onSave,
+}: {
+  reference: UploadedInput | null;
+  onClose: () => void;
+  onSave: (file: File) => Promise<void>;
+}) {
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [crop, setCrop] = useState<CropRect>({
+    x: 8,
+    y: 8,
+    width: 84,
+    height: 84,
+  });
+  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!reference) return;
+    setCrop({ x: 8, y: 8, width: 84, height: 84 });
+    setDragStart(null);
+    setSaving(false);
+    setError("");
+  }, [reference]);
+
+  const pointFromPointer = (event: PointerEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    return {
+      x: clampPercent(((event.clientX - rect.left) / rect.width) * 100),
+      y: clampPercent(((event.clientY - rect.top) / rect.height) * 100),
+    };
+  };
+
+  const updateCropFromPoints = (
+    start: { x: number; y: number },
+    end: { x: number; y: number },
+  ) => {
+    const x = Math.min(start.x, end.x);
+    const y = Math.min(start.y, end.y);
+    const width = Math.max(2, Math.abs(end.x - start.x));
+    const height = Math.max(2, Math.abs(end.y - start.y));
+    setCrop({ x, y, width, height });
+  };
+
+  const handleSave = async () => {
+    if (!reference) return;
+    const image = imageRef.current;
+    if (!image?.naturalWidth || !image.naturalHeight) {
+      setError("Slika nije spremna za crop.");
+      return;
+    }
+
+    const sourceX = Math.round((crop.x / 100) * image.naturalWidth);
+    const sourceY = Math.round((crop.y / 100) * image.naturalHeight);
+    const sourceWidth = Math.round((crop.width / 100) * image.naturalWidth);
+    const sourceHeight = Math.round((crop.height / 100) * image.naturalHeight);
+    if (sourceWidth < 24 || sourceHeight < 24) {
+      setError("Crop zona je premala. Označite veći deo objekta.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setError("");
+      const canvas = document.createElement("canvas");
+      canvas.width = sourceWidth;
+      canvas.height = sourceHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Browser ne može da pripremi crop.");
+      ctx.drawImage(
+        image,
+        sourceX,
+        sourceY,
+        sourceWidth,
+        sourceHeight,
+        0,
+        0,
+        sourceWidth,
+        sourceHeight,
+      );
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        try {
+          canvas.toBlob(
+            (nextBlob) =>
+              nextBlob
+                ? resolve(nextBlob)
+                : reject(new Error("Crop nije mogao da se sačuva.")),
+            "image/jpeg",
+            0.95,
+          );
+        } catch (err) {
+          reject(err);
+        }
+      });
+      await onSave(
+        new File([blob], makeCroppedReferenceFileName(reference.fileName), {
+          type: "image/jpeg",
+        }),
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Crop nije uspeo. Ako je slika iz istorije, uploadujte je ponovo.",
+      );
+      setSaving(false);
+    }
+  };
+
+  if (!reference) return null;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    >
+      <div
+        className="absolute inset-0 bg-foreground/45 backdrop-blur-sm"
+        onClick={saving ? undefined : onClose}
+        aria-hidden="true"
+      />
+      <div className="relative w-full max-w-3xl rounded-2xl border border-border/40 bg-card p-4 shadow-[0_24px_60px_rgba(28,26,25,0.2)]">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              Iseci objekat
+            </p>
+            <h3 className="mt-1 text-base font-semibold text-foreground">
+              Očistite primarnu referencu od ruke, pozadine i viška scene
+            </h3>
+            {reference.fileName && (
+              <p className="mt-0.5 truncate font-mono text-[0.68rem] text-muted-foreground">
+                {reference.fileName}
+              </p>
+            )}
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            onClick={onClose}
+            disabled={saving}
+            aria-label="Zatvori crop alat"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        <div
+          className="relative mt-4 max-h-[68vh] touch-none overflow-hidden rounded-xl border border-border/40 bg-background/70"
+          onPointerDown={(event) => {
+            const point = pointFromPointer(event);
+            event.currentTarget.setPointerCapture(event.pointerId);
+            setDragStart(point);
+            updateCropFromPoints(point, point);
+          }}
+          onPointerMove={(event) => {
+            if (!dragStart) return;
+            updateCropFromPoints(dragStart, pointFromPointer(event));
+          }}
+          onPointerUp={(event) => {
+            if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+              event.currentTarget.releasePointerCapture(event.pointerId);
+            }
+            setDragStart(null);
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            ref={imageRef}
+            src={reference.url}
+            alt="Referenca objekta za crop"
+            className="block max-h-[68vh] w-full select-none object-contain"
+            draggable={false}
+            onError={() => setError("Slika reference nije mogla da se učita.")}
+          />
+          <div
+            className="pointer-events-none absolute border-2 border-white bg-transparent shadow-[0_0_0_9999px_rgba(0,0,0,0.38),0_0_0_1px_rgba(184,80,70,0.85)]"
+            style={{
+              left: `${crop.x}%`,
+              top: `${crop.y}%`,
+              width: `${crop.width}%`,
+              height: `${crop.height}%`,
+            }}
+          />
+        </div>
+
+        {error && (
+          <p className="mt-3 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            {error}
+          </p>
+        )}
+        <p className="mt-3 text-xs text-muted-foreground">
+          Prevucite preko slike da označite samo objekat. Crop će zameniti ovu
+          referencu i biće poslat AI engine-u umesto slike sa rukom ili pozadinom.
+        </p>
+
+        <div className="mt-4 flex flex-wrap justify-end gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setCrop({ x: 8, y: 8, width: 84, height: 84 })}
+            disabled={saving}
+          >
+            Reset
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onClose}
+            disabled={saving}
+          >
+            Otkaži
+          </Button>
+          <Button
+            type="button"
+            variant="accent"
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Čuvamo…
+              </>
+            ) : (
+              <>
+                <Crop className="h-4 w-4" />
+                Sačuvaj crop
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function clampPercent(value: number): number {
+  return Math.min(100, Math.max(0, value));
+}
+
+function makeCroppedReferenceFileName(fileName: string | null | undefined): string {
+  const base = (fileName ?? "objekat")
+    .replace(/\.[a-z0-9]{2,5}$/i, "")
+    .trim() || "objekat";
+  return `${base}-crop.jpg`;
 }
 
 function ToolButton({
@@ -2227,7 +2651,7 @@ function HistoryPanel({
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {new Date(item.createdAt).toLocaleDateString("sr-RS")} ·{" "}
-                    {AI_IMAGE_PROVIDERS.find((p) => p.id === item.provider)?.label}
+                    {getAiEngineLabelForGeneration(item.provider, item.model)}
                   </p>
                   {(() => {
                     const ctx = formatHistoryContext(item);
@@ -2499,7 +2923,7 @@ function buildAiStudioReadiness({
     blockers.push("Dodajte bar jednu sliku objekta.");
   }
   if (editType === "object_insertion" && objectMode === "replace" && !maskDirty) {
-    blockers.push("Označite maskom komad koji menjamo.");
+    blockers.push("Označite maskom celu zonu gde novi objekat treba da stane.");
   }
   if (
     activeEdit.multiSelect &&

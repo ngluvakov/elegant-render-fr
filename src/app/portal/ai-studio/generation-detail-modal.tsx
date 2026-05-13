@@ -28,10 +28,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  AI_IMAGE_PROVIDERS,
   AI_STYLE_OPTIONS,
   formatCreditsFromUnits,
   formatSelectedOptionLabels,
+  getAiEngineLabelForGeneration,
   getAiEditType,
   type AiEditType,
   type AiImageProvider,
@@ -118,10 +118,6 @@ function findStyleLabel(
   return AI_STYLE_OPTIONS.find((s) => s.id === styleId)?.label ?? styleId;
 }
 
-function findProviderLabel(provider: AiImageProvider): string {
-  return AI_IMAGE_PROVIDERS.find((p) => p.id === provider)?.label ?? provider;
-}
-
 export function GenerationDetailModal({
   open,
   generation,
@@ -151,7 +147,10 @@ export function GenerationDetailModal({
     generation.selectedOption,
   );
   const styleLabel = findStyleLabel(generation.editType, generation.styleId);
-  const providerLabel = findProviderLabel(generation.provider);
+  const providerLabel = getAiEngineLabelForGeneration(
+    generation.provider,
+    generation.model,
+  );
   const canDownloadInput = Boolean(generation.inputDownloadUrl) && !generation.filesExpired;
   const canDownloadResult =
     Boolean(generation.downloadUrl) &&

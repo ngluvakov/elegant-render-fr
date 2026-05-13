@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { AI_IMAGE_PROVIDERS, getAiEditType } from "@/lib/ai-studio/catalog";
+import {
+  getAiEditType,
+  getAiEngineLabelForGeneration,
+} from "@/lib/ai-studio/catalog";
 
 export const metadata: Metadata = {
   title: "AI Studio generacije",
@@ -108,8 +111,10 @@ export default async function AdminAiStudioPage() {
                   </td>
                   <td className="px-4 py-3">
                     <p className="font-medium text-foreground">
-                      {AI_IMAGE_PROVIDERS.find((p) => p.id === generation.provider)
-                        ?.label ?? generation.provider}
+                      {getAiEngineLabelForGeneration(
+                        generation.provider,
+                        generation.model,
+                      )}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {generation.model}

@@ -71,6 +71,8 @@ export type EventMap = {
   ai_generation_started: {
     edit_type: string;
     provider: string;
+    engine_id?: string;
+    model?: string;
     mode: "simple" | "advanced";
     has_mask: boolean;
     has_style: boolean;

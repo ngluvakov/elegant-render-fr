@@ -17,6 +17,21 @@ export type AiEditType =
 
 export type AiImageProvider = "gemini_flash" | "gemini_pro" | "openai";
 
+export type AiImageEngineId =
+  | "nano_banana_pro"
+  | "nano_banana"
+  | "gpt_image_15"
+  | "gpt_image_2_test";
+
+export type AiImageEngine = {
+  id: AiImageEngineId;
+  label: string;
+  provider: AiImageProvider;
+  model: string;
+  isExperimental?: boolean;
+  isActive: boolean;
+};
+
 export type AiEditComplexity = "simple" | "complex";
 
 export type AiStyleOption = {
@@ -256,13 +271,14 @@ export const AI_IMAGE_PROVIDERS: Array<{
   },
   {
     id: "openai",
-    label: "GPT Image 2",
+    label: "OpenAI Images",
     modelEnv: "AI_STUDIO_OPENAI_MODEL",
     defaultModel: "gpt-image-2",
   },
 ];
 
 export const ACTIVE_AI_IMAGE_PROVIDER_IDS: AiImageProvider[] = [
+  "gemini_flash",
   "gemini_pro",
   "openai",
 ];
@@ -272,6 +288,44 @@ export const ACTIVE_AI_IMAGE_PROVIDERS = AI_IMAGE_PROVIDERS.filter((provider) =>
 );
 
 export const DEFAULT_AI_PROVIDER: AiImageProvider = "gemini_pro";
+
+export const AI_IMAGE_ENGINES: AiImageEngine[] = [
+  {
+    id: "nano_banana_pro",
+    label: "Nano Banana Pro",
+    provider: "gemini_pro",
+    model: "gemini-3-pro-image-preview",
+    isActive: true,
+  },
+  {
+    id: "nano_banana",
+    label: "Nano Banana",
+    provider: "gemini_flash",
+    model: "gemini-2.5-flash-image",
+    isActive: true,
+  },
+  {
+    id: "gpt_image_15",
+    label: "GPT Image 1.5",
+    provider: "openai",
+    model: "gpt-image-1.5",
+    isActive: true,
+  },
+  {
+    id: "gpt_image_2_test",
+    label: "GPT Image 2",
+    provider: "openai",
+    model: "gpt-image-2",
+    isExperimental: true,
+    isActive: true,
+  },
+];
+
+export const ACTIVE_AI_IMAGE_ENGINES = AI_IMAGE_ENGINES.filter(
+  (engine) => engine.isActive,
+);
+
+export const DEFAULT_AI_ENGINE_ID: AiImageEngineId = "nano_banana_pro";
 
 export type AiCreditTier = {
   minCredits: number;
@@ -330,6 +384,59 @@ export function isActiveAiProvider(id: AiImageProvider): boolean {
 export function getAiProviderModel(id: AiImageProvider): string {
   const provider = getAiProvider(id);
   return process.env[provider.modelEnv] || provider.defaultModel;
+}
+
+export function getAiImageEngine(id: AiImageEngineId): AiImageEngine {
+  const engine = AI_IMAGE_ENGINES.find((item) => item.id === id);
+  if (!engine) throw new Error(`Unknown AI engine: ${id}`);
+  return engine;
+}
+
+export function isActiveAiImageEngine(id: AiImageEngineId): boolean {
+  return ACTIVE_AI_IMAGE_ENGINES.some((engine) => engine.id === id);
+}
+
+export function getDefaultEngineForProvider(
+  provider: AiImageProvider,
+): AiImageEngine {
+  if (provider === "gemini_flash") return getAiImageEngine("nano_banana");
+  if (provider === "openai") return getAiImageEngine("gpt_image_2_test");
+  return getAiImageEngine(DEFAULT_AI_ENGINE_ID);
+}
+
+export function resolveAiImageEngine({
+  engineId,
+  provider,
+}: {
+  engineId?: AiImageEngineId | null;
+  provider?: AiImageProvider | null;
+}): AiImageEngine | null {
+  if (engineId) {
+    const engine = AI_IMAGE_ENGINES.find((item) => item.id === engineId);
+    return engine ?? null;
+  }
+  if (provider) return getDefaultEngineForProvider(provider);
+  return getAiImageEngine(DEFAULT_AI_ENGINE_ID);
+}
+
+export function getAiEngineIdForGeneration(
+  provider: AiImageProvider,
+  model: string | null | undefined,
+): AiImageEngineId {
+  const modelMatch = model
+    ? AI_IMAGE_ENGINES.find(
+        (engine) => engine.provider === provider && engine.model === model,
+      )
+    : null;
+  return (modelMatch ?? getDefaultEngineForProvider(provider)).id;
+}
+
+export function getAiEngineLabelForGeneration(
+  provider: AiImageProvider,
+  model: string | null | undefined,
+): string {
+  const engineId = getAiEngineIdForGeneration(provider, model);
+  return getAiImageEngine(engineId).label;
 }
 
 export function calculateAiCreditPurchase(

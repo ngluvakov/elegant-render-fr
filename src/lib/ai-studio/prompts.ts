@@ -23,11 +23,14 @@ export type AiPromptOptions = {
 
 export function buildAiEditPrompt(options: AiPromptOptions): string {
   const edit = getAiEditType(options.editType);
+  const isObjectEdit = options.editType === "object_insertion";
   const style = options.styleId
     ? AI_STYLE_OPTIONS.find((item) => item.id === options.styleId)
     : null;
   const lines = [
-    "You are editing a real estate photograph for a premium property visualisation platform.",
+    isObjectEdit
+      ? "You are performing a controlled product/object composite into an interior photograph."
+      : "You are editing a real estate photograph for a premium property visualisation platform.",
     "Keep the result photorealistic, natural, commercially usable, and faithful to the original camera perspective.",
     "Preserve architecture, room geometry, windows, doors, perspective, shadows, and realistic materials unless the user explicitly asks to change them.",
     `Edit type: ${edit.label}.`,
@@ -47,8 +50,6 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
     lines.push(`Target wall color: ${options.colorHex}.`);
   }
 
-  const isObjectEdit = options.editType === "object_insertion";
-
   if (options.hasMask) {
     lines.push(
       isObjectEdit
@@ -66,13 +67,14 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
       referenceCount === 1
         ? "Two input images are provided. Image 1 is the interior scene to preserve. Image 2 is the primary reference object."
         : `Multiple input images are provided. Image 1 is the interior scene to preserve. Images 2-${lastImageNumber} are different angles/details of the same reference object; Image 2 is primary.`,
+      "Reference images should be interpreted as cropped object references only. Do not copy hands, people, clothing, background rooms, tables, floors, or photographic context from the reference images into Image 1.",
       "Use the reference image(s) for object identity, form, material, proportions, and visible details, but adapt scale, perspective, lighting, color temperature, contact shadows, and occlusion so the object belongs naturally in Image 1.",
       "Image 2 is authoritative. Use Images 3-N only as supporting angle/detail references of the same object; if any later reference conflicts in object model, color, shape, or material, ignore the conflicting later reference and follow Image 2.",
       "Image 1 must remain the same photograph and the same frame. Do not crop, zoom, pan, rotate, change camera viewpoint, redesign the room, alter walls, windows, floors, existing furniture, lighting, or composition outside the object integration area.",
     );
     if (options.objectMode === "replace") {
       lines.push(
-        "Replace the existing masked furniture/decor item with the referenced object. Remove the original item cleanly, preserve the rest of the room, and keep the replacement centered on the user's marked item even if the user prompt is short.",
+        "Replace within the user's marked placement zone with the referenced object. The mask marks the full zone where the new object should fit, not only the old object. Remove the original item cleanly, preserve the rest of the room, and keep the replacement centered on the marked placement zone even if the user prompt is short.",
       );
     } else {
       lines.push(

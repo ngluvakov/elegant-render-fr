@@ -118,12 +118,14 @@ Stil je smer, ne garancija tacnog kataloskog proizvoda. Za najbolje rezultate tr
 
 ### Engine izbor
 
-AI Studio trenutno nudi dve engine opcije za nove obrade:
+AI Studio trenutno nudi cetiri engine opcije za nove obrade:
 
 - Nano Banana Pro,
-- GPT Image 2.
+- Nano Banana,
+- GPT Image 1.5,
+- GPT Image 2 test.
 
-Stari Nano Banana engine ostaje samo zbog istorije ranijih obrada i ne nudi se za nove generacije.
+Default ostaje Nano Banana Pro. GPT Image 2 je test opcija i moze da ne bude dostupna na svakom nalogu/API konfiguraciji.
 
 Za dizajn javne stranice engine ne mora biti u prvom planu. Za vecinu korisnika vaznije je pitanje: "Koji alat mi treba?" nego "Koji model radi obradu?"
 

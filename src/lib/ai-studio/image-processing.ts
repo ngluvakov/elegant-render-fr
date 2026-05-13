@@ -11,6 +11,17 @@ export type NormalizedImage = {
   dimensions: Dimensions;
 };
 
+export type ImageBufferSummary = {
+  sizeBytes: number;
+  format?: string;
+  width?: number;
+  height?: number;
+  space?: string;
+  channels?: number;
+  hasAlpha?: boolean;
+  orientation?: number;
+};
+
 export type ProviderTarget = {
   width: number;
   height: number;
@@ -43,9 +54,43 @@ function createBlackRgbaWithAlpha(alpha: Buffer): Buffer {
   return rgba;
 }
 
-function createRgbaFromRgbAndAlpha(rgb: Buffer, alpha: Buffer): Buffer {
-  if (rgb.length !== alpha.length * 3) {
-    throw new Error("RGB i alpha kanal nemaju iste dimenzije.");
+async function readSingleChannelRaw(
+  image: ReturnType<typeof sharp>,
+  dims: Dimensions,
+): Promise<Buffer> {
+  const { data, info } = await image
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  if (info.width !== dims.width || info.height !== dims.height) {
+    throw new Error(
+      `AI compositing failed: alpha mask is ${info.width}x${info.height}, expected ${dims.width}x${dims.height}.`,
+    );
+  }
+  if (info.channels === 1) return data;
+
+  return sharp(data, {
+    raw: { width: dims.width, height: dims.height, channels: info.channels },
+  })
+    .extractChannel(0)
+    .raw()
+    .toBuffer();
+}
+
+function createRgbaFromRgbAndAlpha({
+  rgb,
+  alpha,
+  dims,
+}: {
+  rgb: Buffer;
+  alpha: Buffer;
+  dims: Dimensions;
+}): Buffer {
+  const pixelCount = dims.width * dims.height;
+  if (alpha.length !== pixelCount || rgb.length !== pixelCount * 3) {
+    throw new Error(
+      `AI compositing failed: RGB length ${rgb.length}, alpha length ${alpha.length}, expected ${pixelCount} pixels.`,
+    );
   }
   const rgba = Buffer.allocUnsafe(alpha.length * 4);
   for (let index = 0; index < alpha.length; index++) {
@@ -57,6 +102,52 @@ function createRgbaFromRgbAndAlpha(rgb: Buffer, alpha: Buffer): Buffer {
     rgba[rgbaOffset + 3] = alpha[index];
   }
   return rgba;
+}
+
+async function createAiResultRgbOverOriginal({
+  normalizedOriginal,
+  aiResult,
+  dims,
+}: {
+  normalizedOriginal: Buffer;
+  aiResult: Buffer;
+  dims: Dimensions;
+}): Promise<Buffer> {
+  const aiLayer = await sharp(aiResult)
+    .rotate()
+    .resize(dims.width, dims.height, {
+      fit: "fill",
+      kernel: sharp.kernel.lanczos3,
+    })
+    .toColorspace("srgb")
+    .ensureAlpha()
+    .png()
+    .toBuffer();
+
+  const { data, info } = await sharp(normalizedOriginal)
+    .resize(dims.width, dims.height, {
+      fit: "fill",
+      kernel: sharp.kernel.lanczos3,
+    })
+    .composite([{ input: aiLayer, blend: "over" }])
+    .toColorspace("srgb")
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const pixelCount = dims.width * dims.height;
+  if (
+    info.width !== dims.width ||
+    info.height !== dims.height ||
+    info.channels !== 3 ||
+    data.length !== pixelCount * 3
+  ) {
+    throw new Error(
+      `AI compositing failed: normalized result is ${info.width}x${info.height}x${info.channels}, expected ${dims.width}x${dims.height}x3.`,
+    );
+  }
+
+  return data;
 }
 
 function createObjectWorkZoneAlpha({
@@ -146,12 +237,12 @@ async function createObjectSoftWorkZoneAlpha({
     Math.round(Math.min(dims.width, dims.height) * 0.018),
   );
 
-  return sharp(workZoneAlpha, {
-    raw: { width: dims.width, height: dims.height, channels: 1 },
-  })
-    .blur(feather)
-    .raw()
-    .toBuffer();
+  return readSingleChannelRaw(
+    sharp(workZoneAlpha, {
+      raw: { width: dims.width, height: dims.height, channels: 1 },
+    }).blur(feather),
+    dims,
+  );
 }
 
 export async function getImageDimensions(buffer: Buffer): Promise<Dimensions> {
@@ -162,6 +253,22 @@ export async function getImageDimensions(buffer: Buffer): Promise<Dimensions> {
     throw new Error("Dimenzije slike nisu dostupne.");
   }
   return { width, height };
+}
+
+export async function describeImageBuffer(
+  buffer: Buffer,
+): Promise<ImageBufferSummary> {
+  const metadata = await sharp(buffer).metadata();
+  return {
+    sizeBytes: buffer.length,
+    format: metadata.format,
+    width: metadata.width,
+    height: metadata.height,
+    space: metadata.space,
+    channels: metadata.channels,
+    hasAlpha: metadata.hasAlpha,
+    orientation: metadata.orientation,
+  };
 }
 
 export async function normalizeInputImage(buffer: Buffer): Promise<NormalizedImage> {
@@ -278,12 +385,12 @@ export async function prepareObjectMaskForProvider(
     maskInverted: false,
     mode,
   });
-  const maskAlpha = await sharp(editAlpha, {
-    raw: { width: dims.width, height: dims.height, channels: 1 },
-  })
-    .negate()
-    .raw()
-    .toBuffer();
+  const maskAlpha = await readSingleChannelRaw(
+    sharp(editAlpha, {
+      raw: { width: dims.width, height: dims.height, channels: 1 },
+    }).negate(),
+    dims,
+  );
 
   return sharp(createBlackRgbaWithAlpha(maskAlpha), {
     raw: { width: dims.width, height: dims.height, channels: 4 },
@@ -355,15 +462,11 @@ export async function composeWithMask({
     })
     .toBuffer();
 
-  const resizedResultRgb = await sharp(aiResult)
-    .rotate()
-    .resize(originalDims.width, originalDims.height, {
-      fit: "fill",
-      kernel: sharp.kernel.lanczos3,
-    })
-    .removeAlpha()
-    .raw()
-    .toBuffer();
+  const resizedResultRgb = await createAiResultRgbOverOriginal({
+    normalizedOriginal,
+    aiResult,
+    dims: originalDims,
+  });
 
   const maskAlpha = sharp(mask)
     .ensureAlpha()
@@ -399,10 +502,15 @@ export async function composeWithMask({
   }
 
   const editAlpha =
-    editAlphaFromObjectWorkZone ?? (await editAlphaPipeline.raw().toBuffer());
+    editAlphaFromObjectWorkZone ??
+    (await readSingleChannelRaw(editAlphaPipeline, originalDims));
 
   const maskedResult = await sharp(
-    createRgbaFromRgbAndAlpha(resizedResultRgb, editAlpha),
+    createRgbaFromRgbAndAlpha({
+      rgb: resizedResultRgb,
+      alpha: editAlpha,
+      dims: originalDims,
+    }),
     {
       raw: {
         width: originalDims.width,

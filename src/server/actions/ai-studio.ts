@@ -29,6 +29,7 @@ import {
 import { sanitizeAiStudioError } from "@/lib/ai-studio/errors";
 import {
   composeWithMask,
+  describeImageBuffer,
   type ObjectMaskMode,
   normalizeInputImage,
   pickProviderTarget,
@@ -867,17 +868,32 @@ async function runGenerationProcessing(generation: AiGeneration) {
     target: isObjectEdit ? undefined : target,
   });
 
-  const finalImage = mask
-    ? await composeWithMask({
-        original: normalizedInput.image,
-        aiResult: output.image,
-        mask: mask.buffer,
-        originalDims,
-        maskInverted: options.maskInverted,
-        softenMask: isObjectEdit,
-        objectMaskMode: isObjectEdit ? objectMaskMode : undefined,
-      })
-    : await resizeToOriginal(output.image, originalDims);
+  let finalImage: Buffer;
+  try {
+    finalImage = mask
+      ? await composeWithMask({
+          original: normalizedInput.image,
+          aiResult: output.image,
+          mask: mask.buffer,
+          originalDims,
+          maskInverted: options.maskInverted,
+          softenMask: isObjectEdit,
+          objectMaskMode: isObjectEdit ? objectMaskMode : undefined,
+        })
+      : await resizeToOriginal(output.image, originalDims);
+  } catch (err) {
+    await logAiOutputProcessingFailure({
+      generation,
+      output,
+      normalizedInput: normalizedInput.image,
+      originalDims,
+      mask: mask?.buffer ?? null,
+      error: err,
+    });
+    throw new Error(
+      "AI rezultat nije mogao da se bezbedno spoji sa originalom. Kredit je vraćen, pokušajte ponovo ili izaberite drugi engine.",
+    );
+  }
 
   const resultPath = `ai-studio/${generation.userId}/results/${generation.id}.jpg`;
   const { error: uploadError } = await getSupabaseAdmin().storage
@@ -915,6 +931,47 @@ async function runGenerationProcessing(generation: AiGeneration) {
   }
 
   revalidatePath("/portal/ai-studio");
+}
+
+async function logAiOutputProcessingFailure({
+  generation,
+  output,
+  normalizedInput,
+  originalDims,
+  mask,
+  error,
+}: {
+  generation: AiGeneration;
+  output: Awaited<ReturnType<typeof generateAiEdit>>;
+  normalizedInput: Buffer;
+  originalDims: { width: number; height: number };
+  mask: Buffer | null;
+  error: unknown;
+}) {
+  const [aiResult, original, maskSummary] = await Promise.allSettled([
+    describeImageBuffer(output.image),
+    describeImageBuffer(normalizedInput),
+    mask ? describeImageBuffer(mask) : Promise.resolve(null),
+  ]);
+
+  console.error("[AI Studio] Output processing failed", {
+    generationId: generation.id,
+    provider: generation.provider,
+    model: generation.model,
+    outputProvider: output.provider,
+    outputModel: output.model,
+    outputMimeType: output.mimeType,
+    originalDims,
+    aiResult:
+      aiResult.status === "fulfilled" ? aiResult.value : aiResult.reason?.message,
+    original:
+      original.status === "fulfilled" ? original.value : original.reason?.message,
+    mask:
+      maskSummary.status === "fulfilled"
+        ? maskSummary.value
+        : maskSummary.reason?.message,
+    message: error instanceof Error ? error.message : String(error),
+  });
 }
 
 async function claimGenerationForProcessing(generationId: string) {

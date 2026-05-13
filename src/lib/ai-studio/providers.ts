@@ -258,7 +258,9 @@ async function generateWithOpenAi(
         ...(mask ? { mask } : {}),
         size: input.target?.openaiSize ?? "auto",
         output_format: "png",
-        ...(references.length > 0 ? { input_fidelity: "high" as const } : {}),
+        ...(references.length > 0 && supportsOpenAiInputFidelity(model)
+          ? { input_fidelity: "high" as const }
+          : {}),
       },
       { timeout: AI_PROVIDER_TIMEOUT_MS },
     );
@@ -336,6 +338,10 @@ function imageExtension(mimeType: string): "jpg" | "png" | "webp" {
   return "jpg";
 }
 
+function supportsOpenAiInputFidelity(model: string): boolean {
+  return model === "gpt-image-1.5";
+}
+
 function getProviderAttempts(provider: AiImageProvider): AiImageProvider[] {
   return [provider];
 }
@@ -389,6 +395,9 @@ function getPublicProviderMessage(
   }
   if (status === 404) {
     return "Izabrani AI model trenutno nije dostupan.";
+  }
+  if (status === 400 && lowerBody.includes("input_fidelity")) {
+    return "Izabrani OpenAI model ne podržava režim visoke vernosti reference. Izaberite GPT Image 1.5 ili Nano Banana Pro za ovu obradu.";
   }
   if (status >= 500) {
     return "AI provider trenutno ne odgovara stabilno. Pokušajte ponovo za nekoliko minuta.";

@@ -29,7 +29,6 @@ type CommentThreadProps = {
 export function CommentThread({
   orderId,
   initialComments,
-  currentUserId,
 }: CommentThreadProps) {
   const [comments, setComments] = useState(initialComments);
   const bottomRef = useRef<HTMLDivElement>(null);

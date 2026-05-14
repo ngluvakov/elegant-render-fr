@@ -25,7 +25,6 @@ import {
   Pencil,
   Plus,
   Settings2,
-  Sparkles,
   Sun,
   Upload,
   Wand2,

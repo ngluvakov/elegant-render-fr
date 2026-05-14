@@ -98,24 +98,8 @@ export function ItemConfigPanel({
   canDelete: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [advanced, setAdvanced] = useState(false);
-  const [note, setNote] = useState(item.clientNote ?? "");
-  const [styleDesc, setStyleDesc] = useState(
-    (item.configJson?.styleDescription as string) ?? "",
-  );
-  const [roomDetails, setRoomDetails] = useState(
-    (item.configJson?.roomDetails as string) ?? "",
-  );
-  const [techNotes, setTechNotes] = useState(
-    (item.configJson?.technicalNotes as string) ?? "",
-  );
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [uploading, setUploading] = useState<string[]>([]);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deletePending, startDelete] = useTransition();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const refInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
   const isInterior = item.productId === "int-static";
@@ -178,20 +162,6 @@ export function ItemConfigPanel({
     ? readExtAerialConfig(item.configJson)
     : null;
 
-  const handleSave = async () => {
-    setSaving(true);
-    await updateItemConfig(item.id, {
-      clientNote: note || undefined,
-      configJson: advanced
-        ? { styleDescription: styleDesc, roomDetails, technicalNotes: techNotes }
-        : undefined,
-    });
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-    router.refresh();
-  };
-
   const handleDeleteItem = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -205,46 +175,6 @@ export function ItemConfigPanel({
       router.refresh();
     });
   };
-
-  const uploadFile = useCallback(
-    async (file: File, kind: string) => {
-      setUploading((prev) => [...prev, file.name]);
-      try {
-        const urlRes = await fetch("/api/checkout/upload-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            orderId: item.orderId,
-            fileName: file.name,
-            mimeType: file.type,
-            fileSize: file.size,
-          }),
-        });
-        if (!urlRes.ok) throw new Error("Greška");
-        const { signedUrl, storagePath } = await urlRes.json();
-        await fetch(signedUrl, {
-          method: "PUT",
-          headers: { "Content-Type": file.type, "x-upsert": "true" },
-          body: file,
-        });
-        await confirmItemFileUpload(
-          item.orderId,
-          item.id,
-          file.name,
-          file.size,
-          file.type,
-          storagePath,
-          kind,
-        );
-        router.refresh();
-      } catch {}
-      setUploading((prev) => prev.filter((n) => n !== file.name));
-    },
-    [item.orderId, item.id, router],
-  );
-
-  const formatSize = (b: number) =>
-    b < 1024 * 1024 ? `${(b / 1024).toFixed(0)} KB` : `${(b / (1024 * 1024)).toFixed(1)} MB`;
 
   // Universal "minimum for project kickoff" rule: needs a description OR at least one file.
   // For int-static, check across floors (per-floor description/files).
@@ -502,7 +432,6 @@ export function ItemConfigPanel({
 function NonInteriorBody({
   item,
   files,
-  canDelete,
 }: {
   item: ItemData;
   files: ItemFile[];

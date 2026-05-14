@@ -5,7 +5,6 @@
  * Used on: /portal/porudzbine/[orderId] (order detail page).
  */
 import { Download, FileDown } from "lucide-react";
-import { EmptyState } from "./empty-state";
 
 type DeliverableFile = {
   id: string;

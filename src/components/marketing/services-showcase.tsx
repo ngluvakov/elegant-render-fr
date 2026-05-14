@@ -417,10 +417,12 @@ export function ServicesShowcase() {
                 </div>
               ) : (
                 <div className="relative h-48 overflow-hidden">
-                  <img
+                  <Image
                     src={service.imageSrc}
                     alt={service.name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    fill
+                    sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     style={{ objectPosition: service.imagePosition }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10" />
@@ -580,10 +582,12 @@ export function ServicesShowcase() {
               className="overflow-hidden rounded-2xl border border-border/40 bg-card/80 shadow-[0_12px_40px_rgba(28,26,25,0.06)]"
             >
               <div className="relative h-56 overflow-hidden">
-                <img
+                <Image
                   src={ARTWORK.beforeAfter}
                   alt={item.title}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  className="object-cover"
                   style={{ objectPosition: item.position }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/15" />

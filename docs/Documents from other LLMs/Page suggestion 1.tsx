@@ -3,6 +3,7 @@ Design philosophy for this file: Transaction-first platform aligned to official 
 The page must feel like a fast ordering interface, but every visible price must map to the approved price list.
 Do not invent tier names, bundle prices, rush fees, or package math that does not exist in the pricing documents.
 */
+import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +18,6 @@ import {
   Grid2x2,
   Home as HomeIcon,
   Images,
-  Layers3,
   RefreshCcw,
   Sparkles,
   type LucideIcon,
@@ -566,9 +566,12 @@ export default function Home() {
                         <h3 className="text-2xl text-[var(--er-coal)]">Šta kupac šalje odmah</h3>
                         <p className="text-sm leading-7 text-[var(--er-muted)]">{selectedService.materials}</p>
                         <div className="rounded-[1.35rem] border border-[var(--er-border)] bg-white/70 p-4">
-                          <img
+                          <Image
                             src={selectedService.asset}
                             alt={selectedService.name}
+                            width={640}
+                            height={240}
+                            sizes="(min-width: 1024px) 33vw, 100vw"
                             className="h-48 w-full rounded-[1rem] object-cover"
                           />
                         </div>

@@ -19,7 +19,6 @@ import {
   ArrowLeftRight,
   Camera,
   Check,
-  Compass,
   Eraser,
   FileUp,
   Lightbulb,

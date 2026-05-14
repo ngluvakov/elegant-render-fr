@@ -16,7 +16,6 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Camera,
   Check,
   Compass,
   FileUp,

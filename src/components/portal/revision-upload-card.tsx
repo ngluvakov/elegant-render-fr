@@ -8,7 +8,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FileUp, Trash2, Upload } from "lucide-react";
+import { FileUp, Upload } from "lucide-react";
 import { confirmFileUpload } from "@/server/actions/order";
 
 type UploadingFile = { file: File; error?: string };

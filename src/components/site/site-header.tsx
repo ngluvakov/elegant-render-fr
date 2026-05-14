@@ -7,6 +7,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -78,12 +79,13 @@ export function SiteHeader() {
             className="hidden items-center gap-1.5 rounded-full border border-border/80 bg-card/80 px-2.5 py-1.5 shadow-[0_12px_30px_rgba(28,26,25,0.06)] transition hover:border-[color:var(--color-clay)] hover:bg-background sm:inline-flex"
           >
             <span className="inline-flex h-5 w-5 items-center justify-center overflow-hidden rounded-[0.45rem] bg-black ring-1 ring-black/10 sm:h-6 sm:w-6">
-              <img
+              <Image
                 src="/branding/white-rook-symbol.png"
                 alt="White Rook logo"
+                width={24}
+                height={24}
                 className="h-full w-full object-cover"
-                loading="eager"
-                decoding="async"
+                priority
               />
             </span>
             <span className="hidden text-[0.54rem] uppercase tracking-[0.22em] text-muted-foreground md:inline">

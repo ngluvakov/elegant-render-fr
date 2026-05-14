@@ -15,11 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatEur } from "@/lib/catalog/calculate";
 import { track } from "@/lib/posthog-events";
-import {
-  createPayPalOrderAction,
-  capturePayPalOrderAction,
-  mockCardPaymentAction,
-} from "@/server/actions/payment";
+import { mockCardPaymentAction } from "@/server/actions/payment";
 import { PayPalPortalButtons } from "./paypal-portal-buttons";
 
 type PendingPaymentCardProps = {

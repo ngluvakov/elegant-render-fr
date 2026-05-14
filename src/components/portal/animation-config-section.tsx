@@ -68,7 +68,6 @@ import {
   animSupportsSeason,
   animTierDiscountPct,
   type AnimationConfig,
-  type AnimSourceMode,
   type AnimCameraSpeedId,
   type AnimFocusAreas,
   type AnimMusicMoodId,

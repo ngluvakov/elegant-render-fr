@@ -56,7 +56,7 @@ export function StepUpload() {
           throw new Error(error || "Greška pri generisanju upload linka");
         }
 
-        const { signedUrl, storagePath, token } = await urlRes.json();
+        const { signedUrl, storagePath } = await urlRes.json();
 
         // Upload directly to Supabase Storage
         const uploadRes = await fetch(signedUrl, {

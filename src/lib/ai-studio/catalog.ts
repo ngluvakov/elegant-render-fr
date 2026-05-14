@@ -183,18 +183,18 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
   },
   {
     id: "object_insertion",
-    label: "Dodavanje ili zamena objekta",
-    shortLabel: "Object Insert/Replace",
+    label: "Dodavanje ili zamena nameštaja/dekora",
+    shortLabel: "Furniture/Decor Replace",
     complexity: "complex",
     units: 2,
     description:
-      "Dodavanje ili zamena komada nameštaja/dekora iz jedne ili više referentnih slika uz usklađivanje perspektive, svetla i senki.",
+      "Dodavanje ili zamena komada nameštaja, dekora, rasvete, biljaka, umetnosti ili uređaja uz usklađivanje perspektive, svetla i senki.",
     supportsMask: true,
     requiresReferenceImage: true,
     recommendedProvider: "gemini_pro",
     promptPlaceholder:
-      "npr. postavi fotelju pored prozora ili zameni postojeću stolicu; uskladi skalu, svetlo i senku",
-    optionsLabel: "Tip objekta",
+      "npr. postavi fotelju pored prozora ili zameni postojeću stolicu; sačuvaj ostatak sobe",
+    optionsLabel: "Tip komada",
     options: [
       { id: "furniture", label: "Nameštaj" },
       { id: "decor", label: "Dekor" },
@@ -202,7 +202,6 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
       { id: "appliance", label: "Uređaj" },
       { id: "plant", label: "Biljka" },
       { id: "artwork", label: "Umetnost" },
-      { id: "other", label: "Drugo" },
     ],
   },
   {
@@ -326,6 +325,10 @@ export const ACTIVE_AI_IMAGE_ENGINES = AI_IMAGE_ENGINES.filter(
 );
 
 export const DEFAULT_AI_ENGINE_ID: AiImageEngineId = "nano_banana_pro";
+export const OBJECT_EDIT_ACTIVE_ENGINE_IDS: AiImageEngineId[] = [
+  "nano_banana_pro",
+  "gpt_image_15",
+];
 
 export type AiCreditTier = {
   minCredits: number;

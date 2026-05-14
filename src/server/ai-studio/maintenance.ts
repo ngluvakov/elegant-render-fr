@@ -171,6 +171,7 @@ async function removeExpiredGenerationFiles(now: Date) {
       maskStoragePath: true,
       referenceStoragePath: true,
       resultStoragePath: true,
+      providerOutputStoragePath: true,
     },
     take: 500,
   });
@@ -191,6 +192,9 @@ async function removeExpiredGenerationFiles(now: Date) {
       candidates.add(generation.referenceStoragePath);
     }
     if (generation.resultStoragePath) candidates.add(generation.resultStoragePath);
+    if (generation.providerOutputStoragePath) {
+      candidates.add(generation.providerOutputStoragePath);
+    }
   }
   for (const reference of expiredReferenceImages) {
     candidates.add(reference.storagePath);
@@ -207,6 +211,7 @@ async function removeExpiredGenerationFiles(now: Date) {
         { maskStoragePath: { in: paths } },
         { referenceStoragePath: { in: paths } },
         { resultStoragePath: { in: paths } },
+        { providerOutputStoragePath: { in: paths } },
       ],
     },
     select: {
@@ -214,6 +219,7 @@ async function removeExpiredGenerationFiles(now: Date) {
       maskStoragePath: true,
       referenceStoragePath: true,
       resultStoragePath: true,
+      providerOutputStoragePath: true,
     },
   });
   const activeReferenceImages = await prisma.aiGenerationReferenceImage.findMany({
@@ -231,6 +237,9 @@ async function removeExpiredGenerationFiles(now: Date) {
       candidates.delete(generation.referenceStoragePath);
     }
     if (generation.resultStoragePath) candidates.delete(generation.resultStoragePath);
+    if (generation.providerOutputStoragePath) {
+      candidates.delete(generation.providerOutputStoragePath);
+    }
   }
   for (const reference of activeReferenceImages) {
     candidates.delete(reference.storagePath);

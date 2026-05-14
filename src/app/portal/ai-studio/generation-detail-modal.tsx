@@ -278,11 +278,11 @@ export function GenerationDetailModal({
               <SettingRow label="Engine" value={`${providerLabel} · ${generation.model}`} />
               {generation.editType === "object_insertion" && (
                 <SettingRow
-                  label="Objekat"
+                  label="Nameštaj/dekor"
                   value={
                     generation.objectMode === "replace"
                       ? "Zamena postojećeg komada"
-                      : "Dodavanje objekta"
+                      : "Dodavanje komada"
                   }
                 />
               )}
@@ -436,7 +436,7 @@ function ReferenceImagesPane({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Objekat / uglovi
+            Nameštaj/dekor / uglovi
           </p>
           <p className="mt-0.5 text-[0.68rem] text-foreground/70">
             {references.length} {references.length === 1 ? "slika" : "slika"}
@@ -454,7 +454,7 @@ function ReferenceImagesPane({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={reference.url}
-                alt={index === 0 ? "Primarna slika objekta" : `Ugao objekta ${index + 1}`}
+                alt={index === 0 ? "Primarna slika komada" : `Ugao komada ${index + 1}`}
                 className="block aspect-square w-full object-contain"
                 draggable={false}
               />
@@ -483,7 +483,7 @@ function ReferenceImagesPane({
                   href={reference.downloadUrl}
                   download
                   className="inline-flex h-7 shrink-0 items-center justify-center rounded-md bg-foreground px-2 text-background"
-                  aria-label={`Preuzmi sliku objekta ${index + 1}`}
+                  aria-label={`Preuzmi sliku komada ${index + 1}`}
                 >
                   <Download className="h-3 w-3" />
                 </a>

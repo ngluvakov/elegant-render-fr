@@ -57,7 +57,7 @@ import {
 export const metadata: Metadata = createPublicMetadata({
   title: "AI Studio",
   description:
-    "Brza AI obrada fotografija nekretnina: uklanjanje elemenata, dan-u-noć, zamena neba, boja zidova, staging, dodavanje ili zamena objekta, renovacija i redesign.",
+    "Brza AI obrada fotografija nekretnina: uklanjanje elemenata, dan-u-noć, zamena neba, boja zidova, staging, dodavanje ili zamena nameštaja/dekora, renovacija i redesign.",
   path: "/ai-studio",
   image: "/artwork/ai-tool-virtual_staging-after.webp",
 });
@@ -143,9 +143,9 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
   object_insertion: {
     icon: Armchair,
     benefit:
-      "Dodajte konkretan komad ili zamenite postojeći nameštaj/dekor uz više uglova istog objekta.",
-    input: "Enterijer + do 5 slika objekta",
-    output: "Objekat dodat ili zamenjen",
+      "Dodajte konkretan komad nameštaja/dekora ili zamenite postojeći komad uz više uglova istog modela.",
+    input: "Enterijer + do 5 uglova komada",
+    output: "Komad dodat ili zamenjen",
     prompt:
       "Zameni postojeću fotelju referentnim modelom. Sačuvaj skalu, svetlo i senku na podu.",
     gradient: "from-[color:var(--color-sage)]/20 to-foreground/15",
@@ -185,7 +185,7 @@ const workflow = [
   {
     icon: Sparkles,
     title: "Izaberite AI alat",
-    text: "Od brzih korekcija do staginga, dodavanja objekta, renovacije i redesign-a.",
+    text: "Od brzih korekcija do staginga, zamene nameštaja/dekora, renovacije i redesign-a.",
   },
   {
     icon: Brush,
@@ -228,7 +228,7 @@ const tips = [
   "Napišite šta mora da ostane isto: prozori, raspored, pod, materijali.",
   "Ne tražite više nepovezanih stvari u jednoj rečenici.",
   "Za staging navedite namenu sobe, stil i paletu boja.",
-  "Za dodavanje ili zamenu objekta uploadujte do 5 uglova istog komada; za zamenu označite postojeći komad maskom.",
+  "Za dodavanje ili zamenu nameštaja/dekora uploadujte do 5 uglova istog komada; za zamenu označite postojeći komad maskom.",
   "Za renovaciju odvojite materijale, nameštaj i osvetljenje.",
   "Za uklanjanje većih predmeta koristite masku u Advanced mode-u.",
   "Ako je rezultat blizu dobrog, koristite ga kao novi ulaz i tražite malu korekciju.",
@@ -266,7 +266,7 @@ export default async function AiStudioLandingPage() {
             path: "/ai-studio",
             name: "AI Studio za obradu fotografija nekretnina",
             description:
-              "AI alati za uklanjanje elemenata, dan-u-noć, zamenu neba, virtuelno opremanje, dodavanje ili zamenu objekta, renovaciju i redesign prostora.",
+              "AI alati za uklanjanje elemenata, dan-u-noć, zamenu neba, virtuelno opremanje, dodavanje ili zamenu nameštaja/dekora, renovaciju i redesign prostora.",
           }),
           buildBreadcrumbJsonLd([
             { name: "Početna", path: "/" },
@@ -497,7 +497,7 @@ function ToolsSection() {
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
               Svaki alat ima jasan opseg: od brzog čišćenja fotografije do
-              staginga, dodavanja ili zamene objekta, renovacije i redesign-a prostorije. Primer prompta
+              staginga, dodavanja ili zamene nameštaja/dekora, renovacije i redesign-a prostorije. Primer prompta
               ispod svakog alata pokazuje kako da formulišete instrukciju.
             </p>
           </div>

@@ -29,7 +29,7 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
     : null;
   const lines = [
     isObjectEdit
-      ? "You are performing a controlled product/object composite into an interior photograph."
+      ? "You are performing a controlled furniture/decor composite into an interior photograph."
       : "You are editing a real estate photograph for a premium property visualisation platform.",
     "Keep the result photorealistic, natural, commercially usable, and faithful to the original camera perspective.",
     "Preserve architecture, room geometry, windows, doors, perspective, shadows, and realistic materials unless the user explicitly asks to change them.",
@@ -54,8 +54,8 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
     lines.push(
       isObjectEdit
         ? options.objectMode === "replace"
-          ? "A mask is provided for Image 1 as a soft source-object guide, not a surgical edge. The marked area indicates the existing object to remove; it is not the exact boundary or size of the replacement object. Work locally around that object and allow logical extension for scale, contact shadows, legs, handles, reflections, occlusion, and natural integration."
-          : "A mask is provided for Image 1 as an approximate placement guide, not a surgical edge. Add the object near the indicated area and allow only small logical extension for scale, contact shadows, legs, handles, reflections, occlusion, and natural integration."
+          ? "A mask is provided for Image 1. It marks the existing furniture/decor item to replace, not the exact outline of the new item. Work locally around it and allow enough nearby area for realistic size, legs, handles, contact shadows, occlusion, and perspective."
+          : "A mask is provided for Image 1 as an approximate placement guide. Add the furniture/decor item near the indicated area and allow only small local expansion for footprint, shadow, contact, and natural integration."
         : options.maskInverted
           ? "A mask is provided. The opaque area indicates the region to edit; preserve transparent areas as much as possible."
           : "A mask is provided. The transparent area indicates the region to edit; preserve opaque areas as much as possible.",
@@ -67,23 +67,23 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
     const lastImageNumber = referenceCount + 1;
     lines.push(
       referenceCount === 1
-        ? "Two input images are provided. Image 1 is the interior scene to preserve. Image 2 is the primary reference object."
-        : `Multiple input images are provided. Image 1 is the interior scene to preserve. Images 2-${lastImageNumber} are different angles/details of the same reference object; Image 2 is primary.`,
-      "Reference images should be interpreted as cropped object references only. Do not copy hands, people, clothing, background rooms, tables, floors, or photographic context from the reference images into Image 1.",
-      "Use the reference image(s) for object identity, form, material, proportions, and visible details, but adapt scale, perspective, lighting, color temperature, contact shadows, and occlusion so the object belongs naturally in Image 1.",
-      "Image 2 is authoritative. Use Images 3-N only as supporting angle/detail references of the same object; if any later reference conflicts in object model, color, shape, or material, ignore the conflicting later reference and follow Image 2.",
+        ? "Two input images are provided. Image 1 is the interior scene to preserve. Image 2 is the primary furniture/decor reference."
+        : `Multiple input images are provided. Image 1 is the interior scene to preserve. Images 2-${lastImageNumber} are angles/details of the same furniture/decor item; Image 2 is primary.`,
+      "In each reference image, use the largest, most central, or most in-focus furniture/decor item. Ignore the reference background, showroom, room, floor, text, watermark, people, hands, clothing, and unrelated props.",
+      "Use the reference image(s) for item identity, form, material, proportions, and visible details, but adapt scale, perspective, lighting, color temperature, contact shadows, and occlusion so the item belongs naturally in Image 1.",
+      "Image 2 is authoritative. Use Images 3-N only as supporting angle/detail views of the same item; if any later reference differs in model, color, shape, or material, ignore that later reference and follow Image 2.",
       "Image 1 must remain the same photograph and the same frame. Do not crop, zoom, pan, rotate, change camera viewpoint, redesign the room, alter walls, windows, floors, existing furniture, lighting, or composition outside the object integration area.",
     );
     if (options.objectMode === "replace") {
       lines.push(
-        "Replace the user's marked existing furniture/decor item with the referenced object. Remove the original item cleanly. The replacement may extend beyond the exact mask if needed for realistic proportions, feet/legs, handles, shadows, contact with the floor or wall, and perspective. Preserve the rest of the room outside the local replacement zone.",
+        "Replace the masked existing interior item with the referenced furniture/decor item. Remove the original item cleanly and preserve the rest of the room. The replacement may extend beyond the exact mask if needed for proportions, feet/legs, handles, shadows, contact with the floor or wall, and perspective.",
       );
     } else {
       lines.push(
         options.hasMask
-          ? "Add the referenced object around the masked placement guide. The mask can be slightly expanded only for a believable footprint, shadow, contact, and occlusion."
-          : "Add the referenced object into the most logical location from the user's instruction and scene context. No mask was provided, so choose a plausible placement without changing the rest of the room.",
-        "Do not add unrelated furniture unless the user explicitly asks for tiny supporting placement details such as a natural shadow.",
+          ? "Add the referenced furniture/decor item around the masked placement guide. The mask can be slightly expanded only for a believable footprint, shadow, contact, and occlusion."
+          : "Add the referenced furniture/decor item into the most logical location from the user's instruction and scene context. No mask was provided, so choose a plausible placement without changing the rest of the room.",
+        "Do not add unrelated furniture or decor unless it is a tiny natural integration detail such as a contact shadow.",
       );
     }
   }

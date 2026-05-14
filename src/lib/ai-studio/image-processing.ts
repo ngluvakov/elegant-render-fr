@@ -187,12 +187,12 @@ function createObjectWorkZoneAlpha({
   const padding =
     mode === "source_object"
       ? Math.min(
-          shortSide * 0.28,
-          Math.max(bboxMaxSide * 0.25, shortSide * 0.04),
+          shortSide * 0.48,
+          Math.max(bboxMaxSide * 0.85, shortSide * 0.1),
         )
       : Math.min(
-          shortSide * 0.22,
-          Math.max(bboxMaxSide * 0.18, shortSide * 0.035),
+          shortSide * 0.35,
+          Math.max(bboxMaxSide * 0.55, shortSide * 0.08),
         );
   const x0 = Math.max(0, Math.floor(minX - padding));
   const y0 = Math.max(0, Math.floor(minY - padding));
@@ -232,9 +232,10 @@ async function createObjectSoftWorkZoneAlpha({
     maskInverted,
     mode,
   });
+  const featherRatio = mode === "source_object" ? 0.035 : 0.025;
   const feather = Math.max(
-    12,
-    Math.round(Math.min(dims.width, dims.height) * 0.018),
+    16,
+    Math.round(Math.min(dims.width, dims.height) * featherRatio),
   );
 
   return readSingleChannelRaw(

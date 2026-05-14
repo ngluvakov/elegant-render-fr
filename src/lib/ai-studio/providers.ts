@@ -134,8 +134,8 @@ async function generateWithGemini(
     parts.push({
       text:
         index === 0
-          ? `Image ${index + 2}: primary cropped reference of the object.`
-          : `Image ${index + 2}: additional cropped angle/detail view of the same object.`,
+          ? `Image ${index + 2}: primary furniture/decor reference.`
+          : `Image ${index + 2}: additional angle/detail view of the same furniture/decor item.`,
     });
     parts.push({
       inline_data: {

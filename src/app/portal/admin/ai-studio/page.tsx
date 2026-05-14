@@ -26,6 +26,7 @@ export default async function AdminAiStudioPage() {
     generations.map(async (generation) => {
       let resultUrl: string | null = null;
       let inputUrl: string | null = null;
+      let providerOutputUrl: string | null = null;
       let referenceUrls: string[] = [];
       if (generation.expiresAt > now) {
         if (generation.resultStoragePath) {
@@ -39,6 +40,12 @@ export default async function AdminAiStudioPage() {
             .from("order-files")
             .createSignedUrl(generation.inputStoragePath, 60 * 30);
           inputUrl = data?.signedUrl ?? null;
+        }
+        if (generation.providerOutputStoragePath) {
+          const { data } = await getSupabaseAdmin().storage
+            .from("order-files")
+            .createSignedUrl(generation.providerOutputStoragePath, 60 * 30);
+          providerOutputUrl = data?.signedUrl ?? null;
         }
         const references =
           generation.referenceImages.length > 0
@@ -57,7 +64,7 @@ export default async function AdminAiStudioPage() {
           )
         ).filter((url): url is string => Boolean(url));
       }
-      return { generation, resultUrl, inputUrl, referenceUrls };
+      return { generation, resultUrl, inputUrl, providerOutputUrl, referenceUrls };
     }),
   );
 
@@ -88,7 +95,7 @@ export default async function AdminAiStudioPage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ generation, resultUrl, inputUrl, referenceUrls }) => (
+              {rows.map(({ generation, resultUrl, inputUrl, providerOutputUrl, referenceUrls }) => (
                 <tr
                   key={generation.id}
                   className="border-b border-border/40 last:border-b-0"
@@ -160,6 +167,16 @@ export default async function AdminAiStudioPage() {
                           Rezultat
                         </a>
                       )}
+                      {providerOutputUrl && (
+                        <a
+                          href={providerOutputUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs font-medium text-accent hover:underline"
+                        >
+                          Provider output
+                        </a>
+                      )}
                       {referenceUrls.length > 0 && (
                         <a
                           href={referenceUrls[0]}
@@ -168,11 +185,14 @@ export default async function AdminAiStudioPage() {
                           className="text-xs font-medium text-accent hover:underline"
                         >
                           {referenceUrls.length > 1
-                            ? `Objekti (${referenceUrls.length})`
-                            : "Objekat"}
+                            ? `Reference (${referenceUrls.length})`
+                            : "Referenca"}
                         </a>
                       )}
-                      {!inputUrl && !resultUrl && referenceUrls.length === 0 && (
+                      {!inputUrl &&
+                        !resultUrl &&
+                        !providerOutputUrl &&
+                        referenceUrls.length === 0 && (
                         <span className="text-xs text-muted-foreground">
                           Isteklo
                         </span>

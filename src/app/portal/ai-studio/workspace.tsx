@@ -18,7 +18,6 @@ import {
   Check,
   CircleDashed,
   Coins,
-  Crop,
   Download,
   Eraser,
   ImageIcon,
@@ -47,6 +46,7 @@ import {
   ACTIVE_AI_IMAGE_ENGINES,
   AI_STYLE_OPTIONS,
   DEFAULT_AI_ENGINE_ID,
+  OBJECT_EDIT_ACTIVE_ENGINE_IDS,
   formatCreditsFromUnits,
   formatSelectedOptionLabels,
   getAiEditType,
@@ -138,7 +138,6 @@ type UploadedInput = {
   mimeType: string;
   fileName: string;
   generationId?: string | null;
-  isPreparedReference?: boolean;
 };
 
 type ToolMode = "simple" | "advanced";
@@ -188,7 +187,6 @@ export function AiStudioWorkspace({
   const [parentGenerationId, setParentGenerationId] = useState<string | null>(null);
   const [activeGenerationId, setActiveGenerationId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [preparingReferences, setPreparingReferences] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
@@ -238,13 +236,6 @@ export function AiStudioWorkspace({
   const activeEngine = useMemo(() => getAiImageEngine(engineId), [engineId]);
   const activeInput = baseInput;
   const needsReferenceImage = activeEdit.requiresReferenceImage === true;
-  const unpreparedReferenceCount = useMemo(
-    () =>
-      editType === "object_insertion" && objectMode === "replace"
-        ? referenceInputs.filter((reference) => !isPreparedReference(reference)).length
-        : 0,
-    [editType, objectMode, referenceInputs],
-  );
   const hasPendingJobs = history.some(
     (item) => item.status === "queued" || item.status === "processing",
   );
@@ -291,7 +282,6 @@ export function AiStudioWorkspace({
         activeInput,
         needsReferenceImage,
         referenceCount: referenceInputs.length,
-        unpreparedReferenceCount,
         editType,
         objectMode,
         maskDirty,
@@ -315,7 +305,6 @@ export function AiStudioWorkspace({
       pending,
       referenceInputs.length,
       selectedOption,
-      unpreparedReferenceCount,
     ],
   );
   const guideStage = useMemo<AssistantGuideStage>(() => {
@@ -531,6 +520,15 @@ export function AiStudioWorkspace({
     }
   }, [editType, objectMode]);
 
+  useEffect(() => {
+    if (
+      editType === "object_insertion" &&
+      !OBJECT_EDIT_ACTIVE_ENGINE_IDS.includes(engineId)
+    ) {
+      setEngineId(DEFAULT_AI_ENGINE_ID);
+    }
+  }, [editType, engineId]);
+
   // Wipes the workspace back to defaults — radna slika, rezultat,
   // promptovi, kontrole, modal. Ne dira history ni balance. Sets the
   // dismissed flag so a focus-fired or interval-fired refresh doesn't
@@ -602,12 +600,12 @@ export function AiStudioWorkspace({
     }
     const remaining = MAX_OBJECT_REFERENCE_IMAGES - referenceInputs.length;
     if (remaining <= 0) {
-      setError("Možete dodati najviše 5 slika objekta po obradi.");
+      setError("Možete dodati najviše 5 slika komada po obradi.");
       return;
     }
     const selected = files.slice(0, remaining);
     if (files.length > remaining) {
-      setNotice(`Dodato je ${remaining} slika. Maksimum je 5 uglova objekta.`);
+      setNotice(`Dodato je ${remaining} slika. Maksimum je 5 uglova istog komada.`);
     }
     try {
       const uploads = await Promise.all(
@@ -618,18 +616,17 @@ export function AiStudioWorkspace({
             storagePath: upload.storagePath,
             mimeType: file.type,
             fileName: file.name,
-            isPreparedReference: isPreparedReferenceFileName(file.name),
           };
         }),
       );
       setReferenceInputs((prev) => [...prev, ...uploads]);
       if (referenceInputs.length + uploads.length > 1) {
         setNotice(
-          "Prva slika objekta je autoritativna. Dodatne slike koristimo samo kao pomoćne uglove; ako se razlikuju, AI treba da prati prvu.",
+          "Prva slika je glavna referenca. Dodatni uglovi moraju prikazivati isti komad/model/boju/materijal; ako se razlikuju, AI prati prvu.",
         );
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload slike objekta nije uspeo.");
+      setError(err instanceof Error ? err.message : "Upload slike komada nije uspeo.");
     }
   };
 
@@ -647,132 +644,6 @@ export function AiStudioWorkspace({
       "Izabrana slika je postavljena kao glavna referenca. Ostale slike se koriste samo kao pomoćni uglovi.",
     );
   }, []);
-
-  const handleReferenceCrop = useCallback(
-    async (index: number, file: File) => {
-      setError("");
-      setNotice("");
-      const validationError = validateAiImageFile(file);
-      if (validationError) {
-        setError(validationError);
-        throw new Error(validationError);
-      }
-      markWorkspaceActive();
-      try {
-        const upload = await uploadAiFile(file, "reference");
-        setReferenceInputs((prev) =>
-          prev.map((reference, itemIndex) =>
-            itemIndex === index
-              ? {
-                  url: URL.createObjectURL(file),
-                  storagePath: upload.storagePath,
-                  mimeType: file.type,
-                  fileName: file.name,
-                  isPreparedReference: true,
-                }
-              : reference,
-          ),
-        );
-        setNotice(
-          index === 0
-            ? "Primarna referenca je zamenjena cropom objekta."
-            : "Ugao objekta je zamenjen cropom.",
-        );
-      } catch (err) {
-        const message =
-          err instanceof Error
-            ? err.message
-            : "Crop reference nije mogao da se uploaduje.";
-        setError(message);
-        throw new Error(message);
-      }
-    },
-    [markWorkspaceActive],
-  );
-
-  const handlePrepareReferences = useCallback(async () => {
-    if (referenceInputs.length === 0) {
-      setError("Dodajte bar jednu sliku objekta.");
-      return;
-    }
-    const unprepared = referenceInputs.filter(
-      (reference) => !isPreparedReference(reference),
-    );
-    if (unprepared.length === 0) {
-      setNotice("Reference su već pripremljene za zamenu.");
-      return;
-    }
-    if (balanceUnits < unprepared.length) {
-      setError(
-        `Nemate dovoljno AI kredita za pripremu reference. Potrebno je ${formatCreditsFromUnits(unprepared.length)}.`,
-      );
-      return;
-    }
-
-    try {
-      setPreparingReferences(true);
-      setError("");
-      setNotice("");
-      markWorkspaceActive();
-
-      const response = await fetch("/api/ai-studio/references/prepare", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          references: referenceInputs.map((reference) => ({
-            storagePath: reference.storagePath,
-            mimeType: reference.mimeType,
-            fileName: reference.fileName,
-          })),
-        }),
-      });
-      const result = (await response.json()) as {
-        error?: string;
-        preparedReferences?: Array<UploadedInput & { isPreparedReference: true }>;
-        unitsCharged?: number;
-        balanceUnits?: number;
-      };
-
-      if (result.error) {
-        setError(result.error);
-        return;
-      }
-      if (!result.preparedReferences?.length) {
-        setError("Reference nisu pripremljene. Pokušajte ponovo.");
-        return;
-      }
-
-      setReferenceInputs(
-        result.preparedReferences.map((reference) => ({
-          url: reference.url,
-          storagePath: reference.storagePath,
-          mimeType: reference.mimeType,
-          fileName: reference.fileName ?? "objekat-prepared.png",
-          isPreparedReference: true,
-        })),
-      );
-      if (typeof result.balanceUnits === "number") {
-        setBalanceUnits(result.balanceUnits);
-      }
-      setNotice(
-        (result.unitsCharged ?? 0) > 0
-          ? `Reference su pripremljene. Naplaćeno je ${formatCreditsFromUnits(result.unitsCharged ?? 0)}.`
-          : "Reference su već bile pripremljene, bez dodatne naplate.",
-      );
-      track("ai_reference_prepared", {
-        reference_count: referenceInputs.length,
-        units_charged: result.unitsCharged ?? 0,
-      });
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Priprema reference trenutno nije uspela.",
-      );
-    } finally {
-      setPreparingReferences(false);
-    }
-  }, [balanceUnits, markWorkspaceActive, referenceInputs]);
 
   const setResultAsBaseInput = useCallback((nextInput: UploadedInput) => {
     markWorkspaceActive();
@@ -900,12 +771,8 @@ export function AiStudioWorkspace({
                 fileName:
                   reference.fileName ??
                   (reference.sortOrder === 0
-                    ? "objekat-za-ubacivanje"
-                    : `objekat-ugao-${reference.sortOrder + 1}`),
-                isPreparedReference: isPreparedReference({
-                  storagePath: reference.storagePath,
-                  fileName: reference.fileName ?? null,
-                }),
+                    ? "komad-za-ubacivanje"
+                    : `komad-ugao-${reference.sortOrder + 1}`),
               }))
           : gen.referenceUrl && item.referenceStoragePath
             ? [
@@ -913,11 +780,7 @@ export function AiStudioWorkspace({
                   url: gen.referenceUrl,
                   storagePath: item.referenceStoragePath,
                   mimeType: item.referenceMimeType ?? "image/jpeg",
-                  fileName: gen.referenceFileName ?? "objekat-za-ubacivanje",
-                  isPreparedReference: isPreparedReference({
-                    storagePath: item.referenceStoragePath,
-                    fileName: gen.referenceFileName ?? null,
-                  }),
+                  fileName: gen.referenceFileName ?? "komad-za-ubacivanje",
                 },
               ]
             : [],
@@ -951,15 +814,7 @@ export function AiStudioWorkspace({
       return;
     }
     if (needsReferenceImage && referenceInputs.length === 0) {
-      setError("Dodajte sliku objekta koji želite da ubacite u enterijer.");
-      return;
-    }
-    if (
-      editType === "object_insertion" &&
-      objectMode === "replace" &&
-      unpreparedReferenceCount > 0
-    ) {
-      setError("Pripremite referentne slike objekta pre zamene.");
+      setError("Dodajte sliku nameštaja/dekora koji želite da ubacite u enterijer.");
       return;
     }
     if (
@@ -968,7 +823,7 @@ export function AiStudioWorkspace({
       (!maskBlob || mode !== "advanced" || !maskDirty)
     ) {
       setError(
-        "Za zamenu označite postojeći komad koji menjamo. Maska ne mora biti savršena; sistem će proširiti lokalnu zonu za novi objekat, senku i kontakt.",
+        "Za zamenu označite postojeći komad koji menjamo. Maska ne mora biti savršena; sistem će proširiti lokalnu zonu za novi komad, senku i kontakt.",
       );
       return;
     }
@@ -993,7 +848,7 @@ export function AiStudioWorkspace({
       editType === "object_insertion" && objectMode === "insert" && !maskDirty;
     setNotice(
       objectInsertWithoutMask
-        ? "Generišemo bez maske: AI sam bira poziciju objekta, pa rezultat može biti manje predvidljiv."
+        ? "Generišemo bez maske: AI sam bira poziciju komada, pa rezultat može biti manje predvidljiv."
         : "",
     );
     markWorkspaceActive();
@@ -1039,6 +894,8 @@ export function AiStudioWorkspace({
           selectedOption: selectedOption || null,
           colorHex: activeEdit.supportsColor ? colorHex : null,
           parentGenerationId: linkedParentGenerationId,
+          referenceGuidanceAcknowledged:
+            editType === "object_insertion" && referenceInputs.length > 1,
         }),
       });
 
@@ -1229,8 +1086,6 @@ export function AiStudioWorkspace({
             onReferenceUpload={handleReferenceUpload}
             onReferenceRemove={handleReferenceRemove}
             onReferenceMakePrimary={handleReferenceMakePrimary}
-            onReferenceCrop={handleReferenceCrop}
-            onPrepareReferences={handlePrepareReferences}
             onGenerate={handleGenerate}
             onClearAll={handleClearAll}
             pending={pending}
@@ -1242,8 +1097,6 @@ export function AiStudioWorkspace({
             onMaskDirtyChange={setMaskDirty}
             costPreview={costPreview}
             readiness={readiness}
-            balanceUnits={balanceUnits}
-            preparingReferences={preparingReferences}
           />
         </div>
 
@@ -1313,6 +1166,12 @@ function StudioControls({
   objectMode: ObjectEditMode;
 }) {
   const edit = getAiEditType(editType);
+  const availableEngines =
+    editType === "object_insertion"
+      ? ACTIVE_AI_IMAGE_ENGINES.filter((item) =>
+          OBJECT_EDIT_ACTIVE_ENGINE_IDS.includes(item.id),
+        )
+      : ACTIVE_AI_IMAGE_ENGINES;
 
   return (
     <div className="rounded-2xl border border-border/40 bg-card/60 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
@@ -1336,7 +1195,7 @@ function StudioControls({
           <div>
             <ControlLabel>Engine</ControlLabel>
             <div className="mt-2 grid gap-2">
-              {ACTIVE_AI_IMAGE_ENGINES.map((item) => {
+              {availableEngines.map((item) => {
                 const recommended = edit.recommendedProvider === item.provider;
                 return (
                   <SelectableTile
@@ -1396,7 +1255,7 @@ function StudioControls({
               <p className="mt-1 text-[0.68rem] text-muted-foreground">
                 {edit.requiresReferenceImage
                   ? objectMode === "replace"
-                    ? "Označite postojeći komad koji menjamo; sistem će proširiti lokalnu zonu za novi objekat, senku i kontakt."
+                    ? "Označite postojeći komad koji menjamo; sistem će proširiti lokalnu zonu za novi komad, senku i kontakt."
                     : "Maska je smernica za poziciju; AI može blago proširiti zonu zbog senke, kontakta i prirodnog uklapanja."
                   : "Advanced otključava masku za precizno označavanje."}
               </p>
@@ -1545,8 +1404,6 @@ function AiImageEditor({
   onReferenceUpload,
   onReferenceRemove,
   onReferenceMakePrimary,
-  onReferenceCrop,
-  onPrepareReferences,
   onObjectModeChange,
   onGenerate,
   onClearAll,
@@ -1559,8 +1416,6 @@ function AiImageEditor({
   onMaskDirtyChange,
   costPreview,
   readiness,
-  balanceUnits,
-  preparingReferences,
 }: {
   mode: ToolMode;
   editType: AiEditType;
@@ -1573,8 +1428,6 @@ function AiImageEditor({
   onReferenceUpload: (files: File[]) => void;
   onReferenceRemove: (index: number) => void;
   onReferenceMakePrimary: (index: number) => void;
-  onReferenceCrop: (index: number, file: File) => void;
-  onPrepareReferences: () => void;
   onObjectModeChange: (mode: ObjectEditMode) => void;
   onGenerate: (mask: Blob | null) => void;
   onClearAll: () => void;
@@ -1587,8 +1440,6 @@ function AiImageEditor({
   onMaskDirtyChange: (dirty: boolean) => void;
   costPreview: { unitsCharged: number; freeAttemptIndex: number | null } | null;
   readiness: StudioReadiness;
-  balanceUnits: number;
-  preparingReferences: boolean;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const referenceFileRef = useRef<HTMLInputElement>(null);
@@ -1822,7 +1673,7 @@ function AiImageEditor({
           <h2 className="font-heading text-lg text-foreground">Radna slika</h2>
           <p className="text-sm text-muted-foreground">
             {needsReferenceImage
-              ? "Dodajte fotografiju enterijera i 1-5 slika istog objekta. Maska je smernica za poziciju ili komad za zamenu."
+              ? "Dodajte fotografiju enterijera i 1-5 uglova istog komada nameštaja/dekora. Maska je smernica za poziciju ili komad za zamenu."
               : "Jedna slika po obradi. Advanced maska je opciona."}
           </p>
         </div>
@@ -1869,7 +1720,7 @@ function AiImageEditor({
           <div className="grid grid-cols-2 rounded-lg bg-card/50 p-1">
             {(
               [
-                ["insert", "Dodaj objekat"],
+                ["insert", "Dodaj komad"],
                 ["replace", "Zameni postojeći"],
               ] as const
             ).map(([modeId, label]) => (
@@ -2156,14 +2007,10 @@ function AiImageEditor({
             references={referenceInputs}
             objectMode={objectMode}
             pending={pending}
-            preparing={preparingReferences}
-            balanceUnits={balanceUnits}
             onAdd={() => referenceFileRef.current?.click()}
             onAddFiles={onReferenceUpload}
             onRemove={onReferenceRemove}
             onMakePrimary={onReferenceMakePrimary}
-            onCrop={onReferenceCrop}
-            onPrepare={onPrepareReferences}
           />
         )}
 
@@ -2365,39 +2212,23 @@ function ReferenceImagesPanel({
   references,
   objectMode,
   pending,
-  preparing,
-  balanceUnits,
   onAdd,
   onAddFiles,
   onRemove,
   onMakePrimary,
-  onCrop,
-  onPrepare,
 }: {
   references: UploadedInput[];
   objectMode: ObjectEditMode;
   pending: boolean;
-  preparing: boolean;
-  balanceUnits: number;
   onAdd: () => void;
   onAddFiles: (files: File[]) => void;
   onRemove: (index: number) => void;
   onMakePrimary: (index: number) => void;
-  onCrop: (index: number, file: File) => void;
-  onPrepare: () => void;
 }) {
-  const busy = pending || preparing;
+  const busy = pending;
   const canAdd = references.length < MAX_OBJECT_REFERENCE_IMAGES;
   const [dragOver, setDragOver] = useState(false);
-  const [cropIndex, setCropIndex] = useState<number | null>(null);
-  const cropReference =
-    cropIndex !== null ? references[cropIndex] ?? null : null;
-  const unpreparedCount =
-    objectMode === "replace"
-      ? references.filter((reference) => !isPreparedReference(reference)).length
-      : 0;
-  const prepareUnits = unpreparedCount;
-  const canPrepare = unpreparedCount > 0 && !busy && balanceUnits >= prepareUnits;
+  const hasMultipleReferences = references.length > 1;
 
   const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -2425,7 +2256,7 @@ function ReferenceImagesPanel({
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Objekat / uglovi
+            Nameštaj/dekor / uglovi
           </p>
           <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
             {references.length}/{MAX_OBJECT_REFERENCE_IMAGES} slika
@@ -2445,55 +2276,27 @@ function ReferenceImagesPanel({
         )}
       </div>
 
-      {objectMode === "replace" && references.length > 0 && (
+      {references.length > 0 && (
         <div
           className={cn(
             "mb-3 rounded-xl border px-3 py-2 text-xs",
-            unpreparedCount > 0
+            hasMultipleReferences
               ? "border-amber-300/50 bg-amber-50 text-amber-950"
-              : "border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]",
+              : "border-border/40 bg-card/60 text-muted-foreground",
           )}
         >
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div>
-              <p className="font-semibold">
-                {unpreparedCount > 0
-                  ? "Pripremite reference pre zamene"
-                  : "Reference su spremne za zamenu"}
-              </p>
-              <p className="mt-0.5">
-                {unpreparedCount > 0
-                  ? `Auto-priprema izoluje objekat i košta ${formatCreditsFromUnits(prepareUnits)}.`
-                  : "Glavna obrada će koristiti očišćene/cropovane slike objekta."}
-              </p>
-            </div>
-            {unpreparedCount > 0 && (
-              <Button
-                type="button"
-                variant="accent"
-                size="sm"
-                onClick={onPrepare}
-                disabled={!canPrepare}
-              >
-                {preparing ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    Pripremamo…
-                  </>
-                ) : (
-                  <>
-                    <Crop className="h-3.5 w-3.5" />
-                    Pripremi reference
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
-          {unpreparedCount > 0 && balanceUnits < prepareUnits && (
-            <p className="mt-2 text-[0.68rem] font-semibold">
-              Nedostaje kredita za pripremu.
-            </p>
-          )}
+          <p className="font-semibold">
+            {hasMultipleReferences
+              ? "Više uglova mora biti isti komad"
+              : objectMode === "replace"
+                ? "Referenca ide direktno u zamenu"
+                : "Referenca ide direktno u dodavanje"}
+          </p>
+          <p className="mt-0.5 leading-relaxed">
+            {hasMultipleReferences
+              ? "Dodatne slike treba da prikazuju isti model, boju i materijal. Ako se razlikuju, AI prati prvu sliku kao glavnu."
+              : "Ako slika ima pozadinu ili više predmeta, AI pokušava da koristi najveći, centralni ili najfokusiraniji komad nameštaja/dekora i ignoriše ostatak."}
+          </p>
         </div>
       )}
 
@@ -2506,57 +2309,38 @@ function ReferenceImagesPanel({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={reference.url}
-              alt={index === 0 ? "Primarna slika objekta" : `Ugao objekta ${index + 1}`}
+              alt={index === 0 ? "Primarna slika komada" : `Ugao komada ${index + 1}`}
               className="aspect-square w-full object-contain"
               draggable={false}
             />
             <div className="absolute left-1.5 top-1.5 rounded-full bg-card/90 px-2 py-0.5 text-[0.62rem] font-semibold text-foreground shadow-sm">
               {index === 0 ? "Primarna" : `Ugao ${index + 1}`}
             </div>
-            <div
-              className={cn(
-                "absolute bottom-10 left-1.5 rounded-full px-2 py-0.5 text-[0.58rem] font-semibold shadow-sm",
-                isPreparedReference(reference)
-                  ? "bg-[color:var(--color-sage)]/90 text-white"
-                  : "bg-amber-500/90 text-white",
-              )}
-            >
-              {isPreparedReference(reference) ? "Spremno" : "Pripremiti"}
-            </div>
             <button
               type="button"
               onClick={() => onRemove(index)}
               disabled={busy}
               className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-foreground/75 text-background transition-colors hover:bg-destructive disabled:opacity-50"
-              aria-label={`Ukloni sliku objekta ${index + 1}`}
+              aria-label={`Ukloni sliku komada ${index + 1}`}
             >
               <X className="h-3.5 w-3.5" />
             </button>
             <p className="truncate px-2 py-1.5 font-mono text-[0.62rem] text-muted-foreground">
               {reference.fileName}
             </p>
-            <div className="flex gap-1 px-2 pb-2">
-              <button
-                type="button"
-                onClick={() => setCropIndex(index)}
-                disabled={busy}
-                className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-md border border-border/40 bg-background/70 px-2 text-[0.62rem] font-semibold text-foreground transition-colors hover:border-accent/40 disabled:opacity-50"
-              >
-                <Crop className="h-3 w-3" />
-                Iseci
-              </button>
-              {index > 0 && (
+            {index > 0 && (
+              <div className="px-2 pb-2">
                 <button
                   type="button"
                   onClick={() => onMakePrimary(index)}
                   disabled={busy}
-                  className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-md border border-border/40 bg-background/70 px-2 text-[0.62rem] font-semibold text-foreground transition-colors hover:border-accent/40 disabled:opacity-50"
+                  className="inline-flex h-7 w-full items-center justify-center gap-1 rounded-md border border-border/40 bg-background/70 px-2 text-[0.62rem] font-semibold text-foreground transition-colors hover:border-accent/40 disabled:opacity-50"
                 >
                   <Star className="h-3 w-3" />
-                  Glavna
+                  Postavi kao glavnu
                 </button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         ))}
 
@@ -2571,290 +2355,18 @@ function ReferenceImagesPanel({
               <Upload className="h-4 w-4" />
             </span>
             <span className="text-xs font-semibold text-foreground">
-              {references.length === 0 ? "Dodajte objekat" : "Dodaj ugao"}
+              {references.length === 0 ? "Dodajte komad" : "Dodaj ugao"}
             </span>
           </button>
         )}
       </div>
 
       <p className="mt-3 text-[0.68rem] leading-relaxed text-muted-foreground">
-        Prva slika je autoritativna. Za zamenu koristite crop ili auto-pripremu
-        svake reference; dodatni uglovi služe samo za detalje istog objekta.
+        Podržani su nameštaj, dekor, rasveta, uređaji, biljke i umetnost. Torbe,
+        odeća, ruke, ljudi i sitni lični predmeti nisu namenjeni ovom flow-u.
       </p>
-
-      <ReferenceCropModal
-        reference={cropReference}
-        onClose={() => setCropIndex(null)}
-        onSave={async (file) => {
-          if (cropIndex === null) return;
-          await onCrop(cropIndex, file);
-          setCropIndex(null);
-        }}
-      />
     </div>
   );
-}
-
-type CropRect = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
-
-function ReferenceCropModal({
-  reference,
-  onClose,
-  onSave,
-}: {
-  reference: UploadedInput | null;
-  onClose: () => void;
-  onSave: (file: File) => Promise<void>;
-}) {
-  const imageRef = useRef<HTMLImageElement>(null);
-  const [crop, setCrop] = useState<CropRect>({
-    x: 8,
-    y: 8,
-    width: 84,
-    height: 84,
-  });
-  const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(
-    null,
-  );
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!reference) return;
-    setCrop({ x: 8, y: 8, width: 84, height: 84 });
-    setDragStart(null);
-    setSaving(false);
-    setError("");
-  }, [reference]);
-
-  const pointFromPointer = (event: PointerEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    return {
-      x: clampPercent(((event.clientX - rect.left) / rect.width) * 100),
-      y: clampPercent(((event.clientY - rect.top) / rect.height) * 100),
-    };
-  };
-
-  const updateCropFromPoints = (
-    start: { x: number; y: number },
-    end: { x: number; y: number },
-  ) => {
-    const x = Math.min(start.x, end.x);
-    const y = Math.min(start.y, end.y);
-    const width = Math.max(2, Math.abs(end.x - start.x));
-    const height = Math.max(2, Math.abs(end.y - start.y));
-    setCrop({ x, y, width, height });
-  };
-
-  const handleSave = async () => {
-    if (!reference) return;
-    const image = imageRef.current;
-    if (!image?.naturalWidth || !image.naturalHeight) {
-      setError("Slika nije spremna za crop.");
-      return;
-    }
-
-    const sourceX = Math.round((crop.x / 100) * image.naturalWidth);
-    const sourceY = Math.round((crop.y / 100) * image.naturalHeight);
-    const sourceWidth = Math.round((crop.width / 100) * image.naturalWidth);
-    const sourceHeight = Math.round((crop.height / 100) * image.naturalHeight);
-    if (sourceWidth < 24 || sourceHeight < 24) {
-      setError("Crop zona je premala. Označite veći deo objekta.");
-      return;
-    }
-
-    try {
-      setSaving(true);
-      setError("");
-      const canvas = document.createElement("canvas");
-      canvas.width = sourceWidth;
-      canvas.height = sourceHeight;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("Browser ne može da pripremi crop.");
-      ctx.drawImage(
-        image,
-        sourceX,
-        sourceY,
-        sourceWidth,
-        sourceHeight,
-        0,
-        0,
-        sourceWidth,
-        sourceHeight,
-      );
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        try {
-          canvas.toBlob(
-            (nextBlob) =>
-              nextBlob
-                ? resolve(nextBlob)
-                : reject(new Error("Crop nije mogao da se sačuva.")),
-            "image/jpeg",
-            0.95,
-          );
-        } catch (err) {
-          reject(err);
-        }
-      });
-      await onSave(
-        new File([blob], makeCroppedReferenceFileName(reference.fileName), {
-          type: "image/jpeg",
-        }),
-      );
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Crop nije uspeo. Ako je slika iz istorije, uploadujte je ponovo.",
-      );
-      setSaving(false);
-    }
-  };
-
-  if (!reference) return null;
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-    >
-      <div
-        className="absolute inset-0 bg-foreground/45 backdrop-blur-sm"
-        onClick={saving ? undefined : onClose}
-        aria-hidden="true"
-      />
-      <div className="relative w-full max-w-3xl rounded-2xl border border-border/40 bg-card p-4 shadow-[0_24px_60px_rgba(28,26,25,0.2)]">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              Iseci objekat
-            </p>
-            <h3 className="mt-1 text-base font-semibold text-foreground">
-              Očistite primarnu referencu od ruke, pozadine i viška scene
-            </h3>
-            {reference.fileName && (
-              <p className="mt-0.5 truncate font-mono text-[0.68rem] text-muted-foreground">
-                {reference.fileName}
-              </p>
-            )}
-          </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            onClick={onClose}
-            disabled={saving}
-            aria-label="Zatvori crop alat"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-
-        <div
-          className="relative mt-4 max-h-[68vh] touch-none overflow-hidden rounded-xl border border-border/40 bg-background/70"
-          onPointerDown={(event) => {
-            const point = pointFromPointer(event);
-            event.currentTarget.setPointerCapture(event.pointerId);
-            setDragStart(point);
-            updateCropFromPoints(point, point);
-          }}
-          onPointerMove={(event) => {
-            if (!dragStart) return;
-            updateCropFromPoints(dragStart, pointFromPointer(event));
-          }}
-          onPointerUp={(event) => {
-            if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-              event.currentTarget.releasePointerCapture(event.pointerId);
-            }
-            setDragStart(null);
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            ref={imageRef}
-            src={reference.url}
-            alt="Referenca objekta za crop"
-            className="block max-h-[68vh] w-full select-none object-contain"
-            draggable={false}
-            onError={() => setError("Slika reference nije mogla da se učita.")}
-          />
-          <div
-            className="pointer-events-none absolute border-2 border-white bg-transparent shadow-[0_0_0_9999px_rgba(0,0,0,0.38),0_0_0_1px_rgba(184,80,70,0.85)]"
-            style={{
-              left: `${crop.x}%`,
-              top: `${crop.y}%`,
-              width: `${crop.width}%`,
-              height: `${crop.height}%`,
-            }}
-          />
-        </div>
-
-        {error && (
-          <p className="mt-3 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-            {error}
-          </p>
-        )}
-        <p className="mt-3 text-xs text-muted-foreground">
-          Prevucite preko slike da označite samo objekat. Crop će zameniti ovu
-          referencu i biće poslat AI engine-u umesto slike sa rukom ili pozadinom.
-        </p>
-
-        <div className="mt-4 flex flex-wrap justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setCrop({ x: 8, y: 8, width: 84, height: 84 })}
-            disabled={saving}
-          >
-            Reset
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onClose}
-            disabled={saving}
-          >
-            Otkaži
-          </Button>
-          <Button
-            type="button"
-            variant="accent"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saving ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Čuvamo…
-              </>
-            ) : (
-              <>
-                <Crop className="h-4 w-4" />
-                Sačuvaj crop
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function clampPercent(value: number): number {
-  return Math.min(100, Math.max(0, value));
-}
-
-function makeCroppedReferenceFileName(fileName: string | null | undefined): string {
-  const base = (fileName ?? "objekat")
-    .replace(/\.[a-z0-9]{2,5}$/i, "")
-    .trim() || "objekat";
-  return `${base}-crop.jpg`;
 }
 
 function ToolButton({
@@ -3174,7 +2686,6 @@ function buildAiStudioReadiness({
   activeInput,
   needsReferenceImage,
   referenceCount,
-  unpreparedReferenceCount,
   editType,
   objectMode,
   maskDirty,
@@ -3188,7 +2699,6 @@ function buildAiStudioReadiness({
   activeInput: UploadedInput | null;
   needsReferenceImage: boolean;
   referenceCount: number;
-  unpreparedReferenceCount: number;
   editType: AiEditType;
   objectMode: ObjectEditMode;
   maskDirty: boolean;
@@ -3206,15 +2716,7 @@ function buildAiStudioReadiness({
     blockers.push("Dodajte fotografiju za obradu.");
   }
   if (needsReferenceImage && referenceCount === 0) {
-    blockers.push("Dodajte bar jednu sliku objekta.");
-  }
-  if (
-    editType === "object_insertion" &&
-    objectMode === "replace" &&
-    referenceCount > 0 &&
-    unpreparedReferenceCount > 0
-  ) {
-    blockers.push("Pripremite referentne slike objekta pre zamene.");
+    blockers.push("Dodajte bar jednu sliku nameštaja/dekora.");
   }
   if (editType === "object_insertion" && objectMode === "replace" && !maskDirty) {
     blockers.push("Označite maskom postojeći komad koji menjamo.");
@@ -3242,7 +2744,7 @@ function buildAiStudioReadiness({
   }
   if (editType === "object_insertion" && referenceCount > 1) {
     warnings.push(
-      "Prva slika objekta je glavna; dodatne slike se tretiraju samo kao pomoćni uglovi.",
+      "Dodatni uglovi moraju biti isti komad/model/boja/materijal; ako se razlikuju, AI prati prvu sliku.",
     );
   }
 
@@ -3281,24 +2783,6 @@ function toggleOptionId(current: string, id: string): string {
 
 function isAiEditTypeId(value: string | null): value is AiEditType {
   return Boolean(value && AI_EDIT_TYPES.some((item) => item.id === value));
-}
-
-function isPreparedReference(
-  reference: {
-    storagePath: string;
-    fileName?: string | null;
-    isPreparedReference?: boolean;
-  },
-): boolean {
-  return (
-    reference.isPreparedReference === true ||
-    reference.storagePath.includes("/prepared-references/") ||
-    isPreparedReferenceFileName(reference.fileName)
-  );
-}
-
-function isPreparedReferenceFileName(fileName: string | null | undefined): boolean {
-  return /(?:^|[-_])(?:crop|prepared)\.(?:jpe?g|png|webp)$/i.test(fileName ?? "");
 }
 
 // Mirrors the server-side cost calc in startAiStudioGeneration (which

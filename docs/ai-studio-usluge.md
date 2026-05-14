@@ -2,7 +2,7 @@
 
 ## 1. Sta je AI Studio
 
-AI Studio je deo Elegant Render platforme za brzu obradu fotografija nekretnina i prostora. Korisnik uploaduje fotografiju, izabere tip obrade, opcije i eventualno stil, dopise instrukcije i dobija gotovu sliku koju moze da preuzme ili koristi kao novi ulaz za sledecu obradu. Kod dodavanja objekta u enterijer korisnik dodaje jednu ili vise slika istog objekta, a moze i da zameni postojeci komad maskom.
+AI Studio je deo Elegant Render platforme za brzu obradu fotografija nekretnina i prostora. Korisnik uploaduje fotografiju, izabere tip obrade, opcije i eventualno stil, dopise instrukcije i dobija gotovu sliku koju moze da preuzme ili koristi kao novi ulaz za sledecu obradu. Kod dodavanja ili zamene namestaja/dekora korisnik dodaje jednu ili vise slika istog komada, a za zamenu oznacava postojeci komad maskom.
 
 AI Studio nije zamena za kompletan 3D render ili arhitektonski projekat. Njegova uloga je da ubrza manje i srednje vizuelne intervencije na postojecim fotografijama:
 
@@ -11,7 +11,7 @@ AI Studio nije zamena za kompletan 3D render ili arhitektonski projekat. Njegova
 - zamena neba,
 - promena boje zidova,
 - virtuelno opremanje praznog prostora,
-- dodavanje ili zamena konkretnog objekta u enterijeru,
+- dodavanje ili zamena konkretnog komada namestaja/dekora u enterijeru,
 - vizuelna renovacija,
 - redizajn postojece prostorije.
 
@@ -22,7 +22,7 @@ Glavna vrednost za klijenta je brzina: moze da testira ideju, popravi fotografij
 1. Korisnik ulazi u AI Studio.
 2. AI Studio pocinje prazno: istorija postoji, ali radna slika se ne popunjava automatski.
 3. Korisnik uploaduje sliku ili iz istorije klikne na rezultat koji zeli da koristi.
-4. Bira tip obrade. Za "Dodavanje ili zamena objekta" dodaje jednu ili vise slika istog objekta.
+4. Bira tip obrade. Za "Dodavanje ili zamena namestaja/dekora" dodaje jednu ili vise slika istog komada.
 5. Bira engine, opcije i stil ako postoje.
 6. Po potrebi ukljucuje Advanced mode i crta masku.
 7. Upisuje instrukciju.
@@ -51,7 +51,7 @@ Preporuceno:
 
 Limit u interfejsu:
 
-- jedna osnovna slika po obradi; za "Dodavanje ili zamena objekta" dodaje se 1-5 referentnih slika istog objekta,
+- jedna osnovna slika po obradi; za "Dodavanje ili zamena namestaja/dekora" dodaje se 1-5 referentnih slika istog komada,
 - fajl do 50 MB.
 
 ### Izlazni fajl
@@ -118,14 +118,12 @@ Stil je smer, ne garancija tacnog kataloskog proizvoda. Za najbolje rezultate tr
 
 ### Engine izbor
 
-AI Studio trenutno nudi cetiri engine opcije za nove obrade:
+AI Studio trenutno nudi cetiri engine opcije u katalogu, ali za nove obrade namestaja/dekora prikazuje samo dve stabilnije opcije:
 
 - Nano Banana Pro,
-- Nano Banana,
-- GPT Image 1.5,
-- GPT Image 2 test.
+- GPT Image 1.5.
 
-Default ostaje Nano Banana Pro. GPT Image 2 je test opcija i moze da ne bude dostupna na svakom nalogu/API konfiguraciji.
+Nano Banana i GPT Image 2 ostaju samo radi istorije/kompatibilnosti starih generacija. Default ostaje Nano Banana Pro.
 
 Za dizajn javne stranice engine ne mora biti u prvom planu. Za vecinu korisnika vaznije je pitanje: "Koji alat mi treba?" nego "Koji model radi obradu?"
 
@@ -140,7 +138,7 @@ U samom workspace-u engine moze da ostane kao naprednija kontrola, uz oznaku "Pr
 | Zamena neba | Simple | 0.5 kredita | Ne | Ne | Popravka loseg neba |
 | Promena boje zidova | Simple | 0.5 kredita | Da | Ne | Brza provera boje |
 | Virtuelno opremanje | Complex | 1 kredit | Da | Da | Prazni ili slabo uredjeni prostori |
-| Dodavanje ili zamena objekta | Complex | 1 kredit | Da | Ne | Dodavanje ili zamena konkretnog komada namestaja/dekora u prostoru |
+| Dodavanje ili zamena namestaja/dekora | Complex | 1 kredit | Da | Ne | Dodavanje ili zamena konkretnog komada namestaja/dekora u prostoru |
 | Virtuelna renovacija | Complex | 1 kredit | Da | Da | Materijali, podovi, kuhinje, kupatila |
 | Redizajn prostorije | Complex | 1 kredit | Da | Da | Promena stila i atmosfere postojece sobe |
 
@@ -436,11 +434,11 @@ Najbolja poruka:
 
 "Prazan prostor pretvorite u prostor koji kupac odmah razume."
 
-## 10. Usluga: Dodavanje ili zamena objekta
+## 10. Usluga: Dodavanje ili zamena namestaja/dekora
 
 ### Sta radi
 
-Ubacuje objekat iz jedne ili vise referentnih slika u postojecu fotografiju enterijera, ili zamenjuje postojeci komad oznacen maskom. Cilj je da se proveri kako konkretan komad namestaja, rasvete, dekora, biljke, umetnosti ili uredjaja vizuelno stoji u prostoru.
+Ubacuje komad namestaja/dekora iz jedne ili vise referentnih slika u postojecu fotografiju enterijera, ili zamenjuje postojeci komad oznacen maskom. Cilj je da se proveri kako konkretan komad namestaja, rasvete, dekora, biljke, umetnosti ili uredjaja vizuelno stoji u prostoru. Torbe, odeca, ruke, ljudi i sitni licni predmeti nisu namenjeni ovom flow-u.
 
 ### Kada je korisna
 
@@ -454,29 +452,28 @@ Ubacuje objekat iz jedne ili vise referentnih slika u postojecu fotografiju ente
 Obavezno:
 
 - jedna fotografija enterijera,
-- jedna do pet fotografija istog objekta koji se ubacuje ili koristi za zamenu.
-- za zamenu: maskom oznacen postojeci komad i mala zona senke/kontakta.
+- jedna do pet fotografija istog komada koji se ubacuje ili koristi za zamenu,
+- za zamenu: maskom oznacen postojeci komad koji menjamo.
 
-Tip objekta:
+Tip komada:
 
 - namestaj,
 - dekor,
 - rasveta,
 - uredjaj,
 - biljka,
-- umetnost,
-- drugo.
+- umetnost.
 
 Opcionalno:
 
 - prompt,
-- advanced maska za zonu postavljanja pri dodavanju objekta.
+- advanced maska za okvirnu zonu postavljanja pri dodavanju.
 
-Kod dodavanja bez maske AI sam bira poziciju na osnovu instrukcije i scene, pa rezultat moze biti manje predvidljiv. Kod dodavanja sa maskom, maska je smernica, ne stroga ivica: dozvoljeno je malo prosirenje za senku, kontakt, nogare, rucke, odraz ili prirodno uklapanje. Prva referentna slika je autoritativna; dodatne slike se tretiraju samo kao pomocni uglovi istog objekta.
+Kod dodavanja bez maske AI sam bira poziciju na osnovu instrukcije i scene, pa rezultat moze biti manje predvidljiv. Kod dodavanja sa maskom, maska je smernica, ne stroga ivica. Kod zamene maska oznacava postojeci komad koji menjamo, a sistem sme da prosiri lokalnu zonu zbog proporcije, nogara, rucki, senke, kontakta i perspektive. Prva referentna slika je autoritativna; dodatne slike se tretiraju samo kao pomocni uglovi istog modela/boje/materijala. Ako referenca ima pozadinu ili vise predmeta, provider treba da koristi najveci, centralni ili najfokusiraniji komad namestaja/dekora i ignorise pozadinu, showroom, tekst, ljude i druge predmete.
 
 ### Output
 
-Jedna fotografija enterijera sa uklopljenim ili zamenjenim objektom. Sistem pokusava da sacuva identitet, materijal i proporciju objekta, ali rezultat treba komunicirati kao vizuelnu proveru uklapanja, ne kao garanciju kataloski identicnog proizvoda.
+Jedna fotografija enterijera sa uklopljenim ili zamenjenim komadom. Sistem pokusava da sacuva identitet, materijal i proporciju komada, ali rezultat treba komunicirati kao vizuelnu proveru uklapanja, ne kao garanciju kataloski identicnog proizvoda.
 
 ### Najbolji promptovi
 
@@ -492,11 +489,11 @@ Lose:
 
 ### Napomene za dizajn stranice
 
-Ovu uslugu treba jasno razlikovati od staginga: ne oprema celu prostoriju, nego dodaje ili zamenjuje jedan konkretan referentni objekat.
+Ovu uslugu treba jasno razlikovati od staginga: ne oprema celu prostoriju, nego dodaje ili zamenjuje jedan konkretan referentni komad namestaja/dekora.
 
 Najbolja poruka:
 
-"Proverite kako konkretan objekat izgleda u realnom prostoru ili njime zamenite postojeci komad."
+"Proverite kako konkretan komad izgleda u realnom prostoru ili njime zamenite postojeci komad."
 
 ## 11. Usluga: Virtuelna renovacija
 
@@ -830,12 +827,12 @@ Input: fotografija + tip sobe + stil.
 Output: opremljen prostor.
 Cena: 1 kredit.
 
-### Dodavanje ili zamena objekta
+### Dodavanje ili zamena namestaja/dekora
 
-Ubacite konkretan objekat iz referentnih slika u postojeći enterijer ili zamenite postojeći komad.
+Ubacite konkretan komad namestaja/dekora iz referentnih slika u postojeći enterijer ili zamenite postojeći komad.
 
-Input: fotografija enterijera + 1-5 fotografija istog objekta + tip objekta; za zamenu i maska.
-Output: objekat dodat u prostor ili postojeći komad zamenjen referencom.
+Input: fotografija enterijera + 1-5 fotografija istog komada + tip komada; za zamenu i maska.
+Output: komad dodat u prostor ili postojeći komad zamenjen referencom.
 Cena: 1 kredit.
 
 ### Virtuelna renovacija

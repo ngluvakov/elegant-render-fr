@@ -26,6 +26,7 @@ export default async function AdminAiStudioPage() {
     generations.map(async (generation) => {
       let resultUrl: string | null = null;
       let inputUrl: string | null = null;
+      let maskUrl: string | null = null;
       let providerOutputUrl: string | null = null;
       let referenceUrls: string[] = [];
       if (generation.expiresAt > now) {
@@ -40,6 +41,12 @@ export default async function AdminAiStudioPage() {
             .from("order-files")
             .createSignedUrl(generation.inputStoragePath, 60 * 30);
           inputUrl = data?.signedUrl ?? null;
+        }
+        if (generation.maskStoragePath) {
+          const { data } = await getSupabaseAdmin().storage
+            .from("order-files")
+            .createSignedUrl(generation.maskStoragePath, 60 * 30);
+          maskUrl = data?.signedUrl ?? null;
         }
         if (generation.providerOutputStoragePath) {
           const { data } = await getSupabaseAdmin().storage
@@ -64,7 +71,14 @@ export default async function AdminAiStudioPage() {
           )
         ).filter((url): url is string => Boolean(url));
       }
-      return { generation, resultUrl, inputUrl, providerOutputUrl, referenceUrls };
+      return {
+        generation,
+        resultUrl,
+        inputUrl,
+        maskUrl,
+        providerOutputUrl,
+        referenceUrls,
+      };
     }),
   );
 
@@ -95,7 +109,14 @@ export default async function AdminAiStudioPage() {
               </tr>
             </thead>
             <tbody>
-              {rows.map(({ generation, resultUrl, inputUrl, providerOutputUrl, referenceUrls }) => (
+              {rows.map(({
+                generation,
+                resultUrl,
+                inputUrl,
+                maskUrl,
+                providerOutputUrl,
+                referenceUrls,
+              }) => (
                 <tr
                   key={generation.id}
                   className="border-b border-border/40 last:border-b-0"
@@ -177,6 +198,16 @@ export default async function AdminAiStudioPage() {
                           Provider output
                         </a>
                       )}
+                      {maskUrl && (
+                        <a
+                          href={maskUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs font-medium text-accent hover:underline"
+                        >
+                          Maska
+                        </a>
+                      )}
                       {referenceUrls.length > 0 && (
                         <a
                           href={referenceUrls[0]}
@@ -198,6 +229,15 @@ export default async function AdminAiStudioPage() {
                         </span>
                       )}
                     </div>
+                    {(inputUrl || referenceUrls[0] || maskUrl || providerOutputUrl || resultUrl) && (
+                      <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-5">
+                        <DiagnosticThumb label="Original" url={inputUrl} />
+                        <DiagnosticThumb label="Referenca" url={referenceUrls[0] ?? null} />
+                        <DiagnosticThumb label="Maska" url={maskUrl} />
+                        <DiagnosticThumb label="Raw AI" url={providerOutputUrl} />
+                        <DiagnosticThumb label="Final" url={resultUrl} />
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -216,5 +256,36 @@ export default async function AdminAiStudioPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function DiagnosticThumb({ label, url }: { label: string; url: string | null }) {
+  return (
+    <a
+      href={url ?? undefined}
+      target="_blank"
+      rel="noreferrer"
+      className="block overflow-hidden rounded-lg border border-border/30 bg-background/60"
+      aria-disabled={!url}
+    >
+      <div className="flex aspect-square items-center justify-center bg-secondary/40">
+        {url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={url}
+            alt={label}
+            className="h-full w-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <span className="px-2 text-center text-[0.62rem] text-muted-foreground">
+            Nema
+          </span>
+        )}
+      </div>
+      <p className="truncate px-2 py-1 text-[0.62rem] font-semibold text-muted-foreground">
+        {label}
+      </p>
+    </a>
   );
 }

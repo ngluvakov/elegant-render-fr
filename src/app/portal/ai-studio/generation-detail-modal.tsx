@@ -22,7 +22,9 @@ import {
   CheckCircle2,
   Clock,
   Download,
+  Loader2,
   RefreshCw,
+  Trash2,
   Wand2,
   X,
 } from "lucide-react";
@@ -88,6 +90,8 @@ type Props = {
   onClose: () => void;
   onUseResultAsInput: (generation: GenerationDetail) => void;
   onRepeatWithSameSettings: (generation: GenerationDetail) => void;
+  onDelete: (generation: GenerationDetail) => void;
+  deleting?: boolean;
 };
 
 const STATUS_LABEL: Record<GenerationDetail["status"], string> = {
@@ -125,6 +129,8 @@ export function GenerationDetailModal({
   onClose,
   onUseResultAsInput,
   onRepeatWithSameSettings,
+  onDelete,
+  deleting = false,
 }: Props) {
   useEffect(() => {
     if (!open) return;
@@ -157,6 +163,7 @@ export function GenerationDetailModal({
     generation.status === "completed" &&
     !generation.filesExpired;
   const canUseResult = canDownloadResult && Boolean(generation.resultUrl);
+  const canDelete = generation.status === "completed" || generation.status === "failed";
   const isDerivative = Boolean(generation.parentGenerationId);
   const referenceImages =
     generation.referenceImages.length > 0
@@ -352,6 +359,19 @@ export function GenerationDetailModal({
             >
               <RefreshCw className="h-4 w-4" />
               Ponovi sa istim podešavanjima
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => onDelete(generation)}
+              disabled={!canDelete || deleting}
+            >
+              {deleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+              Obriši kreaciju
             </Button>
           </div>
         </div>

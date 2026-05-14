@@ -54,7 +54,7 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
     lines.push(
       isObjectEdit
         ? options.objectMode === "replace"
-          ? "A mask is provided for Image 1. It marks the existing furniture/decor item to replace, not the exact outline of the new item. Work locally around it and allow enough nearby area for realistic size, legs, handles, contact shadows, occlusion, and perspective."
+          ? "A mask is provided for Image 1. It marks the existing furniture/decor item to remove and replace. Treat it as intent, not as the exact outline of the new item."
           : "A mask is provided for Image 1 as an approximate placement guide. Add the furniture/decor item near the indicated area and allow only small local expansion for footprint, shadow, contact, and natural integration."
         : options.maskInverted
           ? "A mask is provided. The opaque area indicates the region to edit; preserve transparent areas as much as possible."
@@ -72,11 +72,11 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
       "In each reference image, use the largest, most central, or most in-focus furniture/decor item. Ignore the reference background, showroom, room, floor, text, watermark, people, hands, clothing, and unrelated props.",
       "Use the reference image(s) for item identity, form, material, proportions, and visible details, but adapt scale, perspective, lighting, color temperature, contact shadows, and occlusion so the item belongs naturally in Image 1.",
       "Image 2 is authoritative. Use Images 3-N only as supporting angle/detail views of the same item; if any later reference differs in model, color, shape, or material, ignore that later reference and follow Image 2.",
-      "Image 1 must remain the same photograph and the same frame. Do not crop, zoom, pan, rotate, change camera viewpoint, redesign the room, alter walls, windows, floors, existing furniture, lighting, or composition outside the object integration area.",
+      "Image 1 must remain the same photograph and the same frame. Do not crop, zoom, pan, rotate, change camera viewpoint, redesign the room, alter walls, windows, floors, lighting, or composition.",
     );
     if (options.objectMode === "replace") {
       lines.push(
-        "Replace the masked existing interior item with the referenced furniture/decor item. Remove the original item cleanly and preserve the rest of the room. The replacement may extend beyond the exact mask if needed for proportions, feet/legs, handles, shadows, contact with the floor or wall, and perspective.",
+        "Replace the masked existing interior item with the referenced furniture/decor item. Remove the original item cleanly, keep the replacement centered on the marked item, and preserve everything else in the room.",
       );
     } else {
       lines.push(

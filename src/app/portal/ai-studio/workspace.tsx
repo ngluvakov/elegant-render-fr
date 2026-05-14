@@ -195,6 +195,16 @@ export function AiStudioWorkspace({
   const baseInputRef = useRef<UploadedInput | null>(null);
   const activeGenerationIdRef = useRef<string | null>(null);
   const resultSuppressedForInputPathRef = useRef<string | null>(null);
+  const flightTimeoutRef = useRef<number | null>(null);
+  const highlightTimeoutRef = useRef<number | null>(null);
+  const [flightStyle, setFlightStyle] = useState<CSSProperties | null>(null);
+  const [flightKey, setFlightKey] = useState(0);
+  const [highlightGenerationId, setHighlightGenerationId] = useState<string | null>(
+    null,
+  );
+  const [deletingGenerationId, setDeletingGenerationId] = useState<string | null>(
+    null,
+  );
 
   // Set when the user clicks "Resetuj sve" — suppresses the next
   // auto-populate from refreshState / refreshGeneration so the result
@@ -205,6 +215,43 @@ export function AiStudioWorkspace({
   const trackedGenerationOutcomesRef = useRef<Set<string>>(new Set());
   const markWorkspaceActive = useCallback(() => {
     workspaceDismissedRef.current = false;
+  }, []);
+
+  const startHistoryFlight = useCallback((generationId: string) => {
+    setHighlightGenerationId(generationId);
+    if (highlightTimeoutRef.current) {
+      window.clearTimeout(highlightTimeoutRef.current);
+    }
+    highlightTimeoutRef.current = window.setTimeout(
+      () => setHighlightGenerationId(null),
+      1600,
+    );
+
+    const source = document.querySelector<HTMLElement>("[data-ai-generate-button]");
+    const target = document.querySelector<HTMLElement>("[data-ai-history-dropzone]");
+    if (!source || !target) return;
+
+    const sourceRect = source.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const startX = sourceRect.left + sourceRect.width / 2;
+    const startY = sourceRect.top + sourceRect.height / 2;
+    const endX = targetRect.left + Math.min(42, targetRect.width / 2);
+    const endY = targetRect.top + targetRect.height / 2;
+
+    setFlightStyle({
+      "--ai-flight-x0": `${startX}px`,
+      "--ai-flight-y0": `${startY}px`,
+      "--ai-flight-x1": `${endX}px`,
+      "--ai-flight-y1": `${endY}px`,
+    } as CSSProperties);
+    setFlightKey((value) => value + 1);
+    if (flightTimeoutRef.current) {
+      window.clearTimeout(flightTimeoutRef.current);
+    }
+    flightTimeoutRef.current = window.setTimeout(
+      () => setFlightStyle(null),
+      900,
+    );
   }, []);
 
   const trackGenerationOutcome = useCallback((generation: GenerationHistoryItem) => {
@@ -344,6 +391,15 @@ export function AiStudioWorkspace({
   useEffect(() => {
     activeGenerationIdRef.current = activeGenerationId;
   }, [activeGenerationId]);
+
+  useEffect(() => {
+    return () => {
+      if (flightTimeoutRef.current) window.clearTimeout(flightTimeoutRef.current);
+      if (highlightTimeoutRef.current) {
+        window.clearTimeout(highlightTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const requestedTool = new URLSearchParams(window.location.search).get("tool");
@@ -656,6 +712,65 @@ export function AiStudioWorkspace({
     setNotice("Rezultat je postavljen kao nova slika za obradu.");
   }, [markWorkspaceActive]);
 
+  useEffect(() => {
+    const sourceGenerationId = new URLSearchParams(window.location.search).get(
+      "sourceGeneration",
+    );
+    if (!sourceGenerationId) return;
+
+    const controller = new AbortController();
+    const hydrateSourceGeneration = async () => {
+      try {
+        const response = await fetch(
+          `/api/ai-studio/generations/${sourceGenerationId}`,
+          { cache: "no-store", signal: controller.signal },
+        );
+        const data = (await response.json()) as {
+          error?: string;
+          generation?: GenerationHistoryItem;
+        };
+        if (data.error) {
+          setError(data.error);
+          return;
+        }
+        const generation = data.generation;
+        if (
+          !generation ||
+          generation.status !== "completed" ||
+          !generation.resultUrl ||
+          !generation.resultStoragePath ||
+          generation.filesExpired
+        ) {
+          setError("Izabrana AI kreacija nije dostupna kao radna slika.");
+          return;
+        }
+        setHistory((prev) =>
+          prev.some((item) => item.id === generation.id)
+            ? prev.map((item) => (item.id === generation.id ? generation : item))
+            : [generation, ...prev],
+        );
+        const nextInput: UploadedInput = {
+          url: generation.resultUrl,
+          storagePath: generation.resultStoragePath,
+          mimeType: generation.resultMimeType ?? "image/jpeg",
+          fileName: generation.resultFileName ?? "ai-result.jpg",
+          generationId: generation.id,
+        };
+        setCurrentResult(nextInput);
+        setResultAsBaseInput(nextInput);
+        setParentGenerationId(generation.id);
+        setResultUrl(generation.resultUrl);
+        setNotice("AI kreacija je postavljena kao nova radna slika.");
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        setError("AI kreacija trenutno nije dostupna.");
+      }
+    };
+
+    void hydrateSourceGeneration();
+    return () => controller.abort();
+  }, [setResultAsBaseInput]);
+
   // Builds the modal payload from a history item. Wrapper so the
   // workspace doesn't have to know about modal types when wiring clicks.
   const openGeneration = useCallback((item: GenerationHistoryItem) => {
@@ -804,6 +919,62 @@ export function AiStudioWorkspace({
     [history, markWorkspaceActive],
   );
 
+  const handleDeleteGeneration = useCallback(
+    async (item: GenerationHistoryItem | GenerationDetail) => {
+      if (item.status === "queued" || item.status === "processing") {
+        setError("Obrada je još u toku. Sačekajte završetak pre brisanja.");
+        return;
+      }
+      const confirmed = window.confirm(
+        "Trajno obrisati ovu AI kreaciju i njene fajlove? Ova radnja ne može da se poništi.",
+      );
+      if (!confirmed) return;
+
+      const previousHistory = history;
+      const previousCurrentResult = currentResult;
+      const previousResultUrl = resultUrl;
+      const previousActiveGenerationId = activeGenerationId;
+      const previousParentGenerationId = parentGenerationId;
+      setDeletingGenerationId(item.id);
+      setHistory((prev) => prev.filter((entry) => entry.id !== item.id));
+      setOpenGenerationId((current) => (current === item.id ? null : current));
+      if (activeGenerationId === item.id) setActiveGenerationId(null);
+      if (currentResult?.generationId === item.id) {
+        setCurrentResult(null);
+        setResultUrl(null);
+      }
+      if (parentGenerationId === item.id) setParentGenerationId(null);
+      setError("");
+
+      try {
+        const response = await fetch(`/api/ai-studio/generations/${item.id}`, {
+          method: "DELETE",
+        });
+        const data = (await response.json()) as { error?: string };
+        if (!response.ok || data.error) {
+          setHistory(previousHistory);
+          setCurrentResult(previousCurrentResult);
+          setResultUrl(previousResultUrl);
+          setActiveGenerationId(previousActiveGenerationId);
+          setParentGenerationId(previousParentGenerationId);
+          setError(data.error ?? "Brisanje nije uspelo.");
+          return;
+        }
+        setNotice("AI kreacija je trajno obrisana.");
+      } catch {
+        setHistory(previousHistory);
+        setCurrentResult(previousCurrentResult);
+        setResultUrl(previousResultUrl);
+        setActiveGenerationId(previousActiveGenerationId);
+        setParentGenerationId(previousParentGenerationId);
+        setError("Brisanje nije uspelo. Pokušajte ponovo.");
+      } finally {
+        setDeletingGenerationId(null);
+      }
+    },
+    [activeGenerationId, currentResult, history, parentGenerationId, resultUrl],
+  );
+
   const handleGenerate = async (maskBlob: Blob | null) => {
     if (!readiness.canGenerate) {
       setError(readiness.primaryMessage ?? "Proverite šta nedostaje pre generisanja.");
@@ -917,6 +1088,7 @@ export function AiStudioWorkspace({
         return;
       }
       setActiveGenerationId(result.generationId);
+      startHistoryFlight(result.generationId);
 
       track("ai_generation_started", {
         edit_type: editType,
@@ -1022,6 +1194,17 @@ export function AiStudioWorkspace({
 
   return (
     <div className="space-y-6">
+      {flightStyle && (
+        <div
+          key={flightKey}
+          className="ai-history-flight"
+          style={flightStyle}
+          aria-hidden="true"
+        >
+          <Sparkles className="h-4 w-4" />
+          <span>AI obrada</span>
+        </div>
+      )}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -1102,6 +1285,8 @@ export function AiStudioWorkspace({
 
         <HistoryPanel
           history={history}
+          highlightedId={highlightGenerationId}
+          deletingId={deletingGenerationId}
           onOpen={openGeneration}
           onUseResult={(item) => {
             if (!item.resultUrl || !item.resultStoragePath || item.filesExpired) return;
@@ -1117,6 +1302,7 @@ export function AiStudioWorkspace({
             setParentGenerationId(item.id);
             setResultUrl(item.resultUrl);
           }}
+          onDelete={handleDeleteGeneration}
         />
       </div>
 
@@ -1127,6 +1313,10 @@ export function AiStudioWorkspace({
         onClose={closeGenerationModal}
         onUseResultAsInput={handleModalUseResult}
         onRepeatWithSameSettings={handleModalRepeat}
+        onDelete={handleDeleteGeneration}
+        deleting={Boolean(
+          openedGeneration && deletingGenerationId === openedGeneration.id,
+        )}
       />
     </div>
   );
@@ -2135,6 +2325,7 @@ function AiImageEditor({
             type="button"
             variant="accent"
             size="lg"
+            data-ai-generate-button
             disabled={
               !readiness.canGenerate
             }
@@ -2396,20 +2587,40 @@ function ToolButton({
 
 function HistoryPanel({
   history,
+  highlightedId,
+  deletingId,
   onOpen,
   onUseResult,
+  onDelete,
 }: {
   history: GenerationHistoryItem[];
+  highlightedId: string | null;
+  deletingId: string | null;
   onOpen: (item: GenerationHistoryItem) => void;
   onUseResult: (item: GenerationHistoryItem) => void;
+  onDelete: (item: GenerationHistoryItem) => void;
 }) {
+  const listRef = useRef<HTMLDivElement>(null);
+  const firstId = history[0]?.id ?? null;
+
+  useEffect(() => {
+    if (!firstId) return;
+    listRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }, [firstId]);
+
   return (
-    <aside className="rounded-2xl border border-border/40 bg-card/60 p-4 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
-      <div className="mb-4">
+    <aside className="rounded-2xl border border-border/40 bg-card/60 p-4 shadow-[0_4px_16px_rgba(28,26,25,0.03)] xl:sticky xl:top-8 xl:flex xl:h-[calc(100vh-7rem)] xl:min-h-[calc(100vh-7rem)] xl:flex-col">
+      <div className="mb-4" data-ai-history-dropzone>
         <h2 className="font-heading text-lg text-foreground">Istorija</h2>
         <p className="mt-1 text-xs text-muted-foreground">
           Klikni na obradu za detalje. Fajlovi su dostupni 30 dana.
         </p>
+        <Link
+          href="/portal/ai-kreacije"
+          className="mt-2 inline-flex text-xs font-semibold text-accent hover:underline"
+        >
+          Prikaži sve AI kreacije
+        </Link>
       </div>
       {history.length === 0 ? (
         <EmptyState
@@ -2418,11 +2629,14 @@ function HistoryPanel({
           description="Vaše AI obrade će se pojaviti ovde."
         />
       ) : (
-        <div className="space-y-3">
+        <div ref={listRef} className="scrollbar-warm min-h-0 space-y-3 overflow-y-auto pr-1 xl:flex-1">
           {history.map((item) => (
             <div
               key={item.id}
-              className="overflow-hidden rounded-xl border border-border/40 bg-card/40 transition-colors hover:border-accent/40 hover:bg-card/80"
+              className={cn(
+                "overflow-hidden rounded-xl border border-border/40 bg-card/40 transition-colors hover:border-accent/40 hover:bg-card/80",
+                highlightedId === item.id && "flash-new border-accent/60 bg-accent/5",
+              )}
             >
               <button
                 type="button"
@@ -2480,30 +2694,55 @@ function HistoryPanel({
                   )}
                 </div>
               </button>
-              {item.resultUrl && !item.filesExpired && (
+              {(item.resultUrl && !item.filesExpired) ||
+              item.status === "completed" ||
+              item.status === "failed" ? (
                 <div className="flex gap-2 border-t border-border/30 p-3 pt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onUseResult(item);
-                    }}
-                  >
-                    Koristi kao sliku
-                  </Button>
-                  <a
-                    href={item.downloadUrl ?? `/api/ai-studio/generations/${item.id}/download`}
-                    download
-                    onClick={(event) => event.stopPropagation()}
-                    className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.8rem] font-medium text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
-                  >
-                    <Download className="h-3 w-3" />
-                    Preuzmi
-                  </a>
+                  {item.resultUrl && !item.filesExpired && (
+                    <>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onUseResult(item);
+                        }}
+                      >
+                        Koristi kao sliku
+                      </Button>
+                      <a
+                        href={item.downloadUrl ?? `/api/ai-studio/generations/${item.id}/download`}
+                        download
+                        onClick={(event) => event.stopPropagation()}
+                        className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.8rem] font-medium text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
+                      >
+                        <Download className="h-3 w-3" />
+                        Preuzmi
+                      </a>
+                    </>
+                  )}
+                  {(item.status === "completed" || item.status === "failed") && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onDelete(item);
+                      }}
+                      disabled={deletingId === item.id}
+                    >
+                      {deletingId === item.id ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-3.5 w-3.5" />
+                      )}
+                      Obriši
+                    </Button>
+                  )}
                 </div>
-              )}
+              ) : null}
             </div>
           ))}
         </div>

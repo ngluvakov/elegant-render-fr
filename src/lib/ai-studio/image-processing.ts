@@ -187,12 +187,12 @@ function createObjectWorkZoneAlpha({
   const padding =
     mode === "source_object"
       ? Math.min(
-          shortSide * 0.48,
-          Math.max(bboxMaxSide * 0.85, shortSide * 0.1),
+          shortSide * 0.28,
+          Math.max(bboxMaxSide * 0.35, shortSide * 0.06),
         )
       : Math.min(
-          shortSide * 0.35,
-          Math.max(bboxMaxSide * 0.55, shortSide * 0.08),
+          shortSide * 0.22,
+          Math.max(bboxMaxSide * 0.25, shortSide * 0.04),
         );
   const x0 = Math.max(0, Math.floor(minX - padding));
   const y0 = Math.max(0, Math.floor(minY - padding));
@@ -232,9 +232,9 @@ async function createObjectSoftWorkZoneAlpha({
     maskInverted,
     mode,
   });
-  const featherRatio = mode === "source_object" ? 0.035 : 0.025;
+  const featherRatio = mode === "source_object" ? 0.024 : 0.018;
   const feather = Math.max(
-    16,
+    12,
     Math.round(Math.min(dims.width, dims.height) * featherRatio),
   );
 
@@ -244,6 +244,31 @@ async function createObjectSoftWorkZoneAlpha({
     }).blur(feather),
     dims,
   );
+}
+
+async function createUserMaskSoftEditAlpha({
+  mask,
+  dims,
+  maskInverted,
+}: {
+  mask: Buffer;
+  dims: Dimensions;
+  maskInverted: boolean;
+}): Promise<Buffer> {
+  const maskAlpha = sharp(mask)
+    .ensureAlpha()
+    .resize(dims.width, dims.height, {
+      fit: "fill",
+      kernel: sharp.kernel.nearest,
+    })
+    .extractChannel("alpha");
+  const editAlphaPipeline = maskInverted ? maskAlpha : maskAlpha.negate();
+  const feather = Math.max(
+    8,
+    Math.round(Math.min(dims.width, dims.height) * 0.012),
+  );
+
+  return readSingleChannelRaw(editAlphaPipeline.blur(feather), dims);
 }
 
 export async function getImageDimensions(buffer: Buffer): Promise<Dimensions> {
@@ -380,12 +405,19 @@ export async function prepareObjectMaskForProvider(
   dims: Dimensions,
   mode: ObjectMaskMode = "placement_guide",
 ): Promise<Buffer> {
-  const editAlpha = await createObjectSoftWorkZoneAlpha({
-    mask: buffer,
-    dims,
-    maskInverted: false,
-    mode,
-  });
+  const editAlpha =
+    mode === "source_object"
+      ? await createUserMaskSoftEditAlpha({
+          mask: buffer,
+          dims,
+          maskInverted: false,
+        })
+      : await createObjectSoftWorkZoneAlpha({
+          mask: buffer,
+          dims,
+          maskInverted: false,
+          mode,
+        });
   const maskAlpha = await readSingleChannelRaw(
     sharp(editAlpha, {
       raw: { width: dims.width, height: dims.height, channels: 1 },

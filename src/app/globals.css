@@ -232,6 +232,48 @@
   }
 }
 
+.ai-history-flight {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--color-accent) 55%, transparent);
+  background: color-mix(in oklab, var(--color-card) 92%, transparent);
+  color: var(--color-foreground);
+  padding: 8px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 18px 44px -18px rgba(159, 106, 75, 0.55);
+  pointer-events: none;
+  transform: translate(var(--ai-flight-x0), var(--ai-flight-y0)) scale(1);
+  animation: ai-history-flight 840ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes ai-history-flight {
+  0% {
+    opacity: 0;
+    transform: translate(var(--ai-flight-x0), var(--ai-flight-y0)) scale(0.86);
+  }
+  16% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.22;
+    transform: translate(var(--ai-flight-x1), var(--ai-flight-y1)) scale(0.72);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-history-flight {
+    animation: er-flash-new 500ms ease-out forwards;
+    transform: translate(var(--ai-flight-x1), var(--ai-flight-y1));
+  }
+}
+
 /*
   --reveal — registered custom property for the AI Studio tool picker's
   diagonal before/after mask. Registering via @property lets the CSS engine

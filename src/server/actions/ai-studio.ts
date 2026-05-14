@@ -10,6 +10,7 @@ import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { enforceCleanScan } from "@/lib/file-scan";
 import {
+  AI_EDIT_TYPES,
   AI_FILE_RETENTION_DAYS,
   AI_FREE_REGENERATIONS,
   addDays,
@@ -168,6 +169,24 @@ export type AiStudioStatusResult = {
   creditsExpireAt?: string | null;
 };
 
+export type AiStudioGenerationListInput = {
+  cursor?: string | null;
+  limit?: number | null;
+  status?: AiGenerationStatusValue | "all" | null;
+  editType?: AiEditType | "all" | null;
+};
+
+export type AiStudioGenerationListResult = {
+  error?: string;
+  generations?: SignedAiGeneration[];
+  nextCursor?: string | null;
+};
+
+export type AiStudioDeleteGenerationResult = {
+  error?: string;
+  deletedId?: string;
+};
+
 type GenerationOptions = {
   selectedOption: string | null;
   colorHex: string | null;
@@ -208,6 +227,108 @@ export async function getAiStudioState() {
     creditsExpireAt: user?.aiCreditsExpireAt?.toISOString() ?? null,
     generations: signedGenerations,
   };
+}
+
+export async function listAiStudioGenerations(
+  input: AiStudioGenerationListInput = {},
+): Promise<AiStudioGenerationListResult> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return { error: "Niste prijavljeni." };
+
+  await expireAiCreditsIfNeeded(userId);
+
+  const limit = Math.min(Math.max(input.limit ?? 24, 1), 60);
+  const where: Prisma.AiGenerationWhereInput = { userId };
+
+  if (input.status && input.status !== "all") {
+    where.status = input.status;
+  }
+  if (
+    input.editType &&
+    input.editType !== "all" &&
+    AI_EDIT_TYPES.some((item) => item.id === input.editType)
+  ) {
+    where.editType = input.editType;
+  }
+
+  try {
+    const rows = await prisma.aiGeneration.findMany({
+      where,
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take: limit + 1,
+      ...(input.cursor ? { cursor: { id: input.cursor }, skip: 1 } : {}),
+    });
+
+    const hasMore = rows.length > limit;
+    const pageRows = hasMore ? rows.slice(0, limit) : rows;
+    const generations = await Promise.all(
+      pageRows.map((generation) => signGeneration(generation)),
+    );
+
+    return {
+      generations,
+      nextCursor: hasMore ? pageRows[pageRows.length - 1]?.id ?? null : null,
+    };
+  } catch (err) {
+    console.error("[AI Studio] Generation list failed", {
+      userId,
+      cursor: input.cursor,
+      message: err instanceof Error ? err.message : String(err),
+    });
+    return { error: "AI kreacije trenutno nisu dostupne." };
+  }
+}
+
+export async function deleteAiStudioGeneration(
+  generationId: string,
+): Promise<AiStudioDeleteGenerationResult> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return { error: "Niste prijavljeni." };
+
+  const generation = await prisma.aiGeneration.findFirst({
+    where: { id: generationId, userId },
+    include: { referenceImages: true },
+  });
+  if (!generation) return { error: "AI obrada nije pronađena." };
+  if (generation.status === "queued" || generation.status === "processing") {
+    return {
+      error:
+        "Obrada je još u toku. Sačekajte da se završi ili ne uspe pre brisanja.",
+    };
+  }
+
+  const candidatePaths = collectGenerationStoragePaths(generation);
+
+  await prisma.$transaction(async (tx) => {
+    await tx.aiGeneration.updateMany({
+      where: { userId, parentGenerationId: generation.id },
+      data: { parentGenerationId: null },
+    });
+
+    await tx.aiGeneration.updateMany({
+      where: {
+        userId,
+        id: { not: generation.id },
+        paidGenerationId: generation.id,
+      },
+      data: {
+        paidGenerationId: null,
+        freeAttemptIndex: null,
+      },
+    });
+
+    await tx.aiGeneration.delete({ where: { id: generation.id } });
+  });
+
+  await removeUnusedAiStudioFiles(candidatePaths);
+
+  revalidatePath("/portal/ai-studio");
+  revalidatePath("/portal/ai-kreacije");
+  revalidatePath("/portal/admin/ai-studio");
+
+  return { deletedId: generation.id };
 }
 
 export async function startAiStudioGeneration(
@@ -507,6 +628,7 @@ export async function startAiStudioGeneration(
   }
 
   revalidatePath("/portal/ai-studio");
+  revalidatePath("/portal/ai-kreacije");
 
   return {
     generationId: generation.id,
@@ -747,6 +869,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
   }
 
   revalidatePath("/portal/ai-studio");
+  revalidatePath("/portal/ai-kreacije");
 }
 
 async function logAiOutputProcessingFailure({
@@ -900,6 +1023,7 @@ async function failAiGeneration(generation: AiGeneration, message: string) {
   }
 
   revalidatePath("/portal/ai-studio");
+  revalidatePath("/portal/ai-kreacije");
 }
 
 async function resolveGenerationReferenceImages(
@@ -1144,6 +1268,85 @@ async function findKnownReferenceImage(userId: string, storagePath: string) {
 
 function ownsAiStudioPath(userId: string, storagePath: string) {
   return storagePath.startsWith(`ai-studio/${userId}/`);
+}
+
+function collectGenerationStoragePaths(
+  generation: AiGeneration & {
+    referenceImages: Pick<AiGenerationReferenceImage, "storagePath">[];
+  },
+): string[] {
+  const paths = new Set<string>();
+  paths.add(generation.inputStoragePath);
+  if (generation.maskStoragePath) paths.add(generation.maskStoragePath);
+  if (generation.referenceStoragePath) paths.add(generation.referenceStoragePath);
+  if (generation.resultStoragePath) paths.add(generation.resultStoragePath);
+  if (generation.providerOutputStoragePath) {
+    paths.add(generation.providerOutputStoragePath);
+  }
+  for (const reference of generation.referenceImages) {
+    paths.add(reference.storagePath);
+  }
+  return [...paths];
+}
+
+async function removeUnusedAiStudioFiles(paths: string[]) {
+  const candidates = new Set(paths.filter(Boolean));
+  if (candidates.size === 0) return;
+
+  const pathList = [...candidates];
+  const [generations, references] = await Promise.all([
+    prisma.aiGeneration.findMany({
+      where: {
+        OR: [
+          { inputStoragePath: { in: pathList } },
+          { maskStoragePath: { in: pathList } },
+          { referenceStoragePath: { in: pathList } },
+          { resultStoragePath: { in: pathList } },
+          { providerOutputStoragePath: { in: pathList } },
+        ],
+      },
+      select: {
+        inputStoragePath: true,
+        maskStoragePath: true,
+        referenceStoragePath: true,
+        resultStoragePath: true,
+        providerOutputStoragePath: true,
+      },
+    }),
+    prisma.aiGenerationReferenceImage.findMany({
+      where: { storagePath: { in: pathList } },
+      select: { storagePath: true },
+    }),
+  ]);
+
+  for (const generation of generations) {
+    candidates.delete(generation.inputStoragePath);
+    if (generation.maskStoragePath) candidates.delete(generation.maskStoragePath);
+    if (generation.referenceStoragePath) {
+      candidates.delete(generation.referenceStoragePath);
+    }
+    if (generation.resultStoragePath) candidates.delete(generation.resultStoragePath);
+    if (generation.providerOutputStoragePath) {
+      candidates.delete(generation.providerOutputStoragePath);
+    }
+  }
+  for (const reference of references) {
+    candidates.delete(reference.storagePath);
+  }
+
+  const removable = [...candidates];
+  for (let index = 0; index < removable.length; index += 100) {
+    const chunk = removable.slice(index, index + 100);
+    const { error } = await getSupabaseAdmin()
+      .storage.from("order-files")
+      .remove(chunk);
+    if (error) {
+      console.error("[AI Studio] User delete storage cleanup failed", {
+        count: chunk.length,
+        message: error.message,
+      });
+    }
+  }
 }
 
 async function downloadStorageFile(storagePath: string) {

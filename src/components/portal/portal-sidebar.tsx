@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Headphones,
   ImageIcon,
+  Images,
   Inbox,
   LayoutDashboard,
   LogOut,
@@ -29,6 +30,7 @@ const CLIENT_NAV = [
   { href: "/portal", label: "Pregled", icon: LayoutDashboard, exact: true },
   { href: "/portal/porudzbine", label: "Porudžbine", icon: ShoppingBag, exact: false },
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
+  { href: "/portal/ai-kreacije", label: "AI kreacije", icon: Images, exact: false },
   { href: "/portal/profil", label: "Profil", icon: User, exact: true },
 ];
 
@@ -41,6 +43,12 @@ const ADMIN_NAV = [
     exact: false,
   },
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
+  {
+    href: "/portal/ai-kreacije",
+    label: "AI kreacije",
+    icon: Images,
+    exact: false,
+  },
   {
     href: "/portal/admin/upiti",
     label: "Upiti",

@@ -5,15 +5,13 @@ import {
   getAiEditType,
   getAiEngineLabelForGeneration,
 } from "@/lib/ai-studio/catalog";
-import {
-  createObjectWorkZoneOverlay,
-  getImageDimensions,
-} from "@/lib/ai-studio/image-processing";
 
 export const metadata: Metadata = {
   title: "AI Studio generacije",
   robots: { index: false, follow: false },
 };
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminAiStudioPage() {
   const generations = await prisma.aiGeneration.findMany({
@@ -63,30 +61,7 @@ export default async function AdminAiStudioPage() {
           generation.editType === "object_insertion" &&
           generation.maskStoragePath
         ) {
-          try {
-            const { data } = await getSupabaseAdmin().storage
-              .from("order-files")
-              .download(generation.maskStoragePath);
-            if (data) {
-              const mask = Buffer.from(await data.arrayBuffer());
-              const options = readObjectDebugOptions(generation.optionsJson);
-              const overlay = await createObjectWorkZoneOverlay({
-                mask,
-                dims: await getImageDimensions(mask),
-                maskInverted: options.maskInverted,
-                mode: options.objectMode === "replace"
-                  ? "source_object"
-                  : "placement_guide",
-                category: options.selectedOption,
-              });
-              workZoneOverlayUrl = `data:image/png;base64,${overlay.toString("base64")}`;
-            }
-          } catch (error) {
-            console.error("[AI Studio] Work-zone overlay failed", {
-              generationId: generation.id,
-              error,
-            });
-          }
+          workZoneOverlayUrl = `/api/admin/ai-studio/work-zone/${generation.id}`;
         }
         const references =
           generation.referenceImages.length > 0
@@ -294,23 +269,6 @@ export default async function AdminAiStudioPage() {
       </div>
     </div>
   );
-}
-
-function readObjectDebugOptions(value: unknown): {
-  selectedOption: string | null;
-  maskInverted: boolean;
-  objectMode: "insert" | "replace";
-} {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return { selectedOption: null, maskInverted: false, objectMode: "insert" };
-  }
-  const data = value as Record<string, unknown>;
-  return {
-    selectedOption:
-      typeof data.selectedOption === "string" ? data.selectedOption : null,
-    maskInverted: data.maskInverted === true,
-    objectMode: data.objectMode === "replace" ? "replace" : "insert",
-  };
 }
 
 function DiagnosticThumb({ label, url }: { label: string; url: string | null }) {

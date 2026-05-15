@@ -24,6 +24,12 @@ model User {
   aiCreditsExpireAt         DateTime?
   aiCreditsReminder30SentAt DateTime?
   aiCreditsReminder7SentAt  DateTime?
+  billingBuyerType          BuyerType @default(individual)
+  billingCountryCode        String?
+  billingCompanyName        String?
+  billingCompanyTaxId       String?
+  billingCompanyMb          String?
+  billingCompanyAddress     String?   @db.Text
   // GDPR Art. 17 erasure request. Set when the user clicks "Obriši
   // nalog" in the profile; admin reconciles within 30 days. Hard
   // deletion is constrained by the Zakon o računovodstvu 10-year
@@ -166,6 +172,11 @@ enum PaymentMethod {
   wire_transfer
 }
 
+enum BillingCurrency {
+  RSD
+  EUR
+}
+
 model Order {
   id                 String           @id @default(cuid())
   orderNumber        String           @unique
@@ -197,11 +208,16 @@ model Order {
   //   companyMb     — matični broj, only meaningful for company_rs.
   //   companyCountryCode — ISO-3166-1 alpha-2; null for individual.
   buyerType          BuyerType        @default(individual)
+  buyerCountryCode   String?
   companyName        String?
   companyTaxId       String?
   companyMb          String?
   companyAddress     String?          @db.Text
   companyCountryCode String?
+  billingCurrency    BillingCurrency?
+  billingVatRate     Float?
+  billingEurToRsdRate Float?
+  billingTotalCents  Int?
   // VIES (VAT Information Exchange System) verification snapshot for
   // company_foreign orders. Populated when admin clicks "Proveri VAT
   // (VIES)" on the order detail. Stored as a snapshot — VIES queries
@@ -375,6 +391,17 @@ model OrderCharge {
   requestedById   String
   reason          String?           @db.Text
   totalCents      Int
+  buyerType       BuyerType?
+  buyerCountryCode String?
+  companyName     String?
+  companyTaxId    String?
+  companyMb       String?
+  companyAddress  String?           @db.Text
+  companyCountryCode String?
+  billingCurrency BillingCurrency?
+  billingVatRate  Float?
+  billingEurToRsdRate Float?
+  billingTotalCents Int?
   status          OrderChargeStatus @default(pending)
   paymentProvider PaymentProvider?
   paymentId       String?

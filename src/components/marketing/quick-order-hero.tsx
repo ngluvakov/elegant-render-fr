@@ -1,6 +1,7 @@
 /**
- * QuickOrderHero — Home page hero section with a vertical service picker,
- * variant selector, order summary card, and "minimalni ulaz" material preview.
+ * QuickOrderHero — Home page hero with a global mode toggle (Ekspertski / AI)
+ * that swaps the service catalog between in-house expert services and AI
+ * Studio tools. Expert mode is the default.
  *
  * Used on: / (home page).
  */
@@ -11,22 +12,28 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
+  Armchair,
   BadgeCheck,
   Calculator,
   Camera,
   Check,
   ChevronDown,
   ChevronUp,
+  CloudSun,
   Eraser,
   FileImage,
   Home,
   Images,
   Layers,
   LayoutGrid,
+  Paintbrush,
+  Palette,
   RefreshCcw,
+  Sofa,
   Sparkles,
   Sun,
   Trees,
+  Wand2,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -36,8 +43,16 @@ import {
   usePublicPricingSettings,
 } from "@/components/site/public-currency-provider";
 import { SERVICES, type ServiceIcon } from "@/lib/catalog/services";
+import {
+  AI_CREDIT_TIERS,
+  AI_CREDIT_UNITS_PER_CREDIT,
+  AI_EDIT_TYPES,
+  type AiEditType,
+} from "@/lib/ai-studio/catalog";
 import { formatPublicPriceText } from "@/lib/catalog/display-currency";
 import { SITE, TRUST_SIGNALS } from "@/lib/content/site";
+
+type PanelMode = "expert" | "ai";
 
 const ICON_MAP: Record<ServiceIcon, LucideIcon> = {
   home: Home,
@@ -53,17 +68,69 @@ const ICON_MAP: Record<ServiceIcon, LucideIcon> = {
   eraser: Eraser,
 };
 
+const AI_ICON_MAP: Record<AiEditType, LucideIcon> = {
+  item_removal: Eraser,
+  day_to_dusk: Sun,
+  sky_replacement: CloudSun,
+  wall_color_change: Paintbrush,
+  virtual_staging: Sofa,
+  object_insertion: Armchair,
+  virtual_renovation: Wand2,
+  room_redesign: Palette,
+};
+
 /** How far the up/down chevrons scroll the services list per click (px). */
 const SCROLL_STEP_PX = 220;
+
+/** Base credit cost in EUR at the entry tier (1 kr = €2 here). */
+const AI_BASE_EUR_PER_CREDIT =
+  AI_CREDIT_TIERS[AI_CREDIT_TIERS.length - 1].centsPerCredit / 100;
+
+/** Cheapest tier (highest volume). */
+const AI_VOLUME_EUR_PER_CREDIT =
+  AI_CREDIT_TIERS[0].centsPerCredit / 100;
+
+/** EUR price for one edit at the base tier. */
+function aiBaseEur(units: number): number {
+  return (units / AI_CREDIT_UNITS_PER_CREDIT) * AI_BASE_EUR_PER_CREDIT;
+}
+
+/** EUR price for one edit at the volume (100+ credits) tier. */
+function aiVolumeEur(units: number): number {
+  return (units / AI_CREDIT_UNITS_PER_CREDIT) * AI_VOLUME_EUR_PER_CREDIT;
+}
+
+/** Credit cost for one edit (0.5 or 1.0). */
+function aiCreditsLabel(units: number): string {
+  const credits = units / AI_CREDIT_UNITS_PER_CREDIT;
+  return credits % 1 === 0 ? `${credits.toFixed(0)} kr` : `${credits.toFixed(1)} kr`;
+}
+
+/** Returns "€1.00" / "€0.75" depending on tier. */
+function aiPriceLabel(units: number, tier: "base" | "volume" = "base"): string {
+  const eur = tier === "base" ? aiBaseEur(units) : aiVolumeEur(units);
+  const fixed = eur % 1 === 0 ? eur.toFixed(0) : eur.toFixed(2);
+  return `€${fixed}`;
+}
+
+/** Before/after-after image; object_insertion has no artwork pair yet. */
+function aiAsset(id: AiEditType): string | undefined {
+  if (id === "object_insertion") return undefined;
+  return `/artwork/ai-tool-${id}-after.webp`;
+}
 
 export function QuickOrderHero() {
   const displayCurrency = usePublicCurrency();
   const pricingSettings = usePublicPricingSettings();
+  const [mode, setMode] = useState<PanelMode>("expert");
   const [selectedServiceSlug, setSelectedServiceSlug] = useState<string>(
     SERVICES[0].slug,
   );
   const [selectedVariantId, setSelectedVariantId] = useState<string>(
     SERVICES[0].variants[0].id,
+  );
+  const [selectedAiEditId, setSelectedAiEditId] = useState<AiEditType>(
+    AI_EDIT_TYPES[0].id,
   );
 
   const servicesScrollRef = useRef<HTMLDivElement>(null);
@@ -80,9 +147,47 @@ export function QuickOrderHero() {
     [selectedService, selectedVariantId],
   );
 
-  const SelectedIcon = ICON_MAP[selectedService.icon];
+  const selectedAiEdit = useMemo(
+    () =>
+      AI_EDIT_TYPES.find((e) => e.id === selectedAiEditId) ?? AI_EDIT_TYPES[0],
+    [selectedAiEditId],
+  );
+
   const priceText = (text: string) =>
     formatPublicPriceText(text, displayCurrency, pricingSettings);
+
+  /** Unified view object — drives the left column + order summary header. */
+  const view = useMemo(() => {
+    if (mode === "ai") {
+      return {
+        name: selectedAiEdit.label,
+        shortName: selectedAiEdit.shortLabel.toLowerCase(),
+        description: selectedAiEdit.description,
+        materials:
+          "Pošalji jednu fotografiju (JPG/PNG/WebP, do 50MB) i kratko napiši šta menjamo, a šta čuvamo. Za zamenu nameštaja dodaj 1–5 referentnih slika istog komada.",
+        asset: aiAsset(selectedAiEdit.id),
+        IconEl: AI_ICON_MAP[selectedAiEdit.id],
+        fromPriceText: `od ${aiPriceLabel(selectedAiEdit.units)} po slici`,
+        kicker: "AI obrada · Brza isporuka",
+      } as const;
+    }
+    return {
+      name: selectedService.name,
+      shortName: selectedService.shortName.toLowerCase(),
+      description: selectedService.philosophy,
+      materials: selectedService.materials,
+      asset: selectedService.asset,
+      IconEl: ICON_MAP[selectedService.icon],
+      fromPriceText: `od ${priceText(selectedService.variants[0].priceLabel)}`,
+      kicker: "Transaction-first · Model-first pricing",
+    } as const;
+  }, [
+    mode,
+    selectedAiEdit,
+    selectedService,
+    displayCurrency,
+    pricingSettings,
+  ]);
 
   const handleServiceChange = (slug: string) => {
     const service = SERVICES.find((s) => s.slug === slug);
@@ -105,6 +210,11 @@ export function QuickOrderHero() {
     });
   };
 
+  const aiCtaHref = `/portal/ai-studio?tool=${selectedAiEdit.id}`;
+  const expertCtaHref = "/cene#configurator";
+  const expertDetailsHref = `/usluge/${selectedService.slug}`;
+  const aiDetailsHref = "/ai-studio";
+
   return (
     <section id="naruci" className="relative py-10 md:py-16 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-4 sm:px-6 lg:px-8">
@@ -114,7 +224,7 @@ export function QuickOrderHero() {
             {/* Hero header: pill + title + description */}
             <div className="space-y-5">
               <span className="inline-flex rounded-full border border-border bg-secondary/70 px-4 py-2 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-                Transaction-first · Model-first pricing
+                {view.kicker}
               </span>
               <h1 className="text-5xl leading-[0.92] tracking-[-0.02em] text-foreground sm:text-6xl lg:text-7xl xl:text-[5.2rem]">
                 Lep prikaz. Jasna cena.{" "}
@@ -138,28 +248,26 @@ export function QuickOrderHero() {
                   </p>
                   <h2 className="mt-3 text-2xl leading-tight text-foreground md:text-3xl">
                     Šta šaljete odmah za{" "}
-                    <span className="text-accent">
-                      {selectedService.shortName.toLowerCase()}
-                    </span>
+                    <span className="text-accent">{view.shortName}</span>
                   </h2>
                   <p className="mt-4 text-sm leading-7 text-muted-foreground md:text-base">
-                    {selectedService.materials}
+                    {view.materials}
                   </p>
                   <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/70 px-3 py-1.5">
-                    <SelectedIcon className="h-3.5 w-3.5 text-accent" />
+                    <view.IconEl className="h-3.5 w-3.5 text-accent" />
                     <span className="text-[0.72rem] font-medium text-foreground">
-                      {selectedService.name}
+                      {view.name}
                     </span>
                     <span className="text-[0.72rem] text-muted-foreground">
-                      od {priceText(selectedService.variants[0].priceLabel)}
+                      {view.fromPriceText}
                     </span>
                   </div>
                 </div>
-                {selectedService.asset && (
+                {view.asset && (
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-secondary md:aspect-[3/2]">
                     <Image
-                      src={selectedService.asset}
-                      alt={selectedService.name}
+                      src={view.asset}
+                      alt={view.name}
                       fill
                       sizes="(max-width: 768px) 100vw, 55vw"
                       className="object-cover"
@@ -193,14 +301,14 @@ export function QuickOrderHero() {
                     Izabrana usluga
                   </p>
                   <h2 className="mt-2 text-3xl text-background md:text-4xl">
-                    {selectedService.name}
+                    {view.name}
                   </h2>
                   <p className="mt-4 text-sm leading-7 text-background/72 md:text-base">
-                    {selectedService.philosophy}
+                    {view.description}
                   </p>
                 </div>
                 <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl border border-background/15 bg-background/5">
-                  <SelectedIcon className="h-6 w-6 text-background" />
+                  <view.IconEl className="h-6 w-6 text-background" />
                 </div>
               </div>
 
@@ -210,7 +318,9 @@ export function QuickOrderHero() {
                     Javni start
                   </p>
                   <p className="mt-2 text-2xl font-semibold text-background">
-                    {priceText(selectedService.variants[0].priceLabel)}
+                    {mode === "ai"
+                      ? aiPriceLabel(selectedAiEdit.units)
+                      : priceText(selectedService.variants[0].priceLabel)}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-background/10 bg-background/5 p-4">
@@ -218,15 +328,19 @@ export function QuickOrderHero() {
                     Obračun
                   </p>
                   <p className="mt-2 text-sm leading-6 text-background/85">
-                    {priceText(selectedVariant.unitLabel)}
+                    {mode === "ai"
+                      ? `${aiCreditsLabel(selectedAiEdit.units)} po slici`
+                      : priceText(selectedVariant.unitLabel)}
                   </p>
                 </div>
                 <div className="rounded-2xl border border-background/10 bg-background/5 p-4">
                   <p className="text-[0.64rem] uppercase tracking-[0.22em] text-background/65">
-                    Revizije
+                    {mode === "ai" ? "Brzina" : "Revizije"}
                   </p>
                   <p className="mt-2 text-sm leading-6 text-background/85">
-                    3 runde uključene
+                    {mode === "ai"
+                      ? "Sekunde do rezultata · 2 besplatne dorade"
+                      : "3 runde uključene"}
                   </p>
                 </div>
               </div>
@@ -241,17 +355,60 @@ export function QuickOrderHero() {
                   Quick order panel
                 </p>
                 <h2 className="mt-2 text-2xl leading-tight text-foreground">
-                  Izaberi uslugu i odmah vidi cenu.
+                  Izaberi pristup i uslugu — cena odmah.
                 </h2>
               </div>
 
-              {/* SERVICE PICKER — vertical scrollable list, all 11 services */}
+              {/* MODE TOGGLE — Ekspertski / AI */}
+              <div
+                role="tablist"
+                aria-label="Pristup izradi"
+                className="grid grid-cols-2 gap-1 rounded-full border border-border bg-background/70 p-1"
+              >
+                {(
+                  [
+                    {
+                      id: "expert" as const,
+                      label: "Ekspertski",
+                      sub: "Ručno · €",
+                    },
+                    { id: "ai" as const, label: "AI Studio", sub: "Krediti" },
+                  ] satisfies Array<{ id: PanelMode; label: string; sub: string }>
+                ).map((opt) => {
+                  const isActive = mode === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      role="tab"
+                      aria-selected={isActive}
+                      type="button"
+                      onClick={() => setMode(opt.id)}
+                      className={cn(
+                        "flex flex-col items-center justify-center rounded-full px-3 py-2 text-center transition",
+                        isActive
+                          ? "bg-foreground text-background shadow-[0_8px_22px_rgba(28,26,25,0.18)]"
+                          : "text-foreground/70 hover:text-foreground",
+                      )}
+                    >
+                      <span className="text-[0.78rem] font-semibold leading-tight">
+                        {opt.label}
+                      </span>
+                      <span className="text-[0.6rem] uppercase tracking-[0.16em] opacity-70">
+                        {opt.sub}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* SERVICE PICKER — list adapts to mode */}
               <div>
                 <div className="mb-2.5 flex items-center justify-between">
                   <p className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted-foreground">
                     1. Usluga
                     <span className="ml-1.5 text-muted-foreground/60">
-                      · {SERVICES.length}
+                      ·{" "}
+                      {mode === "ai" ? AI_EDIT_TYPES.length : SERVICES.length}
                     </span>
                   </p>
                   <div className="flex items-center gap-1">
@@ -279,45 +436,88 @@ export function QuickOrderHero() {
                     ref={servicesScrollRef}
                     className="scrollbar-warm max-h-[264px] space-y-2 overflow-y-auto overscroll-contain pt-1 pr-2 pb-12"
                   >
-                    {SERVICES.map((service) => {
-                      const isActive = service.slug === selectedService.slug;
-                      const ServiceIconEl = ICON_MAP[service.icon];
-                      return (
-                        <button
-                          key={service.slug}
-                          type="button"
-                          onClick={() => handleServiceChange(service.slug)}
-                          className={cn(
-                            "flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition",
-                            isActive
-                              ? "border-accent bg-accent/10 shadow-[0_12px_26px_rgba(184,131,99,0.14)]"
-                              : "border-border bg-background/60 hover:border-[color:var(--color-border-warm)] hover:bg-background",
-                          )}
-                        >
-                          <div
-                            className={cn(
-                              "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border",
-                              isActive
-                                ? "border-accent/40 bg-accent/15 text-accent"
-                                : "border-border bg-card text-foreground",
-                            )}
-                          >
-                            <ServiceIconEl className="h-3.5 w-3.5" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-[0.82rem] font-semibold leading-tight text-foreground">
-                              {service.shortName}
-                            </p>
-                            <p className="mt-0.5 truncate text-[0.72rem] text-muted-foreground">
-                              od {priceText(service.variants[0].priceLabel)}
-                            </p>
-                          </div>
-                          {isActive && (
-                            <Check className="h-3.5 w-3.5 flex-shrink-0 text-accent" />
-                          )}
-                        </button>
-                      );
-                    })}
+                    {mode === "expert"
+                      ? SERVICES.map((service) => {
+                          const isActive =
+                            service.slug === selectedService.slug;
+                          const ServiceIconEl = ICON_MAP[service.icon];
+                          return (
+                            <button
+                              key={service.slug}
+                              type="button"
+                              onClick={() => handleServiceChange(service.slug)}
+                              className={cn(
+                                "flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition",
+                                isActive
+                                  ? "border-accent bg-accent/10 shadow-[0_12px_26px_rgba(184,131,99,0.14)]"
+                                  : "border-border bg-background/60 hover:border-[color:var(--color-border-warm)] hover:bg-background",
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border",
+                                  isActive
+                                    ? "border-accent/40 bg-accent/15 text-accent"
+                                    : "border-border bg-card text-foreground",
+                                )}
+                              >
+                                <ServiceIconEl className="h-3.5 w-3.5" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-[0.82rem] font-semibold leading-tight text-foreground">
+                                  {service.shortName}
+                                </p>
+                                <p className="mt-0.5 truncate text-[0.72rem] text-muted-foreground">
+                                  od{" "}
+                                  {priceText(service.variants[0].priceLabel)}
+                                </p>
+                              </div>
+                              {isActive && (
+                                <Check className="h-3.5 w-3.5 flex-shrink-0 text-accent" />
+                              )}
+                            </button>
+                          );
+                        })
+                      : AI_EDIT_TYPES.map((edit) => {
+                          const isActive = edit.id === selectedAiEdit.id;
+                          const AiIconEl = AI_ICON_MAP[edit.id];
+                          return (
+                            <button
+                              key={edit.id}
+                              type="button"
+                              onClick={() => setSelectedAiEditId(edit.id)}
+                              className={cn(
+                                "flex w-full items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition",
+                                isActive
+                                  ? "border-accent bg-accent/10 shadow-[0_12px_26px_rgba(184,131,99,0.14)]"
+                                  : "border-border bg-background/60 hover:border-[color:var(--color-border-warm)] hover:bg-background",
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border",
+                                  isActive
+                                    ? "border-accent/40 bg-accent/15 text-accent"
+                                    : "border-border bg-card text-foreground",
+                                )}
+                              >
+                                <AiIconEl className="h-3.5 w-3.5" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-[0.82rem] font-semibold leading-tight text-foreground">
+                                  {edit.label}
+                                </p>
+                                <p className="mt-0.5 truncate text-[0.72rem] text-muted-foreground">
+                                  {aiCreditsLabel(edit.units)} ·{" "}
+                                  {aiPriceLabel(edit.units)}
+                                </p>
+                              </div>
+                              {isActive && (
+                                <Check className="h-3.5 w-3.5 flex-shrink-0 text-accent" />
+                              )}
+                            </button>
+                          );
+                        })}
                   </div>
                   {/* Bottom fade mask — hints that more services exist below the fold */}
                   <div
@@ -327,51 +527,103 @@ export function QuickOrderHero() {
                 </div>
               </div>
 
-              {/* VARIANT PICKER */}
-              <div>
-                <p className="mb-2.5 text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted-foreground">
-                  2. Obračun iz cenovnika
-                </p>
-                <div className="space-y-2">
-                  {selectedService.variants.map((variant) => {
-                    const isActive = variant.id === selectedVariant.id;
-                    return (
-                      <button
-                        key={variant.id}
-                        type="button"
-                        onClick={() => setSelectedVariantId(variant.id)}
-                        className={cn(
-                          "w-full rounded-xl border px-3 py-2.5 text-left transition",
-                          isActive
-                            ? "border-[color:var(--color-sage-deep)] bg-[color:var(--color-sage)]/15 shadow-[0_12px_26px_rgba(111,128,106,0.12)]"
-                            : "border-border bg-background/70 hover:bg-background",
-                        )}
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0 flex-1">
-                            <p className="text-[0.82rem] font-semibold leading-tight text-foreground">
-                              {variant.title}
-                            </p>
-                            <p className="mt-1 line-clamp-2 text-[0.68rem] leading-4 text-muted-foreground">
-                              {priceText(variant.description)}
-                            </p>
+              {/* STEP 2 — variants (expert) or tool capabilities (ai) */}
+              {mode === "expert" ? (
+                <div>
+                  <p className="mb-2.5 text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted-foreground">
+                    2. Obračun iz cenovnika
+                  </p>
+                  <div className="space-y-2">
+                    {selectedService.variants.map((variant) => {
+                      const isActive = variant.id === selectedVariant.id;
+                      return (
+                        <button
+                          key={variant.id}
+                          type="button"
+                          onClick={() => setSelectedVariantId(variant.id)}
+                          className={cn(
+                            "w-full rounded-xl border px-3 py-2.5 text-left transition",
+                            isActive
+                              ? "border-[color:var(--color-sage-deep)] bg-[color:var(--color-sage)]/15 shadow-[0_12px_26px_rgba(111,128,106,0.12)]"
+                              : "border-border bg-background/70 hover:bg-background",
+                          )}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[0.82rem] font-semibold leading-tight text-foreground">
+                                {variant.title}
+                              </p>
+                              <p className="mt-1 line-clamp-2 text-[0.68rem] leading-4 text-muted-foreground">
+                                {priceText(variant.description)}
+                              </p>
+                            </div>
+                            <div className="flex-shrink-0 text-right">
+                              <p className="text-[0.82rem] font-semibold text-[color:var(--color-clay-deep)]">
+                                {priceText(variant.priceLabel)}
+                              </p>
+                              <p className="mt-0.5 text-[0.72rem] uppercase tracking-[0.14em] text-muted-foreground">
+                                {priceText(variant.unitLabel)}
+                              </p>
+                            </div>
                           </div>
-                          <div className="flex-shrink-0 text-right">
-                            <p className="text-[0.82rem] font-semibold text-[color:var(--color-clay-deep)]">
-                              {priceText(variant.priceLabel)}
-                            </p>
-                            <p className="mt-0.5 text-[0.72rem] uppercase tracking-[0.14em] text-muted-foreground">
-                              {priceText(variant.unitLabel)}
-                            </p>
-                          </div>
-                        </div>
-                      </button>
-                    );
-                  })}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div>
+                  <p className="mb-2.5 text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted-foreground">
+                    2. Detalji obrade
+                  </p>
+                  <div className="rounded-xl border border-[color:var(--color-sage-deep)] bg-[color:var(--color-sage)]/15 px-3 py-2.5 shadow-[0_12px_26px_rgba(111,128,106,0.12)]">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[0.82rem] font-semibold leading-tight text-foreground">
+                          {selectedAiEdit.complexity === "simple"
+                            ? "Simple obrada"
+                            : "Complex obrada"}
+                        </p>
+                        <p className="mt-1 line-clamp-3 text-[0.68rem] leading-4 text-muted-foreground">
+                          {selectedAiEdit.description}
+                        </p>
+                      </div>
+                      <div className="flex-shrink-0 text-right">
+                        <p className="text-[0.82rem] font-semibold text-[color:var(--color-clay-deep)]">
+                          {aiCreditsLabel(selectedAiEdit.units)}
+                        </p>
+                        <p className="mt-0.5 text-[0.72rem] uppercase tracking-[0.14em] text-muted-foreground">
+                          po slici
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-2.5 flex flex-wrap gap-1.5">
+                      {selectedAiEdit.supportsMask && (
+                        <span className="rounded-full border border-border bg-background/70 px-2 py-0.5 text-[0.62rem] uppercase tracking-[0.14em] text-muted-foreground">
+                          Maska
+                        </span>
+                      )}
+                      {selectedAiEdit.supportsStyles && (
+                        <span className="rounded-full border border-border bg-background/70 px-2 py-0.5 text-[0.62rem] uppercase tracking-[0.14em] text-muted-foreground">
+                          Stilovi
+                        </span>
+                      )}
+                      {selectedAiEdit.supportsColor && (
+                        <span className="rounded-full border border-border bg-background/70 px-2 py-0.5 text-[0.62rem] uppercase tracking-[0.14em] text-muted-foreground">
+                          Boja
+                        </span>
+                      )}
+                      {selectedAiEdit.requiresReferenceImage && (
+                        <span className="rounded-full border border-border bg-background/70 px-2 py-0.5 text-[0.62rem] uppercase tracking-[0.14em] text-muted-foreground">
+                          Reference (1–5)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
-              {/* ORDER SUMMARY — compact */}
+              {/* ORDER SUMMARY — compact, mode-aware */}
               <div className="rounded-2xl border border-foreground/10 bg-foreground p-4 text-background shadow-[0_24px_60px_rgba(28,26,25,0.22)]">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
@@ -379,7 +631,7 @@ export function QuickOrderHero() {
                       Order summary
                     </p>
                     <h3 className="mt-1 truncate text-lg text-background">
-                      {selectedVariant.title}
+                      {mode === "ai" ? selectedAiEdit.label : selectedVariant.title}
                     </h3>
                   </div>
                   <Calculator className="h-4 w-4 flex-shrink-0 text-background/60" />
@@ -387,36 +639,42 @@ export function QuickOrderHero() {
 
                 <div className="mt-3 rounded-xl border border-background/10 bg-background/5 p-3">
                   <p className="text-[0.62rem] uppercase tracking-[0.2em] text-background/65">
-                    Bazna javna cena
+                    {mode === "ai" ? "Cena po obradi" : "Bazna javna cena"}
                   </p>
                   <p className="mt-1 text-3xl font-semibold text-background">
-                    {priceText(selectedVariant.priceLabel)}
+                    {mode === "ai"
+                      ? aiPriceLabel(selectedAiEdit.units)
+                      : priceText(selectedVariant.priceLabel)}
                   </p>
                   <p className="mt-1 text-[0.68rem] leading-5 text-background/70">
-                    {priceText(selectedVariant.unitLabel)}
+                    {mode === "ai"
+                      ? `${aiCreditsLabel(selectedAiEdit.units)} po slici · od ${aiPriceLabel(selectedAiEdit.units, "volume")}/sliku pri 100+ kredita`
+                      : priceText(selectedVariant.unitLabel)}
                   </p>
                 </div>
 
                 <div className="mt-3 text-[0.72rem] leading-5 text-background/80">
                   <p className="font-semibold text-background">Uključeno</p>
                   <p className="mt-1 line-clamp-2 text-background/72">
-                    {priceText(selectedVariant.included)}
+                    {mode === "ai"
+                      ? selectedAiEdit.description
+                      : priceText(selectedVariant.included)}
                   </p>
                 </div>
 
                 <div className="mt-3 grid gap-2 sm:grid-cols-2">
                   <Link
-                    href="/cene#configurator"
+                    href={mode === "ai" ? aiCtaHref : expertCtaHref}
                     className={cn(
                       buttonVariants({ variant: "accent", size: "sm" }),
                       "rounded-full",
                     )}
                   >
-                    Kreni
+                    {mode === "ai" ? "Probaj" : "Kreni"}
                     <ArrowRight className="ml-1 h-3 w-3" />
                   </Link>
                   <Link
-                    href={`/usluge/${selectedService.slug}`}
+                    href={mode === "ai" ? aiDetailsHref : expertDetailsHref}
                     className={cn(
                       buttonVariants({ variant: "outline", size: "sm" }),
                       "rounded-full border-background/20 bg-transparent text-background hover:bg-background/10 hover:text-background",

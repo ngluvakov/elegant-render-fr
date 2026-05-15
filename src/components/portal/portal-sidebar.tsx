@@ -18,6 +18,7 @@ import {
   LayoutDashboard,
   LogOut,
   MessageSquareWarning,
+  ReceiptText,
   Shield,
   ShoppingBag,
   User,
@@ -29,6 +30,7 @@ import { signOutAction } from "@/server/actions/sign-out";
 const CLIENT_NAV = [
   { href: "/portal", label: "Pregled", icon: LayoutDashboard, exact: true },
   { href: "/portal/porudzbine", label: "Porudžbine", icon: ShoppingBag, exact: false },
+  { href: "/portal/finansije", label: "Finansije", icon: ReceiptText, exact: false },
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
   { href: "/portal/ai-kreacije", label: "AI kreacije", icon: Images, exact: false },
   { href: "/portal/profil", label: "Profil", icon: User, exact: true },

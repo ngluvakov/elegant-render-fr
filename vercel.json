@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/outbox-processor",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/invoice-reconcile",
+      "schedule": "15 4 * * *"
     }
   ]
 }

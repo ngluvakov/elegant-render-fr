@@ -25,6 +25,13 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import { recordAuditLog } from "@/lib/audit";
 import { allocateInvoiceNumber } from "@/lib/invoice-number";
 import { renderInvoicePdf, type InvoiceData } from "@/lib/invoice-pdf";
+import {
+  buildInvoiceLineItem,
+  buildInvoiceRecipient,
+  invoiceCurrencyForBuyer,
+  isExportInvoice,
+  paymentMethodLabel,
+} from "@/lib/invoice-data";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { UPLOADS_BUCKET } from "@/lib/file-scan";
 
@@ -53,29 +60,18 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
     // mirrors the three layouts in invoice-pdf.tsx so a customer always
     // sees a document that matches what they entered at checkout.
     const buyerType = order.buyerType;
-    const isExport = buyerType === "company_foreign";
-    // Currency follows the existing pricing model: EUR for foreign
-    // orders, RSD for domestic. The order rows store totalCents in the
-    // billed currency (totalCents already reflects geo-currency).
-    const currency: "RSD" | "EUR" = isExport ? "EUR" : "RSD";
-
-    const recipient = buildRecipient(order);
+    const isExport = isExportInvoice(buyerType);
+    const currency = invoiceCurrencyForBuyer(buyerType);
+    const recipient = buildInvoiceRecipient(order);
     const items = order.items
       .filter((it) => it.totalCents != null && it.totalCents > 0)
       .map((it) => {
-        // Cents already include VAT for domestic orders. For invoices
-        // we need NET cents per line so the PDF can break out the VAT
-        // separately. Domestic VAT is 20%: net = total / 1.2.
         const totalCents = it.totalCents ?? Math.round(it.totalEur * 100);
-        const unitNet = isExport
-          ? totalCents
-          : Math.round(totalCents / 1.2);
-        return {
+        return buildInvoiceLineItem({
           description: it.productLabel,
-          quantity: 1,
-          unitPriceNetCents: unitNet,
-          vatRate: isExport ? 0 : 0.2,
-        };
+          grossUnitCents: totalCents,
+          isExport,
+        });
       });
 
     // Allocate the number AFTER we've validated the order has billable
@@ -168,41 +164,4 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
       reason: err instanceof Error ? err.message : "unknown",
     };
   }
-}
-
-function buildRecipient(order: {
-  buyerType: "individual" | "company_rs" | "company_foreign";
-  companyName: string | null;
-  companyTaxId: string | null;
-  companyMb: string | null;
-  companyAddress: string | null;
-  companyCountryCode: string | null;
-  user: { name: string | null; email: string | null };
-}): InvoiceData["recipient"] {
-  if (order.buyerType === "individual") {
-    return {
-      name: order.user.name ?? order.user.email ?? "Kupac",
-      address: "—",
-      email: order.user.email,
-    };
-  }
-  return {
-    name: order.companyName ?? "—",
-    address: order.companyAddress ?? "—",
-    taxId: order.companyTaxId,
-    mb: order.companyMb,
-    countryCode: order.companyCountryCode,
-    email: order.user.email,
-  };
-}
-
-function paymentMethodLabel(
-  provider: string | null,
-  isExport: boolean,
-): string {
-  if (provider === "paypal") return "PayPal";
-  if (provider === "intesa") {
-    return isExport ? "Card (Banca Intesa)" : "Platna kartica (Banca Intesa)";
-  }
-  return isExport ? "Online payment" : "Online plaćanje";
 }

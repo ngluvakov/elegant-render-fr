@@ -14,6 +14,7 @@
 "use server";
 
 import * as Sentry from "@sentry/nextjs";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import {
   createPayPalOrderCents as createPPOrder,
@@ -22,6 +23,7 @@ import {
 import { processMockCardPaymentCents } from "@/lib/payment/mock-card";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { captureServerEvent } from "@/lib/posthog";
+import { issueChargeInvoice } from "@/server/actions/issue-charge-invoice";
 
 export type ChargePaymentResult = {
   error?: string;
@@ -89,6 +91,23 @@ async function enqueuePaidEmail(args: {
     },
     idempotencyKey: `additional_charge_paid:${args.chargeId}`,
   });
+}
+
+async function finishSuccessfulChargePayment(args: {
+  chargeId: string;
+  orderId: string;
+}) {
+  try {
+    await issueChargeInvoice(args.chargeId);
+  } catch (err) {
+    Sentry.captureException(err, {
+      tags: { area: "invoice", flow: "post-charge-payment-hook" },
+      extra: { chargeId: args.chargeId, orderId: args.orderId },
+    });
+  }
+
+  revalidatePath(`/portal/porudzbine/${args.orderId}`);
+  revalidatePath("/portal/finansije");
 }
 
 // ─── PayPal ──────────────────────────────────────────────
@@ -165,6 +184,10 @@ export async function capturePayPalChargeAction(
     });
     if (result.count === 0) return { success: true };
 
+    await finishSuccessfulChargePayment({
+      chargeId: charge.id,
+      orderId: charge.orderId,
+    });
     await enqueuePaidEmail({
       chargeId: charge.id,
       orderId: charge.orderId,
@@ -220,6 +243,10 @@ export async function mockCardChargePaymentAction(
     });
     if (result.count === 0) return { success: true };
 
+    await finishSuccessfulChargePayment({
+      chargeId: charge.id,
+      orderId: charge.orderId,
+    });
     await enqueuePaidEmail({
       chargeId: charge.id,
       orderId: charge.orderId,

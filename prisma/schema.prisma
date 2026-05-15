@@ -379,6 +379,9 @@ model OrderCharge {
   paymentProvider PaymentProvider?
   paymentId       String?
   paymentStatus   PaymentStatus     @default(pending)
+  invoiceNumber   String?           @unique
+  invoiceIssuedAt DateTime?
+  invoicePdfPath  String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   paidAt          DateTime?

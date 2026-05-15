@@ -21,6 +21,11 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { recordAuditLog } from "@/lib/audit";
+import {
+  buyerTypeForBilling,
+  normalizeCountryCode,
+} from "@/lib/billing";
+import { validateBuyerInfo } from "@/lib/buyer-validation";
 
 export type ProfileState = {
   error?: string;
@@ -37,10 +42,48 @@ export async function updateProfileAction(
   const name = formData.get("name") as string;
   const phone = (formData.get("phone") as string) || null;
   const newPassword = formData.get("newPassword") as string;
+  const billingKind = formData.get("billingKind") as string;
+  const billingCountryCode = normalizeCountryCode(
+    formData.get("billingCountryCode") as string,
+    "RS",
+  );
+  const billingBuyerType = buyerTypeForBilling(
+    billingKind === "company" ? "company" : "individual",
+    billingCountryCode,
+  );
+  const companyName = ((formData.get("billingCompanyName") as string) || "").trim();
+  const companyTaxId = ((formData.get("billingCompanyTaxId") as string) || "")
+    .trim()
+    .toUpperCase();
+  const companyMb = ((formData.get("billingCompanyMb") as string) || "").trim();
+  const companyAddress = ((formData.get("billingCompanyAddress") as string) || "")
+    .trim();
 
   if (!name) return { error: "Ime je obavezno." };
 
+  const buyerError = validateBuyerInfo({
+    buyerType: billingBuyerType,
+    buyerCountryCode: billingCountryCode,
+    companyName,
+    companyTaxId,
+    companyMb,
+    companyAddress,
+    companyCountryCode:
+      billingBuyerType === "company_foreign" ? billingCountryCode : null,
+  });
+  if (buyerError) return { error: buyerError };
+
   const data: Record<string, unknown> = { name, phone };
+  data.billingBuyerType = billingBuyerType;
+  data.billingCountryCode = billingCountryCode;
+  data.billingCompanyName =
+    billingBuyerType === "individual" ? null : companyName;
+  data.billingCompanyTaxId =
+    billingBuyerType === "individual" ? null : companyTaxId;
+  data.billingCompanyMb =
+    billingBuyerType === "company_rs" && companyMb ? companyMb : null;
+  data.billingCompanyAddress =
+    billingBuyerType === "individual" ? null : companyAddress;
 
   if (newPassword) {
     if (newPassword.length < 8) {
@@ -53,6 +96,23 @@ export async function updateProfileAction(
     where: { id: session.user.id },
     data,
   });
+
+  await recordAuditLog({
+    action: "profile.billing_update",
+    entityType: "User",
+    entityId: session.user.id,
+    metadata: {
+      buyerType: billingBuyerType,
+      countryCode: billingCountryCode,
+      hasCompanyTaxId: Boolean(
+        billingBuyerType !== "individual" && companyTaxId,
+      ),
+      hasCompanyMb: Boolean(billingBuyerType === "company_rs" && companyMb),
+    },
+  });
+
+  revalidatePath("/portal/profil");
+  revalidatePath("/poruci");
 
   return { success: true };
 }

@@ -287,8 +287,10 @@ export async function renderProformaPdf(data: ProformaData): Promise<Buffer> {
 }
 
 function ProformaDocument({ data }: { data: ProformaData }) {
-  const t = STRINGS[data.buyerType];
-  const locale = data.buyerType === "company_foreign" ? "en-GB" : "sr-Latn-RS";
+  const layoutKey =
+    data.currency === "EUR" ? "company_foreign" : data.buyerType;
+  const t = STRINGS[layoutKey];
+  const locale = data.currency === "EUR" ? "en-GB" : "sr-Latn-RS";
 
   const subtotalCents = data.items.reduce(
     (sum, it) => sum + it.quantity * it.unitPriceNetCents,
@@ -351,11 +353,11 @@ function ProformaDocument({ data }: { data: ProformaData }) {
                 {data.recipient.mb ? ` · MB ${data.recipient.mb}` : ""}
               </Text>
             )}
-            {data.recipient.taxId && data.buyerType === "company_foreign" && (
+            {data.recipient.taxId && data.currency === "EUR" && (
               <Text style={styles.partyMono}>VAT ID {data.recipient.taxId}</Text>
             )}
             {data.recipient.countryCode &&
-              data.buyerType === "company_foreign" && (
+              data.currency === "EUR" && (
                 <Text style={styles.partyText}>
                   Country: {data.recipient.countryCode}
                 </Text>
@@ -432,7 +434,7 @@ function ProformaDocument({ data }: { data: ProformaData }) {
             </View>
           )}
           {IMPRINT.bank.accountNumber &&
-            data.buyerType !== "company_foreign" && (
+            data.currency !== "EUR" && (
               <View style={styles.bankRow}>
                 <Text style={styles.bankLabel}>{t.bankAccount}</Text>
                 <Text style={styles.bankValue}>
@@ -446,7 +448,7 @@ function ProformaDocument({ data }: { data: ProformaData }) {
               <Text style={styles.bankValue}>{IMPRINT.bank.iban}</Text>
             </View>
           )}
-          {IMPRINT.bank.swift && data.buyerType === "company_foreign" && (
+          {IMPRINT.bank.swift && data.currency === "EUR" && (
             <View style={styles.bankRow}>
               <Text style={styles.bankLabel}>{t.bankSwift}</Text>
               <Text style={styles.bankValue}>{IMPRINT.bank.swift}</Text>

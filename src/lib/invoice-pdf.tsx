@@ -247,8 +247,10 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Buffer> {
 }
 
 function InvoiceDocument({ data }: { data: InvoiceData }) {
-  const t = STRINGS[data.buyerType];
-  const locale = data.buyerType === "company_foreign" ? "en-GB" : "sr-Latn-RS";
+  const layoutKey =
+    data.currency === "EUR" ? "company_foreign" : data.buyerType;
+  const t = STRINGS[layoutKey];
+  const locale = data.currency === "EUR" ? "en-GB" : "sr-Latn-RS";
 
   const subtotalCents = data.items.reduce(
     (sum, it) => sum + it.quantity * it.unitPriceNetCents,
@@ -309,11 +311,11 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
                 {data.recipient.mb ? ` · MB ${data.recipient.mb}` : ""}
               </Text>
             )}
-            {data.recipient.taxId && data.buyerType === "company_foreign" && (
+            {data.recipient.taxId && data.currency === "EUR" && (
               <Text style={styles.partyMono}>VAT ID {data.recipient.taxId}</Text>
             )}
             {data.recipient.countryCode &&
-              data.buyerType === "company_foreign" && (
+              data.currency === "EUR" && (
                 <Text style={styles.partyText}>
                   Country: {data.recipient.countryCode}
                 </Text>
@@ -405,6 +407,12 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
 }
 
 function buildNotes(data: InvoiceData): string[] {
+  if (data.currency === "EUR") {
+    return [
+      "Reverse charge — VAT is not charged on this invoice. Place of supply is outside the Republic of Serbia (čl. 24/25 ZPDV; equivalent to EU VAT Directive 2006/112/EZ Art. 44 / 196).",
+      "Buyer is responsible for accounting VAT in their own jurisdiction.",
+    ];
+  }
   if (data.buyerType === "individual") {
     return [
       "PDV obračunat po stopi 20% i uračunat u prikazane iznose.",
@@ -417,8 +425,5 @@ function buildNotes(data: InvoiceData): string[] {
       "PDV iskazan po stopi 20% — ulazni PDV se može odbiti u skladu sa Zakonom o PDV-u.",
     ];
   }
-  return [
-    "Reverse charge — VAT is not charged on this invoice. Place of supply is outside the Republic of Serbia (čl. 24/25 ZPDV; equivalent to EU VAT Directive 2006/112/EZ Art. 44 / 196).",
-    "Buyer is responsible for accounting VAT in their own jurisdiction.",
-  ];
+  return [];
 }

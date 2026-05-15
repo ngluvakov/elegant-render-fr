@@ -39,19 +39,19 @@ model User {
   createdAt                 DateTime  @default(now())
   updatedAt                 DateTime  @updatedAt
 
-  accounts             Account[]
-  sessions             Session[]
-  orders               Order[]
-  comments             OrderComment[]
-  aiCreditTransactions AiCreditTransaction[]
-  aiGenerations        AiGeneration[]
-  chatFeedback         ChatFeedback[]
-  projectInquiries     ProjectInquiry[]
-  chargesRequested     OrderCharge[]         @relation("OrderChargeRequestedBy")
-  pricingBooksCreated  PricingBook[]         @relation("PricingBookCreatedBy")
-  pricingBooksPublished PricingBook[]        @relation("PricingBookPublishedBy")
-  pricingChangeLogs    PricingChangeLog[]    @relation("PricingChangeLogActor")
-  auditLogs            AuditLog[]            @relation("AuditLogActor")
+  accounts              Account[]
+  sessions              Session[]
+  orders                Order[]
+  comments              OrderComment[]
+  aiCreditTransactions  AiCreditTransaction[]
+  aiGenerations         AiGeneration[]
+  chatFeedback          ChatFeedback[]
+  projectInquiries      ProjectInquiry[]
+  chargesRequested      OrderCharge[]         @relation("OrderChargeRequestedBy")
+  pricingBooksCreated   PricingBook[]         @relation("PricingBookCreatedBy")
+  pricingBooksPublished PricingBook[]         @relation("PricingBookPublishedBy")
+  pricingChangeLogs     PricingChangeLog[]    @relation("PricingChangeLogActor")
+  auditLogs             AuditLog[]            @relation("AuditLogActor")
 
   @@map("users")
 }
@@ -178,27 +178,27 @@ enum BillingCurrency {
 }
 
 model Order {
-  id                 String           @id @default(cuid())
-  orderNumber        String           @unique
-  userId             String
-  projectName        String?
-  status             OrderStatus      @default(draft)
-  paymentStatus      PaymentStatus    @default(pending)
-  paymentProvider    PaymentProvider?
-  paymentId          String?
-  bitrix24DealId     String?          @unique
-  totalEur           Int
-  totalCents         Int?
-  premiumTotalEur    Int?
-  containsAiCredits  Boolean          @default(false)
-  aiCreditsAppliedAt DateTime?
-  customerNote       String?          @db.Text
+  id                  String           @id @default(cuid())
+  orderNumber         String           @unique
+  userId              String
+  projectName         String?
+  status              OrderStatus      @default(draft)
+  paymentStatus       PaymentStatus    @default(pending)
+  paymentProvider     PaymentProvider?
+  paymentId           String?
+  bitrix24DealId      String?          @unique
+  totalEur            Int
+  totalCents          Int?
+  premiumTotalEur     Int?
+  containsAiCredits   Boolean          @default(false)
+  aiCreditsAppliedAt  DateTime?
+  customerNote        String?          @db.Text
   // Customer's explicit waiver of the 14-day distance-selling withdrawal
   // right per Zakon o zaštiti potrošača čl. 28 / EU CRD čl. 16(m).
   // Required for digital services started before the 14-day period
   // elapses; null means the right is still active and the order
   // shouldn't have started production yet.
-  withdrawalWaivedAt DateTime?
+  withdrawalWaivedAt  DateTime?
   // Buyer identity for invoicing. Defaults to `individual` so existing
   // and untouched orders behave as before. company_* values are only
   // populated when the customer explicitly chose "Firma" in checkout
@@ -207,17 +207,17 @@ model Order {
   //                   company_foreign (interpret via companyCountryCode).
   //   companyMb     — matični broj, only meaningful for company_rs.
   //   companyCountryCode — ISO-3166-1 alpha-2; null for individual.
-  buyerType          BuyerType        @default(individual)
-  buyerCountryCode   String?
-  companyName        String?
-  companyTaxId       String?
-  companyMb          String?
-  companyAddress     String?          @db.Text
-  companyCountryCode String?
-  billingCurrency    BillingCurrency?
-  billingVatRate     Float?
+  buyerType           BuyerType        @default(individual)
+  buyerCountryCode    String?
+  companyName         String?
+  companyTaxId        String?
+  companyMb           String?
+  companyAddress      String?          @db.Text
+  companyCountryCode  String?
+  billingCurrency     BillingCurrency?
+  billingVatRate      Float?
   billingEurToRsdRate Float?
-  billingTotalCents  Int?
+  billingTotalCents   Int?
   // VIES (VAT Information Exchange System) verification snapshot for
   // company_foreign orders. Populated when admin clicks "Proveri VAT
   // (VIES)" on the order detail. Stored as a snapshot — VIES queries
@@ -227,40 +227,40 @@ model Order {
   //   vatVerifiedName  — name returned by VIES at lookup time. May
   //                      diverge from companyName if customer mistyped.
   //   vatRequestId     — VIES requestId, retained for audit/dispute use
-  vatVerifiedAt      DateTime?
-  vatVerifiedName    String?
-  vatRequestId       String?
+  vatVerifiedAt       DateTime?
+  vatVerifiedName     String?
+  vatRequestId        String?
   // Invoice issuance — populated once, immediately after the payment
   // provider confirms `paymentStatus = completed`. invoiceNumber is
   // allocated atomically per calendar year via InvoiceCounter and is
   // unique across all orders (no gaps within a year). invoicePdfPath
   // is the Supabase storage path under bucket `order-files`, format
   // `invoices/{year}/{number}.pdf`.
-  invoiceNumber      String?          @unique
-  invoiceIssuedAt    DateTime?
-  invoicePdfPath     String?
-  paymentMethod      PaymentMethod    @default(online_payment)
+  invoiceNumber       String?          @unique
+  invoiceIssuedAt     DateTime?
+  invoicePdfPath      String?
+  paymentMethod       PaymentMethod    @default(online_payment)
   // Predračun (proforma) issuance — populated when admin clicks
   // "Izdaj predračun" on a wire_transfer order. The proforma is NOT
   // a tax document; it's a payment instruction. The legal konačni
   // račun is created later via the existing invoice pipeline once
   // funds land. Format `P-{year}-{seq}` (e.g. P-2026-0001).
-  proformaNumber     String?          @unique
-  proformaIssuedAt   DateTime?
-  proformaPdfPath    String?
+  proformaNumber      String?          @unique
+  proformaIssuedAt    DateTime?
+  proformaPdfPath     String?
   // Rule 3: reference a prior paid order so its model assets feed
   // discount resolution on this order. Nullable; enforced same-user via
   // server action.
-  referencedOrderId  String?
+  referencedOrderId   String?
   // Set by convertInquiryToOrder when an admin converts a
   // ProjectInquiry into a draft. Lets the admin order detail page
   // surface a "Iz upita …" link back to the source so context like
   // attached files and the original message stays one click away
   // even after the customerNote ages. Nullable for all orders that
   // came in via the regular checkout flow.
-  sourceInquiryId    String?
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
+  sourceInquiryId     String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 
   user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   items             OrderItem[]
@@ -311,17 +311,17 @@ enum OrderItemKind {
 }
 
 model OrderFile {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   orderId        String
   orderItemId    String?
   floorId        String?
-  kind           String   @default("source")
+  kind           String    @default("source")
   fileName       String
   fileSize       Int
   mimeType       String
   storagePath    String
   bitrix24FileId String?
-  uploadedAt     DateTime @default(now())
+  uploadedAt     DateTime  @default(now())
   // Antivirus scan state. ISO 27001 control A.8.7. Synchronously
   // scanned at upload-confirm time via Cloudmersive; rows are only
   // created when the scan returns clean. Pre-scan-era rows have null
@@ -386,33 +386,33 @@ enum OrderChargeStatus {
 }
 
 model OrderCharge {
-  id              String            @id @default(cuid())
-  orderId         String
-  requestedById   String
-  reason          String?           @db.Text
-  totalCents      Int
-  buyerType       BuyerType?
-  buyerCountryCode String?
-  companyName     String?
-  companyTaxId    String?
-  companyMb       String?
-  companyAddress  String?           @db.Text
-  companyCountryCode String?
-  billingCurrency BillingCurrency?
-  billingVatRate  Float?
+  id                  String            @id @default(cuid())
+  orderId             String
+  requestedById       String
+  reason              String?           @db.Text
+  totalCents          Int
+  buyerType           BuyerType?
+  buyerCountryCode    String?
+  companyName         String?
+  companyTaxId        String?
+  companyMb           String?
+  companyAddress      String?           @db.Text
+  companyCountryCode  String?
+  billingCurrency     BillingCurrency?
+  billingVatRate      Float?
   billingEurToRsdRate Float?
-  billingTotalCents Int?
-  status          OrderChargeStatus @default(pending)
-  paymentProvider PaymentProvider?
-  paymentId       String?
-  paymentStatus   PaymentStatus     @default(pending)
-  invoiceNumber   String?           @unique
-  invoiceIssuedAt DateTime?
-  invoicePdfPath  String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  paidAt          DateTime?
-  cancelledAt     DateTime?
+  billingTotalCents   Int?
+  status              OrderChargeStatus @default(pending)
+  paymentProvider     PaymentProvider?
+  paymentId           String?
+  paymentStatus       PaymentStatus     @default(pending)
+  invoiceNumber       String?           @unique
+  invoiceIssuedAt     DateTime?
+  invoicePdfPath      String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  paidAt              DateTime?
+  cancelledAt         DateTime?
 
   order       Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
   requestedBy User              @relation("OrderChargeRequestedBy", fields: [requestedById], references: [id])
@@ -532,25 +532,25 @@ model AiCreditTransaction {
 }
 
 model AiGeneration {
-  id                  String             @id @default(cuid())
-  userId              String
-  parentGenerationId  String?
-  paidGenerationId    String?
-  editType            AiEditType
-  provider            AiImageProvider
-  model               String
-  prompt              String             @db.Text
-  styleId             String?
-  optionsJson         Json?
-  status              AiGenerationStatus @default(queued)
-  inputStoragePath    String
-  inputMimeType       String
-  maskStoragePath     String?
-  referenceStoragePath String?
-  referenceMimeType   String?
-  referenceFileName   String?
-  resultStoragePath   String?
-  resultMimeType      String?
+  id                        String             @id @default(cuid())
+  userId                    String
+  parentGenerationId        String?
+  paidGenerationId          String?
+  editType                  AiEditType
+  provider                  AiImageProvider
+  model                     String
+  prompt                    String             @db.Text
+  styleId                   String?
+  optionsJson               Json?
+  status                    AiGenerationStatus @default(queued)
+  inputStoragePath          String
+  inputMimeType             String
+  maskStoragePath           String?
+  referenceStoragePath      String?
+  referenceMimeType         String?
+  referenceFileName         String?
+  resultStoragePath         String?
+  resultMimeType            String?
   // Filename tracking — propagated through derivative chains so
   // downloads carry meaningful names tied to the original upload.
   // `rootFileName` is the slugified original-upload name; it stays
@@ -559,23 +559,23 @@ model AiGeneration {
   // for THIS gen (= parent's resultFileName for derivatives).
   // `resultFileName` is computed deterministically at create time:
   // `{rootBase}__{editTypeCode}__v{NN}__{YYYYMMDD}.{ext}`.
-  rootFileName        String?
-  inputFileName       String?
-  resultFileName      String?
-  unitsCharged        Int
-  coveredUnits        Int
-  freeAttemptIndex    Int?
-  errorMessage        String?            @db.Text
-  providerResponseId  String?
+  rootFileName              String?
+  inputFileName             String?
+  resultFileName            String?
+  unitsCharged              Int
+  coveredUnits              Int
+  freeAttemptIndex          Int?
+  errorMessage              String?            @db.Text
+  providerResponseId        String?
   providerOutputStoragePath String?
   providerOutputMimeType    String?
-  expiresAt           DateTime
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
-  startedAt           DateTime?
-  completedAt         DateTime?
-  processingLockUntil DateTime?
-  attemptCount        Int                @default(0)
+  expiresAt                 DateTime
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+  startedAt                 DateTime?
+  completedAt               DateTime?
+  processingLockUntil       DateTime?
+  attemptCount              Int                @default(0)
 
   user            User                         @relation(fields: [userId], references: [id], onDelete: Cascade)
   referenceImages AiGenerationReferenceImage[]
@@ -664,14 +664,14 @@ model ProjectInquiry {
   updatedAt         DateTime             @updatedAt
   reviewedAt        DateTime?
 
-  user  User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
-  files ProjectInquiryFile[]
+  user            User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  files           ProjectInquiryFile[]
   // Set when an admin converts this inquiry into one or more orders
   // via convertInquiryToOrder. Multiple orders are theoretically
   // possible (re-conversion after a misclick + cancel) but only the
   // most recent one is interesting; admin detail page links to the
   // first by createdAt for stability.
-  convertedOrders Order[]            @relation("InquiryConversion")
+  convertedOrders Order[]              @relation("InquiryConversion")
 
   @@index([status, createdAt])
   @@index([email, createdAt])
@@ -679,13 +679,13 @@ model ProjectInquiry {
 }
 
 model ProjectInquiryFile {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   inquiryId   String
   fileName    String
   fileSize    Int
   mimeType    String
-  storagePath String   @unique
-  uploadedAt  DateTime @default(now())
+  storagePath String    @unique
+  uploadedAt  DateTime  @default(now())
   // Antivirus scan state — see OrderFile for semantics. Same scan
   // pipeline runs before submitProjectInquiry creates rows; an
   // infected file fails the whole inquiry submission.
@@ -724,8 +724,8 @@ model PricingBook {
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 
-  createdBy   User?               @relation("PricingBookCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
-  publishedBy User?               @relation("PricingBookPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+  createdBy   User?                 @relation("PricingBookCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  publishedBy User?                 @relation("PricingBookPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
   products    PricingProduct[]
   addOns      PricingAddOn[]
   discounts   PricingDiscountRule[]
@@ -758,19 +758,19 @@ model PricingProduct {
 }
 
 model PricingAddOn {
-  id             String   @id @default(cuid())
-  bookId         String
-  productId      String
-  addOnId        String
-  label          String
-  description    String
-  priceEur       Float
-  priceType      String
-  includedQty    Int
-  maxQty         Int?
+  id              String   @id @default(cuid())
+  bookId          String
+  productId       String
+  addOnId         String
+  label           String
+  description     String
+  priceEur        Float
+  priceType       String
+  includedQty     Int
+  maxQty          Int?
   volumeRulesJson Json
-  sortOrder      Int      @default(0)
-  updatedAt      DateTime @updatedAt
+  sortOrder       Int      @default(0)
+  updatedAt       DateTime @updatedAt
 
   book PricingBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
 
@@ -832,12 +832,12 @@ model PricingSetting {
 }
 
 model PricingChangeLog {
-  id        String   @id @default(cuid())
-  bookId    String
-  actorId   String?
-  action    String
+  id          String   @id @default(cuid())
+  bookId      String
+  actorId     String?
+  action      String
   detailsJson Json?
-  createdAt DateTime @default(now())
+  createdAt   DateTime @default(now())
 
   book  PricingBook @relation(fields: [bookId], references: [id], onDelete: Cascade)
   actor User?       @relation("PricingChangeLogActor", fields: [actorId], references: [id], onDelete: SetNull)

@@ -16,15 +16,24 @@
  * allocated values.
  */
 import type { ProformaData, ProformaLineItem } from "@/lib/proforma-pdf";
+import {
+  invoiceCurrencyForBuyer,
+  invoiceGrossCentsFromEurCents,
+  invoiceVatRateForBuyer,
+} from "@/lib/invoice-data";
 
 type OrderForProforma = {
   orderNumber: string;
   buyerType: "individual" | "company_rs" | "company_foreign";
+  buyerCountryCode?: string | null;
   companyName: string | null;
   companyTaxId: string | null;
   companyMb: string | null;
   companyAddress: string | null;
   companyCountryCode: string | null;
+  billingCurrency?: "RSD" | "EUR" | null;
+  billingVatRate?: number | null;
+  billingEurToRsdRate?: number | null;
   user: { name: string | null; email: string | null };
   items: Array<{
     productLabel: string;
@@ -48,23 +57,24 @@ export function buildProformaDataForOrder(
   options: BuildProformaDataOptions,
 ): BuildProformaDataResult {
   const buyerType = order.buyerType;
-  const isExport = buyerType === "company_foreign";
-  const currency: "RSD" | "EUR" = isExport ? "EUR" : "RSD";
+  const currency = invoiceCurrencyForBuyer(order);
+  const vatRate = invoiceVatRateForBuyer(order);
 
   const recipient = buildRecipient(order);
   const items: ProformaLineItem[] = order.items
-    .filter((it) => it.totalCents != null && it.totalCents > 0)
+    .filter((it) => (it.totalCents ?? Math.round(it.totalEur * 100)) > 0)
     .map((it) => {
       const totalCents = it.totalCents ?? Math.round(it.totalEur * 100);
-      // Cents already include VAT for domestic orders. The PDF wants
-      // net cents per line so it can break out VAT separately.
-      // Domestic VAT is 20%: net = total / 1.2.
-      const unitNet = isExport ? totalCents : Math.round(totalCents / 1.2);
+      const grossUnitCents = invoiceGrossCentsFromEurCents(totalCents, order);
+      const unitNet =
+        vatRate > 0
+          ? Math.round(grossUnitCents / (1 + vatRate))
+          : grossUnitCents;
       return {
         description: it.productLabel,
         quantity: 1,
         unitPriceNetCents: unitNet,
-        vatRate: isExport ? 0 : 0.2,
+        vatRate,
       };
     });
 
@@ -90,6 +100,7 @@ function buildRecipient(order: OrderForProforma): ProformaData["recipient"] {
     return {
       name: order.user.name ?? order.user.email ?? "Kupac",
       address: "—",
+      countryCode: order.buyerCountryCode ?? null,
       email: order.user.email,
     };
   }

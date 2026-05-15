@@ -7,7 +7,7 @@
  */
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -153,8 +153,11 @@ export function QuickOrderHero() {
     [selectedAiEditId],
   );
 
-  const priceText = (text: string) =>
-    formatPublicPriceText(text, displayCurrency, pricingSettings);
+  const priceText = useCallback(
+    (text: string) =>
+      formatPublicPriceText(text, displayCurrency, pricingSettings),
+    [displayCurrency, pricingSettings],
+  );
 
   /** Unified view object — drives the left column + order summary header. */
   const view = useMemo(() => {
@@ -185,8 +188,7 @@ export function QuickOrderHero() {
     mode,
     selectedAiEdit,
     selectedService,
-    displayCurrency,
-    pricingSettings,
+    priceText,
   ]);
 
   const handleServiceChange = (slug: string) => {

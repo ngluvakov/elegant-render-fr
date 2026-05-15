@@ -10,6 +10,10 @@
  */
 import { Building2, Calendar, FileDown, Landmark } from "lucide-react";
 import { formatEur } from "@/lib/catalog/calculate";
+import {
+  formatBillingMoney,
+  type BillingCurrency,
+} from "@/lib/billing";
 import { IMPRINT } from "@/lib/content/site";
 
 type Props = {
@@ -19,6 +23,8 @@ type Props = {
   proformaIssuedAt: Date;
   totalEur: number;
   totalCents: number | null;
+  billingCurrency?: BillingCurrency | null;
+  billingTotalCents?: number | null;
 };
 
 const PROFORMA_VALIDITY_DAYS = 14;
@@ -36,11 +42,16 @@ export function ProformaCard({
   proformaIssuedAt,
   totalEur,
   totalCents,
+  billingCurrency,
+  billingTotalCents,
 }: Props) {
   const dueDate = new Date(proformaIssuedAt);
   dueDate.setDate(dueDate.getDate() + PROFORMA_VALIDITY_DAYS);
 
-  const amountFormatted = formatEur((totalCents ?? totalEur * 100) / 100);
+  const amountFormatted =
+    billingCurrency && billingTotalCents != null
+      ? formatBillingMoney(billingTotalCents, billingCurrency)
+      : formatEur((totalCents ?? totalEur * 100) / 100);
 
   return (
     <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6">

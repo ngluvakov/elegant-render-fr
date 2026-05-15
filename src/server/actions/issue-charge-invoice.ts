@@ -18,7 +18,9 @@ import { renderInvoicePdf, type InvoiceData } from "@/lib/invoice-pdf";
 import {
   buildInvoiceLineItem,
   buildInvoiceRecipient,
+  invoiceGrossCentsFromEurCents,
   invoiceCurrencyForBuyer,
+  invoiceVatRateForBuyer,
   isExportInvoice,
   paymentMethodLabel,
 } from "@/lib/invoice-data";
@@ -54,18 +56,44 @@ export async function issueChargeInvoice(
     }
 
     const order = charge.order;
-    const buyerType = order.buyerType;
-    const isExport = isExportInvoice(buyerType);
-    const currency = invoiceCurrencyForBuyer(buyerType);
-    const recipient = buildInvoiceRecipient(order);
+    const invoiceBuyer = {
+      buyerType: charge.buyerType ?? order.buyerType,
+      buyerCountryCode: charge.buyerCountryCode ?? order.buyerCountryCode,
+      companyName:
+        charge.buyerType != null ? charge.companyName : order.companyName,
+      companyTaxId:
+        charge.buyerType != null ? charge.companyTaxId : order.companyTaxId,
+      companyMb: charge.buyerType != null ? charge.companyMb : order.companyMb,
+      companyAddress:
+        charge.buyerType != null
+          ? charge.companyAddress
+          : order.companyAddress,
+      companyCountryCode:
+        charge.buyerType != null
+          ? charge.companyCountryCode
+          : order.companyCountryCode,
+      billingCurrency: charge.billingCurrency ?? order.billingCurrency,
+      billingVatRate: charge.billingVatRate ?? order.billingVatRate,
+      billingEurToRsdRate:
+        charge.billingEurToRsdRate ?? order.billingEurToRsdRate,
+      user: order.user,
+    };
+    const buyerType = invoiceBuyer.buyerType;
+    const isExport = isExportInvoice(invoiceBuyer);
+    const currency = invoiceCurrencyForBuyer(invoiceBuyer);
+    const vatRate = invoiceVatRateForBuyer(invoiceBuyer);
+    const recipient = buildInvoiceRecipient(invoiceBuyer);
     const items = charge.items
       .filter((it) => it.amountCents > 0 && it.quantity > 0)
       .map((it) =>
         buildInvoiceLineItem({
           description: it.label,
-          grossUnitCents: it.amountCents,
+          grossUnitCents: invoiceGrossCentsFromEurCents(
+            it.amountCents,
+            invoiceBuyer,
+          ),
           quantity: it.quantity,
-          isExport,
+          vatRate,
         }),
       );
 
@@ -118,6 +146,8 @@ export async function issueChargeInvoice(
           to: order.user.email,
           invoiceNumber: allocation.formatted,
           totalEur: charge.totalCents / 100,
+          billingCurrency: currency,
+          billingTotalCents: charge.billingTotalCents,
           pdfPath: storagePath,
         },
         idempotencyKey: `charge_invoice_issued_email:${chargeId}:${allocation.formatted}`,
@@ -134,6 +164,7 @@ export async function issueChargeInvoice(
         buyerType,
         currency,
         totalEur: charge.totalCents / 100,
+        billingTotalCents: charge.billingTotalCents,
         pdfPath: storagePath,
       },
     });

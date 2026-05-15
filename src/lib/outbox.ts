@@ -106,6 +106,9 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       order.user.email,
       order.orderNumber,
       order.totalCents ? order.totalCents / 100 : order.totalEur,
+      order.billingCurrency && order.billingTotalCents != null
+        ? formatOutboxMoney(order.billingTotalCents, order.billingCurrency)
+        : undefined,
     );
   },
 
@@ -203,17 +206,37 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
     const orderNumber = String(payload.orderNumber ?? "");
     const orderId = String(payload.orderId ?? "");
     const totalCents = Number(payload.totalCents);
+    const billingTotalCents =
+      payload.billingTotalCents == null
+        ? null
+        : Number(payload.billingTotalCents);
+    const billingCurrency =
+      payload.billingCurrency === "RSD" || payload.billingCurrency === "EUR"
+        ? payload.billingCurrency
+        : null;
     const reason = String(payload.reason ?? "");
     const rawLines = payload.lines;
     if (!to || !orderNumber || !orderId || !Number.isFinite(totalCents) || !Array.isArray(rawLines)) {
       throw new Error("additional_charge_requested_email: missing required field(s)");
     }
     const lines = rawLines.map((raw) => {
-      const line = raw as { label?: unknown; quantity?: unknown; amountCents?: unknown };
+      const line = raw as {
+        label?: unknown;
+        quantity?: unknown;
+        amountCents?: unknown;
+        billingSubtotalCents?: unknown;
+      };
+      const billingSubtotalCents =
+        line.billingSubtotalCents == null
+          ? null
+          : Number(line.billingSubtotalCents);
       return {
         label: String(line.label ?? ""),
         quantity: Number(line.quantity ?? 1),
         amountCents: Number(line.amountCents ?? 0),
+        billingSubtotalCents: isFiniteNumber(billingSubtotalCents)
+          ? billingSubtotalCents
+          : null,
       };
     });
     await sendAdditionalChargeRequestedEmail({
@@ -221,6 +244,10 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       orderNumber,
       orderId,
       totalCents,
+      billingCurrency,
+      billingTotalCents: isFiniteNumber(billingTotalCents)
+        ? billingTotalCents
+        : null,
       reason,
       lines,
     });
@@ -231,16 +258,41 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
     const orderNumber = String(payload.orderNumber ?? "");
     const orderId = String(payload.orderId ?? "");
     const totalCents = Number(payload.totalCents);
+    const billingTotalCents =
+      payload.billingTotalCents == null
+        ? null
+        : Number(payload.billingTotalCents);
+    const billingCurrency =
+      payload.billingCurrency === "RSD" || payload.billingCurrency === "EUR"
+        ? payload.billingCurrency
+        : null;
     if (!to || !orderNumber || !orderId || !Number.isFinite(totalCents)) {
       throw new Error("additional_charge_paid_email: missing required field(s)");
     }
-    await sendAdditionalChargePaidEmail({ to, orderNumber, orderId, totalCents });
+    await sendAdditionalChargePaidEmail({
+      to,
+      orderNumber,
+      orderId,
+      totalCents,
+      billingCurrency,
+      billingTotalCents: isFiniteNumber(billingTotalCents)
+        ? billingTotalCents
+        : null,
+    });
   },
 
   invoice_issued_email: async (payload) => {
     const to = String(payload.to ?? "");
     const invoiceNumber = String(payload.invoiceNumber ?? "");
     const totalEur = Number(payload.totalEur);
+    const billingTotalCents =
+      payload.billingTotalCents == null
+        ? null
+        : Number(payload.billingTotalCents);
+    const billingCurrency =
+      payload.billingCurrency === "RSD" || payload.billingCurrency === "EUR"
+        ? payload.billingCurrency
+        : null;
     const pdfPath = String(payload.pdfPath ?? "");
     if (!to || !invoiceNumber || !pdfPath || !Number.isFinite(totalEur)) {
       throw new Error("invoice_issued_email: missing required field(s)");
@@ -264,6 +316,10 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       to,
       invoiceNumber,
       totalEur,
+      amountLabel:
+        billingCurrency && isFiniteNumber(billingTotalCents)
+          ? formatOutboxMoney(billingTotalCents, billingCurrency)
+          : undefined,
       pdfBuffer,
     });
   },
@@ -272,6 +328,14 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
     const to = String(payload.to ?? "");
     const proformaNumber = String(payload.proformaNumber ?? "");
     const totalEur = Number(payload.totalEur);
+    const billingTotalCents =
+      payload.billingTotalCents == null
+        ? null
+        : Number(payload.billingTotalCents);
+    const billingCurrency =
+      payload.billingCurrency === "RSD" || payload.billingCurrency === "EUR"
+        ? payload.billingCurrency
+        : null;
     const pdfPath = String(payload.pdfPath ?? "");
     const dueDate = new Date(String(payload.dueDate ?? ""));
     if (
@@ -298,6 +362,10 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       to,
       proformaNumber,
       totalEur,
+      amountLabel:
+        billingCurrency && isFiniteNumber(billingTotalCents)
+          ? formatOutboxMoney(billingTotalCents, billingCurrency)
+          : undefined,
       dueDate,
       pdfBuffer,
     });
@@ -325,6 +393,20 @@ const BATCH_SIZE = 25;
 function nextAttemptDelayMs(attempts: number): number {
   const minutes = Math.min(16, Math.pow(2, attempts));
   return minutes * 60 * 1000;
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value);
+}
+
+function formatOutboxMoney(cents: number, currency: "RSD" | "EUR"): string {
+  if (currency === "RSD") {
+    return `${(cents / 100).toLocaleString("sr-Latn-RS", {
+      maximumFractionDigits: 0,
+    })} RSD`;
+  }
+  const eur = cents / 100;
+  return eur % 1 === 0 ? `€${eur.toFixed(0)}` : `€${eur.toFixed(2)}`;
 }
 
 export type ProcessBatchResult = {

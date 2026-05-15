@@ -28,7 +28,9 @@ import { renderInvoicePdf, type InvoiceData } from "@/lib/invoice-pdf";
 import {
   buildInvoiceLineItem,
   buildInvoiceRecipient,
+  invoiceGrossCentsFromEurCents,
   invoiceCurrencyForBuyer,
+  invoiceVatRateForBuyer,
   isExportInvoice,
   paymentMethodLabel,
 } from "@/lib/invoice-data";
@@ -60,17 +62,18 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
     // mirrors the three layouts in invoice-pdf.tsx so a customer always
     // sees a document that matches what they entered at checkout.
     const buyerType = order.buyerType;
-    const isExport = isExportInvoice(buyerType);
-    const currency = invoiceCurrencyForBuyer(buyerType);
+    const isExport = isExportInvoice(order);
+    const currency = invoiceCurrencyForBuyer(order);
+    const vatRate = invoiceVatRateForBuyer(order);
     const recipient = buildInvoiceRecipient(order);
     const items = order.items
-      .filter((it) => it.totalCents != null && it.totalCents > 0)
+      .filter((it) => (it.totalCents ?? Math.round(it.totalEur * 100)) > 0)
       .map((it) => {
         const totalCents = it.totalCents ?? Math.round(it.totalEur * 100);
         return buildInvoiceLineItem({
           description: it.productLabel,
-          grossUnitCents: totalCents,
-          isExport,
+          grossUnitCents: invoiceGrossCentsFromEurCents(totalCents, order),
+          vatRate,
         });
       });
 
@@ -126,6 +129,8 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
           to: order.user.email,
           invoiceNumber: allocation.formatted,
           totalEur: order.totalEur,
+          billingCurrency: currency,
+          billingTotalCents: order.billingTotalCents,
           pdfPath: storagePath,
         },
         idempotencyKey: `invoice_issued_email:${orderId}:${allocation.formatted}`,
@@ -141,6 +146,7 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
         buyerType,
         currency,
         totalEur: order.totalEur,
+        billingTotalCents: order.billingTotalCents,
         pdfPath: storagePath,
       },
     });

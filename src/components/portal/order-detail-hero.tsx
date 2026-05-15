@@ -9,6 +9,10 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { formatEur } from "@/lib/catalog/calculate";
+import {
+  formatBillingMoney,
+  type BillingCurrency,
+} from "@/lib/billing";
 import { statusLabel, statusAccent } from "./status-utils";
 import { ProjectNameEditor } from "./project-name-editor";
 
@@ -18,6 +22,8 @@ type OrderDetailHeroProps = {
   status: string;
   totalEur: number;
   totalCents?: number | null;
+  billingCurrency?: BillingCurrency | null;
+  billingTotalCents?: number | null;
   savingsEur?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -32,6 +38,8 @@ export function OrderDetailHero({
   status,
   totalEur,
   totalCents,
+  billingCurrency,
+  billingTotalCents,
   savingsEur = 0,
   createdAt,
   updatedAt,
@@ -87,7 +95,9 @@ export function OrderDetailHero({
           <Badge className={statusAccent(status)}>{statusLabel(status)}</Badge>
           <div className="flex flex-col items-end">
             <p className="text-2xl font-bold text-foreground">
-              {formatEur((totalCents ?? totalEur * 100) / 100)}
+              {billingCurrency && billingTotalCents != null
+                ? formatBillingMoney(billingTotalCents, billingCurrency)
+                : formatEur((totalCents ?? totalEur * 100) / 100)}
             </p>
             {savingsEur > 0 && (
               <p className="text-xs font-semibold text-[color:var(--color-sage-deep)]">

@@ -15,20 +15,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatEur } from "@/lib/catalog/calculate";
+import {
+  formatBillingMoney,
+  type BillingCurrency,
+} from "@/lib/billing";
 import { mockCardChargePaymentAction } from "@/server/actions/charge-payment";
 import { PayPalChargeButtons } from "./paypal-charge-buttons";
 
 type Props = {
   chargeId: string;
   totalCents: number;
+  billingCurrency: BillingCurrency | null;
+  billingTotalCents: number | null;
 };
 
-export function ChargePaymentCard({ chargeId, totalCents }: Props) {
+export function ChargePaymentCard({
+  chargeId,
+  totalCents,
+  billingCurrency,
+  billingTotalCents,
+}: Props) {
   const [method, setMethod] = useState<"paypal" | "card">("paypal");
   const [cardPending, setCardPending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const amountLabel =
+    billingCurrency && billingTotalCents != null
+      ? formatBillingMoney(billingTotalCents, billingCurrency)
+      : formatEur(totalCents / 100);
 
   if (success) {
     return (
@@ -143,7 +158,7 @@ export function ChargePaymentCard({ chargeId, totalCents }: Props) {
             onClick={handleMockCard}
             disabled={cardPending}
           >
-            {cardPending ? "Obrada…" : `Plati ${formatEur(totalCents / 100)}`}
+            {cardPending ? "Obrada…" : `Plati ${amountLabel}`}
           </Button>
         </div>
       )}

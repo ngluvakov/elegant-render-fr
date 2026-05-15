@@ -6,12 +6,18 @@
 import { Receipt } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatEur } from "@/lib/catalog/calculate";
+import {
+  formatBillingMoney,
+  type BillingCurrency,
+} from "@/lib/billing";
 import { ChargePaymentCard } from "./charge-payment-card";
 
 export type ChargeView = {
   id: string;
   reason: string | null;
   totalCents: number;
+  billingCurrency: BillingCurrency | null;
+  billingTotalCents: number | null;
   status: "pending" | "paid" | "cancelled";
   paidAt: Date | null;
   createdAt: Date;
@@ -70,7 +76,7 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
                 )}
               </div>
               <p className="text-base font-bold text-foreground">
-                {formatEur(charge.totalCents / 100)}
+                {formatChargeTotal(charge)}
               </p>
             </div>
             <ul className="space-y-0.5 text-xs text-foreground/80">
@@ -89,6 +95,8 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
             <ChargePaymentCard
               chargeId={charge.id}
               totalCents={charge.totalCents}
+              billingCurrency={charge.billingCurrency}
+              billingTotalCents={charge.billingTotalCents}
             />
           </div>
         ))}
@@ -123,7 +131,7 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
                     )}
                   </div>
                   <p className="text-sm font-semibold text-foreground">
-                    {formatEur(charge.totalCents / 100)}
+                    {formatChargeTotal(charge)}
                   </p>
                 </div>
               </div>
@@ -133,4 +141,10 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
       </div>
     </section>
   );
+}
+
+function formatChargeTotal(charge: ChargeView): string {
+  return charge.billingCurrency && charge.billingTotalCents != null
+    ? formatBillingMoney(charge.billingTotalCents, charge.billingCurrency)
+    : formatEur(charge.totalCents / 100);
 }

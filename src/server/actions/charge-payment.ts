@@ -38,6 +38,8 @@ async function loadChargeForPayment(chargeId: string) {
       id: true,
       orderId: true,
       totalCents: true,
+      billingCurrency: true,
+      billingTotalCents: true,
       status: true,
       paymentStatus: true,
       paymentProvider: true,
@@ -58,6 +60,8 @@ async function trackChargePaid(args: {
   orderId: string;
   userId: string;
   totalCents: number;
+  billingCurrency: "RSD" | "EUR" | null;
+  billingTotalCents: number | null;
   provider: "paypal" | "card_mock";
 }) {
   await captureServerEvent({
@@ -67,6 +71,8 @@ async function trackChargePaid(args: {
       charge_id: args.chargeId,
       order_id: args.orderId,
       total_cents: args.totalCents,
+      billing_currency: args.billingCurrency,
+      billing_total_cents: args.billingTotalCents,
       provider: args.provider,
     },
   });
@@ -78,6 +84,8 @@ async function enqueuePaidEmail(args: {
   orderNumber: string;
   email: string | null;
   totalCents: number;
+  billingCurrency: "RSD" | "EUR" | null;
+  billingTotalCents: number | null;
 }) {
   if (!args.email) return;
   await enqueueOutboxEvent({
@@ -88,6 +96,8 @@ async function enqueuePaidEmail(args: {
       orderId: args.orderId,
       chargeId: args.chargeId,
       totalCents: args.totalCents,
+      billingCurrency: args.billingCurrency,
+      billingTotalCents: args.billingTotalCents,
     },
     idempotencyKey: `additional_charge_paid:${args.chargeId}`,
   });
@@ -194,12 +204,16 @@ export async function capturePayPalChargeAction(
       orderNumber: charge.order.orderNumber,
       email: charge.order.user.email,
       totalCents: charge.totalCents,
+      billingCurrency: charge.billingCurrency,
+      billingTotalCents: charge.billingTotalCents,
     });
     await trackChargePaid({
       chargeId: charge.id,
       orderId: charge.orderId,
       userId: charge.order.userId,
       totalCents: charge.totalCents,
+      billingCurrency: charge.billingCurrency,
+      billingTotalCents: charge.billingTotalCents,
       provider: "paypal",
     });
 
@@ -253,12 +267,16 @@ export async function mockCardChargePaymentAction(
       orderNumber: charge.order.orderNumber,
       email: charge.order.user.email,
       totalCents: charge.totalCents,
+      billingCurrency: charge.billingCurrency,
+      billingTotalCents: charge.billingTotalCents,
     });
     await trackChargePaid({
       chargeId: charge.id,
       orderId: charge.orderId,
       userId: charge.order.userId,
       totalCents: charge.totalCents,
+      billingCurrency: charge.billingCurrency,
+      billingTotalCents: charge.billingTotalCents,
       provider: "card_mock",
     });
 

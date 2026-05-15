@@ -14,6 +14,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatEur } from "@/lib/catalog/calculate";
+import {
+  formatBillingMoney,
+  type BillingCurrency,
+} from "@/lib/billing";
 import { track } from "@/lib/posthog-events";
 import { mockCardPaymentAction } from "@/server/actions/payment";
 import { PayPalPortalButtons } from "./paypal-portal-buttons";
@@ -22,14 +26,26 @@ type PendingPaymentCardProps = {
   orderId: string;
   totalEur: number;
   totalCents?: number | null;
+  billingCurrency?: BillingCurrency | null;
+  billingTotalCents?: number | null;
 };
 
-export function PendingPaymentCard({ orderId, totalEur, totalCents }: PendingPaymentCardProps) {
+export function PendingPaymentCard({
+  orderId,
+  totalEur,
+  totalCents,
+  billingCurrency,
+  billingTotalCents,
+}: PendingPaymentCardProps) {
   const [method, setMethod] = useState<"paypal" | "card">("paypal");
   const [cardPending, setCardPending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const router = useRouter();
+  const amountLabel =
+    billingCurrency && billingTotalCents != null
+      ? formatBillingMoney(billingTotalCents, billingCurrency)
+      : formatEur((totalCents ?? totalEur * 100) / 100);
 
   if (success) {
     return (
@@ -79,7 +95,7 @@ export function PendingPaymentCard({ orderId, totalEur, totalCents }: PendingPay
       <p className="mt-2 text-xs text-muted-foreground">
         Ova porudžbina još nije plaćena. Ukupno:{" "}
         <strong className="text-foreground">
-          {formatEur((totalCents ?? totalEur * 100) / 100)}
+          {amountLabel}
         </strong>
       </p>
 
@@ -177,7 +193,7 @@ export function PendingPaymentCard({ orderId, totalEur, totalCents }: PendingPay
           >
             {cardPending
               ? "Obrada…"
-              : `Plati ${formatEur((totalCents ?? totalEur * 100) / 100)}`}
+              : `Plati ${amountLabel}`}
           </Button>
         </div>
       )}

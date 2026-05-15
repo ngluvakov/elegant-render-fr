@@ -24,7 +24,11 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/server/actions/admin";
 import { recordAuditLog } from "@/lib/audit";
-import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import {
+  invoiceCurrencyForBuyer,
+  invoiceGrossCentsFromEurCents,
+  invoiceVatRateForBuyer,
+} from "@/lib/invoice-data";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -70,20 +74,14 @@ export async function GET(request: Request) {
     );
   }
 
-  const [orders, pricingCatalog] = await Promise.all([
-    prisma.order.findMany({
-      where: {
-        invoiceIssuedAt: { gte: from, lte: to },
-        invoiceNumber: { not: null },
-      },
-      include: { user: { select: { name: true, email: true } } },
-      orderBy: { invoiceIssuedAt: "asc" },
-    }),
-    getPublishedPricingCatalog(),
-  ]);
-
-  const eurToRsd = pricingCatalog.settings.eurToRsdRate;
-  const vatRate = pricingCatalog.settings.serbiaVatRate;
+  const orders = await prisma.order.findMany({
+    where: {
+      invoiceIssuedAt: { gte: from, lte: to },
+      invoiceNumber: { not: null },
+    },
+    include: { user: { select: { name: true, email: true } } },
+    orderBy: { invoiceIssuedAt: "asc" },
+  });
 
   const header = [
     "Broj fakture",
@@ -96,9 +94,9 @@ export async function GET(request: Request) {
     "Država",
     "Tip kupca",
     "Valuta",
-    "Neto (EUR)",
-    "PDV (EUR)",
-    "Bruto (EUR)",
+    "Neto (valuta)",
+    "PDV (valuta)",
+    "Bruto (valuta)",
     "Bruto (RSD)",
     "Status plaćanja",
     "Payment provider",
@@ -108,11 +106,18 @@ export async function GET(request: Request) {
   const lines: string[] = [header.map(csvField).join(",")];
 
   for (const order of orders) {
-    const isExport = order.buyerType === "company_foreign";
-    const grossEur = order.totalEur;
-    const netEur = isExport ? grossEur : grossEur / (1 + vatRate);
-    const vatEur = isExport ? 0 : grossEur - netEur;
-    const grossRsd = isExport ? null : Math.round(grossEur * eurToRsd * (1 + vatRate));
+    const currency = invoiceCurrencyForBuyer(order);
+    const vatRate = invoiceVatRateForBuyer(order);
+    const grossCents =
+      order.billingTotalCents ??
+      invoiceGrossCentsFromEurCents(
+        order.totalCents ?? order.totalEur * 100,
+        order,
+      );
+    const netCents =
+      vatRate > 0 ? Math.round(grossCents / (1 + vatRate)) : grossCents;
+    const vatCents = grossCents - netCents;
+    const grossRsd = currency === "RSD" ? grossCents / 100 : null;
 
     const buyerName =
       order.buyerType === "individual"
@@ -133,12 +138,12 @@ export async function GET(request: Request) {
       buyerName,
       order.companyTaxId ?? "",
       order.companyMb ?? "",
-      order.companyCountryCode ?? "",
+      order.buyerCountryCode ?? order.companyCountryCode ?? "",
       buyerTypeLabel(order.buyerType),
-      isExport ? "EUR" : "RSD",
-      formatNumber(netEur, 2),
-      formatNumber(vatEur, 2),
-      formatNumber(grossEur, 2),
+      currency,
+      formatMoneyNumber(netCents, currency),
+      formatMoneyNumber(vatCents, currency),
+      formatMoneyNumber(grossCents, currency),
       grossRsd != null ? formatNumber(grossRsd, 0) : "",
       order.paymentStatus,
       order.paymentProvider ?? "",
@@ -179,6 +184,10 @@ function formatNumber(n: number, decimals: number): string {
   // CSV typically uses `.` decimal separator regardless of locale —
   // that matches Excel's auto-import on en-US / sr-Latn alike.
   return n.toFixed(decimals);
+}
+
+function formatMoneyNumber(cents: number, currency: "RSD" | "EUR"): string {
+  return formatNumber(cents / 100, currency === "RSD" ? 0 : 2);
 }
 
 function formatIsoDate(d: Date): string {

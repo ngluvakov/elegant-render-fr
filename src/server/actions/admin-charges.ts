@@ -19,6 +19,11 @@ import { prisma } from "@/lib/db";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { captureServerEvent } from "@/lib/posthog";
 import { requireAdmin } from "@/server/actions/admin";
+import {
+  billingCentsFromEurCents,
+  buildBillingSnapshot,
+} from "@/lib/billing";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export type ChargeItemInput = {
   productId?: string;
@@ -68,18 +73,74 @@ export async function adminCreateCharge(args: {
     0,
   );
 
-  const order = await prisma.order.findUnique({
-    where: { id: args.orderId },
-    select: {
-      id: true,
-      orderNumber: true,
-      userId: true,
-      user: { select: { email: true } },
-    },
-  });
+  const [order, pricingCatalog] = await Promise.all([
+    prisma.order.findUnique({
+      where: { id: args.orderId },
+      select: {
+        id: true,
+        orderNumber: true,
+        userId: true,
+        buyerType: true,
+        buyerCountryCode: true,
+        companyName: true,
+        companyTaxId: true,
+        companyMb: true,
+        companyAddress: true,
+        companyCountryCode: true,
+        user: {
+          select: {
+            email: true,
+            billingBuyerType: true,
+            billingCountryCode: true,
+            billingCompanyName: true,
+            billingCompanyTaxId: true,
+            billingCompanyMb: true,
+            billingCompanyAddress: true,
+          },
+        },
+      },
+    }),
+    getPublishedPricingCatalog(),
+  ]);
   if (!order) return { error: "Porudžbina nije pronađena." };
 
   const reason = args.reason?.trim() || null;
+  const userHasBillingProfile = Boolean(order.user.billingCountryCode);
+  const billingSnapshot = buildBillingSnapshot(
+    userHasBillingProfile
+      ? {
+          buyerType: order.user.billingBuyerType,
+          buyerCountryCode: order.user.billingCountryCode,
+          companyName: order.user.billingCompanyName,
+          companyTaxId: order.user.billingCompanyTaxId,
+          companyMb: order.user.billingCompanyMb,
+          companyAddress: order.user.billingCompanyAddress,
+          companyCountryCode: order.user.billingCountryCode,
+        }
+      : {
+          buyerType: order.buyerType,
+          buyerCountryCode:
+            order.buyerCountryCode ??
+            (order.buyerType === "company_rs" ? "RS" : order.companyCountryCode),
+          companyName: order.companyName,
+          companyTaxId: order.companyTaxId,
+          companyMb: order.companyMb,
+          companyAddress: order.companyAddress,
+          companyCountryCode: order.companyCountryCode,
+        },
+    pricingCatalog.settings,
+    order.buyerCountryCode ??
+      (order.buyerType === "company_rs" ? "RS" : order.companyCountryCode),
+  );
+  const billingTotalCents = normalized.reduce(
+    (sum, item) =>
+      sum +
+      billingCentsFromEurCents(
+        item.amountCents * item.quantity,
+        billingSnapshot,
+      ),
+    0,
+  );
 
   const admin = await requireAdmin();
 
@@ -90,6 +151,17 @@ export async function adminCreateCharge(args: {
         requestedById: admin.id,
         reason,
         totalCents,
+        buyerType: billingSnapshot.buyerType,
+        buyerCountryCode: billingSnapshot.buyerCountryCode,
+        companyName: billingSnapshot.companyName,
+        companyTaxId: billingSnapshot.companyTaxId,
+        companyMb: billingSnapshot.companyMb,
+        companyAddress: billingSnapshot.companyAddress,
+        companyCountryCode: billingSnapshot.companyCountryCode,
+        billingCurrency: billingSnapshot.billingCurrency,
+        billingVatRate: billingSnapshot.billingVatRate,
+        billingEurToRsdRate: billingSnapshot.billingEurToRsdRate,
+        billingTotalCents,
         items: {
           create: normalized.map((item) => ({
             productId: item.productId,
@@ -116,11 +188,17 @@ export async function adminCreateCharge(args: {
           orderId: order.id,
           chargeId: created.id,
           totalCents,
+          billingCurrency: billingSnapshot.billingCurrency,
+          billingTotalCents,
           reason: reason ?? "",
           lines: normalized.map((item) => ({
             label: item.label,
             quantity: item.quantity,
             amountCents: item.amountCents,
+            billingSubtotalCents: billingCentsFromEurCents(
+              item.amountCents * item.quantity,
+              billingSnapshot,
+            ),
           })),
         },
         idempotencyKey: `additional_charge_requested:${created.id}`,
@@ -141,6 +219,8 @@ export async function adminCreateCharge(args: {
       order_id: order.id,
       charge_id: charge.id,
       total_cents: totalCents,
+      billing_currency: billingSnapshot.billingCurrency,
+      billing_total_cents: billingTotalCents,
       item_count: normalized.length,
     },
   });

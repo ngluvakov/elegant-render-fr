@@ -69,6 +69,15 @@ function formatEmailEur(amount: number): string {
   return amount % 1 === 0 ? `€${amount.toFixed(0)}` : `€${amount.toFixed(2)}`;
 }
 
+function formatEmailMoney(cents: number, currency: "RSD" | "EUR"): string {
+  if (currency === "RSD") {
+    return `${(cents / 100).toLocaleString("sr-Latn-RS", {
+      maximumFractionDigits: 0,
+    })} RSD`;
+  }
+  return formatEmailEur(cents / 100);
+}
+
 // ─── Email templates ─────────────────────────────────────
 
 export async function sendVerificationEmail(
@@ -168,8 +177,10 @@ export async function sendOrderConfirmationEmail(
   to: string,
   orderNumber: string,
   totalEur: number,
+  amountLabel?: string,
 ) {
   const portalUrl = `${getAuthUrl()}/portal`;
+  const totalLabel = amountLabel ?? formatEmailEur(totalEur);
 
   await send({
     to,
@@ -183,7 +194,7 @@ export async function sendOrderConfirmationEmail(
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; font-size: 14px;">
             <strong>Broj porudžbine:</strong> ${orderNumber}<br/>
-            <strong>Ukupno:</strong> ${formatEmailEur(totalEur)}
+            <strong>Ukupno:</strong> ${escapeHtml(totalLabel)}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
@@ -209,10 +220,12 @@ export async function sendInvoiceIssuedEmail(args: {
   to: string;
   invoiceNumber: string;
   totalEur: number;
+  amountLabel?: string;
   pdfBuffer: Buffer;
 }) {
   const portalUrl = `${getAuthUrl()}/portal`;
   const filename = `racun-${args.invoiceNumber}.pdf`;
+  const amountLabel = args.amountLabel ?? formatEmailEur(args.totalEur);
 
   await send({
     to: args.to,
@@ -226,7 +239,7 @@ export async function sendInvoiceIssuedEmail(args: {
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; font-size: 14px;">
             <strong>Broj računa:</strong> ${escapeHtml(args.invoiceNumber)}<br/>
-            <strong>Iznos:</strong> ${formatEmailEur(args.totalEur)}
+            <strong>Iznos:</strong> ${escapeHtml(amountLabel)}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
@@ -252,6 +265,7 @@ export async function sendProformaIssuedEmail(args: {
   to: string;
   proformaNumber: string;
   totalEur: number;
+  amountLabel?: string;
   dueDate: Date;
   pdfBuffer: Buffer;
 }) {
@@ -261,6 +275,7 @@ export async function sendProformaIssuedEmail(args: {
     month: "2-digit",
     year: "numeric",
   });
+  const amountLabel = args.amountLabel ?? formatEmailEur(args.totalEur);
 
   await send({
     to: args.to,
@@ -275,7 +290,7 @@ export async function sendProformaIssuedEmail(args: {
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; font-size: 14px;">
             <strong>Broj predračuna:</strong> ${escapeHtml(args.proformaNumber)}<br/>
-            <strong>Iznos:</strong> ${formatEmailEur(args.totalEur)}<br/>
+            <strong>Iznos:</strong> ${escapeHtml(amountLabel)}<br/>
             <strong>Rok plaćanja:</strong> ${dueDateLabel}
           </p>
         </div>
@@ -564,25 +579,40 @@ export async function sendAdditionalChargeRequestedEmail(args: {
   orderNumber: string;
   orderId: string;
   totalCents: number;
+  billingCurrency?: "RSD" | "EUR" | null;
+  billingTotalCents?: number | null;
   reason: string;
-  lines: Array<{ label: string; quantity: number; amountCents: number }>;
+  lines: Array<{
+    label: string;
+    quantity: number;
+    amountCents: number;
+    billingSubtotalCents?: number | null;
+  }>;
 }) {
   const portalUrl = `${getAuthUrl()}/portal/porudzbine/${args.orderId}`;
   const totalEur = args.totalCents / 100;
+  const totalLabel =
+    args.billingCurrency && args.billingTotalCents != null
+      ? formatEmailMoney(args.billingTotalCents, args.billingCurrency)
+      : formatEmailEur(totalEur);
   const linesHtml = args.lines
     .map((line) => {
       const subtotal = (line.amountCents * line.quantity) / 100;
+      const subtotalLabel =
+        args.billingCurrency && line.billingSubtotalCents != null
+          ? formatEmailMoney(line.billingSubtotalCents, args.billingCurrency)
+          : formatEmailEur(subtotal);
       return `<li>
         ${escapeHtml(line.label)}
         ${line.quantity > 1 ? ` × ${line.quantity}` : ""}
-        — <strong>${formatEmailEur(subtotal)}</strong>
+        — <strong>${escapeHtml(subtotalLabel)}</strong>
       </li>`;
     })
     .join("\n");
 
   await send({
     to: args.to,
-    subject: `Dodatna naplata na porudžbini ${args.orderNumber} — ${formatEmailEur(totalEur)}`,
+    subject: `Dodatna naplata na porudžbini ${args.orderNumber} — ${totalLabel}`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
         <h2 style="color: #1C1A19;">Dodatna naplata</h2>
@@ -601,7 +631,7 @@ export async function sendAdditionalChargeRequestedEmail(args: {
           ${linesHtml}
         </ul>
         <p style="color: #1C1A19; font-size: 16px; margin: 16px 0;">
-          <strong>Ukupno za naplatu: ${formatEmailEur(totalEur)}</strong>
+          <strong>Ukupno za naplatu: ${escapeHtml(totalLabel)}</strong>
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
           Otvorite porudžbinu u portalu da pregledate stavke i izvršite plaćanje.
@@ -622,9 +652,15 @@ export async function sendAdditionalChargePaidEmail(args: {
   orderNumber: string;
   orderId: string;
   totalCents: number;
+  billingCurrency?: "RSD" | "EUR" | null;
+  billingTotalCents?: number | null;
 }) {
   const portalUrl = `${getAuthUrl()}/portal/porudzbine/${args.orderId}`;
   const totalEur = args.totalCents / 100;
+  const totalLabel =
+    args.billingCurrency && args.billingTotalCents != null
+      ? formatEmailMoney(args.billingTotalCents, args.billingCurrency)
+      : formatEmailEur(totalEur);
 
   await send({
     to: args.to,
@@ -638,7 +674,7 @@ export async function sendAdditionalChargePaidEmail(args: {
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19;">
-            <strong>Iznos:</strong> ${formatEmailEur(totalEur)}
+            <strong>Iznos:</strong> ${escapeHtml(totalLabel)}
           </p>
         </div>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">

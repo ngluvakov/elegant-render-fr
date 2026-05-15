@@ -120,6 +120,7 @@ import {
 } from "@/lib/catalog/exterior-config";
 import { calcTourAssemblyCost } from "@/lib/catalog/tour-assembly";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import { billingCentsFromEurCents } from "@/lib/billing";
 
 export type ItemConfigResult = {
   error?: string;
@@ -232,7 +233,12 @@ export async function repriceOrder(orderId: string) {
   const specialPricing = pricingCatalog.settings.specialPricing;
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    select: { referencedOrderId: true },
+    select: {
+      referencedOrderId: true,
+      billingCurrency: true,
+      billingVatRate: true,
+      billingEurToRsdRate: true,
+    },
   });
   const items = await prisma.orderItem.findMany({
     where: { orderId },
@@ -543,12 +549,23 @@ export async function repriceOrder(orderId: string) {
     premiumTotalCents += bd.totalCents;
   }
 
+  const billingTotalCents = order?.billingCurrency
+    ? billingCentsFromEurCents(orderTotalCents, {
+        billingCurrency: order.billingCurrency,
+        billingVatRate:
+          order.billingVatRate ?? pricingCatalog.settings.serbiaVatRate,
+        billingEurToRsdRate:
+          order.billingEurToRsdRate ?? pricingCatalog.settings.eurToRsdRate,
+      })
+    : undefined;
+
   await prisma.order.update({
     where: { id: orderId },
     data: {
       totalEur: Math.round(orderTotalCents / 100),
       totalCents: orderTotalCents,
       premiumTotalEur: Math.round(premiumTotalCents / 100),
+      ...(billingTotalCents !== undefined ? { billingTotalCents } : {}),
       containsAiCredits,
     },
   });

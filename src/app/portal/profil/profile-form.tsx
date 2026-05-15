@@ -1,10 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
-import { Pencil } from "lucide-react";
+import { useActionState, useMemo, useState } from "react";
+import { Building2, Globe2, Pencil, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { COUNTRIES } from "@/lib/iso-countries";
+import {
+  billingCurrencyForCountry,
+  buyerTypeForBilling,
+} from "@/lib/billing";
+import type { BuyerType } from "@/lib/buyer-validation";
 import {
   updateProfileAction,
   type ProfileState,
@@ -17,6 +23,14 @@ type ProfileFormProps = {
   defaultEmail: string;
   defaultPhone: string;
   hasPassword: boolean;
+  defaultBilling: {
+    buyerType: BuyerType;
+    countryCode: string;
+    companyName: string;
+    companyTaxId: string;
+    companyMb: string;
+    companyAddress: string;
+  };
 };
 
 export function ProfileForm({
@@ -24,11 +38,26 @@ export function ProfileForm({
   defaultEmail,
   defaultPhone,
   hasPassword,
+  defaultBilling,
 }: ProfileFormProps) {
   const [state, formAction, pending] = useActionState(
     updateProfileAction,
     initialState,
   );
+  const [billingKind, setBillingKind] = useState<"individual" | "company">(
+    defaultBilling.buyerType === "individual" ? "individual" : "company",
+  );
+  const [billingCountryCode, setBillingCountryCode] = useState(
+    defaultBilling.countryCode || "RS",
+  );
+
+  const billingCurrency = billingCurrencyForCountry(billingCountryCode);
+  const derivedBuyerType = useMemo(
+    () => buyerTypeForBilling(billingKind, billingCountryCode),
+    [billingKind, billingCountryCode],
+  );
+  const isCompany = billingKind === "company";
+  const isSerbia = billingCountryCode === "RS";
 
   return (
     <form action={formAction} className="mt-8 space-y-6">
@@ -106,6 +135,159 @@ export function ProfileForm({
           </p>
         )}
       </div>
+
+      <section className="space-y-5 rounded-2xl border border-border/50 bg-card/60 p-5">
+        <div>
+          <h2 className="text-sm font-semibold text-foreground">
+            Podaci za račun
+          </h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Koristi se kao podrazumevani podatak za buduće porudžbine i
+            doplate. Već izdati računi se ne menjaju.
+          </p>
+        </div>
+
+        <input type="hidden" name="billingKind" value={billingKind} />
+        <input
+          type="hidden"
+          name="billingBuyerType"
+          value={derivedBuyerType}
+        />
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => setBillingKind("individual")}
+            className={
+              "flex items-start gap-3 rounded-xl border p-4 text-left transition " +
+              (billingKind === "individual"
+                ? "border-accent bg-accent/5"
+                : "border-border bg-background/60 hover:bg-background")
+            }
+          >
+            <UserRound className="mt-0.5 h-4 w-4 text-accent" />
+            <span>
+              <span className="block text-sm font-semibold text-foreground">
+                Fizičko lice
+              </span>
+              <span className="mt-1 block text-xs text-muted-foreground">
+                Račun glasi na ime naloga.
+              </span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setBillingKind("company")}
+            className={
+              "flex items-start gap-3 rounded-xl border p-4 text-left transition " +
+              (billingKind === "company"
+                ? "border-accent bg-accent/5"
+                : "border-border bg-background/60 hover:bg-background")
+            }
+          >
+            <Building2 className="mt-0.5 h-4 w-4 text-accent" />
+            <span>
+              <span className="block text-sm font-semibold text-foreground">
+                Firma
+              </span>
+              <span className="mt-1 block text-xs text-muted-foreground">
+                Čuvamo podatke za fakturu.
+              </span>
+            </span>
+          </button>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="flex flex-col gap-1.5">
+            <span className="text-xs font-medium text-foreground">
+              Država za račun <span className="ml-1 text-destructive">*</span>
+            </span>
+            <select
+              name="billingCountryCode"
+              value={billingCountryCode}
+              onChange={(e) => setBillingCountryCode(e.target.value)}
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
+              required
+            >
+              <option value="RS">Srbija (RS)</option>
+              <option disabled>──────────</option>
+              {COUNTRIES.map((country) =>
+                country.code === "" ? (
+                  <option key="separator" disabled>
+                    {country.label}
+                  </option>
+                ) : (
+                  <option key={country.code} value={country.code}>
+                    {country.label} ({country.code})
+                  </option>
+                ),
+              )}
+            </select>
+          </label>
+          <div className="flex items-center gap-2 rounded-xl border border-border/40 bg-background/60 px-3 py-2 text-sm text-foreground">
+            <Globe2 className="h-4 w-4 text-accent" />
+            <span>
+              {billingCurrency === "RSD"
+                ? "Budući računi: RSD sa PDV-om"
+                : "Budući računi: EUR bez PDV-a"}
+            </span>
+          </div>
+        </div>
+
+        {isCompany && (
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="billingCompanyName">Naziv firme</Label>
+              <Input
+                id="billingCompanyName"
+                name="billingCompanyName"
+                defaultValue={defaultBilling.companyName}
+                required={isCompany}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="billingCompanyAddress">Adresa firme</Label>
+              <Input
+                id="billingCompanyAddress"
+                name="billingCompanyAddress"
+                defaultValue={defaultBilling.companyAddress}
+                required={isCompany}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="billingCompanyTaxId">
+                {isSerbia ? "PIB" : "VAT ID / Tax ID (opciono)"}
+              </Label>
+              <Input
+                id="billingCompanyTaxId"
+                name="billingCompanyTaxId"
+                defaultValue={defaultBilling.companyTaxId}
+                inputMode={isSerbia ? "numeric" : "text"}
+                maxLength={isSerbia ? 9 : undefined}
+                required={isCompany && isSerbia}
+              />
+              <p className="text-xs text-muted-foreground">
+                {isSerbia ? "PIB mora imati 9 cifara." : "Ako postoji, unesite ga sa prefiksom države."}
+              </p>
+            </div>
+            {isSerbia && (
+              <div className="space-y-2">
+                <Label htmlFor="billingCompanyMb">Matični broj</Label>
+                <Input
+                  id="billingCompanyMb"
+                  name="billingCompanyMb"
+                  defaultValue={defaultBilling.companyMb}
+                  inputMode="numeric"
+                  maxLength={8}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Opciono, 8 cifara.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </section>
 
       <Button type="submit" variant="accent" size="lg" disabled={pending}>
         {pending ? "Čuvanje…" : "Sačuvajte izmene"}

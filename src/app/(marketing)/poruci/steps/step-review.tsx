@@ -4,10 +4,11 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { track } from "@/lib/posthog-events";
+import { validateBuyerInfo } from "@/lib/buyer-validation";
 import {
-  validateBuyerInfo,
-  type BuyerType,
-} from "@/lib/buyer-validation";
+  billingCurrencyForCountry,
+  buyerTypeForBilling,
+} from "@/lib/billing";
 import {
   formatPublicPrice,
   type PublicPricingFormatSettings,
@@ -16,28 +17,6 @@ import { COUNTRIES } from "@/lib/iso-countries";
 import { useCheckout, type BuyerInfoState } from "../checkout-context";
 import { createOrder } from "@/server/actions/order";
 import { CompanyVatVerifier } from "../company-vat-verifier";
-
-const BUYER_TYPE_OPTIONS: Array<{
-  value: BuyerType;
-  label: string;
-  description: string;
-}> = [
-  {
-    value: "individual",
-    label: "Fizičko lice",
-    description: "Račun na vaše ime i prezime, sa PDV-om.",
-  },
-  {
-    value: "company_rs",
-    label: "Firma — Srbija",
-    description: "PIB, MB i naziv firme za PDV fakturu kroz SEF.",
-  },
-  {
-    value: "company_foreign",
-    label: "Firma — inostranstvo",
-    description: "PDF faktura bez PDV-a (oslobođenje po čl. 24/25 ZPDV).",
-  },
-];
 
 export function StepReview() {
   const {
@@ -50,6 +29,15 @@ export function StepReview() {
   const [pending, setPending] = useState(false);
   const [waiveWithdrawal, setWaiveWithdrawal] = useState(false);
   const requiresUpload = calculation.items.some((item) => item.kind === "service");
+  const buyerKind =
+    buyerInfo.buyerType === "individual" ? "individual" : "company";
+  const buyerCountryCode =
+    buyerInfo.buyerCountryCode ||
+    (buyerInfo.buyerType === "company_rs"
+      ? "RS"
+      : buyerInfo.companyCountryCode);
+  const buyerCurrency = billingCurrencyForCountry(buyerCountryCode);
+  const isSerbianBuyer = buyerCountryCode === "RS";
 
   const pricingSettings: PublicPricingFormatSettings | undefined = pricingCatalog
     ? {
@@ -68,6 +56,38 @@ export function StepReview() {
 
   const updateBuyer = (patch: Partial<BuyerInfoState>) => {
     setBuyerInfo({ ...buyerInfo, ...patch });
+  };
+
+  const updateBuyerKind = (kind: "individual" | "company") => {
+    const nextType = buyerTypeForBilling(kind, buyerCountryCode || "RS");
+    setBuyerInfo({
+      ...buyerInfo,
+      buyerType: nextType,
+      buyerCountryCode: buyerCountryCode || "RS",
+      companyCountryCode:
+        nextType === "company_foreign" ? buyerCountryCode : "",
+      ...(kind === "individual"
+        ? {
+            companyName: "",
+            companyTaxId: "",
+            companyMb: "",
+            companyAddress: "",
+            companyCountryCode: "",
+          }
+        : {}),
+    });
+  };
+
+  const updateBuyerCountry = (countryCode: string) => {
+    const nextType = buyerTypeForBilling(buyerKind, countryCode);
+    setBuyerInfo({
+      ...buyerInfo,
+      buyerType: nextType,
+      buyerCountryCode: countryCode,
+      companyCountryCode:
+        nextType === "company_foreign" ? countryCode : "",
+      ...(nextType === "company_rs" ? { companyMb: buyerInfo.companyMb } : {}),
+    });
   };
 
   const handleProceed = async () => {
@@ -215,63 +235,46 @@ export function StepReview() {
         </div>
       </div>
 
-      {/* Tip kupca — buyer identity for invoicing. Default is individual.
-          Validation feedback is rendered inline so the customer fixes
-          one issue at a time; the same check runs on the server. */}
+      {/* Billing snapshot for this order. Profile defaults land here,
+          but the customer can still adjust the legal invoice data
+          before payment; the order stores this exact snapshot. */}
       <div className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
-        <h2 className="text-base font-semibold text-foreground">Tip kupca</h2>
+        <h2 className="text-base font-semibold text-foreground">
+          Podaci za račun
+        </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Određuje kako će glasiti račun za ovu porudžbinu.
+          Određuje valutu i podatke koji će biti zaključani na računu za ovu
+          porudžbinu.
         </p>
 
-        <div className="mt-5 grid gap-2 md:grid-cols-3">
-          {BUYER_TYPE_OPTIONS.map((opt) => {
-            const active = buyerInfo.buyerType === opt.value;
-            return (
-              <label
-                key={opt.value}
-                className={
-                  "flex cursor-pointer flex-col gap-1 rounded-xl border p-4 transition " +
-                  (active
-                    ? "border-accent bg-accent/5"
-                    : "border-border bg-background/60 hover:bg-background")
-                }
-              >
-                <div className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="buyer-type"
-                    value={opt.value}
-                    checked={active}
-                    onChange={() =>
-                      updateBuyer({
-                        buyerType: opt.value,
-                        ...(opt.value === "individual"
-                          ? {
-                              companyName: "",
-                              companyTaxId: "",
-                              companyMb: "",
-                              companyAddress: "",
-                              companyCountryCode: "",
-                            }
-                          : {}),
-                      })
-                    }
-                    className="h-4 w-4 flex-shrink-0 accent-accent"
-                  />
-                  <span className="text-sm font-semibold text-foreground">
-                    {opt.label}
-                  </span>
-                </div>
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  {opt.description}
-                </p>
-              </label>
-            );
-          })}
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          <BuyerKindButton
+            active={buyerKind === "individual"}
+            title="Fizičko lice"
+            description="Račun glasi na ime naloga."
+            onClick={() => updateBuyerKind("individual")}
+          />
+          <BuyerKindButton
+            active={buyerKind === "company"}
+            title="Firma"
+            description="Račun glasi na pravno lice."
+            onClick={() => updateBuyerKind("company")}
+          />
         </div>
 
-        {buyerInfo.buyerType !== "individual" && (
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <CountrySelect
+            value={buyerCountryCode}
+            onChange={updateBuyerCountry}
+          />
+          <div className="flex items-center rounded-xl border border-border/40 bg-background/60 px-3 py-2 text-sm text-foreground">
+            {buyerCurrency === "RSD"
+              ? "Račun za Srbiju: RSD sa PDV-om"
+              : "Račun za inostranstvo: EUR bez PDV-a"}
+          </div>
+        </div>
+
+        {buyerKind === "company" && (
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <Field
               label="Naziv firme"
@@ -285,7 +288,7 @@ export function StepReview() {
               value={buyerInfo.companyAddress}
               onChange={(v) => updateBuyer({ companyAddress: v })}
             />
-            {buyerInfo.buyerType === "company_rs" && (
+            {isSerbianBuyer && (
               <>
                 <Field
                   label="PIB"
@@ -310,36 +313,28 @@ export function StepReview() {
                 />
               </>
             )}
-            {buyerInfo.buyerType === "company_foreign" && (
-              <>
-                <CountrySelect
-                  value={buyerInfo.companyCountryCode}
-                  onChange={(code) =>
-                    updateBuyer({ companyCountryCode: code })
+            {!isSerbianBuyer && (
+              <div>
+                <Field
+                  label="VAT ID / Tax ID (opciono)"
+                  value={buyerInfo.companyTaxId}
+                  hint="npr. DE123456789"
+                  onChange={(v) =>
+                    updateBuyer({
+                      companyTaxId: v.toUpperCase().replace(/[^A-Z0-9]/g, ""),
+                    })
                   }
                 />
-                <div>
-                  <Field
-                    label="VAT ID / Tax ID (opciono)"
-                    value={buyerInfo.companyTaxId}
-                    hint="npr. DE123456789"
-                    onChange={(v) =>
-                      updateBuyer({
-                        companyTaxId: v.toUpperCase().replace(/[^A-Z0-9]/g, ""),
-                      })
-                    }
-                  />
-                  <CompanyVatVerifier
-                    countryCode={buyerInfo.companyCountryCode}
-                    vatNumber={buyerInfo.companyTaxId}
-                  />
-                </div>
-              </>
+                <CompanyVatVerifier
+                  countryCode={buyerCountryCode}
+                  vatNumber={buyerInfo.companyTaxId}
+                />
+              </div>
             )}
           </div>
         )}
 
-        {buyerError && buyerInfo.buyerType !== "individual" && (
+        {buyerError && (
           <p className="mt-4 text-sm text-destructive">{buyerError}</p>
         )}
       </div>
@@ -440,6 +435,36 @@ function RsdTotalsBreakdown({
   );
 }
 
+function BuyerKindButton({
+  active,
+  title,
+  description,
+  onClick,
+}: {
+  active: boolean;
+  title: string;
+  description: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={
+        "flex cursor-pointer flex-col gap-1 rounded-xl border p-4 text-left transition " +
+        (active
+          ? "border-accent bg-accent/5"
+          : "border-border bg-background/60 hover:bg-background")
+      }
+    >
+      <span className="text-sm font-semibold text-foreground">{title}</span>
+      <span className="text-xs leading-relaxed text-muted-foreground">
+        {description}
+      </span>
+    </button>
+  );
+}
+
 function CountrySelect({
   value,
   onChange,
@@ -458,6 +483,8 @@ function CountrySelect({
         className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
       >
         <option value="">— Odaberite —</option>
+        <option value="RS">Srbija (RS)</option>
+        <option disabled>──────────</option>
         {COUNTRIES.map((c) =>
           c.code === "" ? (
             <option key="separator" disabled>

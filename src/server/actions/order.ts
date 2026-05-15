@@ -31,6 +31,10 @@ import {
   validateBuyerInfo,
   type BuyerInfoInput,
 } from "@/lib/buyer-validation";
+import {
+  billingCentsFromEurCents,
+  buildBillingSnapshot,
+} from "@/lib/billing";
 
 export type OrderResult = {
   error?: string;
@@ -101,6 +105,17 @@ export async function createOrder(
     return { error: "Ukupna cena mora biti veća od 0." };
   }
 
+  const billingSnapshot = buildBillingSnapshot(
+    buyer,
+    pricingCatalog.settings,
+    buyer.buyerType === "company_rs" ? "RS" : undefined,
+  );
+  const billingTotalCents = calculation.items.reduce(
+    (sum, item) =>
+      sum + billingCentsFromEurCents(item.totalCents, billingSnapshot),
+    0,
+  );
+
   const orderNumber = generateOrderNumber();
   const containsAiCredits = calculation.items.some(
     (item) => item.kind === "ai_credits",
@@ -123,13 +138,17 @@ export async function createOrder(
       containsAiCredits,
       customerNote: customerNote || null,
       withdrawalWaivedAt,
-      buyerType: buyer.buyerType,
-      companyName: buyer.companyName?.trim() || null,
-      companyTaxId: buyer.companyTaxId?.trim() || null,
-      companyMb: buyer.companyMb?.trim() || null,
-      companyAddress: buyer.companyAddress?.trim() || null,
-      companyCountryCode:
-        buyer.companyCountryCode?.trim().toUpperCase() || null,
+      buyerType: billingSnapshot.buyerType,
+      buyerCountryCode: billingSnapshot.buyerCountryCode,
+      companyName: billingSnapshot.companyName,
+      companyTaxId: billingSnapshot.companyTaxId,
+      companyMb: billingSnapshot.companyMb,
+      companyAddress: billingSnapshot.companyAddress,
+      companyCountryCode: billingSnapshot.companyCountryCode,
+      billingCurrency: billingSnapshot.billingCurrency,
+      billingVatRate: billingSnapshot.billingVatRate,
+      billingEurToRsdRate: billingSnapshot.billingEurToRsdRate,
+      billingTotalCents,
       items: {
         create: calculation.items.map((item) => {
           const sourceQI = quoteItems.find(
@@ -200,7 +219,9 @@ export async function createOrder(
       buyerType: order.buyerType,
       hasCompanyTaxId: Boolean(order.companyTaxId),
       hasCompanyMb: Boolean(order.companyMb),
-      countryCode: order.companyCountryCode ?? null,
+      countryCode: order.buyerCountryCode ?? order.companyCountryCode ?? null,
+      billingCurrency: order.billingCurrency,
+      billingTotalCents: order.billingTotalCents,
     },
   });
 

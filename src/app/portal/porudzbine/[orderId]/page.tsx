@@ -16,6 +16,7 @@ import { ItemConfigPanel } from "@/components/portal/item-config-panel";
 import { AddServiceDialog } from "@/components/portal/add-service-dialog";
 import { ReferenceOrderPicker } from "@/components/portal/reference-order-picker";
 import { OrderChargesCard } from "@/components/portal/order-charges-card";
+import { OrderInvoicesCard } from "@/components/portal/order-invoices-card";
 import { OrderAssistantGuideContext } from "@/components/chat/order-guide-context";
 import { AlertCircle } from "lucide-react";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
@@ -128,6 +129,8 @@ export default async function OrderDetailPage({
         status={order.status}
         totalEur={order.totalEur}
         totalCents={order.totalCents}
+        billingCurrency={order.billingCurrency}
+        billingTotalCents={order.billingTotalCents}
         savingsEur={savingsEur}
         createdAt={order.createdAt}
         updatedAt={order.updatedAt}
@@ -224,6 +227,8 @@ export default async function OrderDetailPage({
               id: c.id,
               reason: c.reason,
               totalCents: c.totalCents,
+              billingCurrency: c.billingCurrency,
+              billingTotalCents: c.billingTotalCents,
               status: c.status,
               paidAt: c.paidAt,
               createdAt: c.createdAt,
@@ -261,6 +266,8 @@ export default async function OrderDetailPage({
                 proformaIssuedAt={order.proformaIssuedAt}
                 totalEur={order.totalEur}
                 totalCents={order.totalCents}
+                billingCurrency={order.billingCurrency}
+                billingTotalCents={order.billingTotalCents}
               />
             )}
           {(order.status === "draft" || order.status === "awaiting_payment") &&
@@ -269,39 +276,12 @@ export default async function OrderDetailPage({
                 orderId={order.id}
                 totalEur={order.totalEur}
                 totalCents={order.totalCents}
+                billingCurrency={order.billingCurrency}
+                billingTotalCents={order.billingTotalCents}
               />
             )}
           <DeliverablesCard files={deliverableFiles} orderId={order.id} />
-          {order.invoiceNumber && order.invoiceIssuedAt && (
-            <div className="rounded-2xl border border-border/40 bg-card/60 p-5 md:p-6">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground">
-                    Faktura
-                  </h3>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Broj{" "}
-                    <span className="font-mono text-foreground">
-                      {order.invoiceNumber}
-                    </span>{" "}
-                    · izdata{" "}
-                    {new Date(order.invoiceIssuedAt).toLocaleDateString(
-                      "sr-Latn-RS",
-                      { day: "2-digit", month: "2-digit", year: "numeric" },
-                    )}
-                  </p>
-                </div>
-                <a
-                  href={`/api/portal/invoice/${order.id}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background transition hover:opacity-90"
-                >
-                  Preuzmi PDF
-                </a>
-              </div>
-            </div>
-          )}
+          <OrderInvoicesCard order={order} charges={order.charges} />
           <OrderSummaryCard
             items={order.items}
             customerNote={order.customerNote}

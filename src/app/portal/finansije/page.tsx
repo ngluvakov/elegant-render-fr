@@ -1,17 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  AlertCircle,
-  CheckCircle2,
-  Clock,
-  Download,
-  FileText,
-  ReceiptText,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock, ReceiptText } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import { formatEur } from "@/lib/catalog/calculate";
+import { cn } from "@/lib/utils";
+import {
+  formatBillingMoney,
+  type BillingCurrency,
+} from "@/lib/billing";
+import {
+  invoiceCurrencyForBuyer,
+  invoiceGrossCentsFromEurCents,
+} from "@/lib/invoice-data";
+import { buildInvoiceList, type InvoiceDoc } from "@/lib/invoice-list";
+import { FinanceInvoicesCell } from "@/components/portal/finance-invoices-cell";
 
 export const metadata: Metadata = {
   title: "Finansije",
@@ -20,172 +23,180 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
+type RowStatus = "completed" | "pending" | "failed" | "refunded" | "partial";
 
-type FinanceTransaction = {
-  id: string;
-  kind: "order" | "charge";
-  title: string;
+type ProjectRow = {
   orderId: string;
   orderNumber: string;
-  amountCents: number;
-  paymentStatus: PaymentStatus;
-  paymentProvider: string | null;
-  createdAt: Date;
-  paidAt: Date | null;
-  invoiceNumber: string | null;
-  invoiceIssuedAt: Date | null;
-  invoiceHref: string | null;
-  proformaNumber?: string | null;
-  proformaHref?: string | null;
+  projectName: string;
+  status: RowStatus;
+  latestActivity: Date;
+  total: CurrencyTotals;
+  paid: CurrencyTotals;
+  pending: CurrencyTotals;
+  invoices: InvoiceDoc[];
 };
+
+type CurrencyTotals = Record<BillingCurrency, number>;
 
 export default async function FinancePage() {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return null;
 
-  const [orders, charges] = await Promise.all([
-    prisma.order.findMany({
-      where: { userId, status: { not: "cancelled" } },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        orderNumber: true,
-        projectName: true,
-        status: true,
-        paymentStatus: true,
-        paymentProvider: true,
-        totalEur: true,
-        totalCents: true,
-        createdAt: true,
-        updatedAt: true,
-        invoiceNumber: true,
-        invoiceIssuedAt: true,
-        invoicePdfPath: true,
-        proformaNumber: true,
-        proformaPdfPath: true,
-        items: {
-          select: { productLabel: true, categoryLabel: true },
-          orderBy: { id: "asc" },
-          take: 1,
-        },
-        statusEvents: {
-          where: { toStatus: "paid" },
-          select: { createdAt: true },
-          orderBy: { createdAt: "desc" },
-          take: 1,
+  const orders = await prisma.order.findMany({
+    where: { userId, status: { not: "cancelled" } },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      orderNumber: true,
+      projectName: true,
+      status: true,
+      paymentStatus: true,
+      buyerType: true,
+      buyerCountryCode: true,
+      companyCountryCode: true,
+      billingCurrency: true,
+      billingVatRate: true,
+      billingEurToRsdRate: true,
+      billingTotalCents: true,
+      totalEur: true,
+      totalCents: true,
+      createdAt: true,
+      updatedAt: true,
+      proformaNumber: true,
+      proformaIssuedAt: true,
+      proformaPdfPath: true,
+      invoiceNumber: true,
+      invoiceIssuedAt: true,
+      invoicePdfPath: true,
+      items: {
+        select: { productLabel: true },
+        orderBy: { id: "asc" },
+        take: 1,
+      },
+      charges: {
+        where: { status: { not: "cancelled" } },
+        select: {
+          id: true,
+          reason: true,
+          totalCents: true,
+          buyerType: true,
+          buyerCountryCode: true,
+          companyCountryCode: true,
+          billingCurrency: true,
+          billingVatRate: true,
+          billingEurToRsdRate: true,
+          billingTotalCents: true,
+          status: true,
+          createdAt: true,
+          paidAt: true,
+          invoiceNumber: true,
+          invoiceIssuedAt: true,
+          invoicePdfPath: true,
         },
       },
-    }),
-    prisma.orderCharge.findMany({
-      where: {
-        status: { not: "cancelled" },
-        order: { userId },
+      statusEvents: {
+        where: { toStatus: "paid" },
+        select: { createdAt: true },
+        orderBy: { createdAt: "desc" },
+        take: 1,
       },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        reason: true,
-        totalCents: true,
-        status: true,
-        paymentStatus: true,
-        paymentProvider: true,
-        createdAt: true,
-        paidAt: true,
-        invoiceNumber: true,
-        invoiceIssuedAt: true,
-        invoicePdfPath: true,
-        items: {
-          select: { label: true },
-          orderBy: { id: "asc" },
-          take: 1,
-        },
-        order: {
-          select: {
-            id: true,
-            orderNumber: true,
-            projectName: true,
-            items: {
-              select: { productLabel: true },
-              orderBy: { id: "asc" },
-              take: 1,
-            },
-          },
-        },
-      },
-    }),
-  ]);
-
-  const transactions: FinanceTransaction[] = [
-    ...orders.map((order) => {
-      const firstItem = order.items[0];
-      const amountCents = order.totalCents ?? order.totalEur * 100;
-      return {
-        id: order.id,
-        kind: "order" as const,
-        title: order.projectName ?? firstItem?.productLabel ?? "Porudžbina",
-        orderId: order.id,
-        orderNumber: order.orderNumber,
-        amountCents,
-        paymentStatus: order.paymentStatus,
-        paymentProvider: order.paymentProvider,
-        createdAt: order.createdAt,
-        paidAt: order.statusEvents[0]?.createdAt ?? null,
-        invoiceNumber: order.invoiceNumber,
-        invoiceIssuedAt: order.invoiceIssuedAt,
-        invoiceHref:
-          order.invoiceNumber && order.invoicePdfPath
-            ? `/api/portal/invoice/${order.id}`
-            : null,
-        proformaNumber: order.proformaNumber,
-        proformaHref:
-          order.proformaNumber && order.proformaPdfPath
-            ? `/api/portal/proforma/${order.id}`
-            : null,
-      };
-    }),
-    ...charges.map((charge) => {
-      const firstChargeItem = charge.items[0];
-      const firstOrderItem = charge.order.items[0];
-      const title =
-        charge.reason ??
-        firstChargeItem?.label ??
-        `Doplata za ${charge.order.projectName ?? firstOrderItem?.productLabel ?? "porudžbinu"}`;
-      return {
-        id: charge.id,
-        kind: "charge" as const,
-        title,
-        orderId: charge.order.id,
-        orderNumber: charge.order.orderNumber,
-        amountCents: charge.totalCents,
-        paymentStatus: charge.paymentStatus,
-        paymentProvider: charge.paymentProvider,
-        createdAt: charge.createdAt,
-        paidAt: charge.paidAt,
-        invoiceNumber: charge.invoiceNumber,
-        invoiceIssuedAt: charge.invoiceIssuedAt,
-        invoiceHref:
-          charge.invoiceNumber && charge.invoicePdfPath
-            ? `/api/portal/charge-invoice/${charge.id}`
-            : null,
-      };
-    }),
-  ].sort((a, b) => {
-    const aDate = a.paidAt ?? a.createdAt;
-    const bDate = b.paidAt ?? b.createdAt;
-    return bDate.getTime() - aDate.getTime();
+    },
   });
 
-  const paidCents = transactions
-    .filter((tx) => tx.paymentStatus === "completed")
-    .reduce((sum, tx) => sum + tx.amountCents, 0);
-  const pendingCents = transactions
-    .filter((tx) => tx.paymentStatus === "pending")
-    .reduce((sum, tx) => sum + tx.amountCents, 0);
-  const missingInvoiceCount = transactions.filter(
-    (tx) => tx.paymentStatus === "completed" && !tx.invoiceHref,
-  ).length;
+  const rows: ProjectRow[] = orders.map((order) => {
+    const baseProviderCents = order.totalCents ?? order.totalEur * 100;
+    const orderCurrency = invoiceCurrencyForBuyer(order);
+    const baseBillingCents =
+      order.billingTotalCents ??
+      invoiceGrossCentsFromEurCents(baseProviderCents, order);
+    const orderPaid = order.paymentStatus === "completed";
+    const total = emptyTotals();
+    const paid = emptyTotals();
+    const pending = emptyTotals();
+
+    addCurrencyTotal(total, orderCurrency, baseBillingCents);
+    addCurrencyTotal(orderPaid ? paid : pending, orderCurrency, baseBillingCents);
+
+    for (const charge of order.charges) {
+      const chargeBuyer = {
+        buyerType: charge.buyerType ?? order.buyerType,
+        buyerCountryCode: charge.buyerCountryCode ?? order.buyerCountryCode,
+        companyCountryCode:
+          charge.companyCountryCode ?? order.companyCountryCode,
+        billingCurrency: charge.billingCurrency ?? order.billingCurrency,
+        billingVatRate: charge.billingVatRate ?? order.billingVatRate,
+        billingEurToRsdRate:
+          charge.billingEurToRsdRate ?? order.billingEurToRsdRate,
+      };
+      const chargeCurrency = invoiceCurrencyForBuyer(chargeBuyer);
+      const chargeBillingCents =
+        charge.billingTotalCents ??
+        invoiceGrossCentsFromEurCents(charge.totalCents, chargeBuyer);
+      addCurrencyTotal(total, chargeCurrency, chargeBillingCents);
+      if (charge.status === "paid") {
+        addCurrencyTotal(paid, chargeCurrency, chargeBillingCents);
+      } else if (charge.status === "pending") {
+        addCurrencyTotal(pending, chargeCurrency, chargeBillingCents);
+      }
+    }
+
+    let status: RowStatus;
+    if (order.paymentStatus === "failed") status = "failed";
+    else if (order.paymentStatus === "refunded") status = "refunded";
+    else if (orderPaid && totalsValue(pending) > 0) status = "partial";
+    else if (orderPaid) status = "completed";
+    else status = "pending";
+
+    const orderPaidAt = order.statusEvents[0]?.createdAt ?? null;
+    const chargeDates = order.charges.map((c) => c.paidAt ?? c.createdAt);
+    const latestActivity = maxDate([
+      order.updatedAt,
+      orderPaidAt,
+      ...chargeDates,
+    ]);
+
+    const projectName =
+      order.projectName ??
+      order.items[0]?.productLabel ??
+      "Porudžbina";
+
+    return {
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      projectName,
+      status,
+      latestActivity,
+      total,
+      paid,
+      pending,
+      invoices: buildInvoiceList(order, order.charges),
+    };
+  });
+
+  rows.sort(
+    (a, b) => b.latestActivity.getTime() - a.latestActivity.getTime(),
+  );
+
+  const paidTotal = rows.reduce(
+    (totals, row) => mergeCurrencyTotals(totals, row.paid),
+    emptyTotals(),
+  );
+  const pendingTotal = rows.reduce(
+    (totals, row) => mergeCurrencyTotals(totals, row.pending),
+    emptyTotals(),
+  );
+  const missingInvoiceCount = rows.reduce((count, row) => {
+    let missing = 0;
+    const order = orders.find((o) => o.id === row.orderId);
+    if (!order) return count;
+    if (order.paymentStatus === "completed" && !order.invoiceNumber) missing++;
+    for (const c of order.charges) {
+      if (c.status === "paid" && !c.invoiceNumber) missing++;
+    }
+    return count + missing;
+  }, 0);
 
   return (
     <div className="space-y-6">
@@ -195,7 +206,7 @@ export default async function FinancePage() {
             Finansije
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Pregled uplata, doplata i izdatih računa.
+            Pregled projekata, uplata i izdatih računa.
           </p>
         </div>
       </div>
@@ -204,13 +215,13 @@ export default async function FinancePage() {
         <StatCard
           icon={CheckCircle2}
           label="Plaćeno"
-          value={formatEur(paidCents / 100)}
+          value={formatCurrencyTotals(paidTotal)}
           tone="sage"
         />
         <StatCard
           icon={Clock}
           label="Čeka uplatu"
-          value={formatEur(pendingCents / 100)}
+          value={formatCurrencyTotals(pendingTotal)}
         />
         <StatCard
           icon={AlertCircle}
@@ -220,7 +231,7 @@ export default async function FinancePage() {
         />
       </div>
 
-      {transactions.length === 0 ? (
+      {rows.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border/60 bg-card/40 p-12 text-center">
           <ReceiptText className="mx-auto h-8 w-8 text-muted-foreground/60" />
           <p className="mt-3 text-sm font-medium text-foreground">
@@ -229,105 +240,113 @@ export default async function FinancePage() {
         </div>
       ) : (
         <>
-          <div className="hidden overflow-x-auto md:block">
-            <table className="min-w-full text-sm">
-              <thead className="text-left text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                <tr className="border-b border-border/60">
-                  <th className="px-3 py-3">Transakcija</th>
-                  <th className="px-3 py-3">Porudžbina</th>
-                  <th className="px-3 py-3">Status</th>
-                  <th className="px-3 py-3">Datum</th>
-                  <th className="px-3 py-3 text-right">Iznos</th>
-                  <th className="px-3 py-3 text-right">Dokument</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/40">
-                {transactions.map((tx) => (
-                  <tr key={`${tx.kind}:${tx.id}`} className="align-top">
-                    <td className="px-3 py-4">
-                      <div className="flex items-start gap-2">
-                        <TransactionIcon kind={tx.kind} />
-                        <div>
-                          <p className="font-medium text-foreground">
-                            {tx.title}
-                          </p>
-                          <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
-                            {tx.kind === "order" ? "Porudžbina" : "Doplata"}{" "}
-                            {providerLabel(tx.paymentProvider)
-                              ? `· ${providerLabel(tx.paymentProvider)}`
-                              : ""}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-3 py-4">
-                      <Link
-                        href={`/portal/porudzbine/${tx.orderId}`}
-                        className="font-mono text-[0.78rem] text-foreground underline-offset-4 hover:underline"
-                      >
-                        {tx.orderNumber}
-                      </Link>
-                    </td>
-                    <td className="px-3 py-4">
-                      <Badge className={paymentStatusAccent(tx.paymentStatus)}>
-                        {paymentStatusLabel(tx.paymentStatus)}
-                      </Badge>
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-[0.82rem] text-muted-foreground">
-                      {formatDate(tx.paidAt ?? tx.createdAt)}
-                    </td>
-                    <td className="px-3 py-4 text-right font-semibold text-foreground tabular-nums">
-                      {formatEur(tx.amountCents / 100)}
-                    </td>
-                    <td className="px-3 py-4 text-right">
-                      <DocumentAction tx={tx} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {/* Desktop: zebra-striped table-like grid */}
+          <div className="hidden md:block">
+            <div className="space-y-1">
+              {/* Header */}
+              <div className="grid grid-cols-[2fr_8rem_6.5rem_8rem_10rem] items-center gap-4 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
+                <span>Projekat</span>
+                <span className="text-center">Status</span>
+                <span>Datum</span>
+                <span className="text-right">Iznos</span>
+                <span className="text-right">Računi</span>
+              </div>
 
-          <div className="space-y-3 md:hidden">
-            {transactions.map((tx) => (
-              <div
-                key={`${tx.kind}:${tx.id}`}
-                className="rounded-2xl border border-border/40 bg-card/80 p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex min-w-0 items-start gap-2">
-                    <TransactionIcon kind={tx.kind} />
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-foreground">
-                        {tx.title}
-                      </p>
-                      <Link
-                        href={`/portal/porudzbine/${tx.orderId}`}
-                        className="mt-0.5 block font-mono text-[0.72rem] text-muted-foreground"
-                      >
-                        {tx.orderNumber}
-                      </Link>
-                    </div>
+              {rows.map((row, idx) => (
+                <div
+                  key={row.orderId}
+                  className={cn(
+                    "group relative grid grid-cols-[2fr_8rem_6.5rem_8rem_10rem] items-center gap-4 rounded-lg border border-transparent px-4 py-3 transition-colors hover:border-border/50",
+                    idx % 2 === 0 ? "bg-card/60" : "bg-secondary/30",
+                  )}
+                >
+                  <Link
+                    href={`/portal/porudzbine/${row.orderId}`}
+                    className="absolute inset-0 rounded-lg"
+                    aria-label={`Otvori ${row.orderNumber}`}
+                  />
+                  <div className="relative pointer-events-none min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground">
+                      {row.projectName}
+                    </p>
+                    <p className="mt-0.5 font-mono text-[0.72rem] text-muted-foreground">
+                      {row.orderNumber}
+                    </p>
                   </div>
-                  <Badge className={paymentStatusAccent(tx.paymentStatus)}>
-                    {paymentStatusLabel(tx.paymentStatus)}
-                  </Badge>
-                </div>
-                <div className="mt-4 flex items-end justify-between gap-3">
-                  <div className="text-[0.72rem] text-muted-foreground">
-                    <p>{formatDate(tx.paidAt ?? tx.createdAt)}</p>
-                    {providerLabel(tx.paymentProvider) && (
-                      <p>{providerLabel(tx.paymentProvider)}</p>
+                  <div className="relative pointer-events-none flex justify-center">
+                    <Badge className={statusAccent(row.status)}>
+                      {statusLabel(row.status)}
+                    </Badge>
+                  </div>
+                  <p className="relative pointer-events-none text-[0.78rem] text-muted-foreground tabular-nums">
+                    {formatDate(row.latestActivity)}
+                  </p>
+                  <div className="relative pointer-events-none text-right">
+                    <p className="text-sm font-semibold text-foreground tabular-nums">
+                      {formatCurrencyTotals(row.total)}
+                    </p>
+                    {totalsValue(row.pending) > 0 && row.status !== "pending" && (
+                      <p className="mt-0.5 text-[0.62rem] text-accent">
+                        {formatCurrencyTotals(row.pending)} čeka
+                      </p>
                     )}
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-semibold text-foreground">
-                      {formatEur(tx.amountCents / 100)}
-                    </p>
-                    <div className="mt-2">
-                      <DocumentAction tx={tx} compact />
-                    </div>
+                  <div className="relative flex justify-end pointer-events-none [&>*]:pointer-events-auto">
+                    <FinanceInvoicesCell
+                      invoices={row.invoices}
+                      status={row.status}
+                    />
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile: card stack */}
+          <div className="space-y-3 md:hidden">
+            {rows.map((row) => (
+              <div
+                key={row.orderId}
+                className="relative rounded-2xl border border-border/40 bg-card/80 p-4"
+              >
+                <Link
+                  href={`/portal/porudzbine/${row.orderId}`}
+                  className="absolute inset-0 rounded-2xl"
+                  aria-label={`Otvori ${row.orderNumber}`}
+                />
+                <div className="relative pointer-events-none flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground">
+                      {row.projectName}
+                    </p>
+                    <p className="mt-0.5 font-mono text-[0.72rem] text-muted-foreground">
+                      {row.orderNumber}
+                    </p>
+                  </div>
+                  <Badge className={statusAccent(row.status)}>
+                    {statusLabel(row.status)}
+                  </Badge>
+                </div>
+                <div className="relative pointer-events-none mt-4 flex items-end justify-between gap-3">
+                  <p className="text-[0.72rem] text-muted-foreground">
+                    {formatDate(row.latestActivity)}
+                  </p>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-foreground tabular-nums">
+                      {formatCurrencyTotals(row.total)}
+                    </p>
+                    {totalsValue(row.pending) > 0 && row.status !== "pending" && (
+                      <p className="mt-0.5 text-[0.62rem] text-accent">
+                        {formatCurrencyTotals(row.pending)} čeka
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="relative mt-3 flex justify-end pointer-events-none [&>*]:pointer-events-auto">
+                  <FinanceInvoicesCell
+                    invoices={row.invoices}
+                    status={row.status}
+                  />
                 </div>
               </div>
             ))}
@@ -359,7 +378,9 @@ function StatCard({
   return (
     <div className="rounded-2xl border border-border/40 bg-card/80 p-4">
       <div className="flex items-center gap-3">
-        <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${toneClass}`}>
+        <div
+          className={`flex h-10 w-10 items-center justify-center rounded-xl ${toneClass}`}
+        >
           <Icon className="h-5 w-5" />
         </div>
         <div>
@@ -373,73 +394,15 @@ function StatCard({
   );
 }
 
-function TransactionIcon({ kind }: { kind: FinanceTransaction["kind"] }) {
-  const Icon = kind === "order" ? ReceiptText : FileText;
-  return (
-    <span className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-secondary/70 text-muted-foreground">
-      <Icon className="h-3.5 w-3.5" />
-    </span>
-  );
-}
-
-function DocumentAction({
-  tx,
-  compact,
-}: {
-  tx: FinanceTransaction;
-  compact?: boolean;
-}) {
-  if (tx.invoiceHref) {
-    return (
-      <a
-        href={tx.invoiceHref}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-3 py-1.5 text-[0.78rem] font-medium text-background transition hover:opacity-90"
-      >
-        <Download className="h-3.5 w-3.5" />
-        {compact ? "PDF" : `Račun ${tx.invoiceNumber}`}
-      </a>
-    );
-  }
-
-  if (tx.proformaHref) {
-    return (
-      <a
-        href={tx.proformaHref}
-        target="_blank"
-        rel="noreferrer"
-        className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-secondary"
-      >
-        <Download className="h-3.5 w-3.5" />
-        {compact ? "Predračun" : `Predračun ${tx.proformaNumber}`}
-      </a>
-    );
-  }
-
-  if (tx.paymentStatus === "completed") {
-    return (
-      <span className="text-[0.78rem] text-muted-foreground">
-        Račun se priprema
-      </span>
-    );
-  }
-
-  return (
-    <span className="text-[0.78rem] text-muted-foreground">
-      Posle plaćanja
-    </span>
-  );
-}
-
-function paymentStatusLabel(status: PaymentStatus): string {
+function statusLabel(status: RowStatus): string {
   if (status === "completed") return "Plaćeno";
+  if (status === "partial") return "Doplata u toku";
   if (status === "failed") return "Neuspelo";
   if (status === "refunded") return "Refundirano";
   return "Čeka uplatu";
 }
 
-function paymentStatusAccent(status: PaymentStatus): string {
+function statusAccent(status: RowStatus): string {
   if (status === "completed") {
     return "bg-[color:var(--color-sage)]/20 text-[color:var(--color-sage-deep)]";
   }
@@ -449,17 +412,51 @@ function paymentStatusAccent(status: PaymentStatus): string {
   return "bg-accent/15 text-accent";
 }
 
-function providerLabel(provider: string | null): string {
-  if (provider === "paypal") return "PayPal";
-  if (provider === "card_mock") return "Kartica";
-  if (provider === "wire_transfer") return "Uplata na račun";
-  return "";
-}
-
 function formatDate(date: Date): string {
   return date.toLocaleDateString("sr-Latn-RS", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   });
+}
+
+function maxDate(dates: Array<Date | null>): Date {
+  let best: Date | null = null;
+  for (const d of dates) {
+    if (!d) continue;
+    if (!best || d.getTime() > best.getTime()) best = d;
+  }
+  return best ?? new Date(0);
+}
+
+function emptyTotals(): CurrencyTotals {
+  return { RSD: 0, EUR: 0 };
+}
+
+function addCurrencyTotal(
+  totals: CurrencyTotals,
+  currency: BillingCurrency,
+  cents: number,
+): void {
+  totals[currency] += cents;
+}
+
+function mergeCurrencyTotals(
+  base: CurrencyTotals,
+  next: CurrencyTotals,
+): CurrencyTotals {
+  base.RSD += next.RSD;
+  base.EUR += next.EUR;
+  return base;
+}
+
+function totalsValue(totals: CurrencyTotals): number {
+  return totals.RSD + totals.EUR;
+}
+
+function formatCurrencyTotals(totals: CurrencyTotals): string {
+  const parts: string[] = [];
+  if (totals.RSD > 0) parts.push(formatBillingMoney(totals.RSD, "RSD"));
+  if (totals.EUR > 0) parts.push(formatBillingMoney(totals.EUR, "EUR"));
+  return parts.length > 0 ? parts.join(" / ") : "0";
 }

@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { CheckoutWizard } from "./checkout-wizard";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
-import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
+import { getPublicCountryCode } from "@/lib/catalog/public-currency-server";
+import { getDisplayCurrencyForCountry } from "@/lib/catalog/display-currency";
+import type { BuyerInfoState } from "./checkout-context";
 
 export const metadata: Metadata = {
   title: "Porudžbina",
@@ -11,11 +14,40 @@ export const metadata: Metadata = {
 };
 
 export default async function PoruciPage() {
-  const [session, pricingCatalog, displayCurrency] = await Promise.all([
+  const [session, pricingCatalog, publicCountryCode] = await Promise.all([
     auth(),
     getPublishedPricingCatalog(),
-    getPublicDisplayCurrency(),
+    getPublicCountryCode(),
   ]);
+  const user = session?.user?.id
+    ? await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: {
+          billingBuyerType: true,
+          billingCountryCode: true,
+          billingCompanyName: true,
+          billingCompanyTaxId: true,
+          billingCompanyMb: true,
+          billingCompanyAddress: true,
+        },
+      })
+    : null;
+
+  const initialCountryCode =
+    user?.billingCountryCode ?? publicCountryCode ?? "";
+  const initialBuyerInfo: BuyerInfoState = {
+    buyerType: user?.billingBuyerType ?? "individual",
+    buyerCountryCode: initialCountryCode,
+    companyName: user?.billingCompanyName ?? "",
+    companyTaxId: user?.billingCompanyTaxId ?? "",
+    companyMb: user?.billingCompanyMb ?? "",
+    companyAddress: user?.billingCompanyAddress ?? "",
+    companyCountryCode:
+      user?.billingBuyerType === "company_foreign" ? initialCountryCode : "",
+  };
+  const displayCurrency = initialCountryCode
+    ? getDisplayCurrencyForCountry(initialCountryCode)
+    : getDisplayCurrencyForCountry(publicCountryCode);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-6 py-16 md:py-24">
@@ -32,6 +64,7 @@ export default async function PoruciPage() {
         userEmail={session?.user?.email ?? ""}
         pricingCatalog={pricingCatalog}
         displayCurrency={displayCurrency}
+        initialBuyerInfo={initialBuyerInfo}
       />
     </div>
   );

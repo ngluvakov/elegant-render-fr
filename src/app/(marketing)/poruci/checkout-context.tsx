@@ -15,10 +15,14 @@ import {
 } from "@/lib/catalog/calculate";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import type { BuyerType } from "@/lib/buyer-validation";
-import type { DisplayCurrency } from "@/lib/catalog/display-currency";
+import {
+  getDisplayCurrencyForCountry,
+  type DisplayCurrency,
+} from "@/lib/catalog/display-currency";
 
 export type BuyerInfoState = {
   buyerType: BuyerType;
+  buyerCountryCode: string;
   companyName: string;
   companyTaxId: string;
   companyMb: string;
@@ -28,6 +32,7 @@ export type BuyerInfoState = {
 
 const EMPTY_BUYER_INFO: BuyerInfoState = {
   buyerType: "individual",
+  buyerCountryCode: "",
   companyName: "",
   companyTaxId: "",
   companyMb: "",
@@ -81,6 +86,7 @@ export function CheckoutProvider({
   children,
   pricingCatalog,
   displayCurrency,
+  initialBuyerInfo,
 }: {
   initialItems: QuoteItem[];
   initialUserId: string | null;
@@ -88,6 +94,7 @@ export function CheckoutProvider({
   initialEmail: string;
   pricingCatalog?: ResolvedPricingCatalog;
   displayCurrency: DisplayCurrency;
+  initialBuyerInfo?: BuyerInfoState;
   children: ReactNode;
 }) {
   const [step, setStep] = useState(initialUserId ? 1 : 0);
@@ -100,12 +107,26 @@ export function CheckoutProvider({
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [paymentComplete, setPaymentCompleteState] = useState(false);
   const [buyerInfo, setBuyerInfoState] =
-    useState<BuyerInfoState>(EMPTY_BUYER_INFO);
+    useState<BuyerInfoState>(initialBuyerInfo ?? EMPTY_BUYER_INFO);
 
   const calculation = useMemo(
     () => priceItems(initialItems, [], pricingCatalog),
     [initialItems, pricingCatalog],
   );
+
+  const effectiveDisplayCurrency = useMemo(() => {
+    const country =
+      buyerInfo.buyerCountryCode ||
+      (buyerInfo.buyerType === "company_rs"
+        ? "RS"
+        : buyerInfo.companyCountryCode);
+    return country ? getDisplayCurrencyForCountry(country) : displayCurrency;
+  }, [
+    buyerInfo.buyerCountryCode,
+    buyerInfo.buyerType,
+    buyerInfo.companyCountryCode,
+    displayCurrency,
+  ]);
 
   const setCustomer = useCallback((name: string, email: string) => {
     setCustomerName(name);
@@ -138,7 +159,7 @@ export function CheckoutProvider({
       uploadedFiles,
       paymentComplete,
       buyerInfo,
-      displayCurrency,
+      displayCurrency: effectiveDisplayCurrency,
       pricingCatalog,
       setStep,
       setCustomer,
@@ -154,7 +175,7 @@ export function CheckoutProvider({
       step, initialItems, calculation, orderId, userId, initiallySignedIn,
       customerName, customerEmail, customerNote,
       uploadedFiles, paymentComplete, buyerInfo,
-      displayCurrency, pricingCatalog,
+      effectiveDisplayCurrency, pricingCatalog,
       setCustomer, addFile, removeFile, setBuyerInfo,
     ],
   );

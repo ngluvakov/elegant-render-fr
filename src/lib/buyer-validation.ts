@@ -20,6 +20,7 @@ export type BuyerType = "individual" | "company_rs" | "company_foreign";
 
 export type BuyerInfoInput = {
   buyerType: BuyerType;
+  buyerCountryCode?: string | null;
   companyName?: string | null;
   companyTaxId?: string | null;
   companyMb?: string | null;
@@ -54,6 +55,17 @@ export function isValidCountryCode(s: string): boolean {
  * still trim/lowercase as needed before persisting.
  */
 export function validateBuyerInfo(input: BuyerInfoInput): string | null {
+  const buyerCountry =
+    input.buyerCountryCode?.trim().toUpperCase() ||
+    (input.buyerType === "company_rs"
+      ? "RS"
+      : input.companyCountryCode?.trim().toUpperCase()) ||
+    "";
+
+  if (!buyerCountry || !isValidCountryCode(buyerCountry)) {
+    return "Država za račun mora biti izabrana.";
+  }
+
   if (input.buyerType === "individual") return null;
 
   const name = input.companyName?.trim() ?? "";
@@ -63,6 +75,9 @@ export function validateBuyerInfo(input: BuyerInfoInput): string | null {
   if (!address) return "Adresa firme je obavezna.";
 
   if (input.buyerType === "company_rs") {
+    if (buyerCountry !== "RS") {
+      return "Firma iz Srbije mora imati državu Srbija.";
+    }
     const pib = input.companyTaxId?.trim() ?? "";
     if (!pib || !isValidPib(pib)) {
       return "PIB mora imati tačno 9 cifara.";
@@ -75,9 +90,12 @@ export function validateBuyerInfo(input: BuyerInfoInput): string | null {
   }
 
   if (input.buyerType === "company_foreign") {
-    const country = input.companyCountryCode?.trim().toUpperCase() ?? "";
+    const country = buyerCountry;
     if (!country || !isValidCountryCode(country)) {
       return "Kod države mora biti dva velika slova (npr. DE, FR, IT).";
+    }
+    if (country === "RS") {
+      return "Za firmu iz Srbije izaberite tip 'Firma — Srbija'.";
     }
     const taxId = input.companyTaxId?.trim().toUpperCase() ?? "";
     // VAT ID is optional — non-EU foreign companies may not have one,

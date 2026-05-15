@@ -27,6 +27,12 @@ export default async function ProfilPage() {
       email: true,
       phone: true,
       passwordHash: true,
+      billingBuyerType: true,
+      billingCountryCode: true,
+      billingCompanyName: true,
+      billingCompanyTaxId: true,
+      billingCompanyMb: true,
+      billingCompanyAddress: true,
       deletionRequestedAt: true,
       accounts: {
         select: { provider: true, providerAccountId: true },
@@ -56,6 +62,14 @@ export default async function ProfilPage() {
         defaultEmail={user.email}
         defaultPhone={user.phone ?? ""}
         hasPassword={hasPassword}
+        defaultBilling={{
+          buyerType: user.billingBuyerType,
+          countryCode: user.billingCountryCode ?? "RS",
+          companyName: user.billingCompanyName ?? "",
+          companyTaxId: user.billingCompanyTaxId ?? "",
+          companyMb: user.billingCompanyMb ?? "",
+          companyAddress: user.billingCompanyAddress ?? "",
+        }}
       />
 
       {/* Auth methods. Defensive surfacing — lets the customer

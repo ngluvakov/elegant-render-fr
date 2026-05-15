@@ -147,8 +147,7 @@ async function generateWithGemini(
 
   if (input.mask) {
     parts.push({
-      text:
-        "Soft mask guide for Image 1. Transparent pixels indicate the intended work area; use only a small logical expansion for contact, shadow, legs, handles, reflections, and natural integration.",
+      text: "Mask for Image 1; follow the mask semantics in the instructions.",
     });
     parts.push({
       inline_data: {

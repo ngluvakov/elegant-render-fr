@@ -59,6 +59,7 @@ export type GenerationDetail = {
   createdAt: string;
   completedAt: string | null;
   inputUrl: string | null;
+  referenceStoragePath: string | null;
   referenceUrl: string | null;
   referenceImages: ReferenceImageDetail[];
   resultUrl: string | null;
@@ -81,6 +82,7 @@ type ReferenceImageDetail = {
   fileName: string | null;
   url: string | null;
   downloadUrl: string | null;
+  isLegacyPreparedReference: boolean;
 };
 
 type Props = {
@@ -178,6 +180,9 @@ export function GenerationDetailModal({
               fileName: generation.referenceFileName,
               url: generation.referenceUrl,
               downloadUrl: generation.referenceDownloadUrl,
+              isLegacyPreparedReference:
+                generation.referenceStoragePath?.includes("/prepared-references/") ===
+                true,
             },
           ]
         : [];
@@ -492,6 +497,11 @@ function ReferenceImagesPane({
                 <p className="text-[0.62rem] font-semibold text-foreground">
                   {index === 0 ? "Primarna" : `Ugao ${index + 1}`}
                 </p>
+                {reference.isLegacyPreparedReference && (
+                  <p className="mt-0.5 text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-amber-600">
+                    Stara pripremljena referenca
+                  </p>
+                )}
                 {reference.fileName && (
                   <p className="truncate font-mono text-[0.58rem] text-muted-foreground">
                     {reference.fileName}

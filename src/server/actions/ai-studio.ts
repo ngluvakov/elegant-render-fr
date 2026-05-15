@@ -150,6 +150,7 @@ export type SignedAiGenerationReferenceImage = {
   fileName: string | null;
   url: string | null;
   downloadUrl: string | null;
+  isLegacyPreparedReference: boolean;
 };
 
 export type AiStudioStartResult = {
@@ -749,7 +750,9 @@ async function runGenerationProcessing(generation: AiGeneration) {
   const preparedReferences = await Promise.all(
     references.map(async (reference) =>
       isObjectEdit
-        ? prepareObjectReferenceForProvider(reference.buffer)
+        ? prepareObjectReferenceForProvider(reference.buffer, {
+            category: options.selectedOption,
+          })
         : {
             image: await prepareReferenceForProvider(reference.buffer, target),
             mimeType: "image/jpeg",
@@ -765,6 +768,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
             height: objectInput.height,
           },
           objectMaskMode,
+          { category: options.selectedOption },
         )
       : await prepareMaskForProvider(mask.buffer, target)
     : undefined;
@@ -813,6 +817,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
           maskInverted: options.maskInverted,
           softenMask: isObjectEdit,
           objectMaskMode: isObjectEdit ? objectMaskMode : undefined,
+          objectCategory: isObjectEdit ? options.selectedOption : null,
         })
       : await resizeToOriginal(output.image, originalDims);
   } catch (err) {
@@ -1070,6 +1075,9 @@ async function signReferenceImages(
       return {
         ...reference,
         url,
+        isLegacyPreparedReference: reference.storagePath.includes(
+          "/prepared-references/",
+        ),
         downloadUrl: isFileActive
           ? reference.id === "legacy-primary"
             ? `/api/ai-studio/generations/${generation.id}/download/reference`

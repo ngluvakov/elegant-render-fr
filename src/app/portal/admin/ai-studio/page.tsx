@@ -5,6 +5,10 @@ import {
   getAiEditType,
   getAiEngineLabelForGeneration,
 } from "@/lib/ai-studio/catalog";
+import {
+  createObjectWorkZoneOverlay,
+  getImageDimensions,
+} from "@/lib/ai-studio/image-processing";
 
 export const metadata: Metadata = {
   title: "AI Studio generacije",
@@ -28,6 +32,7 @@ export default async function AdminAiStudioPage() {
       let inputUrl: string | null = null;
       let maskUrl: string | null = null;
       let providerOutputUrl: string | null = null;
+      let workZoneOverlayUrl: string | null = null;
       let referenceUrls: string[] = [];
       if (generation.expiresAt > now) {
         if (generation.resultStoragePath) {
@@ -54,6 +59,35 @@ export default async function AdminAiStudioPage() {
             .createSignedUrl(generation.providerOutputStoragePath, 60 * 30);
           providerOutputUrl = data?.signedUrl ?? null;
         }
+        if (
+          generation.editType === "object_insertion" &&
+          generation.maskStoragePath
+        ) {
+          try {
+            const { data } = await getSupabaseAdmin().storage
+              .from("order-files")
+              .download(generation.maskStoragePath);
+            if (data) {
+              const mask = Buffer.from(await data.arrayBuffer());
+              const options = readObjectDebugOptions(generation.optionsJson);
+              const overlay = await createObjectWorkZoneOverlay({
+                mask,
+                dims: await getImageDimensions(mask),
+                maskInverted: options.maskInverted,
+                mode: options.objectMode === "replace"
+                  ? "source_object"
+                  : "placement_guide",
+                category: options.selectedOption,
+              });
+              workZoneOverlayUrl = `data:image/png;base64,${overlay.toString("base64")}`;
+            }
+          } catch (error) {
+            console.error("[AI Studio] Work-zone overlay failed", {
+              generationId: generation.id,
+              error,
+            });
+          }
+        }
         const references =
           generation.referenceImages.length > 0
             ? generation.referenceImages
@@ -77,6 +111,7 @@ export default async function AdminAiStudioPage() {
         inputUrl,
         maskUrl,
         providerOutputUrl,
+        workZoneOverlayUrl,
         referenceUrls,
       };
     }),
@@ -115,6 +150,7 @@ export default async function AdminAiStudioPage() {
                 inputUrl,
                 maskUrl,
                 providerOutputUrl,
+                workZoneOverlayUrl,
                 referenceUrls,
               }) => (
                 <tr
@@ -230,10 +266,11 @@ export default async function AdminAiStudioPage() {
                       )}
                     </div>
                     {(inputUrl || referenceUrls[0] || maskUrl || providerOutputUrl || resultUrl) && (
-                      <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-5">
+                      <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-6">
                         <DiagnosticThumb label="Original" url={inputUrl} />
                         <DiagnosticThumb label="Referenca" url={referenceUrls[0] ?? null} />
                         <DiagnosticThumb label="Maska" url={maskUrl} />
+                        <DiagnosticThumb label="Work zona" url={workZoneOverlayUrl} />
                         <DiagnosticThumb label="Raw AI" url={providerOutputUrl} />
                         <DiagnosticThumb label="Final" url={resultUrl} />
                       </div>
@@ -257,6 +294,23 @@ export default async function AdminAiStudioPage() {
       </div>
     </div>
   );
+}
+
+function readObjectDebugOptions(value: unknown): {
+  selectedOption: string | null;
+  maskInverted: boolean;
+  objectMode: "insert" | "replace";
+} {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return { selectedOption: null, maskInverted: false, objectMode: "insert" };
+  }
+  const data = value as Record<string, unknown>;
+  return {
+    selectedOption:
+      typeof data.selectedOption === "string" ? data.selectedOption : null,
+    maskInverted: data.maskInverted === true,
+    objectMode: data.objectMode === "replace" ? "replace" : "insert",
+  };
 }
 
 function DiagnosticThumb({ label, url }: { label: string; url: string | null }) {

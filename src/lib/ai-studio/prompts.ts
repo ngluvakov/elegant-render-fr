@@ -24,6 +24,7 @@ export type AiPromptOptions = {
 export function buildAiEditPrompt(options: AiPromptOptions): string {
   const edit = getAiEditType(options.editType);
   const isObjectEdit = options.editType === "object_insertion";
+  const isArtworkObject = isObjectEdit && options.selectedOption === "artwork";
   const style = options.styleId
     ? AI_STYLE_OPTIONS.find((item) => item.id === options.styleId)
     : null;
@@ -67,16 +68,26 @@ export function buildAiEditPrompt(options: AiPromptOptions): string {
     const lastImageNumber = referenceCount + 1;
     lines.push(
       referenceCount === 1
-        ? "Two input images are provided. Image 1 is the interior scene to preserve. Image 2 is the primary furniture/decor reference."
-        : `Multiple input images are provided. Image 1 is the interior scene to preserve. Images 2-${lastImageNumber} are angles/details of the same furniture/decor item; Image 2 is primary.`,
-      "In each reference image, use the largest, most central, or most in-focus furniture/decor item. Ignore the reference background, showroom, room, floor, text, watermark, people, hands, clothing, and unrelated props.",
-      "Use the reference image(s) for item identity, form, material, proportions, and visible details, but adapt scale, perspective, lighting, color temperature, contact shadows, and occlusion so the item belongs naturally in Image 1.",
-      "Image 2 is authoritative. Use Images 3-N only as supporting angle/detail views of the same item; if any later reference differs in model, color, shape, or material, ignore that later reference and follow Image 2.",
+        ? isArtworkObject
+          ? "Two input images are provided. Image 1 is the interior scene to preserve. Image 2 is the primary artwork reference."
+          : "Two input images are provided. Image 1 is the interior scene to preserve. Image 2 is the primary furniture/decor reference."
+        : isArtworkObject
+          ? `Multiple input images are provided. Image 1 is the interior scene to preserve. Images 2-${lastImageNumber} are views/details of the same artwork; Image 2 is primary.`
+          : `Multiple input images are provided. Image 1 is the interior scene to preserve. Images 2-${lastImageNumber} are angles/details of the same furniture/decor item; Image 2 is primary.`,
+      isArtworkObject
+        ? "For artwork, Image 2 is the artwork/poster/canvas content to place on the wall. Do not insert the person, room, background, or reference environment as a 3D object."
+        : "In each reference image, use the largest, most central, or most in-focus furniture/decor item. Ignore the reference background, showroom, room, floor, text, watermark, people, hands, clothing, and unrelated props.",
+      isArtworkObject
+        ? "Use the reference image(s) for artwork identity, composition, colors, and visible details, then render it as plausible framed wall art, canvas, print, or poster in Image 1."
+        : "Use the reference image(s) for item identity, form, material, proportions, and visible details, but adapt scale, perspective, lighting, color temperature, contact shadows, and occlusion so the item belongs naturally in Image 1.",
+      "Image 2 is the only authoritative visual reference. Use Images 3-N only as supporting detail views of the same item; if any later reference differs in model, color, shape, material, or subject, ignore that later reference and follow Image 2.",
       "Image 1 must remain the same photograph and the same frame. Do not crop, zoom, pan, rotate, change camera viewpoint, redesign the room, alter walls, windows, floors, lighting, or composition.",
     );
     if (options.objectMode === "replace") {
       lines.push(
-        "Replace the masked existing interior item with the referenced furniture/decor item. Remove the original item cleanly, keep the replacement centered on the marked item, and preserve everything else in the room.",
+        isArtworkObject
+          ? "Replace the masked wall artwork with the referenced artwork content. Keep it aligned to the existing wall plane or frame area and preserve the rest of the room."
+          : "Replace the masked interior item with the referenced furniture/decor item. Keep the original camera, perspective, lighting, nearby furniture, and the rest of the room unchanged.",
       );
     } else {
       lines.push(

@@ -121,6 +121,7 @@ type ReferenceImageItem = {
   fileName: string | null;
   url: string | null;
   downloadUrl: string | null;
+  isLegacyPreparedReference: boolean;
 };
 
 type AiStudioState =
@@ -805,6 +806,7 @@ export function AiStudioWorkspace({
       createdAt: item.createdAt,
       completedAt: item.completedAt,
       inputUrl: item.inputUrl,
+      referenceStoragePath: item.referenceStoragePath,
       referenceUrl: item.referenceUrl,
       referenceImages: item.referenceImages ?? [],
       resultUrl: item.resultUrl,
@@ -1151,6 +1153,9 @@ export function AiStudioWorkspace({
                 fileName: reference.fileName,
                 url: reference.url,
                 downloadUrl: null,
+                isLegacyPreparedReference: reference.storagePath.includes(
+                  "/prepared-references/",
+                ),
               }))
             : [],
           resultStoragePath: null,
@@ -2478,14 +2483,14 @@ function ReferenceImagesPanel({
         >
           <p className="font-semibold">
             {hasMultipleReferences
-              ? "Više uglova mora biti isti komad"
+              ? "Više uglova mora biti potpuno isti komad"
               : objectMode === "replace"
                 ? "Referenca ide direktno u zamenu"
                 : "Referenca ide direktno u dodavanje"}
           </p>
           <p className="mt-0.5 leading-relaxed">
             {hasMultipleReferences
-              ? "Dodatne slike treba da prikazuju isti model, boju i materijal. Ako se razlikuju, AI prati prvu sliku kao glavnu."
+              ? "Dodatne slike moraju prikazivati isti model, istu boju i isti materijal. Različiti komadi kvare rezultat, a AI treba da prati prvu sliku kao glavnu."
               : "Ako slika ima pozadinu ili više predmeta, AI pokušava da koristi najveći, centralni ili najfokusiraniji komad nameštaja/dekora i ignoriše ostatak."}
           </p>
         </div>
@@ -2983,7 +2988,7 @@ function buildAiStudioReadiness({
   }
   if (editType === "object_insertion" && referenceCount > 1) {
     warnings.push(
-      "Dodatni uglovi moraju biti isti komad/model/boja/materijal; ako se razlikuju, AI prati prvu sliku.",
+      "Dodatni uglovi moraju biti isti model, boja i materijal; različiti komadi kvare rezultat, a AI prati prvu sliku.",
     );
   }
 

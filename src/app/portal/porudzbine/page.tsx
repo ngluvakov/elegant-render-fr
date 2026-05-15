@@ -109,7 +109,7 @@ export default async function PorudzbinePage({
                       className="absolute inset-0 rounded-xl"
                       aria-label={`Otvori ${order.orderNumber}`}
                     />
-                    <div className="relative">
+                    <div className="relative pointer-events-none">
                       <p className="text-sm font-medium text-foreground">
                         {displayName}
                       </p>
@@ -117,21 +117,21 @@ export default async function PorudzbinePage({
                         {order.orderNumber}
                       </p>
                     </div>
-                    <p className="relative text-xs text-muted-foreground">
+                    <p className="relative pointer-events-none text-xs text-muted-foreground">
                       {firstItem?.categoryLabel ?? "—"}
                     </p>
-                    <p className="relative text-xs text-muted-foreground">
+                    <p className="relative pointer-events-none text-xs text-muted-foreground">
                       {order.updatedAt.toLocaleDateString("sr-Latn-RS", {
                         day: "numeric",
                         month: "short",
                       })}
                     </p>
-                    <div className="relative w-28 text-center">
+                    <div className="relative pointer-events-none w-28 text-center">
                       <Badge className={statusAccent(order.status)}>
                         {statusLabel(order.status)}
                       </Badge>
                     </div>
-                    <div className="relative w-20 text-right">
+                    <div className="relative pointer-events-none w-20 text-right">
                       <p className="text-sm font-semibold text-foreground">
                         {formatEur((order.totalCents ?? order.totalEur * 100) / 100)}
                       </p>
@@ -141,7 +141,7 @@ export default async function PorudzbinePage({
                         </p>
                       )}
                     </div>
-                    <div className="relative flex w-[120px] justify-end">
+                    <div className="relative flex w-[120px] justify-end pointer-events-none [&>*]:pointer-events-auto">
                       {canDelete && (
                         <DeleteOrderButton
                           orderId={order.id}
@@ -180,7 +180,7 @@ export default async function PorudzbinePage({
                     className="absolute inset-0 rounded-2xl"
                     aria-label={`Otvori ${order.orderNumber}`}
                   />
-                  <div className="relative flex items-start justify-between gap-3">
+                  <div className="relative pointer-events-none flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-medium text-foreground">
                         {displayName}
@@ -193,14 +193,14 @@ export default async function PorudzbinePage({
                       {statusLabel(order.status)}
                     </Badge>
                   </div>
-                  <div className="relative mt-3 flex items-center justify-between">
+                  <div className="relative pointer-events-none mt-3 flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">
                       {order.updatedAt.toLocaleDateString("sr-Latn-RS", {
                         day: "numeric",
                         month: "short",
                       })}
                     </p>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 [&>button]:pointer-events-auto [&>div:has(button)]:pointer-events-auto">
                       {canDelete && (
                         <DeleteOrderButton
                           orderId={order.id}

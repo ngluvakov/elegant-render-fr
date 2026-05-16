@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Layers, TrendingDown, Zap } from "lucide-react";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -8,17 +7,13 @@ import { CategoryPreview } from "@/components/configurator/category-preview";
 import { ConfiguratorBody } from "@/components/configurator/pricing-configurator";
 import { QuoteProvider } from "@/components/configurator/quote-context";
 import { StandaloneAiCredits } from "@/components/configurator/standalone-ai-credits";
-import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import {
   buildBreadcrumbJsonLd,
   buildOfferCatalogJsonLd,
   buildWebPageJsonLd,
   createPublicMetadata,
 } from "@/lib/seo";
-import {
-  formatPublicPrice,
-  getPublicPricingTerms,
-} from "@/lib/catalog/display-currency";
+import { getPublicPricingTerms } from "@/lib/catalog/display-currency";
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
@@ -38,11 +33,6 @@ export default async function CenePage() {
     getPublishedPricingCatalog(),
   ]);
   const pricingTerms = getPublicPricingTerms(displayCurrency);
-  const extStatic =
-    getConfiguratorProduct("ext-static", pricingCatalog.categories)?.product;
-  const extStaticBaseEur = extStatic?.basePriceEur ?? 250;
-  const extStaticCamPriceEur =
-    extStatic?.addOns.find((a) => a.id === "ext-static-cam")?.priceEur ?? 48;
 
   return (
     <>
@@ -73,71 +63,26 @@ export default async function CenePage() {
         </p>
       </div>
 
-      {/* "Više rendera, niža cena po renderu" strip — explains how the
-          per-output cost drops once the model is built. */}
-      <section className="pt-12 pb-2">
-        <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                icon: Layers,
-                title: "Gradimo jednom",
-                desc: "Prva isporuka nosi pun iznos izrade 3D modela — geometrija, teksture, osvetljenje, okruženje.",
-              },
-              {
-                icon: TrendingDown,
-                title: "Drugi kadar je znatno jeftiniji",
-                desc: `Render eksterijera sa modelom: ${formatPublicPrice(extStaticBaseEur, displayCurrency, pricingCatalog.settings)} (uključuje prvi kadar). Svaki dodatni kadar iste fasade: ${formatPublicPrice(extStaticCamPriceEur, displayCurrency, pricingCatalog.settings)}. Plaćate samo novi pogled, ne ponovo ceo model.`,
-              },
-              {
-                icon: Zap,
-                title: "Više naručite — više uštedite",
-                desc: "Što više naručite iz istog modela, to je ušteda veća. Volumen popusti se primenjuju na već snižene cene.",
-              },
-            ].map((point) => (
-              <div
-                key={point.title}
-                className="flex items-start gap-4 rounded-2xl border border-border/40 bg-card/80 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]"
-              >
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-accent/10">
-                  <point.icon className="h-5 w-5 text-accent" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground">
-                    {point.title}
-                  </h3>
-                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                    {point.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Category preview — five starting-price cards above the configurator. */}
-      <section className="pt-10 pb-2">
-        <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
-          <h2 className="mb-5 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-            Šta vam treba?
-          </h2>
-          <CategoryPreview
-            displayCurrency={displayCurrency}
-            pricingCatalog={pricingCatalog}
-          />
-        </div>
-      </section>
-
-      {/* StandaloneAiCredits + the configurator share a single QuoteProvider
-          so credits added in the package picker show up immediately in the
-          summary sidebar and the in-configurator <details> disclosure — no
-          handoff plumbing, single cart. */}
+      {/* StandaloneAiCredits, category preview, and the configurator share a
+          single QuoteProvider so every entry point updates the same cart. */}
       <QuoteProvider
         displayCurrency={displayCurrency}
         pricingCatalog={pricingCatalog}
       >
         <StandaloneAiCredits />
+
+        <section className="pt-10 pb-2">
+          <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
+            <h2 className="mb-5 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+              Šta vam treba?
+            </h2>
+            <CategoryPreview
+              displayCurrency={displayCurrency}
+              pricingCatalog={pricingCatalog}
+            />
+          </div>
+        </section>
+
         <section id="configurator" className="scroll-mt-24 pb-20 pt-10">
           <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
             <Suspense fallback={null}>

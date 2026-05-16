@@ -1,8 +1,7 @@
 /**
- * StandaloneAiCredits — Compact AI-credits picker that lives on /cene
- * between the service preview cards and the configurator. Lets a customer
- * who came only for AI photo edits add credits in one click without first
- * configuring an architectural service.
+ * StandaloneAiCredits — Compact AI-credits picker that lives near the top of
+ * /cene. Lets a customer who came only for AI photo edits add credits in one
+ * click without first configuring an architectural service.
  *
  * Reads/writes the same QuoteContext as the configurator below, so the
  * QuoteSummary sidebar and the in-configurator <details> disclosure stay
@@ -48,13 +47,15 @@ export function StandaloneAiCredits() {
           <div className="max-w-2xl">
             <SectionKicker>AI Studio krediti</SectionKicker>
             <h2 className="mt-3 text-3xl leading-tight text-foreground md:text-4xl">
-              Treba vam samo brza AI obrada?
+              AI obrada fotografija odmah, bez čekanja ponude
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Plaćate samo ono što obradite — od{" "}
-              {formatPublicPriceFromCents(100, displayCurrency, pricingSettings)} po
-              jednostavnoj obradi. Krediti ostaju aktivni{" "}
-              {pricingSettings.aiCreditExpiresAfterMonths} meseci od dopune.
+              Za izmene na postojećim fotografijama kupite paket kredita i
+              krenite odmah: uklanjanje elemenata, dan-u-noć, zamena neba, boja
+              zidova, staging i renovacija. Jednostavne obrade kreću od{" "}
+              {formatPublicPriceFromCents(100, displayCurrency, pricingSettings)};
+              krediti važe {pricingSettings.aiCreditExpiresAfterMonths} meseci
+              od dopune.
             </p>
           </div>
           <a

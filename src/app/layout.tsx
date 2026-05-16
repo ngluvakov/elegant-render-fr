@@ -24,6 +24,9 @@ const manrope = Manrope({
   display: "swap",
 });
 
+const googleSiteVerification =
+  process.env.GOOGLE_SITE_VERIFICATION?.trim() || undefined;
+
 export const metadata: Metadata = {
   title: {
     default: `${SITE.name} — Arhitektonska vizuelizacija`,
@@ -54,6 +57,11 @@ export const metadata: Metadata = {
     description: SITE.description,
     images: ["/artwork/elegant-render-hero-interior.webp"],
   },
+  verification: googleSiteVerification
+    ? {
+        google: googleSiteVerification,
+      }
+    : undefined,
 };
 
 export default function RootLayout({

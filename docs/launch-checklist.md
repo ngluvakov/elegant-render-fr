@@ -219,7 +219,22 @@ Već dokumentovano u [`docs/gtm-post-launch.md`](gtm-post-launch.md).
 
 ---
 
-## 11. Sentry projekat za produkciju
+## 11. Google Search Console
+
+**Status:** sajt već ima `robots.txt` i `sitemap.xml`. Domen koristi third-party
+nameservere (`ns739.adriahost.com`, `ns740.adriahost.com`), pa DNS verifikacija
+ide kroz Adriahost panel, ne kroz Vercel.
+
+**Treba:**
+- [ ] Kreirati Search Console property za `https://elegantrender.rs/`
+- [ ] Preporučeno: DNS TXT verifikacija na Adriahost-u
+- [ ] Alternativa: HTML tag verifikacija preko `GOOGLE_SITE_VERIFICATION`
+- [ ] `GOOGLE_SEARCH_CONSOLE_URL=https://search.google.com/search-console?resource_id=https%3A%2F%2Felegantrender.rs%2F`
+- [ ] Submit sitemap: `https://elegantrender.rs/sitemap.xml`
+
+---
+
+## 12. Sentry projekat za produkciju
 
 **Gde u kodu:** [`src/instrumentation-client.ts`](../src/instrumentation-client.ts) — koristi `NEXT_PUBLIC_SENTRY_DSN`.
 
@@ -232,7 +247,7 @@ Već dokumentovano u [`docs/gtm-post-launch.md`](gtm-post-launch.md).
 
 ---
 
-## 12. Resend domen verifikacija
+## 13. Resend domen verifikacija
 
 **Gde u kodu:** [`src/lib/email.ts`](../src/lib/email.ts) — `from = "..."` adresa.
 
@@ -282,4 +297,6 @@ GOOGLE_ANALYTICS_DASHBOARD_URL=
 NEXT_PUBLIC_GTM_ENABLED=true
 NEXT_PUBLIC_GTM_CONTAINER_ID=GTM-5X2MCQ87
 GOOGLE_TAG_MANAGER_DASHBOARD_URL=
+GOOGLE_SEARCH_CONSOLE_URL=https://search.google.com/search-console?resource_id=https%3A%2F%2Felegantrender.rs%2F
+GOOGLE_SITE_VERIFICATION=
 ```

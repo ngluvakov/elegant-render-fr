@@ -75,7 +75,7 @@ Structural edits (add/remove items, rename project, edit rooms) only allowed whe
 
 ## Deploy
 
-`git push origin main` triggers Vercel production. Claude Code's default-branch guardrail blocks Claude from running that push — the user runs `! git push origin main` in chat, or Claude opens a PR from a feature branch.
+`git push origin main` triggers Vercel production. Claude has permission to push to main directly (`Bash(git push:*)` is in `.claude/settings.local.json`). Treat every commit on main as a production deploy — type-check and SSR-sanity before pushing.
 
 ## Chatbot
 

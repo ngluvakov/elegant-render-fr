@@ -172,7 +172,7 @@ const SERVICES: Service[] = [
     imagePosition: "50% 50%",
   },
   {
-    name: "Landscape renderi",
+    name: "Uređenje pejzaža",
     slug: "prikazi-dvorista",
     priceEur: 220,
     category: "renderi",
@@ -291,7 +291,7 @@ const SERVICES: Service[] = [
     isCompare: true,
   },
   {
-    name: "Day-to-dusk obrada",
+    name: "Dnevni u noćni prikaz",
     slug: "dan-u-noc",
     priceEur: 10,
     category: "nekretnine",
@@ -342,7 +342,7 @@ const SCENARIOS = [
 const COMPARE_SHOWCASE = [
   { title: "Virtuelno opremanje", text: "Prazna prostorija odmah dobija toplinu i kontekst za oglas.", position: "0% 0%" },
   { title: "Virtuelna renovacija", text: "Kupac dobija jasnu sliku kako prostor može da izgleda nakon adaptacije.", position: "100% 0%" },
-  { title: "Day-to-dusk obrada", text: "Jedan kadar prelazi iz obične dnevne fotografije u jači večernji utisak.", position: "0% 100%" },
+  { title: "Dnevni u noćni prikaz", text: "Jedan kadar prelazi iz obične dnevne fotografije u jači večernji utisak.", position: "0% 100%" },
   { title: "Uklanjanje elemenata", text: "Nered i lične stvari nestaju iz kadra da prostor deluje urednije.", position: "100% 100%" },
 ];
 

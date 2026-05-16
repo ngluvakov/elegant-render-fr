@@ -9,7 +9,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ArrowRight, ChevronDown, Menu, User } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
@@ -42,12 +42,15 @@ import {
   getServicesByCategory,
 } from "@/lib/catalog/services";
 import { formatPublicPriceText } from "@/lib/catalog/display-currency";
+import { SITE_FEATURES } from "@/lib/site-features";
 import { cn } from "@/lib/utils";
 
 const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
   { href: "/ai-studio", label: "AI Studio", pattern: "/ai-studio" },
   { href: "/cene", label: "Cene", pattern: "/cene" },
-  { href: "/portfolio", label: "Portfolio", pattern: "/portfolio" },
+  ...(SITE_FEATURES.portfolio
+    ? [{ href: "/portfolio", label: "Portfolio", pattern: "/portfolio" }]
+    : []),
   { href: "/o-nama", label: "O nama", pattern: "/o-nama" },
   { href: "/kontakt", label: "Kontakt", pattern: "/kontakt" },
 ];
@@ -59,7 +62,16 @@ export function SiteHeader() {
   const pricingSettings = usePublicPricingSettings();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  // Controlled NavigationMenu state so we can close the mega-menu after
+  // the user clicks through a service link — Base-UI doesn't auto-close
+  // on Next.js Link navigation, so the menu would otherwise stay open and
+  // overlap the destination page.
+  const [navMenuValue, setNavMenuValue] = useState<string | null>(null);
   const isLoggedIn = !!session?.user;
+
+  useEffect(() => {
+    setNavMenuValue(null);
+  }, [pathname]);
 
   const isActive = (pattern: string) =>
     pathname === pattern || pathname.startsWith(`${pattern}/`);
@@ -98,7 +110,11 @@ export function SiteHeader() {
         </div>
 
         {/* Desktop nav */}
-        <NavigationMenu className="hidden max-w-none flex-1 justify-center md:flex">
+        <NavigationMenu
+          value={navMenuValue}
+          onValueChange={setNavMenuValue}
+          className="hidden max-w-none flex-1 justify-center md:flex"
+        >
           <NavigationMenuList className="gap-1">
             <NavigationMenuItem>
               <NavigationMenuTrigger

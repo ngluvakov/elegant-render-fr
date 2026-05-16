@@ -78,6 +78,15 @@ export type Service = {
    *  instead of a static image. Takes precedence over `asset` but yields
    *  to the before/after pair. */
   embedSrc?: string;
+  /** Detail-page hero (16:9, 1920×1080). Separate from the home-page
+   *  thumbnails because the detail page is the bottom-of-funnel surface
+   *  and carries a larger, more cinematic frame. Same priority chain as
+   *  the home picker: detailBeforeAsset+detailAfterAsset → reveal,
+   *  detailEmbedSrc → iframe, detailAsset → image. */
+  detailAsset?: string;
+  detailBeforeAsset?: string;
+  detailAfterAsset?: string;
+  detailEmbedSrc?: string;
   /** Plain-language line that shows next to "od €X" everywhere a price
    *  is displayed (picker, services grid, hero chip). Anchors the price
    *  to the quantity it covers so customers don't read €170 as "one
@@ -447,7 +456,9 @@ export const SERVICES: Service[] = [
       "Pošaljite nam osnove, reference i željenu putanju kamere (za animacije) ili raspored tačaka (za 360 ture).",
     asset: PORTFOLIO_ASSET,
     embedSrc:
-      "https://kuula.co/share/collection/71qLx?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
+      "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
+    detailEmbedSrc:
+      "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     philosophy:
       "Najveći trošak je izgradnja 3D modela. Animacija od nule: €15/sek. Iz postojećeg modela: €10/sek (33% jeftinije). Aktivan projekat: €8/sek (47% jeftinije). Duže animacije dobijaju automatski popust: preko 60 sek −20%, preko 2 minuta −25%. Tako duži marketinški filmovi ne znače proporcionalno veći budžet.",
     priceContext:

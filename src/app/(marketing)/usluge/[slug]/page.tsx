@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
@@ -6,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { JsonLd } from "@/components/seo/json-ld";
+import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
 import {
   CATEGORY_LABELS,
   SERVICES,
@@ -82,6 +84,43 @@ export default async function ServiceDetailPage({
         <ArrowLeft className="h-4 w-4" />
         Sve usluge
       </Link>
+
+      {/* Detail-page hero imagery — priority: pair > iframe > single image.
+          Renders nothing while detail* fields stay unset on the service. */}
+      {service.detailBeforeAsset && service.detailAfterAsset ? (
+        <BeforeAfterReveal
+          beforeSrc={service.detailBeforeAsset}
+          afterSrc={service.detailAfterAsset}
+          alt={service.name}
+          sizes="(max-width: 768px) 100vw, 896px"
+          className="mt-10 aspect-[16/9] w-full rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]"
+        >
+          <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-background/95">
+            Pre / posle
+          </span>
+        </BeforeAfterReveal>
+      ) : service.detailEmbedSrc ? (
+        <div className="mt-10 relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]">
+          <iframe
+            title={`${service.name} — 360 pregled`}
+            src={service.detailEmbedSrc}
+            className="h-full w-full border-0"
+            allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
+            loading="lazy"
+          />
+        </div>
+      ) : service.detailAsset ? (
+        <div className="mt-10 relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]">
+          <Image
+            src={service.detailAsset}
+            alt={service.name}
+            fill
+            sizes="(max-width: 768px) 100vw, 896px"
+            className="object-cover"
+            priority
+          />
+        </div>
+      ) : null}
 
       <div className="mt-10 flex flex-wrap items-center gap-3">
         <Badge variant="secondary">{CATEGORY_LABELS[service.category]}</Badge>

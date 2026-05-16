@@ -12,7 +12,7 @@ export const metadata: Metadata = createPublicMetadata({
   path: "/pravno/kolacici",
 });
 
-const LAST_UPDATED = "2026-05-06";
+const LAST_UPDATED = "2026-05-17";
 
 type CookieEntry = {
   name: string;
@@ -77,6 +77,22 @@ const ANALYTICS: CookieEntry[] = [
     provider: "Sentry (Functional Software, Inc.)",
     purpose: "Praćenje performansi i grešaka u aplikaciji.",
     retention: "Sesija pretraživača",
+  },
+  {
+    name: "_ga, _ga_*",
+    storage: "Cookie",
+    provider: "Google Analytics 4",
+    purpose:
+      "Agregatno merenje poseta, izvora saobraćaja i korišćenja stranica nakon saglasnosti za analitiku.",
+    retention: "Do 24 meseca",
+  },
+  {
+    name: "Google Tag Manager",
+    storage: "Script + dataLayer",
+    provider: "Google Tag Manager",
+    purpose:
+      "Upravljanje mernim tagovima i slanje dataLayer događaja nakon saglasnosti za analitiku. Sam po sebi ne postavlja kolačiće.",
+    retention: "Tokom učitane stranice",
   },
 ];
 
@@ -161,8 +177,8 @@ export default function KolaciciPage() {
             agregatnu metriku poseta i performansi bez postavljanja kolačića u
             vaš pretraživač. Bez vašeg pristanka, tehnologije iz kategorija{" "}
             <em>Analitika</em> i <em>Snimanje sesija</em> se ne aktiviraju —
-            PostHog i Sentry se inicijalizuju tek nakon vaše izričite
-            saglasnosti.
+            PostHog, Google Analytics 4, Google Tag Manager i Sentry se
+            inicijalizuju tek nakon vaše izričite saglasnosti.
           </p>
         </Section>
 
@@ -181,9 +197,10 @@ export default function KolaciciPage() {
           </p>
           <p>
             Detaljnije ponašanje korisnika, funnel događaji, izveštaji o
-            greškama i snimanje sesija ostaju odvojeni: PostHog i Sentry se
-            uključuju samo ako izaberete analitiku, a snimanje sesija samo ako
-            posebno uključite tu opciju.
+            greškama i snimanje sesija ostaju odvojeni: PostHog, Google
+            Analytics 4, Google Tag Manager i Sentry se uključuju samo ako
+            izaberete analitiku, a snimanje sesija samo ako posebno uključite
+            tu opciju.
           </p>
         </Section>
 

@@ -6,6 +6,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ConsentBanner } from "@/components/site/consent-banner";
 import { GoogleAnalyticsPostLaunch } from "@/components/analytics/google-analytics-post-launch";
+import { GoogleTagManagerPostLaunch } from "@/components/analytics/google-tag-manager-post-launch";
 import { JsonLd } from "@/components/seo/json-ld";
 import { SITE, buildOrganizationJsonLd } from "@/lib/content/site";
 import { INDEXABLE_ROBOTS, SEO } from "@/lib/seo";
@@ -72,6 +73,7 @@ export default function RootLayout({
         <Analytics />
         <SpeedInsights />
         <GoogleAnalyticsPostLaunch />
+        <GoogleTagManagerPostLaunch />
       </body>
     </html>
   );

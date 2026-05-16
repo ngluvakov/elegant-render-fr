@@ -16,7 +16,7 @@ export const metadata: Metadata = createPublicMetadata({
   path: "/pravno/privatnost",
 });
 
-const LAST_UPDATED = "2026-05-06";
+const LAST_UPDATED = "2026-05-17";
 
 export default function PrivatnostPage() {
   return (
@@ -199,6 +199,16 @@ export default function PrivatnostPage() {
                   name="PostHog Inc."
                   location="SAD / EU"
                   purpose="Anonimna analitika korišćenja sajta (samo uz saglasnost)."
+                />
+                <ProcessorRow
+                  name="Google Analytics 4"
+                  location="SAD / EU"
+                  purpose="Agregatna web analitika, izvori saobraćaja i ponašanje po stranicama (samo uz saglasnost)."
+                />
+                <ProcessorRow
+                  name="Google Tag Manager"
+                  location="SAD / EU"
+                  purpose="Upravljanje mernim tagovima i dataLayer događajima, aktivno samo nakon saglasnosti za analitiku."
                 />
                 <ProcessorRow
                   name="Bitrix24 (Bitrix Inc.)"

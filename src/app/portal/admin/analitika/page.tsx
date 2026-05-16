@@ -86,7 +86,20 @@ const dashboardLinks: DashboardLink[] = [
     note:
       process.env.NEXT_PUBLIC_GA4_ENABLED === "true"
         ? "Tag je aktivan samo posle analytics consent-a."
+        : process.env.NEXT_PUBLIC_GTM_ENABLED === "true"
+          ? "GA4 ide kroz GTM; direct tag je isključen."
         : "Pripremljeno; tag je isključen do live puštanja.",
+  },
+  {
+    title: "Google Tag Manager",
+    description: "GTM container za tagove, dataLayer događaje i buduće marketing integracije.",
+    envName: "GOOGLE_TAG_MANAGER_DASHBOARD_URL",
+    href: dashboardUrl("GOOGLE_TAG_MANAGER_DASHBOARD_URL"),
+    icon: BarChart3,
+    note:
+      process.env.NEXT_PUBLIC_GTM_ENABLED === "true"
+        ? "Container je aktivan samo posle analytics consent-a."
+        : "Pripremljeno; container je isključen do live puštanja.",
   },
   {
     title: "Google Search Console",
@@ -113,6 +126,10 @@ export default async function AdminAnalyticsPage() {
   const ga4MeasurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID?.trim() ?? "";
   const ga4MeasurementReady = /^G-[A-Z0-9]+$/.test(ga4MeasurementId);
   const ga4DashboardReady = Boolean(dashboardUrl("GOOGLE_ANALYTICS_DASHBOARD_URL"));
+  const gtmEnabled = process.env.NEXT_PUBLIC_GTM_ENABLED === "true";
+  const gtmContainerId = process.env.NEXT_PUBLIC_GTM_CONTAINER_ID?.trim() ?? "";
+  const gtmContainerReady = /^GTM-[A-Z0-9]+$/.test(gtmContainerId);
+  const gtmDashboardReady = Boolean(dashboardUrl("GOOGLE_TAG_MANAGER_DASHBOARD_URL"));
 
   return (
     <div className="space-y-8">
@@ -190,12 +207,11 @@ export default async function AdminAnalyticsPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">
-              GA4 priprema za live
+              GA4 režim merenja
             </h2>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Google Analytics 4 je spreman u kodu, ali se ne učitava dok nije
-              eksplicitno uključen env prekidačem i dok posetilac ne prihvati
-              analitiku.
+              Google Analytics 4 je podešen kroz Google Tag Manager. Direct
+              GA4 tag ostaje isključen da se ne dupliraju pageview događaji.
             </p>
           </div>
           <Badge
@@ -205,7 +221,11 @@ export default async function AdminAnalyticsPage() {
                 : "bg-secondary text-muted-foreground"
             }
           >
-            {ga4Enabled ? "GA4 uključen" : "GA4 isključen do live-a"}
+            {ga4Enabled
+              ? "Direct GA4 uključen"
+              : gtmEnabled
+                ? "GA4 preko GTM-a"
+                : "GA4 direct isključen"}
           </Badge>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -230,15 +250,72 @@ export default async function AdminAnalyticsPage() {
           <ReadinessItem
             ready
             title="Consent gating"
-            detail="GA4 komponenta se učitava tek nakon analytics saglasnosti."
+            detail="GTM container i GA4 merenje se učitavaju tek nakon analytics saglasnosti."
           />
           <ReadinessItem
             ready={!ga4Enabled}
-            title="Pre-live stanje"
+            title="Direct GA4 tag"
             detail={
               ga4Enabled
-                ? "Aktivno je uključeno; proveriti da li je domen već live."
-                : "Ispravno: tag je pripremljen, ali ne meri test posete."
+                ? "Uključen je direct GA4 tag; proveriti da li GTM ne šalje isti pageview."
+                : "Ispravno: direct tag je isključen jer GA4 ide kroz GTM."
+            }
+          />
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-border/40 bg-card/80 p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">
+              GTM priprema za live
+            </h2>
+            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Google Tag Manager je spreman u kodu. Container se učitava samo
+              kada je env prekidač uključen i posetilac prihvati analitiku.
+            </p>
+          </div>
+          <Badge
+            className={
+              gtmEnabled
+                ? "bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]"
+                : "bg-secondary text-muted-foreground"
+            }
+          >
+            {gtmEnabled ? "GTM uključen" : "GTM isključen do live-a"}
+          </Badge>
+        </div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2">
+          <ReadinessItem
+            ready={gtmContainerReady}
+            title="Container ID"
+            detail={
+              gtmContainerReady
+                ? "NEXT_PUBLIC_GTM_CONTAINER_ID je podešen."
+                : "Dodati GTM Web Container ID, format GTM-XXXXXXX."
+            }
+          />
+          <ReadinessItem
+            ready={gtmDashboardReady}
+            title="Dashboard link"
+            detail={
+              gtmDashboardReady
+                ? "GOOGLE_TAG_MANAGER_DASHBOARD_URL je podešen."
+                : "Dodati GTM dashboard URL za brzi admin pristup."
+            }
+          />
+          <ReadinessItem
+            ready
+            title="Consent gating"
+            detail="GTM container se učitava tek nakon analytics saglasnosti."
+          />
+          <ReadinessItem
+            ready={!gtmEnabled}
+            title="Pre-live stanje"
+            detail={
+              gtmEnabled
+                ? "Aktivno je uključeno; proveriti da li je container spreman."
+                : "Ispravno: container je pripremljen, ali ne meri test posete."
             }
           />
         </div>

@@ -160,7 +160,7 @@ export function ConsentBanner() {
           />
           <ConsentRow
             label="Analitika"
-            description="Anonimne statistike o korišćenju (PostHog) i izveštaji o greškama (Sentry)."
+            description="Anonimne statistike o korišćenju (PostHog, Google Analytics 4 / Tag Manager) i izveštaji o greškama (Sentry)."
             checked={analytics}
             onChange={setAnalytics}
           />

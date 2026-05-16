@@ -7,6 +7,7 @@ checked-off stavke nakon što budu live.
 Postojeći dokumenti za detalje:
 - [`docs/payments-implementation-plan.md`](payments-implementation-plan.md) — pune faze A-F payment integracije
 - [`docs/ga4-post-launch.md`](ga4-post-launch.md) — Google Analytics 4 setup
+- [`docs/gtm-post-launch.md`](gtm-post-launch.md) — Google Tag Manager setup
 - [`docs/compliance/`](compliance/) — pravne reference
 
 ---
@@ -198,14 +199,27 @@ Ako se doda, proširi `IMPRINT` const + render u impressum page.
 Već dokumentovano u [`docs/ga4-post-launch.md`](ga4-post-launch.md).
 
 **Brzi presek:**
-- [ ] Kreirati GA4 property za produkcionu domenu
-- [ ] `NEXT_PUBLIC_GA4_MEASUREMENT_ID=G-XXXXXXXXXX` (Vercel)
-- [ ] `NEXT_PUBLIC_GA4_ENABLED=true` (Vercel)
+- [x] Kreiran GA4 property za produkcionu domenu
+- [x] `NEXT_PUBLIC_GA4_MEASUREMENT_ID=G-5090C2WQVB`
+- [ ] `NEXT_PUBLIC_GA4_ENABLED=false` (Vercel, jer GA4 ide kroz GTM)
 - [ ] `GOOGLE_ANALYTICS_DASHBOARD_URL=https://analytics.google.com/...`
 
 ---
 
-## 10. Sentry projekat za produkciju
+## 10. GTM (Google Tag Manager)
+
+Već dokumentovano u [`docs/gtm-post-launch.md`](gtm-post-launch.md).
+
+**Brzi presek:**
+- [x] Kreiran GTM Web container za produkcionu domenu
+- [x] `NEXT_PUBLIC_GTM_CONTAINER_ID=GTM-5X2MCQ87`
+- [ ] `NEXT_PUBLIC_GTM_ENABLED=true` (Vercel)
+- [ ] `GOOGLE_TAG_MANAGER_DASHBOARD_URL=https://tagmanager.google.com/...`
+- [x] GA4 ide kroz GTM; direct GA4 tag ostaje isključen da nema duplih pageview-ova
+
+---
+
+## 11. Sentry projekat za produkciju
 
 **Gde u kodu:** [`src/instrumentation-client.ts`](../src/instrumentation-client.ts) — koristi `NEXT_PUBLIC_SENTRY_DSN`.
 
@@ -218,7 +232,7 @@ Već dokumentovano u [`docs/ga4-post-launch.md`](ga4-post-launch.md).
 
 ---
 
-## 11. Resend domen verifikacija
+## 12. Resend domen verifikacija
 
 **Gde u kodu:** [`src/lib/email.ts`](../src/lib/email.ts) — `from = "..."` adresa.
 
@@ -262,7 +276,10 @@ ESIR_PAC=
 ESIR_REGISTRATION_ID=
 
 # Marketing
-NEXT_PUBLIC_GA4_ENABLED=true
-NEXT_PUBLIC_GA4_MEASUREMENT_ID=
+NEXT_PUBLIC_GA4_ENABLED=false
+NEXT_PUBLIC_GA4_MEASUREMENT_ID=G-5090C2WQVB
 GOOGLE_ANALYTICS_DASHBOARD_URL=
+NEXT_PUBLIC_GTM_ENABLED=true
+NEXT_PUBLIC_GTM_CONTAINER_ID=GTM-5X2MCQ87
+GOOGLE_TAG_MANAGER_DASHBOARD_URL=
 ```

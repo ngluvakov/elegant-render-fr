@@ -69,6 +69,15 @@ export type Service = {
   materials: string;
   /** Optional hero image URL (may be cloudfront, local, or empty). */
   asset?: string;
+  /** When both are set, the home-page "Minimalni ulaz" preview renders a
+   *  diagonal before/after reveal (BeforeAfterReveal) instead of a static
+   *  image. Useful for transformation services where the value is the diff. */
+  beforeAsset?: string;
+  afterAsset?: string;
+  /** When set, the preview renders an iframe (e.g. Kuula 360 panorama)
+   *  instead of a static image. Takes precedence over `asset` but yields
+   *  to the before/after pair. */
+  embedSrc?: string;
   /** Why this service is priced the way it is (model-first context). */
   philosophy: string;
   variants: PricingVariant[];
@@ -247,6 +256,8 @@ export const SERVICES: Service[] = [
     materials:
       "Pošalji praznu ili slabo uređenu fotografiju prostora i napiši željeni stil.",
     asset: SERVICES_ASSET,
+    beforeAsset: "/artwork/ai-tool-virtual_staging-before.webp",
+    afterAsset: "/artwork/ai-tool-virtual_staging-after.webp",
     philosophy:
       "Virtual staging se ne predstavlja kroz izmišljene bundle pakete, već kroz cenu prve slike i niže cene za dodatne uglove ili dodatne prostorije iste nekretnine.",
     featured: true,
@@ -327,7 +338,7 @@ export const SERVICES: Service[] = [
     slug: "osnove",
     code: "floor-plans",
     name: "2D i 3D osnove prostora",
-    shortName: "Osnove",
+    shortName: "Osnove/Tlocrt",
     category: "planovi",
     icon: "file-image",
     tagline: "Pregledni planski prikazi za oglase, prodaju i planiranje.",
@@ -394,6 +405,8 @@ export const SERVICES: Service[] = [
     materials:
       "Pošalji model, osnovu ili opis prostora i napiši da li želiš 360 turu, animaciju ili oba izlaza.",
     asset: PORTFOLIO_ASSET,
+    embedSrc:
+      "https://kuula.co/share/collection/71qLx?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     philosophy:
       "360 ture i animacije imaju dve odvojene komercijalne logike. Tour assembly je mali dodatak na postojeće 360 izlaze, dok animacija ima cenu po sekundi. Zato ih interfejs odvaja umesto da ih spaja u lažni bundle.",
     featured: true,

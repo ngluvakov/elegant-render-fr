@@ -49,7 +49,11 @@ import {
   AI_EDIT_TYPES,
   type AiEditType,
 } from "@/lib/ai-studio/catalog";
-import { formatPublicPriceText } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPrice,
+  formatPublicPriceText,
+} from "@/lib/catalog/display-currency";
+import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
 import { SITE, TRUST_SIGNALS } from "@/lib/content/site";
 
 type PanelMode = "expert" | "ai";
@@ -100,23 +104,25 @@ function aiVolumeEur(units: number): number {
   return (units / AI_CREDIT_UNITS_PER_CREDIT) * AI_VOLUME_EUR_PER_CREDIT;
 }
 
-/** Credit cost for one edit (0.5 or 1.0). */
+/** Credit cost for one edit ("0.5 kredita" / "1 kredit" / "2 kredita").
+ *  Serbian noun: 1 → kredit, anything else (including fractions) → kredita. */
 function aiCreditsLabel(units: number): string {
   const credits = units / AI_CREDIT_UNITS_PER_CREDIT;
-  return credits % 1 === 0 ? `${credits.toFixed(0)} kr` : `${credits.toFixed(1)} kr`;
+  const noun = credits === 1 ? "kredit" : "kredita";
+  const value = credits % 1 === 0 ? credits.toFixed(0) : credits.toFixed(1);
+  return `${value} ${noun}`;
 }
 
-/** Returns "€1.00" / "€0.75" depending on tier. */
-function aiPriceLabel(units: number, tier: "base" | "volume" = "base"): string {
-  const eur = tier === "base" ? aiBaseEur(units) : aiVolumeEur(units);
-  const fixed = eur % 1 === 0 ? eur.toFixed(0) : eur.toFixed(2);
-  return `€${fixed}`;
-}
-
-/** Before/after-after image; object_insertion has no artwork pair yet. */
-function aiAsset(id: AiEditType): string | undefined {
-  if (id === "object_insertion") return undefined;
-  return `/artwork/ai-tool-${id}-after.webp`;
+/** Before/after image pair for an AI tool. object_insertion has no
+ *  artwork pair yet — caller falls through to image/none. */
+function aiBeforeAfter(
+  id: AiEditType,
+): { before: string; after: string } | null {
+  if (id === "object_insertion") return null;
+  return {
+    before: `/artwork/ai-tool-${id}-before.webp`,
+    after: `/artwork/ai-tool-${id}-after.webp`,
+  };
 }
 
 export function QuickOrderHero() {
@@ -162,15 +168,19 @@ export function QuickOrderHero() {
   /** Unified view object — drives the left column + order summary header. */
   const view = useMemo(() => {
     if (mode === "ai") {
+      const pair = aiBeforeAfter(selectedAiEdit.id);
       return {
         name: selectedAiEdit.label,
         shortName: selectedAiEdit.shortLabel.toLowerCase(),
         description: selectedAiEdit.description,
         materials:
           "Pošalji jednu fotografiju (JPG/PNG/WebP, do 50MB) i kratko napiši šta menjamo, a šta čuvamo. Za zamenu nameštaja dodaj 1–5 referentnih slika istog komada.",
-        asset: aiAsset(selectedAiEdit.id),
+        asset: undefined as string | undefined,
+        beforeAsset: pair?.before,
+        afterAsset: pair?.after,
+        embedSrc: undefined as string | undefined,
         IconEl: AI_ICON_MAP[selectedAiEdit.id],
-        fromPriceText: `od ${aiPriceLabel(selectedAiEdit.units)} po slici`,
+        fromPriceText: `od ${aiCreditsLabel(selectedAiEdit.units)} po slici`,
         kicker: "AI obrada · Brza isporuka",
       } as const;
     }
@@ -180,6 +190,9 @@ export function QuickOrderHero() {
       description: selectedService.philosophy,
       materials: selectedService.materials,
       asset: selectedService.asset,
+      beforeAsset: selectedService.beforeAsset,
+      afterAsset: selectedService.afterAsset,
+      embedSrc: selectedService.embedSrc,
       IconEl: ICON_MAP[selectedService.icon],
       fromPriceText: `od ${priceText(selectedService.variants[0].priceLabel)}`,
       kicker: "Transaction-first · Model-first pricing",
@@ -265,7 +278,29 @@ export function QuickOrderHero() {
                     </span>
                   </div>
                 </div>
-                {view.asset && (
+                {view.beforeAsset && view.afterAsset ? (
+                  <BeforeAfterReveal
+                    beforeSrc={view.beforeAsset}
+                    afterSrc={view.afterAsset}
+                    alt={view.name}
+                    sizes="(max-width: 768px) 100vw, 55vw"
+                    className="aspect-[4/3] w-full rounded-2xl border border-border bg-secondary md:aspect-[3/2]"
+                  >
+                    <span className="pointer-events-none absolute right-2 top-2 rounded-full bg-foreground/55 px-2 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-background/95">
+                      Pre / posle
+                    </span>
+                  </BeforeAfterReveal>
+                ) : view.embedSrc ? (
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-secondary md:aspect-[3/2]">
+                    <iframe
+                      title={`${view.name} — 360 pregled`}
+                      src={view.embedSrc}
+                      className="h-full w-full border-0"
+                      allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
+                      loading="lazy"
+                    />
+                  </div>
+                ) : view.asset ? (
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-secondary md:aspect-[3/2]">
                     <Image
                       src={view.asset}
@@ -276,7 +311,7 @@ export function QuickOrderHero() {
                       priority={false}
                     />
                   </div>
-                )}
+                ) : null}
               </div>
             </div>
 
@@ -321,7 +356,7 @@ export function QuickOrderHero() {
                   </p>
                   <p className="mt-2 text-2xl font-semibold text-background">
                     {mode === "ai"
-                      ? aiPriceLabel(selectedAiEdit.units)
+                      ? aiCreditsLabel(selectedAiEdit.units)
                       : priceText(selectedService.variants[0].priceLabel)}
                   </p>
                 </div>
@@ -510,8 +545,7 @@ export function QuickOrderHero() {
                                   {edit.label}
                                 </p>
                                 <p className="mt-0.5 truncate text-[0.72rem] text-muted-foreground">
-                                  {aiCreditsLabel(edit.units)} ·{" "}
-                                  {aiPriceLabel(edit.units)}
+                                  {aiCreditsLabel(edit.units)} po slici
                                 </p>
                               </div>
                               {isActive && (
@@ -645,12 +679,20 @@ export function QuickOrderHero() {
                   </p>
                   <p className="mt-1 text-3xl font-semibold text-background">
                     {mode === "ai"
-                      ? aiPriceLabel(selectedAiEdit.units)
+                      ? formatPublicPrice(
+                          aiBaseEur(selectedAiEdit.units),
+                          displayCurrency,
+                          pricingSettings,
+                        )
                       : priceText(selectedVariant.priceLabel)}
                   </p>
                   <p className="mt-1 text-[0.68rem] leading-5 text-background/70">
                     {mode === "ai"
-                      ? `${aiCreditsLabel(selectedAiEdit.units)} po slici · od ${aiPriceLabel(selectedAiEdit.units, "volume")}/sliku pri 100+ kredita`
+                      ? `${aiCreditsLabel(selectedAiEdit.units)} po slici · od ${formatPublicPrice(
+                          aiVolumeEur(selectedAiEdit.units),
+                          displayCurrency,
+                          pricingSettings,
+                        )} po slici pri 100+ kredita`
                       : priceText(selectedVariant.unitLabel)}
                   </p>
                 </div>

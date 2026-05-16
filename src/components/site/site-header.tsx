@@ -194,14 +194,14 @@ export function SiteHeader() {
             variant="outline"
           >
             <User className="mr-1.5 h-3.5 w-3.5" />
-            {isLoggedIn ? "Portal" : "Prijavite se"}
+            {isLoggedIn ? "Portal" : "Prijava"}
           </ButtonLink>
           <QuickInquiryLink
             size="sm"
             variant="accent"
             inquiry={{ source: "site-header", sourceLabel: "Header CTA" }}
           >
-            Pošaljite projekat
+            Započnite projekat
           </QuickInquiryLink>
         </div>
 
@@ -296,7 +296,7 @@ export function SiteHeader() {
                 className="w-full"
               >
                 <User className="mr-1.5 h-3.5 w-3.5" />
-                {isLoggedIn ? "Portal" : "Prijavite se"}
+                {isLoggedIn ? "Portal" : "Prijava"}
               </ButtonLink>
               <QuickInquiryLink
                 onClick={() => setMobileOpen(false)}
@@ -308,7 +308,7 @@ export function SiteHeader() {
                   sourceLabel: "Mobile header CTA",
                 }}
               >
-                Pošaljite projekat
+                Započnite projekat
               </QuickInquiryLink>
             </div>
           </SheetContent>

@@ -195,7 +195,7 @@ export function QuickOrderHero() {
       embedSrc: selectedService.embedSrc,
       IconEl: ICON_MAP[selectedService.icon],
       fromPriceText: `od ${priceText(selectedService.variants[0].priceLabel)}`,
-      kicker: "Transaction-first · Model-first pricing",
+      kicker: "Jasne cene · Plaćate samo ono što Vam je potrebno",
     } as const;
   }, [
     mode,
@@ -389,10 +389,10 @@ export function QuickOrderHero() {
             <div className="space-y-5">
               <div>
                 <p className="text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-                  Quick order panel
+                  Brza procena
                 </p>
                 <h2 className="mt-2 text-2xl leading-tight text-foreground">
-                  Izaberi pristup i uslugu — cena odmah.
+                  Izaberite pristup i uslugu — cena odmah.
                 </h2>
               </div>
 
@@ -442,7 +442,7 @@ export function QuickOrderHero() {
               <div>
                 <div className="mb-2.5 flex items-center justify-between">
                   <p className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted-foreground">
-                    1. Usluga
+                    1. Izaberite uslugu
                     <span className="ml-1.5 text-muted-foreground/60">
                       ·{" "}
                       {mode === "ai" ? AI_EDIT_TYPES.length : SERVICES.length}
@@ -567,7 +567,7 @@ export function QuickOrderHero() {
               {mode === "expert" ? (
                 <div>
                   <p className="mb-2.5 text-[0.7rem] font-bold uppercase tracking-[0.25em] text-muted-foreground">
-                    2. Obračun iz cenovnika
+                    2. Način obračuna
                   </p>
                   <div className="space-y-2">
                     {selectedService.variants.map((variant) => {
@@ -664,7 +664,7 @@ export function QuickOrderHero() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <p className="text-[0.72rem] uppercase tracking-[0.22em] text-background/65">
-                      Order summary
+                      Pregled porudžbine
                     </p>
                     <h3 className="mt-1 truncate text-lg text-background">
                       {mode === "ai" ? selectedAiEdit.label : selectedVariant.title}
@@ -675,7 +675,7 @@ export function QuickOrderHero() {
 
                 <div className="mt-3 rounded-xl border border-background/10 bg-background/5 p-3">
                   <p className="text-[0.62rem] uppercase tracking-[0.2em] text-background/65">
-                    {mode === "ai" ? "Cena po obradi" : "Bazna javna cena"}
+                    {mode === "ai" ? "Cena po obradi" : "Osnovna cena"}
                   </p>
                   <p className="mt-1 text-3xl font-semibold text-background">
                     {mode === "ai"
@@ -698,7 +698,9 @@ export function QuickOrderHero() {
                 </div>
 
                 <div className="mt-3 text-[0.72rem] leading-5 text-background/80">
-                  <p className="font-semibold text-background">Uključeno</p>
+                  <p className="font-semibold text-background">
+                    Šta dobijate u ovoj ceni:
+                  </p>
                   <p className="mt-1 line-clamp-2 text-background/72">
                     {mode === "ai"
                       ? selectedAiEdit.description
@@ -714,7 +716,7 @@ export function QuickOrderHero() {
                       "rounded-full",
                     )}
                   >
-                    {mode === "ai" ? "Probaj" : "Kreni"}
+                    {mode === "ai" ? "Probajte" : "Započnite"}
                     <ArrowRight className="ml-1 h-3 w-3" />
                   </Link>
                   <Link
@@ -724,7 +726,7 @@ export function QuickOrderHero() {
                       "rounded-full border-background/20 bg-transparent text-background hover:bg-background/10 hover:text-background",
                     )}
                   >
-                    Detalji
+                    Saznajte više
                   </Link>
                 </div>
               </div>

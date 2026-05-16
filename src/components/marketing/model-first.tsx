@@ -16,14 +16,12 @@ export function ModelFirst() {
               Model-first pricing
             </p>
             <h2 className="mt-4 text-4xl leading-tight text-background sm:text-5xl">
-              Prvi izlaz gradi model. Sledeći izlazi koriste taj posao i zato
-              koštaju manje.
+              Zašto je naš model cena bolji?
             </h2>
             <p className="mt-5 text-sm leading-7 text-background/70">
-              To je suština cenovne filozofije koju prikazujemo na sajtu. Kupac
-              ne kupuje apstraktni paket, već jasno razume zašto prvi render,
-              prvi hotspot ili prvi sekund nose veću cenu, a dodatni izlazi
-              imaju nižu marginalnu cenu iz istog modela.
+              Kada jednom izgradimo 3D model Vaše nekretnine, on postaje Vaš
+              digitalni resurs. Svaka sledeća usluga iz tog modela je značajno
+              jeftinija — od dodatnih uglova do animacije i situacionog plana.
             </p>
           </article>
 

@@ -34,16 +34,16 @@ function SearchIntentSection() {
       <div className="mx-auto grid w-full max-w-[min(96vw,1720px)] gap-6 px-6 md:grid-cols-3">
         {[
           {
-            title: "Render enterijera i eksterijera",
-            text: "Za stanove, kuće, lokale i manje investitorske projekte kojima treba realističan prikaz pre uređenja, prodaje ili izgradnje.",
+            title: "Arhitektonska vizuelizacija",
+            text: "Realistični prikazi enterijera i eksterijera. Osnovna cena pokriva izradu modela, a svaki dodatni ugao ili prostorija košta znatno manje. Idealno za investitore i arhitekte.",
           },
           {
             title: "Virtuelno opremanje i renovacija",
-            text: "Za postojeće fotografije nekretnina: prazne prostorije, zastareli enterijeri, uklanjanje nereda i bolji prvi utisak u oglasu.",
+            text: "Transformišite prazne ili zastarele prostore na osnovu fotografija. Prva slika pokriva dizajn, a svaka sledeća slika iste prostorije donosi uštedu do 33%.",
           },
           {
-            title: "3D osnove, 360 ture i AI obrada",
-            text: "Za kupce koji moraju brzo da razumeju raspored, kretanje kroz prostor ili potencijal fotografije bez velikog produkcionog procesa.",
+            title: "Interaktivni prikazi i osnove",
+            text: "Od jasnih 2D/3D osnova do imerzivnih 360 tura. Naručite više usluga iz istog modela i ostvarite automatske popuste na celokupan projekat.",
           },
         ].map((item) => (
           <article key={item.title} className="border-t border-border/70 pt-5">

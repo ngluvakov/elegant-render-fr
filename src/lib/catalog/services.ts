@@ -130,7 +130,7 @@ export const SERVICES: Service[] = [
     slug: "unutrasnji-renderi",
     code: "interior-rendering",
     name: "Unutrašnji renderi",
-    shortName: "Enterijer",
+    shortName: "Unutrašnji renderi",
     category: "enterijer",
     icon: "home",
     tagline: "Vizuelizacija enterijera po prostorijama ili spratovima.",
@@ -139,10 +139,10 @@ export const SERVICES: Service[] = [
     highlight:
       "Najjasniji javni ulaz za stanove, kuće, apartmane i manje stambene projekte.",
     materials:
-      "Pošalji osnovu, reference, stil i spisak prostorija. Ako postoji više spratova, svaki sprat se računa zasebno.",
+      "Pošaljite nam osnovu (2D ili PDF), reference stila i spisak prostorija.",
     asset: HERO_ASSET,
     philosophy:
-      "Kod enterijera javna cena ne kreće od broja kadrova, već od osnovnog model-first paketa po spratu. Tako kupac odmah zna da prvi korak pokriva baznu izgradnju scene, a dodatni obim se dodaje jasno i transparentno.",
+      "Naš model cena je jednostavan: najveći deo posla je izgradnja 3D modela. Zato osnovna cena pokriva izradu modela i prve rendere. Svaki sledeći render, novi ugao ili promena doba dana košta drastično manje, jer model već postoji. Ne plaćate isti posao dva puta.",
     featured: true,
     variants: [
       {
@@ -154,7 +154,7 @@ export const SERVICES: Service[] = [
         description:
           "Najbolja početna tačka kada želite kompletan start za jedan sprat bez izmišljanja paketa.",
         included:
-          "Do 10 opremljenih soba, neograničen broj kadrova i floor plan.",
+          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje do 10 opremljenih prostorija, neograničen broj rendera iz tih prostorija i 3D osnovu. Svaki sledeći sprat je 30% jeftiniji.",
         addOns: [
           "11. i svaka sledeća opremljena soba: €28",
           "Dodatni kadar u postojećoj sobi: €10",
@@ -183,7 +183,7 @@ export const SERVICES: Service[] = [
     slug: "spoljasnji-renderi",
     code: "exterior-rendering",
     name: "Spoljašnji renderi",
-    shortName: "Eksterijer",
+    shortName: "Spoljašnji renderi",
     category: "eksterijer",
     icon: "grid",
     tagline: "Za kuće, zgrade, objekte i komplekse.",
@@ -192,10 +192,10 @@ export const SERVICES: Service[] = [
     highlight:
       "Za kuće, objekte, fasade i manje investicione prezentacije sa jasnom logikom prvog i dodatnih prikaza.",
     materials:
-      "Pošalji osnove, fasade, skice, reference i napiši da li želiš statični, 360 ili aerial prikaz.",
+      "Pošaljite nam arhitektonske crteže (osnove, preseke, fasade) i specifikaciju materijala.",
     asset: PORTFOLIO_ASSET,
     philosophy:
-      "Kod eksterijera prvi render nosi pun trošak izgradnje modela. Svaki sledeći ugao iz istog modela ide po nižoj ceni, a dodatna doplata postoji samo ako novi kadar traži geometriju koja ranije nije bila modelovana.",
+      "Osnovna cena pokriva kompletnu izgradnju 3D modela zgrade, postavljanje okruženja, osvetljenja i prvi ugao gledanja. Pošto je model izgrađen, svaki dodatni ugao gledanja iste zgrade košta 81% manje od osnovne cene.",
     featured: true,
     variants: [
       {
@@ -206,7 +206,8 @@ export const SERVICES: Service[] = [
         unitLabel: "prvi kadar",
         description:
           "Osnovni javni ulaz za jedan kompletan statični eksterijerski prikaz sa prvim uglom kamere.",
-        included: "Kompletan 3D model i prvi ugao kamere.",
+        included:
+          "Izgradnja punog 3D modela objekta, postavljanje scene i osvetljenja, i 1 finalni render (ugao gledanja).",
         addOns: [
           "Dodatna kamera sa iste strane modela: €48",
           "Extended model surcharge: +25% jednom po modelu (kamera sa ranije neviđenom geometrijom)",
@@ -245,7 +246,7 @@ export const SERVICES: Service[] = [
     slug: "virtuelno-opremanje",
     code: "virtual-staging",
     name: "Virtuelno opremanje",
-    shortName: "Virtual staging",
+    shortName: "Virtuelno opremanje",
     category: "transformacija",
     icon: "sparkles",
     tagline: "Nameštaj i dekor u praznom prostoru.",
@@ -254,12 +255,12 @@ export const SERVICES: Service[] = [
     highlight:
       "Najbrža ulazna cena za listing upgrade kada već postoji fotografija prostora.",
     materials:
-      "Pošalji praznu ili slabo uređenu fotografiju prostora i napiši željeni stil.",
+      "Pošaljite nam fotografije praznih prostorija visoke rezolucije i željeni stil nameštaja.",
     asset: SERVICES_ASSET,
     beforeAsset: "/artwork/ai-tool-virtual_staging-before.webp",
     afterAsset: "/artwork/ai-tool-virtual_staging-after.webp",
     philosophy:
-      "Virtual staging se ne predstavlja kroz izmišljene bundle pakete, već kroz cenu prve slike i niže cene za dodatne uglove ili dodatne prostorije iste nekretnine.",
+      "Prva slika pokriva analizu prostorije, izbor nameštaja i podešavanje osvetljenja. Svaki dodatni ugao iste prostorije je 33% jeftiniji, jer su stilske odluke već donete.",
     featured: true,
     variants: [
       {
@@ -271,7 +272,7 @@ export const SERVICES: Service[] = [
         description:
           "Javni početak za jednu staged fotografiju kada kupcu treba brz i jasan vizuelni upgrade oglasa.",
         included:
-          "Analiza sobe, odabir nameštaja, raspored i svetlo za prvu sliku.",
+          "Fotorealistično opremanje jedne prazne prostorije na osnovu Vaše fotografije. Uključuje izbor nameštaja, postavljanje i usklađivanje osvetljenja.",
         addOns: [
           "Dodatni ugao iste sobe: €12",
           "Druga soba iste nekretnine: €15",
@@ -301,7 +302,7 @@ export const SERVICES: Service[] = [
     slug: "virtuelna-renovacija",
     code: "virtual-renovation",
     name: "Virtuelna renovacija",
-    shortName: "Renovacija",
+    shortName: "Virtuelna renovacija",
     category: "transformacija",
     icon: "refresh",
     tagline: "Vizuelni prikaz adaptacije pre radova.",
@@ -310,10 +311,10 @@ export const SERVICES: Service[] = [
     highlight:
       "Za odluku pre realnih radova, sa cenom po prikazu i popustom kada se radi više uglova istog prostora.",
     materials:
-      "Pošalji postojeće stanje, fotografije i napiši šta želiš da se promeni u prostoru.",
+      "Pošaljite nam fotografije postojećeg stanja i reference za nove materijale (podove, zidove, nameštaj).",
     asset: PROCESS_ASSET,
     philosophy:
-      "Renovacija se javno komunicira kroz cenu prve slike i niže cene za dodatne uglove istog prostora ili za više prostorija iste nekretnine. Kupac vidi da se odluka širi postepeno, a ne kroz nejasan paket.",
+      "Prva slika pokriva kompletan dizajn renovacije i izbor materijala. Svaki dodatni ugao iste prostorije je 10% jeftiniji, a nakon trećeg ugla popust raste na 20%.",
     featured: true,
     variants: [
       {
@@ -324,7 +325,8 @@ export const SERVICES: Service[] = [
         unitLabel: "prvi prikaz",
         description:
           "Javna ulazna cena za prvi renovation prikaz jednog prostora ili ključnog ugla promene.",
-        included: "Pun renovation rad na prvom prikazu jednog pogleda.",
+        included:
+          "Kompletna vizuelna transformacija jedne prostorije na osnovu Vaše fotografije. Uključuje promenu podova, zidova, fiksiranih elemenata i nameštaja.",
         addOns: [
           "Dodatni ugao iste sobe: €59",
           "4. i svaki sledeći ugao iste sobe: €53",
@@ -337,8 +339,8 @@ export const SERVICES: Service[] = [
   {
     slug: "osnove",
     code: "floor-plans",
-    name: "2D i 3D osnove prostora",
-    shortName: "Osnove/Tlocrt",
+    name: "2D i 3D osnove",
+    shortName: "2D i 3D osnove",
     category: "planovi",
     icon: "file-image",
     tagline: "Pregledni planski prikazi za oglase, prodaju i planiranje.",
@@ -347,10 +349,10 @@ export const SERVICES: Service[] = [
     highlight:
       "Pregledna osnova za oglase, prodaju i planiranje, uz jasno odvojene 2D i 3D cenovne logike.",
     materials:
-      "Pošalji skicu, postojeći tlocrt ili što jasnije informacije o rasporedu prostora i nivoima.",
+      "Pošaljite nam tehničke crteže, skice sa merama ili postojeće PDF osnove.",
     asset: PROCESS_ASSET,
     philosophy:
-      "2D i 3D osnove ne smeju da se mešaju u jedan neodređen paket. Kupac mora odmah da vidi da li kupuje čistu 2D osnovu ili 3D plan sa sopstvenom logikom cena i doplata.",
+      "Osnovna cena pokriva izradu osnove za jedan nivo. Svaki sledeći nivo iste zgrade je jeftiniji, jer je stilski šablon već postavljen. Dupliranje identičnog sprata košta samo trećinu osnovne cene.",
     featured: true,
     variants: [
       {
@@ -361,7 +363,8 @@ export const SERVICES: Service[] = [
         unitLabel: "single level",
         description:
           "Najniža javna ulazna cena za čistu 2D osnovu jednog nivoa.",
-        included: "Jedan nivo u čistom vektorskom prikazu.",
+        included:
+          "Kompletna 2D ili 3D osnova za jedan nivo. Uključuje raspored prostorija, oznake i dimenzije. Dodavanje nameštaja se naplaćuje kao minimalni dodatak.",
         addOns: [
           "Double level: €32",
           "Svaki dodatni nivo: €10",
@@ -394,7 +397,7 @@ export const SERVICES: Service[] = [
     slug: "360-ture-i-animacije",
     code: "tours-and-animation",
     name: "360 ture i animacije",
-    shortName: "360 / animacija",
+    shortName: "360 ture i animacije",
     category: "animacije",
     icon: "images",
     tagline: "Interaktivnost ili kretanje — u odvojenim cenovnim logikama.",
@@ -403,12 +406,12 @@ export const SERVICES: Service[] = [
     highlight:
       "Za projekte kojima treba interaktivnost ili kretanje, ali bez mešanja dve različite logike cene u jedan paket.",
     materials:
-      "Pošalji model, osnovu ili opis prostora i napiši da li želiš 360 turu, animaciju ili oba izlaza.",
+      "Pošaljite nam osnove, reference i željenu putanju kamere (za animacije) ili raspored tačaka (za 360 ture).",
     asset: PORTFOLIO_ASSET,
     embedSrc:
       "https://kuula.co/share/collection/71qLx?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     philosophy:
-      "360 ture i animacije imaju dve odvojene komercijalne logike. Tour assembly je mali dodatak na postojeće 360 izlaze, dok animacija ima cenu po sekundi. Zato ih interfejs odvaja umesto da ih spaja u lažni bundle.",
+      "Ako već imamo izgrađen 3D model iz Vašeg prethodnog projekta, cena animacije po sekundi je niža za 33%. Za duže animacije (preko 30 sekundi) automatski se primenjuju dodatni popusti na količinu.",
     featured: true,
     variants: [
       {
@@ -419,7 +422,8 @@ export const SERVICES: Service[] = [
         unitLabel: "tour assembly & hosting",
         description:
           "Javni dodatak za web-based turu kada već postoji set 360 hotspotova.",
-        included: "Tour assembly i hosting za interaktivni prikaz.",
+        included:
+          "Za animacije: cena se obračunava po sekundi (minimum 15 sekundi). Za 360 ture: osnovna cena pokriva izradu modela i prvu interaktivnu tačku (hotspot).",
         addOns: [
           "Interactive floor plan navigation: €15",
           "Branded tour / white-label UI: €35",
@@ -449,8 +453,8 @@ export const SERVICES: Service[] = [
   {
     slug: "prikazi-dvorista",
     code: "landscape-rendering",
-    name: "Prikazi dvorišta i okruženja",
-    shortName: "Landscape",
+    name: "Uređenje pejzaža",
+    shortName: "Uređenje pejzaža",
     category: "eksterijer",
     icon: "tree",
     tagline: "Za bašte, dvorišta i spoljne ambijente.",
@@ -459,9 +463,9 @@ export const SERVICES: Service[] = [
     highlight:
       "Pogodno za dvorišta, bašte i spoljne ambijente sa teren-first obračunom.",
     materials:
-      "Pošalji osnove parcele, postojeće fotografije i reference atmosfere koju želiš.",
+      "Pošaljite nam situacioni plan, visinske kote i specifikaciju biljaka i materijala.",
     philosophy:
-      "Landscape model nosi početni trošak izgradnje terena i zelenila; svaki dodatni ugao iz istog modela je povoljniji. Extended model surcharge se plaća jednokratno ako se traži teren koji nije bio modelovan.",
+      "Osnovna cena pokriva modelovanje terena i sadnju vegetacije. Svaki dodatni ugao gledanja izgrađenog pejzaža košta 80% manje od osnovne cene.",
     variants: [
       {
         id: "landscape-main",
@@ -470,7 +474,8 @@ export const SERVICES: Service[] = [
         priceLabel: "€220",
         unitLabel: "prvi kadar",
         description: "Teren, vegetacija i prvi kadar iz istog modela.",
-        included: "Kompletan teren, vegetacija i prvi kadar kamere.",
+        included:
+          "Kompletno modelovanje terena, postavljanje vegetacije i staza, i 1 finalni render (ugao gledanja).",
         addOns: [
           "Dodatna kamera, postojeći model: €45",
           "Extended model surcharge: +25% jednom po modelu",
@@ -483,7 +488,7 @@ export const SERVICES: Service[] = [
     slug: "fotomontaza",
     code: "photomontage",
     name: "Fotomontaža",
-    shortName: "Photomontage",
+    shortName: "Fotomontaža",
     category: "eksterijer",
     icon: "camera",
     tagline: "Uklapanje projekta u stvarnu fotografiju.",
@@ -492,9 +497,9 @@ export const SERVICES: Service[] = [
     highlight:
       "Za prikaz budućeg objekta na realnoj lokaciji sa realnim osvetljenjem i senkama.",
     materials:
-      "Pošalji fotografije lokacije iz više uglova, osnovne crteže objekta i reference stila.",
+      "Pošaljite nam fotografiju lokacije visoke rezolucije i 3D model ili arhitektonske crteže objekta.",
     philosophy:
-      "Fotomontaža zahteva i 3D rad i pažljivo uklapanje na postojeću fotografiju. Prva slika nosi pun trošak analize i uklapanja; dodatni uglovi sa iste fotografije ili nove fotografije se obračunavaju po jasnoj logici.",
+      "Osnovna cena pokriva analizu fotografije, uklapanje kamere i osvetljenja. Dodatni ugao iz iste fotografije zahteva samo ponovno uklapanje kamere i znatno je jeftiniji.",
     variants: [
       {
         id: "photomontage-main",
@@ -505,7 +510,7 @@ export const SERVICES: Service[] = [
         description:
           "3D model + uklapanje + kolor grejding za prvu sliku lokacije.",
         included:
-          "Kompletan 3D model, photo matching i compositing za prvu sliku.",
+          "Uklapanje 3D modela objekta u Vašu fotografiju stvarne lokacije. Uključuje usklađivanje osvetljenja i kompozicije.",
         addOns: [
           "Dodatni ugao iste fotografije: €55",
           "Drugačija fotografija iste lokacije: €85",
@@ -517,8 +522,8 @@ export const SERVICES: Service[] = [
   {
     slug: "3d-situacioni",
     code: "3d-site-plans",
-    name: "3D situacioni prikazi",
-    shortName: "Site Plan",
+    name: "Situacioni planovi",
+    shortName: "Situacioni planovi",
     category: "planovi",
     icon: "layers",
     tagline: "Širi prikaz parcele i objekata.",
@@ -526,9 +531,9 @@ export const SERVICES: Service[] = [
       "Kompletan situacioni prikaz terena, objekata i uređenja okoline iz ptičje perspektive — idealno za masterplane, razvojne prezentacije i investitorske ponude.",
     highlight: "Za masterplanove, razvojne projekte i širi prikaz parcele.",
     materials:
-      "Pošalji katastarsku osnovu, planove objekata i referencu stila uređenja.",
+      "Pošaljite nam CAD crteže cele parcele, pozicije objekata i plan uređenja.",
     philosophy:
-      "Situacioni prikaz gradi ceo teren, objekte i uređenje jednom; sezonske varijante i faze izgradnje se dodaju kroz istu scenu po nižoj ceni.",
+      "Osnovna cena pokriva modelovanje celokupnog terena, postavljanje objekata i infrastrukture. Svaki dodatni ugao gledanja izgrađenog plana je drastično jeftiniji.",
     variants: [
       {
         id: "site-plan-main",
@@ -538,7 +543,8 @@ export const SERVICES: Service[] = [
         unitLabel: "prvi prikaz",
         description:
           "Pun teren, objekti i landscaping za prvi prikaz parcele.",
-        included: "Teren + objekti + landscaping za prvi pogled.",
+        included:
+          "Fotorealističan prikaz cele parcele iz vazduha. Uključuje modelovanje terena, zgrada, puteva i vegetacije, i 1 finalni render.",
         addOns: [
           "Dodatni ugao, postojeći model: €65",
           "Sezonska varijanta: €85",
@@ -550,18 +556,18 @@ export const SERVICES: Service[] = [
   {
     slug: "dan-u-noc",
     code: "day-to-dusk",
-    name: "Dan u noć",
-    shortName: "Day-to-Dusk",
+    name: "Dnevni u noćni prikaz",
+    shortName: "Dnevni u noćni prikaz",
     category: "transformacija",
     icon: "sun",
     tagline: "Pretvaranje dnevne scene u večernju.",
     description:
       "Zamena neba, korekcija osvetljenja i kolor grejding za atraktivnije oglasne prikaze. Isporučeno kroz našu partnersku mrežu.",
     highlight: "Kada je ista scena potrebna u večernjem ili zlatnom svetlu.",
-    materials: "Pošalji dnevnu fotografiju i opis željene atmosfere.",
+    materials: "Pošaljite nam dnevne fotografije eksterijera visoke rezolucije.",
     outsourced: true,
     philosophy:
-      "Day-to-dusk je brz post-production dodatak; volume rate i rush delivery su jedine varijacije. Nema skrivenih paketa.",
+      "Cena se obračunava po slici. Za veće količine (preko 10 slika) primenjuje se niža cena po slici.",
     variants: [
       {
         id: "day-to-dusk-main",
@@ -572,7 +578,7 @@ export const SERVICES: Service[] = [
         description:
           "Sky replacement, lighting i color grading za jednu sliku.",
         included:
-          "Zamena neba, korekcija osvetljenja i kolor grejding po slici.",
+          "Transformacija jedne dnevne fotografije eksterijera u dramatičan večernji (dusk) prikaz. Uključuje zamenu neba i podešavanje osvetljenja.",
         addOns: [
           "Shadow removal add-on: €5",
           "Volume rate (10+ slika): €8 po slici",
@@ -584,8 +590,8 @@ export const SERVICES: Service[] = [
   {
     slug: "uklanjanje-elemenata",
     code: "item-removal",
-    name: "Uklanjanje elemenata",
-    shortName: "Item Removal",
+    name: "Uklanjanje predmeta",
+    shortName: "Uklanjanje predmeta",
     category: "transformacija",
     icon: "eraser",
     tagline: "Čišćenje prostora za oglas.",
@@ -594,9 +600,9 @@ export const SERVICES: Service[] = [
     highlight:
       "Za oglase gde prostor mora da bude čist i bez nepotrebnih detalja.",
     materials:
-      "Pošalji fotografiju i jasno označi šta želiš da se ukloni (tekstualno ili skicom).",
+      "Pošaljite nam fotografije i jasno označite predmete koje želite da uklonimo.",
     philosophy:
-      "Jednostavno i kompleksno uklanjanje imaju različite početne cene. Nakon 10 slika volume rate snižava cenu za obe kategorije.",
+      "Cena zavisi od kompleksnosti (jednostavno ili kompleksno uklanjanje). Za više od 10 slika primenjuje se popust na količinu.",
     variants: [
       {
         id: "item-removal-main",
@@ -607,7 +613,7 @@ export const SERVICES: Service[] = [
         description:
           "Simple removal od €12, complex od €25 — bira se prema složenosti.",
         included:
-          "Jednostavno uklanjanje sitnih elemenata sa čistom pozadinom.",
+          "Digitalno uklanjanje predmeta, nereda ili ličnih stvari sa jedne fotografije, uz rekonstrukciju pozadine.",
         addOns: [
           "Complex removal (rekonstrukcija): €25",
           "Dodatna slika — simple: €8",

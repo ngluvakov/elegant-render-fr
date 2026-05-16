@@ -1,48 +1,51 @@
 /**
- * NextIteration — Teaser section describing upcoming configurator features
- * (volume-based pricing, upload & confirmation flow).
+ * NextIteration — Conversion CTA block placed between the model-first
+ * explainer and the FAQ. Surfaces a single primary action ("Započnite
+ * projekat") plus three reassurance pills (revisions, ISO, delivery).
  *
  * Used on: / (home page).
  */
-import { Clock3, HelpCircle } from "lucide-react";
+import { BadgeCheck, Clock3, ShieldCheck } from "lucide-react";
+import { ButtonLink } from "@/components/ui/button-link";
+
+const TRUST_PILLS = [
+  { icon: BadgeCheck, label: "3 runde revizija uključene" },
+  { icon: ShieldCheck, label: "ISO 9001 · 27001 · 50001" },
+  { icon: Clock3, label: "Standardno 3–5 radnih dana" },
+] as const;
 
 export function NextIteration() {
   return (
     <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
-        <div className="rounded-3xl border border-[color:var(--color-border-warm)] bg-card/90 p-6 shadow-[0_30px_80px_rgba(28,26,25,0.08)] sm:p-8">
-          <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-            <div>
-              <p className="text-[0.7rem] uppercase tracking-[0.28em] text-muted-foreground">
-                Sledeća iteracija
-              </p>
-              <h2 className="mt-3 text-3xl leading-tight text-foreground sm:text-4xl">
-                Odatle prelazimo na pravi konfigurator — ne na još jednu
-                prezentaciju firme.
-              </h2>
+        <div className="rounded-3xl border border-[color:var(--color-border-warm)] bg-card/90 p-8 shadow-[0_30px_80px_rgba(28,26,25,0.08)] sm:p-12">
+          <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+            <p className="text-[0.7rem] uppercase tracking-[0.28em] text-muted-foreground">
+              Spremni da krenete?
+            </p>
+            <h2 className="mt-3 text-3xl leading-tight text-foreground sm:text-4xl md:text-5xl">
+              Spremni da započnete projekat?
+            </h2>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
+              Izaberite uslugu, proverite cenu i pošaljite nam materijale. Sve u
+              par klikova.
+            </p>
+            <div className="mt-7">
+              <ButtonLink href="/poruci" variant="accent" size="lg">
+                Započnite projekat
+              </ButtonLink>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-border bg-background/80 p-4">
-                <Clock3 className="mb-3 h-5 w-5 text-[color:var(--color-clay-deep)]" />
-                <p className="text-sm font-semibold text-foreground">
-                  Kalkulacija po obimu
-                </p>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Sledeći korak je unos količine: broj soba, dodatnih kamera,
-                  spratova ili sekundi animacije.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-border bg-background/80 p-4">
-                <HelpCircle className="mb-3 h-5 w-5 text-[color:var(--color-sage-deep)]" />
-                <p className="text-sm font-semibold text-foreground">
-                  Upload i potvrda
-                </p>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Posle izbora logike cene dolazi upload materijala i potvrda
-                  finalnog obračuna sa jasnim rokom.
-                </p>
-              </div>
-            </div>
+            <ul className="mt-8 flex flex-wrap items-center justify-center gap-2">
+              {TRUST_PILLS.map(({ icon: Icon, label }) => (
+                <li
+                  key={label}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-3 py-1.5 text-[0.72rem] text-foreground"
+                >
+                  <Icon className="h-3.5 w-3.5 text-[color:var(--color-sage-deep)]" />
+                  {label}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

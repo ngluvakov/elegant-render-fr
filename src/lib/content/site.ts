@@ -22,7 +22,7 @@ export const SITE = {
   parentCompany: "White Rook DOO",
   tagline: "Lep prikaz. Jasna cena. Lakša odluka.",
   description:
-    "Ručno izrađeni renderi, virtuelno opremanje i vizuelne adaptacije prostora. Biraš uslugu, odmah vidiš baznu cenu iz cenovnika i kako se cena širi — bez izmišljenih paketa.",
+    "Ručno izrađeni renderi, virtuelno opremanje i vizuelne adaptacije prostora. Izaberite uslugu, odmah vidite osnovnu cenu iz cenovnika i kako se cena formira za dodatne zahteve — bez skrivenih troškova i izmišljenih paketa.",
   url: RESOLVED_SITE_URL,
   email: "kontakt@elegantrender.rs",
   instagram: "https://www.instagram.com/elegantrender",
@@ -78,9 +78,9 @@ export function formatAddress(): string {
 }
 
 export const TRUST_SIGNALS = [
-  "Bez paketa van cenovnika — svaka cena je iz zvaničnog cenovnika.",
-  "Logika cene je vidljiva već iznad prevoja, bez skrivenih pravila.",
-  "Tri runde revizija uključene u svaki projekat po našem standardu.",
+  "Bez paketa van cenovnika — svaka cena je direktno iz zvaničnog cenovnika.",
+  "Logika cene je odmah vidljiva, bez skrivenih pravila i sitnih slova.",
+  "Tri runde revizija su uključene u svaki projekat po našem standardu.",
   "Sertifikovano TÜV Rheinland — ISO 9001:2015, ISO/IEC 27001:2022, ISO 50001:2018.",
 ] as const;
 
@@ -147,20 +147,20 @@ export const ISO_CERTIFICATIONS: IsoCertification[] = [
 
 export const PLATFORM_PRINCIPLES = [
   {
-    title: "Šta kupujem",
-    text: "Biraš konkretnu uslugu i odmah vidiš da li cena polazi od prve slike, prvog rendera, sprata, sekunde animacije ili dodatka na postojeći model.",
+    title: "1. Izaberite uslugu",
+    text: "Odaberite tačno ono što Vam je potrebno: render, 360 turu, osnovu ili virtuelno opremanje.",
   },
   {
-    title: "Koliko košta",
-    text: "Vidiš zvaničnu baznu cenu iz cenovnika, a odmah ispod stoje tačne doplate za dodatni obim umesto izmišljenih paketa.",
+    title: "2. Vidite osnovnu cenu",
+    text: "Odmah vidite početnu cenu koja pokriva glavni deo posla i izradu 3D modela.",
   },
   {
-    title: "Kako se cena širi",
-    text: "Interfejs jasno pokazuje logiku: prvi izlaz pokriva glavni posao, sledeći izlazi iz istog modela su jeftiniji.",
+    title: "3. Dodajte šta Vam treba",
+    text: "Dodajte nove uglove, sobe ili spratove. Videćete kako cena po elementu drastično pada.",
   },
   {
-    title: "Šta šaljem",
-    text: "Svaka usluga ima jasno naveden minimalni ulaz: osnove, fotografije, reference ili postojeći model.",
+    title: "4. Pošaljite materijale",
+    text: "Sistem Vam tačno kaže šta nam je potrebno da bismo odmah počeli sa radom.",
   },
 ] as const;
 
@@ -183,30 +183,34 @@ export const NAV_LEGAL: NavItem[] = [
   { href: "/pravno/sertifikati", label: "Sertifikati i standardi" },
 ];
 
+// 4 konkretna primera uštede iz model-first cene. Strukturno isto kao i
+// pre (step + title + description) — ModelFirst komponenta renderuje
+// ovu listu, samo se sadržaj pomera sa generičkih koraka na merljive
+// dolaska-uštede koje kupac može da računa.
 export const ORDERING_STEPS = [
   {
     step: "01",
-    title: "Izaberi tip usluge",
+    title: "Novi ugao gledanja",
     description:
-      "Prvo biraš da li kupuješ enterijer, eksterijer, staging, renovaciju, osnovu ili 360 / animaciju.",
+      "Osnovni eksterijer košta €250. Svaki sledeći ugao gledanja iste zgrade je samo €48 (ušteda od 81%).",
   },
   {
     step: "02",
-    title: "Izaberi tačan obračun",
+    title: "Više spratova",
     description:
-      "Zatim biraš zvaničnu cenovnu logiku iz cenovnika: prvi render, prvi hotspot, sprat, sekundu animacije ili tour add-on.",
+      "Prvi sprat enterijera pokriva do 10 soba. Svaki sledeći sprat u istoj zgradi dobija automatski popust od 30%.",
   },
   {
     step: "03",
-    title: "Dodaj obim projekta",
+    title: "Animacije",
     description:
-      "Interfejs prikazuje tačne doplate iz cenovnika za dodatne sobe, kamere, hotspotove, nivoe ili sekunde.",
+      "Ako već imamo izgrađen model iz Vašeg prethodnog projekta, cena animacije po sekundi je niža za 33%.",
   },
   {
     step: "04",
-    title: "Pošalji materijale",
+    title: "Stambene zgrade",
     description:
-      "Šalješ ono što je minimalno potrebno za start, bez dugog pregovaranja pre prve procene.",
+      "Za investitore: prvi tip stana plaćate po punoj ceni, a svaki sledeći tip stana dobija progresivni popust (do 44%).",
   },
 ] as const;
 
@@ -217,17 +221,17 @@ export const FAQ_ITEMS = [
   {
     question: "Koliko traje izrada jednog rendera?",
     answer:
-      "Zavisi od obima. Tipičan enterijer sa jednim kadrom završavamo za 3 do 5 radnih dana. Veliki projekti sa više kadrova se preciziraju unapred, ali rokovi su uvek jasno definisani pre početka rada.",
+      "Za standardne projekte (npr. enterijer jedne prostorije), prve nacrte šaljemo u roku od 3 do 5 radnih dana. Za veće projekte, tačan rok dobijate odmah uz ponudu, pre početka rada.",
   },
   {
     question: "Da li cena uključuje revizije?",
     answer:
-      "Da. Svaki projekat uključuje tri kruga revizija bez dodatne naknade. Ukoliko su potrebne dodatne revizije, obračunavaju se transparentno po istim pravilima kao i ostatak cenovnika.",
+      "Apsolutno. Za razliku od industrijskog standarda (1–2 runde), mi uključujemo čak 3 runde revizija u osnovnu cenu. Želimo da budete 100% zadovoljni rezultatom.",
   },
   {
-    question: "Koje materijale treba da vam pošaljem?",
+    question: "Koje materijale treba da Vam pošaljem?",
     answer:
-      "Najkorisnije su osnove prostora (2D ili PDF), fotografije postojećeg stanja i reference stila ili atmosfere. Formu porudžbine smo napravili tako da možete da uploadujete sve odjednom, bez gnjavaže.",
+      "Najkorisnije su osnove prostora (2D ili PDF), fotografije postojećeg stanja i reference stila ili atmosfere. Formu porudžbine smo napravili tako da možete da otpremite sve odjednom, bez komplikacija.",
   },
   {
     question: "Da li izdajete fiskalni račun i radite po ugovoru?",
@@ -237,7 +241,7 @@ export const FAQ_ITEMS = [
   {
     question: "Šta ako je projekat veći od uobičajenog?",
     answer:
-      "Za stambene komplekse, veće investitorske projekte i serije rendera iz istog modela koristimo progresivne popuste. Kontaktirajte nas i pripremićemo ponudu koja odgovara obimu posla.",
+      "Za stambene zgrade i velike investitorske projekte primenjujemo progresivne popuste (npr. popusti na ponovljene tipove stanova). Pošaljite nam upit i dobićete preciznu kalkulaciju.",
   },
 ] as const;
 

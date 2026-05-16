@@ -148,6 +148,8 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
     output: "Komad dodat ili zamenjen",
     prompt:
       "Zameni postojeću fotelju referentnim modelom. Sačuvaj skalu, svetlo i senku na podu.",
+    beforeSrc: "/artwork/ai-tool-object_insertion-before.webp",
+    afterSrc: "/artwork/ai-tool-object_insertion-after.webp",
     gradient: "from-[color:var(--color-sage)]/20 to-foreground/15",
   },
   virtual_renovation: {

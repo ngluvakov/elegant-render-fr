@@ -113,16 +113,20 @@ function aiCreditsLabel(units: number): string {
   return `${value} ${noun}`;
 }
 
-/** Before/after image pair for an AI tool. object_insertion has no
- *  artwork pair yet — caller falls through to image/none. */
+/** Before/after image pair for an AI tool. object_insertion also carries
+ *  a third "object" image (the item being inserted), surfaced as an
+ *  inset thumbnail by the caller. */
 function aiBeforeAfter(
   id: AiEditType,
-): { before: string; after: string } | null {
-  if (id === "object_insertion") return null;
-  return {
+): { before: string; after: string; object?: string } {
+  const pair = {
     before: `/artwork/ai-tool-${id}-before.webp`,
     after: `/artwork/ai-tool-${id}-after.webp`,
   };
+  if (id === "object_insertion") {
+    return { ...pair, object: `/artwork/ai-tool-${id}-object.webp` };
+  }
+  return pair;
 }
 
 export function QuickOrderHero() {
@@ -178,6 +182,7 @@ export function QuickOrderHero() {
         asset: undefined as string | undefined,
         beforeAsset: pair?.before,
         afterAsset: pair?.after,
+        objectAsset: pair?.object,
         embedSrc: undefined as string | undefined,
         IconEl: AI_ICON_MAP[selectedAiEdit.id],
         fromPriceText: `od ${aiCreditsLabel(selectedAiEdit.units)} po slici`,
@@ -193,6 +198,7 @@ export function QuickOrderHero() {
       asset: selectedService.asset,
       beforeAsset: selectedService.beforeAsset,
       afterAsset: selectedService.afterAsset,
+      objectAsset: undefined as string | undefined,
       embedSrc: selectedService.embedSrc,
       IconEl: ICON_MAP[selectedService.icon],
       fromPriceText: `od ${priceText(selectedService.variants[0].priceLabel)}`,
@@ -301,6 +307,22 @@ export function QuickOrderHero() {
                     <span className="pointer-events-none absolute right-2 top-2 rounded-full bg-foreground/55 px-2 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-background/95">
                       Pre / posle
                     </span>
+                    {view.objectAsset && (
+                      <div className="pointer-events-none absolute left-3 top-3 flex flex-col items-center gap-1">
+                        <div className="relative h-24 w-24 overflow-hidden rounded-xl border-2 border-background/80 bg-background/40 shadow-[0_8px_24px_rgba(28,26,25,0.35)] md:h-32 md:w-32">
+                          <Image
+                            src={view.objectAsset}
+                            alt="Predmet koji umećemo"
+                            fill
+                            sizes="(max-width: 768px) 96px, 128px"
+                            className="object-cover"
+                          />
+                        </div>
+                        <span className="rounded-full bg-foreground/55 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-background/95">
+                          Predmet
+                        </span>
+                      </div>
+                    )}
                   </BeforeAfterReveal>
                 ) : view.embedSrc ? (
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-secondary md:aspect-[3/2]">

@@ -87,6 +87,10 @@ export type Service = {
   detailBeforeAsset?: string;
   detailAfterAsset?: string;
   detailEmbedSrc?: string;
+  /** Listing-page card image (4:3, 1200×900). Used by services-showcase
+   *  on /usluge — distinct from home (3:2 thumbnail) and detail (16:9
+   *  hero) so each surface has its own visual identity. */
+  listingAsset?: string;
   /** Plain-language line that shows next to "od €X" everywhere a price
    *  is displayed (picker, services grid, hero chip). Anchors the price
    *  to the quantity it covers so customers don't read €170 as "one

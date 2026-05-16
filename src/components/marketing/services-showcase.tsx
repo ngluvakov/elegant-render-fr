@@ -27,6 +27,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
+import { BeforeAfterShowcase } from "@/components/marketing/before-after-showcase";
 import {
   usePublicCurrency,
   usePublicPricingSettings,
@@ -51,6 +52,16 @@ const ARTWORK = {
 const KUULA_EMBED =
   "https://kuula.co/share/collection/71kZD?logo=0&info=0&fs=1&vr=0&sd=0&autorotate=0.14&autop=5&thumbs=0";
 const KUULA_LINK = "https://kuula.co/share/collection/71kZD";
+
+// Listing hero before/after showcase — flip `enabled` to true once the
+// lovart images at /artwork/listing-showcase-{before,after}.webp are
+// uploaded. Until then the original static 4-card "Pre i posle" grid
+// stays visible (no broken-image fallback).
+const LISTING_SHOWCASE = {
+  enabled: false as boolean,
+  before: "/artwork/listing-showcase-before.webp",
+  after: "/artwork/listing-showcase-after.webp",
+};
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -587,36 +598,61 @@ export function ServicesShowcase() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {COMPARE_SHOWCASE.map((item) => (
-            <article
-              key={item.title}
-              className="overflow-hidden rounded-2xl border border-border/40 bg-card/80 shadow-[0_12px_40px_rgba(28,26,25,0.06)]"
-            >
-              <div className="relative h-56 overflow-hidden">
-                <Image
-                  src={ARTWORK.beforeAfter}
-                  alt={item.title}
-                  fill
-                  sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
-                  className="object-cover"
-                  style={{ objectPosition: item.position }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/15" />
-                <div className="absolute left-3 top-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
-                  <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">Pre</span>
-                  <span className="bg-accent/12 px-2.5 py-1 text-accent">Posle</span>
+        {LISTING_SHOWCASE.enabled ? (
+          <BeforeAfterShowcase
+            beforeSrc={LISTING_SHOWCASE.before}
+            afterSrc={LISTING_SHOWCASE.after}
+            alt="Pre i posle — transformacija prostora"
+            sizes="(max-width: 1280px) 100vw, 1200px"
+            className="aspect-[16/9] w-full rounded-3xl border border-border/40 bg-secondary shadow-[0_30px_80px_rgba(28,26,25,0.12)]"
+          >
+            <div className="pointer-events-none absolute left-4 top-4 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
+              <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">
+                Pre
+              </span>
+              <span className="bg-accent/12 px-2.5 py-1 text-accent">
+                Posle
+              </span>
+            </div>
+          </BeforeAfterShowcase>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {COMPARE_SHOWCASE.map((item) => (
+              <article
+                key={item.title}
+                className="overflow-hidden rounded-2xl border border-border/40 bg-card/80 shadow-[0_12px_40px_rgba(28,26,25,0.06)]"
+              >
+                <div className="relative h-56 overflow-hidden">
+                  <Image
+                    src={ARTWORK.beforeAfter}
+                    alt={item.title}
+                    fill
+                    sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover"
+                    style={{ objectPosition: item.position }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/15" />
+                  <div className="absolute left-3 top-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
+                    <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">
+                      Pre
+                    </span>
+                    <span className="bg-accent/12 px-2.5 py-1 text-accent">
+                      Posle
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div className="p-5">
-                <h3 className="font-heading text-xl text-foreground">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {item.text}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
+                <div className="p-5">
+                  <h3 className="font-heading text-xl text-foreground">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {item.text}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* ─── Scenario Guide ────────────────────────────── */}

@@ -161,6 +161,7 @@ export const SERVICES: Service[] = [
     materials:
       "Pošaljite nam osnovu (2D ili PDF), reference stila i spisak prostorija. Što jasniji ulaz, brže šaljemo prve nacrte — standardno 3–5 radnih dana.",
     asset: "/artwork/expert-unutrasnji-renderi.webp",
+    detailAsset: "/artwork/detail-unutrasnji-renderi.webp",
     philosophy:
       "Najveći deo posla je izrada 3D modela — gradimo ga jednom i naplaćujemo jednom. Nakon toga svaki novi ugao, promena nameštaja ili doba dana kreće od €10, ne od pune cene rendera. Tako planirate marketing budžet u sezoni pre-prodaje bez neprijatnih iznenađenja.",
     priceContext:
@@ -222,6 +223,7 @@ export const SERVICES: Service[] = [
     materials:
       "Pošaljite nam arhitektonske crteže (osnove, preseke, fasade) i specifikaciju materijala. Što precizniji ulaz, brže nacrti — standardno 3–5 radnih dana.",
     asset: "/artwork/expert-spoljasnji-renderi.webp",
+    detailAsset: "/artwork/detail-spoljasnji-renderi.webp",
     philosophy:
       "Najveći trošak je izrada 3D modela zgrade — gradimo ga jednom, a svaki sledeći ugao iz iste strane modela je €48 (80% jeftiniji). Doplata postoji samo ako kadar zahteva geometriju neviđene strane objekta. Tako pakovanje od 4-5 rendera ulazi u realan investicioni budžet, a ne traži novu porudžbinu po svakom kadru.",
     priceContext:
@@ -295,6 +297,8 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-virtuelno-opremanje-after.webp",
     beforeAsset: "/artwork/expert-virtuelno-opremanje-before.webp",
     afterAsset: "/artwork/expert-virtuelno-opremanje-after.webp",
+    detailBeforeAsset: "/artwork/detail-virtuelno-opremanje-before.webp",
+    detailAfterAsset: "/artwork/detail-virtuelno-opremanje-after.webp",
     philosophy:
       "Prva slika pokriva izbor nameštaja, stila i osvetljenja. Kad je stil definisan, svaki dodatni ugao iste sobe je 33% jeftiniji, druga soba 17% jeftinija, a od 10+ slika cena pada na €13/sliku. Tako celokupna nekretnina dobija kompletan oglasni paket za delić cene fizičkog opremanja.",
     priceContext:
@@ -354,6 +358,8 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-virtuelna-renovacija-after.webp",
     beforeAsset: "/artwork/expert-virtuelna-renovacija-before.webp",
     afterAsset: "/artwork/expert-virtuelna-renovacija-after.webp",
+    detailBeforeAsset: "/artwork/detail-virtuelna-renovacija-before.webp",
+    detailAfterAsset: "/artwork/detail-virtuelna-renovacija-after.webp",
     philosophy:
       "Prva slika pokriva kompletan dizajn renovacije i izbor materijala. Kad je vizuelni pravac postavljen, svaki dodatni ugao iste prostorije je 10% jeftiniji, a od 4. ugla 20% jeftiniji. Druga soba iste nekretnine: 15% popust. Tako kompletna nekretnina ulazi u realan budžet pre nego što krenu zidari.",
     priceContext:
@@ -399,6 +405,7 @@ export const SERVICES: Service[] = [
     materials:
       "Pošaljite nam tehničke crteže, skice sa merama ili postojeće PDF osnove.",
     asset: "/artwork/expert-osnove.webp",
+    detailAsset: "/artwork/detail-osnove.webp",
     philosophy:
       "Cena pokriva izradu osnove za jedan nivo. Svaki sledeći nivo iste zgrade je 50–66% jeftiniji jer je stilski predložak već postavljen. Identičan sprat (dupliranje sa promenom oznaka) košta samo trećinu osnovne cene. Tako celokupna zgrada dobija pregledne osnove za delić cene CAD studija.",
     priceContext:
@@ -528,6 +535,8 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-prikazi-dvorista-after.webp",
     beforeAsset: "/artwork/expert-prikazi-dvorista-before.webp",
     afterAsset: "/artwork/expert-prikazi-dvorista-after.webp",
+    detailBeforeAsset: "/artwork/detail-prikazi-dvorista-before.webp",
+    detailAfterAsset: "/artwork/detail-prikazi-dvorista-after.webp",
     philosophy:
       "Cena pokriva modelovanje terena, sadnju vegetacije i prvi prikaz. Pošto je teren izgrađen, svaki sledeći ugao iste lokacije je €45 — 80% jeftinije. Doplata postoji samo ako novi ugao zahteva teren koji nije bio u modelu.",
     priceContext:
@@ -568,6 +577,8 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-fotomontaza-after.webp",
     beforeAsset: "/artwork/expert-fotomontaza-before.webp",
     afterAsset: "/artwork/expert-fotomontaza-after.webp",
+    detailBeforeAsset: "/artwork/detail-fotomontaza-before.webp",
+    detailAfterAsset: "/artwork/detail-fotomontaza-after.webp",
     philosophy:
       "Najveći trošak je analiza fotografije i uklapanje kamere, svetla i senki. Kad je uklapanje urađeno, dodatni ugao iz iste fotografije košta samo €55 (82% jeftiniji), a nova fotografija iste lokacije €85.",
     priceContext:
@@ -606,6 +617,7 @@ export const SERVICES: Service[] = [
     materials:
       "Pošaljite nam CAD crteže cele parcele, pozicije objekata i plan uređenja.",
     asset: "/artwork/expert-3d-situacioni.webp",
+    detailAsset: "/artwork/detail-3d-situacioni.webp",
     philosophy:
       "Cena pokriva izradu kompletnog terena, postavljanje objekata, puteva i pejzaža. Pošto je scena izgrađena, svaki sledeći ugao košta €65 (81% jeftinije), sezonska varijanta (zima/leto) €85, a prikaz po fazama izgradnje €95. Tako investitor ima vizuelni materijal za sve faze kampanje — fazu pre prodaje, fazu otvaranja prvog objekta itd. — iz jednog modela.",
     priceContext:
@@ -650,6 +662,8 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-dan-u-noc-after.webp",
     beforeAsset: "/artwork/expert-dan-u-noc-before.webp",
     afterAsset: "/artwork/expert-dan-u-noc-after.webp",
+    detailBeforeAsset: "/artwork/detail-dan-u-noc-before.webp",
+    detailAfterAsset: "/artwork/detail-dan-u-noc-after.webp",
     outsourced: true,
     philosophy:
       "Brza post-produkcija sa jasnom cenom po slici. Pakovanje 10+ slika: €8/slika (20% popust). Hitna isporuka u roku od 24h: +50%.",
@@ -690,6 +704,8 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-uklanjanje-elemenata-after.webp",
     beforeAsset: "/artwork/expert-uklanjanje-elemenata-before.webp",
     afterAsset: "/artwork/expert-uklanjanje-elemenata-after.webp",
+    detailBeforeAsset: "/artwork/detail-uklanjanje-elemenata-before.webp",
+    detailAfterAsset: "/artwork/detail-uklanjanje-elemenata-after.webp",
     philosophy:
       "Jednostavno uklanjanje (sitnice, lične stvari): €12. Kompleksno (veliki objekat sa rekonstrukcijom pozadine): €25. Pakovanje 10+ slika: €10 jednostavno / €20 kompleksno po slici.",
     priceContext:

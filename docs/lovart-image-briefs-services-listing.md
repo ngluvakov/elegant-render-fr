@@ -1,6 +1,12 @@
 # /usluge listing — image briefs for lovart.ai
 
-Working document for generating **17 images** that refresh the `/usluge` listing page (16 grid cards in 4:3 + 1 before/after showcase pair in 16:9 that drives a new auto-animating diagonal-reveal slider). 360 ture i animacije card already uses a Kuula iframe — no image needed there.
+Working document for generating **23 images** that refresh the `/usluge` listing page:
+- **1 hero showcase pair** (16:9) that drives the new auto-animating diagonal-reveal slider at the top of the page
+- **9 single 4:3 cards** for services that deliver a product (renders, plans, animations, 360 tours, aerial)
+- **6 before/after card pairs** for transformation services (staging, renovation, day-to-dusk, item removal, landscape, photomontage) — these need both states so the customer can see the value at a glance
+- **1 iframe card** for 360° enterijeri (already uses Kuula embed — no image)
+
+**Why the transformation cards need pairs:** a single "after" shot of Uklanjanje predmeta shows a beautiful dining room — but the customer can't tell what we did. They see "nice room," not "we removed the clutter." Same for staging, renovation, day-to-dusk: the value of the service is the delta, not the end state. A small per-card reveal slider (mouse-tracked, same component as the AI Studio tool picker cards) makes the transformation legible without auto-animating six sliders at once.
 
 > **Positioning:** the listing page is **top-of-funnel** — the prospect arrives from search or homepage and decides whether we're worth their time within the first scroll. Imagery has to do the heaviest single lift on the site. Same upmarket Sotheby's-tier voice as detail + AI Studio briefs, but each card needs to **earn its position in a 4-column grid** by being visually distinct from its neighbors.
 
@@ -9,7 +15,8 @@ Working document for generating **17 images** that refresh the `/usluge` listing
 ## 1. Surface map
 
 - **Hero showcase slider** (NEW): one 16:9 before/after pair (1920×1080). Auto-animates from 0% → 50% diagonal when scrolled into view, hover-to-100% on desktop, scroll-driven on mobile. Replaces the existing 4-card "Pre i posle" static grid.
-- **Service grid** (16 cards in 4:3): one unique 1200×900 image per card. Each card visually anchors a distinct service variant (e.g. Static Interior is a different scene from 360 Interior, even though they're both "interior").
+- **Service grid — single cards** (9 cards in 4:3, 1200×900): for product-delivery services (renders, plans, animations, 360 tour, aerial). One still image per card.
+- **Service grid — before/after card pairs** (6 cards × 2 = 12 images in 4:3, 1200×900 each): for transformation services. Renders a small mouse-tracked diagonal reveal (same component as the AI Studio tool picker cards on `/ai-studio`).
 - **360° enterijeri card**: stays as a Kuula iframe (no image).
 
 ---
@@ -19,42 +26,43 @@ Working document for generating **17 images** that refresh the `/usluge` listing
 | Parameter | Value |
 |---|---|
 | Hero showcase pair dimensions | **1920×1080 px** (16:9) |
-| Service grid card dimensions | **1200×900 px** (4:3) |
+| Service grid card dimensions | **1200×900 px** (4:3) — both single cards and before/after pair cards |
 | Output format | WebP, sRGB, quality 85 |
 | Naming — hero showcase | `listing-showcase-before.webp` + `listing-showcase-after.webp` |
-| Naming — grid cards | `listing-{slug-or-variant}.webp` (see naming map below) |
+| Naming — single grid cards | `listing-{slug-or-variant}.webp` (see naming map) |
+| Naming — pair grid cards | `listing-{slug-or-variant}-before.webp` + `-after.webp` (see naming map) |
 | Path | Drop into `public/artwork/` |
 | Mobile crop | Cards stay 4:3 on mobile; hero showcase keeps 16:9. Keep key elements within central 90% of frame. |
-| Hero pair frame discipline | **Identical frame** (same camera position, same zoom, same lighting on unchanged elements). |
+| Pair frame discipline (hero + cards) | **Identical frame** for every before/after pair (same camera position, same zoom, same lighting on unchanged elements). The transformation is the entire visual payoff of the reveal. |
 
 ---
 
-## 3. Naming map — grid cards (15 still images)
+## 3. Naming map — grid cards (9 single + 6 pairs = 21 images) + showcase pair (2) + iframe (0) = **23 images total**
 
-| # | Card label (UI) | Slug | File |
+| # | Card label (UI) | Type | Files |
 |---|---|---|---|
-| 1 | Unutrašnji renderi | `unutrasnji-renderi-static` | `listing-interior-static.webp` |
-| 2 | 360° enterijeri | `unutrasnji-renderi-360` | **iframe — no image** |
-| 3 | Spoljašnji renderi | `spoljasnji-renderi-static` | `listing-exterior-static.webp` |
-| 4 | 360° eksterijeri | `spoljasnji-renderi-360` | `listing-exterior-360.webp` |
-| 5 | Prikaz iz vazduha | `spoljasnji-renderi-aerial` | `listing-exterior-aerial.webp` |
-| 6 | Uređenje pejzaža | `prikazi-dvorista` | `listing-landscape.webp` |
-| 7 | Fotomontaža | `fotomontaza` | `listing-photomontage.webp` |
-| 8 | 3D osnove prostora | `osnove-3d` | `listing-floorplan-3d.webp` |
-| 9 | 2D osnove prostora | `osnove-2d` | `listing-floorplan-2d.webp` |
-| 10 | 3D site planovi | `situacioni-prikazi` | `listing-siteplan.webp` |
-| 11 | Arhitektonske animacije | `animacije` | `listing-animation.webp` |
-| 12 | 360 ture | `ture-360` | `listing-tour-360.webp` |
-| 13 | Virtuelno opremanje | `virtuelno-opremanje` | `listing-staging.webp` |
-| 14 | Virtuelna renovacija | `virtuelna-renovacija` | `listing-renovation.webp` |
-| 15 | Dnevni u noćni prikaz | `dan-u-noc` | `listing-day-to-dusk.webp` |
-| 16 | Uklanjanje elemenata | `uklanjanje-elemenata` | `listing-item-removal.webp` |
+| 1 | Unutrašnji renderi | single | `listing-interior-static.webp` |
+| 2 | 360° enterijeri | iframe | — (no image) |
+| 3 | Spoljašnji renderi | single | `listing-exterior-static.webp` |
+| 4 | 360° eksterijeri | single | `listing-exterior-360.webp` |
+| 5 | Prikaz iz vazduha | single | `listing-exterior-aerial.webp` |
+| 6 | Uređenje pejzaža | **pair** | `listing-landscape-before.webp` + `-after.webp` |
+| 7 | Fotomontaža | **pair** | `listing-photomontage-before.webp` + `-after.webp` |
+| 8 | 3D osnove prostora | single | `listing-floorplan-3d.webp` |
+| 9 | 2D osnove prostora | single | `listing-floorplan-2d.webp` |
+| 10 | 3D site planovi | single | `listing-siteplan.webp` |
+| 11 | Arhitektonske animacije | single | `listing-animation.webp` |
+| 12 | 360 ture | single | `listing-tour-360.webp` |
+| 13 | Virtuelno opremanje | **pair** | `listing-staging-before.webp` + `-after.webp` |
+| 14 | Virtuelna renovacija | **pair** | `listing-renovation-before.webp` + `-after.webp` |
+| 15 | Dnevni u noćni prikaz | **pair** | `listing-day-to-dusk-before.webp` + `-after.webp` |
+| 16 | Uklanjanje elemenata | **pair** | `listing-item-removal-before.webp` + `-after.webp` |
 
-Plus the showcase pair:
+Plus the showcase pair (hero):
 - `listing-showcase-before.webp` (1920×1080)
 - `listing-showcase-after.webp` (1920×1080)
 
-**Total: 17 new images.**
+**Total: 23 new images** (1 hero pair = 2 + 9 single cards + 6 card pairs = 12 + 0 for iframe).
 
 ---
 
@@ -213,42 +221,74 @@ photography aesthetic. [+global style]
 
 ---
 
-### 6.6 Uređenje pejzaža → `listing-landscape.webp`
+### 6.6 Uređenje pejzaža — PAIR → `listing-landscape-{before,after}.webp`
 
-**What:** Designer Mediterranean garden — pavilion, stone path, planted beds, water feature. Different angle than detail brief (which used a smaller residential yard).
+**What:** Bare hillside back-garden of a luxury property → fully designer-landscaped Mediterranean garden. Same camera angle, same boundary walls — only the planting and hardscape change.
 
+**Before prompt:**
 ```
-Designer Mediterranean garden of a luxury hillside property, captured 
-wide on a 24mm tilt-shift lens at eye level from a low garden 
-pathway. Curved stone-paver pathway leading through dense planted 
-beds of lavender, rosemary, ornamental grasses, and low olive 
-saplings, with a mature olive tree as a centerpiece in the middle 
-ground. A long narrow reflecting pool in matte black stone runs along 
-the right edge, mirroring the sky. A small walnut-and-blackened-steel 
-garden pavilion with a single sculptural daybed in the back-left. 
-Walled garden boundary in honey-toned limestone barely visible at 
-the edges. Soft afternoon golden hour light, deep depth. [+global style]
+Bare large back-garden of a luxury hillside property, captured wide 
+on a 24mm tilt-shift lens at eye level from a low garden vantage 
+point. Roughly 20×15 meters of empty ground visible: patchy dry 
+grass, exposed soil, some weed clusters, a low honey-toned limestone 
+retaining wall along the back boundary. No paths, no plants, no 
+pavilion, no water feature. Glimpse of the villa's terrace stone 
+edge visible at the very bottom of the frame (suggesting the rest 
+of the house exists out of frame). Neutral diffuse afternoon light. 
+Empty potential. [+global style]
+```
+
+**After prompt** (same frame):
+```
+The exact same back-garden, same camera angle and same light as the 
+previous image — now fully designer-landscaped. Curved stone-paver 
+pathway running through dense planted beds of lavender, rosemary, 
+ornamental grasses, and low olive saplings, with a mature olive tree 
+as a centerpiece in the middle ground. A long narrow reflecting pool 
+in matte black stone runs along the right edge, mirroring the sky. 
+A small walnut-and-blackened-steel garden pavilion with a single 
+sculptural daybed in the back-left corner. Same honey-toned limestone 
+retaining wall along the back boundary, unchanged. Same villa 
+terrace edge at the bottom of the frame. Soft afternoon golden hour 
+light. Sophisticated achievable Mediterranean garden. [+global style]
 ```
 
 ---
 
-### 6.7 Fotomontaža → `listing-photomontage.webp`
+### 6.7 Fotomontaža — PAIR → `listing-photomontage-{before,after}.webp`
 
-**What:** Architectural composite showing a contemporary building inserted into a real-looking site photograph. Make the composite seamless but clearly a "new build on existing land" narrative.
+**What:** Real-looking photograph of an empty hillside building lot → the same photograph with a contemporary luxury villa seamlessly composited onto the lot.
 
+**Before prompt:**
 ```
-Wide architectural site photograph composite of a contemporary luxury 
-villa newly inserted onto a real-looking hillside Adriatic coastal 
-lot. 35mm tilt-shift lens, eye-level street-view angle from across 
-the access road. The villa: two-story, travertine and walnut-clad, 
-deep architectural overhangs, floor-to-ceiling glass facade catching 
-the afternoon light. Surrounding context is documentary-real: 
-neighboring older Mediterranean houses softly out of focus at the 
-edges, mature cypress trees along the lot lines, hazy hills in the 
-far distance, real power lines overhead just visible. The new villa 
-integrates seamlessly: matching sun angle, matching shadow direction, 
-matching color temperature with the existing context. Looks like 
-photo + render perfectly composited. [+global style]
+Wide architectural site photograph of an empty premium hillside 
+building lot, captured on a 35mm tilt-shift lens at eye level from 
+across the access road. The lot sits cleared and graded but empty: 
+bare leveled earth, a few sparse weeds, low rough stone retaining 
+walls along the lot edges. Adjacent context: upmarket existing 
+neighbors visible at distance on either side (modern Mediterranean 
+villas, soft and out of focus), mature cypress trees framing the 
+lot edges, real power lines overhead. Distant view beyond: rolling 
+Adriatic hills, soft hazy horizon. Bright early-afternoon light, 
+mostly clear sky with subtle layered cirrus clouds. Real documentary 
+photograph feel, no architectural rendering visible on the lot itself. 
+[+global style]
+```
+
+**After prompt** (same frame):
+```
+The exact same hillside lot, same camera angle and lighting as the 
+previous image — but now a contemporary luxury villa is photo-
+realistically inserted on the lot. The villa: two-story, travertine 
+and walnut-clad facade, deep architectural overhangs, floor-to-
+ceiling glass curtain walls catching the daylight, dark blackened-
+steel window frames, custom walnut pivot front door at the entry. 
+Paved limestone driveway leading to a low entry portico. Mature 
+olive trees flanking the entrance. The villa integrates seamlessly: 
+matching sun angle and shadow direction with the existing photograph, 
+matching color temperature with the neighboring buildings and sky, 
+matching scale relative to the surrounding context. The photograph 
+looks like the villa has always been there. [+global style]
 ```
 
 ---
@@ -352,98 +392,156 @@ visible 360 stitch. [+global style]
 
 ---
 
-### 6.13 Virtuelno opremanje → `listing-staging.webp`
+### 6.13 Virtuelno opremanje — PAIR → `listing-staging-{before,after}.webp`
 
-**What:** Beautifully staged living room, but showing the "after" state of staging as the listing card (the transformation lives in the hero showcase). Use a DIFFERENT room concept from the home and AI Studio briefs — here, a daytime open-plan living/kitchen of a Manhattan-style townhouse loft.
+**What:** Empty open-plan living room of a Belgrade loft conversion → the same room fully designer-staged. Same architectural shell, only the furnishing changes. Different room concept from the home and AI Studio briefs (loft, not penthouse).
 
+**Before prompt:**
 ```
-Stylishly staged open-plan living room of a contemporary Belgrade 
+Completely empty open-plan living room of a contemporary Belgrade 
 loft conversion, captured wide on a 24mm tilt-shift lens, eye-level 
 corner view. Exposed brick accent wall on the left painted in soft 
-warm white, modern walnut shelving against it. Low cream linen 
+warm white, modern walnut shelving against it (empty shelves). 
+Wide-plank European oak floor totally bare — no rug, no furniture, 
+no decor, no kitchen items at the island visible at the far edge of 
+frame. Large industrial-style black-framed window on the back wall 
+pouring soft afternoon daylight in. Beautiful architectural shell 
+but visually cold and unfinished. [+global style]
+```
+
+**After prompt** (same frame):
+```
+The exact same loft living room, same camera angle and lighting as 
+the previous image — now stylishly designer-staged. Low cream linen 
 modular sectional sofa facing a sculptural travertine coffee table, 
 single sage textile throw across one arm of the sofa, a few 
 intentional design objects on the table (a Murano-glass vessel, a 
-folded art monograph, a single brass candleholder). Wide-plank 
-European oak floor with a hand-knotted neutral wool rug grounding 
-the seating. Linear pendant in blackened steel above the kitchen 
-island visible at the far edge of frame. Warm afternoon daylight 
-from a large industrial-style window. [+global style]
-```
-
----
-
-### 6.14 Virtuelna renovacija → `listing-renovation.webp`
-
-**What:** A renovated kitchen (DIFFERENT room from the bathroom in the hero showcase pair, and different from the home/detail briefs which used other rooms). After-state only (the showcase pair is the full before/after).
-
-```
-Contemporary renovated luxury kitchen in a Belgrade penthouse, 
-captured wide on a 24mm tilt-shift lens, eye-level corner view 
-showing the full depth. Bespoke matte sage-green kitchen cabinetry 
-with integrated walnut handles, Calacatta marble waterfall island 
-with single sculptural pendant in matte black above, brushed brass 
-tap, fully integrated appliances. Wide-plank European oak floor, 
-exposed concrete ceiling with track lighting, large factory-style 
-black-framed window on the back wall opening to a city view. Single 
-walnut counter stool with linen cushion at the island, styled 
-ceramic bowl of citrus and a wooden cutting board with rustic bread 
-on the counter. Warm afternoon light through the back window. 
+folded art monograph, a single brass candleholder). Hand-knotted 
+neutral wool rug grounding the seating. The walnut shelves now 
+populated with curated art books, ceramic vessels, a single brass 
+candlestick. Linear pendant in blackened steel above the kitchen 
+island. Magazine-grade designer-curated, believable, not over-styled. 
 [+global style]
 ```
 
 ---
 
-### 6.15 Dnevni u noćni prikaz → `listing-day-to-dusk.webp`
+### 6.14 Virtuelna renovacija — PAIR → `listing-renovation-{before,after}.webp`
 
-**What:** A villa exterior at blue hour with the full interior glow — single dusk shot (the day version is implied by the service name). Make it MORE dramatic than the home/detail variants since this card has to sell the magic by itself, not via comparison.
+**What:** Dated 90s luxury kitchen → contemporary renovated kitchen in the same footprint. DIFFERENT room from the bathroom hero showcase pair (kitchen here, bathroom in §5.1) so the listing carries TWO renovation transformations without redundancy.
 
+**Before prompt:**
 ```
-Adriatic luxury villa exterior captured at deep blue hour, 35mm 
-tilt-shift lens, front-three-quarter wide view from across an 
-illuminated approach driveway at slight elevation. Travertine and 
-walnut architecture with floor-to-ceiling glass curtain walls glowing 
-softly with warm 2700K interior light. Every interior light gently 
-on: warm spill through the glass facade, accent uplighting on the 
-travertine cladding catching the texture, integrated landscape 
-lighting along the driveway and around mature olive trees. The 
-infinity pool glows from within with subtle turquoise uplighting, 
-casting rippled reflections on the lower facade. Sky is a cinematic 
-deep indigo gradient with a faint amber warm band along the horizon 
-behind the villa. Atmosphere: magazine-cover quality, end-of-day, 
-aspirational. [+global style]
+Dated 1990s luxury kitchen interior awaiting renovation, captured 
+wide on a 24mm tilt-shift lens, eye-level corner view showing the 
+full depth. Heavy honey-oak raised-panel kitchen cabinetry with 
+brass cup handles, dated cream-and-beige granite countertops, 
+oversized stainless-steel range hood with worn finish, almond-color 
+electric cooktop, beige ceramic tile backsplash up to the underside 
+of upper cabinets. Worn beige ceramic tile floor. Fluorescent box 
+ceiling fixture overhead, yellowing white ceiling. Single dated 
+wooden bar stool at the island. Clean but visibly 30 years behind. 
+Cold flat overhead lighting. [+global style]
+```
+
+**After prompt** (same frame):
+```
+The exact same kitchen — same wall positions, same layout, same 
+camera angle as the previous image — fully renovated to a 
+contemporary luxury standard. Bespoke matte sage-green flat-front 
+kitchen cabinetry with integrated walnut handles, Calacatta marble 
+waterfall island replacing the old granite, single sculptural 
+pendant in matte black above the island, brushed brass tap, fully 
+integrated appliances behind walnut paneling. Wide-plank European 
+oak floor replacing the old ceramic. Exposed concrete ceiling with 
+track lighting replacing the fluorescent box. Single walnut counter 
+stool with linen cushion at the island, styled ceramic bowl of 
+citrus and a wooden cutting board with rustic bread on the counter. 
+Warm afternoon light through the same back window. [+global style]
 ```
 
 ---
 
-### 6.16 Uklanjanje elemenata → `listing-item-removal.webp`
+### 6.15 Dnevni u noćni prikaz — PAIR → `listing-day-to-dusk-{before,after}.webp`
 
-**What:** A pristine listing-ready living room — the "after" state of item removal (the before would be cluttered, but this card is the result, not the comparison). Different room from home/detail briefs.
+**What:** Adriatic villa exterior at midday → the same villa at deep blue hour with full interior glow. Same camera angle, same architectural lighting on facade — only the time of day changes.
 
+**Before prompt:**
 ```
-Listing-ready dining room of a luxury Adriatic-coastal villa, 
-captured on a 35mm tilt-shift lens, eye-level wide shot from the 
-adjoining living room. Long sculptural travertine dining table for 
-eight, ivory bouclé dining chairs perfectly aligned, single low 
-sculptural centerpiece of three brass candleholders and a hand-
-thrown ceramic bowl with three lemons. Walnut credenza along the 
-back wall holding a single tall ceramic floor vase with pampas 
-grass. Large abstract canvas above. Floor-to-ceiling window on the 
-right opening to the terrace beyond, soft afternoon light pouring 
-in. Wide-plank European oak floor with a hand-knotted neutral rug 
-grounding the table. Every surface intentional, nothing personal 
-visible, nothing accidental — show home perfection. [+global style]
+Adriatic luxury villa exterior, captured wide on a 35mm tilt-shift 
+lens, front-three-quarter view from across an approach driveway at 
+slight elevation. Travertine and walnut architecture with floor-to-
+ceiling glass curtain walls, custom blackened-steel pivot door, 
+mature olive trees framing the entrance, infinity pool just visible 
+on the side reflecting the bright sky. Bright midday daylight, faint 
+hazy sky, clean soft shadows. Villa interior is unlit — windows 
+read as dark glass reflecting the day. Pool sits flat and unlit. 
+Beautiful but flat — captured at the worst time of day for marketing. 
+[+global style]
+```
+
+**After prompt** (same frame):
+```
+The exact same villa, exact same camera angle and architectural 
+lighting on the facade as the previous image — now captured at deep 
+blue hour. Sky is a cinematic deep indigo gradient with a faint 
+warm amber band along the horizon. Every interior light gently on: 
+warm 2700K glow spilling through the floor-to-ceiling glass, accent 
+uplighting on the travertine cladding catching the texture, 
+integrated landscape lighting along the driveway and around the 
+olive trees. The infinity pool glows from within with subtle 
+turquoise uplighting, casting rippled reflections on the lower 
+facade. Same composition, same villa, transformed time of day. 
+Magazine-cover quality. [+global style]
+```
+
+---
+
+### 6.16 Uklanjanje predmeta — PAIR → `listing-item-removal-{before,after}.webp`
+
+**What:** Cluttered/lived-in luxury dining room → the same room cleaned for listing photography. Same furniture, same camera angle — clutter digitally removed and surface restyled.
+
+**Before prompt:**
+```
+Lived-in dining room of a luxury Adriatic-coastal villa, captured 
+on a 35mm tilt-shift lens, eye-level wide shot from the adjoining 
+living room. Long sculptural travertine dining table for eight 
+visible in the foreground, but the room is clearly lived-in: half-
+finished meal plates and water glasses scattered across the table, 
+crumpled linen napkins, an open laptop and stack of papers on one 
+end, a child's backpack draped over one of the ivory bouclé dining 
+chairs, scattered shoes near the door, a folded laundry basket on 
+the walnut credenza along the back wall, a half-empty wine bottle 
+and two used glasses. Beautiful room underneath, but obviously 
+mid-day-of-living. Soft afternoon light from the right. [+global style]
+```
+
+**After prompt** (same frame):
+```
+The exact same dining room from the same camera angle and lighting 
+as the previous image — with every item of clutter digitally 
+removed. Ivory bouclé dining chairs perfectly aligned, table 
+spotless except for a single low sculptural centerpiece of three 
+brass candleholders and a hand-thrown ceramic bowl with three 
+lemons. Walnut credenza along the back wall cleared, now holding 
+only a single tall ceramic floor vase with pampas grass. Floor 
+clean: no shoes, no backpack, no laundry. The beautiful room is now 
+listing-ready, magazine-grade. Same furniture, same lighting, same 
+composition — just restored to "show home" condition. 
+[+global style]
 ```
 
 ---
 
 ## 7. Repository wiring after upload
 
-After dropping the 17 images into `public/artwork/`:
+After dropping the 23 images into `public/artwork/`:
 
-1. **Showcase slider**: `<BeforeAfterShowcase>` component (already built) gets `beforeSrc` + `afterSrc` pointing to `listing-showcase-{before,after}.webp`. Component handles the load animation + hover (desktop) + scroll-driven (mobile).
-2. **Service grid cards**: each card's `imageSrc` in [services-showcase.tsx](src/components/marketing/services-showcase.tsx) (around lines 95-321) gets updated to the new `listing-*.webp` path. The 4 hardcoded `ARTWORK.triptych*` paths become obsolete and can be removed.
-3. **360° enterijeri card** stays unchanged (continues using Kuula iframe).
+1. **Hero showcase slider**: `<BeforeAfterShowcase>` component (already built) gets `beforeSrc` + `afterSrc` pointing to `listing-showcase-{before,after}.webp`. Component handles the load animation + hover (desktop) + scroll-driven (mobile).
+2. **Service grid — single cards (9)**: each card's `imageSrc` in [services-showcase.tsx](src/components/marketing/services-showcase.tsx) (around lines 95-321) gets updated to the new `listing-*.webp` path.
+3. **Service grid — pair cards (6)**: the Service type in services-showcase will be extended with optional `beforeSrc` + `afterSrc` fields. Pair cards render with the existing `<BeforeAfterReveal>` component (same one the AI Studio tool picker uses on `/ai-studio` — mouse-tracked diagonal reveal, lighter than `<BeforeAfterShowcase>` so we don't fire 6 auto-animations at once). Default state shows the after image with a small "Pre / posle" pill in a corner; on hover the diagonal reveal tracks mouse position.
+4. **360° enterijeri card** stays unchanged (continues using Kuula iframe).
+5. **Cleanup**: the 4 hardcoded `ARTWORK.triptych*` paths become obsolete and can be removed.
 
 **Tell me "listing images are up"** when you drop them and I'll wire the paths in one commit, type-check, push.
 
@@ -460,7 +558,8 @@ After dropping the 17 images into `public/artwork/`:
 
 ## 9. TL;DR
 
-- **17 images** total: 1 showcase pair (16:9) + 15 grid cards (4:3) + 1 iframe card (no image)
-- **`listing-showcase-{before,after}.webp`** (1920×1080) drives the new auto-animating diagonal slider that replaces the 4-card "Pre i posle" grid
-- **`listing-*.webp`** (1200×900) for each service variant card, each visually distinct from neighbors
+- **23 images** total: 1 hero showcase pair (16:9, 1920×1080) + 9 single 4:3 cards + 6 before/after card pairs × 2 + 0 for 360° iframe card
+- **`listing-showcase-{before,after}.webp`** drives the auto-animating diagonal slider at the top of the page (replaces the old 4-card "Pre i posle" grid)
+- **`listing-{slug}.webp`** for single product cards (renders, plans, animation, 360 tour, aerial — 9 cards)
+- **`listing-{slug}-{before,after}.webp`** for transformation cards (staging, renovation, day-to-dusk, item removal, landscape, photomontage — 6 pairs), each rendered with `<BeforeAfterReveal>` for a mouse-tracked mini-slider per card so the customer instantly sees the value
 - After upload → I patch `services-showcase.tsx` in one commit + push

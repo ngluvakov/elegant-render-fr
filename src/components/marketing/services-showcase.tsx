@@ -27,6 +27,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
+import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
 import { BeforeAfterShowcase } from "@/components/marketing/before-after-showcase";
 import {
   usePublicCurrency,
@@ -58,7 +59,7 @@ const KUULA_LINK = "https://kuula.co/share/collection/71kZD";
 // uploaded. Until then the original static 4-card "Pre i posle" grid
 // stays visible (no broken-image fallback).
 const LISTING_SHOWCASE = {
-  enabled: false as boolean,
+  enabled: true as boolean,
   before: "/artwork/listing-showcase-before.webp",
   after: "/artwork/listing-showcase-after.webp",
 };
@@ -79,8 +80,22 @@ type Service = {
   badge: string;
   imageSrc: string;
   imagePosition: string;
+  /** When set, render a small mouse-tracked before/after reveal (uses
+   *  BeforeAfterReveal — same as AI Studio tool picker). Used for the 6
+   *  transformation cards so the customer sees the value at a glance. */
+  beforeSrc?: string;
+  afterSrc?: string;
+  /** When set, render an autoplay-loop <video> instead of the image
+   *  (animation card). */
+  videoSrc?: string;
+  /** When set, render an iframe inside the card (Kuula 360 panorama).
+   *  Replaces the old is360Embed boolean — each card carries its own URL
+   *  now so different 360 cards can point at different collections. */
+  embedSrc?: string;
+  /** Surface the "Pre / posle" pill in the corner. Used for the 6 pair
+   *  cards (matches beforeSrc/afterSrc) but also leaves room for static
+   *  cards that want the pill without the reveal. */
   isCompare?: boolean;
-  is360Embed?: boolean;
 };
 
 // ─── Data ────────────────────────────────────────────────
@@ -114,8 +129,8 @@ const SERVICES: Service[] = [
     includes: ["Do 10 prostorija po spratu", "3D osnova uključena", "3 kruga korekcija"],
     icon: "home",
     badge: "Najtraženije",
-    imageSrc: ARTWORK.triptych1,
-    imagePosition: "0% 50%",
+    imageSrc: "/artwork/listing-interior-static.webp",
+    imagePosition: "50% 50%",
   },
   {
     name: "360° enterijeri",
@@ -131,9 +146,9 @@ const SERVICES: Service[] = [
     ],
     icon: "video",
     badge: "Interaktivno",
-    imageSrc: ARTWORK.triptych1,
+    imageSrc: "",
     imagePosition: "50% 50%",
-    is360Embed: true,
+    embedSrc: KUULA_EMBED,
   },
   {
     name: "Spoljašnji renderi",
@@ -145,8 +160,8 @@ const SERVICES: Service[] = [
     includes: ["Prvi kadar uključen", "Model i scena osvetljenja", "Dodatni uglovi po nižoj ceni"],
     icon: "building",
     badge: "Eksterijer",
-    imageSrc: ARTWORK.triptych1,
-    imagePosition: "100% 50%",
+    imageSrc: "/artwork/listing-exterior-static.webp",
+    imagePosition: "50% 50%",
   },
   {
     name: "360° eksterijeri",
@@ -162,8 +177,8 @@ const SERVICES: Service[] = [
     ],
     icon: "video",
     badge: "VR spremno",
-    imageSrc: ARTWORK.triptych2,
-    imagePosition: "0% 50%",
+    imageSrc: "/artwork/listing-exterior-360.webp",
+    imagePosition: "50% 50%",
   },
   {
     name: "Prikaz iz vazduha",
@@ -179,7 +194,7 @@ const SERVICES: Service[] = [
     ],
     icon: "scan",
     badge: "Iz vazduha",
-    imageSrc: ARTWORK.triptych2,
+    imageSrc: "/artwork/listing-exterior-aerial.webp",
     imagePosition: "50% 50%",
   },
   {
@@ -192,8 +207,11 @@ const SERVICES: Service[] = [
     includes: ["Model terena", "Vegetacija i sadnja", "Prvi kadar uključen"],
     icon: "image",
     badge: "Spoljni ambijent",
-    imageSrc: ARTWORK.triptych2,
-    imagePosition: "100% 50%",
+    imageSrc: "/artwork/listing-landscape-after.webp",
+    imagePosition: "50% 50%",
+    beforeSrc: "/artwork/listing-landscape-before.webp",
+    afterSrc: "/artwork/listing-landscape-after.webp",
+    isCompare: true,
   },
   {
     name: "Fotomontaža",
@@ -205,8 +223,11 @@ const SERVICES: Service[] = [
     includes: ["Analiza lokacije", "Usklađivanje perspektive", "Kompozit finalnog prikaza"],
     icon: "image",
     badge: "Realna lokacija",
-    imageSrc: ARTWORK.triptych3,
-    imagePosition: "0% 50%",
+    imageSrc: "/artwork/listing-photomontage-after.webp",
+    imagePosition: "50% 50%",
+    beforeSrc: "/artwork/listing-photomontage-before.webp",
+    afterSrc: "/artwork/listing-photomontage-after.webp",
+    isCompare: true,
   },
   {
     name: "3D osnove prostora",
@@ -218,7 +239,7 @@ const SERVICES: Service[] = [
     includes: ["Kompletan raspored", "Oznake prostorija", "Opcija nameštene verzije"],
     icon: "plans",
     badge: "Jasan raspored",
-    imageSrc: ARTWORK.triptych3,
+    imageSrc: "/artwork/listing-floorplan-3d.webp",
     imagePosition: "50% 50%",
   },
   {
@@ -231,8 +252,8 @@ const SERVICES: Service[] = [
     includes: ["Kolorisana osnova", "Nazivi prostorija", "Varijante stila i nameštaja"],
     icon: "plans",
     badge: "2D prikaz",
-    imageSrc: ARTWORK.triptych3,
-    imagePosition: "100% 50%",
+    imageSrc: "/artwork/listing-floorplan-2d.webp",
+    imagePosition: "50% 50%",
   },
   {
     name: "3D site planovi",
@@ -244,8 +265,8 @@ const SERVICES: Service[] = [
     includes: ["Parcela i objekti", "Pristupne površine", "Opcije sezonskih varijanti"],
     icon: "plans",
     badge: "Parcela i kontekst",
-    imageSrc: ARTWORK.triptych4,
-    imagePosition: "0% 50%",
+    imageSrc: "/artwork/listing-siteplan.webp",
+    imagePosition: "50% 50%",
   },
   {
     name: "Arhitektonske animacije",
@@ -257,8 +278,9 @@ const SERVICES: Service[] = [
     includes: ["Minimum 15 sekundi", "Cenovnik po sekundi", "Popusti za duže trajanje"],
     icon: "video",
     badge: "Video prikaz",
-    imageSrc: ARTWORK.triptych4,
+    imageSrc: "",
     imagePosition: "50% 50%",
+    videoSrc: "/artwork/listing-animation.mp4",
   },
   {
     name: "360 ture",
@@ -270,8 +292,10 @@ const SERVICES: Service[] = [
     includes: ["Sastavljanje ture", "Navigacija kroz prostor", "Brendirana verzija po potrebi"],
     icon: "video",
     badge: "Web iskustvo",
-    imageSrc: ARTWORK.triptych4,
-    imagePosition: "100% 50%",
+    imageSrc: "",
+    imagePosition: "50% 50%",
+    embedSrc:
+      "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
   },
   {
     name: "Virtuelno opremanje prostora",
@@ -283,8 +307,10 @@ const SERVICES: Service[] = [
     includes: ["Prva stilizovana slika", "Dodatni uglovi po sobi", "Više soba uz povoljniji raspon"],
     icon: "sparkles",
     badge: "Pre i posle",
-    imageSrc: ARTWORK.beforeAfter,
-    imagePosition: "0% 0%",
+    imageSrc: "/artwork/listing-staging-after.webp",
+    imagePosition: "50% 50%",
+    beforeSrc: "/artwork/listing-staging-before.webp",
+    afterSrc: "/artwork/listing-staging-after.webp",
     isCompare: true,
   },
   {
@@ -297,8 +323,10 @@ const SERVICES: Service[] = [
     includes: ["Predlog novog izgleda", "Materijali i završne obrade", "Više uglova ili soba"],
     icon: "sparkles",
     badge: "Pre i posle",
-    imageSrc: ARTWORK.beforeAfter,
-    imagePosition: "100% 0%",
+    imageSrc: "/artwork/listing-renovation-after.webp",
+    imagePosition: "50% 50%",
+    beforeSrc: "/artwork/listing-renovation-before.webp",
+    afterSrc: "/artwork/listing-renovation-after.webp",
     isCompare: true,
   },
   {
@@ -311,8 +339,10 @@ const SERVICES: Service[] = [
     includes: ["Zamena neba", "Kolor i svetlosna obrada", "Volumenski popust za više slika"],
     icon: "image",
     badge: "Pre i posle",
-    imageSrc: ARTWORK.beforeAfter,
-    imagePosition: "0% 100%",
+    imageSrc: "/artwork/listing-day-to-dusk-after.webp",
+    imagePosition: "50% 50%",
+    beforeSrc: "/artwork/listing-day-to-dusk-before.webp",
+    afterSrc: "/artwork/listing-day-to-dusk-after.webp",
     isCompare: true,
   },
   {
@@ -325,8 +355,10 @@ const SERVICES: Service[] = [
     includes: ["Čišćenje kadra", "Rekonstrukcija pozadine", "Jednostavne i kompleksne izmene"],
     icon: "scan",
     badge: "Pre i posle",
-    imageSrc: ARTWORK.beforeAfter,
-    imagePosition: "100% 100%",
+    imageSrc: "/artwork/listing-item-removal-after.webp",
+    imagePosition: "50% 50%",
+    beforeSrc: "/artwork/listing-item-removal-before.webp",
+    afterSrc: "/artwork/listing-item-removal-after.webp",
     isCompare: true,
   },
 ];
@@ -424,13 +456,13 @@ export function ServicesShowcase() {
               key={service.name}
               className="group overflow-hidden rounded-2xl border border-border/40 bg-card/80 shadow-[0_8px_30px_rgba(28,26,25,0.04)] transition-shadow hover:shadow-[0_16px_50px_rgba(28,26,25,0.08)]"
             >
-              {/* Image */}
-              {service.is360Embed ? (
+              {/* Card media — priority chain: iframe > video > before/after pair > image */}
+              {service.embedSrc ? (
                 <div className="relative h-48 overflow-hidden bg-secondary/40">
                   <iframe
-                    title="360 preview"
+                    title={`${service.name} — 360 pregled`}
                     className="h-full w-full border-0"
-                    src={KUULA_EMBED}
+                    src={service.embedSrc}
                     allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
                     loading="lazy"
                   />
@@ -438,6 +470,41 @@ export function ServicesShowcase() {
                     {service.badge}
                   </div>
                 </div>
+              ) : service.videoSrc ? (
+                <div className="relative h-48 overflow-hidden bg-secondary/40">
+                  <video
+                    src={service.videoSrc}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="metadata"
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">
+                    {service.badge}
+                  </div>
+                </div>
+              ) : service.beforeSrc && service.afterSrc ? (
+                <BeforeAfterReveal
+                  beforeSrc={service.beforeSrc}
+                  afterSrc={service.afterSrc}
+                  alt={service.name}
+                  sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  className="h-48 w-full bg-secondary/40"
+                >
+                  <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">
+                    {service.badge}
+                  </div>
+                  <div className="pointer-events-none absolute bottom-3 left-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
+                    <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">
+                      Pre
+                    </span>
+                    <span className="bg-accent/12 px-2.5 py-1 text-accent">
+                      Posle
+                    </span>
+                  </div>
+                </BeforeAfterReveal>
               ) : (
                 <div className="relative h-48 overflow-hidden">
                   <Image

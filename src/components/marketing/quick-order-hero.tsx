@@ -181,6 +181,7 @@ export function QuickOrderHero() {
         embedSrc: undefined as string | undefined,
         IconEl: AI_ICON_MAP[selectedAiEdit.id],
         fromPriceText: `od ${aiCreditsLabel(selectedAiEdit.units)} po slici`,
+        priceContext: undefined as string | undefined,
         kicker: "AI obrada · Brza isporuka",
       } as const;
     }
@@ -195,6 +196,9 @@ export function QuickOrderHero() {
       embedSrc: selectedService.embedSrc,
       IconEl: ICON_MAP[selectedService.icon],
       fromPriceText: `od ${priceText(selectedService.variants[0].priceLabel)}`,
+      priceContext: selectedService.priceContext
+        ? priceText(selectedService.priceContext)
+        : undefined,
       kicker: "Jasne cene · Plaćate samo ono što Vam je potrebno",
     } as const;
   }, [
@@ -277,6 +281,14 @@ export function QuickOrderHero() {
                       {view.fromPriceText}
                     </span>
                   </div>
+                  {view.priceContext && (
+                    <p className="mt-3 text-[0.78rem] leading-6 text-muted-foreground">
+                      <span className="font-semibold text-foreground">
+                        Šta dobijate:
+                      </span>{" "}
+                      {view.priceContext}
+                    </p>
+                  )}
                 </div>
                 {view.beforeAsset && view.afterAsset ? (
                   <BeforeAfterReveal
@@ -352,7 +364,7 @@ export function QuickOrderHero() {
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl border border-background/10 bg-background/5 p-4">
                   <p className="text-[0.64rem] uppercase tracking-[0.22em] text-background/65">
-                    Javni start
+                    Početna cena
                   </p>
                   <p className="mt-2 text-2xl font-semibold text-background">
                     {mode === "ai"
@@ -392,7 +404,7 @@ export function QuickOrderHero() {
                   Brza procena
                 </p>
                 <h2 className="mt-2 text-2xl leading-tight text-foreground">
-                  Izaberite pristup i uslugu — cena odmah.
+                  Izaberite uslugu, vidite šta dobijate i koliko košta.
                 </h2>
               </div>
 
@@ -504,10 +516,15 @@ export function QuickOrderHero() {
                                 <p className="truncate text-[0.82rem] font-semibold leading-tight text-foreground">
                                   {service.shortName}
                                 </p>
-                                <p className="mt-0.5 truncate text-[0.72rem] text-muted-foreground">
+                                <p className="mt-0.5 text-[0.7rem] font-semibold text-[color:var(--color-clay-deep)]">
                                   od{" "}
                                   {priceText(service.variants[0].priceLabel)}
                                 </p>
+                                {service.priceContext && (
+                                  <p className="mt-0.5 line-clamp-2 text-[0.66rem] leading-4 text-muted-foreground">
+                                    {priceText(service.priceContext)}
+                                  </p>
+                                )}
                               </div>
                               {isActive && (
                                 <Check className="h-3.5 w-3.5 flex-shrink-0 text-accent" />

@@ -95,6 +95,22 @@ export default async function ServiceDetailPage({
         {service.tagline}
       </p>
 
+      {service.forSegments && service.forSegments.length > 0 && (
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <span className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            Idealno za:
+          </span>
+          {service.forSegments.map((segment) => (
+            <span
+              key={segment}
+              className="inline-flex items-center rounded-full border border-border bg-background/80 px-3 py-1 text-[0.78rem] text-foreground"
+            >
+              {segment}
+            </span>
+          ))}
+        </div>
+      )}
+
       <p className="mt-10 text-base leading-7 text-muted-foreground">
         {formatPublicPriceText(
           service.description,
@@ -105,7 +121,7 @@ export default async function ServiceDetailPage({
 
       <div className="mt-10 rounded-2xl border border-border/70 bg-secondary/40 p-6 md:p-8">
         <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-          Model-first kontekst
+          Kako se cena formira
         </p>
         <p className="mt-3 text-sm leading-7 text-foreground/85">
           {formatPublicPriceText(
@@ -151,7 +167,7 @@ export default async function ServiceDetailPage({
                 </div>
                 <div className="md:text-right">
                   <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Bazna cena
+                    Početna cena
                   </p>
                   <p className="mt-1 text-3xl text-foreground md:text-4xl">
                     {formatPublicPriceText(
@@ -173,7 +189,7 @@ export default async function ServiceDetailPage({
               <div className="mt-6 space-y-4">
                 <div>
                   <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Uključeno
+                    Šta dobijate u ovoj ceni
                   </p>
                   <p className="mt-2 text-sm leading-6 text-foreground/85">
                     {formatPublicPriceText(

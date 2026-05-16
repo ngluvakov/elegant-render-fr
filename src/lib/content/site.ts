@@ -79,8 +79,8 @@ export function formatAddress(): string {
 
 export const TRUST_SIGNALS = [
   "Bez paketa van cenovnika — svaka cena je direktno iz zvaničnog cenovnika.",
-  "Logika cene je odmah vidljiva, bez skrivenih pravila i sitnih slova.",
-  "Tri runde revizija su uključene u svaki projekat po našem standardu.",
+  "Tačno znate šta plaćate i šta dobijate, bez skrivenih troškova i sitnih slova.",
+  "Tri runde revizija su uključene u svaki projekat — da finalni rezultat tačno odgovara Vašoj viziji.",
   "Sertifikovano TÜV Rheinland — ISO 9001:2015, ISO/IEC 27001:2022, ISO 50001:2018.",
 ] as const;
 

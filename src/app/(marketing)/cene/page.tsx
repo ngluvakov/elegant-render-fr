@@ -73,7 +73,8 @@ export default async function CenePage() {
         </p>
       </div>
 
-      {/* Model-First philosophy strip */}
+      {/* "Više rendera, niža cena po renderu" strip — explains how the
+          per-output cost drops once the model is built. */}
       <section className="pt-12 pb-2">
         <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
           <div className="grid gap-6 md:grid-cols-3">

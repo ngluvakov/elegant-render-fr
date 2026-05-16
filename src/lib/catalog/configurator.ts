@@ -200,15 +200,19 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "360 eksterijer",
         basePriceEur: 335,
         unitLabel: "kompletan model + VR izlaz",
-        includes: ["Pun 3D model", "VR-ready 360 izlaz", "1 hotspot uključen"],
+        includes: [
+          "Pun 3D model",
+          "VR-ready 360 izlaz",
+          "1 interaktivna tačka uključena",
+        ],
         disclaimers: [
-          "Dodatna geometrija za hotspot (€60) se naplaćuje jednom ako je potreban pogled iz neviđene strane",
+          "Doplata za neviđenu stranu modela (€60) naplaćuje se jednom ako tačka zahteva pogled na stranu koja nije bila u modelu",
         ],
         addOns: [
           {
             id: "ext-360-hotspot",
-            label: "Hotspot",
-            description: "Interaktivna tačka gledanja",
+            label: "Interaktivna tačka (hotspot)",
+            description: "Nova tačka gledanja u 360 panorami",
             priceEur: 48,
             priceType: "fixed",
             includedQty: 1,
@@ -217,8 +221,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           },
           {
             id: "ext-360-extended",
-            label: "Dodatna geometrija — hotspot",
-            description: "Hotspot koji zahteva neviđenu geometriju (jednokratno)",
+            label: "Doplata za neviđenu stranu",
+            description:
+              "Jednokratna doplata kada tačka zahteva stranu modela koja ranije nije bila modelovana",
             priceEur: 60,
             priceType: "fixed",
             includedQty: 0,
@@ -245,12 +250,12 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "terrain-model", discountPct: 25, reason: "Okruženje postoji iz situacionog/pejzažnog prikaza" },
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
-        label: "Aerial render",
+        label: "Prikaz iz vazduha",
         basePriceEur: 420,
         unitLabel: "model + okruženje iz vazduha",
         includes: [
           "Pun 3D model + okruženje",
-          "Aerial kamera",
+          "Kamera iz vazduha",
           "1 ugao uključen",
         ],
         disclaimers: [
@@ -259,7 +264,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         addOns: [
           {
             id: "ext-aerial-cam",
-            label: "Dodatni aerial ugao",
+            label: "Dodatni ugao iz vazduha",
             description: "Nova tačka gledanja iz vazduha",
             priceEur: 48,
             priceType: "fixed",
@@ -299,19 +304,19 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         consumes: [
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
-        label: "Render enterijera (statički)",
+        label: "Klasični prikaz enterijera (po spratu)",
         basePriceEur: 170,
-        unitLabel: "10 prostorija + 10 rendera",
+        unitLabel: "ceo sprat sa do 10 prostorija",
         includes: [
           "10 opremljenih prostorija",
-          "10 rendera uključeno",
-          "3D osnova sprata",
+          "neograničen broj uglova kamere",
+          "tlocrt sprata",
         ],
         addOns: [
           {
             id: "int-static-room",
-            label: "Opremljene sobe",
-            description: "Staging + render za dodatnu sobu",
+            label: "Dodatna opremljena soba (11. i sledeća)",
+            description: "Opremanje + render za dodatnu sobu",
             priceEur: 28,
             priceType: "fixed",
             includedQty: 10,
@@ -320,8 +325,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           },
           {
             id: "int-static-cam",
-            label: "Dodatni kadar",
-            description: "Ekstra ugao u postojećoj sobi",
+            label: "Dodatni ugao kamere",
+            description: "Novi ugao kamere u već opremljenoj sobi",
             priceEur: 10,
             priceType: "fixed",
             includedQty: 0,
@@ -349,17 +354,17 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         ],
         label: "360 enterijer (po spratu)",
         basePriceEur: 295,
-        unitLabel: "360 paket po spratu",
+        unitLabel: "ceo sprat u 360 turi",
         includes: [
-          "10 hotspot soba",
-          "10 statičkih kamera",
-          "3D osnova sprata",
+          "10 interaktivnih soba u 360 turi",
+          "10 statičkih uglova kamere",
+          "tlocrt sprata",
         ],
         addOns: [
           {
             id: "int-360-room",
-            label: "Hotspot sobe",
-            description: "Staging + 360 render za dodatnu sobu",
+            label: "Interaktivna soba (hotspot)",
+            description: "Opremanje + 360 render za dodatnu sobu",
             priceEur: 45,
             priceType: "fixed",
             includedQty: 10,
@@ -368,8 +373,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           },
           {
             id: "int-360-hotspot",
-            label: "Dodatni hotspot",
-            description: "Nova tačka gledanja u postojećoj sobi",
+            label: "Dodatna tačka u postojećoj sobi",
+            description: "Novi ugao gledanja u već opremljenoj sobi",
             priceEur: 27,
             priceType: "fixed",
             includedQty: 0,
@@ -453,8 +458,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           },
           {
             id: "land-aerial",
-            label: "Aerial pejzažni prikaz",
-            description: "Kompletni overhead kontekst",
+            label: "Prikaz pejzaža iz vazduha",
+            description: "Kompletan pogled na okruženje iz vazduha",
             priceEur: 380,
             priceType: "fixed",
             includedQty: 0,
@@ -943,19 +948,19 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
       },
       {
         id: "vs-360",
-        label: "360 staging",
+        label: "Interaktivno 360 opremanje",
         basePriceEur: 34,
-        unitLabel: "prvi 360 hotspot",
+        unitLabel: "prva opremljena 360 panorama",
         includes: [
-          "Pun 360 staging sobe",
+          "Kompletno 360 opremanje sobe",
           "Izbor nameštaja",
           "Podešavanje osvetljenja",
         ],
         addOns: [
           {
             id: "vs-360-hotspot",
-            label: "Dodatni hotspot (ista soba)",
-            description: "30% popusta — staging postoji",
+            label: "Dodatna tačka u istoj sobi",
+            description: "30% popust — opremanje već postoji",
             priceEur: 24,
             priceType: "fixed",
             includedQty: 0,

@@ -13,7 +13,7 @@ export function ModelFirst() {
         <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <article className="rounded-3xl border border-foreground/10 bg-foreground p-6 text-background shadow-[0_30px_70px_rgba(28,26,25,0.18)] sm:p-8">
             <p className="text-[0.7rem] uppercase tracking-[0.28em] text-background/65">
-              Model-first pricing
+              Više rendera, niža cena po renderu
             </p>
             <h2 className="mt-4 text-4xl leading-tight text-background sm:text-5xl">
               Zašto je naš model cena bolji?

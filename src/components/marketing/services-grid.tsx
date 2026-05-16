@@ -86,6 +86,18 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
                         <p className="text-sm leading-relaxed text-muted-foreground">
                           {service.tagline}
                         </p>
+                        {service.priceContext && (
+                          <p className="text-[0.78rem] leading-6 text-muted-foreground">
+                            <span className="font-semibold text-foreground">
+                              Šta dobijate:
+                            </span>{" "}
+                            {formatPublicPriceText(
+                              service.priceContext,
+                              displayCurrency,
+                              pricingCatalog.settings,
+                            )}
+                          </p>
+                        )}
                         <div className="mt-auto flex items-center justify-between pt-4">
                           <span className="text-sm font-medium text-foreground">
                             od{" "}

@@ -341,6 +341,8 @@ export const SERVICES: Service[] = [
     materials:
       "Pošaljite nam fotografije postojećeg stanja i reference za nove materijale (podove, zidove, nameštaj).",
     asset: PROCESS_ASSET,
+    beforeAsset: "/artwork/ai-tool-virtual_renovation-before.webp",
+    afterAsset: "/artwork/ai-tool-virtual_renovation-after.webp",
     philosophy:
       "Prva slika pokriva kompletan dizajn renovacije i izbor materijala. Kad je vizuelni pravac postavljen, svaki dodatni ugao iste prostorije je 10% jeftiniji, a od 4. ugla 20% jeftiniji. Druga soba iste nekretnine: 15% popust. Tako kompletna nekretnina ulazi u realan budžet pre nego što krenu zidari.",
     priceContext:
@@ -510,6 +512,11 @@ export const SERVICES: Service[] = [
       "Najpogodnije za pejzažne arhitekte koji predstavljaju projekat klijentu i investitore za zajedničke prostore u kompleksima.",
     materials:
       "Pošaljite nam situacioni plan, visinske kote i specifikaciju biljaka i materijala.",
+    // TODO: zameniti privremenim sky_replacement parom kad budu napravljene
+    // namenske landscape before/after slike. Dimenzije: 1600×1067 px (3:2),
+    // par mora biti isti kadar, samo uređenje različito.
+    beforeAsset: "/artwork/ai-tool-sky_replacement-before.webp",
+    afterAsset: "/artwork/ai-tool-sky_replacement-after.webp",
     philosophy:
       "Cena pokriva modelovanje terena, sadnju vegetacije i prvi prikaz. Pošto je teren izgrađen, svaki sledeći ugao iste lokacije je €45 — 80% jeftinije. Doplata postoji samo ako novi ugao zahteva teren koji nije bio u modelu.",
     priceContext:

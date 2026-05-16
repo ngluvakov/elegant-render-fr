@@ -25,6 +25,7 @@ import {
   renderToBuffer,
 } from "@react-pdf/renderer";
 import { IMPRINT, SITE, formatAddress } from "@/lib/content/site";
+import { PDF_FONT_FAMILY, ensurePdfFontsRegistered } from "@/lib/pdf-fonts";
 
 export type ProformaLineItem = {
   description: string;
@@ -65,9 +66,14 @@ const styles = StyleSheet.create({
     padding: 48,
     fontSize: 10,
     color: COLORS.fg,
-    fontFamily: "Helvetica",
+    fontFamily: PDF_FONT_FAMILY,
   },
-  h1: { fontSize: 20, fontFamily: "Helvetica-Bold", marginBottom: 4 },
+  h1: {
+    fontSize: 20,
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
+    marginBottom: 4,
+  },
   number: { fontSize: 10, color: COLORS.muted },
   draftNote: {
     marginTop: 6,
@@ -87,7 +93,7 @@ const styles = StyleSheet.create({
   metaCol: { textAlign: "right" },
   metaPair: { flexDirection: "row", gap: 18, marginTop: 2 },
   metaLabel: { color: COLORS.muted, width: 90, textAlign: "right" },
-  metaValue: { fontFamily: "Helvetica-Bold" },
+  metaValue: { fontFamily: PDF_FONT_FAMILY, fontWeight: 700 },
   partyGrid: { flexDirection: "row", gap: 24, marginTop: 18 },
   partyBlock: { flex: 1 },
   partyLabel: {
@@ -97,9 +103,13 @@ const styles = StyleSheet.create({
     letterSpacing: 1.4,
     marginBottom: 4,
   },
-  partyName: { fontFamily: "Helvetica-Bold", marginBottom: 1 },
+  partyName: {
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
+    marginBottom: 1,
+  },
   partyText: { lineHeight: 1.5 },
-  partyMono: { fontFamily: "Courier", fontSize: 9, marginTop: 2 },
+  partyMono: { fontFamily: PDF_FONT_FAMILY, fontSize: 9, marginTop: 2 },
   itemsTable: { marginTop: 24 },
   thead: {
     flexDirection: "row",
@@ -121,7 +131,12 @@ const styles = StyleSheet.create({
   tcellQty: { width: 36, textAlign: "right" },
   tcellPrice: { width: 70, textAlign: "right" },
   tcellVat: { width: 50, textAlign: "right", color: COLORS.muted },
-  tcellTotal: { width: 80, textAlign: "right", fontFamily: "Helvetica-Bold" },
+  tcellTotal: {
+    width: 80,
+    textAlign: "right",
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
+  },
   totalsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -130,7 +145,11 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
   },
   totalsLabel: { color: COLORS.muted },
-  totalsValue: { fontFamily: "Helvetica-Bold", textAlign: "right" },
+  totalsValue: {
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
+    textAlign: "right",
+  },
   grandTotal: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -140,10 +159,15 @@ const styles = StyleSheet.create({
     borderTop: `1pt solid ${COLORS.border}`,
     marginLeft: "auto",
   },
-  grandLabel: { fontSize: 11, fontFamily: "Helvetica-Bold" },
+  grandLabel: {
+    fontSize: 11,
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
+  },
   grandValue: {
     fontSize: 13,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
     textAlign: "right",
   },
   bankBox: {
@@ -154,7 +178,8 @@ const styles = StyleSheet.create({
     lineHeight: 1.5,
   },
   bankTitle: {
-    fontFamily: "Helvetica-Bold",
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
     marginBottom: 8,
     fontSize: 11,
   },
@@ -163,7 +188,7 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   bankLabel: { color: COLORS.muted, width: 130 },
-  bankValue: { fontFamily: "Courier", fontSize: 10 },
+  bankValue: { fontFamily: PDF_FONT_FAMILY, fontSize: 10 },
   legalNote: {
     marginTop: 16,
     padding: 12,
@@ -283,6 +308,8 @@ const STRINGS = {
 } as const;
 
 export async function renderProformaPdf(data: ProformaData): Promise<Buffer> {
+  ensurePdfFontsRegistered();
+
   return await renderToBuffer(<ProformaDocument data={data} />);
 }
 

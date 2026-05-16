@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  outputFileTracingIncludes: {
+    "/*": [
+      "./node_modules/@fontsource/noto-sans/files/noto-sans-latin-ext-400-normal.woff",
+      "./node_modules/@fontsource/noto-sans/files/noto-sans-latin-ext-400-italic.woff",
+      "./node_modules/@fontsource/noto-sans/files/noto-sans-latin-ext-700-normal.woff",
+    ],
+  },
 };
 
 export default withSentryConfig(nextConfig, {

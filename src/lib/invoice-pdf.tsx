@@ -25,6 +25,7 @@ import {
   renderToBuffer,
 } from "@react-pdf/renderer";
 import { IMPRINT, SITE, formatAddress } from "@/lib/content/site";
+import { PDF_FONT_FAMILY, ensurePdfFontsRegistered } from "@/lib/pdf-fonts";
 
 export type InvoiceLineItem = {
   description: string;
@@ -64,9 +65,14 @@ const styles = StyleSheet.create({
     padding: 48,
     fontSize: 10,
     color: COLORS.fg,
-    fontFamily: "Helvetica",
+    fontFamily: PDF_FONT_FAMILY,
   },
-  h1: { fontSize: 20, fontFamily: "Helvetica-Bold", marginBottom: 4 },
+  h1: {
+    fontSize: 20,
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
+    marginBottom: 4,
+  },
   number: { fontSize: 10, color: COLORS.muted },
   headerRow: {
     flexDirection: "row",
@@ -78,7 +84,7 @@ const styles = StyleSheet.create({
   metaCol: { textAlign: "right" },
   metaPair: { flexDirection: "row", gap: 18, marginTop: 2 },
   metaLabel: { color: COLORS.muted, width: 90, textAlign: "right" },
-  metaValue: { fontFamily: "Helvetica-Bold" },
+  metaValue: { fontFamily: PDF_FONT_FAMILY, fontWeight: 700 },
   partyGrid: {
     flexDirection: "row",
     gap: 24,
@@ -92,10 +98,14 @@ const styles = StyleSheet.create({
     letterSpacing: 1.4,
     marginBottom: 4,
   },
-  partyName: { fontFamily: "Helvetica-Bold", marginBottom: 1 },
+  partyName: {
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
+    marginBottom: 1,
+  },
   partyText: { lineHeight: 1.5 },
   partyMono: {
-    fontFamily: "Courier",
+    fontFamily: PDF_FONT_FAMILY,
     fontSize: 9,
     marginTop: 2,
   },
@@ -120,7 +130,12 @@ const styles = StyleSheet.create({
   tcellQty: { width: 36, textAlign: "right" },
   tcellPrice: { width: 70, textAlign: "right" },
   tcellVat: { width: 50, textAlign: "right", color: COLORS.muted },
-  tcellTotal: { width: 80, textAlign: "right", fontFamily: "Helvetica-Bold" },
+  tcellTotal: {
+    width: 80,
+    textAlign: "right",
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
+  },
   totalsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -129,7 +144,11 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
   },
   totalsLabel: { color: COLORS.muted },
-  totalsValue: { fontFamily: "Helvetica-Bold", textAlign: "right" },
+  totalsValue: {
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
+    textAlign: "right",
+  },
   grandTotal: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -139,10 +158,15 @@ const styles = StyleSheet.create({
     borderTop: `1pt solid ${COLORS.border}`,
     marginLeft: "auto",
   },
-  grandLabel: { fontSize: 11, fontFamily: "Helvetica-Bold" },
+  grandLabel: {
+    fontSize: 11,
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
+  },
   grandValue: {
     fontSize: 13,
-    fontFamily: "Helvetica-Bold",
+    fontFamily: PDF_FONT_FAMILY,
+    fontWeight: 700,
     textAlign: "right",
   },
   notes: {
@@ -242,6 +266,8 @@ const STRINGS = {
 } as const;
 
 export async function renderInvoicePdf(data: InvoiceData): Promise<Buffer> {
+  ensurePdfFontsRegistered();
+
   const buffer = await renderToBuffer(<InvoiceDocument data={data} />);
   return buffer;
 }
@@ -390,7 +416,7 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
             </Text>
           ))}
           <Text style={styles.paymentLine}>
-            <Text style={{ fontFamily: "Helvetica-Bold" }}>
+            <Text style={{ fontFamily: PDF_FONT_FAMILY, fontWeight: 700 }}>
               {t.paymentLabel}:{" "}
             </Text>
             {data.paymentMethod}

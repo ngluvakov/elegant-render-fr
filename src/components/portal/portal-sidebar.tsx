@@ -22,10 +22,15 @@ import {
   Shield,
   ShoppingBag,
   User,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { signOutAction } from "@/server/actions/sign-out";
+import {
+  hasAdminPermission,
+  type AdminPermission,
+} from "@/lib/admin-permissions";
 
 const CLIENT_NAV = [
   { href: "/portal", label: "Pregled", icon: LayoutDashboard, exact: true },
@@ -36,13 +41,20 @@ const CLIENT_NAV = [
   { href: "/portal/profil", label: "Profil", icon: User, exact: true },
 ];
 
-const ADMIN_NAV = [
+const ADMIN_NAV: Array<{
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  exact: boolean;
+  permission?: AdminPermission;
+}> = [
   { href: "/portal/admin", label: "Admin", icon: Shield, exact: true },
   {
     href: "/portal/admin/analitika",
     label: "Analitika",
     icon: BarChart3,
     exact: false,
+    permission: "ANALYTICS_VIEW",
   },
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
   {
@@ -56,24 +68,63 @@ const ADMIN_NAV = [
     label: "Upiti",
     icon: Inbox,
     exact: false,
+    permission: "INQUIRIES_MANAGE",
   },
   {
     href: "/portal/admin/vr-upiti",
     label: "VR upiti",
     icon: Headphones,
     exact: false,
+    permission: "INQUIRIES_MANAGE",
   },
   {
     href: "/portal/admin/ai-studio",
     label: "AI generacije",
     icon: ImageIcon,
     exact: false,
+    permission: "USAGE_VIEW",
   },
   {
     href: "/portal/admin/chat-feedback",
     label: "AI zahtevi",
     icon: MessageSquareWarning,
     exact: false,
+    permission: "ANALYTICS_VIEW",
+  },
+  {
+    href: "/portal/admin/korisnici",
+    label: "Korisnici",
+    icon: User,
+    exact: false,
+    permission: "USERS_VIEW",
+  },
+  {
+    href: "/portal/admin/finansije/cenovnik",
+    label: "Cenovnik",
+    icon: ReceiptText,
+    exact: false,
+    permission: "FINANCE_MANAGE",
+  },
+  {
+    href: "/portal/admin/finansije/izvoz",
+    label: "Izvoz računa",
+    icon: ReceiptText,
+    exact: false,
+    permission: "FINANCE_VIEW",
+  },
+  {
+    href: "/portal/admin/revizije",
+    label: "Revizije",
+    icon: Shield,
+    exact: false,
+    permission: "AUDIT_VIEW",
+  },
+  {
+    href: "/portal/admin/outbox",
+    label: "Outbox",
+    icon: MessageSquareWarning,
+    exact: false,
+    permission: "SYSTEM_MANAGE",
   },
   { href: "/portal/profil", label: "Profil", icon: User, exact: true },
 ];
@@ -81,14 +132,26 @@ const ADMIN_NAV = [
 type PortalSidebarProps = {
   userName: string;
   userEmail: string;
-  isAdmin?: boolean;
+  adminPermissions?: AdminPermission[];
 };
 
-export function PortalSidebar({ userName, userEmail, isAdmin }: PortalSidebarProps) {
+export function PortalSidebar({
+  userName,
+  userEmail,
+  adminPermissions = [],
+}: PortalSidebarProps) {
   const pathname = usePathname();
+  const isAdmin = adminPermissions.length > 0;
 
   const isActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+  const navItems = isAdmin
+    ? ADMIN_NAV.filter(
+        (item) =>
+          !item.permission ||
+          hasAdminPermission(adminPermissions, item.permission),
+      )
+    : CLIENT_NAV;
 
   return (
     <div className="flex h-full flex-col">
@@ -99,7 +162,7 @@ export function PortalSidebar({ userName, userEmail, isAdmin }: PortalSidebarPro
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {(isAdmin ? ADMIN_NAV : CLIENT_NAV).map((item) => {
+        {navItems.map((item) => {
           const active = isActive(item.href, item.exact);
           return (
             <Link

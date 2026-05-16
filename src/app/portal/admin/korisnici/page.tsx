@@ -4,6 +4,12 @@ import { Search, Sparkles, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { formatCreditsFromUnits } from "@/lib/ai-studio/catalog";
+import { requirePermission } from "@/lib/admin-auth";
+import {
+  ADMIN_PRESET_LABELS,
+  inferAdminPreset,
+  normalizeAdminPermissions,
+} from "@/lib/admin-permissions";
 
 export const metadata: Metadata = {
   title: "Admin — Korisnici",
@@ -17,6 +23,7 @@ export default async function AdminUsersPage({
 }: {
   searchParams: SearchParams;
 }) {
+  await requirePermission("USERS_VIEW");
   const { q } = await searchParams;
 
   const where = q
@@ -37,8 +44,10 @@ export default async function AdminUsersPage({
       email: true,
       isAdmin: true,
       canManageFinance: true,
+      adminPermissions: true,
       aiCreditBalanceUnits: true,
       aiCreditsExpireAt: true,
+      lastActiveAt: true,
       createdAt: true,
       _count: { select: { orders: true } },
     },
@@ -86,57 +95,63 @@ export default async function AdminUsersPage({
           </div>
         )}
 
-        {users.map((user) => (
-          <Link
-            key={user.id}
-            href={`/portal/admin/korisnici/${user.id}`}
-            className="block rounded-xl border border-border/30 bg-card/80 px-4 py-3 transition-all hover:border-border hover:shadow-[0_4px_16px_rgba(28,26,25,0.04)] lg:grid lg:grid-cols-[2fr_1.4fr_1fr_0.6fr_0.8fr_auto] lg:items-center lg:gap-3"
-          >
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-medium text-foreground">
-                {user.name ?? "—"}
+        {users.map((user) => {
+          const permissions = normalizeAdminPermissions(user.adminPermissions, {
+            isAdmin: user.isAdmin,
+          });
+          const preset = inferAdminPreset(permissions);
+          return (
+            <Link
+              key={user.id}
+              href={`/portal/admin/korisnici/${user.id}`}
+              className="block rounded-xl border border-border/30 bg-card/80 px-4 py-3 transition-all hover:border-border hover:shadow-[0_4px_16px_rgba(28,26,25,0.04)] lg:grid lg:grid-cols-[2fr_1.4fr_1fr_0.6fr_0.8fr_auto] lg:items-center lg:gap-3"
+            >
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-medium text-foreground">
+                  {user.name ?? "—"}
+                </p>
+                {permissions.length > 0 && (
+                  <Badge className="gap-1 bg-accent/10 text-accent">
+                    <ShieldCheck className="h-3 w-3" />
+                    {ADMIN_PRESET_LABELS[preset]}
+                  </Badge>
+                )}
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground lg:mt-0">
+                {user.email}
               </p>
-              {user.isAdmin && (
-                <Badge className="gap-1 bg-accent/10 text-accent">
-                  <ShieldCheck className="h-3 w-3" />
-                  Admin
-                </Badge>
-              )}
-              {user.canManageFinance && (
-                <Badge className="gap-1 bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]">
-                  Finansije
-                </Badge>
-              )}
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground lg:mt-0">
-              {user.email}
-            </p>
-            <div className="mt-1 flex items-center gap-1 text-xs lg:mt-0">
-              <Sparkles className="h-3 w-3 text-[color:var(--color-sage-deep)]" />
-              <span className="font-medium text-foreground">
-                {formatCreditsFromUnits(user.aiCreditBalanceUnits)}
-              </span>
-              {user.aiCreditsExpireAt && user.aiCreditBalanceUnits > 0 && (
-                <span className="text-muted-foreground">
-                  · do {user.aiCreditsExpireAt.toLocaleDateString("sr-Latn-RS")}
+              <div className="mt-1 flex items-center gap-1 text-xs lg:mt-0">
+                <Sparkles className="h-3 w-3 text-[color:var(--color-sage-deep)]" />
+                <span className="font-medium text-foreground">
+                  {formatCreditsFromUnits(user.aiCreditBalanceUnits)}
                 </span>
-              )}
-            </div>
-            <p className="mt-1 text-center text-xs text-muted-foreground lg:mt-0">
-              {user._count.orders}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground lg:mt-0">
-              {user.createdAt.toLocaleDateString("sr-Latn-RS", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}
-            </p>
-            <span className="hidden w-16 text-xs font-medium text-accent lg:block">
-              Otvori →
-            </span>
-          </Link>
-        ))}
+                {user.aiCreditsExpireAt && user.aiCreditBalanceUnits > 0 && (
+                  <span className="text-muted-foreground">
+                    · do {user.aiCreditsExpireAt.toLocaleDateString("sr-Latn-RS")}
+                  </span>
+                )}
+              </div>
+              <p className="mt-1 text-center text-xs text-muted-foreground lg:mt-0">
+                {user._count.orders}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground lg:mt-0">
+                {user.lastActiveAt
+                  ? `Aktivan ${user.lastActiveAt.toLocaleDateString("sr-Latn-RS", {
+                      day: "numeric",
+                      month: "short",
+                    })}`
+                  : user.createdAt.toLocaleDateString("sr-Latn-RS", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+              </p>
+              <span className="hidden w-16 text-xs font-medium text-accent lg:block">
+                Otvori →
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

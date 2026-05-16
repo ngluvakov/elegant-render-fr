@@ -12,6 +12,7 @@ import {
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { VrInquiryStatusActions } from "./status-actions";
 import { VrInquiryConvertForm } from "./convert-form";
+import { adminHas, requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "VR upiti — Admin",
@@ -57,6 +58,8 @@ export default async function VrInquiriesPage({
   searchParams: SearchParams;
 }) {
   const { status } = await searchParams;
+  const admin = await requirePermission("INQUIRIES_MANAGE");
+  const canConvertToOrder = adminHas(admin, "FINANCE_MANAGE");
   const where = status ? { status: status as "pending" | "in_progress" | "converted" | "closed" } : {};
 
   const [inquiries, counts] = await Promise.all([
@@ -254,7 +257,8 @@ export default async function VrInquiriesPage({
                   </div>
                 )}
 
-                {inq.status !== "closed" && (
+                {inq.status !== "closed" &&
+                  (canConvertToOrder || inq.convertedOrderId) && (
                   <div className="mt-4 flex justify-end">
                     <VrInquiryConvertForm
                       inquiryId={inq.id}

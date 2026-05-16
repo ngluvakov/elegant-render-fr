@@ -10,6 +10,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
+import { requirePermission } from "@/lib/admin-auth";
+import { normalizeAdminPermissions } from "@/lib/admin-permissions";
 
 export const metadata: Metadata = {
   title: "Revizije — Admin",
@@ -25,6 +27,7 @@ export default async function AdminAuditLogPage({
 }: {
   searchParams: SearchParams;
 }) {
+  await requirePermission("AUDIT_VIEW");
   const { action, entity } = await searchParams;
 
   const where: Record<string, unknown> = {};
@@ -37,7 +40,9 @@ export default async function AdminAuditLogPage({
       orderBy: { createdAt: "desc" },
       take: 200,
       include: {
-        actor: { select: { id: true, email: true, isAdmin: true } },
+        actor: {
+          select: { id: true, email: true, isAdmin: true, adminPermissions: true },
+        },
       },
     }),
     prisma.auditLog.count({ where }),
@@ -126,7 +131,10 @@ export default async function AdminAuditLogPage({
                             <em className="text-muted-foreground">— sistem —</em>
                           )}
                         </span>
-                        {log.actor?.isAdmin && (
+                        {log.actor &&
+                          normalizeAdminPermissions(log.actor.adminPermissions, {
+                            isAdmin: log.actor.isAdmin,
+                          }).length > 0 && (
                           <Badge variant="secondary" className="mt-1 self-start">
                             admin
                           </Badge>

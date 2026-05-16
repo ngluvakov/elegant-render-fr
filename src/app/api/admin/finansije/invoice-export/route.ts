@@ -22,7 +22,7 @@
  */
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireAdmin } from "@/server/actions/admin";
+import { requirePermission } from "@/lib/admin-auth";
 import { recordAuditLog } from "@/lib/audit";
 import {
   invoiceCurrencyForBuyer,
@@ -39,7 +39,7 @@ const MAX_RANGE_DAYS = 366;
 export async function GET(request: Request) {
   let admin;
   try {
-    admin = await requireAdmin();
+    admin = await requirePermission("FINANCE_VIEW");
   } catch {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

@@ -18,7 +18,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { captureServerEvent } from "@/lib/posthog";
-import { requireAdmin } from "@/server/actions/admin";
+import { requirePermission } from "@/lib/admin-auth";
 import {
   billingCentsFromEurCents,
   buildBillingSnapshot,
@@ -39,7 +39,7 @@ export async function adminCreateCharge(args: {
   reason?: string;
   items: ChargeItemInput[];
 }): Promise<{ error?: string; chargeId?: string }> {
-  await requireAdmin();
+  await requirePermission("FINANCE_MANAGE");
 
   if (!args.items.length) {
     return { error: "Mora postojati barem jedna stavka." };
@@ -142,7 +142,7 @@ export async function adminCreateCharge(args: {
     0,
   );
 
-  const admin = await requireAdmin();
+  const admin = await requirePermission("FINANCE_MANAGE");
 
   const charge = await prisma.$transaction(async (tx) => {
     const created = await tx.orderCharge.create({
@@ -231,7 +231,7 @@ export async function adminCreateCharge(args: {
 export async function adminCancelCharge(args: {
   chargeId: string;
 }): Promise<{ error?: string; success?: boolean }> {
-  await requireAdmin();
+  await requirePermission("FINANCE_MANAGE");
 
   const charge = await prisma.orderCharge.findUnique({
     where: { id: args.chargeId },

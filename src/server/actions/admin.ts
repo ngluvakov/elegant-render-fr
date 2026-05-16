@@ -12,7 +12,6 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { transitionOrder } from "@/lib/order/status-machine";
 import type { OrderStatus } from "@/generated/prisma/client";
@@ -20,26 +19,21 @@ import { syncCommentToDeal } from "@/server/bitrix/sync-comment";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { recordAuditLog } from "@/lib/audit";
+import { requireAnyAdminPermission, requirePermission } from "@/lib/admin-auth";
 import {
   addMonths,
   formatCreditsFromUnits,
 } from "@/lib/ai-studio/catalog";
 import { captureServerEvent } from "@/lib/posthog";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import { recordUserActivity } from "@/lib/user-activity";
 
 export async function requireAdmin() {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error("Not authenticated");
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { isAdmin: true, id: true },
-  });
-  if (!user?.isAdmin) throw new Error("Not admin");
-  return user;
+  return requireAnyAdminPermission();
 }
 
 export async function adminCreateComment(orderId: string, body: string) {
-  const admin = await requireAdmin();
+  const admin = await requirePermission("PROJECTS_MANAGE");
   if (!body.trim()) return { error: "Poruka ne može biti prazna." };
 
   const comment = await prisma.orderComment.create({
@@ -73,7 +67,7 @@ export async function adminTransitionOrder(
   toStatus: string,
   note?: string,
 ) {
-  const admin = await requireAdmin();
+  const admin = await requirePermission("PROJECTS_MANAGE");
 
   // Capture the from-status before transition so the audit trail
   // doesn't depend on reading it after the row has been moved.
@@ -109,7 +103,7 @@ export async function adminUploadDeliverable(
   mimeType: string,
   storagePath: string,
 ) {
-  await requireAdmin();
+  await requirePermission("PROJECTS_MANAGE");
 
   const file = await prisma.orderFile.create({
     data: {
@@ -146,7 +140,7 @@ export async function adminGrantAiCredits(args: {
   units: number;
   note: string;
 }): Promise<{ error?: string; balanceAfterUnits?: number }> {
-  await requireAdmin();
+  await requirePermission("AI_CREDITS_MANAGE");
 
   const units = Math.floor(args.units);
   const note = args.note.trim();
@@ -213,6 +207,7 @@ export async function adminGrantAiCredits(args: {
     event: "admin_credits_granted",
     properties: { user_id: args.userId, units },
   });
+  await recordUserActivity(args.userId, { aiCreditsGrantedUnits: units });
 
   await recordAuditLog({
     action: "ai_credits.grant",
@@ -244,7 +239,7 @@ export async function adminGrantFreeRevision(args: {
   orderId: string;
   note: string;
 }): Promise<{ error?: string; success?: boolean }> {
-  const admin = await requireAdmin();
+  const admin = await requirePermission("PROJECTS_MANAGE");
 
   const note = args.note.trim();
   if (!note) return { error: "Razlog je obavezan." };

@@ -18,7 +18,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { transitionOrder } from "@/lib/order/status-machine";
 import { recordAuditLog } from "@/lib/audit";
-import { requireAdmin } from "@/server/actions/admin";
+import { requirePermission } from "@/lib/admin-auth";
 import { finishSuccessfulPayment } from "@/server/actions/payment";
 
 export type MarkWirePaidResult =
@@ -30,7 +30,7 @@ export async function markWireTransferPaid(
 ): Promise<MarkWirePaidResult> {
   let admin;
   try {
-    admin = await requireAdmin();
+    admin = await requirePermission("FINANCE_MANAGE");
   } catch {
     return { ok: false, reason: "not_admin" };
   }

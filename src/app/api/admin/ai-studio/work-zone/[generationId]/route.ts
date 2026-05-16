@@ -5,7 +5,7 @@ import {
   createObjectWorkZoneOverlay,
   getImageDimensions,
 } from "@/lib/ai-studio/image-processing";
-import { requireAdmin } from "@/server/actions/admin";
+import { requirePermission } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,7 +16,7 @@ type RouteParams = {
 
 export async function GET(_request: Request, { params }: RouteParams) {
   try {
-    await requireAdmin();
+    await requirePermission("USAGE_VIEW");
   } catch {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }

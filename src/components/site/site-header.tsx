@@ -9,7 +9,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { ArrowRight, ChevronDown, Menu, User } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
@@ -68,10 +68,6 @@ export function SiteHeader() {
   // overlap the destination page.
   const [navMenuValue, setNavMenuValue] = useState<string | null>(null);
   const isLoggedIn = !!session?.user;
-
-  useEffect(() => {
-    setNavMenuValue(null);
-  }, [pathname]);
 
   const isActive = (pattern: string) =>
     pathname === pattern || pathname.startsWith(`${pattern}/`);
@@ -140,6 +136,7 @@ export function SiteHeader() {
                       render={
                         <Link
                           href="/usluge"
+                          onClick={() => setNavMenuValue(null)}
                           className="text-xs font-medium text-accent hover:underline"
                         />
                       }
@@ -162,7 +159,10 @@ export function SiteHeader() {
                             <NavigationMenuLink
                               key={service.slug}
                               render={
-                                <Link href={`/usluge/${service.slug}`} />
+                                <Link
+                                  href={`/usluge/${service.slug}`}
+                                  onClick={() => setNavMenuValue(null)}
+                                />
                               }
                               className="!flex items-center justify-between gap-3 px-2 py-1.5"
                             >
@@ -190,7 +190,12 @@ export function SiteHeader() {
             {MAIN_NAV.map((item) => (
               <NavigationMenuItem key={item.href}>
                 <NavigationMenuLink
-                  render={<Link href={item.href} />}
+                  render={
+                    <Link
+                      href={item.href}
+                      onClick={() => setNavMenuValue(null)}
+                    />
+                  }
                   className={cn(
                     "px-3 py-1.5 text-sm font-medium text-foreground/70 hover:text-foreground",
                     isActive(item.pattern) && "text-foreground",

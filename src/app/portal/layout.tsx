@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { PortalLayoutShell } from "@/components/portal/portal-layout-shell";
 import { PostHogIdentifyBridge } from "@/components/posthog-identify-bridge";
 import { ChatWidget } from "@/components/chat/chat-widget";
+import { normalizeAdminPermissions } from "@/lib/admin-permissions";
+import { recordUserActivity } from "@/lib/user-activity";
 
 export default async function PortalLayout({
   children,
@@ -15,14 +17,22 @@ export default async function PortalLayout({
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { isAdmin: true, passwordHash: true },
+    select: {
+      isAdmin: true,
+      adminPermissions: true,
+      passwordHash: true,
+    },
   });
+  const adminPermissions = normalizeAdminPermissions(user?.adminPermissions, {
+    isAdmin: user?.isAdmin,
+  });
+  await recordUserActivity(session.user.id, { portalVisits: 1 });
 
   return (
     <PortalLayoutShell
       userName={session.user.name ?? "Korisnik"}
       userEmail={session.user.email ?? ""}
-      isAdmin={user?.isAdmin ?? false}
+      adminPermissions={adminPermissions}
       hasPassword={Boolean(user?.passwordHash)}
     >
       <PostHogIdentifyBridge
@@ -30,7 +40,7 @@ export default async function PortalLayout({
         traits={{
           email: session.user.email ?? undefined,
           name: session.user.name ?? undefined,
-          isAdmin: user?.isAdmin ?? false,
+          isAdmin: adminPermissions.length > 0,
         }}
       />
       {children}

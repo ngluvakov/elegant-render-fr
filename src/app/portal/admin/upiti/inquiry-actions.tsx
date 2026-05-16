@@ -31,10 +31,12 @@ export function ProjectInquiryActions({
   inquiryId,
   status,
   canRetryBitrix,
+  canConvertToOrder,
 }: {
   inquiryId: string;
   status: string;
   canRetryBitrix: boolean;
+  canConvertToOrder: boolean;
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -87,7 +89,8 @@ export function ProjectInquiryActions({
   return (
     <div className="flex flex-col items-end gap-1.5">
       <div className="flex flex-wrap justify-end gap-1.5">
-        {canConvert &&
+        {canConvertToOrder &&
+          canConvert &&
           (confirmingConvert ? (
             <>
               <button

@@ -1,19 +1,12 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import { requirePermission } from "@/lib/admin-auth";
 
 export async function GET(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const admin = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { isAdmin: true },
-  });
-  if (!admin?.isAdmin) {
+  try {
+    await requirePermission("INQUIRIES_MANAGE");
+  } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

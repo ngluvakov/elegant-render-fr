@@ -14,6 +14,7 @@ import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { formatInquiryFileSize } from "@/lib/project-inquiry";
 import { ProjectInquiryActions } from "./inquiry-actions";
+import { adminHas, requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Upiti — Admin",
@@ -74,6 +75,8 @@ export default async function ProjectInquiriesPage({
   searchParams: SearchParams;
 }) {
   const { status, highlight } = await searchParams;
+  const admin = await requirePermission("INQUIRIES_MANAGE");
+  const canConvertToOrder = adminHas(admin, "FINANCE_MANAGE");
   const statusFilter =
     status && VALID_STATUSES.has(status as ProjectInquiryStatus)
       ? (status as ProjectInquiryStatus)
@@ -184,6 +187,7 @@ export default async function ProjectInquiriesPage({
                     inquiryId={inquiry.id}
                     status={inquiry.status}
                     canRetryBitrix={!inquiry.bitrixLeadId}
+                    canConvertToOrder={canConvertToOrder}
                   />
                 </div>
 

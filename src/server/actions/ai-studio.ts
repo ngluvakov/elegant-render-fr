@@ -45,6 +45,11 @@ import { buildAiEditPrompt } from "@/lib/ai-studio/prompts";
 import { validateAiPromptScope } from "@/lib/ai-studio/prompt-scope";
 import { generateAiEdit } from "@/lib/ai-studio/providers";
 import {
+  hasAdminPermission,
+  normalizeAdminPermissions,
+} from "@/lib/admin-permissions";
+import { recordUserActivity } from "@/lib/user-activity";
+import {
   expireAiCreditsIfNeeded,
   refundAiCreditUnits,
   spendAiCreditUnits,
@@ -327,6 +332,7 @@ export async function deleteAiStudioGeneration(
 
   revalidatePath("/portal/ai-studio");
   revalidatePath("/portal/ai-kreacije");
+  await recordUserActivity(userId, { aiGenerationsStarted: 1 });
   revalidatePath("/portal/admin/ai-studio");
 
   return { deletedId: generation.id };
@@ -653,16 +659,21 @@ export async function getAiStudioGenerationStatus(
     where: { id: userId },
     select: {
       isAdmin: true,
+      adminPermissions: true,
       aiCreditBalanceUnits: true,
       aiCreditsExpireAt: true,
     },
   });
   if (!user) return { error: "Korisnik nije pronađen." };
+  const canViewAllGenerations = hasAdminPermission(
+    normalizeAdminPermissions(user.adminPermissions, { isAdmin: user.isAdmin }),
+    "USAGE_VIEW",
+  );
 
   const generation = await prisma.aiGeneration.findFirst({
     where: {
       id: generationId,
-      ...(user.isAdmin ? {} : { userId }),
+      ...(canViewAllGenerations ? {} : { userId }),
     },
   });
   if (!generation) return { error: "AI obrada nije pronađena." };

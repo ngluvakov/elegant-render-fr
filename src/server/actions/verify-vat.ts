@@ -14,7 +14,7 @@ import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { recordAuditLog } from "@/lib/audit";
-import { requireAdmin } from "@/server/actions/admin";
+import { requirePermission } from "@/lib/admin-auth";
 import {
   verifyVatViaVies,
   isViesCountry,
@@ -30,7 +30,7 @@ export async function verifyOrderVat(
 ): Promise<VerifyVatResult> {
   let admin;
   try {
-    admin = await requireAdmin();
+    admin = await requirePermission("FINANCE_MANAGE");
   } catch {
     return { ok: false, reason: "not_admin" };
   }

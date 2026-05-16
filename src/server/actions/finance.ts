@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { requirePermission } from "@/lib/admin-auth";
 import { priceItems, type QuoteItem } from "@/lib/catalog/calculate";
 import type {
   ConfiguratorAddOn,
@@ -22,8 +21,6 @@ import type { PricingSettings } from "@/lib/pricing/catalog";
 
 type FinanceAdmin = {
   id: string;
-  isAdmin: boolean;
-  canManageFinance: boolean;
 };
 
 export type PricingDraftVisualPatch =
@@ -70,16 +67,7 @@ export type PricingDraftVisualPatch =
     };
 
 export async function requireFinanceAdmin(): Promise<FinanceAdmin> {
-  const session = await auth();
-  if (!session?.user?.id) throw new Error("Not authenticated");
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { id: true, isAdmin: true, canManageFinance: true },
-  });
-  if (!user?.isAdmin || !user.canManageFinance) {
-    throw new Error("Finance admin required");
-  }
-  return user;
+  return requirePermission("FINANCE_MANAGE");
 }
 
 export async function savePricingDraftChange(formData: FormData) {
@@ -286,24 +274,6 @@ export async function previewPricingQuote(items: QuoteItem[]) {
   await requireFinanceAdmin();
   const draft = await getDraftPricingCatalog();
   return priceItems(items, [], draft);
-}
-
-export async function saveUserFinanceAccess(formData: FormData) {
-  await requireFinanceAdmin();
-  const userId = text(formData, "userId");
-  if (!userId) throw new Error("Korisnik nije pronađen.");
-  const isAdmin = boolValue(formData, "isAdmin");
-  const canManageFinance = isAdmin && boolValue(formData, "canManageFinance");
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      isAdmin,
-      canManageFinance,
-    },
-  });
-  revalidatePath("/portal/admin/korisnici");
-  revalidatePath(`/portal/admin/korisnici/${userId}`);
 }
 
 function revalidateFinancePaths() {

@@ -35,6 +35,7 @@ import {
   billingCentsFromEurCents,
   buildBillingSnapshot,
 } from "@/lib/billing";
+import { recordUserActivity } from "@/lib/user-activity";
 
 export type OrderResult = {
   error?: string;
@@ -224,6 +225,7 @@ export async function createOrder(
       billingTotalCents: order.billingTotalCents,
     },
   });
+  await recordUserActivity(userId, { ordersCreated: 1 });
 
   return { orderId: order.id, orderNumber: order.orderNumber };
 }
@@ -246,6 +248,7 @@ export async function createEmptyDraft(): Promise<OrderResult> {
 
   revalidatePath("/portal/porudzbine");
   revalidatePath("/portal");
+  await recordUserActivity(session.user.id, { ordersCreated: 1 });
 
   return { orderId: order.id, orderNumber: order.orderNumber };
 }

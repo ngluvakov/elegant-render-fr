@@ -11,6 +11,7 @@ import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { requirePermission } from "@/lib/admin-auth";
 import type { Prisma } from "@/generated/prisma/client";
 import {
   PROJECT_INQUIRY_MAX_FILE_BYTES,
@@ -286,14 +287,12 @@ export async function submitProjectInquiry(
 }
 
 async function assertAdmin(): Promise<{ ok: true } | { error: string }> {
-  const session = await auth();
-  if (!session?.user?.id) return { error: "Nemate pristup." };
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { isAdmin: true },
-  });
-  if (!user?.isAdmin) return { error: "Nemate pristup." };
-  return { ok: true };
+  try {
+    await requirePermission("INQUIRIES_MANAGE");
+    return { ok: true };
+  } catch {
+    return { error: "Nemate pristup." };
+  }
 }
 
 export async function updateProjectInquiryStatus(

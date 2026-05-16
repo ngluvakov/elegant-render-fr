@@ -12,6 +12,7 @@ import crypto from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { requirePermission } from "@/lib/admin-auth";
 import {
   checkRateLimit,
   getServerActionIdentifier,
@@ -25,6 +26,7 @@ import { enqueueOutboxEvent } from "@/lib/outbox";
 import { sanitizeVrConfig, type VrConfig, type VrProductId } from "@/lib/catalog/vr-config";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { generateOrderNumber } from "@/lib/order/generate-number";
+import { recordUserActivity } from "@/lib/user-activity";
 
 export type VrInquiryInput = {
   productId: string;
@@ -133,13 +135,11 @@ export async function updateVrInquiryStatus(
   inquiryId: string,
   status: "pending" | "in_progress" | "converted" | "closed",
 ): Promise<{ ok: true } | { error: string }> {
-  const session = await auth();
-  if (!session?.user?.id) return { error: "Nemate pristup." };
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { isAdmin: true },
-  });
-  if (!user?.isAdmin) return { error: "Nemate pristup." };
+  try {
+    await requirePermission("INQUIRIES_MANAGE");
+  } catch {
+    return { error: "Nemate pristup." };
+  }
 
   await prisma.vrInquiry.update({
     where: { id: inquiryId },
@@ -167,13 +167,12 @@ export async function convertVrInquiryToOrder(args: {
   priceEur: number;
   projectName?: string;
 }): Promise<ConvertInquiryResult> {
-  const session = await auth();
-  if (!session?.user?.id) return { error: "Nemate pristup." };
-  const admin = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { isAdmin: true },
-  });
-  if (!admin?.isAdmin) return { error: "Nemate pristup." };
+  let admin;
+  try {
+    admin = await requirePermission("FINANCE_MANAGE");
+  } catch {
+    return { error: "Nemate pristup." };
+  }
 
   const priceEur = Math.round(Number(args.priceEur));
   if (!Number.isFinite(priceEur) || priceEur <= 0) {
@@ -258,13 +257,13 @@ export async function convertVrInquiryToOrder(args: {
               fromStatus: null,
               toStatus: "draft",
               note: `Konvertovano iz VR upita ${inquiry.id}`,
-              actorId: session.user!.id,
+              actorId: admin.id,
             },
             {
               fromStatus: "draft",
               toStatus: "awaiting_payment",
               note: "Tim je dogovorio opseg i cenu",
-              actorId: session.user!.id,
+              actorId: admin.id,
             },
           ],
         },
@@ -314,5 +313,6 @@ export async function convertVrInquiryToOrder(args: {
   });
 
   revalidatePath("/portal/admin/vr-upiti");
+  await recordUserActivity(userId, { ordersCreated: 1 });
   return { ok: true, orderId: order.id, orderNumber: order.orderNumber };
 }

@@ -7,6 +7,10 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { UPLOADS_BUCKET } from "@/lib/file-scan";
+import {
+  hasAdminPermission,
+  normalizeAdminPermissions,
+} from "@/lib/admin-permissions";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,7 +37,7 @@ export async function GET(
     }),
     prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { isAdmin: true },
+      select: { isAdmin: true, adminPermissions: true },
     }),
   ]);
 
@@ -48,8 +52,15 @@ export async function GET(
   }
 
   const isOwner = charge.order.userId === session.user.id;
-  const isAdmin = Boolean(viewer?.isAdmin);
-  if (!isOwner && !isAdmin) {
+  const canViewFinance = viewer
+    ? hasAdminPermission(
+        normalizeAdminPermissions(viewer.adminPermissions, {
+          isAdmin: viewer.isAdmin,
+        }),
+        "FINANCE_VIEW",
+      )
+    : false;
+  if (!isOwner && !canViewFinance) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

@@ -29,7 +29,7 @@ import { allocateProformaNumber } from "@/lib/proforma-number";
 import { renderProformaPdf } from "@/lib/proforma-pdf";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { UPLOADS_BUCKET } from "@/lib/file-scan";
-import { requireAdmin } from "@/server/actions/admin";
+import { requirePermission } from "@/lib/admin-auth";
 import { buildProformaDataForOrder } from "@/lib/proforma-data-builder";
 
 export type IssueProformaResult =
@@ -39,11 +39,8 @@ export type IssueProformaResult =
 const PROFORMA_VALIDITY_DAYS = 14;
 
 export async function issueProforma(orderId: string): Promise<IssueProformaResult> {
-  // Admin-only — only triggered by the admin button on order detail.
-  // The wizard for inquiry → order conversion (separate later PR)
-  // will also call this through requireAdmin().
   try {
-    await requireAdmin();
+    await requirePermission("FINANCE_MANAGE");
   } catch {
     return { ok: false, reason: "not_admin" };
   }

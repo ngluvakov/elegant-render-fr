@@ -12,6 +12,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Izvoz računa — Admin",
@@ -41,6 +42,7 @@ export default async function InvoiceExportPage({
 }: {
   searchParams: SearchParams;
 }) {
+  await requirePermission("FINANCE_VIEW");
   const params = await searchParams;
   const fallback = defaultRange();
   const from =

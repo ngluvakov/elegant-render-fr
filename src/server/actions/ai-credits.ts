@@ -5,6 +5,7 @@ import {
   addMonths,
 } from "@/lib/ai-studio/catalog";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import { recordUserActivity } from "@/lib/user-activity";
 
 export async function expireAiCreditsIfNeeded(userId: string) {
   const user = await prisma.user.findUnique({
@@ -132,7 +133,7 @@ export async function spendAiCreditUnits({
     return { balanceAfterUnits: user?.aiCreditBalanceUnits ?? 0 };
   }
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const claimed = await tx.user.updateMany({
       where: {
         id: userId,
@@ -172,6 +173,12 @@ export async function spendAiCreditUnits({
 
     return { balanceAfterUnits: updated.aiCreditBalanceUnits };
   });
+
+  if (!result.error) {
+    await recordUserActivity(userId, { aiCreditsSpentUnits: units });
+  }
+
+  return result;
 }
 
 export async function refundAiCreditUnits({

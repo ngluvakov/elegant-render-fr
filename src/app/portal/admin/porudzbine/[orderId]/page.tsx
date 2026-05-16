@@ -18,6 +18,7 @@ import { AdminDeliverableUpload } from "./admin-deliverable-upload";
 import { AdminGrantCreditsPanel } from "./admin-grant-credits-panel";
 import { AdminFreeRevisionPanel } from "./admin-free-revision-panel";
 import { AdminChargesPanel } from "./admin-charges-panel";
+import { adminHas, requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Admin — Detalji porudžbine",
@@ -32,6 +33,11 @@ export default async function AdminOrderDetailPage({
   params: Params;
 }) {
   const { orderId } = await params;
+  const admin = await requirePermission("PROJECTS_VIEW");
+  const canManageProjects = adminHas(admin, "PROJECTS_MANAGE");
+  const canManageCredits = adminHas(admin, "AI_CREDITS_MANAGE");
+  const canViewFinance = adminHas(admin, "FINANCE_VIEW");
+  const canManageFinance = adminHas(admin, "FINANCE_MANAGE");
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
@@ -103,53 +109,62 @@ export default async function AdminOrderDetailPage({
           <Badge className={statusAccent(order.status)}>
             {statusLabel(order.status)}
           </Badge>
-          <p className="text-2xl font-bold text-foreground">
-            {formatEur(order.totalEur)}
-          </p>
+          {canViewFinance && (
+            <p className="text-2xl font-bold text-foreground">
+              {formatEur(order.totalEur)}
+            </p>
+          )}
         </div>
       </div>
 
       <StatusTracker currentStatus={order.status} />
 
-      {/* Admin: change status */}
-      <AdminStatusChanger orderId={order.id} currentStatus={order.status} />
+      {canManageProjects && (
+        <AdminStatusChanger orderId={order.id} currentStatus={order.status} />
+      )}
 
-      {/* Admin: grants */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <AdminGrantCreditsPanel
-          userId={order.user.id}
-          userName={order.user.name}
-          userEmail={order.user.email}
-          balanceUnits={order.user.aiCreditBalanceUnits}
-          expiresAt={order.user.aiCreditsExpireAt}
-        />
-        <AdminFreeRevisionPanel
+      {(canManageCredits || canManageProjects) && (
+        <div className="grid gap-4 md:grid-cols-2">
+          {canManageCredits && (
+            <AdminGrantCreditsPanel
+              userId={order.user.id}
+              userName={order.user.name}
+              userEmail={order.user.email}
+              balanceUnits={order.user.aiCreditBalanceUnits}
+              expiresAt={order.user.aiCreditsExpireAt}
+            />
+          )}
+          {canManageProjects && (
+            <AdminFreeRevisionPanel
+              orderId={order.id}
+              currentStatus={order.status}
+            />
+          )}
+        </div>
+      )}
+
+      {canManageFinance && (
+        <AdminChargesPanel
           orderId={order.id}
-          currentStatus={order.status}
+          charges={order.charges.map((c) => ({
+            id: c.id,
+            reason: c.reason,
+            totalCents: c.totalCents,
+            status: c.status,
+            paymentProvider: c.paymentProvider,
+            paidAt: c.paidAt,
+            createdAt: c.createdAt,
+            items: c.items.map((it) => ({
+              id: it.id,
+              productId: it.productId,
+              kind: it.kind,
+              label: it.label,
+              amountCents: it.amountCents,
+              quantity: it.quantity,
+            })),
+          }))}
         />
-      </div>
-
-      {/* Admin: ad-hoc charges */}
-      <AdminChargesPanel
-        orderId={order.id}
-        charges={order.charges.map((c) => ({
-          id: c.id,
-          reason: c.reason,
-          totalCents: c.totalCents,
-          status: c.status,
-          paymentProvider: c.paymentProvider,
-          paidAt: c.paidAt,
-          createdAt: c.createdAt,
-          items: c.items.map((it) => ({
-            id: it.id,
-            productId: it.productId,
-            kind: it.kind,
-            label: it.label,
-            amountCents: it.amountCents,
-            quantity: it.quantity,
-          })),
-        }))}
-      />
+      )}
 
       {/* Two-column */}
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
@@ -197,7 +212,7 @@ export default async function AdminOrderDetailPage({
             ))}
           </div>
 
-          <AdminCommentComposer orderId={order.id} />
+          {canManageProjects && <AdminCommentComposer orderId={order.id} />}
         </div>
 
         {/* Right: files + items */}
@@ -210,7 +225,7 @@ export default async function AdminOrderDetailPage({
           <AdminActivityTimeline orderId={order.id} />
 
           {/* Deliverables upload */}
-          <AdminDeliverableUpload orderId={order.id} />
+          {canManageProjects && <AdminDeliverableUpload orderId={order.id} />}
 
           {/* Existing deliverables */}
           {deliverableFiles.length > 0 && (
@@ -267,17 +282,19 @@ export default async function AdminOrderDetailPage({
                       </p>
                     )}
                   </div>
-                  <span className="ml-2 text-right font-semibold text-foreground">
-                    {item.originalTotalEur != null &&
-                      item.discountPct != null &&
-                      item.discountPct > 0 &&
-                      item.originalTotalEur > item.totalEur && (
-                        <span className="mr-1 text-[0.7rem] font-normal text-muted-foreground/60 line-through">
-                          {formatEur(item.originalTotalEur)}
-                        </span>
-                      )}
-                    {formatEur(item.totalEur)}
-                  </span>
+                  {canViewFinance && (
+                    <span className="ml-2 text-right font-semibold text-foreground">
+                      {item.originalTotalEur != null &&
+                        item.discountPct != null &&
+                        item.discountPct > 0 &&
+                        item.originalTotalEur > item.totalEur && (
+                          <span className="mr-1 text-[0.7rem] font-normal text-muted-foreground/60 line-through">
+                            {formatEur(item.originalTotalEur)}
+                          </span>
+                        )}
+                      {formatEur(item.totalEur)}
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
@@ -340,6 +357,8 @@ export default async function AdminOrderDetailPage({
             </div>
           )}
 
+          {canViewFinance && (
+            <>
           {/* Buyer identity (Phase A.1). For individual orders only the
               type label appears so the absence of company info is
               visually clear at a glance. */}
@@ -423,7 +442,9 @@ export default async function AdminOrderDetailPage({
                             (razlikuje se od unetog)
                           </p>
                         )}
-                      <AdminVerifyVatButton orderId={order.id} />
+                      {canManageFinance && (
+                        <AdminVerifyVatButton orderId={order.id} />
+                      )}
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -431,7 +452,9 @@ export default async function AdminOrderDetailPage({
                         VAT ID nije verifikovan kroz VIES. Pre izdavanja
                         izvozne fakture preporučljivo je proveriti.
                       </p>
-                      <AdminVerifyVatButton orderId={order.id} />
+                      {canManageFinance && (
+                        <AdminVerifyVatButton orderId={order.id} />
+                      )}
                     </div>
                   )}
                 </div>
@@ -487,9 +510,12 @@ export default async function AdminOrderDetailPage({
                   >
                     Preuzmi PDF
                   </a>
-                  <AdminProformaButton orderId={order.id} alreadyIssued />
+                  {canManageFinance && (
+                    <AdminProformaButton orderId={order.id} alreadyIssued />
+                  )}
                   {order.paymentMethod === "wire_transfer" &&
-                    order.paymentStatus !== "completed" && (
+                    order.paymentStatus !== "completed" &&
+                    canManageFinance && (
                       <AdminMarkPaidButton orderId={order.id} />
                     )}
                 </div>
@@ -509,7 +535,12 @@ export default async function AdminOrderDetailPage({
                   >
                     Pregled PDF-a
                   </a>
-                  <AdminProformaButton orderId={order.id} alreadyIssued={false} />
+                  {canManageFinance && (
+                    <AdminProformaButton
+                      orderId={order.id}
+                      alreadyIssued={false}
+                    />
+                  )}
                 </div>
               </>
             )}
@@ -530,7 +561,9 @@ export default async function AdminOrderDetailPage({
                 idempotentno je, neće duplirati račun.
               </p>
               <div className="mt-3">
-                <AdminRetryInvoiceButton orderId={order.id} />
+                {canManageFinance && (
+                  <AdminRetryInvoiceButton orderId={order.id} />
+                )}
               </div>
             </div>
           )}
@@ -567,6 +600,8 @@ export default async function AdminOrderDetailPage({
                 Preuzmi PDF
               </a>
             </div>
+          )}
+            </>
           )}
         </div>
       </div>

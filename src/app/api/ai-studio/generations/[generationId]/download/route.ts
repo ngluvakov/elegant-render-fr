@@ -6,6 +6,10 @@ import {
   contentDispositionFileName,
   fallbackDownloadName,
 } from "@/lib/ai-studio/naming";
+import {
+  hasAdminPermission,
+  normalizeAdminPermissions,
+} from "@/lib/admin-permissions";
 
 type DownloadRouteContext = {
   params: Promise<{ generationId: string }>;
@@ -20,17 +24,22 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { isAdmin: true },
+    select: { isAdmin: true, adminPermissions: true },
   });
   if (!user) {
     return NextResponse.json({ error: "Korisnik nije pronađen." }, { status: 404 });
   }
 
+  const canViewAllGenerations = hasAdminPermission(
+    normalizeAdminPermissions(user.adminPermissions, { isAdmin: user.isAdmin }),
+    "USAGE_VIEW",
+  );
+
   const { generationId } = await params;
   const generation = await prisma.aiGeneration.findFirst({
     where: {
       id: generationId,
-      ...(user.isAdmin ? {} : { userId }),
+      ...(canViewAllGenerations ? {} : { userId }),
     },
     select: {
       id: true,

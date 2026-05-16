@@ -5,6 +5,7 @@ import {
   getAiEditType,
   getAiEngineLabelForGeneration,
 } from "@/lib/ai-studio/catalog";
+import { requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "AI Studio generacije",
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminAiStudioPage() {
+  await requirePermission("USAGE_VIEW");
   const generations = await prisma.aiGeneration.findMany({
     include: {
       user: { select: { name: true, email: true } },

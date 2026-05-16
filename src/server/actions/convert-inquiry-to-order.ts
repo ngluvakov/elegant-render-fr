@@ -21,12 +21,13 @@ import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { recordAuditLog } from "@/lib/audit";
-import { requireAdmin } from "@/server/actions/admin";
+import { requirePermission } from "@/lib/admin-auth";
 import { generateOrderNumber } from "@/lib/order/generate-number";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { forwardInquiryFiles } from "@/server/actions/forward-inquiry-files";
 import { parseInquirySnapshotItems } from "@/server/actions/inquiry-snapshot-items";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import { recordUserActivity } from "@/lib/user-activity";
 
 export type ConvertInquiryResult =
   | { ok: true; orderId: string; orderNumber: string }
@@ -37,7 +38,7 @@ export async function convertInquiryToOrder(
 ): Promise<ConvertInquiryResult> {
   let admin;
   try {
-    admin = await requireAdmin();
+    admin = await requirePermission("FINANCE_MANAGE");
   } catch {
     return { ok: false, reason: "not_admin" };
   }
@@ -188,6 +189,7 @@ export async function convertInquiryToOrder(
 
     revalidatePath("/portal/admin/upiti");
     revalidatePath("/portal/admin");
+    await recordUserActivity(userId, { ordersCreated: 1 });
 
     return {
       ok: true,

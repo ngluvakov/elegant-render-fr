@@ -175,6 +175,9 @@ export const NAV_MAIN: NavItem[] = [
   { href: "/kontakt", label: "Kontakt" },
 ];
 
+const STRUCTURED_DATA_DESCRIPTION =
+  "Profesionalna arhitektonska vizuelizacija — 3D renderi enterijera i eksterijera, virtuelno opremanje i renovacija prostora.";
+
 export const NAV_LEGAL: NavItem[] = [
   { href: "/pravno/impressum", label: "Impressum" },
   { href: "/pravno/privatnost", label: "Politika privatnosti" },
@@ -306,16 +309,18 @@ export function buildOrganizationJsonLd() {
     legalName: IMPRINT.legalName,
     url: SITE.url,
     logo: `${SITE.url}/branding/elegant-render-logo-with-padding.png`,
-    image: `${SITE.url}/artwork/elegant-render-hero-interior.webp`,
-    description: SITE.description,
+    image: `${SITE.url}/og-image.jpg`,
+    description: STRUCTURED_DATA_DESCRIPTION,
     email: SITE.email,
     taxID: IMPRINT.taxId,
+    vatID: IMPRINT.taxId,
     foundingDate: IMPRINT.foundedAt,
     address: {
       "@type": "PostalAddress",
       streetAddress: IMPRINT.street,
       postalCode: IMPRINT.postalCode,
       addressLocality: IMPRINT.city,
+      addressRegion: "RS",
       addressCountry: "RS",
     },
     contactPoint: [
@@ -327,6 +332,20 @@ export function buildOrganizationJsonLd() {
       },
     ],
     sameAs: [SITE.instagram],
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+        ],
+        opens: "09:00",
+        closes: "17:00",
+      },
+    ],
     areaServed: ["RS", "EU", "Worldwide"],
     currenciesAccepted: "EUR, RSD",
     priceRange: "€€",

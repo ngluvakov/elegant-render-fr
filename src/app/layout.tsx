@@ -7,9 +7,8 @@ import { cn } from "@/lib/utils";
 import { ConsentBanner } from "@/components/site/consent-banner";
 import { GoogleAnalyticsPostLaunch } from "@/components/analytics/google-analytics-post-launch";
 import { GoogleTagManagerPostLaunch } from "@/components/analytics/google-tag-manager-post-launch";
-import { JsonLd } from "@/components/seo/json-ld";
-import { SITE, buildOrganizationJsonLd } from "@/lib/content/site";
-import { INDEXABLE_ROBOTS, SEO } from "@/lib/seo";
+import { SITE } from "@/lib/content/site";
+import { absoluteUrl, INDEXABLE_ROBOTS, SEO } from "@/lib/seo";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-heading",
@@ -29,22 +28,22 @@ const googleSiteVerification =
 
 export const metadata: Metadata = {
   title: {
-    default: `${SITE.name} — Arhitektonska vizuelizacija`,
+    default: SEO.defaultTitle,
     template: `%s · ${SITE.name}`,
   },
-  description: SITE.description,
+  description: SEO.defaultDescription,
   metadataBase: new URL(SITE.url),
   robots: INDEXABLE_ROBOTS,
   openGraph: {
-    title: `${SITE.name} — ${SITE.tagline}`,
-    description: SITE.description,
+    title: SEO.defaultTitle,
+    description: SEO.defaultDescription,
     url: SITE.url,
     siteName: SITE.name,
     locale: SEO.locale,
     type: "website",
     images: [
       {
-        url: "/artwork/elegant-render-hero-interior.webp",
+        url: absoluteUrl(SEO.defaultImage),
         width: 1200,
         height: 630,
         alt: `${SITE.name} arhitektonska vizuelizacija`,
@@ -53,9 +52,12 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE.name} — ${SITE.tagline}`,
-    description: SITE.description,
-    images: ["/artwork/elegant-render-hero-interior.webp"],
+    title: SEO.defaultTitle,
+    description: SEO.twitterDescription,
+    images: [absoluteUrl(SEO.defaultImage)],
+  },
+  other: {
+    "twitter:url": SITE.url,
   },
   verification: googleSiteVerification
     ? {
@@ -75,7 +77,6 @@ export default function RootLayout({
       className={cn("h-full antialiased", cormorant.variable, manrope.variable)}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
-        <JsonLd data={buildOrganizationJsonLd()} />
         {children}
         <ConsentBanner />
         <Analytics />

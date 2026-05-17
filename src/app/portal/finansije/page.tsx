@@ -18,6 +18,8 @@ import { FinanceInvoicesCell } from "@/components/portal/finance-invoices-cell";
 
 export const metadata: Metadata = {
   title: "Finansije",
+  description:
+    "Pregled plaćanja, računa, refundacija i finansijskog statusa za vaše projekte.",
   robots: { index: false, follow: false },
 };
 

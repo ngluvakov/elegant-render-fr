@@ -4,6 +4,8 @@ import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export const metadata: Metadata = {
   title: "AI krediti",
+  description:
+    "Kupovina AI kredita za obradu fotografija i praćenje dostupnog stanja.",
   robots: { index: false, follow: false },
 };
 

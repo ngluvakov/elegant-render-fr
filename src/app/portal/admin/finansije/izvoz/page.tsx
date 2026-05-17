@@ -16,6 +16,8 @@ import { requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Izvoz računa — Admin",
+  description:
+    "Admin izvoz računa i finansijskih podataka za izabrani period.",
   robots: { index: false, follow: false },
 };
 

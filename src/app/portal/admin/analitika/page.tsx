@@ -15,6 +15,8 @@ import { requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Analitika — Admin",
+  description:
+    "Admin hub za Google, Vercel, PostHog, Sentry i SEO dashboard linkove.",
   robots: { index: false, follow: false },
 };
 

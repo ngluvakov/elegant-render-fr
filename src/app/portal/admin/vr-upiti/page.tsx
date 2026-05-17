@@ -16,6 +16,8 @@ import { adminHas, requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "VR upiti — Admin",
+  description:
+    "Admin pregled VR konsultacija, statusa zahteva i osnovnih podataka klijenta.",
   robots: { index: false, follow: false },
 };
 

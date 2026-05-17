@@ -3,14 +3,24 @@ import type { ConfiguratorCategory } from "@/lib/catalog/configurator";
 import type { Service } from "@/lib/catalog/services";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
 import { SERVICES } from "@/lib/catalog/services";
-import { FAQ_ITEMS, SITE } from "@/lib/content/site";
+import { FAQ_ITEMS, SITE, buildOrganizationJsonLd } from "@/lib/content/site";
 
-const DEFAULT_OG_IMAGE = "/artwork/elegant-render-hero-interior.webp";
+const DEFAULT_OG_IMAGE = "/og-image.jpg";
+const DEFAULT_META_TITLE = `${SITE.name} — Arhitektonska vizuelizacija`;
+const DEFAULT_META_DESCRIPTION =
+  "Profesionalni 3D renderi enterijera i eksterijera, virtuelno opremanje i renovacija prostora. Brzo, kvalitetno i po pristupačnoj ceni.";
+const DEFAULT_TWITTER_DESCRIPTION =
+  "Profesionalni 3D renderi enterijera i eksterijera, virtuelno opremanje i renovacija prostora.";
 const OG_IMAGE_SIZE = { width: 1200, height: 630 };
+const SOCIAL_TITLE_MAX_LENGTH = 60;
+const SOCIAL_DESCRIPTION_MAX_LENGTH = 155;
 
 export const SEO = {
   htmlLang: "sr-Latn",
-  locale: "sr_Latn_RS",
+  locale: "sr_RS",
+  defaultTitle: DEFAULT_META_TITLE,
+  defaultDescription: DEFAULT_META_DESCRIPTION,
+  twitterDescription: DEFAULT_TWITTER_DESCRIPTION,
   defaultImage: DEFAULT_OG_IMAGE,
   organizationId: `${SITE.url}/#organization`,
   websiteId: `${SITE.url}/#website`,
@@ -43,6 +53,7 @@ type PublicMetadataOptions = {
   path?: string;
   image?: string;
   imageAlt?: string;
+  twitterDescription?: string;
   noIndex?: boolean;
 };
 
@@ -52,27 +63,51 @@ export function absoluteUrl(path = "/"): string {
   return `${SITE.url}${normalized === "/" ? "" : normalized}`;
 }
 
+function trimForMeta(value: string, maxLength: number): string {
+  const normalized = value.replace(/\s+/g, " ").trim();
+  if (normalized.length <= maxLength) return normalized;
+  const truncated = normalized.slice(0, maxLength - 1);
+  const lastSpace = truncated.lastIndexOf(" ");
+  const safeCut = lastSpace > maxLength * 0.6 ? truncated.slice(0, lastSpace) : truncated;
+  return `${safeCut.trim()}…`;
+}
+
+function formatSocialTitle(title: string, path: string): string {
+  if (path === "/") return DEFAULT_META_TITLE;
+  return trimForMeta(`${title} — ${SITE.name}`, SOCIAL_TITLE_MAX_LENGTH);
+}
+
 export function createPublicMetadata({
   title,
   description,
   path = "/",
   image = DEFAULT_OG_IMAGE,
   imageAlt = `${SITE.name} arhitektonska vizuelizacija`,
+  twitterDescription,
   noIndex = false,
 }: PublicMetadataOptions): Metadata {
   const canonical = absoluteUrl(path);
   const imageUrl = absoluteUrl(image);
+  const socialTitle = formatSocialTitle(title, path);
+  const socialDescription = trimForMeta(
+    description,
+    SOCIAL_DESCRIPTION_MAX_LENGTH,
+  );
+  const socialTwitterDescription = trimForMeta(
+    twitterDescription ?? description,
+    SOCIAL_DESCRIPTION_MAX_LENGTH,
+  );
 
   return {
-    title,
+    title: path === "/" ? { absolute: DEFAULT_META_TITLE } : title,
     description,
     alternates: {
       canonical,
     },
     robots: noIndex ? NO_INDEX_ROBOTS : INDEXABLE_ROBOTS,
     openGraph: {
-      title: `${title} — ${SITE.name}`,
-      description,
+      title: socialTitle,
+      description: socialDescription,
       url: canonical,
       siteName: SITE.name,
       locale: SEO.locale,
@@ -87,9 +122,12 @@ export function createPublicMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} — ${SITE.name}`,
-      description,
+      title: socialTitle,
+      description: socialTwitterDescription,
       images: [imageUrl],
+    },
+    other: {
+      "twitter:url": canonical,
     },
   };
 }
@@ -101,7 +139,7 @@ export function buildWebSiteJsonLd() {
     "@id": SEO.websiteId,
     url: SITE.url,
     name: SITE.name,
-    description: SITE.description,
+    description: SEO.defaultDescription,
     inLanguage: SEO.htmlLang,
     publisher: {
       "@id": SEO.organizationId,
@@ -179,9 +217,25 @@ export function buildServiceJsonLd(service: Service) {
     serviceType: service.name,
     category: service.category,
     provider: {
+      "@type": "LocalBusiness",
       "@id": SEO.organizationId,
+      name: SITE.name,
+      url: SITE.url,
     },
-    areaServed: ["RS", "EU", "Worldwide"],
+    areaServed: [
+      {
+        "@type": "Country",
+        name: "Serbia",
+      },
+      {
+        "@type": "AdministrativeArea",
+        name: "Europe",
+      },
+      {
+        "@type": "Place",
+        name: "Worldwide",
+      },
+    ],
     url: serviceUrl,
     image: absoluteUrl(service.asset ?? DEFAULT_OG_IMAGE),
     offers: {
@@ -269,11 +323,12 @@ export function buildOfferCatalogJsonLd(
 
 export function buildHomeJsonLd() {
   return [
+    buildOrganizationJsonLd(),
     buildWebSiteJsonLd(),
     buildWebPageJsonLd({
       path: "/",
       name: `${SITE.name} - arhitektonska vizuelizacija`,
-      description: SITE.description,
+      description: SEO.defaultDescription,
     }),
     buildServicesItemListJsonLd(SERVICES.filter((service) => service.featured)),
     buildFaqJsonLd(FAQ_ITEMS),

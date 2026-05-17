@@ -6,6 +6,8 @@ import { requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "AI asistent — zahtevi klijenata",
+  description:
+    "Admin pregled zahteva, primedbi i predloga koje korisnici šalju kroz AI asistenta.",
   robots: { index: false, follow: false },
 };
 

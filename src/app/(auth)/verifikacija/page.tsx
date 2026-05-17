@@ -6,6 +6,7 @@ import { NO_INDEX_ROBOTS } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Verifikacija emaila",
+  description: "Potvrdite email adresu i aktivirajte Elegant Render nalog.",
   robots: NO_INDEX_ROBOTS,
 };
 

@@ -10,6 +10,8 @@ import type { BuyerInfoState } from "./checkout-context";
 
 export const metadata: Metadata = {
   title: "Porudžbina",
+  description:
+    "Završite porudžbinu, proverite podatke za kupca i pošaljite zahtev timu Elegant Render.",
   robots: { index: false, follow: false },
 };
 

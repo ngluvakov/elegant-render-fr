@@ -23,6 +23,8 @@ import {
 
 export const metadata: Metadata = {
   title: "Admin — Korisnik",
+  description:
+    "Admin detalji korisnika, porudžbine, krediti, transakcije i podešavanja naloga.",
   robots: { index: false, follow: false },
 };
 

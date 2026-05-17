@@ -12,6 +12,8 @@ import { AutoSubmitMagicLink } from "./auto-submit";
 
 export const metadata: Metadata = {
   title: "Pristup portalu",
+  description:
+    "Siguran magic link ulaz u Elegant Render portal iz email poruke.",
   robots: NO_INDEX_ROBOTS,
 };
 

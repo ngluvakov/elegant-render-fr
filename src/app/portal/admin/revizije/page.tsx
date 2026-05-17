@@ -15,6 +15,8 @@ import { normalizeAdminPermissions } from "@/lib/admin-permissions";
 
 export const metadata: Metadata = {
   title: "Revizije — Admin",
+  description:
+    "Admin audit trail za izmene, akcije i trag aktivnosti na platformi.",
   robots: { index: false, follow: false },
 };
 

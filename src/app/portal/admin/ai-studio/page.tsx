@@ -9,6 +9,8 @@ import { requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "AI Studio generacije",
+  description:
+    "Admin pregled AI Studio generacija, korisnika, statusa i potrošnje kredita.",
   robots: { index: false, follow: false },
 };
 

@@ -3,7 +3,7 @@ import { ExternalLink, Mail } from "lucide-react";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { ProjectInquiryForm } from "@/components/inquiry/project-inquiry-form";
 import { JsonLd } from "@/components/seo/json-ld";
-import { SITE } from "@/lib/content/site";
+import { SITE, buildOrganizationJsonLd } from "@/lib/content/site";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
@@ -51,6 +51,7 @@ export default async function KontaktPage() {
               "@id": `${SITE.url}/#organization`,
             },
           },
+          buildOrganizationJsonLd(),
         ]}
       />
       <SectionKicker>Kontakt</SectionKicker>

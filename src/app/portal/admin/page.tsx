@@ -16,6 +16,8 @@ import { adminHas, requireAnyAdminPermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Admin — Upravljanje platformom",
+  description:
+    "Operativni admin pregled porudžbina, korisnika, statusa i zadataka za upravljanje platformom.",
   robots: { index: false, follow: false },
 };
 

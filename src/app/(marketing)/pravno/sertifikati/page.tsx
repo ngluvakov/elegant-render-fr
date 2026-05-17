@@ -9,8 +9,6 @@ export const metadata: Metadata = createPublicMetadata({
   title: "Sertifikati i standardi",
   description: `${SITE.name} posluje po sertifikovanim ISO standardima 9001:2015, 27001 i 50001 — sertifikovano od strane ${CERTIFIER.name}.`,
   path: "/pravno/sertifikati",
-  image: CERTIFIER.badgeAsset.src,
-  imageAlt: CERTIFIER.badgeAsset.alt,
 });
 
 export default function SertifikatiPage() {

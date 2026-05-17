@@ -8,6 +8,8 @@ import { PrivacyActions } from "./privacy-actions";
 
 export const metadata: Metadata = {
   title: "Profil",
+  description:
+    "Uredite profil, nalog, način prijave i podatke koje koristite na Elegant Render portalu.",
   robots: { index: false, follow: false },
 };
 

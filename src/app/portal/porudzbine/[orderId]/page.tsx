@@ -23,6 +23,8 @@ import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export const metadata: Metadata = {
   title: "Detalji porudžbine",
+  description:
+    "Detalji izabrane porudžbine, status projekta, stavke, poruke i isporuke.",
   robots: { index: false, follow: false },
 };
 

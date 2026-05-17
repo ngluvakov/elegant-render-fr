@@ -4,6 +4,8 @@ import { SectionKicker } from "@/components/brand/section-kicker";
 
 export const metadata: Metadata = {
   title: "404 — Stranica nije pronađena",
+  description:
+    "Stranica nije pronađena. Vratite se na početnu stranicu ili otvorite pregled Elegant Render usluga.",
   robots: { index: false, follow: false },
 };
 

@@ -20,6 +20,8 @@ import { statusLabel } from "@/components/portal/status-utils";
 
 export const metadata: Metadata = {
   title: "Portal",
+  description:
+    "Pregled aktivnih projekata, porudžbina, aktivnosti i isporuka u korisničkom portalu.",
   robots: { index: false, follow: false },
 };
 

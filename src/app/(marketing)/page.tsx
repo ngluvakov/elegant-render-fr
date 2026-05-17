@@ -5,12 +5,12 @@ import { ModelFirst } from "@/components/marketing/model-first";
 import { NextIteration } from "@/components/marketing/next-iteration";
 import { FaqCards } from "@/components/marketing/faq-cards";
 import { JsonLd } from "@/components/seo/json-ld";
-import { SITE } from "@/lib/content/site";
-import { buildHomeJsonLd, createPublicMetadata } from "@/lib/seo";
+import { buildHomeJsonLd, createPublicMetadata, SEO } from "@/lib/seo";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Arhitektonska vizuelizacija",
-  description: SITE.description,
+  description: SEO.defaultDescription,
+  twitterDescription: SEO.twitterDescription,
   path: "/",
 });
 

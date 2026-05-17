@@ -13,6 +13,8 @@ import { NewDraftButton } from "@/components/portal/new-draft-button";
 
 export const metadata: Metadata = {
   title: "Porudžbine",
+  description:
+    "Lista vaših Elegant Render porudžbina sa statusima, pretragom i osnovnim detaljima.",
   robots: { index: false, follow: false },
 };
 

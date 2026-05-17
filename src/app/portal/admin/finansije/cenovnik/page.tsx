@@ -10,6 +10,8 @@ import {
 
 export const metadata: Metadata = {
   title: "Admin — Cenovnik i finansije",
+  description:
+    "Admin upravljanje cenovnikom, finansijskim pravilima i publikacijom cena.",
   robots: { index: false, follow: false },
 };
 

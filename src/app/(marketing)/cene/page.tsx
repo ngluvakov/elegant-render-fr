@@ -22,7 +22,6 @@ export const metadata: Metadata = createPublicMetadata({
   description:
     "Transparentan cenovnik usluga arhitektonske vizuelizacije. Prva isporuka iz modela nosi pun iznos, svaki sledeći prikaz iz istog modela je znatno povoljniji.",
   path: "/cene",
-  image: "/artwork/cene-card-enterijer.webp",
 });
 
 export const dynamic = "force-dynamic";

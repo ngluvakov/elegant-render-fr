@@ -41,8 +41,6 @@ export async function generateMetadata({
     title: service.name,
     description: service.description,
     path: `/usluge/${slug}`,
-    image: service.asset,
-    imageAlt: service.name,
   });
 }
 

@@ -22,6 +22,8 @@ import { adminHas, requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Admin — Detalji porudžbine",
+  description:
+    "Admin detalji porudžbine, stavke, status, plaćanja i operativne akcije.",
   robots: { index: false, follow: false },
 };
 

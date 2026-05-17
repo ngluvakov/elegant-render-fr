@@ -22,6 +22,8 @@ import { requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Outbox — Admin",
+  description:
+    "Admin outbox za email poruke, statuse slanja i ponovna slanja sistemskih obaveštenja.",
   robots: { index: false, follow: false },
 };
 

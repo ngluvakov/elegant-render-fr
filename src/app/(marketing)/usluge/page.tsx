@@ -16,7 +16,6 @@ export const metadata: Metadata = createPublicMetadata({
   description:
     "Kompletna ponuda arhitektonske vizuelizacije — renderi, animacije, 360 ture, virtuelno opremanje i adaptacije prostora.",
   path: "/usluge",
-  image: "/artwork/elegant-render-services-triptych-1.webp",
 });
 
 export default function UslugePage() {

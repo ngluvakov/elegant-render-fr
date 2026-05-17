@@ -18,6 +18,8 @@ import { adminHas, requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Upiti — Admin",
+  description:
+    "Admin pregled projektnih upita, statusa obrade i prioriteta za follow-up.",
   robots: { index: false, follow: false },
 };
 

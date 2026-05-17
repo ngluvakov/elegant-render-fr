@@ -1,36 +1,65 @@
 /**
- * SiteFooter — Dark charcoal marketing site footer with a 4-column layout:
- * brand info, services links, company links, and a "next step" CTA card.
+ * SiteFooter — Dark coal marketing site footer with an editorial
+ * library layout: brand band on top, then four columns (Usluge,
+ * Kompanija, Pravno, Kontakt), then a certificates strip, the legal
+ * imprint snippet, and a minimal bottom bar.
+ *
+ * Footers are not conversion surfaces — the "next step" CTA lives in a
+ * separate <PreFooterCta /> section mounted on secondary marketing
+ * pages.
  *
  * Used on: marketing layout (all public pages).
  */
 import Image from "next/image";
 import Link from "next/link";
+import { ExternalLink, Mail, MapPin } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { ConsentSettingsLink } from "@/components/site/consent-settings-link";
+import { SITE_FEATURES } from "@/lib/site-features";
 import {
   CERTIFIER,
   IMPRINT,
   ISO_CERTIFICATIONS,
+  type NavItem,
   NAV_LEGAL,
-  NAV_MAIN,
   SITE,
   formatAddress,
 } from "@/lib/content/site";
 
-const FOOTER_SERVICES = [
+/**
+ * Curated anchor services — 5 strategic picks (2 core renders +
+ * transformation + premium animation + investor signal) plus a hub
+ * link to /usluge. The hub page lists every service; this footer
+ * column signals breadth and primary offerings.
+ */
+const FOOTER_SERVICES: NavItem[] = [
   { href: "/usluge/unutrasnji-renderi", label: "Unutrašnji renderi" },
   { href: "/usluge/spoljasnji-renderi", label: "Spoljašnji renderi" },
   { href: "/usluge/virtuelno-opremanje", label: "Virtuelno opremanje" },
-  { href: "/usluge/virtuelna-renovacija", label: "Virtuelna renovacija" },
-  { href: "/usluge/osnove", label: "2D i 3D osnove prostora" },
   { href: "/usluge/360-ture-i-animacije", label: "360 ture i animacije" },
+  { href: "/usluge/3d-situacioni", label: "3D situacioni planovi" },
 ];
+
+const KOMPANIJA_LINKS: NavItem[] = [
+  { href: "/o-nama", label: "O nama" },
+  { href: "/cene", label: "Cene" },
+  { href: "/ai-studio", label: "AI Studio" },
+  ...(SITE_FEATURES.portfolio
+    ? [{ href: "/portfolio", label: "Portfolio" }]
+    : []),
+  { href: "/cesto-postavljana-pitanja", label: "Često postavljana pitanja" },
+];
+
+const linkBase =
+  "text-sm text-white/75 transition hover:text-[var(--color-clay-light)]";
+
+const labelBase =
+  "text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/45";
 
 export function SiteFooter() {
   return (
-    <footer className="relative mt-32 overflow-hidden bg-[#171311] text-white">
+    <footer className="relative mt-24 overflow-hidden bg-[var(--color-coal)] text-white">
       <div
         aria-hidden
         className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(184,131,99,0.18),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(113,143,120,0.12),transparent_28%)]"
@@ -41,107 +70,144 @@ export function SiteFooter() {
       />
 
       <div className="relative mx-auto w-full max-w-[min(96vw,1720px)] px-6 py-14 md:py-20">
-        <div className="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[1.25fr_0.75fr_0.75fr_0.95fr]">
-          <div className="max-w-md">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-4 transition hover:opacity-90"
-            >
-              <div className="overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-2 shadow-[0_18px_45px_rgba(0,0,0,0.22)]">
-                <BrandLogo size="md" surface="dark" asChild />
-              </div>
-              <div>
-                <p className="text-[0.94rem] font-semibold uppercase tracking-[0.36em] text-white">
-                  Elegant Render
-                </p>
-                <p className="mt-1 text-[0.7rem] uppercase tracking-[0.24em] text-white/50">
-                  Brza kupovina arhitekturne vizuelizacije
-                </p>
-              </div>
-            </Link>
+        {/* Brand band — logo + name + single-line tagline */}
+        <div className="flex flex-col gap-6 border-b border-white/10 pb-10 md:flex-row md:items-center md:justify-between">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-4 transition hover:opacity-90"
+          >
+            <div className="overflow-hidden rounded-2xl border border-white/15 bg-white/5 p-2 shadow-[0_18px_45px_rgba(0,0,0,0.22)]">
+              <BrandLogo size="md" surface="dark" asChild />
+            </div>
+            <div>
+              <p className="text-[0.94rem] font-semibold uppercase tracking-[0.36em] text-white">
+                {SITE.name}
+              </p>
+              <p className="mt-1 text-[0.7rem] uppercase tracking-[0.24em] text-white/55">
+                {SITE.tagline}
+              </p>
+            </div>
+          </Link>
+          <p className="max-w-xs text-xs leading-6 text-white/45 md:text-right">
+            Diskretno podržano iskustvom kompanije {SITE.parentCompany}.
+          </p>
+        </div>
 
-            <p className="mt-6 text-sm leading-7 text-white/70">
-              Elegant Render je topao i jasan servis za arhitektonsku
-              vizuelizaciju, namenjen privatnim klijentima, agentima,
-              arhitektama, dizajnerima i manjim investitorima kojima su važni
-              transparentna cena, jednostavan proces i vizuelno poverenje.
-            </p>
-            <p className="mt-4 text-xs leading-6 text-white/45">
-              Diskretno podržano iskustvom kompanije {SITE.parentCompany}.
-            </p>
-          </div>
-
-          <div>
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/45">
+        {/* Four nav columns */}
+        <div className="grid gap-10 border-b border-white/10 py-10 lg:grid-cols-4">
+          {/* Usluge */}
+          <nav aria-labelledby="footer-usluge">
+            <p id="footer-usluge" className={labelBase}>
               Usluge
             </p>
-            <div className="mt-5 grid gap-3 text-sm text-white/75">
+            <ul className="mt-5 grid gap-3">
               {FOOTER_SERVICES.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="transition hover:text-[#ddb195]"
-                >
-                  {item.label}
-                </Link>
+                <li key={item.href}>
+                  <Link href={item.href} className={linkBase}>
+                    {item.label}
+                  </Link>
+                </li>
               ))}
-            </div>
-          </div>
+              <li className="pt-1">
+                <Link
+                  href="/usluge"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-clay-light)] transition hover:text-white"
+                >
+                  Sve usluge <span aria-hidden>→</span>
+                </Link>
+              </li>
+            </ul>
+          </nav>
 
-          <div>
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/45">
+          {/* Kompanija */}
+          <nav aria-labelledby="footer-kompanija">
+            <p id="footer-kompanija" className={labelBase}>
               Kompanija
             </p>
-            <div className="mt-5 grid gap-3 text-sm text-white/75">
-              {NAV_MAIN.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="transition hover:text-[#ddb195]"
-                >
-                  {item.label}
-                </Link>
+            <ul className="mt-5 grid gap-3">
+              {KOMPANIJA_LINKS.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className={linkBase}>
+                    {item.label}
+                  </Link>
+                </li>
               ))}
-              {NAV_LEGAL.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="transition hover:text-[#ddb195]"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
+            </ul>
+          </nav>
 
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_24px_60px_rgba(0,0,0,0.16)] backdrop-blur-sm">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-white/45">
-              Sledeći korak
+          {/* Pravno */}
+          <nav aria-labelledby="footer-pravno">
+            <p id="footer-pravno" className={labelBase}>
+              Pravno
             </p>
-            <h2 className="mt-4 text-2xl leading-tight text-[#f7efe7]">
-              Počni od usluge i odmah dobij jasan pravac za cenu i narudžbinu.
-            </h2>
-            <p className="mt-4 text-sm leading-7 text-white/65">
-              Ako želiš da kreneš odmah, vrati se na početnu stranicu i izaberi
-              tip vizuelizacije koji ti treba.
-            </p>
-            <Link
-              href="/#naruci"
-              className="mt-6 inline-flex items-center rounded-full bg-[#b88363] px-5 py-3 text-sm font-medium text-white shadow-[0_18px_40px_rgba(184,131,99,0.28)] transition hover:bg-[#9f6a4b]"
-            >
-              Otvori kalkulaciju i narudžbinu
-            </Link>
+            <ul className="mt-5 grid gap-3">
+              {NAV_LEGAL.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className={linkBase}>
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Kontakt */}
+          <div>
+            <p className={labelBase}>Kontakt</p>
+            <ul className="mt-5 grid gap-4 text-sm text-white/75">
+              <li>
+                <a
+                  href={`mailto:${SITE.email}`}
+                  className="group inline-flex items-start gap-2.5 transition hover:text-[var(--color-clay-light)]"
+                >
+                  <Mail className="mt-0.5 size-4 shrink-0 text-white/45 transition group-hover:text-[var(--color-clay-light)]" />
+                  <span className="break-all">{SITE.email}</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={SITE.instagram}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="group inline-flex items-start gap-2.5 transition hover:text-[var(--color-clay-light)]"
+                >
+                  <ExternalLink className="mt-0.5 size-4 shrink-0 text-white/45 transition group-hover:text-[var(--color-clay-light)]" />
+                  <span>Instagram @elegantrender</span>
+                </a>
+              </li>
+              <li>
+                <div className="inline-flex items-start gap-2.5 text-white/65">
+                  <MapPin className="mt-0.5 size-4 shrink-0 text-white/45" />
+                  <span className="leading-6">
+                    {IMPRINT.street}, {IMPRINT.postalCode} {IMPRINT.city}
+                    <br />
+                    {IMPRINT.country}
+                  </span>
+                </div>
+              </li>
+              <li className="pt-1">
+                <QuickInquiryLink
+                  inquiry={{
+                    source: "site-footer",
+                    sourceLabel: "Footer brzi upit",
+                  }}
+                  className="inline-flex items-center rounded-full border border-white/20 px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-white/85 transition hover:border-[var(--color-clay-light)] hover:text-[var(--color-clay-light)]"
+                >
+                  Brzi upit
+                </QuickInquiryLink>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <div className="border-b border-white/10 py-5">
+        {/* Certificates strip */}
+        <div className="border-b border-white/10 py-6">
           <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-white/45">
             Sertifikati i standardi
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-white/55">
-            {/* Badge has white surround on its own — wrap in a tight white
-                card so the silver bevel and TÜV blue read cleanly on the
-                dark footer surface. */}
+            {/* Badge has silver bevel + TÜV blue — wrap in a tight white
+                card so it reads cleanly on the dark coal surface. */}
             <Link
               href="/pravno/sertifikati"
               aria-label={`${CERTIFIER.name} sertifikat — sertifikati i standardi`}
@@ -163,16 +229,16 @@ export function SiteFooter() {
             ))}
             <Link
               href="/pravno/sertifikati"
-              className="ml-auto text-white/65 transition hover:text-[#ddb195]"
+              className="ml-auto text-white/65 transition hover:text-[var(--color-clay-light)]"
             >
               O sertifikatima →
             </Link>
           </div>
         </div>
 
-        {/* Imprint snippet — short name + address + registry numbers
-            visible on every page, per Zakon o elektronskoj trgovini čl. 7.
-            The /pravno/impressum page surfaces the full registered name. */}
+        {/* Imprint — Zakon o elektronskoj trgovini čl. 7 requires the
+            registered name, registry numbers and address on every page;
+            /pravno/impressum surfaces the full legal identity. */}
         <div className="border-b border-white/10 py-5 text-xs leading-relaxed text-white/55">
           <p>
             <strong className="text-white/75">{IMPRINT.shortName}</strong>
@@ -183,32 +249,14 @@ export function SiteFooter() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-4 pt-6 text-xs text-white/45 md:flex-row md:items-center md:justify-between">
+        {/* Bottom bar — copyright + consent settings only. Nav and legal
+            links are already covered by the columns above. */}
+        <div className="flex flex-col gap-3 pt-6 text-xs text-white/45 md:flex-row md:items-center md:justify-between">
           <p>
             © {new Date().getFullYear()} {SITE.parentCompany}. Sva prava
             zadržana. · {SITE.name} je deo {SITE.parentCompany}.
           </p>
-          <div className="flex flex-wrap gap-x-5 gap-y-2">
-            {NAV_LEGAL.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="transition hover:text-[#ddb195]"
-              >
-                {item.label}
-              </Link>
-            ))}
-            <ConsentSettingsLink className="transition hover:text-[#ddb195]" />
-            <Link href="/kontakt" className="transition hover:text-[#ddb195]">
-              Kontakt
-            </Link>
-            <QuickInquiryLink
-              className="transition hover:text-[#ddb195]"
-              inquiry={{ source: "site-footer", sourceLabel: "Footer quick inquiry" }}
-            >
-              Brzi upit
-            </QuickInquiryLink>
-          </div>
+          <ConsentSettingsLink className="self-start transition hover:text-[var(--color-clay-light)] md:self-auto" />
         </div>
       </div>
     </footer>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { FinalCta } from "@/components/marketing/final-cta";
+import { PreFooterCta } from "@/components/site/pre-footer-cta";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { JsonLd } from "@/components/seo/json-ld";
 import {
@@ -123,7 +123,7 @@ export default function ONamaPage() {
           </div>
         </div>
       </article>
-      <FinalCta />
+      <PreFooterCta />
     </>
   );
 }

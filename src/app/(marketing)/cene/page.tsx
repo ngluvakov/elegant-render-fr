@@ -7,6 +7,7 @@ import { CategoryPreview } from "@/components/configurator/category-preview";
 import { ConfiguratorBody } from "@/components/configurator/pricing-configurator";
 import { QuoteProvider } from "@/components/configurator/quote-context";
 import { StandaloneAiCredits } from "@/components/configurator/standalone-ai-credits";
+import { PreFooterCta } from "@/components/site/pre-footer-cta";
 import {
   buildBreadcrumbJsonLd,
   buildOfferCatalogJsonLd,
@@ -127,6 +128,14 @@ export default async function CenePage() {
           </div>
         </div>
       </section>
+
+      <PreFooterCta
+        heading="Treba dogovor pre nego što kreneš?"
+        body="Ako želiš jasan razgovor o većem projektu ili specifičnom obimu, pošalji kratak opis i vraćamo se obično istog radnog dana."
+        ctaLabel="Otvori formu za projekat"
+        ctaHref="/kontakt"
+        inquirySource={{ source: "cene-pre-footer", sourceLabel: "Cene PreFooter brzi upit" }}
+      />
     </>
   );
 }

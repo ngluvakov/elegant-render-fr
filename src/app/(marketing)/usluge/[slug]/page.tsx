@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { JsonLd } from "@/components/seo/json-ld";
+import { PreFooterCta } from "@/components/site/pre-footer-cta";
 import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
 import {
   CATEGORY_LABELS,
@@ -59,7 +60,8 @@ export default async function ServiceDetailPage({
   const pricingSettings = pricingCatalog.settings;
 
   return (
-    <article className="mx-auto w-full max-w-4xl px-6 pb-24 pt-20 md:pt-28">
+    <>
+      <article className="mx-auto w-full max-w-4xl px-6 pb-24 pt-20 md:pt-28">
       <JsonLd
         data={[
           buildWebPageJsonLd({
@@ -289,7 +291,12 @@ export default async function ServiceDetailPage({
           Detaljan cenovnik
         </ButtonLink>
       </div>
-    </article>
+      </article>
+      <PreFooterCta
+        heading={`Spreman za narudžbinu — ${service.name.toLowerCase()}?`}
+        body="Otvori kalkulator, podesi parametre svoje vizuelizacije i odmah vidi tačnu cenu."
+      />
+    </>
   );
 }
 

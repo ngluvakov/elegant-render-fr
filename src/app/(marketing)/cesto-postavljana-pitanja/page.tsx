@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { JsonLd } from "@/components/seo/json-ld";
+import { PreFooterCta } from "@/components/site/pre-footer-cta";
 import {
   AI_STUDIO_FAQS,
   FAQ_ITEMS,
@@ -98,6 +99,10 @@ export default function CestoPostavljanaPitanjaPage() {
           ))}
         </div>
       </main>
+      <PreFooterCta
+        heading="Ostalo je još pitanja — ili si spreman?"
+        body="Ako odgovor nisi pronašao, otvori kalkulator i složi varijantu sam, ili pošalji brzi upit i vraćamo se istog radnog dana."
+      />
     </>
   );
 }

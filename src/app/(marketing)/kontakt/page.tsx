@@ -3,6 +3,7 @@ import { ExternalLink, Mail } from "lucide-react";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { ProjectInquiryForm } from "@/components/inquiry/project-inquiry-form";
 import { JsonLd } from "@/components/seo/json-ld";
+import { PreFooterCta } from "@/components/site/pre-footer-cta";
 import { SITE, buildOrganizationJsonLd } from "@/lib/content/site";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -29,7 +30,8 @@ export default async function KontaktPage() {
     : null;
 
   return (
-    <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pb-24 pt-20 md:pt-28">
+    <>
+      <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pb-24 pt-20 md:pt-28">
       <JsonLd
         data={[
           buildWebPageJsonLd({
@@ -127,6 +129,11 @@ export default async function KontaktPage() {
           </div>
         </aside>
       </div>
-    </div>
+      </div>
+      <PreFooterCta
+        heading="Više voliš da odmah vidiš cenu?"
+        body="Otvori kalkulator i konfiguriši vizuelizaciju sam — cenu vidiš odmah, pre nego što pošalješ bilo kakav upit."
+      />
+    </>
   );
 }

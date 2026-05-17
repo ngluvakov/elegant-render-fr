@@ -3,18 +3,44 @@ import Image from "next/image";
 import Link from "next/link";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { SectionKicker } from "@/components/brand/section-kicker";
-import { CERTIFIER, ISO_CERTIFICATIONS, SITE } from "@/lib/content/site";
-import { createPublicMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
+import {
+  CERTIFIER,
+  ISO_CERTIFICATIONS,
+  SITE,
+  buildOrganizationJsonLd,
+} from "@/lib/content/site";
+import {
+  buildBreadcrumbJsonLd,
+  buildWebPageJsonLd,
+  createPublicMetadata,
+} from "@/lib/seo";
+
+const O_NAMA_DESCRIPTION = `${SITE.name} je B2C podbrend kompanije ${SITE.parentCompany} za arhitektonsku vizuelizaciju — sa transparentnim cenama i brzim procesom.`;
 
 export const metadata: Metadata = createPublicMetadata({
   title: "O nama",
-  description: `${SITE.name} je B2C podbrend kompanije ${SITE.parentCompany} za arhitektonsku vizuelizaciju — sa transparentnim cenama i brzim procesom.`,
+  description: O_NAMA_DESCRIPTION,
   path: "/o-nama",
 });
 
 export default function ONamaPage() {
   return (
     <>
+      <JsonLd
+        data={[
+          buildWebPageJsonLd({
+            path: "/o-nama",
+            name: `O nama — ${SITE.name}`,
+            description: O_NAMA_DESCRIPTION,
+          }),
+          buildBreadcrumbJsonLd([
+            { name: "Početna", path: "/" },
+            { name: "O nama", path: "/o-nama" },
+          ]),
+          buildOrganizationJsonLd(),
+        ]}
+      />
       <article className="mx-auto w-full max-w-3xl px-6 pb-20 pt-20 md:pt-28">
         <SectionKicker>O nama</SectionKicker>
         <h1 className="mt-4 text-5xl leading-[1.05] text-foreground md:text-6xl">

@@ -5,10 +5,17 @@ import type {
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
 import { CATEGORY_LABELS, SERVICES } from "@/lib/catalog/services";
 import { formatPublicPrice } from "@/lib/catalog/display-currency";
-import { IMPRINT, SITE, formatAddress } from "@/lib/content/site";
+import {
+  AI_STUDIO_FAQS,
+  FAQ_ITEMS,
+  IMPRINT,
+  SERVICES_PAGE_FAQS,
+  SITE,
+  formatAddress,
+} from "@/lib/content/site";
 
-function bullets(lines: string[]): string {
-  return lines.map((line) => `- ${line}`).join("\n");
+function link(title: string, url: string, note?: string): string {
+  return `- [${title}](${url})${note ? `: ${note}` : ""}`;
 }
 
 function productPrice(product: ConfiguratorProduct): string {
@@ -21,33 +28,51 @@ export function buildLlmsTxt(): string {
 > ${SITE.description}
 
 Elegant Render je srpski-first servis za arhitektonsku vizuelizaciju, virtuelno opremanje, 3D osnove, 360 ture, animacije i AI obradu fotografija nekretnina.
+Primarni jezik javnog sajta je srpski latinicom (sr-Latn), a osnovna valuta cenovnika je EUR bez PDV-a.
 
-## Najvažnije stranice
-${bullets([
-  `${SITE.url}/ - početna i brzi izbor usluge`,
-  `${SITE.url}/usluge - pregled svih usluga`,
-  `${SITE.url}/cene - transparentan konfigurator cena`,
-  `${SITE.url}/ai-studio - AI obrada fotografija nekretnina`,
-  `${SITE.url}/kontakt - kontakt forma i brzi upit`,
-  `${SITE.url}/pravno/impressum - pravni podaci pružaoca usluge`,
-])}
+## Core public pages
+${[
+  link("Početna", `${SITE.url}/`, "pozicioniranje, najvažnije usluge i brzi izbor usluge"),
+  link("Usluge", `${SITE.url}/usluge`, "pregled svih usluga arhitektonske vizuelizacije"),
+  link("Cene", `${SITE.url}/cene`, "transparentan konfigurator cena i javni cenovnik"),
+  link("AI Studio", `${SITE.url}/ai-studio`, "AI obrada fotografija nekretnina"),
+  link("O nama", `${SITE.url}/o-nama`, `${SITE.name} kao B2C podbrend kompanije ${SITE.parentCompany}, sertifikati i pristup`),
+  link("Često postavljana pitanja", `${SITE.url}/cesto-postavljana-pitanja`, "konsolidovani odgovori o procesu, rokovima i cenama"),
+  link("Kontakt", `${SITE.url}/kontakt`, "kontakt forma i brzi upit za projekat"),
+].join("\n")}
 
-## Sažetak ponude
-${bullets(
-  SERVICES.map(
-    (service) =>
-      `${service.name}: ${service.tagline} Početna cena: ${service.variants[0].priceLabel}.`,
+## Services
+${SERVICES.map((service) =>
+  link(
+    service.name,
+    `${SITE.url}/usluge/${service.slug}`,
+    `${service.tagline} Početna cena: ${service.variants[0].priceLabel}.`,
   ),
-)}
+).join("\n")}
 
-## Cene i porezi
+## Machine-readable files
+${[
+  link("Full AI-readable public profile", `${SITE.url}/llms-full.txt`, "detaljan pregled identiteta, usluga, cena i pravila za AI sisteme"),
+  link("XML sitemap", `${SITE.url}/sitemap.xml`, "kanonski spisak javnih URL-ova za crawler-e"),
+  link("Robots policy", `${SITE.url}/robots.txt`, "pravila crawlovanja javnih i privatnih putanja"),
+].join("\n")}
+
+## Pricing and tax notes
 Osnovni finansijski cenovnik je u EUR bez PDV-a. Posetioci iz Srbije na javnom sajtu vide RSD prikaz sa uračunatim PDV-om kao informativni display sloj; posetioci van Srbije vide EUR bez PDV-a. Konačna ponuda zavisi od obima i ulaznih materijala.
 
-## Kontakt
+## FAQ
+${FAQ_ITEMS.map((item) => `- **${item.question}** ${item.answer}`).join("\n")}
+
+## Contact
 Email: ${SITE.email}
 Instagram: ${SITE.instagram}
 
-Za pun mašinski čitljiv pregled koristite ${SITE.url}/llms-full.txt.
+## Optional
+${[
+  link("Impressum", `${SITE.url}/pravno/impressum`, "pravni podaci pružaoca usluge"),
+  link("Sertifikati i standardi", `${SITE.url}/pravno/sertifikati`, "javna potvrda sertifikata i standarda"),
+  link("Politika privatnosti", `${SITE.url}/pravno/privatnost`, "obrada podataka i privatnost"),
+].join("\n")}
 `;
 }
 
@@ -100,6 +125,28 @@ ${variants}`;
 ${products}`;
   }).join("\n\n");
 
+  const faqSection = [
+    {
+      heading: "Opšta pitanja",
+      items: FAQ_ITEMS,
+    },
+    {
+      heading: "Pitanja o uslugama i ceni",
+      items: SERVICES_PAGE_FAQS,
+    },
+    {
+      heading: "AI Studio",
+      items: AI_STUDIO_FAQS,
+    },
+  ]
+    .map(
+      (group) =>
+        `### ${group.heading}\n${group.items
+          .map((item) => `- **${item.question}** ${item.answer}`)
+          .join("\n")}`,
+    )
+    .join("\n\n");
+
   return `# ${SITE.name} - AI-readable public profile
 
 ## Identitet
@@ -111,6 +158,19 @@ ${products}`;
 - Email: ${SITE.email}
 - Instagram: ${SITE.instagram}
 - Website: ${SITE.url}
+- Jezik javnog sajta: srpski latinicom (sr-Latn)
+
+## Discovery files
+- Canonical llms.txt: ${SITE.url}/llms.txt
+- Full AI-readable profile: ${SITE.url}/llms-full.txt
+- XML sitemap: ${SITE.url}/sitemap.xml
+- Robots policy: ${SITE.url}/robots.txt
+
+## Search and AI interpretation
+- Public marketing pages are intended to be crawlable and indexable.
+- Private portal, admin, API, authentication and checkout paths are not public source material.
+- Structured data on public pages describes Organization, WebSite, WebPage, BreadcrumbList, Service, OfferCatalog and FAQPage entities.
+- Canonical URLs use the ${SITE.url} origin.
 
 ## Pozicioniranje
 ${SITE.name} pomaže vlasnicima nekretnina, agentima, arhitektama, dizajnerima i manjim investitorima da brzo dobiju jasan vizuelni prikaz prostora. Fokus je na transparentnim javnim cenama, model-first obračunu i brzom kontakt toku za klijente koji ne žele self-serve konfigurator.
@@ -122,6 +182,9 @@ ${serviceSections}
 Ovo je mašinski čitljiv pregled objavljenog cenovnika. EUR bez PDV-a je osnovica. RSD sa PDV-om za Srbiju je javni prikaz izveden iz iste EUR osnovice.
 
 ${pricingSections}
+
+## Često postavljana pitanja
+${faqSection}
 
 ## Kako korisnik šalje upit
 - Self-serve tok: stranica /cene i konfigurator.

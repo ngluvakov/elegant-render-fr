@@ -15,8 +15,23 @@ import { SITE_FEATURES } from "@/lib/site-features";
 // if NEXT_PUBLIC_SITE_URL isn't set. Setting the env var explicitly
 // is useful for non-prod environments (preview branches that should
 // look at a different host) without touching code.
-const RESOLVED_SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://elegantrender.rs";
+const DEFAULT_SITE_URL = "https://elegantrender.rs";
+
+function normalizeSiteUrl(value: string): string {
+  try {
+    const url = new URL(value);
+    url.hash = "";
+    url.search = "";
+    url.pathname = url.pathname.replace(/\/+$/, "");
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return DEFAULT_SITE_URL;
+  }
+}
+
+const RESOLVED_SITE_URL = normalizeSiteUrl(
+  process.env.NEXT_PUBLIC_SITE_URL ?? DEFAULT_SITE_URL,
+);
 
 export const SITE = {
   name: "Elegant Render",
@@ -176,6 +191,7 @@ export const NAV_MAIN: NavItem[] = [
     ? [{ href: "/portfolio", label: "Portfolio" }]
     : []),
   { href: "/o-nama", label: "O nama" },
+  { href: "/cesto-postavljana-pitanja", label: "Pitanja" },
   { href: "/kontakt", label: "Kontakt" },
 ];
 

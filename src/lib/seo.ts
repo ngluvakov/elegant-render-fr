@@ -57,10 +57,28 @@ type PublicMetadataOptions = {
   noIndex?: boolean;
 };
 
+function normalizePath(path = "/"): string {
+  const trimmed = path.trim();
+  if (!trimmed || trimmed === "/") return "/";
+  return trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+}
+
+function normalizeCanonicalPath(path = "/"): string {
+  const absoluteMatch = path.match(/^https?:\/\//);
+  const rawPath = absoluteMatch ? new URL(path).pathname : path;
+  const withoutSearchOrHash = rawPath.split(/[?#]/, 1)[0];
+  const normalized = normalizePath(withoutSearchOrHash).replace(/\/{2,}/g, "/");
+  return normalized === "/" ? normalized : normalized.replace(/\/+$/, "");
+}
+
 export function absoluteUrl(path = "/"): string {
   if (/^https?:\/\//.test(path)) return path;
-  const normalized = path.startsWith("/") ? path : `/${path}`;
+  const normalized = normalizePath(path);
   return `${SITE.url}${normalized === "/" ? "" : normalized}`;
+}
+
+export function canonicalUrl(path = "/"): string {
+  return absoluteUrl(normalizeCanonicalPath(path));
 }
 
 function trimForMeta(value: string, maxLength: number): string {
@@ -86,7 +104,7 @@ export function createPublicMetadata({
   twitterDescription,
   noIndex = false,
 }: PublicMetadataOptions): Metadata {
-  const canonical = absoluteUrl(path);
+  const canonical = canonicalUrl(path);
   const imageUrl = absoluteUrl(image);
   const socialTitle = formatSocialTitle(title, path);
   const socialDescription = trimForMeta(

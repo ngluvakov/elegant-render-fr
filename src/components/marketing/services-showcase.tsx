@@ -1,6 +1,6 @@
 /**
- * ServicesShowcase — Rich services page with filterable cards, artwork images,
- * 360 Kuula embed, before/after showcase, scenario guide, process steps, and FAQ.
+ * ServicesShowcase — Services page with filterable cards, scenario guide,
+ * process steps, and FAQ.
  *
  * Used on: /usluge (services page).
  */
@@ -8,6 +8,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowRight,
   BadgeEuro,
@@ -28,7 +29,6 @@ import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
-import { BeforeAfterShowcase } from "@/components/marketing/before-after-showcase";
 import {
   usePublicCurrency,
   usePublicPricingSettings,
@@ -47,22 +47,10 @@ const ARTWORK = {
   triptych2: "/artwork/elegant-render-services-triptych-2.webp",
   triptych3: "/artwork/elegant-render-services-triptych-3.webp",
   triptych4: "/artwork/elegant-render-services-triptych-4.webp",
-  beforeAfter: "/artwork/elegant-render-services-before-after-grid.webp",
 };
 
 const KUULA_EMBED =
   "https://kuula.co/share/collection/71kZD?logo=0&info=0&fs=1&vr=0&sd=0&autorotate=0.14&autop=5&thumbs=0";
-const KUULA_LINK = "https://kuula.co/share/collection/71kZD";
-
-// Listing hero before/after showcase — flip `enabled` to true once the
-// lovart images at /artwork/listing-showcase-{before,after}.webp are
-// uploaded. Until then the original static 4-card "Pre i posle" grid
-// stays visible (no broken-image fallback).
-const LISTING_SHOWCASE = {
-  enabled: true as boolean,
-  before: "/artwork/listing-showcase-before.webp",
-  after: "/artwork/listing-showcase-after.webp",
-};
 
 // ─── Types ───────────────────────────────────────────────
 
@@ -382,13 +370,6 @@ const SCENARIOS = [
   },
 ];
 
-const COMPARE_SHOWCASE = [
-  { title: "Virtuelno opremanje", text: "Prazna prostorija odmah dobija toplinu i kontekst za oglas.", position: "0% 0%" },
-  { title: "Virtuelna renovacija", text: "Kupac dobija jasnu sliku kako prostor može da izgleda nakon adaptacije.", position: "100% 0%" },
-  { title: "Dnevni u noćni prikaz", text: "Jedan kadar prelazi iz obične dnevne fotografije u jači večernji utisak.", position: "0% 100%" },
-  { title: "Uklanjanje elemenata", text: "Nered i lične stvari nestaju iz kadra da prostor deluje urednije.", position: "100% 100%" },
-];
-
 // ─── Component ───────────────────────────────────────────
 
 export function ServicesShowcase() {
@@ -454,11 +435,13 @@ export function ServicesShowcase() {
           return (
             <article
               key={service.name}
-              className="group overflow-hidden rounded-2xl border border-border/40 bg-card/80 shadow-[0_8px_30px_rgba(28,26,25,0.04)] transition-shadow hover:shadow-[0_16px_50px_rgba(28,26,25,0.08)]"
+              className="group relative overflow-hidden rounded-2xl border border-border/40 bg-card/80 shadow-[0_8px_30px_rgba(28,26,25,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)]"
             >
-              {/* Card media — priority chain: iframe > video > before/after pair > image */}
+              {/* Card media — priority chain: iframe > video > before/after pair > image.
+                  Interactive media (iframe/video/before-after reveal) is bumped to
+                  z-10 so the stretched card link doesn't steal pointer events. */}
               {service.embedSrc ? (
-                <div className="relative h-48 overflow-hidden bg-secondary/40">
+                <div className="relative z-10 h-48 overflow-hidden bg-secondary/40">
                   <iframe
                     title={`${service.name} — 360 pregled`}
                     className="h-full w-full border-0"
@@ -466,7 +449,7 @@ export function ServicesShowcase() {
                     allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
                     loading="lazy"
                   />
-                  <div className="absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">
+                  <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">
                     {service.badge}
                   </div>
                 </div>
@@ -481,7 +464,7 @@ export function ServicesShowcase() {
                     preload="metadata"
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">
+                  <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">
                     {service.badge}
                   </div>
                 </div>
@@ -491,7 +474,7 @@ export function ServicesShowcase() {
                   afterSrc={service.afterSrc}
                   alt={service.name}
                   sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
-                  className="h-48 w-full bg-secondary/40"
+                  className="relative z-10 h-48 w-full bg-secondary/40"
                 >
                   <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">
                     {service.badge}
@@ -550,8 +533,16 @@ export function ServicesShowcase() {
                     <Icon className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div>
-                    <h3 className="text-base font-semibold text-foreground">
-                      {service.name}
+                    <h3 className="text-base font-semibold text-foreground transition-colors group-hover:text-accent">
+                      {/* Stretched link: covers the entire card via ::after so the
+                          whole surface opens the service detail page. The inquiry
+                          CTA below sits on z-10 to escape this overlay. */}
+                      <Link
+                        href={`/usluge/${service.slug}`}
+                        className="outline-none after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:after:ring-2 focus-visible:after:ring-accent/60"
+                      >
+                        {service.name}
+                      </Link>
                     </h3>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {service.audience}
@@ -579,7 +570,7 @@ export function ServicesShowcase() {
                       sourceLabel: service.name,
                       serviceType: service.name,
                     }}
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-foreground transition-colors hover:text-accent"
+                    className="relative z-10 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground transition-colors hover:text-accent"
                   >
                     Zatraži ponudu
                     <ChevronRight className="h-4 w-4" />
@@ -589,137 +580,6 @@ export function ServicesShowcase() {
             </article>
           );
         })}
-      </section>
-
-      {/* ─── 360 Embed Section ─────────────────────────── */}
-      <section className="space-y-8">
-        <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
-          <div className="space-y-4">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-accent">
-              360 enterijeri uživo
-            </p>
-            <h2 className="font-heading text-3xl leading-tight text-foreground md:text-4xl">
-              Ovako izgleda <span className="text-accent">360 prikaz</span> vašeg prostora
-            </h2>
-          </div>
-          <p className="text-base leading-relaxed text-muted-foreground">
-            Interaktivni prikaz u kome možete da se krećete kroz prostor, gledate
-            u svim pravcima i steknete realan osećaj enterijera.
-          </p>
-        </div>
-
-        <div className="overflow-hidden rounded-3xl border border-border/40 bg-secondary/30 p-3 shadow-[0_20px_60px_rgba(28,26,25,0.08)] md:p-4">
-          <div
-            className="overflow-hidden rounded-2xl bg-secondary/60"
-            style={{ minHeight: "480px", height: "56vh", maxHeight: "700px" }}
-          >
-            <iframe
-              title="Elegant Render 360 enterijeri"
-              className="h-full w-full border-0"
-              src={KUULA_EMBED}
-              allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
-              allowFullScreen
-              loading="lazy"
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <a
-            href={KUULA_LINK}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
-          >
-            Otvori puni prikaz
-            <ArrowRight className="h-4 w-4" />
-          </a>
-          <QuickInquiryLink
-            variant="outline"
-            className="rounded-full"
-            inquiry={{
-              source: "services-360-section",
-              sourceLabel: "360 enterijer sekcija",
-              serviceType: "360 enterijeri",
-            }}
-          >
-            Zatraži ponudu za 360 enterijer
-          </QuickInquiryLink>
-        </div>
-      </section>
-
-      {/* ─── Before/After Showcase ─────────────────────── */}
-      <section className="space-y-8">
-        <div className="grid gap-6 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
-          <div className="space-y-4">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-accent">
-              Pre i posle
-            </p>
-            <h2 className="font-heading text-3xl leading-tight text-foreground md:text-4xl">
-              Transformacija koja se <span className="text-accent">odmah vidi</span>
-            </h2>
-          </div>
-          <p className="text-base leading-relaxed text-muted-foreground">
-            Staging, renovacija i obrada fotografija — usluge gde vizuelni dokaz
-            promene govori više od opisa.
-          </p>
-        </div>
-
-        {LISTING_SHOWCASE.enabled ? (
-          <BeforeAfterShowcase
-            beforeSrc={LISTING_SHOWCASE.before}
-            afterSrc={LISTING_SHOWCASE.after}
-            alt="Pre i posle — transformacija prostora"
-            sizes="(max-width: 1280px) 100vw, 1200px"
-            className="aspect-[16/9] w-full rounded-3xl border border-border/40 bg-secondary shadow-[0_30px_80px_rgba(28,26,25,0.12)]"
-          >
-            <div className="pointer-events-none absolute left-4 top-4 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
-              <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">
-                Pre
-              </span>
-              <span className="bg-accent/12 px-2.5 py-1 text-accent">
-                Posle
-              </span>
-            </div>
-          </BeforeAfterShowcase>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {COMPARE_SHOWCASE.map((item) => (
-              <article
-                key={item.title}
-                className="overflow-hidden rounded-2xl border border-border/40 bg-card/80 shadow-[0_12px_40px_rgba(28,26,25,0.06)]"
-              >
-                <div className="relative h-56 overflow-hidden">
-                  <Image
-                    src={ARTWORK.beforeAfter}
-                    alt={item.title}
-                    fill
-                    sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover"
-                    style={{ objectPosition: item.position }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/15" />
-                  <div className="absolute left-3 top-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
-                    <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">
-                      Pre
-                    </span>
-                    <span className="bg-accent/12 px-2.5 py-1 text-accent">
-                      Posle
-                    </span>
-                  </div>
-                </div>
-                <div className="p-5">
-                  <h3 className="font-heading text-xl text-foreground">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {item.text}
-                  </p>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
       </section>
 
       {/* ─── Scenario Guide ────────────────────────────── */}

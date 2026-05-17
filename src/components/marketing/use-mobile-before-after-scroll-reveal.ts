@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, type MutableRefObject, type RefObject } from "react";
+import { playBeforeAfterDemoAnimation } from "@/components/marketing/before-after-demo-animation";
 
 const REST_REVEAL = 50;
 const MIN_SCROLL_REVEAL = 20;
@@ -9,24 +10,20 @@ const DEMO_VIEWPORT_THRESHOLD = 0.4;
 const SCROLL_START_VIEWPORT_RATIO = 0.9;
 const SCROLL_COMPLETE_VIEWPORT_RATIO = 0.42;
 
-type DemoSegment = { from: number; to: number; durationMs: number };
-
-const DEMO_SEGMENTS: readonly DemoSegment[] = [
-  { from: 50, to: 100, durationMs: 700 },
-  { from: 100, to: 0, durationMs: 900 },
-  { from: 0, to: 50, durationMs: 500 },
-];
-
 type UseMobileBeforeAfterScrollRevealOptions = {
   mediaRef: RefObject<HTMLDivElement | null>;
   animatingRef: MutableRefObject<boolean>;
   setReveal: (value: number) => void;
+  demoReplayKey?: string | number;
+  demoIntervalMs?: number;
 };
 
 export function useMobileBeforeAfterScrollReveal({
   mediaRef,
   animatingRef,
   setReveal,
+  demoReplayKey,
+  demoIntervalMs,
 }: UseMobileBeforeAfterScrollRevealOptions) {
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -51,6 +48,7 @@ export function useMobileBeforeAfterScrollReveal({
 
     let rafId: number | null = null;
     let cancelDemo: (() => void) | null = null;
+    let intervalId: number | null = null;
     let playedInView = false;
     let scrollDriven = false;
 
@@ -80,11 +78,34 @@ export function useMobileBeforeAfterScrollReveal({
       rafId = requestAnimationFrame(revealFromViewportPosition);
     };
 
+    const stopInterval = () => {
+      if (intervalId === null) return;
+      window.clearInterval(intervalId);
+      intervalId = null;
+    };
+
+    const runDemo = () => {
+      scrollDriven = false;
+      cancelDemo?.();
+      cancelDemo = playBeforeAfterDemoAnimation(setReveal, animatingRef, () => {
+        cancelDemo = null;
+        scrollDriven = true;
+        scheduleScrollReveal();
+      });
+    };
+
+    const startInterval = () => {
+      stopInterval();
+      if (!demoIntervalMs) return;
+      intervalId = window.setInterval(runDemo, demoIntervalMs);
+    };
+
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) {
           playedInView = false;
           scrollDriven = false;
+          stopInterval();
           cancelDemo?.();
           cancelDemo = null;
           return;
@@ -93,17 +114,13 @@ export function useMobileBeforeAfterScrollReveal({
         if (playedInView) {
           scrollDriven = true;
           scheduleScrollReveal();
+          startInterval();
           return;
         }
 
         playedInView = true;
-        scrollDriven = false;
-        cancelDemo?.();
-        cancelDemo = playDemoAnimation(setReveal, animatingRef, () => {
-          cancelDemo = null;
-          scrollDriven = true;
-          scheduleScrollReveal();
-        });
+        runDemo();
+        startInterval();
       },
       { threshold: DEMO_VIEWPORT_THRESHOLD },
     );
@@ -116,59 +133,9 @@ export function useMobileBeforeAfterScrollReveal({
       obs.disconnect();
       window.removeEventListener("scroll", scheduleScrollReveal);
       window.removeEventListener("resize", scheduleScrollReveal);
+      stopInterval();
       cancelDemo?.();
       if (rafId !== null) cancelAnimationFrame(rafId);
     };
-  }, [animatingRef, mediaRef, setReveal]);
-}
-
-function easeInOutQuad(t: number): number {
-  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-}
-
-function playDemoAnimation(
-  setReveal: (n: number) => void,
-  animatingRef: MutableRefObject<boolean>,
-  onDone: () => void,
-): () => void {
-  if (animatingRef.current) return () => {};
-  animatingRef.current = true;
-
-  let cancelled = false;
-  let frameId: number | null = null;
-  let segIdx = 0;
-  let segStart = performance.now();
-
-  const step = (now: number) => {
-    if (cancelled) return;
-
-    const seg = DEMO_SEGMENTS[segIdx];
-    const elapsed = now - segStart;
-    const t = Math.min(1, elapsed / seg.durationMs);
-    setReveal(seg.from + (seg.to - seg.from) * easeInOutQuad(t));
-
-    if (t < 1) {
-      frameId = requestAnimationFrame(step);
-      return;
-    }
-
-    segIdx++;
-    if (segIdx < DEMO_SEGMENTS.length) {
-      segStart = now;
-      frameId = requestAnimationFrame(step);
-      return;
-    }
-
-    animatingRef.current = false;
-    frameId = null;
-    onDone();
-  };
-
-  frameId = requestAnimationFrame(step);
-
-  return () => {
-    cancelled = true;
-    if (frameId !== null) cancelAnimationFrame(frameId);
-    animatingRef.current = false;
-  };
+  }, [animatingRef, demoIntervalMs, demoReplayKey, mediaRef, setReveal]);
 }

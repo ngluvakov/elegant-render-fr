@@ -14,9 +14,16 @@
  */
 "use client";
 
-import { useCallback, useRef, type CSSProperties, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { playBeforeAfterDemoAnimation } from "@/components/marketing/before-after-demo-animation";
 import { useMobileBeforeAfterScrollReveal } from "@/components/marketing/use-mobile-before-after-scroll-reveal";
 
 const DEFAULT_REVEAL = 50;
@@ -33,6 +40,10 @@ type Props = {
   fallback?: ReactNode;
   /** Rendered above the divider (e.g. "Pre / posle" badge). */
   children?: ReactNode;
+  /** Optional automatic demo replay. Used by the home page preview. */
+  autoDemoIntervalMs?: number;
+  /** Changes force a fresh demo when auto demo is enabled. */
+  demoReplayKey?: string | number;
 };
 
 export function BeforeAfterReveal({
@@ -43,6 +54,8 @@ export function BeforeAfterReveal({
   className,
   fallback,
   children,
+  autoDemoIntervalMs,
+  demoReplayKey,
 }: Props) {
   const mediaRef = useRef<HTMLDivElement>(null);
   const animatingRef = useRef(false);
@@ -56,7 +69,78 @@ export function BeforeAfterReveal({
     );
   }, []);
 
-  useMobileBeforeAfterScrollReveal({ mediaRef, animatingRef, setReveal });
+  useMobileBeforeAfterScrollReveal({
+    mediaRef,
+    animatingRef,
+    setReveal,
+    demoReplayKey,
+    demoIntervalMs: autoDemoIntervalMs,
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!autoDemoIntervalMs) return;
+
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (reduceMotion) {
+      setReveal(DEFAULT_REVEAL);
+      return;
+    }
+
+    const isCoarse = window.matchMedia(
+      "(hover: none), (pointer: coarse)",
+    ).matches;
+    if (isCoarse) return;
+
+    const el = mediaRef.current;
+    if (!el) return;
+
+    let intervalId: number | null = null;
+    let cancelDemo: (() => void) | null = null;
+
+    const stopInterval = () => {
+      if (intervalId === null) return;
+      window.clearInterval(intervalId);
+      intervalId = null;
+    };
+
+    const runDemo = () => {
+      cancelDemo?.();
+      cancelDemo = playBeforeAfterDemoAnimation(
+        setReveal,
+        animatingRef,
+        () => {
+          cancelDemo = null;
+        },
+      );
+    };
+
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) {
+          stopInterval();
+          cancelDemo?.();
+          cancelDemo = null;
+          return;
+        }
+
+        runDemo();
+        stopInterval();
+        intervalId = window.setInterval(runDemo, autoDemoIntervalMs);
+      },
+      { threshold: 0.35 },
+    );
+
+    obs.observe(el);
+
+    return () => {
+      obs.disconnect();
+      stopInterval();
+      cancelDemo?.();
+    };
+  }, [autoDemoIntervalMs, demoReplayKey, setReveal]);
 
   // Project (px, py) onto the 135° gradient line. Exact projection keeps
   // the diagonal anchored to the cursor on non-square aspect ratios.

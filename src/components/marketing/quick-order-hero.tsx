@@ -94,6 +94,8 @@ const AI_BASE_EUR_PER_CREDIT =
 const AI_VOLUME_EUR_PER_CREDIT =
   AI_CREDIT_TIERS[0].centsPerCredit / 100;
 
+const HERO_BEFORE_AFTER_DEMO_INTERVAL_MS = 10_000;
+
 /** EUR price for one edit at the base tier. */
 function aiBaseEur(units: number): number {
   return (units / AI_CREDIT_UNITS_PER_CREDIT) * AI_BASE_EUR_PER_CREDIT;
@@ -307,6 +309,8 @@ export function QuickOrderHero() {
                     alt={view.name}
                     sizes="(max-width: 768px) 100vw, 55vw"
                     className="aspect-[4/3] w-full rounded-2xl border border-border bg-secondary md:aspect-[3/2]"
+                    autoDemoIntervalMs={HERO_BEFORE_AFTER_DEMO_INTERVAL_MS}
+                    demoReplayKey={`${view.beforeAsset}:${view.afterAsset}`}
                   >
                     <span className="pointer-events-none absolute right-2 top-2 rounded-full bg-foreground/55 px-2 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-background/95">
                       Pre / posle

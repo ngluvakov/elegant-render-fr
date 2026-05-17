@@ -325,10 +325,10 @@ export type AiCreditTier = {
 };
 
 export const AI_CREDIT_TIERS: AiCreditTier[] = [
-  { minCredits: 100, centsPerCredit: 150 },
-  { minCredits: 50, centsPerCredit: 160 },
-  { minCredits: 25, centsPerCredit: 180 },
-  { minCredits: 1, centsPerCredit: 200 },
+  { minCredits: 100, centsPerCredit: 38 },
+  { minCredits: 50, centsPerCredit: 40 },
+  { minCredits: 25, centsPerCredit: 45 },
+  { minCredits: 1, centsPerCredit: 50 },
 ] as const;
 
 export function getAiEditType(id: AiEditType): AiEditTypeDefinition {

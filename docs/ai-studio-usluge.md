@@ -72,10 +72,10 @@ AI Studio koristi kreditni sistem:
 
 Vece kupovine kredita smanjuju cenu po kreditu:
 
-- 1+ kredit: 2.00 EUR po kreditu,
-- 25+ kredita: 1.80 EUR po kreditu,
-- 50+ kredita: 1.60 EUR po kreditu,
-- 100+ kredita: 1.50 EUR po kreditu.
+- 1+ kredit: 0.50 EUR po kreditu,
+- 25+ kredita: 0.45 EUR po kreditu,
+- 50+ kredita: 0.40 EUR po kreditu,
+- 100+ kredita: 0.38 EUR po kreditu.
 
 ### Free regenerations
 

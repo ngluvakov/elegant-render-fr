@@ -1433,7 +1433,7 @@ function AiTiersEditor({
                 ...current,
                 aiCreditTiers: [
                   ...current.aiCreditTiers,
-                  { minCredits: 1, centsPerCredit: 200 },
+                  { minCredits: 1, centsPerCredit: 50 },
                 ],
               }))
             }

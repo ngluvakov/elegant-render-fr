@@ -47,6 +47,7 @@ import {
   AI_CREDIT_TIERS,
   AI_CREDIT_UNITS_PER_CREDIT,
   AI_EDIT_TYPES,
+  type AiCreditTier,
   type AiEditType,
 } from "@/lib/ai-studio/catalog";
 import {
@@ -86,24 +87,28 @@ const AI_ICON_MAP: Record<AiEditType, LucideIcon> = {
 /** How far the up/down chevrons scroll the services list per click (px). */
 const SCROLL_STEP_PX = 220;
 
-/** Base credit cost in EUR at the entry tier (1 kr = €2 here). */
-const AI_BASE_EUR_PER_CREDIT =
-  AI_CREDIT_TIERS[AI_CREDIT_TIERS.length - 1].centsPerCredit / 100;
-
-/** Cheapest tier (highest volume). */
-const AI_VOLUME_EUR_PER_CREDIT =
-  AI_CREDIT_TIERS[0].centsPerCredit / 100;
-
 const HERO_BEFORE_AFTER_DEMO_INTERVAL_MS = 10_000;
 
 /** EUR price for one edit at the base tier. */
-function aiBaseEur(units: number): number {
-  return (units / AI_CREDIT_UNITS_PER_CREDIT) * AI_BASE_EUR_PER_CREDIT;
+function aiBaseEur(
+  units: number,
+  tiers: AiCreditTier[],
+  unitsPerCredit: number,
+): number {
+  const sorted = [...tiers].sort((a, b) => a.minCredits - b.minCredits);
+  const entryTier = sorted[0] ?? AI_CREDIT_TIERS[AI_CREDIT_TIERS.length - 1];
+  return (units / unitsPerCredit) * (entryTier.centsPerCredit / 100);
 }
 
 /** EUR price for one edit at the volume (100+ credits) tier. */
-function aiVolumeEur(units: number): number {
-  return (units / AI_CREDIT_UNITS_PER_CREDIT) * AI_VOLUME_EUR_PER_CREDIT;
+function aiVolumeEur(
+  units: number,
+  tiers: AiCreditTier[],
+  unitsPerCredit: number,
+): number {
+  const sorted = [...tiers].sort((a, b) => b.minCredits - a.minCredits);
+  const volumeTier = sorted[0] ?? AI_CREDIT_TIERS[0];
+  return (units / unitsPerCredit) * (volumeTier.centsPerCredit / 100);
 }
 
 /** Credit cost for one edit ("0.5 kredita" / "1 kredit" / "2 kredita").
@@ -727,7 +732,11 @@ export function QuickOrderHero() {
                   <p className="mt-1 text-3xl font-semibold text-background">
                     {mode === "ai"
                       ? formatPublicPrice(
-                          aiBaseEur(selectedAiEdit.units),
+                          aiBaseEur(
+                            selectedAiEdit.units,
+                            pricingSettings.aiCreditTiers,
+                            pricingSettings.aiCreditUnitsPerCredit,
+                          ),
                           displayCurrency,
                           pricingSettings,
                         )
@@ -736,7 +745,11 @@ export function QuickOrderHero() {
                   <p className="mt-1 text-[0.68rem] leading-5 text-background/70">
                     {mode === "ai"
                       ? `${aiCreditsLabel(selectedAiEdit.units)} po slici · od ${formatPublicPrice(
-                          aiVolumeEur(selectedAiEdit.units),
+                          aiVolumeEur(
+                            selectedAiEdit.units,
+                            pricingSettings.aiCreditTiers,
+                            pricingSettings.aiCreditUnitsPerCredit,
+                          ),
                           displayCurrency,
                           pricingSettings,
                         )} po slici pri 100+ kredita`

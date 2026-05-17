@@ -34,6 +34,15 @@ const DEFAULT_CUSTOM = 15;
 export function StandaloneAiCredits() {
   const { items, setAiCredits, displayCurrency, pricingSettings } = useQuote();
   const tiers = pricingSettings.aiCreditTiers;
+  const entryTier = tiers.reduce(
+    (best: (typeof tiers)[number] | null, tier) =>
+      !best || tier.minCredits < best.minCredits ? tier : best,
+    null,
+  );
+  const simpleStartingCents = Math.round(
+    (entryTier?.centsPerCredit ?? 50) /
+      pricingSettings.aiCreditUnitsPerCredit,
+  );
   const existingCredits =
     items.find((item) => item.productId === AI_CREDIT_PRODUCT_ID)
       ?.aiCreditQuantity ?? 0;
@@ -53,7 +62,11 @@ export function StandaloneAiCredits() {
               Za izmene na postojećim fotografijama kupite paket kredita i
               krenite odmah: uklanjanje elemenata, dan-u-noć, zamena neba, boja
               zidova, staging i renovacija. Jednostavne obrade kreću od{" "}
-              {formatPublicPriceFromCents(100, displayCurrency, pricingSettings)};
+              {formatPublicPriceFromCents(
+                simpleStartingCents,
+                displayCurrency,
+                pricingSettings,
+              )};
               krediti važe {pricingSettings.aiCreditExpiresAfterMonths} meseci
               od dopune.
             </p>

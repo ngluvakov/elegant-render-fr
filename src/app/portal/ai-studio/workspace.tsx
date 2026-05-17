@@ -43,19 +43,14 @@ import { cn } from "@/lib/utils";
 import {
   AI_EDIT_TYPES,
   AI_FREE_REGENERATIONS,
-  ACTIVE_AI_IMAGE_ENGINES,
   AI_STYLE_OPTIONS,
-  DEFAULT_AI_ENGINE_ID,
-  OBJECT_EDIT_ACTIVE_ENGINE_IDS,
   formatCreditsFromUnits,
   formatSelectedOptionLabels,
   getAiEditType,
-  getAiEngineIdForGeneration,
   getAiEngineLabelForGeneration,
-  getAiImageEngine,
   parseSelectedOptions,
+  pickEngineForBilling,
   type AiEditType,
-  type AiImageEngineId,
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
 import {
@@ -174,8 +169,6 @@ export function AiStudioWorkspace({
   );
   const [mode, setMode] = useState<ToolMode>("simple");
   const [editType, setEditType] = useState<AiEditType>("virtual_staging");
-  const [engineId, setEngineId] =
-    useState<AiImageEngineId>(DEFAULT_AI_ENGINE_ID);
   const [selectedOption, setSelectedOption] = useState("");
   const [styleId, setStyleId] = useState("modern");
   const [colorHex, setColorHex] = useState("#f2eee8");
@@ -281,24 +274,27 @@ export function AiStudioWorkspace({
   }, []);
 
   const activeEdit = useMemo(() => getAiEditType(editType), [editType]);
-  const activeEngine = useMemo(() => getAiImageEngine(engineId), [engineId]);
   const activeInput = baseInput;
   const needsReferenceImage = activeEdit.requiresReferenceImage === true;
   const hasPendingJobs = history.some(
     (item) => item.status === "queued" || item.status === "processing",
   );
+  // Free retry is alive while parent.editType === current editType and
+  // the paid root's free pool isn't exhausted. Server enforces the same
+  // rule — this is just a UI/cost preview gate.
   const linkedParentGenerationId = useMemo(() => {
-    if (!parentGenerationId || !activeInput) return null;
+    if (!parentGenerationId) return null;
     const parent = history.find((item) => item.id === parentGenerationId);
-    if (!parent) return null;
-    if (
-      activeInput.storagePath === parent.resultStoragePath ||
-      activeInput.storagePath === parent.inputStoragePath
-    ) {
-      return parentGenerationId;
-    }
-    return null;
-  }, [activeInput, history, parentGenerationId]);
+    if (!parent || parent.status !== "completed") return null;
+    if (parent.editType !== editType) return null;
+    const paidRoot = parent.paidGenerationId ?? parent.id;
+    const freeUsed = history.filter(
+      (item) =>
+        item.paidGenerationId === paidRoot && item.freeAttemptIndex !== null,
+    ).length;
+    if (freeUsed >= AI_FREE_REGENERATIONS) return null;
+    return parentGenerationId;
+  }, [editType, history, parentGenerationId]);
   const hasPrompt = prompt.trim().length > 0;
   const activeGeneration = useMemo(
     () =>
@@ -577,15 +573,6 @@ export function AiStudioWorkspace({
     }
   }, [editType, objectMode]);
 
-  useEffect(() => {
-    if (
-      editType === "object_insertion" &&
-      !OBJECT_EDIT_ACTIVE_ENGINE_IDS.includes(engineId)
-    ) {
-      setEngineId(DEFAULT_AI_ENGINE_ID);
-    }
-  }, [editType, engineId]);
-
   // Wipes the workspace back to defaults — radna slika, rezultat,
   // promptovi, kontrole, modal. Ne dira history ni balance. Sets the
   // dismissed flag so a focus-fired or interval-fired refresh doesn't
@@ -599,7 +586,6 @@ export function AiStudioWorkspace({
     setParentGenerationId(null);
     setActiveGenerationId(null);
     setEditType("virtual_staging");
-    setEngineId(DEFAULT_AI_ENGINE_ID);
     setSelectedOption("");
     setStyleId("modern");
     setColorHex("#f2eee8");
@@ -832,6 +818,22 @@ export function AiStudioWorkspace({
     );
   }, [openedGeneration, history]);
 
+  // Best-effort client estimate of free retries left on this paid root.
+  // Server is authoritative — if history doesn't include older
+  // generations from the same chain, this can over-report; server will
+  // reject and charge. Good enough for the modal hint.
+  const openedFreeRetriesRemaining = useMemo(() => {
+    if (!openedGeneration) return 0;
+    const item = history.find((entry) => entry.id === openedGeneration.id);
+    if (!item) return 0;
+    const paidRoot = item.paidGenerationId ?? item.id;
+    const freeUsed = history.filter(
+      (entry) =>
+        entry.paidGenerationId === paidRoot && entry.freeAttemptIndex !== null,
+    ).length;
+    return Math.max(0, AI_FREE_REGENERATIONS - freeUsed);
+  }, [openedGeneration, history]);
+
   const costPreview = useMemo(
     () => computeCostPreview(history, linkedParentGenerationId, editType),
     [history, linkedParentGenerationId, editType],
@@ -904,7 +906,6 @@ export function AiStudioWorkspace({
       );
       setEditType(gen.editType);
       setObjectMode(gen.objectMode);
-      setEngineId(getAiEngineIdForGeneration(gen.provider, gen.model));
       if (gen.styleId) setStyleId(gen.styleId);
       if (gen.selectedOption) setSelectedOption(gen.selectedOption);
       if (gen.colorHex) setColorHex(gen.colorHex);
@@ -1039,8 +1040,6 @@ export function AiStudioWorkspace({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           editType,
-          engineId,
-          provider: activeEngine.provider,
           inputStoragePath: activeInput.storagePath,
           inputMimeType: activeInput.mimeType,
           inputFileName: activeInput.fileName,
@@ -1092,11 +1091,13 @@ export function AiStudioWorkspace({
       setActiveGenerationId(result.generationId);
       startHistoryFlight(result.generationId);
 
+      const expectedEngine = pickEngineForBilling(
+        Boolean(linkedParentGenerationId),
+      );
       track("ai_generation_started", {
         edit_type: editType,
-        provider: activeEngine.provider,
-        engine_id: engineId,
-        model: activeEngine.model,
+        provider: expectedEngine.provider,
+        model: expectedEngine.model,
         mode,
         has_mask: Boolean(maskStoragePath),
         has_style: Boolean(activeEdit.supportsStyles && styleId !== "none"),
@@ -1119,8 +1120,8 @@ export function AiStudioWorkspace({
           parentGenerationId: linkedParentGenerationId,
           paidGenerationId: null,
           editType,
-          provider: activeEngine.provider,
-          model: activeEngine.model,
+          provider: expectedEngine.provider,
+          model: expectedEngine.model,
           prompt,
           styleId: activeEdit.supportsStyles ? styleId : null,
           status: result.status ?? "queued",
@@ -1241,6 +1242,14 @@ export function AiStudioWorkspace({
         </div>
       )}
 
+      <RetryStatusBanner
+        history={history}
+        parentGenerationId={parentGenerationId}
+        linkedParentGenerationId={linkedParentGenerationId}
+        editType={editType}
+        onCancel={() => setParentGenerationId(null)}
+      />
+
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-5">
           <StudioControls
@@ -1248,8 +1257,6 @@ export function AiStudioWorkspace({
             setMode={setMode}
             editType={editType}
             setEditType={setEditType}
-            engineId={engineId}
-            setEngineId={setEngineId}
             selectedOption={selectedOption}
             setSelectedOption={setSelectedOption}
             styleId={styleId}
@@ -1315,6 +1322,7 @@ export function AiStudioWorkspace({
         open={Boolean(openedGeneration)}
         generation={openedGeneration}
         parentResultFileName={parentResultFileName}
+        freeRetriesRemaining={openedFreeRetriesRemaining}
         onClose={closeGenerationModal}
         onUseResultAsInput={handleModalUseResult}
         onRepeatWithSameSettings={handleModalRepeat}
@@ -1332,8 +1340,6 @@ function StudioControls({
   setMode,
   editType,
   setEditType,
-  engineId,
-  setEngineId,
   selectedOption,
   setSelectedOption,
   styleId,
@@ -1348,8 +1354,6 @@ function StudioControls({
   setMode: (mode: ToolMode) => void;
   editType: AiEditType;
   setEditType: (type: AiEditType) => void;
-  engineId: AiImageEngineId;
-  setEngineId: (engineId: AiImageEngineId) => void;
   selectedOption: string;
   setSelectedOption: (value: string) => void;
   styleId: string;
@@ -1361,12 +1365,6 @@ function StudioControls({
   objectMode: ObjectEditMode;
 }) {
   const edit = getAiEditType(editType);
-  const availableEngines =
-    editType === "object_insertion"
-      ? ACTIVE_AI_IMAGE_ENGINES.filter((item) =>
-          OBJECT_EDIT_ACTIVE_ENGINE_IDS.includes(item.id),
-        )
-      : ACTIVE_AI_IMAGE_ENGINES;
 
   return (
     <div className="rounded-2xl border border-border/40 bg-card/60 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
@@ -1387,39 +1385,6 @@ function StudioControls({
         </div>
 
         <div className="space-y-5">
-          <div>
-            <ControlLabel>Engine</ControlLabel>
-            <div className="mt-2 grid gap-2">
-              {availableEngines.map((item) => {
-                const recommended = edit.recommendedProvider === item.provider;
-                return (
-                  <SelectableTile
-                    key={item.id}
-                    active={engineId === item.id}
-                    onClick={() => setEngineId(item.id)}
-                    title={item.label}
-                    subtitle={
-                      item.isExperimental
-                        ? "Eksperimentalno"
-                        : recommended
-                          ? "Preporučeno za ovu obradu"
-                          : item.model
-                    }
-                    trailing={
-                      engineId === item.id ? (
-                        <Check className="h-4 w-4 text-accent" />
-                      ) : recommended ? (
-                        <span className="rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
-                          Preporučeno
-                        </span>
-                      ) : null
-                    }
-                  />
-                );
-              })}
-            </div>
-          </div>
-
           {edit.supportsMask !== false && (
             <div>
               <ControlLabel>Mod</ControlLabel>
@@ -2923,6 +2888,73 @@ function CostPreviewLabel({
         {formatCreditsFromUnits(preview.unitsCharged)}
       </strong>
     </span>
+  );
+}
+
+// Surfaces the retry state above the studio form. Reading the cost
+// preview alone is easy to miss when scrolling — this banner is the
+// loud version: "free retry is on" vs "you changed something that
+// killed it." Dismissable so a user who started a retry but wants a
+// fresh paid edit can clear the link in one click.
+function RetryStatusBanner({
+  history,
+  parentGenerationId,
+  linkedParentGenerationId,
+  editType,
+  onCancel,
+}: {
+  history: GenerationHistoryItem[];
+  parentGenerationId: string | null;
+  linkedParentGenerationId: string | null;
+  editType: AiEditType;
+  onCancel: () => void;
+}) {
+  if (!parentGenerationId) return null;
+  const parent = history.find((item) => item.id === parentGenerationId);
+  if (!parent) return null;
+
+  const isFree = linkedParentGenerationId === parentGenerationId;
+  const editTypeChanged = parent.editType !== editType;
+  const parentLabel = getAiEditType(parent.editType).label;
+
+  if (isFree) {
+    return (
+      <div className="flex items-start gap-3 rounded-xl border border-[color:var(--color-sage)]/35 bg-[color:var(--color-sage)]/10 px-4 py-3 text-sm">
+        <span className="mt-0.5 inline-flex h-5 items-center rounded-full bg-[color:var(--color-sage)]/20 px-2 text-[0.62rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+          Besplatno
+        </span>
+        <div className="flex-1 text-foreground/85">
+          {`Aktivno je besplatno ponavljanje obrade „${parentLabel}". Slika, prompt i sva ostala podešavanja smeju da se menjaju — promenom `}
+          <strong className="px-0.5">tipa obrade</strong>
+          {" gubi se besplatno ponavljanje."}
+        </div>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="shrink-0 text-xs font-semibold text-muted-foreground hover:text-foreground"
+        >
+          Otkaži
+        </button>
+      </div>
+    );
+  }
+
+  const message = editTypeChanged
+    ? `Promenili ste tip obrade — besplatno ponavljanje važi samo za „${parentLabel}". Pokretanje će se naplatiti.`
+    : `Besplatno ponavljanje za „${parentLabel}" je iskorišćeno. Sledeća obrada će se naplatiti.`;
+
+  return (
+    <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-50/60 px-4 py-3 text-sm dark:bg-amber-950/30">
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+      <div className="flex-1 text-foreground/85">{message}</div>
+      <button
+        type="button"
+        onClick={onCancel}
+        className="shrink-0 text-xs font-semibold text-muted-foreground hover:text-foreground"
+      >
+        Otkaži
+      </button>
+    </div>
   );
 }
 

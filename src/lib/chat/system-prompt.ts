@@ -13,7 +13,6 @@ import type {
 } from "@/lib/catalog/configurator";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
 import {
-  ACTIVE_AI_IMAGE_ENGINES,
   AI_CREDIT_EXPIRES_AFTER_MONTHS,
   AI_CREDIT_TIERS,
   AI_CREDIT_UNITS_PER_CREDIT,
@@ -279,7 +278,7 @@ function formatAiStudio(settings?: SystemPromptPricingSettings): string {
         : null,
     ].filter(Boolean);
 
-    return `- ${tool.id} -> ${tool.label}; ${tool.complexity}; troši ${formatCreditCount(tool.units, unitsPerCredit)}; ${tool.description}; mogućnosti: ${capabilities.join(", ") || "osnovna instrukcija"}; preporučeni provider: ${tool.recommendedProvider ?? "podrazumevani"}`;
+    return `- ${tool.id} -> ${tool.label}; ${tool.complexity}; troši ${formatCreditCount(tool.units, unitsPerCredit)}; ${tool.description}; mogućnosti: ${capabilities.join(", ") || "osnovna instrukcija"}`;
   }).join("\n");
 
   const creditTiers = tiers
@@ -291,8 +290,7 @@ function formatAiStudio(settings?: SystemPromptPricingSettings): string {
 
   return `AI Studio obrađuje postojeće fotografije; ne pravi kontrolisan 3D render od nule.
 Krediti: 1 kredit = ${unitsPerCredit} jedinice; jednostavni alati obično troše 0.5 kredita, kompleksni 1 kredit. Krediti važe ${expiresAfterMonths} meseci od poslednje dopune. Tier cene: ${creditTiers}.
-Rezultati i ulazni fajlovi: retencija ${AI_FILE_RETENTION_DAYS} dana; do ${AI_FREE_REGENERATIONS} besplatne regeneracije iz iste završene obrade. Ako novi alat troši više jedinica od pokrivene obrade, doplaćuje se samo razlika.
-Aktivni AI image engine-i: ${ACTIVE_AI_IMAGE_ENGINES.map((engine) => `${engine.label}${engine.isExperimental ? " (eksperimentalno)" : ""}`).join(", ")}.
+Rezultati i ulazni fajlovi: retencija ${AI_FILE_RETENTION_DAYS} dana. Prva obrada uvek troši kredite; nakon završene obrade dobija se ${AI_FREE_REGENERATIONS} besplatno ponavljanje — važi samo dok je tip obrade isti (sve ostalo, uključujući ulaznu sliku i prompt, sme da se menja). Promenom tipa obrade gubi se besplatno ponavljanje.
 AI alati:
 ${tools}`;
 }

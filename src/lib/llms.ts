@@ -6,7 +6,6 @@ import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
 import { CATEGORY_LABELS, SERVICES } from "@/lib/catalog/services";
 import { formatPublicPrice } from "@/lib/catalog/display-currency";
 import {
-  ACTIVE_AI_IMAGE_ENGINES,
   AI_CREDIT_TIERS,
   AI_CREDIT_UNITS_PER_CREDIT,
   AI_EDIT_TYPES,
@@ -57,7 +56,7 @@ function buildAiStudioKnowledge(): string {
     return `- ${tool.label} (${tool.id}): ${tool.description} Troši ${creditCount(tool.units)}. ${features.join(", ")}.`;
   }).join("\n");
 
-  return `Krediti: 1 kredit = ${AI_CREDIT_UNITS_PER_CREDIT} jedinice; tier cene: ${tiers}. Retencija fajlova: ${AI_FILE_RETENTION_DAYS} dana. Besplatne regeneracije: do ${AI_FREE_REGENERATIONS} iz iste završene obrade. Aktivni engine-i: ${ACTIVE_AI_IMAGE_ENGINES.map((engine) => engine.label).join(", ")}.
+  return `Krediti: 1 kredit = ${AI_CREDIT_UNITS_PER_CREDIT} jedinice; tier cene: ${tiers}. Retencija fajlova: ${AI_FILE_RETENTION_DAYS} dana. Prva obrada uvek troši kredite; nakon završetka korisnik dobija ${AI_FREE_REGENERATIONS} besplatno ponavljanje — važi samo dok je tip obrade isti. Promenom tipa obrade gubi se besplatno ponavljanje.
 ${tools}`;
 }
 

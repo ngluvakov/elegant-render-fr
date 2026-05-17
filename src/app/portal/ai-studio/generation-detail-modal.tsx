@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
+  AI_FREE_REGENERATIONS,
   AI_STYLE_OPTIONS,
   formatCreditsFromUnits,
   formatSelectedOptionLabels,
@@ -89,6 +90,10 @@ type Props = {
   open: boolean;
   generation: GenerationDetail | null;
   parentResultFileName?: string | null;
+  // How many free retries are still available on this generation's paid
+  // root chain. >0 → "Ponovi" submits as a free retry (subject to
+  // editType match on the server). Computed in workspace from history.
+  freeRetriesRemaining: number;
   onClose: () => void;
   onUseResultAsInput: (generation: GenerationDetail) => void;
   onRepeatWithSameSettings: (generation: GenerationDetail) => void;
@@ -128,6 +133,7 @@ export function GenerationDetailModal({
   open,
   generation,
   parentResultFileName,
+  freeRetriesRemaining,
   onClose,
   onUseResultAsInput,
   onRepeatWithSameSettings,
@@ -333,6 +339,20 @@ export function GenerationDetailModal({
                   }
                 />
               )}
+              <SettingRow
+                label="Besplatno ponavljanje"
+                value={
+                  generation.status !== "completed" ? (
+                    <span className="text-muted-foreground">—</span>
+                  ) : freeRetriesRemaining > 0 ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.7rem] font-semibold text-[color:var(--color-sage-deep)]">
+                      Dostupno ({freeRetriesRemaining}/{AI_FREE_REGENERATIONS}) · isti tip
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">Iskorišćeno</span>
+                  )
+                }
+              />
             </dl>
             {generation.prompt && (
               <div className="mt-3 rounded-xl border border-border/30 bg-background/60 p-3">
@@ -349,21 +369,23 @@ export function GenerationDetailModal({
           <div className="flex flex-wrap items-center gap-2">
             <Button
               type="button"
-              variant="accent"
-              onClick={() => onUseResultAsInput(generation)}
-              disabled={!canUseResult}
-            >
-              <Wand2 className="h-4 w-4" />
-              Koristi rezultat kao novu radnu sliku
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
+              variant={freeRetriesRemaining > 0 ? "accent" : "outline"}
               onClick={() => onRepeatWithSameSettings(generation)}
               disabled={!canDownloadInput}
             >
               <RefreshCw className="h-4 w-4" />
-              Ponovi sa istim podešavanjima
+              {freeRetriesRemaining > 0
+                ? "Ponovi (besplatno, isti tip)"
+                : "Ponovi (naplaćuje se)"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onUseResultAsInput(generation)}
+              disabled={!canUseResult}
+            >
+              <Wand2 className="h-4 w-4" />
+              Nastavi od rezultata (nova naplata)
             </Button>
             <Button
               type="button"

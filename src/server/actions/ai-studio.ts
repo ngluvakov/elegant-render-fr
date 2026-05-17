@@ -16,10 +16,8 @@ import {
   addDays,
   formatCreditsFromUnits,
   getAiEditType,
-  OBJECT_EDIT_ACTIVE_ENGINE_IDS,
-  resolveAiImageEngine,
+  pickEngineForBilling,
   type AiEditType,
-  type AiImageEngineId,
   type AiImageProvider,
 } from "@/lib/ai-studio/catalog";
 import {
@@ -73,8 +71,6 @@ export type AiStudioReferenceImageInput = {
 
 export type AiStudioGenerateInput = {
   editType: AiEditType;
-  engineId?: AiImageEngineId | null;
-  provider?: AiImageProvider | null;
   inputStoragePath: string;
   inputMimeType: string;
   inputFileName?: string | null;
@@ -344,27 +340,10 @@ export async function startAiStudioGeneration(
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return { error: "Niste prijavljeni." };
-  const engine = resolveAiImageEngine({
-    engineId: input.engineId,
-    provider: input.provider,
-  });
-  if (!engine?.isActive) {
-    return {
-      error:
-        "Izabrani AI engine nije dostupan za nove obrade. Izaberite jedan od ponuđenih engine-a.",
-    };
-  }
-  if (
-    input.editType === "object_insertion" &&
-    !OBJECT_EDIT_ACTIVE_ENGINE_IDS.includes(engine.id)
-  ) {
-    return {
-      error:
-        "Za dodavanje ili zamenu nameštaja/dekora izaberite Nano Banana Pro ili GPT Image 1.5.",
-    };
-  }
-  const provider = engine.provider;
-  const model = engine.model;
+  // Engine selection is internal — pickEngineForBilling resolves it once
+  // the free-vs-paid decision is made further down. No client input.
+  let provider: AiImageProvider = pickEngineForBilling(false).provider;
+  let model: string = pickEngineForBilling(false).model;
   const referenceImages = normalizeReferenceImageInputs(input);
   const objectMode: ObjectEditMode =
     input.editType === "object_insertion" && input.objectMode === "replace"
@@ -470,17 +449,15 @@ export async function startAiStudioGeneration(
       where: { id: input.parentGenerationId, userId },
     });
     if (!parent) return { error: "Prethodna obrada nije pronađena." };
+    if (parent.status !== "completed" || !parent.resultStoragePath) {
+      return { error: "Prethodna obrada još nije završena." };
+    }
 
-    const parentResultIsInput =
-      parent.resultStoragePath === input.inputStoragePath;
-    const parentInputIsInput = parent.inputStoragePath === input.inputStoragePath;
-    const parentMatchesActualInput = parentResultIsInput || parentInputIsInput;
-
-    if (parentMatchesActualInput) {
-      if (parent.status !== "completed" || !parent.resultStoragePath) {
-        return { error: "Prethodna obrada još nije završena." };
-      }
-
+    // Free retry is gated ONLY by edit type matching the paid root.
+    // Input image, references, mask, style, options, prompt — all sme da
+    // se menjaju unutar istog besplatnog pokušaja. Promena editType-a
+    // znači da je ovo nov, plaćen edit (paidGenerationId ostaje null).
+    if (parent.editType === input.editType) {
       paidGenerationId = parent.paidGenerationId ?? parent.id;
       const root = await prisma.aiGeneration.findFirst({
         where: { id: paidGenerationId, userId },
@@ -488,12 +465,18 @@ export async function startAiStudioGeneration(
       if (!root) return { error: "Početna plaćena obrada nije pronađena." };
       rootCoveredUnits = root.coveredUnits;
 
-      // Inherit the root only when the actual input belongs to the same
-      // generation chain. A stale parent id with a fresh upload must not
-      // rename the new input or consume the free-retry chain.
-      if (parent.rootFileName) rootFileName = parent.rootFileName;
-      if (parentResultIsInput && parent.resultFileName) {
-        inputFileName = parent.resultFileName;
+      // Filename continuity: only inherit the root when the input file
+      // actually belongs to this chain. If the customer uploads a new
+      // photo for the free retry, treat the filename as fresh.
+      const parentResultIsInput =
+        parent.resultStoragePath === input.inputStoragePath;
+      const parentInputIsInput =
+        parent.inputStoragePath === input.inputStoragePath;
+      if (parentResultIsInput || parentInputIsInput) {
+        if (parent.rootFileName) rootFileName = parent.rootFileName;
+        if (parentResultIsInput && parent.resultFileName) {
+          inputFileName = parent.resultFileName;
+        }
       }
 
       const freeUsed = await countFreeAttempts(userId, paidGenerationId);
@@ -511,6 +494,13 @@ export async function startAiStudioGeneration(
       }
     }
   }
+
+  // Now that we know whether this is a billed paid generation or a free
+  // retry, route to the matching engine. Free retry uses the cheaper
+  // Flash model; paid runs use Pro.
+  const billedEngine = pickEngineForBilling(freeAttemptIndex !== null);
+  provider = billedEngine.provider;
+  model = billedEngine.model;
 
   // Counter for the result filename: how many generations of THIS edit
   // type already exist on THIS root chain. Padded later via composeResultFileName.
@@ -607,6 +597,11 @@ export async function startAiStudioGeneration(
       coveredUnits = editDef.units;
       freeAttemptIndex = null;
     }
+
+    // Engine must match the new billing decision after the fallback.
+    const fallbackEngine = pickEngineForBilling(freeAttemptIndex !== null);
+    provider = fallbackEngine.provider;
+    model = fallbackEngine.model;
 
     generation = await createGeneration();
   }

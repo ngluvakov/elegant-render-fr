@@ -3,7 +3,7 @@ export const AI_CREDIT_CATEGORY_ID = "ai-studio";
 export const AI_CREDIT_UNITS_PER_CREDIT = 2;
 export const AI_CREDIT_EXPIRES_AFTER_MONTHS = 12;
 export const AI_FILE_RETENTION_DAYS = 30;
-export const AI_FREE_REGENERATIONS = 2;
+export const AI_FREE_REGENERATIONS = 1;
 
 export type AiEditType =
   | "item_removal"
@@ -66,9 +66,6 @@ export type AiEditTypeDefinition = {
   // Used by object_insertion, where image 1 is the scene and image 2 is
   // the object to merge into that scene.
   requiresReferenceImage?: boolean;
-  // Provider that gives the best result/price tradeoff for this edit.
-  // The UI surfaces it as "Preporučeno" and seeds the picker default.
-  recommendedProvider?: AiImageProvider;
   // Edit-specific placeholder for the prompt textarea so the example
   // matches the operation (e.g. "ukloni X, Y" for item_removal vs
   // "dodaj nameštaj…" for staging).
@@ -98,7 +95,6 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     description: "Uklanjanje predmeta, nereda, ljudi, vozila ili sitnih smetnji sa fotografije.",
     supportsMask: true,
     multiSelect: true,
-    recommendedProvider: "gemini_pro",
     promptPlaceholder: "npr. ukloni saobraćajne znake i kese; pažljivo sa senkama na zidu",
     optionsLabel: "Šta uklanjamo (može više)",
     options: [
@@ -117,7 +113,6 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     units: 1,
     description: "Pretvaranje dnevne fotografije u večernji ili sutonski prikaz.",
     supportsMask: false,
-    recommendedProvider: "gemini_pro",
     promptPlaceholder: "npr. zadržati prirodno osvetljenje na fasadi, suptilan sjaj prozora",
     optionsLabel: "Atmosfera",
     options: [
@@ -136,7 +131,6 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     units: 1,
     description: "Zamena sivog ili oblačnog neba atraktivnijom atmosferom.",
     supportsMask: false,
-    recommendedProvider: "gemini_pro",
     promptPlaceholder: "npr. blago osvetljenje, suptilni oblaci, ne menjati boju zgrade",
     optionsLabel: "Nebo",
     options: [
@@ -156,7 +150,6 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     description: "Brza promena boje zidova uz color picker i dodatne instrukcije.",
     supportsColor: true,
     supportsMask: true,
-    recommendedProvider: "gemini_pro",
     promptPlaceholder: "npr. zadrži boju lajsni i ramova, ne dirati nameštaj",
   },
   {
@@ -168,7 +161,6 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     description: "Dodavanje nameštaja i dekora u praznu ili slabo uređenu prostoriju.",
     supportsStyles: true,
     supportsMask: true,
-    recommendedProvider: "gemini_pro",
     promptPlaceholder: "npr. topao moderni nameštaj, drveni patos, sačuvati prozore i osvetljenje",
     optionsLabel: "Tip prostorije",
     options: [
@@ -191,7 +183,6 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
       "Dodavanje ili zamena komada nameštaja, dekora, rasvete, biljaka, umetnosti ili uređaja uz usklađivanje perspektive, svetla i senki.",
     supportsMask: true,
     requiresReferenceImage: true,
-    recommendedProvider: "gemini_pro",
     promptPlaceholder:
       "npr. postavi fotelju pored prozora ili zameni postojeću stolicu; sačuvaj ostatak sobe",
     optionsLabel: "Tip komada",
@@ -213,7 +204,6 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     description: "Promena materijala, podova, zidova, kuhinje, kupatila ili celog izgleda.",
     supportsStyles: true,
     supportsMask: true,
-    recommendedProvider: "gemini_pro",
     promptPlaceholder: "npr. zameni pod hrastovim parketom, ostavi raspored kuhinje",
     optionsLabel: "Šta menjamo",
     options: [
@@ -235,7 +225,6 @@ export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [
     description: "Promena stila, atmosfere i vizuelnog identiteta postojeće prostorije.",
     supportsStyles: true,
     supportsMask: true,
-    recommendedProvider: "gemini_pro",
     promptPlaceholder: "npr. svetli skandinavski stil, zadržati orijentaciju i prozore",
     optionsLabel: "Tip prostorije",
     options: [
@@ -420,6 +409,15 @@ export function resolveAiImageEngine({
   }
   if (provider) return getDefaultEngineForProvider(provider);
   return getAiImageEngine(DEFAULT_AI_ENGINE_ID);
+}
+
+// Server picks the engine on each generation: paid (root) goes to Nano
+// Banana Pro for quality, the included free retry falls back to Nano
+// Banana (Flash) to cap cost. Single source of truth — no client input.
+export function pickEngineForBilling(isFreeRetry: boolean): AiImageEngine {
+  return isFreeRetry
+    ? getAiImageEngine("nano_banana")
+    : getAiImageEngine("nano_banana_pro");
 }
 
 export function getAiEngineIdForGeneration(

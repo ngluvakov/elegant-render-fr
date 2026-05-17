@@ -8,6 +8,7 @@
 import OpenAI from "openai";
 import { auth } from "@/lib/auth";
 import { buildSystemPrompt } from "@/lib/chat/system-prompt";
+import type { AssistantGuideContext } from "@/lib/chat/guide-context";
 import { detectChatFeedbackSignal } from "@/lib/chat/feedback";
 import { getDisplayCurrencyForCountry } from "@/lib/catalog/display-currency";
 import { prisma } from "@/lib/db";
@@ -49,6 +50,11 @@ function normalizeMessages(messages: unknown): IncomingChatMessage[] | null {
   return normalized.length > 0 ? normalized : null;
 }
 
+function normalizeGuideContext(value: unknown): AssistantGuideContext | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as AssistantGuideContext;
+}
+
 async function captureChatFeedback(args: {
   messages: IncomingChatMessage[];
   pagePath: unknown;
@@ -88,8 +94,10 @@ export async function POST(request: Request) {
     });
   }
 
-  const { messages, pagePath, sessionId } = await request.json();
+  const { messages, pagePath, sessionId, guideContext } = await request.json();
   const normalizedMessages = normalizeMessages(messages);
+  const pagePathText = cleanText(pagePath, 240);
+  const assistantGuideContext = normalizeGuideContext(guideContext);
 
   if (!normalizedMessages) {
     return new Response("Missing messages", { status: 400 });
@@ -110,13 +118,20 @@ export async function POST(request: Request) {
     request.headers.get("x-vercel-ip-country"),
   );
   const pricingCatalog = await getPublishedPricingCatalog();
+  const systemPrompt = buildSystemPrompt({
+    displayCurrency,
+    pricingSettings: pricingCatalog.settings,
+    categories: pricingCatalog.categories,
+    pagePath: pagePathText,
+    guideContext: assistantGuideContext,
+  });
 
   const stream = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     messages: [
       {
         role: "system",
-        content: buildSystemPrompt(displayCurrency, pricingCatalog.settings),
+        content: systemPrompt,
       },
       ...normalizedMessages.slice(-20), // Keep last 20 messages for context
     ],

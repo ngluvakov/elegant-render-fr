@@ -6,6 +6,14 @@ import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
 import { CATEGORY_LABELS, SERVICES } from "@/lib/catalog/services";
 import { formatPublicPrice } from "@/lib/catalog/display-currency";
 import {
+  ACTIVE_AI_IMAGE_ENGINES,
+  AI_CREDIT_TIERS,
+  AI_CREDIT_UNITS_PER_CREDIT,
+  AI_EDIT_TYPES,
+  AI_FILE_RETENTION_DAYS,
+  AI_FREE_REGENERATIONS,
+} from "@/lib/ai-studio/catalog";
+import {
   AI_STUDIO_FAQS,
   FAQ_ITEMS,
   IMPRINT,
@@ -20,6 +28,37 @@ function link(title: string, url: string, note?: string): string {
 
 function productPrice(product: ConfiguratorProduct): string {
   return `${formatPublicPrice(product.basePriceEur, "eur")} (${product.unitLabel})`;
+}
+
+function creditCount(units: number): string {
+  const credits = units / AI_CREDIT_UNITS_PER_CREDIT;
+  return Number.isInteger(credits)
+    ? `${credits.toFixed(0)} kredit${credits === 1 ? "" : "a"}`
+    : `${credits.toFixed(1)} kredita`;
+}
+
+function buildAiStudioKnowledge(): string {
+  const tiers = [...AI_CREDIT_TIERS]
+    .sort((a, b) => b.minCredits - a.minCredits)
+    .map(
+      (tier) =>
+        `${tier.minCredits}+ kredita: ${formatPublicPrice(tier.centsPerCredit / 100, "eur")} po kreditu`,
+    )
+    .join("; ");
+  const tools = AI_EDIT_TYPES.map((tool) => {
+    const features = [
+      tool.complexity,
+      tool.supportsMask === false ? "bez maske" : "maska dostupna",
+      tool.supportsStyles ? "stilovi" : null,
+      tool.supportsColor ? "izbor boje" : null,
+      tool.requiresReferenceImage ? "traži referentnu sliku komada" : null,
+    ].filter(Boolean);
+
+    return `- ${tool.label} (${tool.id}): ${tool.description} Troši ${creditCount(tool.units)}. ${features.join(", ")}.`;
+  }).join("\n");
+
+  return `Krediti: 1 kredit = ${AI_CREDIT_UNITS_PER_CREDIT} jedinice; tier cene: ${tiers}. Retencija fajlova: ${AI_FILE_RETENTION_DAYS} dana. Besplatne regeneracije: do ${AI_FREE_REGENERATIONS} iz iste završene obrade. Aktivni engine-i: ${ACTIVE_AI_IMAGE_ENGINES.map((engine) => engine.label).join(", ")}.
+${tools}`;
 }
 
 export function buildLlmsTxt(): string {
@@ -59,6 +98,9 @@ ${[
 
 ## Pricing and tax notes
 Osnovni finansijski cenovnik je u EUR bez PDV-a. Posetioci iz Srbije na javnom sajtu vide RSD prikaz sa uračunatim PDV-om kao informativni display sloj; posetioci van Srbije vide EUR bez PDV-a. Konačna ponuda zavisi od obima i ulaznih materijala.
+
+## AI Studio
+${buildAiStudioKnowledge()}
 
 ## FAQ
 ${FAQ_ITEMS.map((item) => `- **${item.question}** ${item.answer}`).join("\n")}
@@ -182,6 +224,9 @@ ${serviceSections}
 Ovo je mašinski čitljiv pregled objavljenog cenovnika. EUR bez PDV-a je osnovica. RSD sa PDV-om za Srbiju je javni prikaz izveden iz iste EUR osnovice.
 
 ${pricingSections}
+
+## AI Studio alati i krediti
+${buildAiStudioKnowledge()}
 
 ## Često postavljana pitanja
 ${faqSection}

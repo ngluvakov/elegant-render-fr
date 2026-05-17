@@ -176,6 +176,36 @@ const CONTACT_TIPS: ChatGuideTip[] = [
   },
 ];
 
+const ABOUT_TIPS: ChatGuideTip[] = [
+  {
+    id: "about-white-rook",
+    label: "Ko stoji iza brenda",
+    body:
+      "Elegant Render je B2C podbrend kompanije White Rook DOO, sa istim timom i jasnijim procesom za krajnje kupce.",
+  },
+  {
+    id: "about-certificates",
+    label: "Sertifikati",
+    body:
+      "Proces se oslanja na ISO 9001, ISO/IEC 27001 i ISO 50001 sertifikate koje potvrđuje TUV Rheinland.",
+  },
+];
+
+const FAQ_ROUTE_TIPS: ChatGuideTip[] = [
+  {
+    id: "faq-answer-scope",
+    label: "Brz odgovor",
+    body:
+      "Pitajte konkretno za rok, materijale, revizije, cenu ili AI obradu i dobićete najkraći relevantan odgovor.",
+  },
+  {
+    id: "faq-next-step",
+    label: "Sledeći korak",
+    body:
+      "Ako odgovor zavisi od obima projekta, najbrži sledeći korak je opis + osnove/fotografije kroz brzi upit.",
+  },
+];
+
 const CONTEXT_TIPS: ChatGuideRule[] = [
   {
     id: "ai-before-upload",
@@ -406,6 +436,14 @@ function getRouteTips(pathname: string): ChatGuideTip[] {
 
   if (SITE_FEATURES.portfolio && pathname.startsWith("/portfolio")) {
     return [...PORTFOLIO_TIPS, ...SERVICE_ROUTE_TIPS];
+  }
+
+  if (pathname.startsWith("/o-nama") || pathname.startsWith("/pravno/sertifikati")) {
+    return ABOUT_TIPS;
+  }
+
+  if (pathname.startsWith("/cesto-postavljana-pitanja")) {
+    return [...FAQ_ROUTE_TIPS, ...SERVICE_ROUTE_TIPS];
   }
 
   if (pathname.startsWith("/kontakt")) {

@@ -164,6 +164,7 @@ export function ChatWidget() {
           body: JSON.stringify({
             pagePath: pathname,
             sessionId: chatSessionId,
+            guideContext,
             messages: newMessages.map((m) => ({
               role: m.role,
               content: m.content,
@@ -209,7 +210,7 @@ export function ChatWidget() {
         setStreaming(false);
       }
     },
-    [chatSessionId, messages, pathname],
+    [chatSessionId, guideContext, messages, pathname],
   );
 
   return (

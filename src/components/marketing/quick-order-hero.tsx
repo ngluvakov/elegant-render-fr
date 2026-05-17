@@ -243,11 +243,15 @@ export function QuickOrderHero() {
   return (
     <section id="naruci" className="relative py-10 md:py-16 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-4 sm:px-6 lg:px-8">
+        {/* Grid with explicit xl placement so mobile source order (managed via
+            `order-*`) differs from desktop layout. Mobile flow:
+              1. Hero header  2. Minimalni ulaz  3. Brza procena (panel)
+              4. Izabrana usluga  5. Trust signals
+            Desktop: 2 columns; left col stacks Hero → Minimalni → Izabrana →
+            Trust, right col is the sticky panel spanning all rows. */}
         <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,440px)]">
-          {/* ───────────── LEFT COLUMN ───────────── */}
-          <div className="space-y-8">
-            {/* Hero header: pill + title + description */}
-            <div className="space-y-5">
+          {/* Hero header: pill + title + description */}
+          <div className="order-1 space-y-5 xl:col-start-1 xl:row-start-1">
               <span className="inline-flex rounded-full border border-border bg-secondary/70 px-4 py-2 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
                 {view.kicker}
               </span>
@@ -260,8 +264,8 @@ export function QuickOrderHero() {
               </p>
             </div>
 
-            {/* "Minimalni ulaz za start" — full column width, image > text on desktop */}
-            <div className="grain-soft relative overflow-hidden rounded-3xl border border-border bg-card/80 p-6 shadow-[0_24px_60px_rgba(28,26,25,0.07)] sm:p-8 lg:p-10">
+          {/* "Minimalni ulaz za start" — full column width, image > text on desktop */}
+          <div className="order-2 grain-soft relative overflow-hidden rounded-3xl border border-border bg-card/80 p-6 shadow-[0_24px_60px_rgba(28,26,25,0.07)] sm:p-8 lg:p-10 xl:col-start-1 xl:row-start-2">
               <div
                 aria-hidden
                 className="absolute inset-0 bg-[linear-gradient(135deg,rgba(184,131,99,0.1),transparent_55%,rgba(143,154,138,0.1))]"
@@ -349,8 +353,8 @@ export function QuickOrderHero() {
               </div>
             </div>
 
-            {/* Trust signals — 4 col on xl, 2 col on md, 1 col on mobile */}
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {/* Trust signals — 4 col on xl, 2 col on md, 1 col on mobile */}
+          <div className="order-5 grid gap-4 md:grid-cols-2 xl:col-start-1 xl:row-start-4 xl:grid-cols-4">
               {TRUST_SIGNALS.map((signal) => (
                 <div
                   key={signal}
@@ -364,8 +368,8 @@ export function QuickOrderHero() {
               ))}
             </div>
 
-            {/* Selected service dark detail card — full column width */}
-            <div className="overflow-hidden rounded-3xl border border-foreground/10 bg-foreground p-6 text-background shadow-[0_30px_80px_rgba(28,26,25,0.22)] sm:p-8 lg:p-10">
+          {/* Selected service dark detail card — full column width */}
+          <div className="order-4 overflow-hidden rounded-3xl border border-foreground/10 bg-foreground p-6 text-background shadow-[0_30px_80px_rgba(28,26,25,0.22)] sm:p-8 lg:p-10 xl:col-start-1 xl:row-start-3">
               <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                 <div className="lg:max-w-2xl">
                   <p className="text-[0.68rem] uppercase tracking-[0.28em] text-background/65">
@@ -416,10 +420,10 @@ export function QuickOrderHero() {
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* ───────────── RIGHT COLUMN — Quick Order Panel (sticky on xl) ───────────── */}
-          <aside className="relative overflow-hidden rounded-3xl border border-border bg-card/95 p-5 shadow-[0_30px_80px_rgba(28,26,25,0.12)] sm:p-6 xl:sticky xl:top-24 xl:self-start">
+          {/* Quick Order Panel — mobile order-3 (between Minimalni and Izabrana);
+              desktop col 2, rowspan all so it pins as a single sticky panel */}
+          <aside className="order-3 relative overflow-hidden rounded-3xl border border-border bg-card/95 p-5 shadow-[0_30px_80px_rgba(28,26,25,0.12)] sm:p-6 xl:col-start-2 xl:row-start-1 xl:row-span-4 xl:sticky xl:top-24 xl:self-start">
             <div className="space-y-5">
               <div>
                 <p className="text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">

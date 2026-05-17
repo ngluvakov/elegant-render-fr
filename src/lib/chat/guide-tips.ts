@@ -9,6 +9,7 @@ import {
   type DisplayCurrency,
   type PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
+import { SITE_FEATURES } from "@/lib/site-features";
 
 export type ChatGuideTip = {
   id: string;
@@ -403,7 +404,7 @@ function getRouteTips(pathname: string): ChatGuideTip[] {
     return [...SERVICE_ROUTE_TIPS, ...PRICING_TIPS];
   }
 
-  if (pathname.startsWith("/portfolio")) {
+  if (SITE_FEATURES.portfolio && pathname.startsWith("/portfolio")) {
     return [...PORTFOLIO_TIPS, ...SERVICE_ROUTE_TIPS];
   }
 

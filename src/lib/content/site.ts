@@ -7,6 +7,8 @@
  * Used by: layout.tsx, site-header, site-footer, marketing pages,
  *          legal pages, robots.ts, sitemap.ts
  */
+import { SITE_FEATURES } from "@/lib/site-features";
+
 // Canonical site URL used by absoluteUrl(), robots.ts, sitemap.ts,
 // and the JSON-LD Organization schema below. Env-driven with a
 // fallback so the production build always resolves a real URL even
@@ -170,7 +172,9 @@ export const NAV_MAIN: NavItem[] = [
   { href: "/ai-studio", label: "AI Studio" },
   { href: "/usluge", label: "Usluge" },
   { href: "/cene", label: "Cene" },
-  { href: "/portfolio", label: "Portfolio" },
+  ...(SITE_FEATURES.portfolio
+    ? [{ href: "/portfolio", label: "Portfolio" }]
+    : []),
   { href: "/o-nama", label: "O nama" },
   { href: "/kontakt", label: "Kontakt" },
 ];

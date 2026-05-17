@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { createPublicMetadata } from "@/lib/seo";
+import { SITE_FEATURES } from "@/lib/site-features";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Portfolio",
@@ -14,6 +16,10 @@ export const metadata: Metadata = createPublicMetadata({
 const PLACEHOLDERS = Array.from({ length: 9 }, (_, i) => i + 1);
 
 export default function PortfolioPage() {
+  if (!SITE_FEATURES.portfolio) {
+    notFound();
+  }
+
   return (
     <>
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">

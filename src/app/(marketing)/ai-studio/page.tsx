@@ -30,6 +30,10 @@ import {
   type ToolPickerIconName,
 } from "@/components/marketing/ai-studio/tool-picker-card";
 import {
+  CreditBuyDockDesktop,
+  CreditBuyDockMobile,
+} from "@/components/marketing/ai-studio/credit-buy-dock";
+import {
   AI_EDIT_TYPES,
   calculateAiCreditPurchase,
   formatCreditsFromUnits,
@@ -301,14 +305,24 @@ export default async function AiStudioLandingPage() {
           buildFaqJsonLd(AI_STUDIO_FAQS),
         ]}
       />
-      <HeroSection
-        displayCurrency={displayCurrency}
-        pricingSettings={pricingSettings}
-      />
-      <ToolPickerSection
-        displayCurrency={displayCurrency}
-        pricingSettings={pricingSettings}
-      />
+      <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-12">
+          <div className="min-w-0">
+            <HeroContent
+              displayCurrency={displayCurrency}
+              pricingSettings={pricingSettings}
+            />
+            <ToolPickerGrid
+              displayCurrency={displayCurrency}
+              pricingSettings={pricingSettings}
+            />
+          </div>
+          <CreditBuyDockDesktop
+            pricingSettings={pricingSettings}
+            displayCurrency={displayCurrency}
+          />
+        </div>
+      </div>
       <WorkflowSection />
       <ToolsSection />
       <ScenarioSection />
@@ -323,11 +337,15 @@ export default async function AiStudioLandingPage() {
       <TipsSection />
       <FaqSection />
       <FinalCtaSection />
+      <CreditBuyDockMobile
+        pricingSettings={pricingSettings}
+        displayCurrency={displayCurrency}
+      />
     </>
   );
 }
 
-function HeroSection({
+function HeroContent({
   displayCurrency,
   pricingSettings,
 }: {
@@ -335,7 +353,7 @@ function HeroSection({
   pricingSettings: PricingSettings;
 }) {
   return (
-    <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
+    <div>
       <SectionKicker>AI Studio</SectionKicker>
       <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
         AI obrada koja vašu fotografiju pretvori u prodajni vizual
@@ -362,6 +380,7 @@ function HeroSection({
           href="/portal/ai-studio/krediti"
           variant="outline"
           size="lg"
+          className="lg:hidden"
         >
           <Coins className="h-4 w-4" />
           Kupi kredite
@@ -394,7 +413,7 @@ const ICON_NAME_BY_TOOL: Record<AiEditType, ToolPickerIconName> = {
   room_redesign: "palette",
 };
 
-function ToolPickerSection({
+function ToolPickerGrid({
   displayCurrency,
   pricingSettings,
 }: {
@@ -403,40 +422,38 @@ function ToolPickerSection({
 }) {
   return (
     <section className="pt-12 pb-2">
-      <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
-        <h2 className="mb-5 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-          Šta želite da uradite?
-        </h2>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-4">
-          {AI_EDIT_TYPES.map((item) => {
-            const detail = toolDetails[item.id];
-            const startingEur = toolStartingEur(
-              item.units,
-              pricingSettings.aiCreditTiers,
-              pricingSettings.aiCreditUnitsPerCredit,
-            );
-            return (
-              <ToolPickerCard
-                key={item.id}
-                href={`/portal/ai-studio?tool=${item.id}`}
-                label={item.label}
-                shortLabel={item.shortLabel}
-                blurb={detail.benefit}
-                imageSrc={detail.imageSrc}
-                beforeSrc={detail.beforeSrc}
-                afterSrc={detail.afterSrc}
-                iconName={ICON_NAME_BY_TOOL[item.id]}
-                gradient={detail.gradient}
-                creditsLabel={formatCreditsFromUnits(item.units)}
-                startingEurLabel={formatPublicPrice(
-                  startingEur,
-                  displayCurrency,
-                  pricingSettings,
-                )}
-              />
-            );
-          })}
-        </div>
+      <h2 className="mb-5 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+        Šta želite da uradite?
+      </h2>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
+        {AI_EDIT_TYPES.map((item) => {
+          const detail = toolDetails[item.id];
+          const startingEur = toolStartingEur(
+            item.units,
+            pricingSettings.aiCreditTiers,
+            pricingSettings.aiCreditUnitsPerCredit,
+          );
+          return (
+            <ToolPickerCard
+              key={item.id}
+              href={`/portal/ai-studio?tool=${item.id}`}
+              label={item.label}
+              shortLabel={item.shortLabel}
+              blurb={detail.benefit}
+              imageSrc={detail.imageSrc}
+              beforeSrc={detail.beforeSrc}
+              afterSrc={detail.afterSrc}
+              iconName={ICON_NAME_BY_TOOL[item.id]}
+              gradient={detail.gradient}
+              creditsLabel={formatCreditsFromUnits(item.units)}
+              startingEurLabel={formatPublicPrice(
+                startingEur,
+                displayCurrency,
+                pricingSettings,
+              )}
+            />
+          );
+        })}
       </div>
     </section>
   );
@@ -900,7 +917,7 @@ function FaqSection() {
 
 function FinalCtaSection() {
   return (
-    <section className="px-6 pb-24">
+    <section className="px-6 pb-32 lg:pb-24">
       <div className="mx-auto flex w-full max-w-[min(96vw,1720px)] flex-col items-start justify-between gap-6 rounded-2xl bg-foreground p-6 text-background shadow-[0_30px_80px_rgba(28,26,25,0.22)] md:flex-row md:items-center md:p-10">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-background/60">

@@ -1,25 +1,12 @@
-import type { Metadata } from "next";
-import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { NewOrderFromQuote } from "./new-order-from-quote";
-import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
-export const metadata: Metadata = {
-  title: "Nova porudžbina",
-  description:
-    "Pokrenite novu porudžbinu iz portala i izaberite usluge prema važećem cenovniku.",
-  robots: { index: false, follow: false },
-};
-
-export default async function NovaPorudzbina() {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/prijava?callbackUrl=/portal/nova-porudzbina");
-  const pricingCatalog = await getPublishedPricingCatalog();
-
-  return (
-    <NewOrderFromQuote
-      userId={session.user.id}
-      pricingCatalog={pricingCatalog}
-    />
-  );
+// `/portal/nova-porudzbina` was the legacy "confirm order" page that
+// AI-credit + configurator shortcuts pushed into after stashing a quote.
+// Everything now goes through `/poruci`, which handles guests, presents
+// the withdrawal waiver alongside the final total in the buyer's
+// currency, and pre-fills buyer info for logged-in users. This route
+// stays only to catch bookmarked links and in-flight tabs — the
+// sessionStorage stash survives the same-tab redirect.
+export default function NovaPorudzbina(): never {
+  redirect("/poruci");
 }

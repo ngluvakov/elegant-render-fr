@@ -27,6 +27,7 @@ import { enforceCleanScan } from "@/lib/file-scan";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 import { recordAuditLog } from "@/lib/audit";
+import { getPublicCountryCode } from "@/lib/catalog/public-currency-server";
 import {
   validateBuyerInfo,
   type BuyerInfoInput,
@@ -43,6 +44,42 @@ export type OrderResult = {
   orderId?: string;
   orderNumber?: string;
 };
+
+async function getStoredBuyerInfo(userId: string): Promise<BuyerInfoInput> {
+  const [user, publicCountryCode] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        billingBuyerType: true,
+        billingCountryCode: true,
+        billingCompanyName: true,
+        billingCompanyTaxId: true,
+        billingCompanyMb: true,
+        billingCompanyAddress: true,
+      },
+    }),
+    getPublicCountryCode(),
+  ]);
+
+  const buyerType = user?.billingBuyerType ?? "individual";
+  const fallbackCountryCode = publicCountryCode ?? "RS";
+  const buyerCountryCode =
+    buyerType === "company_rs"
+      ? "RS"
+      : user?.billingCountryCode ??
+        (buyerType === "individual" ? fallbackCountryCode : null);
+
+  return {
+    buyerType,
+    buyerCountryCode,
+    companyName: user?.billingCompanyName ?? null,
+    companyTaxId: user?.billingCompanyTaxId ?? null,
+    companyMb: user?.billingCompanyMb ?? null,
+    companyAddress: user?.billingCompanyAddress ?? null,
+    companyCountryCode:
+      buyerType === "company_foreign" ? buyerCountryCode : null,
+  };
+}
 
 export async function createOrder(
   userId: string,
@@ -66,9 +103,9 @@ export async function createOrder(
   }
 
   // Buyer-info validation runs server-side regardless of client checks.
-  // For B2C, buyerInfo may be undefined or { buyerType: "individual" } —
-  // both are accepted; the row defaults buyerType to 'individual'.
-  const buyer = buyerInfo ?? { buyerType: "individual" as const };
+  // Portal shortcuts may omit buyerInfo, so derive it from the saved
+  // profile instead of asking logged-in users to repeat those fields.
+  const buyer = buyerInfo ?? (await getStoredBuyerInfo(userId));
   const buyerError = validateBuyerInfo(buyer);
   if (buyerError) return { error: buyerError };
 

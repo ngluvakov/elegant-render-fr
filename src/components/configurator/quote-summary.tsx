@@ -62,15 +62,6 @@ export function QuoteSummary() {
     router.push("/poruci");
   };
 
-  const handleOrderInPortal = () => {
-    stashCheckoutQuote(items);
-    track("checkout_started", {
-      cart_size: calculation.items.length,
-      total_eur: calculation.total,
-    });
-    router.push("/portal/nova-porudzbina");
-  };
-
   const handleInquiryFromQuote = () => {
     openInquiry({
       source: "quote-summary",
@@ -332,14 +323,7 @@ export function QuoteSummary() {
             Neka tim pošalje predlog
           </button>
           <p className="mt-3 text-center text-[0.7rem] text-background/40">
-            Bez registracije — naručite u par koraka.{" "}
-            <button
-              type="button"
-              onClick={handleOrderInPortal}
-              className="underline-offset-2 hover:text-background/70 hover:underline"
-            >
-              Imam nalog
-            </button>
+            Bez registracije — naručite u par koraka.
           </p>
 
           {/* Share quote — saves to DB and returns a tokenized link.

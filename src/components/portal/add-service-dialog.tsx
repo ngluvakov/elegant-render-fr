@@ -14,7 +14,7 @@ import {
   type ConfiguratorCategory,
 } from "@/lib/catalog/configurator";
 import { addOrderItem } from "@/server/actions/item-config";
-import { formatEur } from "@/lib/catalog/calculate";
+import { useOrderCurrency } from "@/components/portal/order-currency-context";
 import { Collapsible } from "@/components/ui/collapsible";
 
 export function AddServiceDialog({
@@ -32,6 +32,7 @@ export function AddServiceDialog({
   const [error, setError] = useState<string | null>(null);
   const [, start] = useTransition();
   const router = useRouter();
+  const { formatPrice } = useOrderCurrency();
 
   const availableByCategory = useMemo(() => {
     return categories.map((cat) => ({
@@ -51,6 +52,13 @@ export function AddServiceDialog({
       if (result.error) {
         setError(result.error);
         return;
+      }
+      if (result.newItemId) {
+        // Picked up by ItemConfigPanel on mount so the newly added
+        // service opens its dropdown automatically.
+        try {
+          sessionStorage.setItem("er-just-added-item-id", result.newItemId);
+        } catch {}
       }
       setOpen(false);
       setActiveCat(null);
@@ -92,7 +100,7 @@ export function AddServiceDialog({
           )}
 
           {/* Category chips */}
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {availableByCategory.map((cat) => (
               <button
                 key={cat.id}
@@ -101,10 +109,10 @@ export function AddServiceDialog({
                   setActiveCat(activeCat === cat.id ? null : cat.id)
                 }
                 className={cn(
-                  "rounded-full border px-3 py-1 text-[0.7rem] font-medium transition-all",
+                  "rounded-full border px-4 py-2 text-sm font-medium transition-all",
                   activeCat === cat.id
                     ? "border-accent bg-accent text-accent-foreground shadow-[0_4px_12px_-4px_rgba(159,106,75,0.3)]"
-                    : "border-border/40 bg-card/60 text-muted-foreground hover:border-accent/40 hover:text-foreground",
+                    : "border-border/40 bg-card/60 text-foreground/80 hover:border-accent/40 hover:bg-accent/[0.04] hover:text-foreground",
                 )}
               >
                 {cat.label}
@@ -132,7 +140,7 @@ export function AddServiceDialog({
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-semibold text-foreground">
-                        {formatEur(prod.basePriceEur)}
+                        {formatPrice(prod.basePriceEur)}
                       </span>
                       <button
                         type="button"
@@ -159,7 +167,7 @@ export function AddServiceDialog({
           )}
 
           {!activeCat && (
-            <p className="mt-3 text-center text-[0.7rem] text-muted-foreground">
+            <p className="mt-4 text-center text-sm text-muted-foreground">
               Izaberite kategoriju
             </p>
           )}

@@ -7,7 +7,7 @@
  */
 "use client";
 
-import { useCallback, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   Check,
@@ -25,7 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
-import { formatDiscountedPrice } from "@/lib/catalog/calculate";
+import { useOrderCurrency } from "@/components/portal/order-currency-context";
 import {
   confirmItemFileUpload,
   deleteOrderItem,
@@ -101,6 +101,19 @@ export function ItemConfigPanel({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deletePending, startDelete] = useTransition();
   const router = useRouter();
+  const { formatDiscounted } = useOrderCurrency();
+
+  // Auto-expand right after AddServiceDialog inserts a new item, so the
+  // customer lands directly inside the configurator for the freshly added
+  // service. The flag is one-shot — cleared as soon as it's consumed.
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("er-just-added-item-id") === item.id) {
+        setExpanded(true);
+        sessionStorage.removeItem("er-just-added-item-id");
+      }
+    } catch {}
+  }, [item.id]);
 
   const isInterior = item.productId === "int-static";
   const isTour360 = item.productId === "int-360";
@@ -225,7 +238,7 @@ export function ItemConfigPanel({
             <p className="mt-0.5 text-xs text-muted-foreground">
               {item.categoryLabel} ·{" "}
               {(() => {
-                const { primary, struck } = formatDiscountedPrice(
+                const { primary, struck } = formatDiscounted(
                   item.totalEur,
                   item.originalTotalEur ?? item.totalEur,
                   item.discountPct ?? 0,

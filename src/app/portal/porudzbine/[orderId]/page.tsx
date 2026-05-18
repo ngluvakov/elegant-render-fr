@@ -18,8 +18,11 @@ import { ReferenceOrderPicker } from "@/components/portal/reference-order-picker
 import { OrderChargesCard } from "@/components/portal/order-charges-card";
 import { OrderInvoicesCard } from "@/components/portal/order-invoices-card";
 import { OrderAssistantGuideContext } from "@/components/chat/order-guide-context";
+import { OrderCurrencyProvider } from "@/components/portal/order-currency-context";
 import { AlertCircle } from "lucide-react";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import { displayCurrencyForBillingCurrency } from "@/lib/billing";
+import { getDisplayCurrencyForCountry } from "@/lib/catalog/display-currency";
 
 export const metadata: Metadata = {
   title: "Detalji porudžbine",
@@ -71,6 +74,17 @@ export default async function OrderDetailPage({
   if (!order || order.userId !== session.user.id) return notFound();
   const pricingCatalog = await getPublishedPricingCatalog();
 
+  // Display currency: prefer the snapshot stamped on the order (set by
+  // createOrder / createEmptyDraft); fall back to the user's profile
+  // billingCountryCode for legacy orders that pre-date the snapshot.
+  const userBilling = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { billingCountryCode: true },
+  });
+  const displayCurrency = order.billingCurrency
+    ? displayCurrencyForBillingCurrency(order.billingCurrency)
+    : getDisplayCurrencyForCountry(userBilling?.billingCountryCode);
+
   // Rule 3 picker — list user's paid-or-later orders as referencable.
   const referencableOrders = await prisma.order.findMany({
     where: {
@@ -113,6 +127,10 @@ export default async function OrderDetailPage({
   ).length;
 
   return (
+    <OrderCurrencyProvider
+      currency={displayCurrency}
+      settings={pricingCatalog.settings}
+    >
     <div className="space-y-6">
       <OrderAssistantGuideContext
         productIds={serviceItems.map((item) => item.productId)}
@@ -157,16 +175,6 @@ export default async function OrderDetailPage({
               <p className="mb-4 text-xs text-muted-foreground">
                 Za svaku stavku dodajte opis, osnove i reference stila. Za detaljnije opcije koristite „Napredno podešavanje”.
               </p>
-
-              {isDraft && (
-                <div className="mb-4">
-                  <ReferenceOrderPicker
-                    orderId={order.id}
-                    initialReferenceId={order.referencedOrderId}
-                    availableOrders={referencableOrders}
-                  />
-                </div>
-              )}
 
               {unconfiguredCount > 0 && (
                 <div className="mb-4 flex items-start gap-3 rounded-2xl border-l-4 border-l-[color:var(--color-ember-deep)] border border-[color:var(--color-ember)]/50 bg-gradient-to-br from-[color:var(--color-ember)]/[0.12] to-[color:var(--color-ember)]/[0.04] p-4 shadow-[0_8px_24px_-12px_rgba(163,127,45,0.3)] animate-in fade-in slide-in-from-top-1 duration-300">
@@ -218,6 +226,14 @@ export default async function OrderDetailPage({
                     orderId={order.id}
                     existingProductIds={serviceItems.map((i) => i.productId)}
                     categories={pricingCatalog.categories}
+                  />
+                )}
+
+                {isDraft && (
+                  <ReferenceOrderPicker
+                    orderId={order.id}
+                    initialReferenceId={order.referencedOrderId}
+                    availableOrders={referencableOrders}
                   />
                 )}
               </div>
@@ -288,6 +304,8 @@ export default async function OrderDetailPage({
             items={order.items}
             customerNote={order.customerNote}
             sourceFiles={sourceFiles}
+            displayCurrency={displayCurrency}
+            pricingSettings={pricingCatalog.settings}
           />
           {order.status === "in_review" && (
             <ReworkRequestCard orderId={order.id} />
@@ -295,5 +313,6 @@ export default async function OrderDetailPage({
         </div>
       </div>
     </div>
+    </OrderCurrencyProvider>
   );
 }

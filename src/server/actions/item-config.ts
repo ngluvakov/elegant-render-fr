@@ -600,7 +600,7 @@ export async function addOrderItem(
   orderId: string,
   productId: string,
   sourceMode?: string,
-): Promise<ItemConfigResult> {
+): Promise<ItemConfigResult & { newItemId?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { error: "Niste prijavljeni." };
 
@@ -690,7 +690,7 @@ export async function addOrderItem(
         ? pricingCatalog.settings.specialPricing.tour360.firstFloorEur
         : breakdown.totalEur;
 
-  await prisma.orderItem.create({
+  const created = await prisma.orderItem.create({
     data: {
       orderId,
       productId,
@@ -704,11 +704,12 @@ export async function addOrderItem(
       durationDiscount: breakdown.durationDiscount ?? null,
       ...(initialConfigJson ? { configJson: initialConfigJson } : {}),
     },
+    select: { id: true },
   });
 
   await repriceOrder(orderId);
   revalidatePath(`/portal/porudzbine/${orderId}`);
-  return { success: true };
+  return { success: true, newItemId: created.id };
 }
 
 function sanitizeRoom(r: InteriorRoom): InteriorRoom {

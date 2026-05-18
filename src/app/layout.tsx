@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ConsentBanner } from "@/components/site/consent-banner";
@@ -25,6 +26,23 @@ const manrope = Manrope({
 
 const googleSiteVerification =
   process.env.GOOGLE_SITE_VERIFICATION?.trim() || undefined;
+
+const GTM_CONTAINER_ID = "GTM-5X2MCQ87";
+const GTM_BOOTSTRAP = `
+window.dataLayer = window.dataLayer || [];
+function gtag(){window.dataLayer.push(arguments);}
+gtag('consent', 'default', {
+  analytics_storage: 'denied',
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied'
+});
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${GTM_CONTAINER_ID}');
+`;
 
 export const metadata: Metadata = {
   title: {
@@ -76,7 +94,19 @@ export default function RootLayout({
       lang={SEO.htmlLang}
       className={cn("h-full antialiased", cormorant.variable, manrope.variable)}
     >
+      <Script id="google-tag-manager" strategy="beforeInteractive">
+        {GTM_BOOTSTRAP}
+      </Script>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_CONTAINER_ID}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+            title="Google Tag Manager"
+          />
+        </noscript>
         {children}
         <ConsentBanner />
         <Analytics />

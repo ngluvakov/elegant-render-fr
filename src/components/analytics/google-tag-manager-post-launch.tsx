@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import Script from "next/script";
 import {
   CONSENT_CHANGE_EVENT,
   readConsent,
@@ -15,12 +14,6 @@ declare global {
     gtag?: (...args: unknown[]) => void;
   }
 }
-
-const rawContainerId = process.env.NEXT_PUBLIC_GTM_CONTAINER_ID?.trim() ?? "";
-const containerId = /^GTM-[A-Z0-9]+$/.test(rawContainerId)
-  ? rawContainerId
-  : "";
-const gtmEnabled = process.env.NEXT_PUBLIC_GTM_ENABLED === "true";
 
 function ensureGoogleDataLayer() {
   window.dataLayer = window.dataLayer || [];
@@ -55,7 +48,6 @@ function hasAnalyticsConsent(prefs: ConsentPrefs | null) {
 export function GoogleTagManagerPostLaunch() {
   const pathname = usePathname();
   const [analyticsConsent, setAnalyticsConsent] = useState(false);
-  const [scriptReady, setScriptReady] = useState(false);
 
   useEffect(() => {
     const applyConsent = (prefs: ConsentPrefs | null) => {
@@ -79,7 +71,7 @@ export function GoogleTagManagerPostLaunch() {
   }, []);
 
   useEffect(() => {
-    if (!gtmEnabled || !containerId || !analyticsConsent || !scriptReady) {
+    if (!analyticsConsent) {
       return;
     }
     window.dataLayer?.push({
@@ -88,34 +80,7 @@ export function GoogleTagManagerPostLaunch() {
       page_location: window.location.href,
       page_title: document.title,
     });
-  }, [analyticsConsent, pathname, scriptReady]);
+  }, [analyticsConsent, pathname]);
 
-  if (!gtmEnabled || !containerId || !analyticsConsent) return null;
-
-  return (
-    <>
-      <Script id="gtm-init" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){window.dataLayer.push(arguments);}
-          gtag('consent', 'default', {
-            analytics_storage: 'granted',
-            ad_storage: 'denied',
-            ad_user_data: 'denied',
-            ad_personalization: 'denied'
-          });
-          window.dataLayer.push({
-            'gtm.start': new Date().getTime(),
-            event: 'gtm.js'
-          });
-        `}
-      </Script>
-      <Script
-        id="gtm-loader"
-        src={`https://www.googletagmanager.com/gtm.js?id=${containerId}`}
-        strategy="afterInteractive"
-        onReady={() => setScriptReady(true)}
-      />
-    </>
-  );
+  return null;
 }

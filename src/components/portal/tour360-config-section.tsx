@@ -39,7 +39,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatEur } from "@/lib/catalog/calculate";
+import { useOrderCurrency } from "@/components/portal/order-currency-context";
 import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -157,6 +157,7 @@ function Tour360FloorPanel({
   const inputRef = useRef<HTMLInputElement>(null);
   const viewInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const { formatPrice } = useOrderCurrency();
 
   const sourceFiles = files.filter((f) => f.kind !== "window-view");
   const viewFiles = files.filter((f) => f.kind === "window-view");
@@ -284,7 +285,7 @@ function Tour360FloorPanel({
               )}
             </div>
             <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
-              {roomsSummary} · {formatEur(calc.floorTotal)}
+              {roomsSummary} · {formatPrice(calc.floorTotal)}
             </p>
           </div>
           <ChevronDown
@@ -1248,6 +1249,7 @@ export function Tour360ConfigSection({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initRef = useRef(true);
   const router = useRouter();
+  const { formatPrice } = useOrderCurrency();
 
   const calc = useMemo(
     () => calcTour360Total(floors, tourAssembly),
@@ -1328,7 +1330,7 @@ export function Tour360ConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatEur(calc.totalEur)}
+            {formatPrice(calc.totalEur)}
           </p>
         </div>
       </div>

@@ -34,6 +34,7 @@ import {
 import {
   billingCentsFromEurCents,
   buildBillingSnapshot,
+  type BillingSnapshotInput,
 } from "@/lib/billing";
 import { recordUserActivity } from "@/lib/user-activity";
 
@@ -234,11 +235,56 @@ export async function createEmptyDraft(): Promise<OrderResult> {
   const session = await auth();
   if (!session?.user?.id) return { error: "Niste prijavljeni." };
 
+  // Snapshot the user's billing identity onto the draft so totals
+  // display in their currency (RSD for RS, EUR otherwise) from the
+  // moment the draft is created — matches how createOrder seeds the
+  // snapshot during checkout. Without this the portal would show EUR
+  // for items added inside an RS-customer's draft until the draft
+  // funnels through /poruci.
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      billingBuyerType: true,
+      billingCountryCode: true,
+      billingCompanyName: true,
+      billingCompanyTaxId: true,
+      billingCompanyMb: true,
+      billingCompanyAddress: true,
+    },
+  });
+  const pricingCatalog = await getPublishedPricingCatalog();
+  const snapshotInput: BillingSnapshotInput = {
+    buyerType: user?.billingBuyerType ?? "individual",
+    buyerCountryCode: user?.billingCountryCode ?? null,
+    companyName: user?.billingCompanyName ?? null,
+    companyTaxId: user?.billingCompanyTaxId ?? null,
+    companyMb: user?.billingCompanyMb ?? null,
+    companyAddress: user?.billingCompanyAddress ?? null,
+    companyCountryCode: user?.billingCountryCode ?? null,
+  };
+  const billingSnapshot = buildBillingSnapshot(
+    snapshotInput,
+    pricingCatalog.settings,
+    user?.billingCountryCode ?? "RS",
+  );
+
   const order = await prisma.order.create({
     data: {
       orderNumber: generateOrderNumber(),
       userId: session.user.id,
       totalEur: 0,
+      totalCents: 0,
+      buyerType: billingSnapshot.buyerType,
+      buyerCountryCode: billingSnapshot.buyerCountryCode,
+      companyName: billingSnapshot.companyName,
+      companyTaxId: billingSnapshot.companyTaxId,
+      companyMb: billingSnapshot.companyMb,
+      companyAddress: billingSnapshot.companyAddress,
+      companyCountryCode: billingSnapshot.companyCountryCode,
+      billingCurrency: billingSnapshot.billingCurrency,
+      billingVatRate: billingSnapshot.billingVatRate,
+      billingEurToRsdRate: billingSnapshot.billingEurToRsdRate,
+      billingTotalCents: 0,
       items: { create: [] },
       statusEvents: {
         create: { toStatus: "draft", note: "Nacrt kreiran iz portala" },

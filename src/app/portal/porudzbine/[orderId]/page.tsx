@@ -157,6 +157,8 @@ export default async function OrderDetailPage({
         projectName={order.projectName}
         firstItemLabel={firstItem?.productLabel}
         firstItemCategory={firstItem?.categoryLabel}
+        displayCurrency={displayCurrency}
+        pricingSettings={pricingCatalog.settings}
       />
 
       {/* Status tracker */}

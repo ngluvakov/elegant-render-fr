@@ -38,7 +38,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatEur } from "@/lib/catalog/calculate";
+import { useOrderCurrency } from "@/components/portal/order-currency-context";
 import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -149,6 +149,7 @@ function FloorPanel({
   const [styleGuideOpen, setStyleGuideOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const viewInputRef = useRef<HTMLInputElement>(null);
+  const { formatPrice } = useOrderCurrency();
   const router = useRouter();
 
   const sourceFiles = files.filter((f) => f.kind !== "window-view");
@@ -266,7 +267,7 @@ function FloorPanel({
             <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
               {calc.totalRooms} prostor{calc.totalRooms === 1 ? "ija" : "ija"} ·{" "}
               {calc.totalCameras} {kameraNoun(calc.totalCameras)} ·{" "}
-              {formatEur(calc.floorTotal)}
+              {formatPrice(calc.floorTotal)}
             </p>
           </div>
           <ChevronDown
@@ -1005,6 +1006,7 @@ export function InteriorConfigSection({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initRef = useRef(true);
   const router = useRouter();
+  const { formatPrice } = useOrderCurrency();
 
   const calc = useMemo(() => calcInteriorTotal(floors), [floors]);
 
@@ -1076,7 +1078,7 @@ export function InteriorConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatEur(calc.totalEur)}
+            {formatPrice(calc.totalEur)}
           </p>
         </div>
       </div>

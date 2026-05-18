@@ -15,7 +15,7 @@
 "use client";
 
 import type { LineItemBreakdown } from "@/lib/catalog/calculate";
-import { formatEur } from "@/lib/catalog/calculate";
+import { useOrderCurrency } from "@/components/portal/order-currency-context";
 
 type Extra = { label: string; eur: number };
 type ExplicitRow = { label: string; value: number; sub?: string };
@@ -37,6 +37,7 @@ export function PricingBreakdown({
   baseLabel = "Cena",
   title = "Sastav cene",
 }: Props) {
+  const { formatPrice } = useOrderCurrency();
   const extrasTotal = extras.reduce((s, e) => s + e.eur, 0);
 
   let lineRows: ExplicitRow[];
@@ -49,7 +50,7 @@ export function PricingBreakdown({
         label: a.billableQty > 1 ? `${a.label} × ${a.billableQty}` : a.label,
         value: a.totalEur,
         sub: a.isVolumeRate
-          ? `veća količina €${a.unitPriceEur}/kom`
+          ? `veća količina ${formatPrice(a.unitPriceEur)}/kom`
           : undefined,
       })),
     ];
@@ -77,7 +78,7 @@ export function PricingBreakdown({
       <div className="flex items-center justify-between gap-2 border-t border-border/30 pt-1.5 text-foreground">
         <span className="text-sm font-medium">Ukupno</span>
         <span className="text-base font-bold tabular-nums">
-          {formatEur(total)}
+          {formatPrice(total)}
         </span>
       </div>
     </div>
@@ -93,6 +94,7 @@ function Row({
   value: number;
   sub?: string;
 }) {
+  const { formatPrice } = useOrderCurrency();
   return (
     <div className="flex items-baseline justify-between gap-2">
       <div className="min-w-0 truncate text-foreground">
@@ -104,7 +106,7 @@ function Row({
         )}
       </div>
       <span className="flex-shrink-0 tabular-nums text-foreground">
-        €{value}
+        {formatPrice(value)}
       </span>
     </div>
   );

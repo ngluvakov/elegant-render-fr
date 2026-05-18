@@ -28,7 +28,8 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { calculateQuote, formatEur } from "@/lib/catalog/calculate";
+import { calculateQuote } from "@/lib/catalog/calculate";
+import { useOrderCurrency } from "@/components/portal/order-currency-context";
 import { Collapsible } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -103,6 +104,7 @@ export function Ext360ConfigSection({
   const refInputRef = useRef<HTMLInputElement>(null);
   const locationPhotoInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const { formatPrice } = useOrderCurrency();
 
   const renderingTotal = useMemo(() => {
     const calc = calculateQuote([
@@ -286,7 +288,7 @@ export function Ext360ConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatEur(totalEur)}
+            {formatPrice(totalEur)}
           </p>
         </div>
       </div>

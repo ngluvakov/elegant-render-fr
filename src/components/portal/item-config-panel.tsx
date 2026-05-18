@@ -107,12 +107,21 @@ export function ItemConfigPanel({
   // customer lands directly inside the configurator for the freshly added
   // service. The flag is one-shot — cleared as soon as it's consumed.
   useEffect(() => {
+    let shouldExpand = false;
     try {
       if (sessionStorage.getItem("er-just-added-item-id") === item.id) {
-        setExpanded(true);
+        shouldExpand = true;
         sessionStorage.removeItem("er-just-added-item-id");
       }
     } catch {}
+
+    if (!shouldExpand) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      setExpanded(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [item.id]);
 
   const isInterior = item.productId === "int-static";

@@ -4,7 +4,11 @@
  *
  * Used on: /portal/porudzbine/[orderId] (order detail page).
  */
-import { formatDiscountedPrice } from "@/lib/catalog/calculate";
+import {
+  formatPublicDiscountedPrice,
+  type DisplayCurrency,
+  type PublicPricingFormatSettings,
+} from "@/lib/catalog/display-currency";
 
 type OrderSummaryCardProps = {
   items: Array<{
@@ -19,12 +23,16 @@ type OrderSummaryCardProps = {
   }>;
   customerNote: string | null;
   sourceFiles: Array<{ id: string; fileName: string; fileSize: number }>;
+  displayCurrency: DisplayCurrency;
+  pricingSettings: PublicPricingFormatSettings;
 };
 
 export function OrderSummaryCard({
   items,
   customerNote,
   sourceFiles,
+  displayCurrency,
+  pricingSettings,
 }: OrderSummaryCardProps) {
   return (
     <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
@@ -35,10 +43,12 @@ export function OrderSummaryCard({
       {/* Items */}
       <div className="mt-4 space-y-2">
         {items.map((item) => {
-          const { primary, struck } = formatDiscountedPrice(
+          const { primary, struck } = formatPublicDiscountedPrice(
             (item.totalCents ?? item.totalEur * 100) / 100,
             item.originalTotalEur ?? item.totalEur,
             item.discountPct ?? 0,
+            displayCurrency,
+            pricingSettings,
           );
           return (
             <div

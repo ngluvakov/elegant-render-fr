@@ -34,9 +34,9 @@ import {
 import { cn } from "@/lib/utils";
 import {
   calculateQuote,
-  formatEur,
   type LineItemBreakdown,
 } from "@/lib/catalog/calculate";
+import { useOrderCurrency } from "@/components/portal/order-currency-context";
 import { PricingBreakdown } from "./pricing-breakdown";
 import { HelpTip } from "@/components/ui/help-tip";
 import { Collapsible } from "@/components/ui/collapsible";
@@ -120,6 +120,7 @@ export function LandscapeConfigSection({
   const plantingInputRef = useRef<HTMLInputElement>(null);
   const droneInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  const { formatPrice } = useOrderCurrency();
 
   const breakdown = useMemo<LineItemBreakdown>(() => {
     const addOnQuantities: Record<string, number> = {
@@ -338,7 +339,7 @@ export function LandscapeConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatEur(totalEur)}
+            {formatPrice(totalEur)}
           </p>
         </div>
       </div>

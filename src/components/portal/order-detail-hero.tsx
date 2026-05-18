@@ -8,7 +8,11 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { formatEur } from "@/lib/catalog/calculate";
+import {
+  formatPublicPrice,
+  type DisplayCurrency,
+  type PublicPricingFormatSettings,
+} from "@/lib/catalog/display-currency";
 import {
   formatBillingMoney,
   type BillingCurrency,
@@ -30,6 +34,8 @@ type OrderDetailHeroProps = {
   projectName: string | null;
   firstItemLabel?: string;
   firstItemCategory?: string;
+  displayCurrency: DisplayCurrency;
+  pricingSettings: PublicPricingFormatSettings;
 };
 
 export function OrderDetailHero({
@@ -46,6 +52,8 @@ export function OrderDetailHero({
   projectName,
   firstItemLabel,
   firstItemCategory,
+  displayCurrency,
+  pricingSettings,
 }: OrderDetailHeroProps) {
   const editable = status === "draft";
   const fallback = firstItemLabel ?? orderNumber;
@@ -97,11 +105,16 @@ export function OrderDetailHero({
             <p className="text-2xl font-bold text-foreground">
               {billingCurrency && billingTotalCents != null
                 ? formatBillingMoney(billingTotalCents, billingCurrency)
-                : formatEur((totalCents ?? totalEur * 100) / 100)}
+                : formatPublicPrice(
+                    (totalCents ?? totalEur * 100) / 100,
+                    displayCurrency,
+                    pricingSettings,
+                  )}
             </p>
             {savingsEur > 0 && (
               <p className="text-xs font-semibold text-[color:var(--color-sage-deep)]">
-                −{formatEur(savingsEur)} ušteđeno
+                −{formatPublicPrice(savingsEur, displayCurrency, pricingSettings)}{" "}
+                ušteđeno
               </p>
             )}
           </div>

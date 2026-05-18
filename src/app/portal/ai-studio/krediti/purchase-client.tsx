@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { ArrowLeft, ArrowRight, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AiCreditAdder } from "@/components/configurator/ai-credit-adder";
 import { QuoteProvider, useQuote } from "@/components/configurator/quote-context";
 import { formatCents, formatCreditsFromUnits } from "@/lib/ai-studio/catalog";
+import { stashCheckoutQuote } from "@/lib/checkout-session";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 
 export function AiCreditPurchaseClient({
@@ -49,12 +51,13 @@ export function AiCreditPurchaseClient({
 function PortalCreditSummary() {
   const { items, calculation, clearAll } = useQuote();
   const router = useRouter();
+  const [waiveWithdrawal, setWaiveWithdrawal] = useState(false);
   const creditItem = calculation.items.find((item) => item.kind === "ai_credits");
   const hasCredits = Boolean(creditItem);
 
   const handleOrder = () => {
-    if (!hasCredits) return;
-    sessionStorage.setItem("er-checkout-quote", JSON.stringify(items));
+    if (!hasCredits || !waiveWithdrawal) return;
+    stashCheckoutQuote(items, { withdrawalWaivedAt: new Date() });
     router.push("/portal/nova-porudzbina");
   };
 
@@ -82,14 +85,34 @@ function PortalCreditSummary() {
               {formatCents(calculation.totalCents)}
             </span>
           </div>
+          <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-border/50 bg-background/50 px-3 py-2.5">
+            <input
+              type="checkbox"
+              checked={waiveWithdrawal}
+              onChange={(event) => setWaiveWithdrawal(event.target.checked)}
+              className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 cursor-pointer accent-accent"
+            />
+            <span className="text-xs leading-relaxed text-muted-foreground">
+              Pristajem da se AI krediti aktiviraju odmah posle plaćanja i da
+              time odustajem od 14-dnevnog povlačenja.{" "}
+              <Link
+                href="/pravno/uslovi"
+                target="_blank"
+                className="text-foreground/80 underline-offset-4 hover:underline"
+              >
+                Detalji
+              </Link>
+            </span>
+          </label>
           <Button
             type="button"
             variant="accent"
             size="xl"
             className="w-full"
             onClick={handleOrder}
+            disabled={!waiveWithdrawal}
           >
-            Kreiraj porudžbinu
+            Nastavi na plaćanje
             <ArrowRight className="h-4 w-4" />
           </Button>
           <button

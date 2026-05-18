@@ -9,6 +9,7 @@ import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import type { DisplayCurrency } from "@/lib/catalog/display-currency";
 import { ButtonLink } from "@/components/ui/button-link";
 import { requestPortalAccessAction } from "@/server/actions/auth";
+import { CHECKOUT_QUOTE_STORAGE_KEY } from "@/lib/checkout-session";
 import {
   CheckoutProvider,
   useCheckout,
@@ -234,7 +235,7 @@ export function CheckoutWizard({
   const [quoteItems, setQuoteItems] = useState<QuoteItem[] | null>(null);
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("er-checkout-quote");
+    const raw = sessionStorage.getItem(CHECKOUT_QUOTE_STORAGE_KEY);
     if (!raw) {
       router.replace("/cene");
       return;

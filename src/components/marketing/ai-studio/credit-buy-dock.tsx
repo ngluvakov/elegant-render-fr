@@ -23,6 +23,7 @@ import {
   formatPublicPriceFromCents,
   type DisplayCurrency,
 } from "@/lib/catalog/display-currency";
+import { stashCheckoutQuote } from "@/lib/checkout-session";
 import type { PricingSettings } from "@/lib/pricing/catalog";
 import { cn } from "@/lib/utils";
 
@@ -417,5 +418,5 @@ function stashCreditQuote(credits: number) {
     addOnQuantities: {},
     aiCreditQuantity: quantity,
   };
-  sessionStorage.setItem("er-checkout-quote", JSON.stringify([item]));
+  stashCheckoutQuote([item]);
 }

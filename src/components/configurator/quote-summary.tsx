@@ -29,6 +29,7 @@ import {
 } from "@/lib/catalog/display-currency";
 import { saveQuote } from "@/server/actions/quote";
 import { track } from "@/lib/posthog-events";
+import { stashCheckoutQuote } from "@/lib/checkout-session";
 import { useQuote } from "./quote-context";
 
 export function QuoteSummary() {
@@ -53,7 +54,7 @@ export function QuoteSummary() {
   const { openInquiry } = useQuickInquiry();
 
   const handleOrder = () => {
-    sessionStorage.setItem("er-checkout-quote", JSON.stringify(items));
+    stashCheckoutQuote(items);
     track("checkout_started", {
       cart_size: calculation.items.length,
       total_eur: calculation.total,
@@ -62,7 +63,7 @@ export function QuoteSummary() {
   };
 
   const handleOrderInPortal = () => {
-    sessionStorage.setItem("er-checkout-quote", JSON.stringify(items));
+    stashCheckoutQuote(items);
     track("checkout_started", {
       cart_size: calculation.items.length,
       total_eur: calculation.total,

@@ -11,14 +11,15 @@
 
 import { useState } from "react";
 import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   getRelatedProductIds,
   filterUnaddedRelated,
 } from "@/lib/catalog/product-relations";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
-import {
-  formatPublicPrice,
-} from "@/lib/catalog/display-currency";
+import { formatPublicPrice } from "@/lib/catalog/display-currency";
+import { resolveDiscount } from "@/lib/catalog/calculate";
+import { makeUpsellTargetItem } from "@/lib/catalog/upsell-helpers";
 import { useQuote } from "./quote-context";
 
 type Props = {
@@ -47,14 +48,30 @@ export function RelatedServicesPostcard({ productId }: Props) {
     .map((id) => {
       const result = getConfiguratorProduct(id, pricingCatalog?.categories);
       if (!result || result.product.inquiryOnly) return null;
-      return { id, product: result.product, categoryId: result.category.id };
+      const targetItem = makeUpsellTargetItem(id);
+      const discount = resolveDiscount(targetItem, items, pricingCatalog);
+      return {
+        id,
+        product: result.product,
+        categoryId: result.category.id,
+        discount,
+      };
     })
     .filter((r): r is NonNullable<typeof r> => r !== null);
 
   if (relatedProducts.length === 0) return null;
 
+  const hasAnyDiscount = relatedProducts.some((r) => r.discount !== null);
+
   return (
-    <div className="relative mt-2 rounded-xl border border-[color:var(--color-sage)]/20 bg-[color:var(--color-sage)]/8 p-3">
+    <div
+      className={cn(
+        "relative mt-3 rounded-xl border p-4 transition-colors",
+        hasAnyDiscount
+          ? "border-[color:var(--color-sage)]/45 bg-[color:var(--color-sage)]/15"
+          : "border-[color:var(--color-sage)]/25 bg-[color:var(--color-sage)]/8",
+      )}
+    >
       {/* Dismiss */}
       <button
         type="button"
@@ -65,39 +82,82 @@ export function RelatedServicesPostcard({ productId }: Props) {
         <X className="h-4 w-4" />
       </button>
 
-      {/* Header */}
-      <p className="mb-2 text-xs font-medium text-muted-foreground">
-        Uz ovaj paket:
-      </p>
+      {/* Header — SectionKicker-style + optional discount pill */}
+      <div className="mb-3 flex items-center gap-2 pr-6">
+        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[color:var(--color-sage-deep)]">
+          Uz ovaj paket
+        </p>
+        {hasAnyDiscount && (
+          <span className="inline-flex items-center rounded bg-[color:var(--color-sage-deep)]/15 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-[color:var(--color-sage-deep)]">
+            Sa popustom
+          </span>
+        )}
+      </div>
 
       {/* Related rows */}
-      <div className="space-y-1.5">
-        {relatedProducts.map(({ id, product, categoryId }) => (
-          <div key={id} className="flex items-center gap-2">
-            <span className="text-sm text-foreground">{product.label}</span>
-            {product.displayPerUnitEur !== undefined ? (
-              <span className="ml-1 text-xs text-muted-foreground">
-                {formatPublicPrice(
-                  product.displayPerUnitEur,
-                  displayCurrency,
-                  pricingSettings,
-                )}
-                {product.displayUnitLabel ? ` / ${product.displayUnitLabel}` : ""}
-              </span>
-            ) : (
-              <span className="ml-1 text-xs text-muted-foreground">
-                {formatPublicPrice(product.basePriceEur, displayCurrency, pricingSettings)}
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={() => addProduct(id, categoryId)}
-              className="ml-auto flex h-7 items-center rounded-md border border-foreground/20 bg-transparent px-2 text-xs font-medium text-foreground transition-colors hover:border-foreground/30 hover:bg-foreground/5"
+      <div className="space-y-2.5">
+        {relatedProducts.map(({ id, product, categoryId, discount }) => {
+          const original =
+            product.displayPerUnitEur ?? product.basePriceEur;
+          const discounted = discount
+            ? Math.round(original * (1 - discount.pct / 100))
+            : null;
+          const unitSuffix = product.displayUnitLabel
+            ? ` / ${product.displayUnitLabel}`
+            : "";
+
+          return (
+            <div
+              key={id}
+              className="flex flex-wrap items-center gap-x-2 gap-y-1"
             >
-              + Dodaj
-            </button>
-          </div>
-        ))}
+              <span className="text-sm font-medium text-foreground">
+                {product.label}
+              </span>
+
+              {discount && discounted !== null ? (
+                <>
+                  <span className="inline-flex items-center rounded border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/20 px-1.5 py-0.5 text-[0.65rem] font-bold tracking-wide text-[color:var(--color-sage-deep)]">
+                    &minus;{discount.pct}%
+                  </span>
+                  <span className="text-xs text-muted-foreground/60 line-through">
+                    {formatPublicPrice(
+                      original,
+                      displayCurrency,
+                      pricingSettings,
+                    )}
+                    {unitSuffix}
+                  </span>
+                  <span className="text-sm font-semibold text-foreground">
+                    {formatPublicPrice(
+                      discounted,
+                      displayCurrency,
+                      pricingSettings,
+                    )}
+                    {unitSuffix}
+                  </span>
+                </>
+              ) : (
+                <span className="text-xs text-muted-foreground">
+                  {formatPublicPrice(
+                    original,
+                    displayCurrency,
+                    pricingSettings,
+                  )}
+                  {unitSuffix}
+                </span>
+              )}
+
+              <button
+                type="button"
+                onClick={() => addProduct(id, categoryId)}
+                className="ml-auto flex h-7 items-center rounded-md border border-foreground/20 bg-transparent px-2.5 text-xs font-medium text-foreground transition-colors hover:border-foreground/30 hover:bg-foreground/5"
+              >
+                + Dodaj
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

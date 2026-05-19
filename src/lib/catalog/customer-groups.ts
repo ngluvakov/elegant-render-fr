@@ -19,7 +19,8 @@ export type CustomerGroupId =
   | "enterijer"
   | "planovi"
   | "animacija"
-  | "opremanje-renovacija";
+  | "opremanje-renovacija"
+  | "vr-iskustvo";
 
 export type CustomerGroup = {
   id: CustomerGroupId;
@@ -61,10 +62,10 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
   },
   {
     id: "animacija",
-    label: "Animacija & 360",
+    label: "360 i Animacija",
     shortLabel: "Animacija",
-    blurb: "3D animacije, 360° ture i VR iskustva",
-    catIds: ["animation", "vr-experiences"],
+    blurb: "3D animacije i 360° ture",
+    catIds: ["animation"],
     imageSrc: "/artwork/cene-card-animacija.webp",
     videoSrc: "/artwork/cene-card-animacija.mp4",
   },
@@ -75,6 +76,14 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     blurb: "Staging, renovacija, dan u noć, uklanjanje elemenata",
     catIds: ["staging", "renovation", "day-to-dusk", "item-removal"],
     imageSrc: "/artwork/cene-card-opremanje-renovacija.webp",
+  },
+  {
+    id: "vr-iskustvo",
+    label: "VR iskustvo",
+    shortLabel: "VR",
+    blurb: "Imerzivni VR walkthrough — konsultacija pre izrade",
+    catIds: ["vr-experiences"],
+    imageSrc: "/artwork/cene-card-animacija.webp",
   },
 ];
 

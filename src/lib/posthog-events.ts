@@ -117,6 +117,14 @@ export type EventMap = {
   };
   category_preview_click: { group: string };
   service_group_picked: { group: string };
+  service_chip_click: { filter: string };
+  service_tablica_click_dodaj: { product_id: string; category_id: string };
+  service_tablica_click_upsell: {
+    primary_product_id: string;
+    related_product_id: string;
+    discount_pct: number;
+  };
+  cart_chip_click: { cart_size: number };
 
   // Admin operational signals (server-side)
   admin_credits_granted: { user_id: string; units: number };

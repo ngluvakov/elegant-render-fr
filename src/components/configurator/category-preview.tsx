@@ -18,6 +18,7 @@ import Link from "next/link";
 import {
   Building2,
   Camera,
+  Glasses,
   Layers,
   Sofa,
   Sparkles,
@@ -85,6 +86,10 @@ const GROUP_VISUALS: Record<
   "opremanje-renovacija": {
     icon: Sparkles,
     gradient: "from-[color:var(--color-sage)]/20 to-accent/15",
+  },
+  "vr-iskustvo": {
+    icon: Glasses,
+    gradient: "from-foreground/15 to-[color:var(--color-sage-deep)]/20",
   },
 };
 

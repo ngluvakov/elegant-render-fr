@@ -178,7 +178,7 @@ export function ConfiguratorBody() {
                 type="button"
                 onClick={() => {
                   document
-                    .getElementById("configurator")
+                    .getElementById("tablice")
                     ?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
                 className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-2xl border border-dashed border-border/60 bg-transparent px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent"

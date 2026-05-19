@@ -3,10 +3,11 @@ import { Suspense } from "react";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { JsonLd } from "@/components/seo/json-ld";
-import { CategoryPreview } from "@/components/configurator/category-preview";
 import { ConfiguratorBody } from "@/components/configurator/pricing-configurator";
 import { QuoteProvider } from "@/components/configurator/quote-context";
 import { StandaloneAiCredits } from "@/components/configurator/standalone-ai-credits";
+import { ServiceChooserChips } from "@/components/configurator/service-chooser-chips";
+import { TablicaGrid } from "@/components/configurator/tablica-grid";
 import { PreFooterCta } from "@/components/site/pre-footer-cta";
 import {
   buildBreadcrumbJsonLd,
@@ -71,19 +72,20 @@ export default async function CenePage() {
       >
         <StandaloneAiCredits />
 
-        <section className="pt-10 pb-2">
-          <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
-            <h2 className="mb-5 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-              Šta vam treba?
-            </h2>
-            <CategoryPreview
-              displayCurrency={displayCurrency}
-              pricingCatalog={pricingCatalog}
-            />
-          </div>
+        {/* Sticky chip filter bar — includes CartChip on the right */}
+        <Suspense fallback={null}>
+          <ServiceChooserChips />
+        </Suspense>
+
+        {/* Browse grid — 18 tablice, filtered by active chip */}
+        <section id="tablice" className="mx-auto w-full max-w-[min(96vw,1720px)] scroll-mt-24 px-6">
+          <Suspense fallback={null}>
+            <TablicaGrid />
+          </Suspense>
         </section>
 
-        <section id="configurator" className="scroll-mt-24 pb-20 pt-16">
+        {/* Cart / configurator — anchored for CartChip scroll target */}
+        <section id="korpa" className="scroll-mt-24 pb-20 pt-16">
           <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
             <Suspense fallback={null}>
               <ConfiguratorBody />

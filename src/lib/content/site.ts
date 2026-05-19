@@ -164,20 +164,20 @@ export const ISO_CERTIFICATIONS: IsoCertification[] = [
 
 export const PLATFORM_PRINCIPLES = [
   {
-    title: "1. Izaberite uslugu",
-    text: "Odaberite tačno ono što Vam je potrebno: render, 360 turu, osnovu ili virtuelno opremanje.",
+    title: "1. Izračunate okvir",
+    text: "Izaberete uslugu i tip obračuna. Odmah vidite početnu cenu i šta ona konkretno uključuje.",
   },
   {
-    title: "2. Vidite osnovnu cenu",
-    text: "Odmah vidite početnu cenu koja pokriva glavni deo posla i izradu 3D modela.",
+    title: "2. Pošaljete materijale",
+    text: "Forma traži samo ono što nam treba za start: osnove, fotografije, reference stila i kratak cilj projekta.",
   },
   {
-    title: "3. Dodajte šta Vam treba",
-    text: "Dodajte nove uglove, sobe ili spratove. Videćete kako cena po elementu drastično pada.",
+    title: "3. Dobijete prve nacrte",
+    text: "Za standardne projekte prve nacrte šaljemo za 3-5 radnih dana, uz jasnu komunikaciju kroz portal.",
   },
   {
-    title: "4. Pošaljite materijale",
-    text: "Sistem Vam tačno kaže šta nam je potrebno da bismo odmah počeli sa radom.",
+    title: "4. Finalizujemo kroz revizije",
+    text: "Tri runde revizija su uključene, zatim preuzimate finalne fajlove i dokumentaciju za projekat.",
   },
 ] as const;
 

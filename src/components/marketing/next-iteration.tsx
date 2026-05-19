@@ -1,7 +1,7 @@
 /**
  * NextIteration — Conversion CTA block placed between the model-first
- * explainer and the FAQ. Surfaces a single primary action ("Započnite
- * projekat") plus three reassurance pills (revisions, ISO, delivery).
+ * explainer and the FAQ. Surfaces a single primary action ("Izračunajte
+ * cenu") plus three reassurance pills (revisions, ISO, delivery).
  *
  * Used on: / (home page).
  */
@@ -24,15 +24,15 @@ export function NextIteration() {
               Spremni da krenete?
             </p>
             <h2 className="mt-3 text-3xl leading-tight text-foreground sm:text-4xl md:text-5xl">
-              Spremni da započnete projekat?
+              Spremni da proverite budžet?
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground">
-              Izaberite uslugu, proverite cenu i pošaljite nam materijale. Sve u
-              par klikova.
+              Prvo složite okvirnu ponudu u kalkulatoru. Kada ste spremni,
+              porudžbina nastavlja iz iste quote korpe bez vraćanja unazad.
             </p>
             <div className="mt-7">
-              <ButtonLink href="/poruci" variant="accent" size="lg">
-                Započnite projekat
+              <ButtonLink href="/cene#configurator" variant="accent" size="lg">
+                Izračunajte cenu
               </ButtonLink>
             </div>
             <ul className="mt-8 flex flex-wrap items-center justify-center gap-2">

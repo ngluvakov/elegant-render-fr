@@ -15,6 +15,7 @@ import {
   usePublicCurrency,
   usePublicPricingSettings,
 } from "@/components/site/public-currency-provider";
+import { CONSENT_CHANGE_EVENT, readConsent } from "@/lib/consent";
 import { useAssistantGuideSnapshot } from "@/lib/chat/guide-context";
 import { getChatGuideTips } from "@/lib/chat/guide-tips";
 import { ChatMessages, type ChatMessage } from "./chat-messages";
@@ -77,6 +78,7 @@ export function ChatWidget() {
   const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MESSAGE]);
   const [streaming, setStreaming] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [consentDecided, setConsentDecided] = useState(false);
   const [guideDismissed, setGuideDismissed] = useState(false);
   const [tipIndex, setTipIndex] = useState(0);
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
@@ -105,12 +107,31 @@ export function ChatWidget() {
 
   // Load persisted state after hydration
   useEffect(() => {
+    const hasConsent = readConsent() !== null;
+    setConsentDecided(hasConsent);
+    if (hasConsent) {
+      setMessages(loadMessages());
+      setOpen(loadOpen());
+      setGuideDismissed(loadGuideDismissed());
+      setChatSessionId(loadChatSessionId());
+    }
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const syncConsent = () => setConsentDecided(readConsent() !== null);
+    window.addEventListener(CONSENT_CHANGE_EVENT, syncConsent);
+    return () => window.removeEventListener(CONSENT_CHANGE_EVENT, syncConsent);
+  }, [hydrated]);
+
+  useEffect(() => {
+    if (!hydrated || !consentDecided || chatSessionId) return;
     setMessages(loadMessages());
     setOpen(loadOpen());
     setGuideDismissed(loadGuideDismissed());
     setChatSessionId(loadChatSessionId());
-    setHydrated(true);
-  }, []);
+  }, [chatSessionId, consentDecided, hydrated]);
 
   // Persist messages to sessionStorage
   useEffect(() => {
@@ -212,6 +233,8 @@ export function ChatWidget() {
     },
     [chatSessionId, guideContext, messages, pathname],
   );
+
+  if (!hydrated || !consentDecided) return null;
 
   return (
     <>

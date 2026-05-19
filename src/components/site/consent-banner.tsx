@@ -115,17 +115,17 @@ export function ConsentBanner() {
       role="dialog"
       aria-modal="false"
       aria-labelledby="consent-banner-title"
-      className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-xl rounded-2xl border border-border/70 bg-card/95 p-5 shadow-[0_24px_60px_rgba(28,26,25,0.18)] backdrop-blur-md sm:inset-x-auto sm:right-5 sm:bottom-5 sm:p-6"
+      className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-lg rounded-2xl border border-border/70 bg-card/95 p-4 shadow-[0_24px_60px_rgba(28,26,25,0.18)] backdrop-blur-md sm:inset-x-auto sm:right-5 sm:bottom-5 sm:p-6"
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-accent/12 text-accent">
+        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent/12 text-accent sm:h-9 sm:w-9">
           <Cookie className="h-4 w-4" />
         </div>
         <div className="min-w-0 flex-1">
           <h2 id="consent-banner-title" className="text-base font-semibold text-foreground">
             Kolačići i privatnost
           </h2>
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-1 text-sm leading-relaxed text-muted-foreground sm:text-sm">
             Koristimo neophodne kolačiće za rad sajta. Dodatnu analitiku i
             snimanje sesija uključujemo samo uz vašu saglasnost, da bismo
             popravili iskustvo.{" "}
@@ -173,27 +173,27 @@ export function ConsentBanner() {
         </div>
       )}
 
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="mt-4 grid grid-cols-2 gap-2 sm:mt-5 sm:flex sm:flex-wrap">
         {view === "summary" && (
           <>
             <button
               type="button"
               onClick={handleAcceptAll}
-              className="inline-flex flex-1 items-center justify-center rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--color-clay-deep)] sm:flex-none"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--color-clay-deep)] sm:flex-none"
             >
               Prihvati sve
             </button>
             <button
               type="button"
               onClick={handleNecessaryOnly}
-              className="inline-flex flex-1 items-center justify-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary sm:flex-none"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary sm:flex-none"
             >
               Samo neophodne
             </button>
             <button
               type="button"
               onClick={() => setForceOpen(true)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+              className="col-span-2 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:text-foreground sm:col-span-1 sm:text-sm"
             >
               <Settings className="h-3.5 w-3.5" />
               Podešavanja
@@ -205,14 +205,14 @@ export function ConsentBanner() {
             <button
               type="button"
               onClick={handleSavePrefs}
-              className="inline-flex flex-1 items-center justify-center rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--color-clay-deep)] sm:flex-none"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--color-clay-deep)] sm:flex-none"
             >
               Sačuvaj izbor
             </button>
             <button
               type="button"
               onClick={handleAcceptAll}
-              className="inline-flex flex-1 items-center justify-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary sm:flex-none"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary sm:flex-none"
             >
               Prihvati sve
             </button>

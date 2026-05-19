@@ -26,6 +26,11 @@ export type EventMap = {
     source_mode?: string;
   };
   service_removed: { product_id: string; cart_size_after: number };
+  quote_prefilled_from_url: {
+    product_id: string;
+    category_id: string;
+    source_mode?: string;
+  };
   quote_saved: { cart_size: number; total_eur: number };
   quote_loaded_from_share: { cart_size: number; token_age_days?: number };
 

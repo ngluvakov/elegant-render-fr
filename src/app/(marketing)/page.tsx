@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { QuickOrderHero } from "@/components/marketing/quick-order-hero";
 import { PlatformPrinciples } from "@/components/marketing/platform-principles";
 import { ModelFirst } from "@/components/marketing/model-first";
 import { NextIteration } from "@/components/marketing/next-iteration";
 import { FaqCards } from "@/components/marketing/faq-cards";
+import { ResultsProof } from "@/components/marketing/results-proof";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildHomeJsonLd, createPublicMetadata, SEO } from "@/lib/seo";
 
@@ -20,6 +22,7 @@ export default function Home() {
       <JsonLd data={buildHomeJsonLd()} />
       <QuickOrderHero />
       <SearchIntentSection />
+      <ResultsProof />
       <PlatformPrinciples />
       <ModelFirst />
       <NextIteration />
@@ -36,24 +39,34 @@ function SearchIntentSection() {
           {
             title: "Arhitektonska vizuelizacija",
             text: "Realistični prikazi enterijera i eksterijera. Osnovna cena pokriva izradu modela, a svaki dodatni ugao ili prostorija košta znatno manje. Idealno za investitore i arhitekte.",
+            href: "/cene?group=enterijer#configurator",
           },
           {
             title: "Virtuelno opremanje i renovacija",
             text: "Transformišite prazne ili zastarele prostore na osnovu fotografija. Prva slika pokriva dizajn, a svaka sledeća slika iste prostorije donosi uštedu do 33%.",
+            href: "/cene?group=opremanje-renovacija#configurator",
           },
           {
             title: "Interaktivni prikazi i osnove",
             text: "Od jasnih 2D/3D osnova do imerzivnih 360 tura. Naručite više usluga iz istog modela i ostvarite automatske popuste na celokupan projekat.",
+            href: "/cene?group=planovi#configurator",
           },
         ].map((item) => (
-          <article key={item.title} className="border-t border-border/70 pt-5">
+          <Link
+            key={item.title}
+            href={item.href}
+            className="group border-t border-border/70 pt-5"
+          >
             <h2 className="text-xl font-semibold text-foreground">
               {item.title}
             </h2>
             <p className="mt-3 text-sm leading-7 text-muted-foreground">
               {item.text}
             </p>
-          </article>
+            <p className="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-accent group-hover:underline">
+              Pogledajte cene
+            </p>
+          </Link>
         ))}
       </div>
     </section>

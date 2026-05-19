@@ -94,10 +94,10 @@ export default function RootLayout({
       lang={SEO.htmlLang}
       className={cn("h-full antialiased", cormorant.variable, manrope.variable)}
     >
-      <Script id="google-tag-manager" strategy="beforeInteractive">
-        {GTM_BOOTSTRAP}
-      </Script>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
+        <Script id="google-tag-manager" strategy="beforeInteractive">
+          {GTM_BOOTSTRAP}
+        </Script>
         <noscript>
           <iframe
             src={`https://www.googletagmanager.com/ns.html?id=${GTM_CONTAINER_ID}`}

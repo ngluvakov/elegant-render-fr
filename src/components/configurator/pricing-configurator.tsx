@@ -35,7 +35,10 @@ export function ConfiguratorBody() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const sharedToken = searchParams.get("q");
+  const prefillProductId = searchParams.get("add");
+  const prefillSourceMode = searchParams.get("sourceMode") ?? undefined;
   const hydratedRef = useRef(false);
+  const prefilledRef = useRef(false);
 
   // Hydrate from a shared quote URL (?q=<token>) on first mount only.
   useEffect(() => {
@@ -59,6 +62,32 @@ export function ConfiguratorBody() {
       cancelled = true;
     };
   }, [sharedToken, loadItems, router]);
+
+  // Homepage and service-card CTAs can deep-link into /cene with a product
+  // selected. Add it once, then clean the URL so refreshes do not duplicate it.
+  useEffect(() => {
+    if (!prefillProductId || prefilledRef.current) return;
+    prefilledRef.current = true;
+    const result = getConfiguratorProduct(
+      prefillProductId,
+      pricingCatalog?.categories,
+    );
+    if (result && !result.product.inquiryOnly) {
+      addProduct(prefillProductId, result.category.id, prefillSourceMode);
+      track("quote_prefilled_from_url", {
+        product_id: prefillProductId,
+        category_id: result.category.id,
+        ...(prefillSourceMode ? { source_mode: prefillSourceMode } : {}),
+      });
+    }
+    router.replace("/cene#configurator", { scroll: false });
+  }, [
+    prefillProductId,
+    prefillSourceMode,
+    addProduct,
+    pricingCatalog,
+    router,
+  ]);
 
   // Listen for chat proposal events (when user is already on /cene)
   // and check sessionStorage on mount (when navigated from another page)

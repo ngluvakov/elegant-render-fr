@@ -80,3 +80,23 @@ Structural edits (add/remove items, rename project, edit rooms) only allowed whe
 ## Chatbot
 
 OpenAI-backed chat emits service proposals as `:::predlog` blocks (see `src/components/chat/chat-messages.tsx`). Parsing + "add to configurator" flow is wired through `sessionStorage("er-chat-proposal")` and the `er-chat-proposal` custom event.
+
+## The Elegant Gentlemen (subagent team)
+
+Five on-demand subagents live in `.claude/agents/` and confer via files in `.claude/elegant-gentlemen/`. They are **off-duty by default** — never auto-delegate to them.
+
+| Slug | Gentleman | Remit |
+|---|---|---|
+| `eg-conversion-ashford` | Mr. Ashford | Conversion & funnel; Serbian CTA copy |
+| `eg-design-beaumont` | Mr. Beaumont | Design & brand (sage/clay, calm, minimal) |
+| `eg-stack-carrington` | Mr. Carrington | Stack & code quality (the rules above) |
+| `eg-architect-davenport` | Mr. Davenport | UI/UX architect — the only one who writes UI code |
+| `eg-deploy-whitfield` | Mr. Whitfield | Pre-deploy gate before `git push origin main` |
+
+**Engage:** `/eg <task>` for the full round-table, the phrase "Elegant Gentlemen, …" as an equivalent trigger, or `@eg-<slug>` for a one-off consult.
+**Dismiss:** "Gentlemen, that will be all." Outside an active session they do nothing.
+
+**Write scopes** (enforced socially via each agent's system prompt, not the harness):
+- Ashford/Beaumont/Carrington/Whitfield write **only** inside their own study under `.claude/elegant-gentlemen/<name>/`.
+- Davenport is the **only** gentleman who writes production code, and only to UI surface: `src/app/**`, `src/components/**`, `src/styles/**`, `tailwind.config.*`. He never touches `prisma/`, `src/server/**`, or `src/lib/catalog/**`.
+- Round-table notes live in `.claude/elegant-gentlemen/sessions/<ts>-<topic>/`; each gentleman writes only his own `NN-<slug>.md`. Main Claude (moderator) writes `brief.md`, `decision.md`, and `dismissed.md`.

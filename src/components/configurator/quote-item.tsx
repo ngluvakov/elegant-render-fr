@@ -89,72 +89,74 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
       className="overflow-hidden rounded-2xl border border-border/60 bg-card/95 transition-shadow"
     >
       {/* Header */}
-      <button
-        type="button"
-        onClick={() => setExpanded((v) => !v)}
-        className="flex w-full items-center justify-between gap-3 bg-secondary/40 px-5 py-4 text-left transition-colors hover:bg-secondary/60"
-      >
-        <div className="min-w-0 flex-1">
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            {breakdown.categoryLabel}
-          </p>
-          <p className="mt-1 text-base font-semibold text-foreground">
-            {breakdown.productLabel}
-          </p>
-          {breakdown.discountReason && (
-            <p className="mt-1 text-xs text-[color:var(--color-sage-deep)]">
-              {breakdown.discountReason}
+      <div className="flex items-stretch bg-secondary/40">
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="flex min-w-0 flex-1 items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-secondary/60"
+          aria-expanded={expanded}
+        >
+          <div className="min-w-0 flex-1">
+            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              {breakdown.categoryLabel}
             </p>
-          )}
-        </div>
-        <div className="flex items-center gap-3">
-          {(() => {
-            const { primary, struck, badge } = formatPublicDiscountedPrice(
-              breakdown.totalEur,
-              breakdown.originalTotalEur,
-              breakdown.discountPct,
-              displayCurrency,
-              pricingSettings,
-            );
-            return (
-              <div className="flex flex-col items-end">
-                <div className="flex items-center gap-2">
-                  {struck && (
-                    <span className="text-sm text-muted-foreground/60 line-through">
-                      {struck}
+            <p className="mt-1 text-base font-semibold text-foreground">
+              {breakdown.productLabel}
+            </p>
+            {breakdown.discountReason && (
+              <p className="mt-1 text-xs text-[color:var(--color-sage-deep)]">
+                {breakdown.discountReason}
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            {(() => {
+              const { primary, struck, badge } = formatPublicDiscountedPrice(
+                breakdown.totalEur,
+                breakdown.originalTotalEur,
+                breakdown.discountPct,
+                displayCurrency,
+                pricingSettings,
+              );
+              return (
+                <div className="flex flex-col items-end">
+                  <div className="flex items-center gap-2">
+                    {struck && (
+                      <span className="text-sm text-muted-foreground/60 line-through">
+                        {struck}
+                      </span>
+                    )}
+                    <span className="text-lg font-semibold text-foreground">
+                      {primary}
+                    </span>
+                  </div>
+                  {badge && (
+                    <span className="mt-0.5 rounded-md bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.68rem] font-semibold text-[color:var(--color-sage-deep)]">
+                      {badge}
                     </span>
                   )}
-                  <span className="text-lg font-semibold text-foreground">
-                    {primary}
-                  </span>
                 </div>
-                {badge && (
-                  <span className="mt-0.5 rounded-md bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.68rem] font-semibold text-[color:var(--color-sage-deep)]">
-                    {badge}
-                  </span>
-                )}
-              </div>
-            );
-          })()}
-          <ChevronDown
-            className={cn(
-              "h-4 w-4 text-muted-foreground transition-transform duration-300",
-              expanded && "rotate-180",
-            )}
-          />
+              );
+            })()}
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 text-muted-foreground transition-transform duration-300",
+                expanded && "rotate-180",
+              )}
+            />
+          </div>
+        </button>
+        <div className="flex items-center pr-4">
           <button
             type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              removeProduct(breakdown.instanceId);
-            }}
+            onClick={() => removeProduct(breakdown.instanceId)}
             aria-label="Ukloni"
-            className="flex h-7 w-7 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors hover:bg-destructive/20"
+            className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors hover:bg-destructive/20"
           >
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
-      </button>
+      </div>
 
       <Collapsible open={expanded}>
         <div>

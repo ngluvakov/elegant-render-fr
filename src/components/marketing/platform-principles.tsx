@@ -15,14 +15,13 @@ export function PlatformPrinciples() {
           <div className="max-w-3xl space-y-3">
             <SectionKicker>Jasan proces poručivanja</SectionKicker>
             <h2 className="text-4xl leading-tight text-foreground md:text-5xl">
-              Umesto marketinških paketa, vidite stvarni način obračuna po
-              usluzi.
+              Od okvirne cene do finalnih fajlova, bez nagađanja šta se dešava
+              sledeće.
             </h2>
           </div>
           <p className="max-w-xl text-sm leading-7 text-muted-foreground">
-            Prvi nivo iskustva je servisna platforma: birate uslugu, zatim
-            tačan tip obračuna, a ispod se prikazuju stvarne doplate koje menjaju
-            ukupnu cenu projekta.
+            Kalkulator služi da odluka bude laka, a proces posle toga ostaje
+            kratak: materijali, prvi nacrti, revizije i isporuka kroz portal.
           </p>
         </div>
 

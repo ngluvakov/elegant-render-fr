@@ -28,7 +28,10 @@ export function proxy(request: NextRequest) {
 
     if (!token) {
       const signInUrl = new URL("/prijava", request.url);
-      signInUrl.searchParams.set("callbackUrl", pathname);
+      signInUrl.searchParams.set(
+        "callbackUrl",
+        `${pathname}${request.nextUrl.search}`,
+      );
       return NextResponse.redirect(signInUrl);
     }
   }

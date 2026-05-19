@@ -34,6 +34,10 @@ const INPUT_MAX = 9999;
 // allowed to go higher (INPUT_MAX) — the slider just clamps visually.
 const SLIDER_MAX = 200;
 
+export function aiCreditTaxLabel(displayCurrency: DisplayCurrency) {
+  return displayCurrency === "rsd" ? "sa PDV" : "bez PDV";
+}
+
 type CreditBuyDockProps = {
   pricingSettings: PricingSettings;
   displayCurrency: DisplayCurrency;
@@ -74,8 +78,13 @@ export function CreditBuyDockMobile({
   const [credits, setCredits] = useState(10);
   const [open, setOpen] = useState(false);
   const purchase = useMemo(
-    () => calculateAiCreditPurchase(credits, tiers),
-    [credits, tiers],
+    () =>
+      calculateAiCreditPurchase(
+        credits,
+        tiers,
+        pricingSettings.aiCreditUnitsPerCredit,
+      ),
+    [credits, pricingSettings.aiCreditUnitsPerCredit, tiers],
   );
   const router = useRouter();
 
@@ -194,8 +203,13 @@ function CreditPickerBody({
   const inputId = useId();
 
   const purchase = useMemo(
-    () => calculateAiCreditPurchase(credits, tiers),
-    [credits, tiers],
+    () =>
+      calculateAiCreditPurchase(
+        credits,
+        tiers,
+        pricingSettings.aiCreditUnitsPerCredit,
+      ),
+    [credits, pricingSettings.aiCreditUnitsPerCredit, tiers],
   );
   const tierMeta = useMemo(() => buildTierMeta(tiers), [tiers]);
   const currentTierIndex = useMemo(
@@ -352,7 +366,9 @@ function CreditPickerBody({
       )}
 
       <div className="mt-4 flex items-baseline justify-between border-t border-border/50 pt-4">
-        <span className="text-sm text-muted-foreground">Ukupno (bez PDV)</span>
+        <span className="text-sm text-muted-foreground">
+          Ukupno ({aiCreditTaxLabel(displayCurrency)})
+        </span>
         <span className="text-2xl font-bold text-foreground tabular-nums">
           {formatPublicPriceFromCents(
             purchase.totalCents,
@@ -410,7 +426,7 @@ function findActiveTierIndex(credits: number, tiers: TierMetaEntry[]): number {
   return active;
 }
 
-function stashCreditQuote(credits: number) {
+export function stashCreditQuote(credits: number) {
   const quantity = Math.max(MIN_CREDITS, Math.floor(credits));
   const item: QuoteItem = {
     instanceId: crypto.randomUUID(),

@@ -11,12 +11,16 @@ import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 
 const initialState: AuthState = {};
 
-export function SignInForm() {
+export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
   const [state, formAction, pending] = useActionState(signInAction, initialState);
+  const registrationHref =
+    callbackUrl === "/portal"
+      ? "/registracija"
+      : `/registracija?callbackUrl=${encodeURIComponent(callbackUrl)}`;
 
   return (
     <div className="mt-8 space-y-5">
-      <GoogleSignInButton />
+      <GoogleSignInButton callbackUrl={callbackUrl} />
 
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-border" />
@@ -25,6 +29,7 @@ export function SignInForm() {
       </div>
 
     <form action={formAction} className="space-y-5">
+      <input type="hidden" name="callbackUrl" value={callbackUrl} />
       {state.error && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {state.error}
@@ -74,7 +79,7 @@ export function SignInForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Nemate nalog?{" "}
-        <Link href="/registracija" className="font-medium text-foreground hover:text-accent">
+        <Link href={registrationHref} className="font-medium text-foreground hover:text-accent">
           Registrujte se
         </Link>
       </p>

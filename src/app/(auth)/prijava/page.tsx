@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { sanitizeAuthCallback } from "@/lib/auth-redirect";
 import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { SignInForm } from "./sign-in-form";
 
@@ -10,7 +11,14 @@ export const metadata: Metadata = {
   robots: NO_INDEX_ROBOTS,
 };
 
-export default async function PrijavaPage() {
+export default async function PrijavaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const callbackUrl = sanitizeAuthCallback(params.callbackUrl);
+
   // Already signed in → /portal. Without this, clicking a provider
   // button while authenticated triggers Auth.js v5's "link the new
   // OAuth account to the current session user" path, which silently
@@ -19,7 +27,7 @@ export default async function PrijavaPage() {
   // actually account linking. Easier to never show the form when a
   // session exists.
   const session = await auth();
-  if (session?.user?.id) redirect("/portal");
+  if (session?.user?.id) redirect(callbackUrl);
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
@@ -31,7 +39,7 @@ export default async function PrijavaPage() {
             timom.
           </p>
         </div>
-        <SignInForm />
+        <SignInForm callbackUrl={callbackUrl} />
       </div>
     </div>
   );

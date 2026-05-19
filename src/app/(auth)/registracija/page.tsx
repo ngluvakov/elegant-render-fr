@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { sanitizeAuthCallback } from "@/lib/auth-redirect";
 import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { SignUpForm } from "./sign-up-form";
 
@@ -10,13 +11,20 @@ export const metadata: Metadata = {
   robots: NO_INDEX_ROBOTS,
 };
 
-export default async function RegistracijaPage() {
+export default async function RegistracijaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string | string[] }>;
+}) {
+  const params = await searchParams;
+  const callbackUrl = sanitizeAuthCallback(params.callbackUrl);
+
   // Already signed in → /portal. Same rationale as the sign-in page:
   // clicking the Google button on registration while authenticated
   // would link that Google account to the current session user
   // instead of creating a fresh signup.
   const session = await auth();
-  if (session?.user?.id) redirect("/portal");
+  if (session?.user?.id) redirect(callbackUrl);
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
@@ -30,7 +38,7 @@ export default async function RegistracijaPage() {
             komunicirate sa timom.
           </p>
         </div>
-        <SignUpForm />
+        <SignUpForm callbackUrl={callbackUrl} />
       </div>
     </div>
   );

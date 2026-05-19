@@ -286,9 +286,11 @@ function calculateAiCreditItem(
   item: QuoteItem,
   pricingCatalog?: ResolvedPricingCatalog,
 ): LineItemBreakdown {
+  const pricingSettings = getPricingSettings(pricingCatalog);
   const purchase = calculateAiCreditPurchase(
     item.aiCreditQuantity ?? 1,
-    getPricingSettings(pricingCatalog).aiCreditTiers,
+    pricingSettings.aiCreditTiers,
+    pricingSettings.aiCreditUnitsPerCredit,
   );
   const totalEur = centsToEur(purchase.totalCents);
   return {

@@ -443,6 +443,7 @@ export function getAiEngineLabelForGeneration(
 export function calculateAiCreditPurchase(
   credits: number,
   tiers: AiCreditTier[] = AI_CREDIT_TIERS,
+  unitsPerCredit = AI_CREDIT_UNITS_PER_CREDIT,
 ) {
   const quantity = Math.max(1, Math.floor(credits));
   const sorted = tiers.slice().sort((a, b) => b.minCredits - a.minCredits);
@@ -453,7 +454,7 @@ export function calculateAiCreditPurchase(
   const totalCents = quantity * tier.centsPerCredit;
   return {
     credits: quantity,
-    units: quantity * AI_CREDIT_UNITS_PER_CREDIT,
+    units: quantity * unitsPerCredit,
     centsPerCredit: tier.centsPerCredit,
     totalCents,
   };
@@ -468,9 +469,15 @@ export function formatCents(cents: number): string {
   return value % 1 === 0 ? `€${value.toFixed(0)}` : `€${value.toFixed(2)}`;
 }
 
-export function formatCreditsFromUnits(units: number): string {
-  const credits = units / AI_CREDIT_UNITS_PER_CREDIT;
-  return credits % 1 === 0 ? `${credits.toFixed(0)} kredita` : `${credits.toFixed(1)} kredita`;
+export function formatCreditsFromUnits(
+  units: number,
+  unitsPerCredit = AI_CREDIT_UNITS_PER_CREDIT,
+): string {
+  const credits = units / unitsPerCredit;
+  if (credits === 1) return "1 kredit";
+  return credits % 1 === 0
+    ? `${credits.toFixed(0)} kredita`
+    : `${credits.toFixed(1)} kredita`;
 }
 
 export function addMonths(date: Date, months: number): Date {

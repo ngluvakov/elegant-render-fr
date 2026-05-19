@@ -315,7 +315,22 @@ export const AI_STUDIO_FAQS = [
   {
     question: "Da li rezultat mogu ponovo da obradim?",
     answer:
-      "Da. Rezultat može da postane nova ulazna slika za malu korekciju ili nastavak dorade.",
+      "Da. Rezultat može da postane nova ulazna slika za malu korekciju ili nastavak dorade. Ako nastavljate isti tip obrade, sistem trenutno omogućava jedno besplatno ponavljanje.",
+  },
+  {
+    question: "Šta ako obrada ne uspe?",
+    answer:
+      "Ako sistem ne uspe da završi obradu, naplaćeni krediti se vraćaju na AI Studio balans. Ako rezultat nije dovoljno dobar, nastavite doradu iz rezultata i koristite dostupno besplatno ponavljanje za isti tip obrade.",
+  },
+  {
+    question: "Koliko dugo su fajlovi dostupni?",
+    answer:
+      "AI Studio fajlovi se čuvaju 30 dana. U tom periodu rezultat možete preuzeti iz istorije ili ga koristiti kao novu ulaznu sliku.",
+  },
+  {
+    question: "Da li dobijam račun za kupovinu kredita?",
+    answer:
+      "Da. Elegant Render je deo White Rook DOO i za kupovinu kredita izdaje odgovarajuću dokumentaciju u skladu sa podacima kupca.",
   },
 ] as const;
 

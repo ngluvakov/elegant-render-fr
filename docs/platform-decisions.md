@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-05-19 - AI Studio guest-credit funnel and visual proof
+
+- **Oblast promene:** conversion | design | pricing | auth | architecture | docs
+- **Šta se promenilo:** `/ai-studio` sada vodi hladne posetioce primarno ka javnoj kupovini AI kredita kroz `/poruci`, dok je otvaranje portala sekundarni put za postojeće korisnike. Protected portal redirect čuva ceo `callbackUrl` sa query stringom, login/registracija/Google vraćaju korisnika na isti `/portal/ai-studio?tool=...` tok, a hero dobija dominantan before/after proof, trust signale i jasniju cenu/PDV komunikaciju.
+- **Zašto:** AI Studio je self-serve proizvod; login-wall pre kupovine prekida nameru, a stranica mora odmah da pokaže kvalitet rezultata i objasni šta korisnik dobija za kredit.
+- **Uticaj na conversion:** Smanjeno je trenje za nove korisnike: kupovina kredita ide kroz guest checkout, a izbor alata se ne gubi posle auth-a.
+- **Uticaj na design:** Hero je pomeren sa “SaaS katalog” osećaja ka premium real-estate before/after dokazu; mobile kartice koriste srpske kratke nazive i chat se ne prikazuje na AI Studio landing strani da ne kolidira sa mobile credit dock-om.
+- **Uticaj na code:** Dodati auth callback sanitization, request-scoped memoization za public pricing/currency lookup, javni AI credit checkout button i jasniji tax label za RSD/EUR prikaz.
+- **Uticaj na docs:** Usklađen AI Studio service doc sa stvarnim brojem besplatnih ponavljanja.
+- **Povezani fajlovi:** `src/app/(marketing)/ai-studio/page.tsx`, `src/components/marketing/ai-studio/credit-buy-dock.tsx`, `src/components/marketing/ai-studio/credit-checkout-button.tsx`, `src/proxy.ts`, `src/server/actions/auth.ts`, `src/app/(auth)/prijava/page.tsx`, `src/app/(auth)/registracija/page.tsx`, `src/lib/auth-redirect.ts`, `src/lib/catalog/public-currency-server.ts`, `src/server/pricing/catalog.ts`, `src/lib/content/site.ts`, `docs/ai-studio-usluge.md`
+- **Reference:** Codex agent-team review and user request to apply recommendations.
+
 ## 2026-05-19 - Codex on-demand agent team
 
 - **Oblast promene:** docs

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "@/lib/db";
 import {
   DEFAULT_PRICING_SETTINGS,
@@ -44,7 +45,7 @@ function staticPayload() {
   };
 }
 
-export async function getPublishedPricingCatalog(): Promise<ResolvedPricingCatalog> {
+export const getPublishedPricingCatalog = cache(async function getPublishedPricingCatalog(): Promise<ResolvedPricingCatalog> {
   try {
     if (!prisma.pricingBook) return getStaticPricingCatalog();
 
@@ -67,7 +68,7 @@ export async function getPublishedPricingCatalog(): Promise<ResolvedPricingCatal
     if (isMissingPricingTableError(error)) return getStaticPricingCatalog();
     throw error;
   }
-}
+});
 
 export const getPublishedPricingBook = getPublishedPricingCatalog;
 

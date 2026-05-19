@@ -1,7 +1,8 @@
 /**
  * ChatWidget — Floating AI assistant button + chat drawer.
  * Persists conversation and open/closed state across page navigations
- * via sessionStorage. Appears on all marketing pages (bottom-right corner).
+ * via sessionStorage. Appears on marketing pages except AI Studio, where
+ * the mobile credit dock owns the bottom-right/bottom-fixed space.
  *
  * Used on: (marketing)/layout.tsx
  */
@@ -234,7 +235,7 @@ export function ChatWidget() {
     [chatSessionId, guideContext, messages, pathname],
   );
 
-  if (!hydrated || !consentDecided) return null;
+  if (!hydrated || !consentDecided || pathname === "/ai-studio") return null;
 
   return (
     <>

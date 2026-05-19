@@ -6,7 +6,6 @@ import {
   Armchair,
   Brush,
   CheckCircle2,
-  CircleDollarSign,
   CloudSun,
   Coins,
   Eraser,
@@ -25,6 +24,8 @@ import {
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { ButtonLink } from "@/components/ui/button-link";
 import { JsonLd } from "@/components/seo/json-ld";
+import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
+import { CreditCheckoutButton } from "@/components/marketing/ai-studio/credit-checkout-button";
 import {
   ToolPickerCard,
   type ToolPickerIconName,
@@ -35,6 +36,8 @@ import {
 } from "@/components/marketing/ai-studio/credit-buy-dock";
 import {
   AI_EDIT_TYPES,
+  AI_FILE_RETENTION_DAYS,
+  AI_FREE_REGENERATIONS,
   calculateAiCreditPurchase,
   formatCreditsFromUnits,
   type AiEditType,
@@ -48,7 +51,7 @@ import {
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 import type { PricingSettings } from "@/lib/pricing/catalog";
-import { AI_STUDIO_FAQS } from "@/lib/content/site";
+import { AI_STUDIO_FAQS, IMPRINT } from "@/lib/content/site";
 import {
   SEO,
   absoluteUrl,
@@ -204,6 +207,20 @@ const workflow = [
   },
 ];
 
+const heroProof = {
+  beforeSrc: "/artwork/ai-tool-virtual_staging-before.webp",
+  afterSrc: "/artwork/ai-tool-virtual_staging-after.webp",
+  title: "Prazan prostor u prodajni kadar",
+  text: "Before/after primer iz AI Studio alata za virtuelno opremanje.",
+};
+
+const trustSignals = [
+  "Neuspešna obrada vraća kredite",
+  `${AI_FREE_REGENERATIONS} besplatno ponavljanje istog tipa`,
+  `Fajlovi se čuvaju ${AI_FILE_RETENTION_DAYS} dana`,
+  `Račun izdaje ${IMPRINT.shortName}`,
+];
+
 const scenarios = [
   {
     title: "Očistite fotografiju",
@@ -241,6 +258,17 @@ const tips = [
 
 const creditPackages = [10, 25, 50, 100];
 
+const MOBILE_LABEL_BY_TOOL: Record<AiEditType, string> = {
+  item_removal: "Uklanjanje",
+  day_to_dusk: "Dan u noć",
+  sky_replacement: "Nebo",
+  wall_color_change: "Boja zidova",
+  virtual_staging: "Opremanje",
+  object_insertion: "Nameštaj/dekor",
+  virtual_renovation: "Renovacija",
+  room_redesign: "Redizajn",
+};
+
 /**
  * Lowest-tier single-purchase starting price for a tool, stored internally
  * in EUR because AI credits and checkout remain EUR-based.
@@ -254,6 +282,12 @@ function toolStartingEur(
   const lowestTier = sorted[sorted.length - 1];
   const eurPerCredit = lowestTier.centsPerCredit / 100;
   return (units / unitsPerCredit) * eurPerCredit;
+}
+
+function publicTaxNote(displayCurrency: DisplayCurrency): string {
+  return displayCurrency === "rsd"
+    ? "RSD sa PDV-om."
+    : "EUR bez PDV-a.";
 }
 
 export default async function AiStudioLandingPage() {
@@ -324,7 +358,7 @@ export default async function AiStudioLandingPage() {
         </div>
       </div>
       <WorkflowSection />
-      <ToolsSection />
+      <ToolsSection pricingSettings={pricingSettings} />
       <ScenarioSection />
       <ComparisonSection
         displayCurrency={displayCurrency}
@@ -352,39 +386,86 @@ function HeroContent({
   displayCurrency: DisplayCurrency;
   pricingSettings: PricingSettings;
 }) {
+  const simpleStarting = formatPublicPrice(
+    toolStartingEur(
+      1,
+      pricingSettings.aiCreditTiers,
+      pricingSettings.aiCreditUnitsPerCredit,
+    ),
+    displayCurrency,
+    pricingSettings,
+  );
+
   return (
-    <div>
-      <SectionKicker>AI Studio</SectionKicker>
-      <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
-        AI obrada koja vašu fotografiju pretvori u prodajni vizual
-      </h1>
-      <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-        Uploadujte fotografiju, izaberite alat i dobijte spreman vizuelni
-        rezultat za oglas, prezentaciju ili proveru ideje. Osam alata, od{" "}
-        {formatPublicPrice(
-          toolStartingEur(
-            1,
-            pricingSettings.aiCreditTiers,
-            pricingSettings.aiCreditUnitsPerCredit,
-          ),
-          displayCurrency,
-          pricingSettings,
-        )} po obradi.
-      </p>
-      <div className="mt-8 flex flex-wrap gap-3">
-        <ButtonLink href="/portal/ai-studio" variant="accent" size="lg">
-          Otvori AI Studio
-          <ArrowRight className="h-4 w-4" />
-        </ButtonLink>
-        <ButtonLink
-          href="/portal/ai-studio/krediti"
-          variant="outline"
-          size="lg"
-          className="lg:hidden"
+    <div className="grid items-start gap-7 xl:grid-cols-2">
+      <div>
+        <SectionKicker>AI Studio</SectionKicker>
+        <h1 className="mt-4 max-w-3xl text-4xl leading-[1.08] text-foreground sm:text-5xl 2xl:text-6xl">
+          AI obrada koja vašu fotografiju pretvori u prodajni vizual
+        </h1>
+        <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+          Uploadujte fotografiju, izaberite alat i dobijte spreman vizuelni
+          rezultat za oglas, prezentaciju ili proveru ideje. Osam alata, od{" "}
+          {simpleStarting} po obradi.
+        </p>
+
+        <div className="mt-5 flex flex-wrap gap-2 text-xs text-foreground/82">
+          <span className="rounded-full bg-secondary px-3 py-1">
+            Simple ={" "}
+            {formatCreditsFromUnits(
+              1,
+              pricingSettings.aiCreditUnitsPerCredit,
+            )}{" "}
+            · Complex ={" "}
+            {formatCreditsFromUnits(
+              2,
+              pricingSettings.aiCreditUnitsPerCredit,
+            )}
+          </span>
+          <span className="rounded-full bg-secondary px-3 py-1">
+            {publicTaxNote(displayCurrency)}
+          </span>
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-3">
+          <CreditCheckoutButton label="Kupi kredite i počni" />
+          <ButtonLink href="/portal/ai-studio" variant="outline" size="lg">
+            Otvori AI Studio
+            <ArrowRight className="h-4 w-4" />
+          </ButtonLink>
+        </div>
+
+        <ul className="mt-6 grid max-w-2xl gap-2 text-xs text-foreground/78 sm:grid-cols-2">
+          {trustSignals.map((item) => (
+            <li key={item} className="flex items-start gap-2">
+              <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 flex-none text-accent" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-border/60 bg-card/80 shadow-[0_24px_70px_-36px_rgba(28,26,25,0.28)]">
+        <BeforeAfterReveal
+          beforeSrc={heroProof.beforeSrc}
+          afterSrc={heroProof.afterSrc}
+          alt={heroProof.title}
+          sizes="(max-width: 768px) 100vw, 36vw"
+          className="aspect-[4/3] bg-secondary"
+          autoDemoIntervalMs={7000}
         >
-          <Coins className="h-4 w-4" />
-          Kupi kredite
-        </ButtonLink>
+          <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/60 px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-background/95">
+            Pre / posle
+          </span>
+        </BeforeAfterReveal>
+        <div className="p-4">
+          <p className="text-sm font-semibold text-foreground">
+            {heroProof.title}
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            {heroProof.text}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -438,14 +519,17 @@ function ToolPickerGrid({
               key={item.id}
               href={`/portal/ai-studio?tool=${item.id}`}
               label={item.label}
-              shortLabel={item.shortLabel}
+              shortLabel={MOBILE_LABEL_BY_TOOL[item.id]}
               blurb={detail.benefit}
               imageSrc={detail.imageSrc}
               beforeSrc={detail.beforeSrc}
               afterSrc={detail.afterSrc}
               iconName={ICON_NAME_BY_TOOL[item.id]}
               gradient={detail.gradient}
-              creditsLabel={formatCreditsFromUnits(item.units)}
+              creditsLabel={formatCreditsFromUnits(
+                item.units,
+                pricingSettings.aiCreditUnitsPerCredit,
+              )}
               startingEurLabel={formatPublicPrice(
                 startingEur,
                 displayCurrency,
@@ -503,7 +587,11 @@ function WorkflowSection() {
  * placeholder rather than illustration); each tool's example prompt now
  * does that job.
  */
-function ToolsSection() {
+function ToolsSection({
+  pricingSettings,
+}: {
+  pricingSettings: PricingSettings;
+}) {
   return (
     <section className="bg-secondary/35 py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
@@ -550,7 +638,10 @@ function ToolsSection() {
                   <div className="flex flex-wrap justify-end gap-1.5">
                     <span className="rounded-full bg-secondary px-2 py-1 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                       {item.complexity === "simple" ? "Simple" : "Complex"} ·{" "}
-                      {formatCreditsFromUnits(item.units)}
+                      {formatCreditsFromUnits(
+                        item.units,
+                        pricingSettings.aiCreditUnitsPerCredit,
+                      )}
                     </span>
                     {capabilities.length > 0 && (
                       <span className="rounded-full bg-secondary px-2 py-1 text-[0.65rem] font-bold uppercase tracking-[0.14em] text-muted-foreground">
@@ -613,7 +704,7 @@ function ScenarioSection() {
             >
               <Image
                 src={item.image}
-                alt=""
+                alt={`${item.title} - primer AI Studio primene`}
                 width={720}
                 height={460}
                 className="aspect-[4/3] w-full object-cover"
@@ -773,7 +864,7 @@ function CreditsSection({
           <p className="mt-4 text-sm leading-7 text-muted-foreground">
             Krediti važe {pricingSettings.aiCreditExpiresAfterMonths} meseci od poslednje dopune. Veći paketi imaju nižu
             cenu po kreditu, a sistem automatski primenjuje najbolju cenu za
-            izabranu količinu.
+            izabranu količinu. {publicTaxNote(displayCurrency)}
           </p>
           <div className="mt-5 grid gap-2 text-sm text-foreground/82">
             <span className="inline-flex items-center gap-2">
@@ -785,15 +876,7 @@ function CreditsSection({
               Complex obrada = 1 kredit
             </span>
           </div>
-          <ButtonLink
-            href="/portal/ai-studio/krediti"
-            variant="accent"
-            size="lg"
-            className="mt-7"
-          >
-            Kupi kredite
-            <ArrowRight className="h-4 w-4" />
-          </ButtonLink>
+          <CreditCheckoutButton className="mt-7" label="Kupi kredite" />
         </div>
 
         <div>
@@ -802,6 +885,7 @@ function CreditsSection({
               const purchase = calculateAiCreditPurchase(
                 credits,
                 pricingSettings.aiCreditTiers,
+                pricingSettings.aiCreditUnitsPerCredit,
               );
               return (
                 <div
@@ -933,18 +1017,15 @@ function FinalCtaSection() {
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <ButtonLink href="/portal/ai-studio" variant="accent" size="lg">
-            Otvori AI Studio
-            <ArrowRight className="h-4 w-4" />
-          </ButtonLink>
+          <CreditCheckoutButton label="Kupi kredite i počni" />
           <ButtonLink
-            href="/portal/ai-studio/krediti"
+            href="/portal/ai-studio"
             variant="outline"
             size="lg"
             className="border-background/30 text-background hover:bg-background/10"
           >
-            <CircleDollarSign className="h-4 w-4" />
-            Kupi kredite
+            Otvori AI Studio
+            <ArrowRight className="h-4 w-4" />
           </ButtonLink>
         </div>
       </div>

@@ -99,7 +99,7 @@ function BeforeAfterCard({
   return (
     <Link
       href={href}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)]"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)] focus-visible:border-accent/60 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
     >
       <BeforeAfterReveal
         beforeSrc={beforeSrc!}
@@ -144,7 +144,7 @@ function FallbackCard({
   return (
     <Link
       href={href}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)]"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)] focus-visible:border-accent/60 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
     >
       <div
         className={cn(

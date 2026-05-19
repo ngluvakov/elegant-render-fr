@@ -13,6 +13,7 @@ import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { signIn } from "@/lib/auth";
+import { sanitizeAuthCallback } from "@/lib/auth-redirect";
 import { prisma } from "@/lib/db";
 import {
   sendVerificationEmail,
@@ -41,6 +42,7 @@ export async function signUpAction(
   const name = formData.get("name") as string;
   const email = (formData.get("email") as string)?.trim().toLowerCase();
   const password = formData.get("password") as string;
+  const callbackUrl = sanitizeAuthCallback(formData.get("callbackUrl"));
 
   if (!name || !email || !password) {
     return { error: "Sva polja su obavezna." };
@@ -88,7 +90,7 @@ export async function signUpAction(
     redirect: false,
   });
 
-  redirect("/portal");
+  redirect(callbackUrl);
 }
 
 // ─── Sign In ─────────────────────────────────────────────
@@ -99,6 +101,7 @@ export async function signInAction(
 ): Promise<AuthState> {
   const email = (formData.get("email") as string)?.trim().toLowerCase();
   const password = formData.get("password") as string;
+  const callbackUrl = sanitizeAuthCallback(formData.get("callbackUrl"));
 
   if (!email || !password) {
     return { error: "Email i lozinka su obavezni." };
@@ -114,7 +117,7 @@ export async function signInAction(
     return { error: "Pogrešan email ili lozinka." };
   }
 
-  redirect("/portal");
+  redirect(callbackUrl);
 }
 
 // ─── Forgot Password ────────────────────────────────────

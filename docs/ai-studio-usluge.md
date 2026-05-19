@@ -79,7 +79,7 @@ Vece kupovine kredita smanjuju cenu po kreditu:
 
 ### Free regenerations
 
-Sistem podrzava do 2 besplatna pokusaja u okviru istog placenog AI generation chain-a, kada korisnik nastavlja iz postojeceg rezultata i obrada ulazi u pokriveni obim.
+Sistem podrzava 1 besplatan pokusaj u okviru istog placenog AI generation chain-a, kada korisnik nastavlja iz postojeceg rezultata i obrada ulazi u pokriveni obim.
 
 Za dizajn stranice ovo moze da se objasni jednostavnije:
 

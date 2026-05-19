@@ -8,14 +8,18 @@
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
 
-export function GoogleSignInButton() {
+export function GoogleSignInButton({
+  callbackUrl = "/portal",
+}: {
+  callbackUrl?: string;
+}) {
   return (
     <Button
       type="button"
       variant="outline"
       size="lg"
       className="w-full"
-      onClick={() => signIn("google", { callbackUrl: "/portal" })}
+      onClick={() => signIn("google", { callbackUrl })}
     >
       <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
         <path

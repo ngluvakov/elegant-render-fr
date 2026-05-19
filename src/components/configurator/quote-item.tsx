@@ -23,6 +23,7 @@ import { useQuote } from "./quote-context";
 import { AddOnStepper } from "./addon-stepper";
 import { InteriorQuoteEditor } from "./interior-quote-editor";
 import { Tour360QuoteEditor } from "./tour360-quote-editor";
+import { RelatedServicesPostcard } from "./related-services-postcard";
 
 type QuoteItemProps = {
   breakdown: LineItemBreakdown;
@@ -82,6 +83,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
     breakdown.addOns.some((ao) => ao.includedQty > 0 && ao.quantity > 0);
 
   return (
+    <>
     <div
       data-quote-item={breakdown.instanceId}
       className="overflow-hidden rounded-2xl border border-border/60 bg-card/95 transition-shadow"
@@ -330,5 +332,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
         </div>
       </Collapsible>
     </div>
+    <RelatedServicesPostcard productId={breakdown.productId} />
+    </>
   );
 }

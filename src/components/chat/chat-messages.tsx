@@ -42,41 +42,118 @@ function renderLinks(text: string) {
   });
 }
 
-type ProposalItem = { id: string; qty: number; sourceMode?: string };
+type ProposalItem = {
+  id: string;
+  qty: number;
+  sourceMode?: string;
+  isPrimary?: boolean;
+};
+
+type ParsedProposal = {
+  primary: ProposalItem[];
+  related: ProposalItem[];
+  note: string | null;
+};
 
 // Accepts "id:qty" or "id/sourceMode:qty". The sourceMode form is used
 // for the consolidated `anim` product (anim/scratch:30, anim/active:60).
 function parseProposalItems(raw: string[]): ProposalItem[] {
-  return raw.map((entry) => {
-    const [head, qtyStr] = entry.split(":");
-    const trimmed = head.trim();
-    const slash = trimmed.indexOf("/");
-    if (slash > 0) {
-      return {
-        id: trimmed.slice(0, slash),
-        sourceMode: trimmed.slice(slash + 1),
-        qty: parseInt(qtyStr) || 1,
-      };
-    }
-    return { id: trimmed, qty: parseInt(qtyStr) || 1 };
-  });
+  return raw
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [head, qtyStr] = entry.split(":");
+      const trimmed = head.trim();
+      const slash = trimmed.indexOf("/");
+      if (slash > 0) {
+        return {
+          id: trimmed.slice(0, slash),
+          sourceMode: trimmed.slice(slash + 1),
+          qty: parseInt(qtyStr) || 1,
+        };
+      }
+      return { id: trimmed, qty: parseInt(qtyStr) || 1 };
+    });
 }
 
-function ProposalCard({ entries }: { entries: ProposalItem[] }) {
+// Parses a :::predlog body. Two grammars supported:
+//
+//   Option A (flat, legacy — backwards-compatible):
+//     id1:qty,id2:qty,id3:qty
+//
+//   Option B (sectioned, current):
+//     primary: id:qty
+//     related: id1:qty,id2:qty
+//     note: free-form Serbian text
+//
+// Option B is detected by a `primary:` line. Anything else falls through
+// to flat parse so older bot completions keep working.
+function parseProposalBody(body: string): ParsedProposal {
+  const trimmed = body.trim();
+  const hasPrimaryLine = /^primary\s*:/im.test(trimmed);
+
+  if (!hasPrimaryLine) {
+    const flat = parseProposalItems(trimmed.split(","));
+    const [first, ...rest] = flat;
+    return {
+      primary: first ? [{ ...first, isPrimary: true }] : [],
+      related: rest,
+      note: null,
+    };
+  }
+
+  const lines = trimmed.split(/\r?\n/);
+  let primaryRaw = "";
+  let relatedRaw = "";
+  let note: string | null = null;
+
+  for (const line of lines) {
+    const match = line.match(/^(primary|related|note)\s*:\s*(.*)$/i);
+    if (!match) continue;
+    const key = match[1].toLowerCase();
+    const value = match[2].trim();
+    if (key === "primary") primaryRaw = value;
+    else if (key === "related") relatedRaw = value;
+    else if (key === "note") note = value || null;
+  }
+
+  return {
+    primary: parseProposalItems(primaryRaw.split(",")).map((item) => ({
+      ...item,
+      isPrimary: true,
+    })),
+    related: parseProposalItems(relatedRaw.split(",")),
+    note,
+  };
+}
+
+function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
   const router = useRouter();
   const pathname = usePathname();
   const displayCurrency = usePublicCurrency();
   const pricingSettings = usePublicPricingSettings();
   const isOnCene = pathname === "/cene";
 
-  const items = entries
+  const primary = proposal.primary
+    .map((e) => ({ ...e, product: getConfiguratorProduct(e.id) }))
+    .filter((e) => e.product);
+  const related = proposal.related
     .map((e) => ({ ...e, product: getConfiguratorProduct(e.id) }))
     .filter((e) => e.product);
 
-  if (items.length === 0) return null;
+  if (primary.length === 0 && related.length === 0) return null;
+
+  // Cart receives only primary items. Related are surfaced in the
+  // configurator postcard after the primary is added.
+  const cartPayload = primary.length > 0 ? primary : related;
 
   const handleAccept = () => {
-    sessionStorage.setItem("er-chat-proposal", JSON.stringify(entries));
+    sessionStorage.setItem(
+      "er-chat-proposal",
+      JSON.stringify(
+        cartPayload.map(({ id, qty, sourceMode }) => ({ id, qty, sourceMode })),
+      ),
+    );
 
     if (isOnCene) {
       window.dispatchEvent(new CustomEvent("er-chat-proposal"));
@@ -91,7 +168,7 @@ function ProposalCard({ entries }: { entries: ProposalItem[] }) {
         Predlog usluga
       </p>
       <div className="space-y-1.5">
-        {items.map((item) => (
+        {primary.map((item) => (
           <div
             key={item.id}
             className="flex items-center justify-between text-xs"
@@ -112,6 +189,28 @@ function ProposalCard({ entries }: { entries: ProposalItem[] }) {
           </div>
         ))}
       </div>
+      {related.length > 0 && (
+        <div className="mt-2 border-t border-accent/10 pt-2">
+          <p className="mb-1 text-[0.68rem] font-medium text-foreground/60">
+            Uz ovaj paket:
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {related.map((item) => (
+              <span
+                key={item.id}
+                className="rounded-md bg-foreground/5 px-2 py-0.5 text-[0.68rem] text-foreground/75"
+              >
+                {item.product!.product.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      {proposal.note && (
+        <p className="mt-2 text-[0.68rem] italic text-foreground/60">
+          {proposal.note}
+        </p>
+      )}
       <button
         type="button"
         onClick={handleAccept}
@@ -130,14 +229,16 @@ function MessageContent({ content }: { content: string }) {
   const textBefore = proposalMatch
     ? content.slice(0, proposalMatch.index).trim()
     : content;
-  const entries = proposalMatch
-    ? parseProposalItems(proposalMatch[1].split(",").filter(Boolean))
-    : [];
+  const proposal = proposalMatch
+    ? parseProposalBody(proposalMatch[1])
+    : null;
+  const hasItems =
+    proposal && (proposal.primary.length > 0 || proposal.related.length > 0);
 
   return (
     <>
       {renderLinks(textBefore)}
-      {entries.length > 0 && <ProposalCard entries={entries} />}
+      {hasItems && <ProposalCard proposal={proposal} />}
     </>
   );
 }

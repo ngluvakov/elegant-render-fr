@@ -27,14 +27,40 @@ import { cn } from "@/lib/utils";
 import {
   CUSTOMER_GROUPS,
   type CustomerGroupId,
+  type CustomerGroup,
   getGroupStartingPriceEur,
 } from "@/lib/catalog/customer-groups";
+import {
+  CONFIGURATOR_CATEGORIES,
+  type ConfiguratorCategory,
+  type ConfiguratorProduct,
+} from "@/lib/catalog/configurator";
 import {
   formatPublicPrice,
   type DisplayCurrency,
 } from "@/lib/catalog/display-currency";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import { track } from "@/lib/posthog-events";
+
+/**
+ * Find the first non-inquiryOnly product in a group that carries
+ * displayPerUnitEur. Returns undefined when no product is annotated
+ * (e.g. inquiry-only groups like VR).
+ */
+function getGroupDisplayProduct(
+  group: CustomerGroup,
+  categories: ConfiguratorCategory[],
+): ConfiguratorProduct | undefined {
+  for (const cat of categories) {
+    if (!group.catIds.includes(cat.id)) continue;
+    for (const prod of cat.products) {
+      if (!prod.inquiryOnly && prod.displayPerUnitEur !== undefined) {
+        return prod;
+      }
+    }
+  }
+  return undefined;
+}
 
 const GROUP_VISUALS: Record<
   CustomerGroupId,
@@ -70,13 +96,12 @@ export function CategoryPreview({
   pricingCatalog?: ResolvedPricingCatalog;
 }) {
   const pricingSettings = pricingCatalog?.settings;
+  const categories = pricingCatalog?.categories ?? CONFIGURATOR_CATEGORIES;
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-5">
       {CUSTOMER_GROUPS.map((group) => {
-        const startingEur = getGroupStartingPriceEur(
-          group,
-          pricingCatalog?.categories,
-        );
+        const startingEur = getGroupStartingPriceEur(group, categories);
+        const displayProduct = getGroupDisplayProduct(group, categories);
         const visual = GROUP_VISUALS[group.id];
         return (
           <PreviewCard
@@ -86,6 +111,9 @@ export function CategoryPreview({
             shortLabel={group.shortLabel}
             blurb={group.blurb}
             startingEur={startingEur}
+            displayPerUnitEur={displayProduct?.displayPerUnitEur}
+            displayUnitLabel={displayProduct?.displayUnitLabel}
+            displayPackageNote={displayProduct?.displayPackageNote}
             imageSrc={group.imageSrc}
             videoSrc={group.videoSrc}
             icon={visual.icon}
@@ -108,6 +136,9 @@ function PreviewCard({
   shortLabel,
   blurb,
   startingEur,
+  displayPerUnitEur,
+  displayUnitLabel,
+  displayPackageNote,
   imageSrc,
   videoSrc,
   icon: Icon,
@@ -121,6 +152,9 @@ function PreviewCard({
   shortLabel: string;
   blurb: string;
   startingEur: number;
+  displayPerUnitEur?: number;
+  displayUnitLabel?: string;
+  displayPackageNote?: string;
   imageSrc: string;
   videoSrc?: string;
   icon: LucideIcon;
@@ -186,16 +220,33 @@ function PreviewCard({
         <p className="hidden text-xs leading-snug text-muted-foreground md:line-clamp-2 md:block">
           {blurb}
         </p>
-        <p className="mt-auto pt-1 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          od{" "}
-          <span className="text-base font-bold normal-case tracking-normal text-foreground">
-            {formatPublicPrice(
-              startingEur,
-              displayCurrency,
-              pricingSettings,
+        {displayPerUnitEur !== undefined && displayUnitLabel ? (
+          <div className="mt-auto pt-2">
+            <p>
+              <span className="text-xs font-normal normal-case tracking-normal text-muted-foreground">
+                od{" "}
+              </span>
+              <span className="text-2xl font-bold text-foreground">
+                {formatPublicPrice(displayPerUnitEur, displayCurrency, pricingSettings)}
+              </span>
+              <span className="text-sm font-normal text-muted-foreground">
+                {" "}/ {displayUnitLabel}
+              </span>
+            </p>
+            {displayPackageNote && (
+              <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
+                {displayPackageNote}
+              </p>
             )}
-          </span>
-        </p>
+          </div>
+        ) : (
+          <p className="mt-auto pt-2 text-xs text-muted-foreground">
+            od{" "}
+            <span className="text-base font-bold text-foreground">
+              {formatPublicPrice(startingEur, displayCurrency, pricingSettings)}
+            </span>
+          </p>
+        )}
       </div>
     </Link>
   );

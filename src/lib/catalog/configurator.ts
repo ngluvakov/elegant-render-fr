@@ -98,6 +98,15 @@ export type ConfiguratorProduct = {
   // to a consultation intake form (currently used for VR products that
   // require scope alignment before commitment).
   inquiryOnly?: boolean;
+  // Presentation-only fields for the "per-render" entry card frame.
+  // Invisible to calculateQuote / priceItems — they read only basePriceEur,
+  // addOns, and durationConfig. Author per-product when a meaningful
+  // unit price + package minimum exists (e.g. int-static: €17/render in a
+  // 10-render package). Omit when the product is a single-unit entry.
+  displayPerUnitEur?: number;
+  displayMinQty?: number;
+  displayUnitLabel?: string;
+  displayPackageNote?: string;
 };
 
 export type ConfiguratorCategory = {
@@ -153,6 +162,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "Statički eksterijer",
         basePriceEur: 250,
         unitLabel: "kompletan model + prvi kadar",
+        displayPerUnitEur: 250,
+        displayUnitLabel: "render",
+        displayPackageNote: "uključuje 3D model i 1 kadar; dodatni kadrovi €48",
         includes: ["Pun 3D model", "Scena i osvetljenje", "1 kadar uključen"],
         disclaimers: [
           "Dodatna geometrija (+25%) se obračunava jednom ako kadar zahteva neviđenu stranu modela",
@@ -200,6 +212,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "360 eksterijer",
         basePriceEur: 335,
         unitLabel: "kompletan model + VR izlaz",
+        displayPerUnitEur: 335,
+        displayUnitLabel: "panoramu",
+        displayPackageNote: "uključuje 3D model i 1 interaktivnu tačku; dodatne €48",
         includes: [
           "Pun 3D model",
           "VR-ready 360 izlaz",
@@ -253,6 +268,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "Prikaz iz vazduha",
         basePriceEur: 420,
         unitLabel: "model + okruženje iz vazduha",
+        displayPerUnitEur: 420,
+        displayUnitLabel: "render iz vazduha",
+        displayPackageNote: "uključuje 3D model, okruženje i 1 ugao; dodatni €48",
         includes: [
           "Pun 3D model + okruženje",
           "Kamera iz vazduha",
@@ -307,6 +325,10 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "Klasični prikaz enterijera (po spratu)",
         basePriceEur: 170,
         unitLabel: "ceo sprat sa do 10 prostorija",
+        displayPerUnitEur: 17,
+        displayMinQty: 10,
+        displayUnitLabel: "render",
+        displayPackageNote: "paket od 10 prostorija, jedan sprat",
         includes: [
           "10 opremljenih prostorija",
           "neograničen broj uglova kamere",
@@ -355,6 +377,10 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "360 enterijer (po spratu)",
         basePriceEur: 295,
         unitLabel: "ceo sprat u 360 turi",
+        displayPerUnitEur: 30,
+        displayMinQty: 10,
+        displayUnitLabel: "panoramu",
+        displayPackageNote: "paket od 10 panorama, jedan sprat",
         includes: [
           "10 interaktivnih soba u 360 turi",
           "10 statičkih uglova kamere",
@@ -427,6 +453,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "Pejzažni render",
         basePriceEur: 220,
         unitLabel: "teren + vegetacija + prvi kadar",
+        displayPerUnitEur: 220,
+        displayUnitLabel: "render",
+        displayPackageNote: "uključuje teren, vegetaciju i 1 kadar; dodatni €45",
         includes: [
           "Modelovanje terena",
           "Vegetacija i sadnja",
@@ -490,6 +519,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "3D osnova jednog nivoa",
         basePriceEur: 29,
         unitLabel: "jednonivoski 3D layout",
+        displayPerUnitEur: 29,
+        displayUnitLabel: "nivo",
         includes: ["Kompletni raspored sprata", "Oznake prostorija", "Dimenzije"],
         addOns: [
           {
@@ -565,6 +596,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "2D osnova jednog nivoa",
         basePriceEur: 20,
         unitLabel: "čist vektorski layout",
+        displayPerUnitEur: 20,
+        displayUnitLabel: "nivo",
         includes: ["Čist vektorski layout", "Oznake prostorija", "Kodiranje bojom"],
         addOns: [
           {
@@ -644,6 +677,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "3D situacioni plan",
         basePriceEur: 350,
         unitLabel: "teren + objekti + pejzaž",
+        displayPerUnitEur: 350,
+        displayUnitLabel: "situacioni plan",
+        displayPackageNote: "uključuje teren, objekte i pejzaž; dodatni uglovi €65",
         includes: [
           "Modelovanje terena",
           "Postavljanje objekata",
@@ -711,6 +747,10 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "Animacija (od nule)",
         basePriceEur: 15,
         unitLabel: "€15/sek, minimum 15 sek (€225)",
+        displayPerUnitEur: 15,
+        displayMinQty: 15,
+        displayUnitLabel: "sekundu",
+        displayPackageNote: "minimum 15 sekundi (€225)",
         includes: [
           "Pun 3D model",
           "Dizajn putanje animacije",
@@ -908,6 +948,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "Statički staging",
         basePriceEur: 18,
         unitLabel: "prva opremljena slika",
+        displayPerUnitEur: 18,
+        displayUnitLabel: "sliku",
         includes: [
           "Analiza prostorije",
           "Izbor i postavljanje nameštaja",
@@ -951,6 +993,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "Interaktivno 360 opremanje",
         basePriceEur: 34,
         unitLabel: "prva opremljena 360 panorama",
+        displayPerUnitEur: 34,
+        displayUnitLabel: "panoramu",
         includes: [
           "Kompletno 360 opremanje sobe",
           "Izbor nameštaja",
@@ -1007,6 +1051,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "Virtuelna renovacija",
         basePriceEur: 66,
         unitLabel: "kompletna renovacija jednog pogleda",
+        displayPerUnitEur: 66,
+        displayUnitLabel: "pogled",
         includes: [
           "Kompletan dizajn renovacije",
           "Izbor materijala",
@@ -1053,6 +1099,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "Dan u noć konverzija",
         basePriceEur: 10,
         unitLabel: "po slici",
+        displayPerUnitEur: 10,
+        displayUnitLabel: "sliku",
         includes: ["Zamena neba", "Podešavanje osvetljenja", "Color grading"],
         addOns: [
           {
@@ -1106,6 +1154,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "Jednostavno uklanjanje",
         basePriceEur: 12,
         unitLabel: "po slici",
+        displayPerUnitEur: 12,
+        displayUnitLabel: "sliku",
         includes: [
           "Identifikacija elemenata",
           "Čisto uklanjanje",
@@ -1129,6 +1179,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         label: "Složeno uklanjanje",
         basePriceEur: 25,
         unitLabel: "po slici",
+        displayPerUnitEur: 25,
+        displayUnitLabel: "sliku",
         includes: [
           "Uklanjanje velikih elemenata",
           "Rekonstrukcija pozadine",

@@ -83,7 +83,7 @@ export default async function CenePage() {
           </div>
         </section>
 
-        <section id="configurator" className="scroll-mt-24 pb-20 pt-10">
+        <section id="configurator" className="scroll-mt-24 pb-20 pt-16">
           <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
             <Suspense fallback={null}>
               <ConfiguratorBody />

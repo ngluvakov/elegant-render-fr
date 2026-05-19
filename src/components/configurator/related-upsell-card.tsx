@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { resolveDiscount } from "@/lib/catalog/calculate";
 import { makePrimaryItem, makeUpsellTargetItem } from "@/lib/catalog/upsell-helpers";
 import { useQuote } from "./quote-context";
+import { formatPublicPrice } from "@/lib/catalog/display-currency";
 import { track } from "@/lib/posthog-events";
 import type { ConfiguratorProduct } from "@/lib/catalog/configurator";
 import type { QuoteItem } from "@/lib/catalog/calculate";
@@ -33,7 +34,7 @@ export function RelatedUpsellCard({
   categoryId,
   pricingCatalog,
 }: Props) {
-  const { addProduct } = useQuote();
+  const { addProduct, displayCurrency, pricingSettings } = useQuote();
   const [imgFailed, setImgFailed] = useState(false);
 
   const targetItem = makeUpsellTargetItem(relatedProduct.id);
@@ -102,15 +103,15 @@ export function RelatedUpsellCard({
           {discount && discountedPrice !== null ? (
             <div className="flex items-baseline gap-1.5">
               <span className="text-xs text-muted-foreground line-through">
-                €{originalPrice}
+                {formatPublicPrice(originalPrice, displayCurrency, pricingSettings)}
               </span>
               <span className="text-base font-semibold text-foreground">
-                €{discountedPrice}
+                {formatPublicPrice(discountedPrice, displayCurrency, pricingSettings)}
               </span>
             </div>
           ) : (
             <span className="text-sm text-muted-foreground">
-              od €{originalPrice}
+              od {formatPublicPrice(originalPrice, displayCurrency, pricingSettings)}
             </span>
           )}
         </div>

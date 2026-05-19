@@ -10,8 +10,8 @@
  *   - int-static | int-360 → "Konfiguriši sprat" → addProduct (opens InteriorQuoteEditor)
  *   - else → "Dodaj u korpu" → addProduct
  *
- * Upsell hint: collapsed by default, single-line with chevron.
- * Expands into a grid of RelatedUpsellCard components (max 3).
+ * Upsell hint: sage callout band with preview chips, expand to RelatedUpsellCard grid.
+ * Price strip: live cart-triggered discount when product has a qualifying sibling in cart.
  */
 "use client";
 
@@ -21,6 +21,7 @@ import { Check, Building2, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { resolveDiscount } from "@/lib/catalog/calculate";
 import { makePrimaryItem, makeUpsellTargetItem, getUpsellProducts } from "@/lib/catalog/upsell-helpers";
+import { formatPublicPrice } from "@/lib/catalog/display-currency";
 import { useQuote } from "./quote-context";
 import { RelatedUpsellCard } from "./related-upsell-card";
 import { track } from "@/lib/posthog-events";
@@ -28,6 +29,25 @@ import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import type { ConfiguratorCategory, ConfiguratorProduct } from "@/lib/catalog/configurator";
 import type { QuoteItem } from "@/lib/catalog/calculate";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
+
+// Serbian pluralization for unit labels used in "U paketu od X Y" annotation.
+// Only needed for the small set of units that appear on /cene. Extend if needed.
+function pluralizeUnit(unitLabel: string, qty: number): string {
+  const map: Record<string, [string, string, string]> = {
+    "render":    ["render",   "rendera",  "rendera"],
+    "panoramu":  ["panoramu", "panorame", "panorama"],
+    "sekundu":   ["sekundu",  "sekunde",  "sekundi"],
+    "sliku":     ["sliku",    "slike",    "slika"],
+    "kadar":     ["kadar",    "kadra",    "kadrova"],
+    "nivo":      ["nivo",     "nivoa",    "nivoa"],
+    "pogled":    ["pogled",   "pogleda",  "pogleda"],
+    "prostoriju": ["prostoriju", "prostorije", "prostorija"],
+  };
+  const forms = map[unitLabel] ?? [unitLabel, unitLabel, unitLabel];
+  if (qty === 1) return forms[0];
+  if (qty >= 2 && qty <= 4) return forms[1];
+  return forms[2];
+}
 
 type Props = {
   product: ConfiguratorProduct;
@@ -37,23 +57,48 @@ type Props = {
 };
 
 export function ServiceTablica({ product, category, cartItems, pricingCatalog }: Props) {
-  const { addProduct } = useQuote();
+  const { addProduct, displayCurrency, pricingSettings } = useQuote();
   const [expanded, setExpanded] = useState(false);
   const [upsellOpen, setUpsellOpen] = useState(false);
   const [imgFailed, setImgFailed] = useState(false);
 
-  // Upsell products (filtered out-of-cart, non-inquiry)
+  // ── Upsell products ──────────────────────────────────────────────────────
   const upsellProducts = getUpsellProducts(product.id, cartItems).slice(0, 3);
 
-  // Check if any upsell has a discount given this primary + current cart
   const primaryItem = makePrimaryItem(product.id);
   const siblings: QuoteItem[] = [primaryItem, ...cartItems];
   const upsellDiscounts = upsellProducts.map((up) => {
     const targetItem = makeUpsellTargetItem(up.id);
     return resolveDiscount(targetItem, siblings, pricingCatalog);
   });
-  const hasAnyDiscount = upsellDiscounts.some((d) => d !== null);
+  const hasAnyUpsellDiscount = upsellDiscounts.some((d) => d !== null);
   const hasUpsells = upsellProducts.length > 0;
+
+  // ── Own (tablica-level) live discount ────────────────────────────────────
+  const ownTargetItem = makeUpsellTargetItem(product.id);
+  const ownDiscount = resolveDiscount(ownTargetItem, cartItems, pricingCatalog);
+  const isInCart = cartItems.some((i) => i.productId === product.id);
+  // Suppress when: already in cart (confusing), or inquiry-only (no real price surface)
+  const showOwnDiscount = ownDiscount !== null && !isInCart && !product.inquiryOnly;
+
+  // ── Price figures ────────────────────────────────────────────────────────
+  const displayUnitLabel = product.displayUnitLabel ?? product.unitLabel;
+  const displayMinQty = product.displayMinQty;
+  const displayPackageNote = product.displayPackageNote;
+
+  const originalPerUnit = product.displayPerUnitEur ?? product.basePriceEur;
+  const originalPackage = product.basePriceEur;
+
+  const discountedPerUnit = showOwnDiscount
+    ? Math.round(originalPerUnit * (1 - ownDiscount.pct / 100))
+    : null;
+  const discountedPackage = showOwnDiscount
+    ? Math.round(originalPackage * (1 - ownDiscount.pct / 100))
+    : null;
+
+  // ── CTA resolution ───────────────────────────────────────────────────────
+  const isInquiry = product.inquiryOnly;
+  const isInterior = product.id === "int-static" || product.id === "int-360";
 
   const handleAddToCart = () => {
     addProduct(product.id, category.id);
@@ -63,10 +108,6 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog }:
     });
   };
 
-  // CTA resolution
-  const isInquiry = product.inquiryOnly;
-  const isInterior = product.id === "int-static" || product.id === "int-360";
-
   const primaryCta = isInquiry ? (
     <div>
       <Link
@@ -75,7 +116,6 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog }:
       >
         Pošalji upit
       </Link>
-      {/* Trust line — always visible for inquiry products */}
       <p className="mt-2 text-xs text-muted-foreground text-center">
         Odgovaramo u roku od jednog radnog dana.
       </p>
@@ -90,11 +130,16 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog }:
     </button>
   );
 
-  // Upsell hint copy
-  const upsellNames = upsellProducts.map((up, i) => {
-    const hasDiscount = upsellDiscounts[i] !== null;
-    return hasDiscount ? `${up.label} (uz popust)` : up.label;
-  });
+  // ── Price strip container style ──────────────────────────────────────────
+  // showOwnDiscount → stronger sage (15%/40 border)
+  // no discount but paket product → quiet sage (8%)
+  // else → no tint
+  const hasPriceStripBand = showOwnDiscount || (displayMinQty !== undefined && displayMinQty > 1);
+  const priceStripBandClass = showOwnDiscount
+    ? "rounded-lg bg-[color:var(--color-sage)]/15 border border-[color:var(--color-sage)]/40 px-4 py-3 -mx-2 my-1"
+    : displayMinQty !== undefined && displayMinQty > 1
+    ? "rounded-lg bg-[color:var(--color-sage)]/8 px-4 py-3 -mx-2 my-1"
+    : "";
 
   return (
     <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
@@ -145,33 +190,57 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog }:
             </ul>
           )}
 
-          {/* Upsell hint — only when related products exist */}
+          {/* ── Issue 3b: Upsell sage callout band ── */}
           {hasUpsells && (
-            <div className="mt-2">
-              <button
-                type="button"
-                onClick={() => setUpsellOpen((v) => !v)}
-                className={cn(
-                  "flex items-center gap-1 text-sm transition-colors text-left w-full",
-                  hasAnyDiscount
-                    ? "text-foreground border-l-2 border-[color:var(--color-sage)]/40 pl-3"
-                    : "text-muted-foreground",
-                )}
-              >
-                <span className="flex-1">
-                  Često ide zajedno:{" "}
-                  {upsellNames.join(", ")}
-                </span>
-                <ChevronDown
-                  className={cn(
-                    "h-4 w-4 shrink-0 transition-transform",
-                    upsellOpen && "rotate-180",
+            <div className="rounded-xl border border-[color:var(--color-sage)]/35 bg-[color:var(--color-sage)]/8 p-4 mt-2">
+              {/* Kicker row */}
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[color:var(--color-sage-deep)] leading-none">
+                  Često ide zajedno
+                  {hasAnyUpsellDiscount && (
+                    <span className="ml-2 inline-flex items-center rounded bg-[color:var(--color-sage-deep)]/15 px-1.5 py-0.5 text-[0.6rem] font-bold normal-case tracking-normal text-[color:var(--color-sage-deep)]">
+                      Sa popustom
+                    </span>
                   )}
-                />
-              </button>
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setUpsellOpen((v) => !v)}
+                  className="inline-flex items-center gap-1 text-xs font-medium text-foreground hover:text-[color:var(--color-sage-deep)] transition-colors shrink-0"
+                >
+                  {upsellOpen ? "Sakrij" : "Vidi sve"}
+                  <ChevronDown
+                    className={cn(
+                      "h-3.5 w-3.5 transition-transform",
+                      upsellOpen && "rotate-180",
+                    )}
+                  />
+                </button>
+              </div>
 
+              {/* Preview chips — always visible in collapsed state */}
+              <div className="flex flex-wrap gap-1.5">
+                {upsellProducts.slice(0, 3).map((up, i) => {
+                  const chipDiscount = upsellDiscounts[i];
+                  return (
+                    <span
+                      key={up.id}
+                      className="inline-flex items-center gap-1 rounded-full bg-card border border-[color:var(--color-sage)]/25 px-2.5 py-1 text-xs font-medium text-foreground"
+                    >
+                      {up.label}
+                      {chipDiscount !== null && (
+                        <span className="text-[0.65rem] font-bold text-[color:var(--color-sage-deep)]">
+                          &minus;{chipDiscount.pct}%
+                        </span>
+                      )}
+                    </span>
+                  );
+                })}
+              </div>
+
+              {/* Expanded grid */}
               {upsellOpen && (
-                <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {upsellProducts.map((up) => {
                     const upCategoryId =
                       getConfiguratorProduct(up.id, pricingCatalog?.categories)
@@ -220,33 +289,99 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog }:
 
       {/* ZONE 3 — Price strip */}
       <div className="bg-secondary/60 border-t border-border/40 py-5 px-6">
-        {/* Package price (base) */}
-        <p className="text-base text-muted-foreground">
-          €{product.basePriceEur} / paket
-        </p>
 
-        {/* Hero per-unit cifra */}
-        {product.displayPerUnitEur !== undefined ? (
-          <>
+        {/* ── Issues 3a + 4: price band (conditionally tinted) ── */}
+        <div className={hasPriceStripBand ? priceStripBandClass : undefined}>
+
+          {/* Issue 4: own discount badge */}
+          {showOwnDiscount && (
+            <div className="mb-2 inline-flex items-center gap-1.5 rounded bg-[color:var(--color-sage-deep)] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
+              Popust &minus;{ownDiscount.pct}%
+            </div>
+          )}
+
+          {/* Issue 3a: kicker for package products (no discount state) */}
+          {!showOwnDiscount && displayMinQty !== undefined && displayMinQty > 1 && (
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--color-sage-deep)] mb-1">
+              Cena po renderu
+            </p>
+          )}
+
+          {/* Package price line */}
+          <p className="text-base text-muted-foreground">
+            {showOwnDiscount ? (
+              <>
+                <span className="line-through text-muted-foreground/60 mr-2">
+                  {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}
+                </span>
+                <span className="text-foreground font-medium">
+                  {formatPublicPrice(discountedPackage!, displayCurrency, pricingSettings)}
+                </span>
+                {" / paket"}
+              </>
+            ) : (
+              <>
+                {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}
+                {" / paket"}
+              </>
+            )}
+          </p>
+
+          {/* Hero per-unit figure */}
+          {product.displayPerUnitEur !== undefined ? (
+            <>
+              <p className="text-5xl font-bold text-foreground leading-none mt-1">
+                {showOwnDiscount ? (
+                  <>
+                    <span className="line-through text-2xl text-muted-foreground/50 mr-2 font-medium">
+                      {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
+                    </span>
+                    {formatPublicPrice(discountedPerUnit!, displayCurrency, pricingSettings)}
+                  </>
+                ) : (
+                  <>od {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}</>
+                )}
+              </p>
+              <p className="text-lg text-muted-foreground mt-1">
+                / {displayUnitLabel}
+              </p>
+            </>
+          ) : (
             <p className="text-5xl font-bold text-foreground leading-none mt-1">
-              od €{product.displayPerUnitEur}
+              {showOwnDiscount ? (
+                <>
+                  <span className="line-through text-2xl text-muted-foreground/50 mr-2 font-medium">
+                    {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}
+                  </span>
+                  {formatPublicPrice(discountedPackage!, displayCurrency, pricingSettings)}
+                </>
+              ) : (
+                <>od {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}</>
+              )}
             </p>
-            <p className="text-lg text-muted-foreground mt-1">
-              / {product.displayUnitLabel ?? product.unitLabel}
-            </p>
-          </>
-        ) : (
-          <p className="text-5xl font-bold text-foreground leading-none mt-1">
-            od €{product.basePriceEur}
-          </p>
-        )}
+          )}
 
-        {/* Package note — ALWAYS visible (honesty anchor) */}
-        {product.displayPackageNote && (
-          <p className="text-xs text-muted-foreground italic mt-3">
-            {product.displayPackageNote}
-          </p>
-        )}
+          {/* Issue 4: discount reason line */}
+          {showOwnDiscount && (
+            <p className="mt-2 text-xs italic text-[color:var(--color-sage-deep)]">
+              {ownDiscount.reason}
+            </p>
+          )}
+
+          {/* Package note — always visible (honesty anchor) */}
+          {displayPackageNote && (
+            <p className="text-xs text-muted-foreground italic mt-3">
+              {displayPackageNote}
+            </p>
+          )}
+
+          {/* Issue 3a: "U paketu od X" annotation — only when no own discount showing */}
+          {!showOwnDiscount && displayMinQty !== undefined && displayMinQty > 1 && (
+            <p className="text-xs text-[color:var(--color-sage-deep)] mt-1.5">
+              U paketu od {displayMinQty} {pluralizeUnit(displayUnitLabel ?? "", displayMinQty)}
+            </p>
+          )}
+        </div>
 
         {/* CTA */}
         <div className="mt-4">

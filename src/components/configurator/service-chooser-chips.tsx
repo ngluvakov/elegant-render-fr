@@ -48,8 +48,9 @@ export function ServiceChooserChips() {
   );
 
   return (
-    <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm py-3">
-      <div className="overflow-x-auto scrollbar-none snap-x snap-mandatory flex gap-2 px-4">
+    <div className="sticky top-0 z-20 w-full bg-background/95 backdrop-blur-sm">
+      <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 py-3">
+      <div className="overflow-x-auto scrollbar-none snap-x snap-mandatory flex gap-2">
         {CHIP_DEFS.map((chip) => {
           const isActive = chip.filter === activeFilter;
           const isSve = chip.filter === "sve";
@@ -77,6 +78,7 @@ export function ServiceChooserChips() {
         <div className="w-px bg-border/40 self-stretch mx-2 shrink-0" />
 
         <CartChip />
+      </div>
       </div>
     </div>
   );

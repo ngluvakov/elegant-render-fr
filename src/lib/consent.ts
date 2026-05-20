@@ -4,8 +4,8 @@
  * Stores the user's choice in localStorage. Two custom events tie the
  * pieces together:
  *   - "er-consent-change"   fires when the saved value is updated;
- *                           instrumentation-client listens to (de)init
- *                           Sentry and PostHog.
+ *                           instrumentation-client and marketing tags
+ *                           listen to start/stop optional tracking.
  *   - "er-open-consent"     dispatched by the footer "Cookie settings"
  *                           link to re-open the banner after a decision.
  *
@@ -14,7 +14,7 @@
  * cannot opt out of it.
  */
 
-export const CONSENT_VERSION = 1 as const;
+export const CONSENT_VERSION = 2 as const;
 export const CONSENT_STORAGE_KEY = "er-consent";
 export const CONSENT_CHANGE_EVENT = "er-consent-change";
 export const CONSENT_OPEN_EVENT = "er-open-consent";
@@ -23,6 +23,7 @@ export type ConsentPrefs = {
   version: typeof CONSENT_VERSION;
   necessary: true;
   analytics: boolean;
+  marketing: boolean;
   recording: boolean;
   decidedAt: string;
 };
@@ -38,6 +39,7 @@ export function readConsent(): ConsentPrefs | null {
       version: CONSENT_VERSION,
       necessary: true,
       analytics: Boolean(parsed.analytics),
+      marketing: Boolean(parsed.marketing),
       recording: Boolean(parsed.recording),
       decidedAt: typeof parsed.decidedAt === "string" ? parsed.decidedAt : new Date().toISOString(),
     };
@@ -51,6 +53,7 @@ export function writeConsent(prefs: Omit<ConsentPrefs, "version" | "necessary" |
     version: CONSENT_VERSION,
     necessary: true,
     analytics: prefs.analytics,
+    marketing: prefs.marketing,
     recording: prefs.recording,
     decidedAt: new Date().toISOString(),
   };
@@ -62,11 +65,11 @@ export function writeConsent(prefs: Omit<ConsentPrefs, "version" | "necessary" |
 }
 
 export function acceptAll(): ConsentPrefs {
-  return writeConsent({ analytics: true, recording: true });
+  return writeConsent({ analytics: true, marketing: true, recording: true });
 }
 
 export function acceptNecessary(): ConsentPrefs {
-  return writeConsent({ analytics: false, recording: false });
+  return writeConsent({ analytics: false, marketing: false, recording: false });
 }
 
 /** Re-open the banner from anywhere (e.g. footer link). */

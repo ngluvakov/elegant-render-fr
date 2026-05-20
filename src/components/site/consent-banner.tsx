@@ -5,7 +5,7 @@
  *
  * Consent storage and event wiring lives in src/lib/consent.ts.
  * instrumentation-client.ts subscribes to the er-consent-change event
- * to (de)init Sentry + PostHog.
+ * to (de)init Sentry + PostHog. Marketing tags listen separately.
  *
  * Hydration: useSyncExternalStore + a server sentinel snapshot ensures
  * the SSR pass and the client first render both return null from the
@@ -36,7 +36,9 @@ function subscribe(callback: () => void) {
 }
 
 function snapshotKey(prefs: ConsentPrefs | null): string {
-  return prefs ? `${prefs.analytics}|${prefs.recording}|${prefs.decidedAt}` : "";
+  return prefs
+    ? `${prefs.analytics}|${prefs.marketing}|${prefs.recording}|${prefs.decidedAt}`
+    : "";
 }
 
 function getSnapshot() {
@@ -64,12 +66,14 @@ export function ConsentBanner() {
   // when an external value changes".
   // See https://react.dev/reference/react/useState#storing-information-from-previous-renders
   const [analytics, setAnalytics] = useState(false);
+  const [marketing, setMarketing] = useState(false);
   const [recording, setRecording] = useState(false);
   const draftKey = `${snapshot}|${forceOpen}`;
   const [lastDraftKey, setLastDraftKey] = useState("");
   if (draftKey !== lastDraftKey) {
     setLastDraftKey(draftKey);
     setAnalytics(consent?.analytics ?? false);
+    setMarketing(consent?.marketing ?? false);
     setRecording(consent?.recording ?? false);
   }
 
@@ -106,7 +110,7 @@ export function ConsentBanner() {
   };
 
   const handleSavePrefs = () => {
-    writeConsent({ analytics, recording });
+    writeConsent({ analytics, marketing, recording });
     closeAndClear();
   };
 
@@ -126,9 +130,9 @@ export function ConsentBanner() {
             Kolačići i privatnost
           </h2>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground sm:text-sm">
-            Koristimo neophodne kolačiće za rad sajta. Dodatnu analitiku i
-            snimanje sesija uključujemo samo uz vašu saglasnost, da bismo
-            popravili iskustvo.{" "}
+            Koristimo neophodne kolačiće za rad sajta. Dodatnu analitiku,
+            marketinško merenje i snimanje sesija uključujemo samo uz vašu
+            saglasnost, da bismo popravili iskustvo.{" "}
             <Link
               href="/pravno/kolacici"
               className="text-foreground underline-offset-4 hover:underline"
@@ -163,6 +167,12 @@ export function ConsentBanner() {
             description="Anonimne statistike o korišćenju (PostHog, Google Analytics 4 / Tag Manager) i izveštaji o greškama (Sentry)."
             checked={analytics}
             onChange={setAnalytics}
+          />
+          <ConsentRow
+            label="Marketing"
+            description="Merenje LinkedIn kampanja, konverzija i publike preko LinkedIn Insight Tag-a."
+            checked={marketing}
+            onChange={setMarketing}
           />
           <ConsentRow
             label="Snimanje sesija"

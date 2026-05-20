@@ -16,7 +16,7 @@ export const metadata: Metadata = createPublicMetadata({
   path: "/pravno/privatnost",
 });
 
-const LAST_UPDATED = "2026-05-17";
+const LAST_UPDATED = "2026-05-20";
 
 export default function PrivatnostPage() {
   return (
@@ -209,6 +209,11 @@ export default function PrivatnostPage() {
                   name="Google Tag Manager"
                   location="SAD / EU"
                   purpose="Upravljanje mernim tagovima i dataLayer događajima, aktivno samo nakon saglasnosti za analitiku."
+                />
+                <ProcessorRow
+                  name="LinkedIn Insight Tag"
+                  location="SAD / EU"
+                  purpose="Merenje LinkedIn kampanja, konverzija i publike, aktivno samo nakon saglasnosti za marketing."
                 />
                 <ProcessorRow
                   name="Bitrix24 (Bitrix Inc.)"

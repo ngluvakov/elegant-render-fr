@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-05-20 - LinkedIn Insight Tag sa marketing saglasnošću
+
+- **Oblast promene:** conversion | marketing | legal | docs
+- **Šta se promenilo:** Dodat je LinkedIn Insight Tag za partner ID `9178042`, ali se učitava samo kada posetilac uključi novu kategoriju saglasnosti `Marketing`.
+- **Zašto:** LinkedIn kampanje treba da mogu da mere posete i konverzije bez mešanja advertising/retargeting svrhe u postojeću analitičku saglasnost.
+- **Uticaj na conversion:** Omogućava LinkedIn campaign attribution i publike za buduće kampanje, uz očekivani manji signal jer korisnik mora dati marketing consent.
+- **Uticaj na design:** Cookie banner dobija dodatni red za marketing u podešavanjima; nema promene javnog vizuelnog identiteta.
+- **Uticaj na code:** Consent schema je podignuta na verziju 2, što traži ponovnu potvrdu izbora kolačića; dodat je consent-gated LinkedIn client tag.
+- **Uticaj na docs:** Ažurirani su politika kolačića, politika privatnosti i ovaj decision log.
+- **Povezani fajlovi:** `src/lib/consent.ts`, `src/components/site/consent-banner.tsx`, `src/components/analytics/linkedin-insight-tag.tsx`, `src/app/layout.tsx`, `src/app/(marketing)/pravno/kolacici/page.tsx`, `src/app/(marketing)/pravno/privatnost/page.tsx`, `src/app/portal/admin/analitika/page.tsx`, `docs/platform-decisions.md`
+- **Reference:** User-provided LinkedIn Insight Tag snippet.
+
 ## 2026-05-19 - AI Studio guest-credit funnel and visual proof
 
 - **Oblast promene:** conversion | design | pricing | auth | architecture | docs

@@ -16,7 +16,7 @@ import { requirePermission } from "@/lib/admin-auth";
 export const metadata: Metadata = {
   title: "Analitika — Admin",
   description:
-    "Admin hub za Google, Vercel, PostHog, Sentry i SEO dashboard linkove.",
+    "Admin hub za Google, LinkedIn, Vercel, PostHog, Sentry i SEO dashboard linkove.",
   robots: { index: false, follow: false },
 };
 
@@ -102,6 +102,14 @@ const dashboardLinks: DashboardLink[] = [
       process.env.NEXT_PUBLIC_GTM_ENABLED === "true"
         ? "Container je aktivan samo posle analytics consent-a."
         : "Pripremljeno; container je isključen do live puštanja.",
+  },
+  {
+    title: "LinkedIn Campaign Manager",
+    description: "Insight Tag, LinkedIn kampanje, publike i conversion tracking status.",
+    envName: "LINKEDIN_CAMPAIGN_MANAGER_URL",
+    href: dashboardUrl("LINKEDIN_CAMPAIGN_MANAGER_URL"),
+    icon: BarChart3,
+    note: "Insight Tag partner ID 9178042 se učitava samo posle marketing consent-a.",
   },
   {
     title: "Google Search Console",

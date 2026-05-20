@@ -12,7 +12,7 @@ export const metadata: Metadata = createPublicMetadata({
   path: "/pravno/kolacici",
 });
 
-const LAST_UPDATED = "2026-05-17";
+const LAST_UPDATED = "2026-05-20";
 
 type CookieEntry = {
   name: string;
@@ -96,6 +96,26 @@ const ANALYTICS: CookieEntry[] = [
   },
 ];
 
+const MARKETING: CookieEntry[] = [
+  {
+    name: "LinkedIn Insight Tag",
+    storage: "Script + pixel request",
+    provider: "LinkedIn",
+    purpose:
+      "Merenje uspešnosti LinkedIn kampanja, konverzija, poseta stranica i publike nakon saglasnosti za marketing.",
+    retention: "Pseudonimizovani podaci do 180 dana",
+  },
+  {
+    name: "lms_analytics, AnalyticsSyncHistory, UserMatchHistory, li_fat_id, li_sugr, _guid",
+    storage: "Cookie + first-party identifier",
+    provider: "LinkedIn",
+    purpose:
+      "Povezivanje posete sa LinkedIn oglasima, attribution i audience matching nakon saglasnosti za marketing.",
+    retention:
+      "Uglavnom 30-90 dana; pojedini LinkedIn cookies mogu trajati do 1 godine",
+  },
+];
+
 const RECORDING: CookieEntry[] = [
   {
     name: "ph_session_*",
@@ -165,8 +185,8 @@ export default function KolaciciPage() {
           <p>
             Pri prvoj poseti sajtu prikazujemo vam banner sa tri opcije:
             Prihvati sve, Samo neophodne ili Podešavanja sa pojedinačnim
-            uključivanjem analitike i snimanja sesija. Vaš izbor možete u
-            svakom trenutku promeniti preko linka{" "}
+            uključivanjem analitike, marketinga i snimanja sesija. Vaš izbor
+            možete u svakom trenutku promeniti preko linka{" "}
             <ConsentSettingsLink className="text-foreground underline-offset-4 hover:underline" />
             {" "}u podnožju ili klikom ovde:{" "}
             <ConsentSettingsLink className="text-foreground underline-offset-4 hover:underline" />
@@ -176,9 +196,10 @@ export default function KolaciciPage() {
             Vercel Web Analytics i Speed Insights koristimo za osnovnu,
             agregatnu metriku poseta i performansi bez postavljanja kolačića u
             vaš pretraživač. Bez vašeg pristanka, tehnologije iz kategorija{" "}
-            <em>Analitika</em> i <em>Snimanje sesija</em> se ne aktiviraju —
-            PostHog, Google Analytics 4, Google Tag Manager i Sentry se
-            inicijalizuju tek nakon vaše izričite saglasnosti.
+            <em>Analitika</em>, <em>Marketing</em> i <em>Snimanje sesija</em>{" "}
+            se ne aktiviraju — PostHog, Google Analytics 4, Google Tag
+            Manager, LinkedIn Insight Tag i Sentry se inicijalizuju tek nakon
+            vaše izričite saglasnosti.
           </p>
         </Section>
 
@@ -197,10 +218,10 @@ export default function KolaciciPage() {
           </p>
           <p>
             Detaljnije ponašanje korisnika, funnel događaji, izveštaji o
-            greškama i snimanje sesija ostaju odvojeni: PostHog, Google
-            Analytics 4, Google Tag Manager i Sentry se uključuju samo ako
-            izaberete analitiku, a snimanje sesija samo ako posebno uključite
-            tu opciju.
+            greškama, marketinško merenje i snimanje sesija ostaju odvojeni:
+            PostHog, Google Analytics 4, Google Tag Manager, LinkedIn Insight
+            Tag i Sentry se uključuju samo ako izaberete odgovarajuću
+            saglasnost.
           </p>
         </Section>
 
@@ -211,12 +232,18 @@ export default function KolaciciPage() {
         />
 
         <CookieCategorySection
-          title="6. Snimanje sesija"
+          title="6. Marketing"
+          subtitle="Merenje kampanja i konverzija. Aktivira se tek uz zasebnu marketing saglasnost."
+          entries={MARKETING}
+        />
+
+        <CookieCategorySection
+          title="7. Snimanje sesija"
           subtitle="Anonimna snimanja kretanja po stranicama, posebno korisna oko grešaka. Tekstualni unosi i osetljive forme se maskiraju. Aktiviraju se uz zasebnu saglasnost."
           entries={RECORDING}
         />
 
-        <Section title="7. Kontrola u pretraživaču">
+        <Section title="8. Kontrola u pretraživaču">
           <p>
             Pored banner-a na sajtu, sve kolačiće možete da pregledate i
             obrišete u podešavanjima vašeg pretraživača. Linkovi ka
@@ -266,7 +293,7 @@ export default function KolaciciPage() {
           </ul>
         </Section>
 
-        <Section title="8. Više informacija">
+        <Section title="9. Više informacija">
           <p>
             Detalji o tome kako obrađujemo lične podatke i kome se obraćate
             ako imate pitanja nalaze se u{" "}

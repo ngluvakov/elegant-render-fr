@@ -6,6 +6,7 @@ import { ModelFirst } from "@/components/marketing/model-first";
 import { NextIteration } from "@/components/marketing/next-iteration";
 import { FaqCards } from "@/components/marketing/faq-cards";
 import { ResultsProof } from "@/components/marketing/results-proof";
+import { MarketingServicesShowcase } from "@/components/marketing/marketing-services-showcase";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildHomeJsonLd, createPublicMetadata, SEO } from "@/lib/seo";
 
@@ -27,6 +28,7 @@ export default function Home() {
       <ModelFirst />
       <NextIteration />
       <FaqCards />
+      <MarketingServicesShowcase />
     </>
   );
 }

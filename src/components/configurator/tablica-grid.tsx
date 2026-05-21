@@ -70,7 +70,7 @@ function buildFilteredSortedProducts(
   return matched;
 }
 
-export function TablicaGrid() {
+export function TablicaGrid({ marketingMode = false }: { marketingMode?: boolean } = {}) {
   const { items: cartItems, pricingCatalog } = useQuote();
   const sp = useSearchParams();
   const activeFilter = sp.get("filter") ?? DEFAULT_FILTER;
@@ -99,6 +99,7 @@ export function TablicaGrid() {
           category={category}
           cartItems={cartItems}
           pricingCatalog={pricingCatalog}
+          marketingMode={marketingMode}
         />
       ))}
     </div>

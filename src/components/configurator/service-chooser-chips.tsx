@@ -32,7 +32,13 @@ export const CHIP_DEFS: ChipDef[] = [
 
 export const DEFAULT_FILTER = "exterior";
 
-export function ServiceChooserChips() {
+export function ServiceChooserChips({
+  basePath = "/cene",
+  showCartChip = true,
+}: {
+  basePath?: string;
+  showCartChip?: boolean;
+} = {}) {
   const router = useRouter();
   const sp = useSearchParams();
   const activeFilter = sp.get("filter") ?? DEFAULT_FILTER;
@@ -41,10 +47,10 @@ export function ServiceChooserChips() {
     (filter: string) => {
       const params = new URLSearchParams(sp.toString());
       params.set("filter", filter);
-      router.replace(`/cene?${params.toString()}`, { scroll: false });
+      router.replace(`${basePath}?${params.toString()}`, { scroll: false });
       track("service_chip_click", { filter });
     },
-    [router, sp],
+    [router, sp, basePath],
   );
 
   return (
@@ -74,10 +80,14 @@ export function ServiceChooserChips() {
           );
         })}
 
-        {/* Vertical divider before CartChip */}
-        <div className="w-px bg-border/40 self-stretch mx-2 shrink-0" />
+        {showCartChip && (
+          <>
+            {/* Vertical divider before CartChip */}
+            <div className="w-px bg-border/40 self-stretch mx-2 shrink-0" />
 
-        <CartChip />
+            <CartChip />
+          </>
+        )}
       </div>
       </div>
     </div>

@@ -6,8 +6,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { ConfiguratorBody } from "@/components/configurator/pricing-configurator";
 import { QuoteProvider } from "@/components/configurator/quote-context";
 import { StandaloneAiCredits } from "@/components/configurator/standalone-ai-credits";
-import { ServiceChooserChips } from "@/components/configurator/service-chooser-chips";
-import { TablicaGrid } from "@/components/configurator/tablica-grid";
+import { ServiceMatrix } from "@/components/configurator/service-matrix";
 import { PreFooterCta } from "@/components/site/pre-footer-cta";
 import {
   buildBreadcrumbJsonLd,
@@ -64,7 +63,7 @@ export default async function CenePage() {
         </p>
       </div>
 
-      {/* StandaloneAiCredits, category preview, and the configurator share a
+      {/* StandaloneAiCredits, the service matrix, and the configurator share a
           single QuoteProvider so every entry point updates the same cart. */}
       <QuoteProvider
         displayCurrency={displayCurrency}
@@ -72,17 +71,12 @@ export default async function CenePage() {
       >
         <StandaloneAiCredits />
 
-        {/* Sticky chip filter bar — includes CartChip on the right */}
+        {/* Service matrix — left sidebar of categories + right table of services
+            with hover-preview pricing and an info drawer. Replaces the previous
+            chip filter + tablica grid. */}
         <Suspense fallback={null}>
-          <ServiceChooserChips />
+          <ServiceMatrix />
         </Suspense>
-
-        {/* Browse grid — 18 tablice, filtered by active chip */}
-        <section id="tablice" className="mx-auto w-full max-w-[min(96vw,1720px)] scroll-mt-24 px-6">
-          <Suspense fallback={null}>
-            <TablicaGrid />
-          </Suspense>
-        </section>
 
         {/* Cart / configurator — anchored for CartChip scroll target */}
         <section id="korpa" className="scroll-mt-24 pb-20 pt-16">

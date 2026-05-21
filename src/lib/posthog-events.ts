@@ -118,12 +118,23 @@ export type EventMap = {
   category_preview_click: { group: string };
   service_group_picked: { group: string };
   service_chip_click: { filter: string };
-  service_tablica_click_dodaj: { product_id: string; category_id: string };
+  service_tablica_click_dodaj: {
+    product_id: string;
+    category_id: string;
+    marketing_mode?: boolean;
+  };
   service_tablica_click_upsell: {
     primary_product_id: string;
     related_product_id: string;
     discount_pct: number;
   };
+  service_matrix_cat_click: { cat: string };
+  service_matrix_add: {
+    product_id: string;
+    category_id: string;
+    from: "row" | "detail_drawer";
+  };
+  service_matrix_info_open: { product_id: string };
   cart_chip_click: { cart_size: number };
 
   // Admin operational signals (server-side)

@@ -54,9 +54,16 @@ type Props = {
   category: ConfiguratorCategory;
   cartItems: QuoteItem[];
   pricingCatalog?: ResolvedPricingCatalog;
+  /**
+   * When true, the card renders as a marketing showcase on the homepage:
+   * primary CTA links to /cene?cat=<category>#usluge instead of adding to
+   * cart. Used by MarketingServicesShowcase since cart state does not
+   * persist between routes.
+   */
+  marketingMode?: boolean;
 };
 
-export function ServiceTablica({ product, category, cartItems, pricingCatalog }: Props) {
+export function ServiceTablica({ product, category, cartItems, pricingCatalog, marketingMode = false }: Props) {
   const { addProduct, displayCurrency, pricingSettings } = useQuote();
   const [expanded, setExpanded] = useState(false);
   const [upsellOpen, setUpsellOpen] = useState(false);
@@ -120,6 +127,20 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog }:
         Odgovaramo u roku od jednog radnog dana.
       </p>
     </div>
+  ) : marketingMode ? (
+    <Link
+      href={`/cene?cat=${category.id}#usluge`}
+      onClick={() =>
+        track("service_tablica_click_dodaj", {
+          product_id: product.id,
+          category_id: category.id,
+          marketing_mode: true,
+        })
+      }
+      className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2.5 text-sm font-semibold transition-colors"
+    >
+      Pogledaj na cenovniku
+    </Link>
   ) : (
     <button
       type="button"

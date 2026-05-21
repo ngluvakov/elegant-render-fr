@@ -26,6 +26,7 @@ type Props = {
   onInfoClick: (productId: string) => void;
   dimmed?: boolean;
   recommended?: boolean;
+  active?: boolean;
 };
 
 export function ServiceMatrixRow({
@@ -37,6 +38,7 @@ export function ServiceMatrixRow({
   onInfoClick,
   dimmed = false,
   recommended = false,
+  active = false,
 }: Props) {
   const { addProduct, displayCurrency, pricingSettings, pricingCatalog } =
     useQuote();
@@ -83,26 +85,23 @@ export function ServiceMatrixRow({
   const isInquiry = product.inquiryOnly;
   const isInterior = product.id === "int-static" || product.id === "int-360";
 
-  const PrimaryActionIcon = isInquiry ? Mail : isInterior ? Sliders : Plus;
-  const primaryActionLabel = isInquiry
-    ? "Pošalji upit"
-    : isInterior
-      ? "Konfiguriši"
-      : "Dodaj u korpu";
-
   return (
     <li
+      data-flip-key={product.id}
       onMouseEnter={() => onHover(product.id)}
       onMouseLeave={() => onHover(null)}
       data-hovered={isHovered ? "" : undefined}
       data-in-cart={isInCart ? "" : undefined}
       data-dimmed={dimmed ? "" : undefined}
+      data-active={active ? "" : undefined}
       className={cn(
-        "group relative flex items-center gap-3 rounded-lg border border-border/50 bg-card px-3 py-2 transition-all duration-200",
-        "hover:border-[color:var(--color-sage)]/50 hover:bg-secondary/30",
+        "group relative flex items-center gap-3 rounded-lg border bg-card px-3 py-2 transition-all duration-200",
+        "border-border/50 hover:border-[color:var(--color-sage)]/50 hover:bg-secondary/30",
         dimmed && "opacity-55 hover:opacity-100",
         recommended &&
           "border-[color:var(--color-sage)]/45 bg-[color:var(--color-sage)]/8",
+        active &&
+          "border-l-[3px] border-l-accent border-r-border/50 border-y-border/50 bg-accent/[0.04]",
         isInCart && "border-[color:var(--color-sage-deep)]/45 bg-[color:var(--color-sage)]/10",
       )}
     >
@@ -173,29 +172,40 @@ export function ServiceMatrixRow({
         {isInquiry ? (
           <Link
             href={`/kontakt?service=${product.id}`}
-            aria-label={primaryActionLabel}
+            aria-label="Pošalji upit"
             className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
           >
-            <PrimaryActionIcon className="h-4 w-4" />
+            <Mail className="h-4 w-4" />
             <span className="hidden sm:inline">Upit</span>
           </Link>
+        ) : isInCart ? (
+          isInterior ? (
+            <Link
+              href="#korpa"
+              aria-label="Konfiguriši u korpi"
+              className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[color:var(--color-sage-deep)] px-3 text-xs font-semibold text-white transition-colors hover:bg-[color:var(--color-sage-deep)]/85"
+            >
+              <Sliders className="h-4 w-4" />
+              <span className="hidden sm:inline">Konfiguriši</span>
+            </Link>
+          ) : (
+            <span
+              aria-label="Već u korpi"
+              className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[color:var(--color-sage-deep)]/15 px-3 text-xs font-semibold text-[color:var(--color-sage-deep)]"
+            >
+              <Check className="h-4 w-4" />
+              <span className="hidden sm:inline">U korpi</span>
+            </span>
+          )
         ) : (
           <button
             type="button"
             onClick={handleAdd}
-            disabled={isInCart && !isInterior}
-            aria-label={isInCart ? "Već u korpi" : primaryActionLabel}
-            className={cn(
-              "inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition-colors",
-              isInCart
-                ? "bg-[color:var(--color-sage-deep)]/15 text-[color:var(--color-sage-deep)] cursor-default"
-                : "bg-accent text-accent-foreground hover:bg-accent/90",
-            )}
+            aria-label="Dodaj u korpu"
+            className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
           >
-            <PrimaryActionIcon className="h-4 w-4" />
-            <span className="hidden sm:inline">
-              {isInCart ? "U korpi" : isInterior ? "Konfiguriši" : "Dodaj"}
-            </span>
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Dodaj</span>
           </button>
         )}
       </div>

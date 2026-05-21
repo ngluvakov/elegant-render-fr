@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { ServiceMatrixRow } from "./service-matrix-row";
 import {
   resolveDiscount,
@@ -10,6 +10,7 @@ import { makePrimaryItem } from "@/lib/catalog/upsell-helpers";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
 import { useQuote } from "./quote-context";
 import { ALL_FILTER } from "./service-matrix-shared";
+import { useFlipAnimation } from "./use-flip-animation";
 import type {
   ConfiguratorCategory,
   ConfiguratorProduct,
@@ -50,10 +51,14 @@ export function ServiceMatrixTable({
 
   const allFlat = useMemo(() => flattenAll(categories), [categories]);
 
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const flipKey = `${activeCat}::${cartItems.map((i) => i.productId).join("|")}`;
+  useFlipAnimation(containerRef, flipKey);
+
   // ── "Sve usluge" mode: group by category, no recommended split ──
   if (activeCat === ALL_FILTER) {
     return (
-      <div className="flex flex-col gap-5">
+      <div ref={containerRef} className="flex flex-col gap-5">
         {categories.map((cat) => (
           <section key={cat.id}>
             <header className="mb-2 flex items-baseline justify-between px-1">
@@ -124,21 +129,19 @@ export function ServiceMatrixTable({
   );
 
   return (
-    <div className="flex flex-col gap-5">
-      {/* Active category — animated slide-in-from-top whenever activeCat changes */}
-      <section
-        key={`active-${activeCat}`}
-        className="animate-in fade-in slide-in-from-top-2 duration-300 ease-out"
-      >
+    <div ref={containerRef} className="flex flex-col gap-5">
+      {/* Active category — sits at the top; rows carry data-flip-key so they
+          animate from their previous position when activeCat changes. */}
+      <section>
         <header className="mb-2 flex items-baseline justify-between px-1">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-foreground">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-accent">
             {activeCategory.label}
           </h3>
           <span className="text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground">
             {activeCategory.sectionLabel}
           </span>
         </header>
-        <ul className="flex flex-col gap-2">
+        <ul className="flex flex-col gap-1.5">
           {activeCategory.products.map((product) => (
             <ServiceMatrixRow
               key={product.id}
@@ -148,16 +151,14 @@ export function ServiceMatrixTable({
               hoveredId={hoveredId}
               onHover={onHover}
               onInfoClick={onInfoClick}
+              active
             />
           ))}
         </ul>
       </section>
 
       {cheaper.length > 0 && (
-        <section
-          key={`cheaper-${activeCat}-${cartItems.length}`}
-          className="animate-in fade-in slide-in-from-top-1 duration-300 ease-out"
-        >
+        <section>
           <header className="mb-2 flex items-baseline justify-between px-1">
             <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[color:var(--color-sage-deep)]">
               Postaje povoljnije uz {activeCategory.label.toLowerCase()}

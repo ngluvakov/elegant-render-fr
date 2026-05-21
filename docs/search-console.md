@@ -53,3 +53,22 @@ Admin shortcut:
 ```env
 GOOGLE_SEARCH_CONSOLE_URL=https://search.google.com/search-console?resource_id=https%3A%2F%2Felegantrender.rs%2F
 ```
+
+## "Page with redirect" Notes
+
+This report is expected for URL variants that are not canonical, for example:
+
+- `http://elegantrender.rs/*` redirecting to `https://elegantrender.rs/*`
+- trailing-slash URLs such as `/usluge/` redirecting to `/usluge`
+- private portal URLs redirecting logged-out visitors to `/prijava`
+
+Before requesting validation, check that every URL in the submitted sitemap
+returns `200` on the canonical host and that `robots.txt` disallows private
+prefixes (`/portal`, `/api`, auth and checkout routes). If Search Console lists
+only non-canonical variants, no app change is needed; if it lists canonical
+sitemap URLs, fix those URLs or redirects before validating.
+
+If Search Console lists `www.elegantrender.rs` URLs, add the `www` hostname in
+Vercel and point DNS at Vercel, then redirect it to the apex canonical host.
+Without the Vercel domain assignment, `https://www.elegantrender.rs` can fail
+TLS before the app has a chance to redirect.

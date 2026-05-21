@@ -4,9 +4,9 @@ import { SITE } from "@/lib/content/site";
 // Keep crawlers on public, citeable material. Index exclusion for HTML pages
 // should still use noindex/auth; robots.txt is a crawl preference.
 const PRIVATE_PATHS = [
-  "/api/",
+  "/api",
   "/monitoring",
-  "/portal/",
+  "/portal",
   "/poruci",
   "/prijava",
   "/registracija",

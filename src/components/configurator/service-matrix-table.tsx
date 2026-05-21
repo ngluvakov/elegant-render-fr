@@ -6,7 +6,7 @@ import {
   resolveDiscount,
   type QuoteItem,
 } from "@/lib/catalog/calculate";
-import { makePrimaryItem } from "@/lib/catalog/upsell-helpers";
+import { makePrimaryItem, makeUpsellTargetItem } from "@/lib/catalog/upsell-helpers";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
 import { useQuote } from "./quote-context";
 import { ALL_FILTER } from "./service-matrix-shared";
@@ -115,7 +115,11 @@ export function ServiceMatrixTable({
     if (pc.category.id === activeCat) continue;
     if (cartProductIds.has(pc.product.id)) continue;
     if (pc.product.inquiryOnly) continue;
-    const target = makePrimaryItem(pc.product.id);
+    // Use TARGET instance id (distinct from PRIMARY) so resolveDiscount's
+    // "target is canonical creator" guard (calculate.ts:413) doesn't
+    // mis-fire when the active category has a single product whose
+    // instanceId would otherwise match the target's.
+    const target = makeUpsellTargetItem(pc.product.id);
     const d = resolveDiscount(target, siblingsForCheaper, pricingCatalog);
     if (d) cheaper.push({ ...pc, discountPct: d.pct });
   }

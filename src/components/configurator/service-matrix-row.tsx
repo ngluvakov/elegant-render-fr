@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { Building2, Check, Info, Mail, Plus, Sliders } from "lucide-react";
+import { useMemo } from "react";
+import { Check, Info, Mail, Plus, Sliders } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { resolveDiscount, type QuoteItem } from "@/lib/catalog/calculate";
 import {
@@ -40,7 +40,6 @@ export function ServiceMatrixRow({
 }: Props) {
   const { addProduct, displayCurrency, pricingSettings, pricingCatalog } =
     useQuote();
-  const [imgFailed, setImgFailed] = useState(false);
 
   const isInCart = cartItems.some((i) => i.productId === product.id);
   const isHovered = hoveredId === product.id;
@@ -62,7 +61,6 @@ export function ServiceMatrixRow({
 
   const isPreviewDiscount = discount !== null && hoveredId !== null && hoveredId !== product.id;
 
-  const displayUnitLabel = product.displayUnitLabel ?? product.unitLabel;
   const originalPerUnit = product.displayPerUnitEur ?? product.basePriceEur;
   const discountedPerUnit = discount
     ? Math.round(originalPerUnit * (1 - discount.pct / 100))
@@ -100,7 +98,7 @@ export function ServiceMatrixRow({
       data-in-cart={isInCart ? "" : undefined}
       data-dimmed={dimmed ? "" : undefined}
       className={cn(
-        "group relative flex items-stretch gap-3 sm:gap-4 rounded-xl border border-border/50 bg-card px-3 py-3 sm:px-4 sm:py-3 transition-all duration-200",
+        "group relative flex items-center gap-3 rounded-lg border border-border/50 bg-card px-3 py-2 transition-all duration-200",
         "hover:border-[color:var(--color-sage)]/50 hover:bg-secondary/30",
         dimmed && "opacity-55 hover:opacity-100",
         recommended &&
@@ -108,26 +106,9 @@ export function ServiceMatrixRow({
         isInCart && "border-[color:var(--color-sage-deep)]/45 bg-[color:var(--color-sage)]/10",
       )}
     >
-      <div className="relative h-14 w-14 sm:h-16 sm:w-16 shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-[color:var(--color-sage)]/15 to-[color:var(--color-sage-deep)]/25">
-        {!imgFailed ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={`/artwork/tablica-${product.id}.webp`}
-            alt=""
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover"
-            onError={() => setImgFailed(true)}
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Building2 className="h-6 w-6 text-foreground/30" strokeWidth={1.5} />
-          </div>
-        )}
-      </div>
-
       <div className="min-w-0 flex-1 flex flex-col justify-center">
         <div className="flex items-baseline gap-2 flex-wrap">
-          <h4 className="text-sm sm:text-base font-medium leading-snug text-foreground">
+          <h4 className="text-sm sm:text-[0.95rem] font-medium leading-tight text-foreground">
             {product.label}
           </h4>
           {isInCart && (
@@ -137,23 +118,23 @@ export function ServiceMatrixRow({
           )}
           {recommended && !isInCart && (
             <span className="inline-flex items-center rounded-full bg-[color:var(--color-sage)]/20 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[color:var(--color-sage-deep)]">
-              Preporuka
+              Povoljnije
             </span>
           )}
         </div>
-        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+        <p className="mt-0.5 truncate text-[0.7rem] text-muted-foreground">
           {category.label}
         </p>
       </div>
 
-      <div className="hidden sm:flex flex-col items-end justify-center text-right min-w-[120px]">
+      <div className="flex flex-col items-end justify-center text-right shrink-0 min-w-[88px] sm:min-w-[120px]">
         {discount ? (
           <>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xs line-through text-muted-foreground/55">
+            <div className="flex items-baseline gap-1 sm:gap-1.5">
+              <span className="text-[0.65rem] sm:text-xs line-through text-muted-foreground/55">
                 {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
               </span>
-              <span className="text-base font-semibold text-foreground">
+              <span className="text-sm sm:text-base font-semibold text-foreground">
                 {formatPublicPrice(discountedPerUnit!, displayCurrency, pricingSettings)}
               </span>
             </div>
@@ -168,22 +149,14 @@ export function ServiceMatrixRow({
             >
               &minus;{discount.pct}%{" "}
               {isPreviewDiscount && (
-                <span className="ml-1 font-normal normal-case tracking-normal">preview</span>
+                <span className="ml-1 hidden sm:inline font-normal normal-case tracking-normal">preview</span>
               )}
-            </span>
-            <span className="text-[0.65rem] text-muted-foreground">
-              / {displayUnitLabel}
             </span>
           </>
         ) : (
-          <>
-            <span className="text-base font-semibold text-foreground">
-              od {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
-            </span>
-            <span className="text-[0.65rem] text-muted-foreground">
-              / {displayUnitLabel}
-            </span>
-          </>
+          <span className="text-sm sm:text-base font-semibold text-foreground">
+            od {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
+          </span>
         )}
       </div>
 
@@ -227,26 +200,6 @@ export function ServiceMatrixRow({
         )}
       </div>
 
-      {/* Mobile price strip */}
-      <div className="sm:hidden absolute inset-x-3 bottom-1 flex justify-end">
-        {discount ? (
-          <div className="flex items-baseline gap-1.5 text-xs">
-            <span className="line-through text-muted-foreground/55">
-              {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
-            </span>
-            <span className="font-semibold text-foreground">
-              {formatPublicPrice(discountedPerUnit!, displayCurrency, pricingSettings)}
-            </span>
-            <span className="rounded bg-[color:var(--color-sage-deep)] px-1 py-0 text-[0.55rem] font-bold uppercase text-white">
-              &minus;{discount.pct}%
-            </span>
-          </div>
-        ) : (
-          <span className="text-xs font-semibold text-foreground">
-            od {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
-          </span>
-        )}
-      </div>
     </li>
   );
 }

@@ -35,14 +35,14 @@ export function ServiceMatrix() {
   return (
     <section
       id="usluge"
-      className="mx-auto w-full max-w-[min(96vw,1720px)] scroll-mt-24 px-6 pb-16 pt-10"
+      className="mx-auto w-full max-w-[min(96vw,1720px)] scroll-mt-24 px-6 pb-10 pt-8"
     >
-      <header className="mb-6 flex items-baseline justify-between gap-4 px-1">
-        <h2 className="text-2xl font-semibold leading-tight text-foreground md:text-3xl">
+      <header className="mb-4 flex items-baseline justify-between gap-4 px-1">
+        <h2 className="text-xl font-semibold leading-tight text-foreground md:text-2xl">
           Izaberi uslugu
         </h2>
-        <p className="hidden text-sm text-muted-foreground sm:block">
-          Pređi mišem preko usluge da vidiš popust na ostale.
+        <p className="hidden text-xs text-muted-foreground sm:block">
+          Pređi mišem preko usluge da vidiš popust na povezane.
         </p>
       </header>
 

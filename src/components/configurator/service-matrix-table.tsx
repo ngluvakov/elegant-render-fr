@@ -2,7 +2,11 @@
 
 import { useMemo } from "react";
 import { ServiceMatrixRow } from "./service-matrix-row";
-import { getRelatedProductIds } from "@/lib/catalog/product-relations";
+import {
+  resolveDiscount,
+  type QuoteItem,
+} from "@/lib/catalog/calculate";
+import { makePrimaryItem } from "@/lib/catalog/upsell-helpers";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
 import { useQuote } from "./quote-context";
 import { ALL_FILTER } from "./service-matrix-shared";
@@ -49,7 +53,7 @@ export function ServiceMatrixTable({
   // ── "Sve usluge" mode: group by category, no recommended split ──
   if (activeCat === ALL_FILTER) {
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-5">
         {categories.map((cat) => (
           <section key={cat.id}>
             <header className="mb-2 flex items-baseline justify-between px-1">
@@ -60,7 +64,7 @@ export function ServiceMatrixTable({
                 {cat.sectionLabel}
               </span>
             </header>
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-1.5">
               {cat.products.map((product) => (
                 <ServiceMatrixRow
                   key={product.id}
@@ -90,30 +94,37 @@ export function ServiceMatrixTable({
   }
 
   const cartProductIds = new Set(cartItems.map((i) => i.productId));
-  const activeProductIds = new Set(activeCategory.products.map((p) => p.id));
 
-  // Recommended: union of related products from each cart item, minus what's
-  // already in the cart and minus products in the active category (avoid dupes).
-  const recommendedIds = new Set<string>();
-  if (cartItems.length > 0) {
-    for (const item of cartItems) {
-      for (const relId of getRelatedProductIds(item.productId)) {
-        if (cartProductIds.has(relId)) continue;
-        if (activeProductIds.has(relId)) continue;
-        recommendedIds.add(relId);
-      }
-    }
+  // Cheaper-with: products from other categories that would receive a
+  // discount via resolveDiscount when any product in the active category is
+  // a sibling (or any cart item is). Sorted by discount % descending so the
+  // strongest savings sit closest to the active group.
+  const siblingsForCheaper: QuoteItem[] = [
+    ...activeCategory.products.map((p) => makePrimaryItem(p.id)),
+    ...cartItems,
+  ];
+
+  type Cheaper = ProductWithCategory & { discountPct: number };
+  const cheaper: Cheaper[] = [];
+  for (const pc of allFlat) {
+    if (pc.category.id === activeCat) continue;
+    if (cartProductIds.has(pc.product.id)) continue;
+    if (pc.product.inquiryOnly) continue;
+    const target = makePrimaryItem(pc.product.id);
+    const d = resolveDiscount(target, siblingsForCheaper, pricingCatalog);
+    if (d) cheaper.push({ ...pc, discountPct: d.pct });
   }
+  cheaper.sort((a, b) => b.discountPct - a.discountPct);
 
-  const recommended = allFlat.filter((pc) => recommendedIds.has(pc.product.id));
+  const cheaperIds = new Set(cheaper.map((c) => c.product.id));
   const otherProducts = allFlat.filter(
     (pc) =>
       pc.category.id !== activeCat &&
-      !recommendedIds.has(pc.product.id),
+      !cheaperIds.has(pc.product.id),
   );
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       {/* Active category — animated slide-in-from-top whenever activeCat changes */}
       <section
         key={`active-${activeCat}`}
@@ -142,21 +153,21 @@ export function ServiceMatrixTable({
         </ul>
       </section>
 
-      {recommended.length > 0 && (
+      {cheaper.length > 0 && (
         <section
-          key={`recommended-${activeCat}-${cartItems.length}`}
+          key={`cheaper-${activeCat}-${cartItems.length}`}
           className="animate-in fade-in slide-in-from-top-1 duration-300 ease-out"
         >
           <header className="mb-2 flex items-baseline justify-between px-1">
             <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[color:var(--color-sage-deep)]">
-              Preporučeno uz izabrano
+              Postaje povoljnije uz {activeCategory.label.toLowerCase()}
             </h3>
             <span className="text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground">
-              Sa popustom za već naručeno
+              Hover &rarr; preview popusta
             </span>
           </header>
-          <ul className="flex flex-col gap-2">
-            {recommended.map(({ product, category }) => (
+          <ul className="flex flex-col gap-1.5">
+            {cheaper.map(({ product, category }) => (
               <ServiceMatrixRow
                 key={product.id}
                 product={product}
@@ -182,7 +193,7 @@ export function ServiceMatrixTable({
               Iz drugih kategorija
             </span>
           </header>
-          <ul className="flex flex-col gap-2">
+          <ul className="flex flex-col gap-1.5">
             {otherProducts.map(({ product, category }) => (
               <ServiceMatrixRow
                 key={product.id}

@@ -7,8 +7,6 @@
  */
 "use client";
 
-import { useState } from "react";
-import { Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { resolveDiscount } from "@/lib/catalog/calculate";
 import { makePrimaryItem, makeUpsellTargetItem } from "@/lib/catalog/upsell-helpers";
@@ -35,7 +33,6 @@ export function RelatedUpsellCard({
   pricingCatalog,
 }: Props) {
   const { addProduct, displayCurrency, pricingSettings } = useQuote();
-  const [imgFailed, setImgFailed] = useState(false);
 
   const targetItem = makeUpsellTargetItem(relatedProduct.id);
   const primaryItem = makePrimaryItem(primaryProductId);
@@ -58,29 +55,16 @@ export function RelatedUpsellCard({
   };
 
   return (
-    <div className="flex flex-col rounded-xl border border-border/50 bg-card overflow-hidden">
-      {/* Thumbnail */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-[color:var(--color-sage)]/10 to-[color:var(--color-sage-deep)]/20">
-        {!imgFailed ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            src={`/artwork/tablica-${relatedProduct.id}.webp`}
-            alt={relatedProduct.label}
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover object-center"
-            onError={() => setImgFailed(true)}
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Building2 className="h-8 w-8 text-foreground/25" strokeWidth={1.5} />
-          </div>
-        )}
-
-        {/* POPUST badge */}
+    <div className="flex flex-col rounded-xl border border-border/50 bg-card p-3 gap-1.5">
+      {/* Header row: name + POPUST badge */}
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-medium text-foreground leading-snug line-clamp-2">
+          {relatedProduct.label}
+        </p>
         {discount && (
           <span
             className={cn(
-              "absolute top-2 left-2 rounded px-1.5 py-0.5 text-[0.65rem] font-semibold tracking-wide border",
+              "shrink-0 rounded px-1.5 py-0.5 text-[0.65rem] font-semibold tracking-wide border",
               "text-[color:var(--color-sage-deep)] border-[color:var(--color-sage)]/30",
               pct >= 40
                 ? "bg-[color:var(--color-sage)]/25"
@@ -92,39 +76,32 @@ export function RelatedUpsellCard({
         )}
       </div>
 
-      {/* Info */}
-      <div className="p-3 flex flex-col gap-1.5 flex-1">
-        <p className="text-sm font-medium text-foreground leading-snug line-clamp-2">
-          {relatedProduct.label}
-        </p>
-
-        {/* Price line */}
-        <div className="mt-auto">
-          {discount && discountedPrice !== null ? (
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xs text-muted-foreground line-through">
-                {formatPublicPrice(originalPrice, displayCurrency, pricingSettings)}
-              </span>
-              <span className="text-base font-semibold text-foreground">
-                {formatPublicPrice(discountedPrice, displayCurrency, pricingSettings)}
-              </span>
-            </div>
-          ) : (
-            <span className="text-sm text-muted-foreground">
-              od {formatPublicPrice(originalPrice, displayCurrency, pricingSettings)}
+      {/* Price line */}
+      <div>
+        {discount && discountedPrice !== null ? (
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-xs text-muted-foreground line-through">
+              {formatPublicPrice(originalPrice, displayCurrency, pricingSettings)}
             </span>
-          )}
-        </div>
-
-        {/* Ghost add button */}
-        <button
-          type="button"
-          onClick={handleAdd}
-          className="mt-1 w-full rounded-md border border-foreground/20 bg-transparent px-2 py-1 text-xs font-medium text-foreground hover:bg-foreground/5 transition-colors"
-        >
-          + Dodaj
-        </button>
+            <span className="text-base font-semibold text-foreground">
+              {formatPublicPrice(discountedPrice, displayCurrency, pricingSettings)}
+            </span>
+          </div>
+        ) : (
+          <span className="text-sm text-muted-foreground">
+            od {formatPublicPrice(originalPrice, displayCurrency, pricingSettings)}
+          </span>
+        )}
       </div>
+
+      {/* Ghost add button */}
+      <button
+        type="button"
+        onClick={handleAdd}
+        className="mt-1 w-full rounded-md border border-foreground/20 bg-transparent px-2 py-1 text-xs font-medium text-foreground hover:bg-foreground/5 transition-colors"
+      >
+        + Dodaj
+      </button>
     </div>
   );
 }

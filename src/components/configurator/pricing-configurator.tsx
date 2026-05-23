@@ -18,6 +18,7 @@
 import { Suspense, useEffect, useRef } from "react";
 import { ChevronDown, Plus, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { QuoteProvider, useQuote } from "./quote-context";
 import { ServiceAdder } from "./service-adder";
 import { AiCreditAdder } from "./ai-credit-adder";
@@ -30,7 +31,9 @@ import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import { loadQuote } from "@/server/actions/quote";
 import { track } from "@/lib/posthog-events";
 
-export function ConfiguratorBody() {
+export function ConfiguratorBody({
+  hideQuoteSummary = false,
+}: { hideQuoteSummary?: boolean } = {}) {
   const { calculation, addProduct, loadItems, pricingCatalog } = useQuote();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -149,7 +152,12 @@ export function ConfiguratorBody() {
 
   return (
     <>
-      <div className="grid items-start gap-8 pb-24 xl:grid-cols-[1fr_400px] xl:pb-0">
+      <div
+        className={cn(
+          "grid items-start gap-8 pb-24 xl:pb-0",
+          hideQuoteSummary ? "xl:grid-cols-1" : "xl:grid-cols-[1fr_400px]",
+        )}
+      >
         {/* Main column */}
         <div className="space-y-8">
           {/* Service browser */}
@@ -208,13 +216,15 @@ export function ConfiguratorBody() {
           )}
         </div>
 
-        {/* Sidebar */}
-        <aside
-          id="quote-summary"
-          className="xl:sticky xl:top-24 xl:self-start"
-        >
-          <QuoteSummary />
-        </aside>
+        {/* Sidebar — hidden on /cene where QuoteSummary lives inside ServiceMatrix */}
+        {!hideQuoteSummary && (
+          <aside
+            id="quote-summary"
+            className="xl:sticky xl:top-24 xl:self-start"
+          >
+            <QuoteSummary />
+          </aside>
+        )}
       </div>
 
       <MobileQuoteBar />

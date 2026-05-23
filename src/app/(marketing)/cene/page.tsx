@@ -5,6 +5,7 @@ import { SectionKicker } from "@/components/brand/section-kicker";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ConfiguratorBody } from "@/components/configurator/pricing-configurator";
 import { QuoteProvider } from "@/components/configurator/quote-context";
+import { QuoteSummary } from "@/components/configurator/quote-summary";
 import { StandaloneAiCredits } from "@/components/configurator/standalone-ai-credits";
 import { ServiceMatrix } from "@/components/configurator/service-matrix";
 import { PreFooterCta } from "@/components/site/pre-footer-cta";
@@ -72,17 +73,19 @@ export default async function CenePage() {
         <StandaloneAiCredits />
 
         {/* Service matrix — left sidebar of categories + right table of services
-            with hover-preview pricing and an info drawer. Replaces the previous
-            chip filter + tablica grid. */}
+            with hover-preview pricing and an info drawer. The black "Vaša
+            ponuda" QuoteSummary card lives in the matrix as a sticky 3rd
+            column on xl+, so the cart is visible while browsing. */}
         <Suspense fallback={null}>
-          <ServiceMatrix />
+          <ServiceMatrix cartSlot={<QuoteSummary />} />
         </Suspense>
 
-        {/* Cart / configurator — anchored for CartChip scroll target */}
+        {/* Cart / configurator — item-editor cards below the matrix.
+            QuoteSummary is suppressed here (already shown above). */}
         <section id="korpa" className="scroll-mt-24 pb-20 pt-16">
           <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
             <Suspense fallback={null}>
-              <ConfiguratorBody />
+              <ConfiguratorBody hideQuoteSummary />
             </Suspense>
           </div>
         </section>

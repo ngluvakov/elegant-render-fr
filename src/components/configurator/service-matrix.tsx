@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { ServiceMatrixSidebar } from "./service-matrix-sidebar";
 import { ServiceMatrixTable } from "./service-matrix-table";
 import { ServiceDetailDrawer } from "./service-detail-drawer";
@@ -9,7 +10,11 @@ import { useQuote } from "./quote-context";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
 import { DEFAULT_CAT, MATRIX_CAT_PARAM } from "./service-matrix-shared";
 
-export function ServiceMatrix() {
+type Props = {
+  cartSlot?: ReactNode;
+};
+
+export function ServiceMatrix({ cartSlot }: Props = {}) {
   const sp = useSearchParams();
   const activeCat = sp.get(MATRIX_CAT_PARAM) ?? DEFAULT_CAT;
 
@@ -32,6 +37,8 @@ export function ServiceMatrix() {
     }
   }
 
+  const hasCart = cartSlot != null;
+
   return (
     <section
       id="usluge"
@@ -46,7 +53,12 @@ export function ServiceMatrix() {
         </p>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-[260px_minmax(0,1fr)]">
+      <div
+        className={cn(
+          "grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)]",
+          hasCart && "xl:grid-cols-[240px_minmax(0,1fr)_380px]",
+        )}
+      >
         <ServiceMatrixSidebar activeCat={activeCat} />
         <div className="min-w-0">
           <ServiceMatrixTable
@@ -56,7 +68,18 @@ export function ServiceMatrix() {
             onInfoClick={setActiveDetailId}
           />
         </div>
+        {hasCart && (
+          <aside className="hidden xl:block xl:sticky xl:top-20 xl:self-start">
+            {cartSlot}
+          </aside>
+        )}
       </div>
+
+      {hasCart && (
+        <div className="mt-6 xl:hidden">
+          {cartSlot}
+        </div>
+      )}
 
       <ServiceDetailDrawer
         product={detailProduct}

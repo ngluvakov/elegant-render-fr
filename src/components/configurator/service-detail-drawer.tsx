@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Building2, Check, Info, ArrowDownToLine } from "lucide-react";
+import { Check, Info, ArrowDownToLine } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -41,7 +40,6 @@ export function ServiceDetailDrawer({
     pricingSettings,
     addProduct,
   } = useQuote();
-  const [imgFailed, setImgFailed] = useState(false);
 
   if (!product || !category) {
     return (
@@ -99,23 +97,6 @@ export function ServiceDetailDrawer({
           <SheetTitle>{product.label}</SheetTitle>
           <SheetDescription>{category.description}</SheetDescription>
         </SheetHeader>
-
-        <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-[color:var(--color-sage)]/10 to-[color:var(--color-sage-deep)]/20">
-          {!imgFailed ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={`/artwork/tablica-${product.id}.webp`}
-              alt={product.label}
-              loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover"
-              onError={() => setImgFailed(true)}
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Building2 className="h-14 w-14 text-foreground/20" strokeWidth={1} />
-            </div>
-          )}
-        </div>
 
         <div className="flex flex-col gap-5 p-6">
           <div>

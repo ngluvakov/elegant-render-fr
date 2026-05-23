@@ -20,7 +20,6 @@ import { ChevronDown, Plus, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { QuoteProvider, useQuote } from "./quote-context";
-import { ServiceAdder } from "./service-adder";
 import { AiCreditAdder } from "./ai-credit-adder";
 import { QuoteItemCard } from "./quote-item";
 import { QuoteSummary } from "./quote-summary";
@@ -160,14 +159,6 @@ export function ConfiguratorBody({
       >
         {/* Main column */}
         <div className="space-y-8">
-          {/* Service browser */}
-          <section>
-            <h2 className="mb-4 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-              Izaberite uslugu
-            </h2>
-            <ServiceAdder />
-          </section>
-
           {/* Added items */}
           {calculation.items.length > 0 && (
             <section>
@@ -186,7 +177,7 @@ export function ConfiguratorBody({
                 type="button"
                 onClick={() => {
                   document
-                    .getElementById("tablice")
+                    .getElementById("usluge")
                     ?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
                 className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-2xl border border-dashed border-border/60 bg-transparent px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent"

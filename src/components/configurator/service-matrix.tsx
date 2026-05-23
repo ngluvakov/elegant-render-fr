@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
+import { Percent } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ServiceMatrixSidebar } from "./service-matrix-sidebar";
 import { ServiceMatrixTable } from "./service-matrix-table";
@@ -44,14 +45,23 @@ export function ServiceMatrix({ cartSlot }: Props = {}) {
       id="usluge"
       className="mx-auto w-full max-w-[min(96vw,1720px)] scroll-mt-24 px-6 pb-10 pt-8"
     >
-      <header className="mb-4 flex items-baseline justify-between gap-4 px-1">
+      <header className="mb-4 px-1">
         <h2 className="text-xl font-semibold leading-tight text-foreground md:text-2xl">
           Izaberi uslugu
         </h2>
-        <p className="hidden text-xs text-muted-foreground sm:block">
-          Pređi mišem preko usluge da vidiš popust na povezane.
-        </p>
       </header>
+
+      <div className="mb-5 flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/[0.06] p-4 md:p-5">
+        <Percent className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+        <div>
+          <p className="text-base md:text-lg font-medium leading-snug text-foreground">
+            Usluge postaju jeftinije u kombinaciji sa drugim uslugama.
+          </p>
+          <p className="mt-1 text-sm md:text-[0.95rem] leading-relaxed text-muted-foreground">
+            Isprobajte kombinaciju usluga koja Vama treba i saznajte koliko biste uštedeli.
+          </p>
+        </div>
+      </div>
 
       <div
         className={cn(

@@ -208,7 +208,6 @@ export function ServiceMatrixTable({
                 hoveredId={hoveredId}
                 onHover={onHover}
                 onInfoClick={onInfoClick}
-                dimmed
               />
             ))}
           </ul>

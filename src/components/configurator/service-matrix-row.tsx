@@ -24,7 +24,6 @@ type Props = {
   hoveredId: string | null;
   onHover: (id: string | null) => void;
   onInfoClick: (productId: string) => void;
-  dimmed?: boolean;
   recommended?: boolean;
   active?: boolean;
 };
@@ -36,7 +35,6 @@ export function ServiceMatrixRow({
   hoveredId,
   onHover,
   onInfoClick,
-  dimmed = false,
   recommended = false,
   active = false,
 }: Props) {
@@ -92,12 +90,10 @@ export function ServiceMatrixRow({
       onMouseLeave={() => onHover(null)}
       data-hovered={isHovered ? "" : undefined}
       data-in-cart={isInCart ? "" : undefined}
-      data-dimmed={dimmed ? "" : undefined}
       data-active={active ? "" : undefined}
       className={cn(
         "group relative flex items-center gap-3 rounded-lg border bg-card px-3 py-2 transition-all duration-200",
         "border-border/50 hover:border-[color:var(--color-sage)]/50 hover:bg-secondary/30",
-        dimmed && "opacity-55 hover:opacity-100",
         recommended &&
           "border-[color:var(--color-sage)]/45 bg-[color:var(--color-sage)]/8",
         active &&

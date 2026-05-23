@@ -226,6 +226,38 @@
       animation: none;
     }
   }
+
+  /*
+    .sidebar-attention-pulse — domino-wave highlight rotating through the
+    /cene matrix category sidebar until the visitor makes their first
+    selection. Each <li> sets its own animation-delay so the wave ripples
+    top-to-bottom. Cycle is 7s with a brief 8% highlight window then a
+    long quiet tail so the page does not feel busy. Reduced motion off.
+  */
+  @keyframes sidebar-attention-pulse {
+    0%, 88%, 100% {
+      border-left-color: transparent;
+      box-shadow: 0 0 0 0 transparent;
+    }
+    4%, 8% {
+      border-left-color: var(--color-accent);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 30%, transparent);
+    }
+    14% {
+      border-left-color: transparent;
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  .sidebar-attention-pulse {
+    animation: sidebar-attention-pulse 7s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar-attention-pulse {
+      animation: none;
+    }
+  }
 }
 
 @keyframes ai-result-scan {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useSyncExternalStore } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
@@ -8,37 +8,6 @@ import { useQuote } from "./quote-context";
 import { track } from "@/lib/posthog-events";
 import { ALL_FILTER, MATRIX_CAT_PARAM } from "./service-matrix-shared";
 import { useFlipAnimation } from "./use-flip-animation";
-
-const INTERACTED_KEY = "matrix-cat-interacted";
-
-// useSyncExternalStore handles SSR + client divergence cleanly without
-// triggering hydration warnings — server returns the "already interacted"
-// snapshot so the pulse class never lands in static HTML, and the client
-// reconciles from localStorage after hydration.
-function subscribeInteracted(callback: () => void) {
-  if (typeof window === "undefined") return () => {};
-  window.addEventListener(INTERACTED_KEY, callback);
-  window.addEventListener("storage", callback);
-  return () => {
-    window.removeEventListener(INTERACTED_KEY, callback);
-    window.removeEventListener("storage", callback);
-  };
-}
-
-function getInteractedSnapshot() {
-  return localStorage.getItem(INTERACTED_KEY) === "1";
-}
-
-function getInteractedServerSnapshot() {
-  return true;
-}
-
-function markInteracted() {
-  try {
-    localStorage.setItem(INTERACTED_KEY, "1");
-    window.dispatchEvent(new Event(INTERACTED_KEY));
-  } catch {}
-}
 
 type Item = {
   id: string;
@@ -80,15 +49,14 @@ export function ServiceMatrixSidebar({ activeCat }: { activeCat: string }) {
   useFlipAnimation(desktopRef, activeCat);
   useFlipAnimation(mobileRef, activeCat);
 
-  const hasInteracted = useSyncExternalStore(
-    subscribeInteracted,
-    getInteractedSnapshot,
-    getInteractedServerSnapshot,
-  );
+  // Per-session interaction flag — animation runs from mount until the first
+  // category click, then stops for this React lifetime. State resets on full
+  // reload or route-away-and-back so a returning visitor sees the pulse again.
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const setCat = useCallback(
     (id: string) => {
-      if (!hasInteracted) markInteracted();
+      if (!hasInteracted) setHasInteracted(true);
       const params = new URLSearchParams(sp.toString());
       if (id === ALL_FILTER) {
         params.delete(MATRIX_CAT_PARAM);

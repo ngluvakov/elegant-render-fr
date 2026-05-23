@@ -47,19 +47,22 @@ export function ServiceMatrixRow({
   // Build siblings list: cart items + hovered (if any, and not this row).
   // resolveDiscount(target, siblings) returns the best applicable discount
   // for *this* product given the current cart + simulated hover-primary.
+  // When THIS row is hovered, siblings stays at cartItems so any real
+  // cart-based discount keeps showing instead of disappearing.
   const discount = useMemo(() => {
     if (product.inquiryOnly) return null;
     if (isInCart) return null;
-    if (isHovered) return null;
     const target = makeUpsellTargetItem(product.id);
     const siblings: QuoteItem[] =
       hoveredId && hoveredId !== product.id
         ? [makePrimaryItem(hoveredId), ...cartItems]
         : cartItems;
     return resolveDiscount(target, siblings, pricingCatalog);
-  }, [product.id, product.inquiryOnly, hoveredId, isHovered, isInCart, cartItems, pricingCatalog]);
+  }, [product.id, product.inquiryOnly, hoveredId, isInCart, cartItems, pricingCatalog]);
 
   const isPreviewDiscount = discount !== null && hoveredId !== null && hoveredId !== product.id;
+  const hasActiveDiscount =
+    discount !== null && !isPreviewDiscount && cartItems.length > 0;
 
   const originalPerUnit = product.displayPerUnitEur ?? product.basePriceEur;
   const discountedPerUnit = discount
@@ -99,6 +102,7 @@ export function ServiceMatrixRow({
         active &&
           "border-l-[3px] border-l-accent border-r-border/50 border-y-border/50 bg-accent/[0.04]",
         isInCart && "border-[color:var(--color-sage-deep)]/45 bg-[color:var(--color-sage)]/10",
+        hasActiveDiscount && "orbit-glow",
       )}
     >
       <div className="min-w-0 flex-1 flex flex-col justify-center">

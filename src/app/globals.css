@@ -253,7 +253,58 @@
     animation: sidebar-attention-pulse 7s ease-in-out infinite;
   }
 
+  /*
+    .orbit-glow — a thin reddish ring with a brighter "comet" that orbits
+    the element's border, used to draw the eye to rows that became cheaper
+    because of an item already in the cart. Uses a conic-gradient mask so
+    the glow lives on the border only, never tints the row content. The
+    @property declaration makes --er-orbit-angle animatable (CSS Houdini).
+    Reduced-motion falls back to a static reddish ring.
+  */
+  @property --er-orbit-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes orbit-glow {
+    to {
+      --er-orbit-angle: 360deg;
+    }
+  }
+
+  .orbit-glow {
+    position: relative;
+  }
+  .orbit-glow::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(
+      from var(--er-orbit-angle),
+      transparent 0deg,
+      transparent 260deg,
+      oklch(0.62 0.18 25 / 0.85) 320deg,
+      oklch(0.7 0.22 28 / 1) 340deg,
+      oklch(0.62 0.18 25 / 0.85) 350deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: orbit-glow 3.5s linear infinite;
+    pointer-events: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .orbit-glow::before {
+      animation: none;
+      background: oklch(0.65 0.2 25 / 0.55);
+    }
     .sidebar-attention-pulse {
       animation: none;
     }

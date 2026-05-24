@@ -6,13 +6,14 @@ import { CheckoutWizard } from "./checkout-wizard";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 import { getPublicCountryCode } from "@/lib/catalog/public-currency-server";
 import { getDisplayCurrencyForCountry } from "@/lib/catalog/display-currency";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import type { BuyerInfoState } from "./checkout-context";
 
 export const metadata: Metadata = {
   title: "Porudžbina",
   description:
     "Završite porudžbinu, proverite podatke za kupca i pošaljite zahtev timu Elegant Render.",
-  robots: { index: false, follow: false },
+  robots: NO_INDEX_ROBOTS,
 };
 
 export default async function PoruciPage() {

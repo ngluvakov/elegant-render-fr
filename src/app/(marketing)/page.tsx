@@ -15,6 +15,11 @@ export const metadata: Metadata = createPublicMetadata({
   description: SEO.defaultDescription,
   twitterDescription: SEO.twitterDescription,
   path: "/",
+  keywords: [
+    "arhitektonska vizuelizacija Srbija",
+    "profesionalni 3D renderi",
+    "virtuelno opremanje nekretnina",
+  ],
 });
 
 export default function Home() {

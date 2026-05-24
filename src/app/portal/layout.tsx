@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -6,6 +7,11 @@ import { PostHogIdentifyBridge } from "@/components/posthog-identify-bridge";
 import { ChatWidget } from "@/components/chat/chat-widget";
 import { normalizeAdminPermissions } from "@/lib/admin-permissions";
 import { recordUserActivity } from "@/lib/user-activity";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  robots: NO_INDEX_ROBOTS,
+};
 
 export default async function PortalLayout({
   children,

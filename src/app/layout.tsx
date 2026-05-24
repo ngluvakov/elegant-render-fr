@@ -10,7 +10,12 @@ import { GoogleAnalyticsPostLaunch } from "@/components/analytics/google-analyti
 import { GoogleTagManagerPostLaunch } from "@/components/analytics/google-tag-manager-post-launch";
 import { LinkedInInsightTag } from "@/components/analytics/linkedin-insight-tag";
 import { SITE } from "@/lib/content/site";
-import { absoluteUrl, INDEXABLE_ROBOTS, SEO } from "@/lib/seo";
+import {
+  absoluteUrl,
+  buildLanguageAlternates,
+  INDEXABLE_ROBOTS,
+  SEO,
+} from "@/lib/seo";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-heading",
@@ -51,7 +56,20 @@ export const metadata: Metadata = {
     template: `%s · ${SITE.name}`,
   },
   description: SEO.defaultDescription,
+  applicationName: SITE.name,
+  authors: [{ name: SITE.parentCompany, url: SITE.url }],
+  creator: SITE.name,
+  publisher: SITE.parentCompany,
+  referrer: "strict-origin-when-cross-origin",
+  category: "Architecture visualization",
+  classification:
+    "Architectural visualization, virtual staging, 3D rendering, AI real estate imagery",
+  keywords: [...SEO.keywords],
   metadataBase: new URL(SITE.url),
+  alternates: {
+    canonical: SITE.url,
+    languages: buildLanguageAlternates("/"),
+  },
   robots: INDEXABLE_ROBOTS,
   openGraph: {
     title: SEO.defaultTitle,

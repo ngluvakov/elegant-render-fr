@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SERVICES } from "@/lib/catalog/services";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, buildLanguageAlternates } from "@/lib/seo";
 
 type SitemapEntry = {
   path: string;
@@ -98,6 +98,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: route.changeFrequency,
       priority: route.priority,
+      alternates: {
+        languages: buildLanguageAlternates(route.path),
+      },
       images: route.images,
     })),
     ...SERVICES.map((service) => ({
@@ -105,6 +108,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: service.featured ? 0.9 : 0.75,
+      alternates: {
+        languages: buildLanguageAlternates(`/usluge/${service.slug}`),
+      },
       images: uniqueImages([
         service.listingAsset,
         service.detailAsset,

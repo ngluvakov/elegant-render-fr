@@ -2,18 +2,67 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { SectionKicker } from "@/components/brand/section-kicker";
-import { CERTIFIER, ISO_CERTIFICATIONS, SITE } from "@/lib/content/site";
-import { createPublicMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/json-ld";
+import {
+  CERTIFIER,
+  ISO_CERTIFICATIONS,
+  SITE,
+  buildOrganizationJsonLd,
+} from "@/lib/content/site";
+import {
+  absoluteUrl,
+  buildBreadcrumbJsonLd,
+  buildWebPageJsonLd,
+  createPublicMetadata,
+} from "@/lib/seo";
+
+const CERTIFICATES_DESCRIPTION = `${SITE.name} posluje po sertifikovanim ISO standardima 9001:2015, 27001 i 50001 — sertifikovano od strane ${CERTIFIER.name}.`;
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Sertifikati i standardi",
-  description: `${SITE.name} posluje po sertifikovanim ISO standardima 9001:2015, 27001 i 50001 — sertifikovano od strane ${CERTIFIER.name}.`,
+  description: CERTIFICATES_DESCRIPTION,
   path: "/pravno/sertifikati",
 });
 
 export default function SertifikatiPage() {
   return (
     <>
+      <JsonLd
+        data={[
+          buildWebPageJsonLd({
+            path: "/pravno/sertifikati",
+            name: "Sertifikati i standardi",
+            description: CERTIFICATES_DESCRIPTION,
+          }),
+          buildBreadcrumbJsonLd([
+            { name: "Početna", path: "/" },
+            { name: "Sertifikati i standardi", path: "/pravno/sertifikati" },
+          ]),
+          buildOrganizationJsonLd(),
+          {
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "@id": `${absoluteUrl("/pravno/sertifikati")}#certificates`,
+            name: "Elegant Render ISO sertifikati",
+            itemListElement: ISO_CERTIFICATIONS.map((cert, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              item: {
+                "@type": "EducationalOccupationalCredential",
+                name: cert.code,
+                credentialCategory: cert.domain,
+                description: cert.description,
+                identifier: cert.certNumber,
+                url: cert.verifyUrl,
+                recognizedBy: {
+                  "@type": "Organization",
+                  name: CERTIFIER.name,
+                },
+              },
+            })),
+          },
+        ]}
+      />
       <article className="mx-auto w-full max-w-3xl px-6 pb-20 pt-20 md:pt-28">
         <SectionKicker>Pravno</SectionKicker>
         <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">

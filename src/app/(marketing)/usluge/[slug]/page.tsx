@@ -42,6 +42,13 @@ export async function generateMetadata({
     title: service.name,
     description: service.description,
     path: `/usluge/${slug}`,
+    image:
+      service.detailAsset ??
+      service.detailAfterAsset ??
+      service.listingAsset ??
+      service.asset,
+    imageAlt: `${service.name} - Elegant Render`,
+    keywords: [service.name, service.shortName, CATEGORY_LABELS[service.category]],
   });
 }
 

@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-05-24 - Search and AI discovery readiness
+
+- **Oblast promene:** conversion | architecture | docs
+- **Šta se promenilo:** Public metadata, sitemap alternates, robots host, schema.org JSON-LD and AI-readable `llms.txt` content are tightened for SEO, GEO and AEO readiness. Portal and checkout surfaces are explicitly noindex, while public service, pricing, FAQ and trust pages expose canonical, answer-friendly, machine-readable context.
+- **Zašto:** Search engines and AI answer engines need one canonical source of truth for identity, services, prices, trust signals and crawl boundaries.
+- **Uticaj na conversion:** Bolja vidljivost javnih stranica i jasniji machine-readable put ka uslugama, cenama i kontaktu.
+- **Uticaj na design:** Nema promene vizuelnog dizajna.
+- **Uticaj na code:** Centralizovani metadata helpers sada dodaju self-referencing hreflang, keywords, publisher/creator metadata i bogatiji JSON-LD; sitemap dodaje language alternates; portal layout nameće noindex za sve private rute.
+- **Uticaj na docs:** Ažuriran ovaj decision log.
+- **Povezani fajlovi:** `src/lib/seo.ts`, `src/lib/llms.ts`, `src/app/layout.tsx`, `src/app/sitemap.ts`, `src/app/robots.ts`, `src/app/portal/layout.tsx`, `src/app/(marketing)/usluge/vr/konsultacija/page.tsx`, `src/app/(marketing)/pravno/sertifikati/page.tsx`, `docs/platform-decisions.md`
+- **Reference:** User request: "Please make sure that the platform is SEO, GEO and AEO ready."
+
 ## 2026-05-20 - LinkedIn Insight Tag sa marketing saglasnošću
 
 - **Oblast promene:** conversion | marketing | legal | docs

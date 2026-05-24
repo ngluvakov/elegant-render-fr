@@ -66,6 +66,11 @@ export const metadata: Metadata = createPublicMetadata({
   description:
     "Brza AI obrada fotografija nekretnina: uklanjanje elemenata, dan-u-noć, zamena neba, boja zidova, staging, dodavanje ili zamena nameštaja/dekora, renovacija i redesign.",
   path: "/ai-studio",
+  keywords: [
+    "AI obrada fotografija nekretnina",
+    "AI virtual staging",
+    "AI uklanjanje predmeta sa slike",
+  ],
 });
 
 type ToolDetail = {

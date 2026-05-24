@@ -17,6 +17,11 @@ export const metadata: Metadata = createPublicMetadata({
   description:
     "Kompletna ponuda arhitektonske vizuelizacije — renderi, animacije, 360 ture, virtuelno opremanje i adaptacije prostora.",
   path: "/usluge",
+  keywords: [
+    "usluge arhitektonske vizuelizacije",
+    "renderi enterijera i eksterijera",
+    "virtuelna renovacija",
+  ],
 });
 
 export default function UslugePage() {

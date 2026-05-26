@@ -950,19 +950,91 @@ export const SERVICES: Service[] = [
     description:
       "Praznu ili slabo uređenu fotografiju prostora pretvaramo u opremljenu scenu koja prodaje. Idealno za agente nekretnina i vlasnike — opremanje fotografije košta 100× manje od pravog opremanja stana, a značajno povećava klikove na oglas. Druga soba iz iste nekretnine: 17% jeftinije. Pakovanje od 10 slika: 28% jeftinije po slici.",
     highlight:
-      "Najbrži način da prazna nekretnina deluje useljivo i poveća broj poziva sa oglasa.",
+      "Praktičan način da prazna nekretnina deluje useljivo i poveća broj poziva sa oglasa.",
     materials:
       "Pošaljite nam fotografije praznih prostorija visoke rezolucije i željeni stil nameštaja.",
     asset: "/artwork/expert-virtuelno-opremanje-after.webp",
     beforeAsset: "/artwork/expert-virtuelno-opremanje-before.webp",
     afterAsset: "/artwork/expert-virtuelno-opremanje-after.webp",
+    detailAsset: "/artwork/detail-virtuelno-opremanje-after.webp",
     detailBeforeAsset: "/artwork/detail-virtuelno-opremanje-before.webp",
     detailAfterAsset: "/artwork/detail-virtuelno-opremanje-after.webp",
     philosophy:
       "Prva slika pokriva izbor nameštaja, stila i osvetljenja. Kad je stil definisan, svaki dodatni ugao iste sobe je 33% jeftiniji, druga soba 17% jeftinija, a od 10+ slika cena pada na €13/sliku. Tako celokupna nekretnina dobija kompletan oglasni paket za delić cene fizičkog opremanja.",
     priceContext:
       "€18 prva slika · €15 druga soba · od €13/sliku za pakovanje 10+ slika.",
+    forSegments: [
+      "Agencije nekretnina",
+      "Vlasnici praznih jedinica",
+      "Fotografi nekretnina (post-produkcija)",
+    ],
     featured: true,
+    problemHeading: "Prazna soba deluje hladno. Opremljena prodaje.",
+    problemBody:
+      "Kupac otvori oglas, vidi prazan stan i nastavi dalje. Bez nameštaja nema osećaja razmere, bez stila nema emocionalne reakcije. Većina agenata zna ovo — ali fizičko opremanje stana košta hiljade evra i traje danima.",
+    problemResolution:
+      "Virtuelno opremanje pretvara fotografiju prazne sobe u atraktivnu scenu za jedan dan i jedan klik više po oglasu. Nameštaj, ćilim, lampa, biljka — sve u stilu koji odgovara nekretnini.",
+    benefits: [
+      {
+        icon: "speed",
+        title: "Brz rezultat",
+        body: "Sliku šaljete danas, opremljen prikaz dobijate za nekoliko radnih dana. Ne čekate dostavu nameštaja, ne organizujete fotograf-termin.",
+      },
+      {
+        icon: "value",
+        title: "100× jeftinije od fizičkog opremanja",
+        body: "Pravi nameštaj za prezentaciju stana košta hiljade evra i traje danima. Virtuelno €18 po slici, €13 za pakovanje 10+ slika.",
+      },
+      {
+        icon: "trust",
+        title: "Stil koji odgovara kupcu",
+        body: "Birate iz nekoliko pravaca — moderni minimalist, warm Scandinavian, klasičan. Promena stila iste sobe: €12.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite fotografije",
+        body: "Fotografije praznih prostorija visoke rezolucije i 1–2 reference stila nameštaja koji želite.",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Opremanje",
+        body: "Postavljamo nameštaj, materijale i osvetljenje na Vaše fotografije. Prve nacrte šaljemo za 3–5 radnih dana.",
+      },
+      {
+        title: "Isporuka i revizije",
+        body: "Dobijate gotove slike spremne za oglas. Tri runde revizije su uključene u cenu — bez doplate.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €18?",
+        a: "Fotorealistično opremanje jedne prazne prostorije na osnovu Vaše fotografije — uključen izbor nameštaja, postavljanje i usklađivanje osvetljenja. Dodatni ugao iste sobe: €12 (33% popust). Druga soba iste nekretnine: €15 (17% popust). Pakovanje 10+ slika: €13 po slici (28% popust).",
+      },
+      {
+        q: "Da li deluje stvarno?",
+        a: "Naša verzija je fotorealistična — kupac obično ne primeti razliku između naše opremljene slike i fotografije stvarno opremljenog stana. Transparentno označavamo da je upotrebljen virtual staging, ali to ne smanjuje efikasnost oglasa.",
+      },
+      {
+        q: "Mogu li da promenim stil ako mi se ne dopadne?",
+        a: "Da. Promena stila opremanja iste sobe: €12. Pre toga su uključene tri runde revizije bez doplate — u njima menjamo nameštaj, materijale i osvetljenje dok rezultat ne bude tačan.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude. Pakovanja 10+ slika idu fazno — prve slike za nedelju dana, ostatak po dogovoru sa Vama.",
+      },
+      {
+        q: "Da li radite za agencije sa puno listinga?",
+        a: "Da. Pakovanje 10+ slika je €13 po slici (28% popust). Stalni agenti mogu da dogovore prioritet izrade i konzistentnu stilsku liniju kroz sve listinge.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Fotografije praznih prostorija u dobroj rezoluciji (najmanje 1920px na dužoj strani, ne snimak telefonom pod uglom) i 1–2 reference stila nameštaja.",
+      },
+    ],
     variants: [
       {
         id: "staging-static",
@@ -971,7 +1043,7 @@ export const SERVICES: Service[] = [
         priceLabel: "€18",
         unitLabel: "prva opremljena slika",
         description:
-          "Najbrži upgrade oglasa: prazna soba postaje atraktivna scena za €18. Svaka sledeća soba 17% jeftinija.",
+          "Brz upgrade oglasa: prazna soba postaje atraktivna scena za €18. Svaka sledeća soba 17% jeftinija.",
         included:
           "Fotorealistično opremanje jedne prazne prostorije na osnovu Vaše fotografije. Uključuje izbor nameštaja, postavljanje i usklađivanje osvetljenja.",
         addOns: [
@@ -1017,6 +1089,7 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-virtuelna-renovacija-after.webp",
     beforeAsset: "/artwork/expert-virtuelna-renovacija-before.webp",
     afterAsset: "/artwork/expert-virtuelna-renovacija-after.webp",
+    detailAsset: "/artwork/detail-virtuelna-renovacija-after.webp",
     detailBeforeAsset: "/artwork/detail-virtuelna-renovacija-before.webp",
     detailAfterAsset: "/artwork/detail-virtuelna-renovacija-after.webp",
     philosophy:
@@ -1029,6 +1102,72 @@ export const SERVICES: Service[] = [
       "Agencije za nekretnine",
     ],
     featured: true,
+    problemHeading: "Renovacija je skupa. Greška u materijalu — još skuplja.",
+    problemBody:
+      "Vlasnik bira pločice po katalogu, podove po uzorku, kuhinjske elemente po showroom-u — i sve zajedno tek vidi posle radova. Tada je kasno za ispravku. Izvođači prave izmene sa naknadnim računom.",
+    problemResolution:
+      "Virtuelna renovacija prikazuje finalni izgled prostorije pre nego što kupite materijal i pre nego što stignu majstori. Vidite sve zajedno, isprobate varijante, donosite odluku bez rizika.",
+    benefits: [
+      {
+        icon: "value",
+        title: "Manje grešaka, niži troškovi",
+        body: "Skupa izmena materijala posle radova proizvodi nove troškove kod izvođača. Render ih sprečava — vidite finalni izgled pre nego što potrošite na zidare.",
+      },
+      {
+        icon: "speed",
+        title: "Brži dogovor sa majstorima",
+        body: "Majstor zna tačno šta gradi kada ima rendere — manje pitanja, kraći vremenski okvir, manje izmena u toku rada.",
+      },
+      {
+        icon: "trust",
+        title: "Više varijanti za malo",
+        body: "€66 prvi prikaz. Dodatni ugao iste sobe €59 (10% popust), od 4. ugla €53 (20% popust). Druga soba 15% jeftinija. Kompletna nekretnina ulazi u realan budžet.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite materijal",
+        body: "Fotografije postojećeg stanja sobe i reference za nove podove, zidove i nameštaj. Što jasniji ulaz, brže nacrti.",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Render renovacije",
+        body: "Postavljamo nove materijale, fiksirane elemente, nameštaj i osvetljenje. Prve nacrte šaljemo za 3–5 radnih dana.",
+      },
+      {
+        title: "Isporuka i revizije",
+        body: "Dobijate finalne slike. Tri runde revizije su uključene u cenu — menjamo materijale, boje i layout dok ne bude tačno.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €66?",
+        a: "Kompletna vizuelna transformacija jedne prostorije na osnovu Vaše fotografije — uključuje promenu podova, zidova, fiksiranih elemenata i nameštaja. Dodatni ugao iste sobe: €59 (10% popust). 4. i svaki sledeći ugao: €53 (20% popust). Druga soba: €56 (15% popust).",
+      },
+      {
+        q: "Razlika u odnosu na virtuelno opremanje (€18)?",
+        a: "Virtuelno opremanje (€18) menja samo nameštaj — zidovi, podovi i fiksirani elementi ostaju isti. Virtuelna renovacija (€66) menja sve — pločice, podove, ormare, kuhinju. Različite namene.",
+      },
+      {
+        q: "Koliko stvarno štedim?",
+        a: "Skupa greška u izboru materijala posle radova obično košta 5–10× više od jednog rendera. Ako sprečimo jedan pogrešan izbor pločica ili podova, render se vraća kroz uštedu.",
+      },
+      {
+        q: "Mogu li da probam različite varijante?",
+        a: "Da. U tri runde revizije menjamo materijale i layout dok ne bude tačno. Dodatna varijanta na istom rasporedu (drugi materijali) računa se kao novi prvi prikaz.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema fotografija i referenci. Završna isporuka zavisi od broja revizija.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Fotografije postojećeg stanja u dobroj rezoluciji, plan rasporeda (osnova ako postoji) i reference materijala koje želite (podovi, zidovi, ormari, nameštaj).",
+      },
+    ],
     variants: [
       {
         id: "renovation-main",

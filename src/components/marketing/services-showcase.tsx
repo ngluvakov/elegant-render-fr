@@ -153,7 +153,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "360° eksterijeri",
-    slug: "spoljasnji-renderi",
+    slug: "360-eksterijer",
     priceEur: 335,
     category: "360",
     short: "VR-spreman prikaz eksterijera sa interaktivnim tačkama gledanja.",

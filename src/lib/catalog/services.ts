@@ -411,6 +411,136 @@ export const SERVICES: Service[] = [
     ],
   },
   {
+    slug: "360-eksterijer",
+    code: "exterior-360-tour",
+    name: "360° eksterijer",
+    shortName: "360 eksterijer",
+    category: "eksterijer",
+    icon: "images",
+    tagline: "Klijent obilazi vašu zgradu kao u igri — pre nego što je sagrađena.",
+    description:
+      "Interaktivna 360 panorama oko vašeg objekta. Kupac otvara link u pretraživaču, miša rotira pogled iz svih uglova, prebacuje između tačaka — i u VR režimu na Meta Quest uređajima. Idealno za off-plan pre-prodaju jedinica, remote demo i online prospekt.",
+    highlight:
+      "Najjača prezentacija kada je kupac udaljen i tradicionalni render ne ubeđuje. Investitori za pre-prodaju iz dijaspore i agencije za remote pokazivanje.",
+    materials:
+      "Pošaljite arhitektonske nacrte (PDF/DWG), reference stila i raspored željenih tačaka gledanja. Prvi nacrt 3–5 radnih dana.",
+    asset: "/artwork/listing-exterior-360.webp",
+    detailAsset: "/artwork/detail-360-eksterijer.webp",
+    detailEmbedSrc:
+      "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
+    philosophy:
+      "Najveći trošak je izgradnja 3D modela. Cena €335 pokriva pun model i prvu interaktivnu 360 panoramu. Svaka sledeća tačka iz iste strane modela: €48 (80% jeftinije). Tačka koja zahteva neviđenu stranu: €60 jednokratno. Za 5+ tačaka popust pada na €53 po tački — kompletan obilazak objekta ulazi u realan investitorski budžet.",
+    priceContext:
+      "€335 — pun 3D model + prva 360 panorama spremna za VR. Sledeća tačka iste strane: €48.",
+    forSegments: [
+      "Investitori (off-plan pre-prodaja)",
+      "Agencije nekretnina (remote demo)",
+      "Arhitekte (klijentske prezentacije)",
+    ],
+    problemHeading: "Nacrti ne otvaraju vrata. Šetnja kroz objekat — otvara.",
+    problemBody:
+      "Investitor pokazuje fasadu, kupac klimne glavom i odlazi „da razmisli\". Statična slika ne daje osećaj prostora iz svih uglova, ne pokazuje materijale u različitim svetlima, ne dozvoljava kupcu da sam istraži. Odluka se odlaže — ili gubi.",
+    problemResolution:
+      "Interaktivna 360 panorama pretvara fasadu u prostor kroz koji klijent prolazi mišem ili VR uređajem. Kupac sam istražuje objekat iz svih uglova, sa istim materijalima i okolinom koje će videti uživo — i donosi odluku.",
+    benefits: [
+      {
+        icon: "trust",
+        title: "Poverenje kroz iskustvo",
+        body: "Kupac ulazi u prostor mišem i sam ispituje materijale, dimenzije i osvetljenje. Niko ne mora da mu objašnjava perspektivu.",
+      },
+      {
+        icon: "speed",
+        title: "Prezentacija na daljinu",
+        body: "Pošaljete link, kupac otvara panoramu sa telefona ili VR headset-a, bez instalacije i bez naloga.",
+      },
+      {
+        icon: "value",
+        title: "Niža cena od fizičke makete",
+        body: "Pun 3D model i interaktivna panorama za €335. Fizička maketa istog objekta košta višestruko više i ne može da se menja kad arhitekta promeni materijal.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite materijal",
+        body: "Dostavite arhitektonske nacrte (PDF/DWG) i, po želji, reference stila i raspored željenih tačaka gledanja.",
+      },
+      {
+        title: "Dobijate ponudu",
+        body: "Preciznu ponudu šaljemo najkasnije narednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Mi gradimo panoramu",
+        body: "Tim gradi 3D model, postavlja osvetljenje i materijale, renderuje 360 panoramu. Vi pratite napredak.",
+      },
+      {
+        title: "Isporuka linka i embed koda",
+        body: "Dobijate link za deljenje i embed kod za sajt. Tri runde revizije su uključene u cenu — bez doplate.",
+      },
+    ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-360-eksterijer-01.webp",
+        alt: "Frame iz 360 panorame stambene zgrade — ulična perspektiva",
+      },
+      {
+        src: "/artwork/portfolio-360-eksterijer-02.webp",
+        alt: "Frame iz 360 panorame porodične kuće — dnevna scena",
+      },
+      {
+        src: "/artwork/portfolio-360-eksterijer-03.webp",
+        alt: "Frame iz 360 panorame poslovnog objekta — ulazna fasada",
+      },
+      {
+        src: "/artwork/portfolio-360-eksterijer-04.webp",
+        alt: "Frame iz 360 panorame masterplana — kontekst okruženja",
+      },
+    ],
+    faqs: [
+      {
+        q: "Kako klijent otvara panoramu?",
+        a: "Šaljemo link i embed kod. Klijent otvara kroz pretraživač — bez instalacije i bez naloga. Radi na telefonu, računaru i Meta Quest VR uređaju (VR mod je ugrađen u panoramu).",
+      },
+      {
+        q: "Šta tačno uključuje cena od €335?",
+        a: "Pun 3D model objekta i prva interaktivna 360 panorama spremna za VR. Svaka dodatna tačka gledanja iz iste strane modela: €48. Tačka koja zahteva neviđenu stranu: €60 (jednokratno). Za 5+ dodatnih tačaka: €53 po tački.",
+      },
+      {
+        q: "Razlika u odnosu na klasični render?",
+        a: "Klasični spoljašnji render (€250) je jedna slika iz jednog ugla. 360 panorama (€335) je interaktivan prikaz kroz koji klijent sam prolazi — 360° pogled iz tačke, sa mogućnošću dodavanja više tačaka po objektu.",
+      },
+      {
+        q: "Da li radi u VR headset-u?",
+        a: "Da. Panorama je standardno VR-ready — Meta Quest i kompatibilni uređaji otvaraju je direktno iz pretraživača, bez dodatne aplikacije.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prvi nacrt panorame šaljemo za 3–5 radnih dana od potvrde ponude i prijema arhitektonskih nacrta. Tri runde revizije su uključene.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Arhitektonske nacrte (osnove, preseci, fasade) u PDF ili DWG formatu. Po želji: specifikacija materijala fasade, fotografije lokacije za kontekst okoline.",
+      },
+    ],
+    variants: [
+      {
+        id: "exterior-360",
+        title: "Interaktivna 360 panorama",
+        basePrice: 335,
+        priceLabel: "€335",
+        unitLabel: "3D model + prva 360 panorama",
+        description:
+          "Klijent se okreće oko zgrade mišem ili VR uređajem. Idealno za remote prezentacije i online prospekt.",
+        included:
+          "Pun 3D model objekta + prva interaktivna 360 panorama spremna za VR uređaje (Meta Quest itd.).",
+        addOns: [
+          "Dodatna interaktivna tačka, ista strana modela: €48",
+          "Dodatna tačka koja zahteva neviđenu stranu: €60",
+          "Za 5+ dodatnih tačaka: €53 po tački (popust na količinu)",
+        ],
+      },
+    ],
+  },
+  {
     slug: "virtuelno-opremanje",
     code: "virtual-staging",
     name: "Virtuelno opremanje",

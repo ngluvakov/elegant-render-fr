@@ -198,10 +198,10 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                 Pošaljite projekat
               </QuickInquiryLink>
               <a
-                href="#portfolio"
+                href={service.detailEmbedSrc ? "#demo" : "#portfolio"}
                 className="inline-flex h-12 items-center rounded-lg border border-background/40 px-6 text-sm font-medium text-background transition hover:border-background hover:bg-background/10"
               >
-                Pogledajte portfolio
+                {service.detailEmbedSrc ? "Probajte uživo" : "Pogledajte portfolio"}
               </a>
             </div>
           </div>
@@ -261,6 +261,35 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                 </article>
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Interactive demo — opt-in for services with a Kuula/iframe embed. */}
+      {service.detailEmbedSrc && (
+        <section id="demo" className="bg-background py-16 md:py-24">
+          <div className="mx-auto max-w-5xl px-6 lg:px-10">
+            <div className="mx-auto max-w-2xl text-center">
+              <SectionKicker align="center">Demo</SectionKicker>
+              <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
+                Otvorite panoramu — kliknite i prevucite mišem.
+              </h2>
+              <p className="mt-4 text-base leading-7 text-muted-foreground">
+                Demo prikazuje stvarnu interakciju koju će Vaš kupac imati: rotacija po svim uglovima, prelazak između tačaka, VR mod na podržanim uređajima.
+              </p>
+            </div>
+            <div className="mt-10 aspect-[16/9] overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+              <iframe
+                title={`${service.name} — interaktivna demo panorama`}
+                src={service.detailEmbedSrc}
+                className="h-full w-full border-0"
+                allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
+                loading="lazy"
+              />
+            </div>
+            <p className="mt-4 text-center text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              Otvara se i u VR režimu na Meta Quest uređajima
+            </p>
           </div>
         </section>
       )}

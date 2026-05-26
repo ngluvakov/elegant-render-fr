@@ -1727,12 +1727,84 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-dan-u-noc-after.webp",
     beforeAsset: "/artwork/expert-dan-u-noc-before.webp",
     afterAsset: "/artwork/expert-dan-u-noc-after.webp",
+    detailAsset: "/artwork/detail-dan-u-noc-after.webp",
     detailBeforeAsset: "/artwork/detail-dan-u-noc-before.webp",
     detailAfterAsset: "/artwork/detail-dan-u-noc-after.webp",
     outsourced: true,
     philosophy:
       "Brza post-produkcija sa jasnom cenom po slici. Pakovanje 10+ slika: €8/slika (20% popust). Hitna isporuka u roku od 24h: +50%.",
     priceContext: "€10 po slici · €8 po slici za pakovanje 10+.",
+    forSegments: [
+      "Agencije nekretnina (dramatic listing photo)",
+      "Investitori (kampanje sa dnevno/večernjim varijantama)",
+      "Fotografi nekretnina (post-produkcija)",
+    ],
+    problemHeading: "Dnevna fotografija ne prodaje. Topla večernja — prodaje.",
+    problemBody:
+      "Agent snimi objekat usred dana sa ravnim svetlom i plavim nebom — funkcionalna slika, ali bez emocije. Iste te fotografije izgledaju kao stotine drugih listinga. Klijent skroluje dalje.",
+    problemResolution:
+      "Zamena neba, dodavanje toplog osvetljenja prozora i fasadnog akcenta pretvara dnevnu sliku u dramatičan večernji prikaz. Listing dobija emotional pull bez ponovne fotografije ili filmskog termina.",
+    benefits: [
+      {
+        icon: "speed",
+        title: "Bez ponovne fotografije",
+        body: "Šaljete dnevnu fotografiju koju već imate. Bez čekanja na dusk-termin, bez fotografa-honorara po izlasku.",
+      },
+      {
+        icon: "value",
+        title: "€10 po slici, €8 za pakovanje",
+        body: "Jedna slika €10, pakovanje 10+ slika pada na €8 po slici (20% popust). Kompletna kampanja stana ili kuće za delić cene novog snimanja.",
+      },
+      {
+        icon: "trust",
+        title: "Listing koji se izdvaja",
+        body: "Dramatic dusk look u real-estate galeriji izdvaja oglas od ostalih i povećava broj klikova na listing.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite fotografije",
+        body: "Dnevne fotografije eksterijera visoke rezolucije (DSLR/mirrorless idealno, ne snimak telefonom pod uglom).",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok najkasnije narednog radnog dana. Hitna isporuka u 24h dostupna uz +50% doplate.",
+      },
+      {
+        title: "Transformacija",
+        body: "Tim menja nebo, kolor-grejda osvetljenje i dodaje akcent svetla na prozorima i fasadi. Standardni rok 3–5 radnih dana.",
+      },
+      {
+        title: "Isporuka",
+        body: "Dobijate finalne slike spremne za listing i kampanje. Po želji uz uklanjanje neželjenih senki za €5 po slici.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €10?",
+        a: "Transformacija jedne dnevne fotografije eksterijera u dramatičan večernji prikaz — uključuje zamenu neba i podešavanje osvetljenja. Uklanjanje neželjenih senki: €5 po slici. Pakovanje 10+ slika: €8 po slici (20% popust). Hitna isporuka u 24h: +50%.",
+      },
+      {
+        q: "Da li deluje stvarno ili kao filter?",
+        a: "Naša verzija je fotorealistična — osvetljenje prozora, fasadne lampe i refleksije u staklu se uklapaju u realnu geometriju objekta. Nije Instagram filter; svaki light source se pažljivo postavi po fotografiji.",
+      },
+      {
+        q: "Mogu li da dobijem i dnevnu i večernju verziju iste fotografije?",
+        a: "Da. Originalna dnevna verzija ostaje neizmenjena, mi šaljemo dodatnu večernju. Pakovanja agencija često uključuju oba seta — dnevni za listing, večernji za društvene mreže i marketing kampanje.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Standardni rok 3–5 radnih dana po slici. Hitna isporuka u 24h dostupna uz doplatu +50%. Pakovanja 10+ slika idu fazno po dogovoru.",
+      },
+      {
+        q: "Da li radite za agencije sa puno listinga?",
+        a: "Da. Pakovanje 10+ slika je €8 po slici (20% popust). Stalni agenti mogu da dogovore prioritet izrade i konzistentnu light-grading liniju kroz sve listinge.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Dnevne fotografije eksterijera u dobroj rezoluciji (DSLR ili mirrorless, najmanje 3000px na dužoj strani). Telefonske fotografije pod uglom ne preporučujemo.",
+      },
+    ],
     variants: [
       {
         id: "day-to-dusk-main",
@@ -1769,12 +1841,81 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-uklanjanje-elemenata-after.webp",
     beforeAsset: "/artwork/expert-uklanjanje-elemenata-before.webp",
     afterAsset: "/artwork/expert-uklanjanje-elemenata-after.webp",
+    detailAsset: "/artwork/detail-uklanjanje-elemenata-after.webp",
     detailBeforeAsset: "/artwork/detail-uklanjanje-elemenata-before.webp",
     detailAfterAsset: "/artwork/detail-uklanjanje-elemenata-after.webp",
+    outsourced: true,
     philosophy:
       "Jednostavno uklanjanje (sitnice, lične stvari): €12. Kompleksno (veliki objekat sa rekonstrukcijom pozadine): €25. Pakovanje 10+ slika: €10 jednostavno / €20 kompleksno po slici.",
     priceContext:
       "€12 jednostavno / €25 kompleksno · pakovanje 10+: €10 / €20.",
+    forSegments: [
+      "Agencije nekretnina (čist listing photo)",
+      "Fotografi (post-produkcija praznih jedinica)",
+      "Investitori (marketing materijali bez nereda)",
+    ],
+    problemHeading: "Nered na fotografiji odvodi pažnju. Čist kadar — zadržava.",
+    problemBody:
+      "Klijent ne sređuje stan pre fotograf-termina. Lične stvari, kablovi, kutije, parkirani autobusi pred fasadom — sve to ulazi u listing i odvlači pažnju kupca sa prostora. Fizičko sređivanje nije isplativo, fotograf nema vremena da čeka.",
+    problemResolution:
+      "Digitalno uklanjamo nered i nepotrebne objekte sa fotografije, sa rekonstrukcijom pozadine gde je potrebno. Listing izgleda čist bez ijednog sata fizičkog rada na lokaciji.",
+    benefits: [
+      {
+        icon: "speed",
+        title: "Bez fizičkog sređivanja",
+        body: "Fotograf snima šta zatekne, vi šaljete sliku — mi uklanjamo nered. Ne čekate da neko isprazni stan, ne organizujete dodatni termin.",
+      },
+      {
+        icon: "value",
+        title: "Dva tier-a po složenosti",
+        body: "Sitnice i lične stvari: €12. Veliki objekat sa rekonstrukcijom pozadine: €25. Pakovanje 10+ slika spušta na €10 / €20 po slici.",
+      },
+      {
+        icon: "trust",
+        title: "Pozadina koja izgleda stvarno",
+        body: "Kod kompleksnog uklanjanja rekonstruišemo pozadinu (zid, pločice, parket) tako da rezultat deluje kao da predmet nikad nije bio tu.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite fotografije",
+        body: "Fotografije sa jasno označenim predmetima koje želite da uklonimo (komentar u email-u ili screenshot sa crtežom).",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu (jednostavno €12 ili kompleksno €25) i rok najkasnije narednog radnog dana.",
+      },
+      {
+        title: "Uklanjanje",
+        body: "Tim uklanja označene predmete i rekonstruiše pozadinu gde je potrebno. Standardni rok 3–5 radnih dana.",
+      },
+      {
+        title: "Isporuka",
+        body: "Dobijate finalne slike spremne za listing. Tri runde revizije su uključene.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €12?",
+        a: "Digitalno uklanjanje sitnica i ličnih stvari sa jedne fotografije. Kompleksno uklanjanje (veliki objekat sa rekonstrukcijom pozadine): €25. Dodatna slika — jednostavno: €8 (33% popust). Dodatna slika — kompleksno: €18 (28% popust). Pakovanje 10+: €10 / €20 po slici.",
+      },
+      {
+        q: "Kako da znam da li je moj slučaj jednostavan ili kompleksan?",
+        a: "Jednostavno: lične stvari, magazini, kablovi, šolje — predmeti gde pozadina (zid, sto, pod) ostaje vidljiva i lako se zameni. Kompleksno: veliki aparati, parkirana vozila, kuhinjski elementi — gde se pozadina rekonstruiše iz nule. Pošaljite fotografiju i mi potvrdimo tier u ponudi.",
+      },
+      {
+        q: "Da li rekonstrukcija pozadine deluje stvarno?",
+        a: "Da. Kombinujemo kontekst iz iste fotografije (svetlo, perspektiva) sa rekonstrukcijom materijala (pločice, parket, zid) tako da rezultat nema 'pečate' uklanjanja. Tri runde revizije su uključene ako neki detalj nije tačan.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Standardni rok 3–5 radnih dana po slici. Pakovanja 10+ slika idu fazno po dogovoru — prve slike pre, ostatak po terminu.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Fotografije u dobroj rezoluciji i jasno označavanje predmeta koje želite da uklonimo (komentar u email-u, screenshot sa crtežom, ili lista u tekstu).",
+      },
+    ],
     variants: [
       {
         id: "item-removal-main",

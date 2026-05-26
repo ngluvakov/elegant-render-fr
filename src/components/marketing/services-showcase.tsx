@@ -109,7 +109,7 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 const SERVICES: Service[] = [
   {
     name: "Unutrašnji renderi",
-    slug: "unutrasnji-renderi",
+    slug: "render-enterijera",
     priceEur: 170,
     category: "renderi",
     short: "Vizuelizacija enterijera pre opremanja, renovacije ili prodaje prostora.",

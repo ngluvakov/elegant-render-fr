@@ -258,6 +258,137 @@ export const SERVICES: Service[] = [
     ],
   },
   {
+    slug: "render-enterijera",
+    code: "interior-static-dedicated",
+    name: "Render enterijera",
+    shortName: "Render enterijera",
+    category: "enterijer",
+    icon: "home",
+    tagline: "Pokažite kupcima dom još pre nego što počnu radovi.",
+    description:
+      "Fotorealistični prikaz svake prostorije budućeg stana ili kuće — sa tačnim materijalima, rasporedom nameštaja i prirodnim svetlom. €170 pokriva ceo sprat sa do 10 opremljenih prostorija i neograničen broj uglova kamere iz tih soba. Prodajte off-plan jedinicu kupcu koji vidi tačno šta dobija.",
+    highlight:
+      "Pravi izbor za prospekt off-plan jedinica, klijentske prezentacije izbora materijala i marketing pred otvaranje prodaje.",
+    materials:
+      "Pošaljite osnovu (2D ili PDF), reference stila i spisak prostorija. Prvi nacrt 3–5 radnih dana.",
+    asset: "/artwork/expert-unutrasnji-renderi.webp",
+    listingAsset: "/artwork/listing-interior-static.webp",
+    detailAsset: "/artwork/detail-interior-static.webp",
+    detailBeforeAsset: "/artwork/problem-interior-static-before.webp",
+    detailAfterAsset: "/artwork/problem-interior-static-after.webp",
+    philosophy:
+      "Najveći deo posla je izrada 3D modela sprata — gradimo ga jednom i naplaćujemo jednom. Posle toga svaki novi ugao iste sobe je €10, dodatna soba na istom spratu €28, drugi sprat €120 (30% jeftinije). Tako planirate marketing budžet u sezoni pre-prodaje bez iznenađenja.",
+    priceContext:
+      "€170 — ceo sprat sa do 10 opremljenih prostorija + neograničen broj rendera iz tih soba.",
+    forSegments: [
+      "Investitori (multi-unit pre-prodaja)",
+      "Arhitekte enterijera (klijentske prezentacije)",
+      "Privatni klijenti pred renoviranje",
+    ],
+    problemHeading: "Kupac ne kupuje tlocrt. Kupuje dom u kome se vidi.",
+    problemBody:
+      "Investitor pokazuje nacrt stana, kupac broji metre i odlazi. Linije i oznake ne govore o materijalima, svetlu i atmosferi prostorije. Odluka se odlaže do trenutka kada se prostor može videti uživo — a tada se gradnja često već završila.",
+    problemResolution:
+      "Render enterijera pretvara osnovu u prepoznatljiv prostor — sa tačnim materijalima, izborom nameštaja i prirodnim svetlom. Kupac otvara prospekt, prepozna sobu u kojoj će živeti i donosi odluku.",
+    benefits: [
+      {
+        icon: "speed",
+        title: "Prodaja pre gradnje",
+        body: "Off-plan jedinice idu brže kada kupac vidi tačnu sobu — sa stvarnim materijalima, ne crtežom. Razlika u brzini prodaje opravdava investiciju u prvih nekoliko jedinica.",
+      },
+      {
+        icon: "trust",
+        title: "Izbor materijala bez nesporazuma",
+        body: "Klijent bira između varijanti renderom — vidi pod, zid i nameštaj zajedno, ne zamišlja. Konflikt na primopredaji se smanjuje.",
+      },
+      {
+        icon: "value",
+        title: "Jedan paket pokriva ceo sprat",
+        body: "€170 obuhvata do 10 prostorija sa neograničenim brojem uglova. Po sobi to izlazi manje od €20 — kategorijski jeftinije od pojedinačnog naručivanja.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite osnovu",
+        body: "PDF ili DWG tlocrt sprata, reference stila i spisak prostorija. Opciono: specifikacija materijala, fotografije inspiracije.",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok u roku od jednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Izrada i nacrte",
+        body: "Tim gradi 3D model sprata, postavlja materijale, nameštaj i osvetljenje. Prve nacrte šaljemo za 3–5 radnih dana.",
+      },
+      {
+        title: "Isporuka i revizije",
+        body: "Dobijate finalne vizuale visoke rezolucije. Tri runde revizije su uključene u cenu — bez doplate.",
+      },
+    ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-interior-static-01.webp",
+        alt: "Dnevna soba sa kuhinjskim ostrvom — Elegant Render",
+      },
+      {
+        src: "/artwork/portfolio-interior-static-02.webp",
+        alt: "Kuhinja sa pendant svetlima i materijalom kamene radne ploče — Elegant Render",
+      },
+      {
+        src: "/artwork/portfolio-interior-static-03.webp",
+        alt: "Glavna spavaća soba sa indirektnim svetlom i toplom paletom — Elegant Render",
+      },
+      {
+        src: "/artwork/portfolio-interior-static-04.webp",
+        alt: "Kupatilo sa prirodnim svetlom i mermernim materijalom — Elegant Render",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €170?",
+        a: "Kompletan 3D model jednog sprata sa do 10 opremljenih prostorija i neograničenim brojem uglova kamere iz tih soba. Uključen je i tlocrt sprata. Svaki sledeći sprat: €120 (30% jeftinije). 11. soba na istom spratu: €28.",
+      },
+      {
+        q: "Razlika u odnosu na pojedinačnu sobu kod konkurencije?",
+        a: "Standardno tržište naplaćuje po sobi. Mi naplaćujemo po spratu — €170 za do 10 prostorija. Po sobi to izlazi manje od €20. Logika je da je model već izgrađen kad pređemo iz sobe u sobu — naplata jednom umesto deset puta.",
+      },
+      {
+        q: "Mogu li kasnije da menjam materijale ili nameštaj?",
+        a: "Tri runde revizije su uključene u cenu. Posle prve isporuke menjamo podove, zidove, nameštaj ili osvetljenje dok rezultat ne bude tačan. Dodatna varijanta dizajna (drugi nameštaj na istom rasporedu) je opciono dostupna.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema osnova. Završna isporuka zavisi od broja revizija — sve tri runde su uključene.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Osnovu (PDF ili DWG) sa rasporedom prostorija, spisak prostorija za render i reference stila. Po želji: specifikacija materijala (podovi, fasade, vrata), fotografije inspiracije, primere atmosfere.",
+      },
+      {
+        q: "Da li radite i jednu sobu odvojeno?",
+        a: "Standardni paket je po spratu jer je 3D model najveći deo posla. Pojedinačna soba je dostupna na poseban dogovor, ali po sobi nije ekonomski isplativija od paketa — preporučujemo barem ceo sprat.",
+      },
+    ],
+    variants: [
+      {
+        id: "interior-static",
+        title: "Klasični prikaz — po spratu",
+        basePrice: 170,
+        priceLabel: "€170",
+        unitLabel: "ceo sprat sa do 10 prostorija",
+        description:
+          "Jedna porudžbina pokriva ceo sprat sa neograničenim brojem uglova. Svaki sledeći sprat 30% jeftiniji.",
+        included:
+          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje do 10 opremljenih prostorija, neograničen broj uglova kamere iz tih soba i tlocrt sprata. Svaki sledeći sprat: €120 (30% jeftiniji).",
+        addOns: [
+          "11. i svaka sledeća opremljena soba: €28",
+          "Dodatni ugao kamere u postojećoj sobi: €10",
+          "Dodatni sprat: €120 (30% popust)",
+        ],
+      },
+    ],
+  },
+  {
     slug: "spoljasnji-renderi",
     code: "exterior-rendering",
     name: "Spoljašnji renderi",

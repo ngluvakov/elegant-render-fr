@@ -560,6 +560,9 @@ export const SERVICES: Service[] = [
       "Pošaljite arhitektonske nacrte (PDF/DWG), situacioni plan sa katastarskom podlogom, opciono fotografije lokacije. Prvi nacrt 3–5 radnih dana.",
     asset: "/artwork/listing-exterior-aerial.webp",
     listingAsset: "/artwork/listing-exterior-aerial.webp",
+    detailAsset: "/artwork/detail-exterior-aerial.webp",
+    detailBeforeAsset: "/artwork/problem-aerial-before.webp",
+    detailAfterAsset: "/artwork/problem-aerial-after.webp",
     philosophy:
       "Najveći trošak je izgradnja modela parcele i okruženja. Cena €420 pokriva pun 3D model objekta i konteksta, sa prvim prikazom iz vazduha. Svaki sledeći ugao iz iste strane modela je €48 (80% jeftinije). Doplata za prikaz zadnje strane (+25%): €105, jednokratno. Tako kompletna prezentacija lokacije ulazi u realan budžet — bez ponovnog modelovanja po slici.",
     priceContext:
@@ -607,6 +610,24 @@ export const SERVICES: Service[] = [
       {
         title: "Finalni fajlovi",
         body: "Visoka rezolucija, PNG i TIFF, uz fakturu. Odmah upotrebljivo za štampu, prezentacije i web.",
+      },
+    ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-aerial-01.webp",
+        alt: "Stambeni kompleks, ptičja perspektiva — parcela, pristupni putevi i zelenilo — Elegant Render",
+      },
+      {
+        src: "/artwork/portfolio-aerial-02.webp",
+        alt: "Individualna vila, ptičja perspektiva — parcela, pristupni putevi i zelenilo — Elegant Render",
+      },
+      {
+        src: "/artwork/portfolio-aerial-03.webp",
+        alt: "Mešovita namena, ptičja perspektiva — parcela, pristupni putevi i zelenilo — Elegant Render",
+      },
+      {
+        src: "/artwork/portfolio-aerial-04.webp",
+        alt: "Poslovni objekat, ptičja perspektiva — parcela, pristupni putevi i zelenilo — Elegant Render",
       },
     ],
     faqs: [

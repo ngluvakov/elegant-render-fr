@@ -1327,18 +1327,90 @@ export const SERVICES: Service[] = [
     description:
       "Prikaz uređenog spoljnog prostora — dvorišta, bašte, parka ili pristupne staze — pre nego što izvođači stignu na lokaciju. Idealno za prezentaciju klijentu pre potpisivanja ugovora ili reklamu pred otvaranje. Svaki sledeći ugao iste lokacije: 80% jeftiniji.",
     highlight:
-      "Najpogodnije za pejzažne arhitekte koji predstavljaju projekat klijentu i investitore za zajedničke prostore u kompleksima.",
+      "Prikladno za pejzažne arhitekte koji predstavljaju projekat klijentu i investitore za zajedničke prostore u kompleksima.",
     materials:
       "Pošaljite nam situacioni plan, visinske kote i specifikaciju biljaka i materijala.",
     asset: "/artwork/expert-prikazi-dvorista-after.webp",
     beforeAsset: "/artwork/expert-prikazi-dvorista-before.webp",
     afterAsset: "/artwork/expert-prikazi-dvorista-after.webp",
+    detailAsset: "/artwork/detail-prikazi-dvorista-after.webp",
     detailBeforeAsset: "/artwork/detail-prikazi-dvorista-before.webp",
     detailAfterAsset: "/artwork/detail-prikazi-dvorista-after.webp",
     philosophy:
       "Cena pokriva modelovanje terena, sadnju vegetacije i prvi prikaz. Pošto je teren izgrađen, svaki sledeći ugao iste lokacije je €45 — 80% jeftinije. Doplata postoji samo ako novi ugao zahteva teren koji nije bio u modelu.",
     priceContext:
       "€220 — kompletan teren + vegetacija + prvi prikaz. Sledeći ugao: €45 (80% jeftiniji).",
+    forSegments: [
+      "Pejzažne arhitekte (klijentske prezentacije)",
+      "Investitori (zajednički prostori u kompleksima)",
+      "Vlasnici parcela pred uređenje",
+    ],
+    problemHeading: "Gola parcela ne pokazuje vrednost. Uređen pejzaž — pokazuje.",
+    problemBody:
+      "Klijent gleda crtež pejzaža sa simbolima i ne vidi kako će dvorište zaista izgledati. Bez vizuelnog pejzaža, prodavac ne može da odbrani cenu uređenja, investitor ne dobija odobrenje, kupac parcele ne vidi potencijal.",
+    problemResolution:
+      "Pejzažni render pretvara situacioni plan u fotorealističan prikaz uređenog prostora — sa zrelom vegetacijom, popločanim stazama i akcent elementima u pravom kontekstu i svetlu.",
+    benefits: [
+      {
+        icon: "trust",
+        title: "Klijent vidi finalni rezultat",
+        body: "Pejzažni arhitekta predstavlja projekat sa vizuelizacijom koja zamenjuje desetine objašnjenja. Klijent potpisuje brže.",
+      },
+      {
+        icon: "context",
+        title: "Dokaz vrednosti za investitora",
+        body: "Zajednički prostori u kompleksu prodaju jedinice. Render ih čini opipljivim pred prodajni tim, fond i kupce.",
+      },
+      {
+        icon: "value",
+        title: "Više uglova jednom modelovan teren",
+        body: "€220 pokriva kompletan teren i prvi prikaz. Svaki sledeći ugao iste lokacije: €45 (80% jeftiniji).",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite plan",
+        body: "Situacioni plan, visinske kote i specifikaciju biljaka i materijala (kamenje, popločavanje, vodeni elementi).",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Modelovanje i render",
+        body: "Tim modeluje teren, postavlja vegetaciju, staze i materijale. Prve nacrte šaljemo za 3–5 radnih dana.",
+      },
+      {
+        title: "Isporuka i revizije",
+        body: "Dobijate finalne vizuale. Tri runde revizije su uključene u cenu — bez doplate.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €220?",
+        a: "Kompletno modelovanje terena, postavljanje vegetacije i staza i prvi finalni render. Svaki sledeći ugao iste lokacije: €45 (80% popust). Doplata za neviđenu stranu terena: +25% jednom po modelu. Pogled iz vazduha na celu lokaciju: €380.",
+      },
+      {
+        q: "Razlika u odnosu na klasičan render eksterijera?",
+        a: "Render eksterijera pokazuje objekat sa fasade i okolinom. Pejzažni render fokus stavlja na uređenje — popločane staze, biljke u zrelom stanju, akcent kamenje, vodene elemente. Različite namene.",
+      },
+      {
+        q: "Koliko detaljno modelujete biljke?",
+        a: "Vegetacija je u realnoj zrelosti — ne kao da je sadno juče, već u stanju u kojem će biti za 2–3 godine. Birate listopadno/zimzeleno, akcent stabla i ukrasno bilje iz našeg kataloga ili po referencama.",
+      },
+      {
+        q: "Da li radite i za stambene komplekse, ne samo privatna dvorišta?",
+        a: "Da. Zajednički prostori u stambenim kompleksima su jednako uobičajen scenario. Razlika je samo u veličini terena — cena ostaje €220 za prvi prikaz, dodatni uglovi €45.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema situacionog plana. Tri runde revizije su uključene.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Situacioni plan u PDF ili DWG formatu, visinske kote terena i specifikaciju ili reference biljaka i materijala (kamenje, popločavanje, vodeni elementi).",
+      },
+    ],
     variants: [
       {
         id: "landscape-main",
@@ -1367,7 +1439,7 @@ export const SERVICES: Service[] = [
     icon: "camera",
     tagline: "Vaš objekat na stvarnoj fotografiji lokacije.",
     description:
-      "Vaš budući objekat pažljivo uklopljen u realnu fotografiju lokacije — sa istim osvetljenjem, senkama i okruženjem kao na originalnoj slici. Najuverljiviji prikaz za nadležne organe (urbanistička dozvola, javna rasprava), prezentaciju klijentu i marketing pre izgradnje. Sledeći ugao iste fotografije: 82% jeftiniji.",
+      "Vaš budući objekat pažljivo uklopljen u realnu fotografiju lokacije — sa istim osvetljenjem, senkama i okruženjem kao na originalnoj slici. Verodostojan prikaz za nadležne organe (urbanistička dozvola, javna rasprava), prezentaciju klijentu i marketing pre izgradnje. Sledeći ugao iste fotografije: 82% jeftiniji.",
     highlight:
       "Za projekte u kojima realističnost i autentičnost lokacije presudno menjaju doživljaj projekta — dozvole, javne rasprave, investitorske prezentacije.",
     materials:
@@ -1375,12 +1447,84 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-fotomontaza-after.webp",
     beforeAsset: "/artwork/expert-fotomontaza-before.webp",
     afterAsset: "/artwork/expert-fotomontaza-after.webp",
+    detailAsset: "/artwork/detail-fotomontaza-after.webp",
     detailBeforeAsset: "/artwork/detail-fotomontaza-before.webp",
     detailAfterAsset: "/artwork/detail-fotomontaza-after.webp",
     philosophy:
       "Najveći trošak je analiza fotografije i uklapanje kamere, svetla i senki. Kad je uklapanje urađeno, dodatni ugao iz iste fotografije košta samo €55 (82% jeftiniji), a nova fotografija iste lokacije €85.",
     priceContext:
       "€300 — uklapanje + prvi prikaz. Sledeći ugao iste fotografije: €55 (82% jeftiniji).",
+    forSegments: [
+      "Investitori (urbanistička dozvola, javna rasprava)",
+      "Arhitekte (klijentske prezentacije)",
+      "Studija za masterplan i razvojne projekte",
+    ],
+    problemHeading: "Render ne ubeđuje regulatora. Fotografija — ubeđuje.",
+    problemBody:
+      "Investitor ide u urbanističku komisiju ili na javnu raspravu sa renderom — i čuje pitanja: kako će izgledati u kontekstu susednih zgrada? Kako se uklapa u ulicu? Render daje umetnički prikaz, ne tehnički dokaz.",
+    problemResolution:
+      "Fotomontaža uklapa Vaš 3D model u realnu fotografiju lokacije sa istim osvetljenjem, senkama i okruženjem. Komisija dobija dokaz, ne crtež. Investitor dobija dozvolu, ne odlaganje.",
+    benefits: [
+      {
+        icon: "trust",
+        title: "Dokaz za regulatorne procedure",
+        body: "Urbanistička komisija prihvata fotomontažu kao verodostojan prilog. Javna rasprava ne pita „kako će izgledati“ — vidi.",
+      },
+      {
+        icon: "context",
+        title: "Tačan kontekst lokacije",
+        body: "Susedne zgrade, ulica, stabla — sve kako stvarno postoji. Bez interpretacije, bez „umetničke slobode“.",
+      },
+      {
+        icon: "value",
+        title: "Više uglova iste fotografije za malo",
+        body: "€300 pokriva analizu i prvi prikaz. Dodatni ugao iz iste fotografije: €55 (82% popust). Druga fotografija iste lokacije: €85.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite materijal",
+        body: "Fotografiju lokacije visoke rezolucije i 3D model ili arhitektonske crteže objekta.",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Analiza i uklapanje",
+        body: "Analiziramo perspektivu, svetla i senke fotografije, pa uklapamo 3D model objekta. Prvi nacrt 3–5 radnih dana.",
+      },
+      {
+        title: "Isporuka i revizije",
+        body: "Dobijate fotorealističan prikaz spreman za dozvole, prezentacije i marketing. Tri runde revizije uključene.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €300?",
+        a: "Analiza fotografije lokacije, uklapanje 3D modela objekta i prvi finalni prikaz. Dodatni ugao iz iste fotografije: €55 (82% popust). Druga fotografija iste lokacije: €85 (72% popust). Doplata za neviđenu stranu objekta: +25% jednom.",
+      },
+      {
+        q: "Razlika u odnosu na render eksterijera (€250)?",
+        a: "Render eksterijera gradi sve od nule — objekat, okruženje, materijale, svetlo. Fotomontaža (€300) uklapa objekat u stvarnu fotografiju lokacije sa postojećim svetlom i kontekstom. Različite namene.",
+      },
+      {
+        q: "Da li je prihvatljiva za urbanističku komisiju?",
+        a: "Da. Fotomontaža je standardno prihvaćeni prilog u materijalima za urbanističku dozvolu, javnu raspravu i investitorske prezentacije. Verodostojnost komisija ceni iznad render kvaliteta.",
+      },
+      {
+        q: "Mogu li da pošaljem fotografiju sa telefona?",
+        a: "Tehnički je moguće, ali ne preporučujemo — kvalitet fotografije direktno utiče na kvalitet finalnog prikaza. Idealno: profesionalna fotografija ili DSLR/mirrorless snimak, najmanje 4000px na dužoj strani.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema fotografije i 3D modela ili crteža. Tri runde revizije su uključene.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Fotografiju lokacije u dobroj rezoluciji (DSLR ili mirrorless, najmanje 4000px) i 3D model objekta (FBX, OBJ, SKP) ili arhitektonske crteže (PDF, DWG) iz kojih izgradimo model.",
+      },
+    ],
     variants: [
       {
         id: "photomontage-main",

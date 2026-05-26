@@ -389,6 +389,140 @@ export const SERVICES: Service[] = [
     ],
   },
   {
+    slug: "360-tura-enterijera",
+    code: "interior-360-tour-dedicated",
+    name: "360 tura enterijera",
+    shortName: "360 tura enterijera",
+    category: "enterijer",
+    icon: "home",
+    tagline: "Kupac obilazi stan iz fotelje — pre nego što je sagrađen.",
+    description:
+      "Interaktivna 360 tura kroz ceo sprat. Klijent otvara link u pretraživaču ili VR uređaju, prelazi iz sobe u sobu, sam istražuje raspored i materijale. €295 pokriva do 10 interaktivnih soba + 10 dodatnih statičkih uglova kamere + tlocrt sprata.",
+    highlight:
+      "Prezentacija za udaljenog kupca i odluku bez termina za pokazivanje uživo — investitori za off-plan, agencije za remote kupovinu.",
+    materials:
+      "Pošaljite osnovu (2D ili PDF), reference stila i spisak prostorija za interaktivnu turu. Prvi nacrt 3–5 radnih dana.",
+    asset: "/artwork/listing-interior-static.webp",
+    listingAsset: "/artwork/listing-interior-static.webp",
+    detailAsset: "/artwork/detail-interior-360.webp",
+    detailBeforeAsset: "/artwork/problem-interior-360-before.webp",
+    detailAfterAsset: "/artwork/problem-interior-360-after.webp",
+    detailEmbedSrc:
+      "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
+    philosophy:
+      "Najveći deo posla je izrada 3D modela sprata — gradimo ga jednom i naplaćujemo jednom. Posle toga svaka dodatna interaktivna tačka u istoj sobi je €27, dodatna soba €45, dodatni statički ugao €10, drugi sprat €205 (30% jeftinije). Tako kompletan obilazak ulazi u realan investitorski budžet.",
+    priceContext:
+      "€295 — ceo sprat u 360 turi sa do 10 interaktivnih soba + 10 statičkih uglova + tlocrt.",
+    forSegments: [
+      "Investitori (off-plan pre-prodaja)",
+      "Agencije nekretnina (remote demo)",
+      "Arhitekte enterijera (klijentske prezentacije)",
+    ],
+    problemHeading: "Tlocrt zatvara raspored u dve dimenzije. Tura ga otvara.",
+    problemBody:
+      "Statična slika daje jedan ugao iz jedne sobe. Kupac ne može da oseti odnose između prostorija, vidljivost iz kuhinje ka dnevnoj, prolaz iz hodnika ka spavaćoj. Pita za drugu sliku — i još jednu — i odluku odlaže.",
+    problemResolution:
+      "360 tura povezuje sve sobe u jedinstven prolaz. Kupac sam ulazi u stan, prelazi iz prostorije u prostoriju mišem ili VR uređajem, sam ispituje raspored i materijale — i donosi odluku iz fotelje.",
+    benefits: [
+      {
+        icon: "trust",
+        title: "Stan u pretraživaču",
+        body: "Kupac otvara link sa telefona, računara ili VR headset-a — bez instalacije i bez naloga. Ulazi u prostor u istom trenutku.",
+      },
+      {
+        icon: "speed",
+        title: "Prodaja bez termina",
+        body: "Kupac iz dijaspore ili druge zemlje vidi celu jedinicu u vreme koje njemu odgovara. Investitor ne čeka da kupac dođe na lokaciju.",
+      },
+      {
+        icon: "value",
+        title: "Jedan paket pokriva ceo sprat",
+        body: "€295 obuhvata do 10 interaktivnih soba i 10 statičkih uglova. Po sobi to izlazi ispod €30 — manje od pojedinačnog 360 rendera kod konkurencije.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite osnovu",
+        body: "PDF ili DWG tlocrt sprata, reference stila, spisak prostorija za turu i raspored interaktivnih tačaka po želji.",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok u roku od jednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Izrada i tura",
+        body: "Tim gradi 3D model, postavlja materijale, osvetljenje i interaktivne tačke. Prvi nacrt ture šaljemo za 3–5 radnih dana.",
+      },
+      {
+        title: "Isporuka linka i embed koda",
+        body: "Dobijate link za deljenje i embed kod za sajt. Tri runde revizije su uključene u cenu — bez doplate.",
+      },
+    ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-interior-360-01.webp",
+        alt: "Frame iz 360 ture — open-concept dnevna i kuhinja, prelaz između prostorija",
+      },
+      {
+        src: "/artwork/portfolio-interior-360-02.webp",
+        alt: "Frame iz 360 ture — glavna spavaća soba sa indirektnim svetlom",
+      },
+      {
+        src: "/artwork/portfolio-interior-360-03.webp",
+        alt: "Frame iz 360 ture — ulazna zona i pogled kroz stan",
+      },
+      {
+        src: "/artwork/portfolio-interior-360-04.webp",
+        alt: "Frame iz 360 ture — terasa i prelaz ka enterijernom prostoru",
+      },
+    ],
+    faqs: [
+      {
+        q: "Kako klijent otvara turu?",
+        a: "Šaljemo link i embed kod. Klijent otvara kroz pretraživač — bez instalacije i bez naloga. Radi na telefonu, računaru i Meta Quest VR uređaju (VR mod je ugrađen u turu).",
+      },
+      {
+        q: "Šta tačno dobijam za €295?",
+        a: "Kompletan 3D model jednog sprata sa do 10 interaktivnih soba u 360 turi, dodatnih 10 statičkih uglova kamere i tlocrt sprata. 11. i svaka sledeća interaktivna soba: €45. Dodatna interaktivna tačka: €27. Dodatni statički ugao: €10. Sledeći sprat: €205 (30% popust).",
+      },
+      {
+        q: "Razlika u odnosu na statički render enterijera (€170)?",
+        a: "Statički render daje fiksne uglove kamere — kupac vidi sliku iz jedne pozicije. 360 tura povezuje sve sobe u prolaz — kupac sam ulazi u prostor, rotira pogled, prelazi između tačaka. Različita namena, ne alternative.",
+      },
+      {
+        q: "Da li radi u VR headset-u?",
+        a: "Da. Tura je standardno VR-ready — Meta Quest i kompatibilni uređaji otvaraju je direktno iz pretraživača, bez dodatne aplikacije.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prvi nacrt ture šaljemo za 3–5 radnih dana od potvrde ponude i prijema osnova. Tri runde revizije su uključene — bez doplate.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Osnovu (PDF ili DWG) sa rasporedom prostorija, spisak prostorija za interaktivnu turu i reference stila. Opciono: specifikacija materijala (podovi, fasade, vrata), fotografije inspiracije.",
+      },
+    ],
+    variants: [
+      {
+        id: "interior-360",
+        title: "Interaktivna 360 tura — po spratu",
+        basePrice: 295,
+        priceLabel: "€295",
+        unitLabel: "ceo sprat u 360 turi",
+        description:
+          "Kupac obilazi prostor mišem kao u igri — savršeno za online prezentaciju nekretnine i remote pre-prodaju.",
+        included:
+          "Do 10 interaktivnih soba u 360 turi (klijent ulazi i obilazi prostor) + 10 dodatnih statičkih uglova kamere + tlocrt sprata.",
+        addOns: [
+          "11. i svaka sledeća interaktivna soba: €45",
+          "Dodatna interaktivna tačka u postojećoj sobi: €27",
+          "Dodatni statički ugao kamere: €10",
+          "Dodatni sprat (360 tura): €205 (30% popust)",
+        ],
+      },
+    ],
+  },
+  {
     slug: "spoljasnji-renderi",
     code: "exterior-rendering",
     name: "Spoljašnji renderi",

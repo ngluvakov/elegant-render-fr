@@ -122,7 +122,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "360° enterijeri",
-    slug: "unutrasnji-renderi",
+    slug: "360-tura-enterijera",
     priceEur: 295,
     category: "360",
     short: "Interaktivna 360 tura kroz prostor sa dodatnim statičnim uglovima kamere.",

@@ -545,6 +545,115 @@ export const SERVICES: Service[] = [
     ],
   },
   {
+    slug: "prikazi-iz-vazduha",
+    code: "exterior-aerial-dedicated",
+    name: "Prikazi iz vazduha",
+    shortName: "Prikazi iz vazduha",
+    category: "eksterijer",
+    icon: "camera",
+    tagline: "Tlocrt ne govori gde ste. Prikaz iz vazduha — govori.",
+    description:
+      "Aerial prikaz objekta u kontekstu — parcela, ulazni koridori, susedna izgradnja, zelenilo. Idealno za urbanističku dozvolu, javnu raspravu, prezentacije fondu ili odboru, i marketing parcele. €420 pokriva kompletan 3D model objekta i okruženja sa prvim prikazom; svaki sledeći ugao iz iste strane modela je €48.",
+    highlight:
+      "Najjača prezentacija lokacije i konteksta — za urbanističku dozvolu, board prezentacije i investitorske ponude.",
+    materials:
+      "Pošaljite arhitektonske nacrte (PDF/DWG), situacioni plan sa katastarskom podlogom, opciono fotografije lokacije. Prvi nacrt 3–5 radnih dana.",
+    asset: "/artwork/listing-exterior-aerial.webp",
+    listingAsset: "/artwork/listing-exterior-aerial.webp",
+    philosophy:
+      "Najveći trošak je izgradnja modela parcele i okruženja. Cena €420 pokriva pun 3D model objekta i konteksta, sa prvim prikazom iz vazduha. Svaki sledeći ugao iz iste strane modela je €48 (80% jeftinije). Doplata za prikaz zadnje strane (+25%): €105, jednokratno. Tako kompletna prezentacija lokacije ulazi u realan budžet — bez ponovnog modelovanja po slici.",
+    priceContext:
+      "€420 — pun 3D model objekta + okruženje + prvi prikaz iz vazduha. Sledeći ugao: €48.",
+    forSegments: [
+      "Developeri (masterplani)",
+      "Investitori (parcele i kompleksi)",
+      "Arhitekte (regulatorne prezentacije)",
+    ],
+    problemHeading: "Tlocrt ne govori gde ste. Prikaz iz vazduha — govori.",
+    problemBody:
+      "Investitor dolazi na prezentaciju sa fasciklom nacrta. Regulatorno telo, fond ili partner gleda u oznake ulica i katastarskih parcela koje ne može da poveže sa stvarnim prostorom. Odluka se odlaže.",
+    problemResolution:
+      "Prikaz iz vazduha stavlja Vaš objekat na mapu okruženja — vidljivi su parcela, ulazni koridori, zelenilo i susedna izgradnja, na jednoj slici koja objašnjava lokaciju bolje od svakog tlocrta.",
+    benefits: [
+      {
+        icon: "trust",
+        title: "Vizuelizacija za javnu raspravu",
+        body: "Urbanistička komisija i regulatorno telo dobijaju prikaz koji smešta objekat u kontekst parcele i okruženja — u formatu koji procedura prihvata.",
+      },
+      {
+        icon: "context",
+        title: "Pregled koji board razume",
+        body: "Fond, partner ili banka ne čita DWG. Prikaz iz vazduha daje celokupan obuhvat lokacije na jednoj slici — bez objašnjavanja šta koja linija znači.",
+      },
+      {
+        icon: "value",
+        title: "Prospekt koji prodaje lokaciju",
+        body: "Kupac parcele ili stana u kompleksu odmah vidi okruženje, pristupne puteve i susednu izgradnju. Ne mora da zamišlja — vidi.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite nacrte",
+        body: "PDF ili DWG osnove, fasade i situacioni plan sa katastarskom podlogom. Opciono: specifikacija materijala, fotografije lokacije.",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok u roku od jednog radnog dana. Plaćanje avansne rate otključava izradu.",
+      },
+      {
+        title: "Izrada i nacrte",
+        body: "Prve nacrte šaljemo za 3–5 radnih dana. Uključene su 3 runde revizije — bez doplate.",
+      },
+      {
+        title: "Finalni fajlovi",
+        body: "Visoka rezolucija, PNG i TIFF, uz fakturu. Odmah upotrebljivo za štampu, prezentacije i web.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €420?",
+        a: "Pun 3D model objekta i okruženja, sa prvim prikazom iz vazduha. Paket uključuje 2 ugla. Svaki dodatni ugao: €48. Doplata za prikaz zadnje strane (+25%): €105, jednokratno.",
+      },
+      {
+        q: "Razlika od klasičnog rendera eksterijera?",
+        a: "Klasični render eksterijera (€250) je ugao sa tla — fasada u prvom planu, okruženje sugerisano. Aerial (€420) daje ptičju perspektivu: vidi se cela parcela, ulazni koridori i susedna izgradnja. Različita namena — nisu alternative.",
+      },
+      {
+        q: "Razlika od fotografije dronom?",
+        a: "Fotografija dronom snima ono što postoji na terenu. Aerial render gradi se iz DWG/PDF nacrta — može se napraviti pre nego što je kamen postavljen, sa tačnim materijalima fasade i oblikovanim okruženjem.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Arhitektonske nacrte u PDF ili DWG formatu (osnove, fasade, situacioni plan sa katastarskom podlogom). Po želji: specifikacija materijala fasade i fotografije lokacije za kontekst.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema nacrta. Tri runde revizije su uključene — bez doplate.",
+      },
+      {
+        q: "Da li se može koristiti u regulatornoj proceduri?",
+        a: "Prikaz je arhitektonska vizuelizacija — ne zamenjuje tehnički elaborat, ali se standardno koristi kao prilog u materijalima za javnu raspravu i investitorske prezentacije.",
+      },
+    ],
+    variants: [
+      {
+        id: "exterior-aerial",
+        title: "Prikaz iz vazduha",
+        basePrice: 420,
+        priceLabel: "€420",
+        unitLabel: "prikaz objekta + okruženja iz vazduha",
+        description:
+          "Za masterplane, parcele i investitorske prezentacije gde se vidi širi kontekst objekta, parking, prilazi.",
+        included:
+          "Pun 3D model objekta + okruženje + prvi prikaz iz vazduha.",
+        addOns: [
+          "Dodatni ugao iz vazduha: €48 (80% popust)",
+          "Doplata za prikaz zadnje strane (+25%): €105 jednokratno",
+        ],
+      },
+    ],
+  },
+  {
     slug: "virtuelno-opremanje",
     code: "virtual-staging",
     name: "Virtuelno opremanje",

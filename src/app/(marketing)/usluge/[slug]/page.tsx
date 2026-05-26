@@ -158,7 +158,11 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         )}
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-tr from-foreground/85 via-foreground/55 to-foreground/15"
+          className={
+            service.detailAsset
+              ? "absolute inset-0 bg-gradient-to-tr from-foreground/85 via-foreground/55 to-foreground/15"
+              : "absolute inset-0 bg-gradient-to-br from-foreground via-foreground to-[color:var(--color-sage-deep)]/40"
+          }
         />
         <div className="relative mx-auto w-full max-w-[min(96vw,1320px)] px-6 pb-16 pt-32 lg:px-10 lg:pt-40">
           <Link

@@ -170,7 +170,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Prikaz iz vazduha",
-    slug: "spoljasnji-renderi",
+    slug: "prikazi-iz-vazduha",
     priceEur: 420,
     category: "renderi",
     short: "Pogled iz vazduha za objekte kod kojih je važan širi kontekst parcele i okoline.",

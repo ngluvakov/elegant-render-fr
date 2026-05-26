@@ -53,6 +53,29 @@ export type ServiceIcon =
   | "sun"
   | "eraser";
 
+export type BenefitIcon = "speed" | "trust" | "value" | "context";
+
+export type ServiceBenefit = {
+  title: string;
+  body: string;
+  icon?: BenefitIcon;
+};
+
+export type ProcessStep = {
+  title: string;
+  body: string;
+};
+
+export type ServiceFaq = {
+  q: string;
+  a: string;
+};
+
+export type PortfolioImage = {
+  src: string;
+  alt: string;
+};
+
 export type Service = {
   slug: string;
   code: string;
@@ -107,6 +130,29 @@ export type Service = {
   featured?: boolean;
   /** Delivered via White Rook partner network rather than in-house. */
   outsourced?: boolean;
+
+  /* ------------------------------------------------------------------ *
+   * Landing-style sections — all optional. When unset, the section is
+   * skipped on the detail page (graceful degradation). Populate per
+   * service as we roll the new template across the catalog.
+   * ------------------------------------------------------------------ */
+
+  /** Problem/agitation block — short narrative on what goes wrong without this service. */
+  problemHeading?: string;
+  problemBody?: string;
+  problemResolution?: string;
+
+  /** Three reason-to-buy cards rendered as a 3-up grid. */
+  benefits?: ServiceBenefit[];
+
+  /** Four-step "kako radimo" timeline. */
+  processSteps?: ProcessStep[];
+
+  /** Portfolio gallery (recommended 4 images, 16:9). */
+  portfolioImages?: PortfolioImage[];
+
+  /** Service-specific FAQ. Rendered after the generic SERVICES_PAGE_FAQS. */
+  faqs?: ServiceFaq[];
 };
 
 export const CATEGORY_LABELS: Record<ServiceCategory, string> = {
@@ -234,6 +280,90 @@ export const SERVICES: Service[] = [
       "Vlasnici objekta (marketing pred izgradnju)",
     ],
     featured: true,
+    problemHeading: "Kupci ne kupuju nacrte. Kupuju dom.",
+    problemBody:
+      "Većina investitora gubi nedelje pokušavajući da objasni kupcima kako će objekat izgledati na osnovu tehničkih crteža ili grubih skica. Kupcima je teško da zamisle prostor, materijale i okolinu — i zato odlažu odluku.",
+    problemResolution:
+      "Spoljašnji renderi prevode arhitektonske nacrte u stvarnost. Prikazujemo tačne materijale, pravilno osvetljenje i realno okruženje, na osnovu Vaših DWG/PDF crteža — što znači da prodajete nekretnine brzo i sa potpunim poverenjem.",
+    benefits: [
+      {
+        title: "Prodaja pre gradnje",
+        body: "Omogućite kupcima da vide tačno šta kupuju. Off-plan jedinice idu brže kada slika ulijeva poverenje.",
+        icon: "speed",
+      },
+      {
+        title: "Ušteda u odnosu na maketu",
+        body: "Fizička maketa košta višestruko više i ne može da se menja. Render prilagođavamo, koristite ga na svim kanalima.",
+        icon: "value",
+      },
+      {
+        title: "Profesionalna prezentacija",
+        body: "Objekat izgleda završeno i postavljeno u realan kontekst — vegetacija, osvetljenje, tačni materijali fasade.",
+        icon: "trust",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite materijal",
+        body: "Dostavite arhitektonske nacrte (PDF/DWG) i, po želji, reference stila i specifikaciju materijala.",
+      },
+      {
+        title: "Dobijate ponudu",
+        body: "Preciznu ponudu šaljemo najkasnije narednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Mi gradimo model",
+        body: "Tim postavlja 3D model, osvetljenje i vegetaciju. Vi pratite napredak; intervencija nije potrebna.",
+      },
+      {
+        title: "Isporuka i revizije",
+        body: "Dobijate finalne vizuale. Tri runde revizije su uključene u cenu — bez doplate.",
+      },
+    ],
+    portfolioImages: [
+      {
+        src: "/artwork/listing-exterior-static.webp",
+        alt: "Spoljašnji render — klasični prikaz fasade",
+      },
+      {
+        src: "/artwork/listing-exterior-aerial.webp",
+        alt: "Spoljašnji render — prikaz iz vazduha",
+      },
+      {
+        src: "/artwork/listing-exterior-360.webp",
+        alt: "Spoljašnji render — 360 panorama",
+      },
+      {
+        src: "/artwork/expert-spoljasnji-renderi.webp",
+        alt: "Spoljašnji render — primer iz portfolija",
+      },
+    ],
+    faqs: [
+      {
+        q: "Koliko traje izrada spoljašnjih rendera?",
+        a: "Prve nacrte šaljemo najčešće za 3–5 radnih dana od potvrde ponude i prijema svih materijala. Završna isporuka zavisi od broja revizija — tri runde su uključene u cenu.",
+      },
+      {
+        q: "Šta ako mi se ne svidi neki detalj?",
+        a: "Svaka porudžbina uključuje tri kruga revizije bez doplate. Prilagođavamo materijale, boje, osvetljenje i uglove kamere dok rezultat ne bude tačan.",
+      },
+      {
+        q: "Da li mogu da koristim AI alate umesto ovoga?",
+        a: "AI alati su dobri za inspiraciju, ali ne mogu da naprave precizan prikaz Vašeg specifičnog objekta na osnovu DWG/PDF nacrta. Naši renderi su tehnički tačni — svaki prozor, materijal i proporcija odgovaraju realnoj građevini, što je presudno kada prodajete nekretninu.",
+      },
+      {
+        q: "Da li je €250 cena za jednu sliku?",
+        a: "€250 pokriva izgradnju kompletnog 3D modela Vaše zgrade i prvi finalni render. Pošto je model već napravljen, svaki sledeći ugao iste strane objekta košta samo €48 — 80% jeftiniji. Na primer, četiri ugla istog objekta su €394 ukupno (€250 + 3 × €48).",
+      },
+      {
+        q: "Šta treba da dostavim da biste počeli?",
+        a: "Arhitektonske nacrte (osnove, preseci, fasade) u PDF ili DWG formatu. Opciono ali korisno: referentne fotografije stila, specifikacija materijala fasade i fotografija lokacije za kontekst okoline.",
+      },
+      {
+        q: "Da li radite i porodične kuće, ili samo velike projekte?",
+        a: "Radimo projekte svih veličina — od porodičnih kuća do stambenih kompleksa i poslovnih objekata. Cena modela i prvog ugla je ista: €250.",
+      },
+    ],
     variants: [
       {
         id: "exterior-static",

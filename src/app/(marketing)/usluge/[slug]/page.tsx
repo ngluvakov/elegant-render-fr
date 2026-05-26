@@ -2,21 +2,36 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Check } from "lucide-react";
+import {
+  ArrowLeft,
+  BadgeCheck,
+  Check,
+  ChevronDown,
+  Clock,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { JsonLd } from "@/components/seo/json-ld";
-import { PreFooterCta } from "@/components/site/pre-footer-cta";
+import { SectionKicker } from "@/components/brand/section-kicker";
 import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
 import {
   CATEGORY_LABELS,
   SERVICES,
   getServiceBySlug,
+  type BenefitIcon,
+  type Service,
 } from "@/lib/catalog/services";
-import { formatPublicPriceText } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPriceText,
+  type DisplayCurrency,
+} from "@/lib/catalog/display-currency";
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import type { PricingSettings } from "@/lib/pricing/catalog";
+import { PreFooterCta } from "@/components/site/pre-footer-cta";
 import {
   buildBreadcrumbJsonLd,
   buildServiceJsonLd,
@@ -66,9 +81,17 @@ export default async function ServiceDetailPage({
   ]);
   const pricingSettings = pricingCatalog.settings;
 
+  const ctx: RenderCtx = { service, displayCurrency, pricingSettings };
+  const hasLandingContent = Boolean(
+    service.problemHeading ||
+      service.benefits?.length ||
+      service.processSteps?.length ||
+      service.portfolioImages?.length ||
+      service.faqs?.length,
+  );
+
   return (
     <>
-      <article className="mx-auto w-full max-w-4xl px-6 pb-24 pt-20 md:pt-28">
       <JsonLd
         data={[
           buildWebPageJsonLd({
@@ -84,6 +107,517 @@ export default async function ServiceDetailPage({
           buildServiceJsonLd(service),
         ]}
       />
+
+      {hasLandingContent ? (
+        <LandingTemplate ctx={ctx} />
+      ) : (
+        <EditorialTemplate ctx={ctx} />
+      )}
+    </>
+  );
+}
+
+type RenderCtx = {
+  service: Service;
+  displayCurrency: DisplayCurrency;
+  pricingSettings: PricingSettings;
+};
+
+/* -------------------------------------------------------------------------- *
+ * Landing template — used when a service has the new landing content fields
+ * populated (problem/benefits/process/portfolio/faqs). Full hero, dark CTA.
+ * -------------------------------------------------------------------------- */
+
+function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
+  const { service } = ctx;
+
+  return (
+    <article className="flex flex-col">
+      {/* Hero — full-width bg image + coal overlay + content left-aligned. */}
+      <section className="relative isolate flex min-h-[78svh] items-end overflow-hidden bg-foreground">
+        {service.detailAsset && (
+          <Image
+            src={service.detailAsset}
+            alt={service.name}
+            fill
+            sizes="100vw"
+            className="object-cover"
+            priority
+          />
+        )}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-tr from-foreground/85 via-foreground/55 to-foreground/15"
+        />
+        <div className="relative mx-auto w-full max-w-[min(96vw,1320px)] px-6 pb-16 pt-32 lg:px-10 lg:pt-40">
+          <Link
+            href="/usluge"
+            className="inline-flex items-center gap-1 text-xs uppercase tracking-[0.22em] text-background/75 transition-colors hover:text-background"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            Sve usluge
+          </Link>
+          <div className="mt-8 max-w-2xl">
+            <SectionKicker className="[&_span:last-child]:text-background/80 [&_span:first-child]:from-[color:var(--color-clay-light)]">
+              {CATEGORY_LABELS[service.category]}
+            </SectionKicker>
+            <h1 className="mt-5 font-heading text-5xl leading-[1.02] text-background md:text-6xl lg:text-7xl">
+              {service.name}
+            </h1>
+            <p className="mt-5 max-w-xl font-heading text-2xl italic leading-snug text-background/90 md:text-3xl">
+              {service.tagline}
+            </p>
+            <p className="mt-6 max-w-xl text-base leading-7 text-background/80 md:text-lg">
+              {formatPublicPriceText(
+                service.description,
+                ctx.displayCurrency,
+                ctx.pricingSettings,
+              )}
+            </p>
+            <div className="mt-10 flex flex-wrap items-center gap-3">
+              <QuickInquiryLink
+                size="xl"
+                variant="accent"
+                inquiry={{
+                  source: "service-detail-hero",
+                  sourceLabel: `${service.name} — hero`,
+                  serviceType: service.name,
+                }}
+              >
+                Pošaljite projekat
+              </QuickInquiryLink>
+              <a
+                href="#portfolio"
+                className="inline-flex h-12 items-center rounded-lg border border-background/40 px-6 text-sm font-medium text-background transition hover:border-background hover:bg-background/10"
+              >
+                Pogledajte portfolio
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Problem / agitation. */}
+      {service.problemHeading && (
+        <section className="bg-background py-16 md:py-24">
+          <div className="mx-auto grid max-w-5xl gap-12 px-6 md:grid-cols-2 md:items-center lg:px-10">
+            <div>
+              <SectionKicker>Problem</SectionKicker>
+              <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
+                {service.problemHeading}
+              </h2>
+              {service.problemBody && (
+                <p className="mt-5 text-base leading-7 text-muted-foreground">
+                  {service.problemBody}
+                </p>
+              )}
+              {service.problemResolution && (
+                <p className="mt-4 text-base leading-7 text-foreground/90">
+                  <strong className="font-semibold">
+                    {service.problemResolution}
+                  </strong>
+                </p>
+              )}
+            </div>
+            <ProblemVisual ctx={ctx} />
+          </div>
+        </section>
+      )}
+
+      {/* Benefits — 3 cards. */}
+      {service.benefits && service.benefits.length > 0 && (
+        <section className="bg-secondary py-16 md:py-24">
+          <div className="mx-auto max-w-5xl px-6 lg:px-10">
+            <div className="mx-auto max-w-2xl text-center">
+              <SectionKicker align="center">Zašto ova usluga</SectionKicker>
+              <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
+                Tri razloga zašto klijenti biraju Elegant Render.
+              </h2>
+            </div>
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+              {service.benefits.map((benefit) => (
+                <article
+                  key={benefit.title}
+                  className="rounded-2xl border border-border/70 bg-card/85 p-8 shadow-[0_14px_40px_rgba(28,26,25,0.05)]"
+                >
+                  <BenefitIconBadge icon={benefit.icon} />
+                  <h3 className="mt-5 font-heading text-xl text-foreground">
+                    {benefit.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                    {benefit.body}
+                  </p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Pricing — variants as cards + model-first explainer. */}
+      <section id="cene" className="bg-background py-16 md:py-24">
+        <div className="mx-auto max-w-6xl px-6 lg:px-10">
+          <div className="mx-auto max-w-2xl text-center">
+            <SectionKicker align="center">Cene</SectionKicker>
+            <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
+              Transparentne cene. Bez nagađanja.
+            </h2>
+            <p className="mt-4 text-base leading-7 text-muted-foreground">
+              Osnovna cena pokriva izgradnju 3D modela i prvi finalni render.
+              Svaki sledeći ugao iz istog modela je drastično jeftiniji — jer
+              je model već tu.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {service.variants.map((variant, idx) => (
+              <PricingCard
+                key={variant.id}
+                ctx={ctx}
+                variant={variant}
+                featured={idx === 0 && service.variants.length > 1}
+              />
+            ))}
+          </div>
+          {/* Model-first explainer postcard. */}
+          <aside className="mt-10 rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10 p-6 md:p-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:gap-6">
+              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-[color:var(--color-sage)]/20 text-[color:var(--color-sage-deep)]">
+                <Wallet className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="font-heading text-xl text-foreground">
+                  Kako se cena formira
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-foreground/85">
+                  {formatPublicPriceText(
+                    service.philosophy,
+                    ctx.displayCurrency,
+                    ctx.pricingSettings,
+                  )}
+                </p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      {/* Process — 4 steps. */}
+      {service.processSteps && service.processSteps.length > 0 && (
+        <section className="bg-secondary py-16 md:py-24">
+          <div className="mx-auto max-w-5xl px-6 lg:px-10">
+            <div className="mx-auto max-w-2xl text-center">
+              <SectionKicker align="center">Proces</SectionKicker>
+              <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
+                Od nacrta do finalnih vizuala u četiri koraka.
+              </h2>
+            </div>
+            <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {service.processSteps.map((step, idx) => (
+                <li
+                  key={step.title}
+                  className="rounded-2xl border border-border/70 bg-card/85 p-6 shadow-[0_14px_40px_rgba(28,26,25,0.05)]"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-accent-foreground">
+                    {idx + 1}
+                  </div>
+                  <h3 className="mt-4 font-heading text-lg text-foreground">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    {step.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      )}
+
+      {/* Portfolio. */}
+      {service.portfolioImages && service.portfolioImages.length > 0 && (
+        <section id="portfolio" className="bg-background py-16 md:py-24">
+          <div className="mx-auto max-w-6xl px-6 lg:px-10">
+            <div className="mx-auto max-w-2xl text-center">
+              <SectionKicker align="center">Portfolio</SectionKicker>
+              <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
+                Primeri iz nedavno isporučenih projekata.
+              </h2>
+            </div>
+            <div className="mt-12 grid gap-6 sm:grid-cols-2">
+              {service.portfolioImages.map((img) => (
+                <figure
+                  key={img.src}
+                  className="group relative aspect-[16/9] overflow-hidden rounded-2xl border border-border/70 bg-secondary"
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                  />
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* FAQ. */}
+      {service.faqs && service.faqs.length > 0 && (
+        <section id="faq" className="bg-secondary py-16 md:py-24">
+          <div className="mx-auto max-w-3xl px-6 lg:px-10">
+            <div className="text-center">
+              <SectionKicker align="center">Pitanja</SectionKicker>
+              <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
+                Pitanja koja direktno utiču na kupovnu odluku.
+              </h2>
+            </div>
+            <div className="mt-10 divide-y divide-border/70 border-y border-border/70">
+              {service.faqs.map((item) => (
+                <details
+                  key={item.q}
+                  className="group py-5 [&[open]_.faq-chevron]:rotate-180"
+                >
+                  <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-left">
+                    <span className="font-heading text-lg text-foreground">
+                      {item.q}
+                    </span>
+                    <ChevronDown className="faq-chevron mt-1 h-5 w-5 flex-none text-accent transition-transform" />
+                  </summary>
+                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                    {formatPublicPriceText(
+                      item.a,
+                      ctx.displayCurrency,
+                      ctx.pricingSettings,
+                    )}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Dark final CTA. */}
+      <section className="bg-foreground py-20 md:py-28">
+        <div className="mx-auto max-w-3xl px-6 text-center lg:px-10">
+          <h2 className="font-heading text-3xl leading-tight text-background md:text-4xl">
+            Spremni da vizuelizujete projekat?
+          </h2>
+          <p className="mt-4 text-base leading-7 text-background/80">
+            Pošaljite nam svoje nacrte i preciznu ponudu šaljemo najkasnije
+            narednog radnog dana.
+          </p>
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <QuickInquiryLink
+              size="xl"
+              variant="accent"
+              inquiry={{
+                source: "service-detail-final-cta",
+                sourceLabel: `${service.name} — final CTA`,
+                serviceType: service.name,
+              }}
+            >
+              Pošaljite projekat
+            </QuickInquiryLink>
+            <ButtonLink
+              href="/cene"
+              size="xl"
+              variant="outline"
+              className="border-background/40 bg-transparent text-background hover:bg-background/10 hover:text-background"
+            >
+              Detaljan cenovnik
+            </ButtonLink>
+          </div>
+          <p className="mt-6 text-xs uppercase tracking-[0.22em] text-background/55">
+            Bez obaveza · Tri runde revizije uključene
+          </p>
+        </div>
+      </section>
+    </article>
+  );
+}
+
+function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
+  const { service } = ctx;
+  if (service.detailBeforeAsset && service.detailAfterAsset) {
+    return (
+      <BeforeAfterReveal
+        beforeSrc={service.detailBeforeAsset}
+        afterSrc={service.detailAfterAsset}
+        alt={service.name}
+        sizes="(max-width: 768px) 100vw, 480px"
+        className="aspect-[4/3] w-full rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]"
+      >
+        <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-background/95">
+          Pre / posle
+        </span>
+      </BeforeAfterReveal>
+    );
+  }
+  if (service.portfolioImages && service.portfolioImages.length > 0) {
+    const first = service.portfolioImages[0];
+    return (
+      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+        <Image
+          src={first.src}
+          alt={first.alt}
+          fill
+          sizes="(max-width: 768px) 100vw, 480px"
+          className="object-cover"
+        />
+      </figure>
+    );
+  }
+  if (service.detailAsset) {
+    return (
+      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+        <Image
+          src={service.detailAsset}
+          alt={service.name}
+          fill
+          sizes="(max-width: 768px) 100vw, 480px"
+          className="object-cover"
+        />
+      </figure>
+    );
+  }
+  return null;
+}
+
+function PricingCard({
+  ctx,
+  variant,
+  featured,
+}: {
+  ctx: RenderCtx;
+  variant: Service["variants"][number];
+  featured: boolean;
+}) {
+  return (
+    <article
+      className={[
+        "relative flex flex-col rounded-2xl border bg-card/90 p-6 shadow-[0_14px_40px_rgba(28,26,25,0.05)] md:p-7",
+        featured ? "border-accent" : "border-border/70",
+      ].join(" ")}
+    >
+      {featured && (
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-accent-foreground">
+          Najčešće naručivano
+        </span>
+      )}
+      <h3 className="font-heading text-xl text-foreground">{variant.title}</h3>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        {formatPublicPriceText(
+          variant.description,
+          ctx.displayCurrency,
+          ctx.pricingSettings,
+        )}
+      </p>
+      <div className="mt-6">
+        <p className="font-heading text-4xl text-foreground md:text-5xl">
+          {formatPublicPriceText(
+            variant.priceLabel,
+            ctx.displayCurrency,
+            ctx.pricingSettings,
+          )}
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {formatPublicPriceText(
+            variant.unitLabel,
+            ctx.displayCurrency,
+            ctx.pricingSettings,
+          )}
+        </p>
+      </div>
+      <p className="mt-6 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+        U ceni
+      </p>
+      <p className="mt-2 text-sm leading-6 text-foreground/85">
+        {formatPublicPriceText(
+          variant.included,
+          ctx.displayCurrency,
+          ctx.pricingSettings,
+        )}
+      </p>
+      {variant.addOns.length > 0 && (
+        <>
+          <p className="mt-5 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+            Doplate iz cenovnika
+          </p>
+          <ul className="mt-2 space-y-2">
+            {variant.addOns.map((addOn) => (
+              <li
+                key={addOn}
+                className="flex gap-2 text-sm leading-6 text-muted-foreground"
+              >
+                <Check className="mt-1 h-3.5 w-3.5 flex-none text-[color:var(--color-sage-deep)]" />
+                <span>
+                  {formatPublicPriceText(
+                    addOn,
+                    ctx.displayCurrency,
+                    ctx.pricingSettings,
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      {variant.note && (
+        <p className="mt-5 rounded-lg border border-border/70 bg-secondary/50 p-3 text-xs leading-6 text-muted-foreground">
+          {formatPublicPriceText(
+            variant.note,
+            ctx.displayCurrency,
+            ctx.pricingSettings,
+          )}
+        </p>
+      )}
+      <div className="mt-auto pt-6">
+        <QuickInquiryLink
+          size="lg"
+          variant={featured ? "accent" : "outline"}
+          className="w-full justify-center"
+          inquiry={{
+            source: "service-detail-pricing",
+            sourceLabel: `${ctx.service.name} — ${variant.title}`,
+            serviceType: ctx.service.name,
+          }}
+        >
+          Zatražite ponudu
+        </QuickInquiryLink>
+      </div>
+    </article>
+  );
+}
+
+const BENEFIT_ICONS: Record<BenefitIcon, React.ComponentType<{ className?: string }>> = {
+  speed: TrendingUp,
+  trust: BadgeCheck,
+  value: Wallet,
+  context: Clock,
+};
+
+function BenefitIconBadge({ icon }: { icon?: BenefitIcon }) {
+  const Icon = icon ? BENEFIT_ICONS[icon] : BadgeCheck;
+  return (
+    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]">
+      <Icon className="h-5 w-5" />
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- *
+ * Editorial template — fallback for services that don't yet have the new
+ * landing fields populated. Matches the prior layout 1:1 to avoid regressions.
+ * -------------------------------------------------------------------------- */
+
+function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
+  const { service } = ctx;
+  return (
+    <>
+    <article className="mx-auto w-full max-w-4xl px-6 pb-24 pt-20 md:pt-28">
       <Link
         href="/usluge"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
@@ -92,8 +626,6 @@ export default async function ServiceDetailPage({
         Sve usluge
       </Link>
 
-      {/* Detail-page hero imagery — priority: pair > iframe > single image.
-          Renders nothing while detail* fields stay unset on the service. */}
       {service.detailBeforeAsset && service.detailAfterAsset ? (
         <BeforeAfterReveal
           beforeSrc={service.detailBeforeAsset}
@@ -107,7 +639,7 @@ export default async function ServiceDetailPage({
           </span>
         </BeforeAfterReveal>
       ) : service.detailEmbedSrc ? (
-        <div className="mt-10 relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]">
+        <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]">
           <iframe
             title={`${service.name} — 360 pregled`}
             src={service.detailEmbedSrc}
@@ -117,7 +649,7 @@ export default async function ServiceDetailPage({
           />
         </div>
       ) : service.detailAsset ? (
-        <div className="mt-10 relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]">
+        <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]">
           <Image
             src={service.detailAsset}
             alt={service.name}
@@ -160,8 +692,8 @@ export default async function ServiceDetailPage({
       <p className="mt-10 text-base leading-7 text-muted-foreground">
         {formatPublicPriceText(
           service.description,
-          displayCurrency,
-          pricingSettings,
+          ctx.displayCurrency,
+          ctx.pricingSettings,
         )}
       </p>
 
@@ -172,8 +704,8 @@ export default async function ServiceDetailPage({
         <p className="mt-3 text-sm leading-7 text-foreground/85">
           {formatPublicPriceText(
             service.philosophy,
-            displayCurrency,
-            pricingSettings,
+            ctx.displayCurrency,
+            ctx.pricingSettings,
           )}
         </p>
       </div>
@@ -206,8 +738,8 @@ export default async function ServiceDetailPage({
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
                     {formatPublicPriceText(
                       variant.description,
-                      displayCurrency,
-                      pricingSettings,
+                      ctx.displayCurrency,
+                      ctx.pricingSettings,
                     )}
                   </p>
                 </div>
@@ -218,15 +750,15 @@ export default async function ServiceDetailPage({
                   <p className="mt-1 text-3xl text-foreground md:text-4xl">
                     {formatPublicPriceText(
                       variant.priceLabel,
-                      displayCurrency,
-                      pricingSettings,
+                      ctx.displayCurrency,
+                      ctx.pricingSettings,
                     )}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {formatPublicPriceText(
                       variant.unitLabel,
-                      displayCurrency,
-                      pricingSettings,
+                      ctx.displayCurrency,
+                      ctx.pricingSettings,
                     )}
                   </p>
                 </div>
@@ -240,8 +772,8 @@ export default async function ServiceDetailPage({
                   <p className="mt-2 text-sm leading-6 text-foreground/85">
                     {formatPublicPriceText(
                       variant.included,
-                      displayCurrency,
-                      pricingSettings,
+                      ctx.displayCurrency,
+                      ctx.pricingSettings,
                     )}
                   </p>
                 </div>
@@ -259,8 +791,8 @@ export default async function ServiceDetailPage({
                         <Check className="mt-1 h-3.5 w-3.5 flex-shrink-0 text-accent" />
                         {formatPublicPriceText(
                           addOn,
-                          displayCurrency,
-                          pricingSettings,
+                          ctx.displayCurrency,
+                          ctx.pricingSettings,
                         )}
                       </li>
                     ))}
@@ -271,8 +803,8 @@ export default async function ServiceDetailPage({
                   <div className="rounded-lg border border-border bg-secondary/40 p-4 text-sm leading-6 text-muted-foreground">
                     {formatPublicPriceText(
                       variant.note,
-                      displayCurrency,
-                      pricingSettings,
+                      ctx.displayCurrency,
+                      ctx.pricingSettings,
                     )}
                   </div>
                 )}
@@ -298,7 +830,7 @@ export default async function ServiceDetailPage({
           Detaljan cenovnik
         </ButtonLink>
       </div>
-      </article>
+    </article>
       <PreFooterCta
         heading={`Spreman za narudžbinu — ${service.name.toLowerCase()}?`}
         body="Otvori kalkulator, podesi parametre svoje vizuelizacije i odmah vidi tačnu cenu."

@@ -956,9 +956,9 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-virtuelno-opremanje-after.webp",
     beforeAsset: "/artwork/expert-virtuelno-opremanje-before.webp",
     afterAsset: "/artwork/expert-virtuelno-opremanje-after.webp",
-    detailAsset: "/artwork/detail-virtuelno-opremanje-after.webp",
-    detailBeforeAsset: "/artwork/detail-virtuelno-opremanje-before.webp",
-    detailAfterAsset: "/artwork/detail-virtuelno-opremanje-after.webp",
+    detailAsset: "/artwork/detail-virtuelno-opremanje.webp",
+    detailBeforeAsset: "/artwork/problem-virtuelno-opremanje-before.webp",
+    detailAfterAsset: "/artwork/problem-virtuelno-opremanje-after.webp",
     philosophy:
       "Prva slika pokriva izbor nameštaja, stila i osvetljenja. Kad je stil definisan, svaki dodatni ugao iste sobe je 33% jeftiniji, druga soba 17% jeftinija, a od 10+ slika cena pada na €13/sliku. Tako celokupna nekretnina dobija kompletan oglasni paket za delić cene fizičkog opremanja.",
     priceContext:
@@ -1035,6 +1035,24 @@ export const SERVICES: Service[] = [
         a: "Fotografije praznih prostorija u dobroj rezoluciji (najmanje 1920px na dužoj strani, ne snimak telefonom pod uglom) i 1–2 reference stila nameštaja.",
       },
     ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-virtuelno-opremanje-01.webp",
+        alt: "Virtuelno opremanje — moderna dnevna soba sa minimalističkim nameštajem",
+      },
+      {
+        src: "/artwork/portfolio-virtuelno-opremanje-02.webp",
+        alt: "Virtuelno opremanje — spavaća soba sa toplim materijalima",
+      },
+      {
+        src: "/artwork/portfolio-virtuelno-opremanje-03.webp",
+        alt: "Virtuelno opremanje — kuhinja sa trpezarijom i prirodnim svetlom",
+      },
+      {
+        src: "/artwork/portfolio-virtuelno-opremanje-04.webp",
+        alt: "Virtuelno opremanje — kućna kancelarija sa policama i prirodnim svetlom",
+      },
+    ],
     variants: [
       {
         id: "staging-static",
@@ -1089,9 +1107,9 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-virtuelna-renovacija-after.webp",
     beforeAsset: "/artwork/expert-virtuelna-renovacija-before.webp",
     afterAsset: "/artwork/expert-virtuelna-renovacija-after.webp",
-    detailAsset: "/artwork/detail-virtuelna-renovacija-after.webp",
-    detailBeforeAsset: "/artwork/detail-virtuelna-renovacija-before.webp",
-    detailAfterAsset: "/artwork/detail-virtuelna-renovacija-after.webp",
+    detailAsset: "/artwork/detail-virtuelna-renovacija.webp",
+    detailBeforeAsset: "/artwork/problem-virtuelna-renovacija-before.webp",
+    detailAfterAsset: "/artwork/problem-virtuelna-renovacija-after.webp",
     philosophy:
       "Prva slika pokriva kompletan dizajn renovacije i izbor materijala. Kad je vizuelni pravac postavljen, svaki dodatni ugao iste prostorije je 10% jeftiniji, a od 4. ugla 20% jeftiniji. Druga soba iste nekretnine: 15% popust. Tako kompletna nekretnina ulazi u realan budžet pre nego što krenu zidari.",
     priceContext:
@@ -1168,6 +1186,24 @@ export const SERVICES: Service[] = [
         a: "Fotografije postojećeg stanja u dobroj rezoluciji, plan rasporeda (osnova ako postoji) i reference materijala koje želite (podovi, zidovi, ormari, nameštaj).",
       },
     ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-virtuelna-renovacija-01.webp",
+        alt: "Virtuelna renovacija — moderna kuhinja sa ostrvom i kamenom radnom pločom",
+      },
+      {
+        src: "/artwork/portfolio-virtuelna-renovacija-02.webp",
+        alt: "Virtuelna renovacija — kupatilo sa staklenom tuš-kabinom i kamenim materijalima",
+      },
+      {
+        src: "/artwork/portfolio-virtuelna-renovacija-03.webp",
+        alt: "Virtuelna renovacija — dnevna soba sa novim podovima i toplim materijalima",
+      },
+      {
+        src: "/artwork/portfolio-virtuelna-renovacija-04.webp",
+        alt: "Virtuelna renovacija — radni prostor sa policama i prirodnim svetlom",
+      },
+    ],
     variants: [
       {
         id: "renovation-main",
@@ -1204,6 +1240,8 @@ export const SERVICES: Service[] = [
       "Pošaljite nam tehničke crteže, skice sa merama ili postojeće PDF osnove.",
     asset: "/artwork/expert-osnove.webp",
     detailAsset: "/artwork/detail-osnove.webp",
+    detailBeforeAsset: "/artwork/problem-osnove-before.webp",
+    detailAfterAsset: "/artwork/problem-osnove-after.webp",
     philosophy:
       "Cena pokriva izradu osnove za jedan nivo. Svaki sledeći nivo iste zgrade je 50–66% jeftiniji jer je stilski predložak već postavljen. Identičan sprat (dupliranje sa promenom oznaka) košta samo trećinu osnovne cene. Tako celokupna zgrada dobija pregledne osnove za delić cene CAD studija.",
     priceContext:
@@ -1214,6 +1252,11 @@ export const SERVICES: Service[] = [
       "Vlasnici (planiranje uređenja)",
     ],
     featured: true,
+    problemHeading: "Tehnički crtež plaši kupca. Pregledna osnova — privlači.",
+    problemBody:
+      "Agent oglasi stan sa CAD tlocrtom — debele linije, oznake dimenzija, scale bars. Kupac otvori, zatvori, ne pita. Tlocrt govori jezik koji laik ne razume — i listing gubi poziv koji bi inače dobio.",
+    problemResolution:
+      "Pregledna 2D ili 3D osnova prikazuje raspored prostorija sa bojama, oznakama u srpskom i nameštajem na pravim mestima. Kupac razume šta kupuje na prvi pogled — listing postaje razgovor.",
     benefits: [
       {
         icon: "trust",
@@ -1269,6 +1312,24 @@ export const SERVICES: Service[] = [
       {
         q: "Šta dostavljam da biste počeli?",
         a: "Tehničke crteže, skice sa merama ili postojeće PDF osnove. Što jasniji ulaz (CAD), brže izrada.",
+      },
+    ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-osnove-01.webp",
+        alt: "3D osnova — porodična kuća sa rasporedom prostorija i nameštajem",
+      },
+      {
+        src: "/artwork/portfolio-osnove-02.webp",
+        alt: "3D osnova — stan u zgradi sa kompaktnim rasporedom",
+      },
+      {
+        src: "/artwork/portfolio-osnove-03.webp",
+        alt: "2D osnova — čist tehnički plan sa oznakama i dimenzijama",
+      },
+      {
+        src: "/artwork/portfolio-osnove-04.webp",
+        alt: "3D osnova — dupleks sa rasporedom oba sprata",
       },
     ],
     variants: [
@@ -1395,9 +1456,9 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-prikazi-dvorista-after.webp",
     beforeAsset: "/artwork/expert-prikazi-dvorista-before.webp",
     afterAsset: "/artwork/expert-prikazi-dvorista-after.webp",
-    detailAsset: "/artwork/detail-prikazi-dvorista-after.webp",
-    detailBeforeAsset: "/artwork/detail-prikazi-dvorista-before.webp",
-    detailAfterAsset: "/artwork/detail-prikazi-dvorista-after.webp",
+    detailAsset: "/artwork/detail-prikazi-dvorista.webp",
+    detailBeforeAsset: "/artwork/problem-prikazi-dvorista-before.webp",
+    detailAfterAsset: "/artwork/problem-prikazi-dvorista-after.webp",
     philosophy:
       "Cena pokriva modelovanje terena, sadnju vegetacije i prvi prikaz. Pošto je teren izgrađen, svaki sledeći ugao iste lokacije je €45 — 80% jeftinije. Doplata postoji samo ako novi ugao zahteva teren koji nije bio u modelu.",
     priceContext:
@@ -1473,6 +1534,24 @@ export const SERVICES: Service[] = [
         a: "Situacioni plan u PDF ili DWG formatu, visinske kote terena i specifikaciju ili reference biljaka i materijala (kamenje, popločavanje, vodeni elementi).",
       },
     ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-prikazi-dvorista-01.webp",
+        alt: "Uređenje pejzaža — privatno dvorište porodične kuće sa terasom i travnjakom",
+      },
+      {
+        src: "/artwork/portfolio-prikazi-dvorista-02.webp",
+        alt: "Uređenje pejzaža — zajednički prostor stambenog kompleksa sa pešačkim stazama",
+      },
+      {
+        src: "/artwork/portfolio-prikazi-dvorista-03.webp",
+        alt: "Uređenje pejzaža — dvorište vile sa bazenom i terasom",
+      },
+      {
+        src: "/artwork/portfolio-prikazi-dvorista-04.webp",
+        alt: "Uređenje pejzaža — javni prostor sa popločanom stazom i zrelim sadnicama",
+      },
+    ],
     variants: [
       {
         id: "landscape-main",
@@ -1509,9 +1588,9 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-fotomontaza-after.webp",
     beforeAsset: "/artwork/expert-fotomontaza-before.webp",
     afterAsset: "/artwork/expert-fotomontaza-after.webp",
-    detailAsset: "/artwork/detail-fotomontaza-after.webp",
-    detailBeforeAsset: "/artwork/detail-fotomontaza-before.webp",
-    detailAfterAsset: "/artwork/detail-fotomontaza-after.webp",
+    detailAsset: "/artwork/detail-fotomontaza.webp",
+    detailBeforeAsset: "/artwork/problem-fotomontaza-before.webp",
+    detailAfterAsset: "/artwork/problem-fotomontaza-after.webp",
     philosophy:
       "Najveći trošak je analiza fotografije i uklapanje kamere, svetla i senki. Kad je uklapanje urađeno, dodatni ugao iz iste fotografije košta samo €55 (82% jeftiniji), a nova fotografija iste lokacije €85.",
     priceContext:
@@ -1587,6 +1666,24 @@ export const SERVICES: Service[] = [
         a: "Fotografiju lokacije u dobroj rezoluciji (DSLR ili mirrorless, najmanje 4000px) i 3D model objekta (FBX, OBJ, SKP) ili arhitektonske crteže (PDF, DWG) iz kojih izgradimo model.",
       },
     ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-fotomontaza-01.webp",
+        alt: "Fotomontaža — porodična kuća uklopljena u stvarnu uličnu fotografiju",
+      },
+      {
+        src: "/artwork/portfolio-fotomontaza-02.webp",
+        alt: "Fotomontaža — stambena zgrada u urbanom kontekstu",
+      },
+      {
+        src: "/artwork/portfolio-fotomontaza-03.webp",
+        alt: "Fotomontaža — poslovni objekat uklopljen u fotografiju lokacije",
+      },
+      {
+        src: "/artwork/portfolio-fotomontaza-04.webp",
+        alt: "Fotomontaža — vila uklopljena u prirodno okruženje",
+      },
+    ],
     variants: [
       {
         id: "photomontage-main",
@@ -1622,6 +1719,8 @@ export const SERVICES: Service[] = [
       "Pošaljite nam CAD crteže cele parcele, pozicije objekata i plan uređenja.",
     asset: "/artwork/expert-3d-situacioni.webp",
     detailAsset: "/artwork/detail-3d-situacioni.webp",
+    detailBeforeAsset: "/artwork/problem-3d-situacioni-before.webp",
+    detailAfterAsset: "/artwork/problem-3d-situacioni-after.webp",
     philosophy:
       "Cena pokriva izradu kompletnog terena, postavljanje objekata, puteva i pejzaža. Pošto je scena izgrađena, svaki sledeći ugao košta €65 (81% jeftinije), sezonska varijanta (zima/leto) €85, a prikaz po fazama izgradnje €95. Tako investitor ima vizuelni materijal za sve faze kampanje — fazu pre prodaje, fazu otvaranja prvog objekta itd. — iz jednog modela.",
     priceContext:
@@ -1631,6 +1730,11 @@ export const SERVICES: Service[] = [
       "Urbanisti i studija za masterplan",
       "Arhitekte (investitorske prezentacije)",
     ],
+    problemHeading: "2D situacioni plan deluje kao karta. 3D — pokazuje projekat.",
+    problemBody:
+      "Fond, partner ili regulator otvori situacioni plan i vidi linije. Nije jasno gde je ulaz, kako se prilazi, šta je zajednički prostor a šta privatno. Razgovor staje na „mogu li da vidim render“.",
+    problemResolution:
+      "3D situacioni prikaz pokazuje istu parcelu sa svim objektima, pristupima, vegetacijom i kontekstom — investitor odgovara na pitanje pre nego što stigne. Materijal je istovremeno za regulatornu proceduru i za prodajnu kampanju.",
     benefits: [
       {
         icon: "context",
@@ -1692,6 +1796,24 @@ export const SERVICES: Service[] = [
         a: "CAD crteže cele parcele (DWG), pozicije i tipologije objekata, plan uređenja i kontekst okruženja. Opciono: reference materijala fasade i pejzaža.",
       },
     ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-3d-situacioni-01.webp",
+        alt: "3D situacioni plan — stambeni kompleks sa 3 zgrade, zajedničkim prostorom i parking zonama",
+      },
+      {
+        src: "/artwork/portfolio-3d-situacioni-02.webp",
+        alt: "3D situacioni plan — mixed-use razvoj sa stambenim i poslovnim objektima",
+      },
+      {
+        src: "/artwork/portfolio-3d-situacioni-03.webp",
+        alt: "3D situacioni plan — parcele sa porodičnim kućama i individualnim dvorištima",
+      },
+      {
+        src: "/artwork/portfolio-3d-situacioni-04.webp",
+        alt: "3D situacioni plan — prva faza izgradnje vidljiva, kasnije faze nagovešten kontekst",
+      },
+    ],
     variants: [
       {
         id: "site-plan-main",
@@ -1727,9 +1849,9 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-dan-u-noc-after.webp",
     beforeAsset: "/artwork/expert-dan-u-noc-before.webp",
     afterAsset: "/artwork/expert-dan-u-noc-after.webp",
-    detailAsset: "/artwork/detail-dan-u-noc-after.webp",
-    detailBeforeAsset: "/artwork/detail-dan-u-noc-before.webp",
-    detailAfterAsset: "/artwork/detail-dan-u-noc-after.webp",
+    detailAsset: "/artwork/detail-dan-u-noc.webp",
+    detailBeforeAsset: "/artwork/problem-dan-u-noc-before.webp",
+    detailAfterAsset: "/artwork/problem-dan-u-noc-after.webp",
     outsourced: true,
     philosophy:
       "Brza post-produkcija sa jasnom cenom po slici. Pakovanje 10+ slika: €8/slika (20% popust). Hitna isporuka u roku od 24h: +50%.",
@@ -1805,6 +1927,24 @@ export const SERVICES: Service[] = [
         a: "Dnevne fotografije eksterijera u dobroj rezoluciji (DSLR ili mirrorless, najmanje 3000px na dužoj strani). Telefonske fotografije pod uglom ne preporučujemo.",
       },
     ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-dan-u-noc-01.webp",
+        alt: "Dnevni u noćni — porodična kuća sa osvetljenim prozorima i fasadnim svetlom",
+      },
+      {
+        src: "/artwork/portfolio-dan-u-noc-02.webp",
+        alt: "Dnevni u noćni — stambena zgrada sa osvetljenim terasama u večernjem režimu",
+      },
+      {
+        src: "/artwork/portfolio-dan-u-noc-03.webp",
+        alt: "Dnevni u noćni — vila sa osvetljenim bazenom i terasom",
+      },
+      {
+        src: "/artwork/portfolio-dan-u-noc-04.webp",
+        alt: "Dnevni u noćni — poslovni objekat sa fasadnim osvetljenjem i osvetljenim ulazom",
+      },
+    ],
     variants: [
       {
         id: "day-to-dusk-main",
@@ -1841,9 +1981,9 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-uklanjanje-elemenata-after.webp",
     beforeAsset: "/artwork/expert-uklanjanje-elemenata-before.webp",
     afterAsset: "/artwork/expert-uklanjanje-elemenata-after.webp",
-    detailAsset: "/artwork/detail-uklanjanje-elemenata-after.webp",
-    detailBeforeAsset: "/artwork/detail-uklanjanje-elemenata-before.webp",
-    detailAfterAsset: "/artwork/detail-uklanjanje-elemenata-after.webp",
+    detailAsset: "/artwork/detail-uklanjanje-elemenata.webp",
+    detailBeforeAsset: "/artwork/problem-uklanjanje-elemenata-before.webp",
+    detailAfterAsset: "/artwork/problem-uklanjanje-elemenata-after.webp",
     outsourced: true,
     philosophy:
       "Jednostavno uklanjanje (sitnice, lične stvari): €12. Kompleksno (veliki objekat sa rekonstrukcijom pozadine): €25. Pakovanje 10+ slika: €10 jednostavno / €20 kompleksno po slici.",
@@ -1914,6 +2054,24 @@ export const SERVICES: Service[] = [
       {
         q: "Šta dostavljam da biste počeli?",
         a: "Fotografije u dobroj rezoluciji i jasno označavanje predmeta koje želite da uklonimo (komentar u email-u, screenshot sa crtežom, ili lista u tekstu).",
+      },
+    ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-uklanjanje-elemenata-01.webp",
+        alt: "Uklanjanje predmeta — dnevna soba sređena za listing fotografiju",
+      },
+      {
+        src: "/artwork/portfolio-uklanjanje-elemenata-02.webp",
+        alt: "Uklanjanje predmeta — kuhinja sa rekonstruisanom pozadinom posle uklanjanja aparata",
+      },
+      {
+        src: "/artwork/portfolio-uklanjanje-elemenata-03.webp",
+        alt: "Uklanjanje predmeta — kupatilo sa praznim policama spremno za fotografiju",
+      },
+      {
+        src: "/artwork/portfolio-uklanjanje-elemenata-04.webp",
+        alt: "Uklanjanje predmeta — spoljna fasada bez parkiranog vozila i vidljivih kablova",
       },
     ],
     variants: [

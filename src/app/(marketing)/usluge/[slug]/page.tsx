@@ -34,6 +34,7 @@ import type { PricingSettings } from "@/lib/pricing/catalog";
 import { PreFooterCta } from "@/components/site/pre-footer-cta";
 import {
   buildBreadcrumbJsonLd,
+  buildFaqJsonLd,
   buildServiceJsonLd,
   buildWebPageJsonLd,
   createPublicMetadata,
@@ -105,6 +106,16 @@ export default async function ServiceDetailPage({
             { name: service.name, path: `/usluge/${service.slug}` },
           ]),
           buildServiceJsonLd(service),
+          ...(service.faqs && service.faqs.length > 0
+            ? [
+                buildFaqJsonLd(
+                  service.faqs.map((f) => ({
+                    question: f.q,
+                    answer: f.a,
+                  })),
+                ),
+              ]
+            : []),
         ]}
       />
 

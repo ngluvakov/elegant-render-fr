@@ -1199,7 +1199,7 @@ export const SERVICES: Service[] = [
     description:
       "Pregledni 2D ili 3D tlocrti — za oglas, prodaju, dozvolu ili planiranje uređenja. 2D daje čist tehnički prikaz; 3D daje atraktivniji prostorni prikaz koji kupac razume bez znanja arhitekture. Cena pokriva jedan nivo (sprat); dupliranje istog sprata košta samo trećinu cene.",
     highlight:
-      "Najprikladnije za agencije nekretnina koje žele da oglas izgleda profesionalno i investitore koji predstavljaju tipove stanova u zgradi.",
+      "Prikladno za agencije nekretnina koje žele da oglas izgleda profesionalno i investitore koji predstavljaju tipove stanova u zgradi.",
     materials:
       "Pošaljite nam tehničke crteže, skice sa merama ili postojeće PDF osnove.",
     asset: "/artwork/expert-osnove.webp",
@@ -1208,7 +1208,69 @@ export const SERVICES: Service[] = [
       "Cena pokriva izradu osnove za jedan nivo. Svaki sledeći nivo iste zgrade je 50–66% jeftiniji jer je stilski predložak već postavljen. Identičan sprat (dupliranje sa promenom oznaka) košta samo trećinu osnovne cene. Tako celokupna zgrada dobija pregledne osnove za delić cene CAD studija.",
     priceContext:
       "€20 jedan nivo (2D čist plan) / €29 jedan nivo (3D plan). Dodatni nivo: €10–15.",
+    forSegments: [
+      "Agencije nekretnina (listing materijali)",
+      "Investitori (tipovi stanova u zgradi)",
+      "Vlasnici (planiranje uređenja)",
+    ],
     featured: true,
+    benefits: [
+      {
+        icon: "trust",
+        title: "Kupac razume na prvi pogled",
+        body: "Bez tehničkog predznanja, kupac vidi raspored, dimenzije i namenu prostorija. Oglas filtrira neozbiljne pozive.",
+      },
+      {
+        icon: "speed",
+        title: "Brz materijal za listing",
+        body: "€20 za 2D, €29 za 3D — jedan dan rada, dobijate fajl za oglas, prospekt i prezentaciju.",
+      },
+      {
+        icon: "value",
+        title: "Više nivoa za istu zgradu jeftinije",
+        body: "Identičan sprat (dupliranje sa promenom oznaka): trećina cene. Svaki sledeći nivo iste zgrade: 50–66% jeftiniji.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite tlocrte",
+        body: "Tehničke crteže, skice sa merama ili postojeće PDF osnove (PDF/DWG/skica).",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Izrada osnove",
+        body: "Tim crta 2D ili 3D verziju sa oznakama i dimenzijama. Prvi nacrt 1–3 radna dana.",
+      },
+      {
+        title: "Isporuka i revizije",
+        body: "Dobijate finalnu osnovu u željenom formatu. Tri runde revizije su uključene u cenu.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €20 / €29?",
+        a: "€20 daje jedan nivo u čistom 2D vektorskom prikazu sa rasporedom prostorija, oznakama i dimenzijama. €29 daje 3D verziju istog nivoa — prostorni prikaz koji kupac razume bez znanja arhitekture. Identičan sprat (dupliranje): €6 (2D) / €10 (3D).",
+      },
+      {
+        q: "2D ili 3D — šta da biram?",
+        a: "Za agencijski listing: 3D, jer kupac razume na prvi pogled. Za regulatornu proceduru ili tehničku dokumentaciju: 2D, jer prati tehnički standard. Za dupleks na oglasu: oba (svaki sprat ima drugačiju namenu).",
+      },
+      {
+        q: "Da li se može dodati nameštaj?",
+        a: "Da. Verzija sa nameštajem: €6 (2D) ili €8 (3D). Varijanta dizajna (isti raspored, drugi nameštaj): €6.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prve nacrte šaljemo za 1–3 radna dana od potvrde ponude i prijema tehničkih crteža. Tri runde revizije su uključene.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Tehničke crteže, skice sa merama ili postojeće PDF osnove. Što jasniji ulaz (CAD), brže izrada.",
+      },
+    ],
     variants: [
       {
         id: "floorplan-2d",
@@ -1217,7 +1279,7 @@ export const SERVICES: Service[] = [
         priceLabel: "€20",
         unitLabel: "jedan sprat (2D plan)",
         description:
-          "Najjeftiniji ulaz za oglas — jasan tehnički tlocrt sa rasporedom i merama. Identičan sprat: €6.",
+          "Brz ulaz za oglas — jasan tehnički tlocrt sa rasporedom i merama. Identičan sprat: €6.",
         included:
           "Jedan nivo u čistom 2D vektorskom prikazu. Uključuje raspored prostorija, oznake i dimenzije.",
         addOns: [
@@ -1553,9 +1615,9 @@ export const SERVICES: Service[] = [
     icon: "layers",
     tagline: "Cela parcela iz vazduha — investitorska ponuda na jednoj slici.",
     description:
-      "Kompletan prikaz parcele iz vazduha: teren, sve objekte, puteve, parking, vegetaciju i uređenje. Najsilniji vizuelni materijal za investitorsku ponudu, urbanističku dozvolu i prodaju većih kompleksa. Sledeći ugao iste parcele: 81% jeftiniji. Faze izgradnje i sezonske varijante naručujete kroz istu scenu.",
+      "Kompletan prikaz parcele iz vazduha: teren, sve objekte, puteve, parking, vegetaciju i uređenje. Investitorski materijal za ponudu, urbanističku dozvolu i prodaju većih kompleksa. Sledeći ugao iste parcele: 81% jeftiniji. Faze izgradnje i sezonske varijante naručujete kroz istu scenu.",
     highlight:
-      "Za masterplane, stambene komplekse, poslovne zone i razvojne projekte gde se prodaje **lokacija**, a ne samo objekat.",
+      "Za masterplane, stambene komplekse, poslovne zone i razvojne projekte gde se prodaje lokacija, a ne samo objekat.",
     materials:
       "Pošaljite nam CAD crteže cele parcele, pozicije objekata i plan uređenja.",
     asset: "/artwork/expert-3d-situacioni.webp",
@@ -1568,6 +1630,67 @@ export const SERVICES: Service[] = [
       "Investitori i developeri",
       "Urbanisti i studija za masterplan",
       "Arhitekte (investitorske prezentacije)",
+    ],
+    benefits: [
+      {
+        icon: "context",
+        title: "Cela parcela na jednoj slici",
+        body: "Investitor odgovara fondu sa jednim vizualom umesto sa fasciklom crteža. Konkurentska prednost kod investitorskih ponuda.",
+      },
+      {
+        icon: "trust",
+        title: "Materijal za dozvolu i marketing",
+        body: "Isti model služi i regulatornoj proceduri i prodajnim kampanjama — bez ponovnog modelovanja.",
+      },
+      {
+        icon: "value",
+        title: "Više vizuala iz iste scene",
+        body: "€350 pokriva kompletan teren. Dodatni ugao €65, sezonska varijanta €85, prikaz po fazama izgradnje €95 — bez ponovnog modelovanja.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite CAD plan",
+        body: "CAD crteže cele parcele, pozicije i tipologije objekata, plan uređenja i kontekst okruženja (PDF/DWG).",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Modelovanje scene",
+        body: "Tim modeluje teren, objekte, puteve, parking i pejzaž. Prve nacrte šaljemo za 3–5 radnih dana.",
+      },
+      {
+        title: "Isporuka i revizije",
+        body: "Dobijate finalni prikaz iz vazduha. Tri runde revizije su uključene u cenu — bez doplate.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €350?",
+        a: "Modelovanje cele parcele (teren, objekti, putevi, parking, vegetacija, pejzaž) i prvi finalni prikaz iz vazduha. Dodatni ugao iste parcele: €65 (81% popust). Sezonska varijanta (zima/leto): €85. Prikaz po fazama izgradnje: €95.",
+      },
+      {
+        q: "Razlika u odnosu na prikaz iz vazduha (€420)?",
+        a: "Aerial render (€420) je fokusiran na jedan objekat sa okruženjem. Situacioni plan (€350) prikazuje celu parcelu sa svim objektima i razvojem — masterplan nivo. Aerial je za pojedinačan objekat, situacioni za kompleks.",
+      },
+      {
+        q: "Da li se može koristiti za urbanističku dozvolu?",
+        a: "Da. Situacioni plan je standardni prilog u urbanističkim procedurama. 3D prikaz povećava razumljivost pred komisijom u odnosu na klasičan tehnički crtež.",
+      },
+      {
+        q: "Mogu li da naručim faze izgradnje?",
+        a: "Da. Prikaz po fazama izgradnje (€95) prikazuje istu parcelu u različitim fazama razvoja — pre, prva faza završena, druga faza u nazaku itd. Investitorska kampanja dobija vizuelni materijal za svaku fazu.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema CAD plana. Tri runde revizije su uključene.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "CAD crteže cele parcele (DWG), pozicije i tipologije objekata, plan uređenja i kontekst okruženja. Opciono: reference materijala fasade i pejzaža.",
+      },
     ],
     variants: [
       {

@@ -141,6 +141,9 @@ export type Service = {
   problemHeading?: string;
   problemBody?: string;
   problemResolution?: string;
+  /** Optional visual for the problem section (4:3). When unset, ProblemVisual
+   *  falls back to BeforeAfterReveal → first portfolio image → detailAsset. */
+  problemAsset?: string;
 
   /** Three reason-to-buy cards rendered as a 3-up grid. */
   benefits?: ServiceBenefit[];
@@ -438,6 +441,7 @@ export const SERVICES: Service[] = [
       "Arhitekte (klijentske prezentacije)",
     ],
     problemHeading: "Nacrti ne otvaraju vrata. Šetnja kroz objekat — otvara.",
+    problemAsset: "/artwork/expert-360-eksterijer-problem.webp",
     problemBody:
       "Investitor pokazuje fasadu, kupac klimne glavom i odlazi „da razmisli\". Statična slika ne daje osećaj prostora iz svih uglova, ne pokazuje materijale u različitim svetlima, ne dozvoljava kupcu da sam istraži. Odluka se odlaže — ili gubi.",
     problemResolution:

@@ -329,12 +329,12 @@ export const SERVICES: Service[] = [
         alt: "Spoljašnji render — klasični prikaz fasade",
       },
       {
-        src: "/artwork/listing-exterior-aerial.webp",
-        alt: "Spoljašnji render — prikaz iz vazduha",
+        src: "/artwork/elegant-render-feature-exterior.webp",
+        alt: "Spoljašnji render — moderna porodična kuća, ulična perspektiva",
       },
       {
-        src: "/artwork/listing-exterior-360.webp",
-        alt: "Spoljašnji render — 360 panorama",
+        src: "/artwork/elegant-render-services-triptych-1.webp",
+        alt: "Spoljašnji render — fasada u dnevnom svetlu",
       },
       {
         src: "/artwork/expert-spoljasnji-renderi.webp",
@@ -375,7 +375,7 @@ export const SERVICES: Service[] = [
         priceLabel: "€250",
         unitLabel: "3D model + prvi render",
         description:
-          "Najbrža ulazna tačka za prospekt: dobijate pun 3D model zgrade i prvi finalni render. Sledeći uglovi 80% jeftiniji.",
+          "Ulazna tačka za prospekt: pun 3D model zgrade i prvi finalni render. Svaki sledeći ugao 80% jeftiniji.",
         included:
           "Izgradnja punog 3D modela objekta, postavljanje scene, osvetljenja, materijala i 1 finalni render (ugao kamere). Sledeći ugao iste strane: samo €48.",
         addOns: [
@@ -420,11 +420,11 @@ export const SERVICES: Service[] = [
     shortName: "360 eksterijer",
     category: "eksterijer",
     icon: "images",
-    tagline: "Klijent obilazi vašu zgradu kao u igri — pre nego što je sagrađena.",
+    tagline: "Klijent obilazi Vašu zgradu kao u igri — pre gradnje.",
     description:
-      "Interaktivna 360 panorama oko vašeg objekta. Kupac otvara link u pretraživaču, miša rotira pogled iz svih uglova, prebacuje između tačaka — i u VR režimu na Meta Quest uređajima. Idealno za off-plan pre-prodaju jedinica, remote demo i online prospekt.",
+      "Interaktivna 360 panorama oko Vašeg objekta. Kupac otvara link u pretraživaču, mišem rotira pogled iz svih uglova, prebacuje između tačaka — i u VR režimu na Meta Quest uređajima. Idealno za off-plan pre-prodaju jedinica, remote demo i online prospekt.",
     highlight:
-      "Najjača prezentacija kada je kupac udaljen i tradicionalni render ne ubeđuje. Investitori za pre-prodaju iz dijaspore i agencije za remote pokazivanje.",
+      "Prava prezentacija za udaljenog kupca — kada statični render ne daje osećaj prostora. Investitori za pre-prodaju iz dijaspore i agencije za remote pokazivanje.",
     materials:
       "Pošaljite arhitektonske nacrte (PDF/DWG), reference stila i raspored željenih tačaka gledanja. Prvi nacrt 3–5 radnih dana.",
     asset: "/artwork/listing-exterior-360.webp",
@@ -443,7 +443,7 @@ export const SERVICES: Service[] = [
     problemHeading: "Nacrti ne otvaraju vrata. Šetnja kroz objekat — otvara.",
     problemAsset: "/artwork/expert-360-eksterijer-problem.webp",
     problemBody:
-      "Investitor pokazuje fasadu, kupac klimne glavom i odlazi „da razmisli\". Statična slika ne daje osećaj prostora iz svih uglova, ne pokazuje materijale u različitim svetlima, ne dozvoljava kupcu da sam istraži. Odluka se odlaže — ili gubi.",
+      "Investitor pokazuje fasadu, kupac klimne glavom i odlazi da razmisli. Statična slika ne daje osećaj prostora iz svih uglova, ne pokazuje materijale u svetlu, ne dozvoljava kupcu da sam istraži. Odluka se odlaže.",
     problemResolution:
       "Interaktivna 360 panorama pretvara fasadu u prostor kroz koji klijent prolazi mišem ili VR uređajem. Kupac sam istražuje objekat iz svih uglova, sa istim materijalima i okolinom koje će videti uživo — i donosi odluku.",
     benefits: [
@@ -496,7 +496,7 @@ export const SERVICES: Service[] = [
       },
       {
         src: "/artwork/portfolio-360-eksterijer-04.webp",
-        alt: "Frame iz 360 panorame masterplana — kontekst okruženja",
+        alt: "Frame iz 360 panorame stambenog kompleksa — okolni objekti i pristupna zona",
       },
     ],
     faqs: [
@@ -555,7 +555,7 @@ export const SERVICES: Service[] = [
     description:
       "Aerial prikaz objekta u kontekstu — parcela, ulazni koridori, susedna izgradnja, zelenilo. Idealno za urbanističku dozvolu, javnu raspravu, prezentacije fondu ili odboru, i marketing parcele. €420 pokriva kompletan 3D model objekta i okruženja sa prvim prikazom; svaki sledeći ugao iz iste strane modela je €48.",
     highlight:
-      "Najjača prezentacija lokacije i konteksta — za urbanističku dozvolu, board prezentacije i investitorske ponude.",
+      "Prava prezentacija lokacije i konteksta — za urbanističku dozvolu, board prezentacije i investitorske ponude.",
     materials:
       "Pošaljite arhitektonske nacrte (PDF/DWG), situacioni plan sa katastarskom podlogom, opciono fotografije lokacije. Prvi nacrt 3–5 radnih dana.",
     asset: "/artwork/listing-exterior-aerial.webp",

@@ -348,7 +348,7 @@ export function buildServiceJsonLd(service: Service) {
         }
       : {}),
     url: serviceUrl,
-    image: absoluteUrl(service.asset ?? DEFAULT_OG_IMAGE),
+    image: absoluteUrl(service.detailAsset ?? service.asset ?? DEFAULT_OG_IMAGE),
     offers: {
       "@type": "OfferCatalog",
       "@id": `${serviceUrl}#offers`,

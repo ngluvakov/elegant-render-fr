@@ -318,7 +318,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                 key={variant.id}
                 ctx={ctx}
                 variant={variant}
-                featured={idx === 0 && service.variants.length > 1}
+                featured={idx === 0}
               />
             ))}
           </div>

@@ -219,7 +219,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "3D osnove prostora",
-    slug: "osnove-prostora",
+    slug: "osnove",
     priceEur: 29,
     category: "osnove",
     short: "Top-down 3D prikaz rasporeda prostorija, nameštaja i funkcionalne organizacije.",
@@ -232,7 +232,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "2D osnove prostora",
-    slug: "osnove-prostora",
+    slug: "osnove",
     priceEur: 20,
     category: "osnove",
     short: "Čiste i pregledne 2D osnove za marketing materijale, sajtove i oglase.",
@@ -245,7 +245,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "3D site planovi",
-    slug: "situacioni-prikazi",
+    slug: "3d-situacioni",
     priceEur: 350,
     category: "osnove",
     short: "Pregled cele parcele sa objektima, pristupima, zelenilom i širim odnosom prostora.",
@@ -258,7 +258,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Arhitektonske animacije",
-    slug: "animacije-i-ture",
+    slug: "360-ture-i-animacije",
     priceEur: 225,
     category: "360",
     short: "Video walkthrough i flythrough prikaz za snažniji prodajni utisak.",
@@ -272,7 +272,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "360 ture",
-    slug: "animacije-i-ture",
+    slug: "360-ture-i-animacije",
     priceEur: 20,
     category: "360",
     short: "Web bazirane ture koje povezuju 360 kadrove u interaktivno iskustvo.",

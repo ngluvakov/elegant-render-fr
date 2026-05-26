@@ -148,7 +148,9 @@ export function SiteHeader() {
 
                   <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
                     {CATEGORY_ORDER.map((category) => {
-                      const services = getServicesByCategory(category);
+                      const services = getServicesByCategory(category).filter(
+                        (s) => !s.hideFromMenu,
+                      );
                       if (services.length === 0) return null;
                       return (
                         <div key={category} className="space-y-1">

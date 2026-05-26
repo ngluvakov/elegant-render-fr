@@ -130,6 +130,12 @@ export type Service = {
   featured?: boolean;
   /** Delivered via White Rook partner network rather than in-house. */
   outsourced?: boolean;
+  /** Hide from primary navigation dropdown menu. The service is still in
+   *  the catalog, still has a /usluge/<slug> page, and still appears in
+   *  the sitemap — but the header dropdown skips it. Used for multi-variant
+   *  master pages (e.g. unutrasnji-renderi) where dedicated split services
+   *  exist and the master would duplicate them in the dropdown. */
+  hideFromMenu?: boolean;
 
   /* ------------------------------------------------------------------ *
    * Landing-style sections — all optional. When unset, the section is
@@ -202,6 +208,7 @@ export const SERVICES: Service[] = [
     shortName: "Unutrašnji renderi",
     category: "enterijer",
     icon: "home",
+    hideFromMenu: true,
     tagline: "Pokažite kupcima dom još pre nego što izvođači stignu na lokaciju.",
     description:
       "Pokažite kupcima ili klijentima kako će izgledati svaka prostorija budućeg doma — još pre nego što počnu radovi. Jedna porudžbina pokriva ceo sprat sa do 10 opremljenih prostorija i neograničen broj uglova kamere iz tih soba. Prodajte stan iz prospekta, dogovorite klijenta na izboru materijala, ili predstavite enterijer pre nego što ga izgradite.",
@@ -529,6 +536,7 @@ export const SERVICES: Service[] = [
     shortName: "Spoljašnji renderi",
     category: "eksterijer",
     icon: "grid",
+    hideFromMenu: true,
     tagline: "Prodajte zgradu pre nego što počnu radovi.",
     description:
       "Realistični prikazi fasada, kuća i poslovnih objekata — za prospekt, dozvolu, oglas ili klijentsku prezentaciju. Cena pokriva izradu kompletnog 3D modela objekta i prvi render. Pošto je model već izgrađen, svaki sledeći ugao kamere koji koristi istu stranu zgrade košta samo €48 — 80% jeftinije.",
@@ -681,7 +689,7 @@ export const SERVICES: Service[] = [
   {
     slug: "360-eksterijer",
     code: "exterior-360-tour",
-    name: "360° eksterijer",
+    name: "360 eksterijer",
     shortName: "360 eksterijer",
     category: "eksterijer",
     icon: "images",
@@ -1373,38 +1381,100 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "360-ture-i-animacije",
-    code: "tours-and-animation",
-    name: "360 ture i animacije",
-    shortName: "360 ture i animacije",
+    slug: "vr-tura",
+    code: "vr-tour-assembly",
+    name: "VR tura",
+    shortName: "VR tura",
     category: "animacije",
     icon: "images",
-    tagline: "Pokrenite kupca kroz prostor — pre nego što ga izgradite.",
+    tagline: "Spojite panorame u jedinstvenu turu koju kupac obiđe iz fotelje.",
     description:
-      "Dve potpuno različite usluge u jednoj kategoriji. **360 tura**: klijent obilazi prostor mišem ili VR uređajem kao u igri (Meta Quest). **Animacija**: 30-sekundni film u kome kamera leti kroz objekat — moćan marketinški alat za prospekt i prezentaciju investitorima. Ako iz prethodnog projekta već imamo Vaš 3D model, animacija je 33% jeftinija; ako je projekat aktivan, čak 47% jeftinija.",
+      "Već naručene 360 panorame (eksterijer, enterijer, opremanje) spajamo u jedinstvenu VR turu sa interaktivnim navigacijama, hosting-om i embed kodom za sajt. Kupac otvara link u pretraživaču ili VR uređaju, prelazi između tačaka, sam istražuje prostor.",
     highlight:
-      "Za pre-prodaju jedinica, online prezentacije investitorima i marketing kampanje gde statična slika nije dovoljna.",
+      "Prirodan dodatak na već naručene 360 panorame — niska cena, brza isporuka, spreman za VR uređaje.",
     materials:
-      "Pošaljite nam osnove, reference i željenu putanju kamere (za animacije) ili raspored tačaka (za 360 ture).",
+      "Pošaljite 360 panorame koje već imate (od nas ili drugog izvora) i raspored za navigaciju između tačaka. Hosting podešavamo za 1–2 radna dana.",
     asset: PORTFOLIO_ASSET,
     embedSrc:
       "https://kuula.co/share/collection/7k7GQ?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     detailEmbedSrc:
       "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     philosophy:
-      "Najveći trošak je izgradnja 3D modela. Animacija od nule: €15/sek. Iz postojećeg modela: €10/sek (33% jeftinije). Aktivan projekat: €8/sek (47% jeftinije). Duže animacije dobijaju automatski popust: preko 60 sek −20%, preko 2 minuta −25%. Tako duži marketinški filmovi ne znače proporcionalno veći budžet.",
+      "Sami 360 paketi (Eksterijer €335, Enterijer €295) već uključuju jednu ili više interaktivnih tačaka i embed kod. VR tura postaje korisna kada povezujete više panorama iz različitih projekata ili dodajete navigaciju po tlocrtu — tada je sklapanje i hosting zaseban posao.",
     priceContext:
-      "Animacija od €15/sek (min. 15 sek = €225). 360 tura dodatak: od €20 + hosting.",
+      "€20 — sklapanje + hosting + embed kod. Navigacija po tlocrtu: €15. Branding ture: €35.",
     forSegments: [
-      "Investitori (pre-prodaja jedinica)",
-      "Agencije za nekretnine",
-      "Razvojni projekti (masterplan prezentacije)",
+      "Investitori (kompletna prezentacija projekta)",
+      "Agencije nekretnina (više stanova u istoj turi)",
+      "Arhitekte (klijentska prezentacija sa više soba)",
     ],
     featured: true,
+    problemHeading: "Lepe panorame, slabo povezane — kupac se gubi.",
+    problemBody:
+      "Imate 5 360 panorama enterijera i 3 eksterijera, ali ih šaljete kao posebne linkove. Kupac otvori jednu, vidi sobu, mora da klikne nazad na email, otvori sledeću. Gubi pažnju pre nego što obiđe pola stana.",
+    problemResolution:
+      "VR tura spaja sve Vaše panorame u jedinstven prolaz sa interaktivnim hotspot-ovima i navigacijom po tlocrtu. Kupac otvara jedan link i obilazi ceo projekat — bez gubljenja konteksta.",
+    benefits: [
+      {
+        icon: "trust",
+        title: "Jedan link, ceo projekat",
+        body: "Sve panorame u jednom kontinualnom prolazu. Kupac vidi vezu između prostorija, ne fragmente.",
+      },
+      {
+        icon: "speed",
+        title: "Brza isporuka",
+        body: "Sklapamo za 1–2 radna dana. Hosting i embed kod isporučujemo isti dan kada finalizujemo strukturu.",
+      },
+      {
+        icon: "value",
+        title: "Pristupačan dodatak na već naručene panorame",
+        body: "€20 osnovno sklapanje. Navigacija po tlocrtu: €15. Branding ture sa Vašim logoom: €35.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite panorame",
+        body: "Već izrađene 360 panorame (linkove ili fajlove) i raspored za navigaciju između tačaka.",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok najkasnije narednog radnog dana.",
+      },
+      {
+        title: "Sklapanje i hosting",
+        body: "Spajamo panorame, dodajemo hotspot navigaciju i postavljamo na host. Prvi nacrt 1–2 radna dana.",
+      },
+      {
+        title: "Isporuka linka i embed koda",
+        body: "Dobijate link za deljenje i embed kod za sajt. Tri runde revizije za navigaciju i raspored su uključene.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Da li VR tura uključuje izradu panorame?",
+        a: "Ne. VR tura je dodatak na već izrađene panorame. Ako prvo treba da izradimo panorame, naručite 360 eksterijer (€335) ili 360 turu enterijera (€295) — ti paketi već uključuju jednu interaktivnu tačku i embed kod za pojedinačnu panoramu.",
+      },
+      {
+        q: "Šta ako moje panorame nisu od vas?",
+        a: "Nije problem. Sklapamo bilo koje 360 panorame standardnih formata (equirectangular ili stitched cube maps). Hosting je naš; link je deljiv i embed-friendly.",
+      },
+      {
+        q: "Da li radi u VR headset-u?",
+        a: "Da. Tura je standardno VR-ready — Meta Quest i kompatibilni uređaji otvaraju je direktno iz pretraživača, bez dodatne aplikacije.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "1–2 radna dana od potvrde ponude i prijema panorama.",
+      },
+      {
+        q: "Šta dostavljam?",
+        a: "Panorame koje već imate (linkove ili fajlove), raspored navigacije između tačaka i opciono brand asset-e (logo, boje).",
+      },
+    ],
     variants: [
       {
         id: "tour-assembly",
-        title: "360 tura — sklapanje i hosting",
+        title: "VR tura — sklapanje i hosting",
         basePrice: 20,
         priceLabel: "€20",
         unitLabel: "sklapanje i hosting interaktivne ture",
@@ -1418,6 +1488,96 @@ export const SERVICES: Service[] = [
         ],
         note: "Ovo je dodatak na već izrađene 360 panorame, ne cena za samu izradu 360 sadržaja.",
       },
+    ],
+  },
+  {
+    slug: "arhitektonska-animacija",
+    code: "architectural-animation",
+    name: "Arhitektonska animacija",
+    shortName: "Arhitektonska animacija",
+    category: "animacije",
+    icon: "layers",
+    tagline: "Marketinški film u kome kamera leti kroz objekat.",
+    description:
+      "Arhitektonska animacija pretvara Vaš 3D model u 30-sekundni film u kojem kamera leti kroz objekat, otkrivajući prostor scenom po scenom. Marketinški alat za prospekt, investitorske prezentacije i kampanje na društvenim mrežama. Minimum 15 sekundi (€225).",
+    highlight:
+      "Za investitore koji žele dramatičnu prezentaciju kompleksa i agencije koje žele da listing bude više od galerije slika.",
+    materials:
+      "Pošaljite osnove, fasade i, ako postoji, već izrađen 3D model. Definišite željenu putanju kamere i ključne momente.",
+    asset: PORTFOLIO_ASSET,
+    philosophy:
+      "Najveći trošak je izgradnja 3D modela. Animacija od nule: €15/sek. Iz postojećeg modela: €10/sek (33% jeftinije). Aktivan projekat (model još uvek u radu): €8/sek (47% jeftinije). Duže animacije dobijaju automatski popust: preko 60 sek −20%, preko 2 minuta −25%.",
+    priceContext:
+      "€15/sek od nule · €10/sek iz postojećeg modela · minimum 15 sek (€225).",
+    forSegments: [
+      "Investitori (marketing kampanje)",
+      "Agencije nekretnina (premium listing)",
+      "Razvojni projekti (masterplan prezentacije)",
+    ],
+    featured: true,
+    problemHeading: "Statična slika ne pokreće. Film — pokreće.",
+    problemBody:
+      "Prospekt sa 10 slika ima ograničenu pažnju. Klijent skroluje, zatvori, ne pamti. Marketing kampanja na društvenim mrežama traži pokret, ne statičke kadrove.",
+    problemResolution:
+      "Arhitektonska animacija daje 30 sekundi prostora kroz koji kamera leti, otkrivajući enterijer, eksterijer i kontekst u jedinstvenom narativu. Listing dobija kvalitet filmskog trejlera.",
+    benefits: [
+      {
+        icon: "speed",
+        title: "Brže prebacuje na ozbiljnu fazu",
+        body: "Klijent koji vidi animaciju razume projekat za 30 sekundi. Konsultacije počinju sa pitanjima o detaljima, ne o gabaritu.",
+      },
+      {
+        icon: "value",
+        title: "Niža cena iz postojećeg modela",
+        body: "Ako smo Vam već izradili spoljašnji ili unutrašnji render, model je tu — animacija je €10/sek umesto €15/sek (33% popust). Aktivan projekat: €8/sek (47% popust).",
+      },
+      {
+        icon: "trust",
+        title: "Materijal za sve kanale",
+        body: "Jedna animacija postaje YouTube prikaz, Instagram reel, prospekt embed i prezentacija na sastanku. Multi-channel sa jednim ulaganjem.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite materijal",
+        body: "Osnove, fasade, postojeći 3D model (ako postoji) i opis željene putanje kamere.",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu po sekundi i ukupan budžet u roku od jednog radnog dana.",
+      },
+      {
+        title: "Animacija",
+        body: "Postavljamo kameru, materijale i osvetljenje, renderujemo sve frejmove. Prvi nacrt 5–7 radnih dana (zavisi od dužine).",
+      },
+      {
+        title: "Isporuka",
+        body: "Dobijate finalni film (MP4, 4K rezolucija). Tri runde revizije za putanju kamere su uključene.",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €225?",
+        a: "15 sekundi animacije iz novog 3D modela. Cena po sekundi: €15. Ako već imamo Vaš model: €10/sek (€150 za 15 sek). Aktivan projekat (model u izradi): €8/sek (€120 za 15 sek).",
+      },
+      {
+        q: "Razlika od video walkthrough-a?",
+        a: "Video walkthrough snima postojeći prostor. Arhitektonska animacija gradi nepostojeći prostor iz nacrta — možete da snimite objekat koji još nije izgrađen, sa tačnim materijalima fasade i okolinom.",
+      },
+      {
+        q: "Koliko brzo dobijam animaciju?",
+        a: "Standardni rok 5–7 radnih dana za 15–30 sekundi. Duže animacije idu fazno po dogovoru. Tri runde revizije za putanju kamere uključene.",
+      },
+      {
+        q: "Mogu li da menjam putanju kamere posle prvog nacrta?",
+        a: "Da. U tri runde revizije menjamo putanju, brzinu, prelaze i ključne momente. Materijali, osvetljenje i geometrija fiksiraju se posle prve revizije.",
+      },
+      {
+        q: "Šta dostavljam?",
+        a: "Arhitektonske nacrte (PDF/DWG), postojeći 3D model ako postoji (FBX, OBJ, SKP), opis željene putanje i ključnih momenata. Opciono: muzika ili sound brief.",
+      },
+    ],
+    variants: [
       {
         id: "animation-from-scratch",
         title: "Arhitektonska animacija (od nule)",

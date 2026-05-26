@@ -121,7 +121,7 @@ const SERVICES: Service[] = [
     imagePosition: "50% 50%",
   },
   {
-    name: "360° enterijeri",
+    name: "360 enterijeri",
     slug: "360-tura-enterijera",
     priceEur: 295,
     category: "360",
@@ -152,7 +152,7 @@ const SERVICES: Service[] = [
     imagePosition: "50% 50%",
   },
   {
-    name: "360° eksterijeri",
+    name: "360 eksterijeri",
     slug: "360-eksterijer",
     priceEur: 335,
     category: "360",
@@ -257,8 +257,8 @@ const SERVICES: Service[] = [
     imagePosition: "50% 50%",
   },
   {
-    name: "Arhitektonske animacije",
-    slug: "360-ture-i-animacije",
+    name: "Arhitektonska animacija",
+    slug: "arhitektonska-animacija",
     priceEur: 225,
     category: "360",
     short: "Video walkthrough i flythrough prikaz za snažniji prodajni utisak.",
@@ -271,8 +271,8 @@ const SERVICES: Service[] = [
     videoSrc: "/artwork/listing-animation.mp4",
   },
   {
-    name: "360 ture",
-    slug: "360-ture-i-animacije",
+    name: "VR tura",
+    slug: "vr-tura",
     priceEur: 20,
     category: "360",
     short: "Web bazirane ture koje povezuju 360 kadrove u interaktivno iskustvo.",

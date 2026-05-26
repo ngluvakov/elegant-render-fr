@@ -37,7 +37,8 @@ const FOOTER_SERVICES: NavItem[] = [
   { href: "/usluge/unutrasnji-renderi", label: "Unutrašnji renderi" },
   { href: "/usluge/spoljasnji-renderi", label: "Spoljašnji renderi" },
   { href: "/usluge/virtuelno-opremanje", label: "Virtuelno opremanje" },
-  { href: "/usluge/360-ture-i-animacije", label: "360 ture i animacije" },
+  { href: "/usluge/vr-tura", label: "VR tura" },
+  { href: "/usluge/arhitektonska-animacija", label: "Arhitektonska animacija" },
   { href: "/usluge/3d-situacioni", label: "3D situacioni planovi" },
 ];
 

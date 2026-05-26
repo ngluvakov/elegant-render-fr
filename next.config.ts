@@ -17,6 +17,23 @@ const nextConfig: NextConfig = {
       "./node_modules/@fontsource/noto-sans/files/noto-sans-latin-ext-700-normal.woff",
     ],
   },
+  async redirects() {
+    return [
+      // Legacy mixed service split into vr-tura + arhitektonska-animacija.
+      // Old slug 301s to vr-tura (primary product of the legacy bundle).
+      {
+        source: "/usluge/360-ture-i-animacije",
+        destination: "/usluge/vr-tura",
+        permanent: true,
+      },
+      // Friendly alias: people type "uredjenje-pejzaza" but slug is prikazi-dvorista.
+      {
+        source: "/usluge/uredjenje-pejzaza",
+        destination: "/usluge/prikazi-dvorista",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(nextConfig, {

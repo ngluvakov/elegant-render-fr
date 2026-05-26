@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-05-25 - Superadmin account access update
+
+- **Oblast promene:** auth
+- **Šta se promenilo:** Nalog `stevanranca@gmail.com` je osvežen/kreiran kao Super Admin sa svih 13 admin permisija, uključujući finance i admin-access upravljanje. Lozinka je resetovana po zahtevu, ali nije upisana u repo dokumentaciju.
+- **Zašto:** Vlasničkom/operativnom korisniku je potreban pun pristup platformi.
+- **Uticaj na conversion:** Nema direktnog uticaja.
+- **Uticaj na design:** Nema.
+- **Uticaj na code:** Nema izmene runtime koda; promena je direktna DB izmena na `users` i prateći `audit_logs` zapis.
+- **Uticaj na docs:** Ažuriran ovaj decision log.
+- **Povezani fajlovi:** `docs/platform-decisions.md`
+- **Reference:** User request: "Dodaj jedan superadmin nalog. stevanranca@gmail.com sifru stavi neku laku"
+
 ## 2026-05-24 - Search and AI discovery readiness
 
 - **Oblast promene:** conversion | architecture | docs

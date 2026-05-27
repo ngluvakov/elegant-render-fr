@@ -29,8 +29,8 @@ export function StepPayment() {
   const [cardPending, setCardPending] = useState(false);
   const [error, setError] = useState("");
 
-  // Mirror step-review: RS visitors see the total converted to RSD
-  // (with VAT) using the catalog's published rate; everyone else
+  // Mirror step-review: RS visitors see the RSD gross total
+  // with VAT included using the catalog's published rate; everyone else
   // sees the canonical EUR figure stored on the order. PostHog
   // tracking stays on EUR as the source-of-truth currency.
   const pricingSettings: PublicPricingFormatSettings | undefined =

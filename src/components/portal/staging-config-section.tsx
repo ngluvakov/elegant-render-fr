@@ -765,10 +765,10 @@ export function StagingConfigSection({
             </div>
           </div>
           <p className="text-[0.7rem] text-muted-foreground">
-            +€{angleAddOnPriceEur} po dodatnom {angleAddOnLabel}u
+            +{formatPrice(angleAddOnPriceEur)} po dodatnom {angleAddOnLabel}u
             {config.extraAnglesCount > 0 && (
               <span className="ml-1 font-semibold text-accent">
-                · ukupno +€{config.extraAnglesCount * angleAddOnPriceEur}
+                · ukupno +{formatPrice(config.extraAnglesCount * angleAddOnPriceEur)}
               </span>
             )}
           </p>
@@ -810,7 +810,7 @@ export function StagingConfigSection({
           <div className="flex items-center gap-2">
             {config.restyleEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +€{restylePriceEur}
+                +{formatPrice(restylePriceEur)}
               </span>
             )}
             <Switch

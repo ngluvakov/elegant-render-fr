@@ -38,6 +38,7 @@ import {
 } from "@/lib/catalog/configurator";
 import {
   formatPublicPrice,
+  formatPublicPriceText,
   type DisplayCurrency,
 } from "@/lib/catalog/display-currency";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
@@ -235,12 +236,21 @@ function PreviewCard({
                 {formatPublicPrice(displayPerUnitEur, displayCurrency, pricingSettings)}
               </span>
               <span className="text-sm font-normal text-muted-foreground">
-                {" "}/ {displayUnitLabel}
+                {" "}/{" "}
+                {formatPublicPriceText(
+                  displayUnitLabel,
+                  displayCurrency,
+                  pricingSettings,
+                )}
               </span>
             </p>
             {displayPackageNote && (
               <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
-                {displayPackageNote}
+                {formatPublicPriceText(
+                  displayPackageNote,
+                  displayCurrency,
+                  pricingSettings,
+                )}
               </p>
             )}
           </div>

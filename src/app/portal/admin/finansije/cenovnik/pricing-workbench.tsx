@@ -307,7 +307,7 @@ export function PricingWorkbench({
               <SlidersHorizontal className="h-4 w-4" />
               Globalna pravila
             </span>
-            <Badge variant="secondary">AI + PDV</Badge>
+            <Badge variant="secondary">AI + kurs + PDV</Badge>
           </button>
           {draft.categories.map((category) => (
             <button
@@ -1324,7 +1324,7 @@ function SettingsWorkbench({
           }
         />
         <MetricEditor
-          label="PDV za Srbiju"
+          label="PDV za razlaganje RSD cene"
           value={settings.serbiaVatRate}
           suffix="decimal"
           step={0.01}

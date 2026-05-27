@@ -9,6 +9,10 @@ import { ResultsProof } from "@/components/marketing/results-proof";
 import { MarketingServicesShowcase } from "@/components/marketing/marketing-services-showcase";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildHomeJsonLd, createPublicMetadata, SEO } from "@/lib/seo";
+import { formatPublicPriceText } from "@/lib/catalog/display-currency";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
+import { FAQ_ITEMS } from "@/lib/content/site";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Arhitektonska vizuelizacija",
@@ -22,10 +26,23 @@ export const metadata: Metadata = createPublicMetadata({
   ],
 });
 
-export default function Home() {
+export default async function Home() {
+  const [displayCurrency, pricingCatalog] = await Promise.all([
+    getPublicDisplayCurrency(),
+    getPublishedPricingCatalog(),
+  ]);
+  const formattedFaqs = FAQ_ITEMS.map((item) => ({
+    ...item,
+    answer: formatPublicPriceText(
+      item.answer,
+      displayCurrency,
+      pricingCatalog.settings,
+    ),
+  }));
+
   return (
     <>
-      <JsonLd data={buildHomeJsonLd()} />
+      <JsonLd data={buildHomeJsonLd(formattedFaqs)} />
       <QuickOrderHero />
       <SearchIntentSection />
       <ResultsProof />

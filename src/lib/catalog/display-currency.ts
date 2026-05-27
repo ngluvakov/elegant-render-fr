@@ -48,9 +48,11 @@ export function eurToPublicRsd(
     serbiaVatRate: PUBLIC_SERBIA_VAT_RATE,
   },
 ): number {
-  return Math.round(
-    amountEur * settings.eurToRsdRate * (1 + settings.serbiaVatRate),
-  );
+  return Math.round(amountEur * settings.eurToRsdRate);
+}
+
+export function formatPublicRsdAmount(amountRsd: number): string {
+  return `${rsdFormatter.format(amountRsd)} RSD`;
 }
 
 export function formatPublicPrice(
@@ -113,11 +115,18 @@ export function formatPublicPriceText(
   currency: DisplayCurrency = "eur",
   settings?: PublicPricingFormatSettings,
 ): string {
-  return text.replace(/€\s?(\d+(?:[.,]\d+)?)/g, (_, rawAmount: string) => {
-    const amount = Number.parseFloat(rawAmount.replace(",", "."));
-    if (!Number.isFinite(amount)) return _;
-    return formatPublicPrice(amount, currency, settings);
-  });
+  return text.replace(
+    /€\s?(\d+(?:[.,]\d+)?)(?:\s?[–-]\s?(\d+(?:[.,]\d+)?))?/g,
+    (match, rawAmount: string, rawRangeEnd?: string) => {
+      const amount = Number.parseFloat(rawAmount.replace(",", "."));
+      if (!Number.isFinite(amount)) return match;
+      const formattedStart = formatPublicPrice(amount, currency, settings);
+      if (!rawRangeEnd) return formattedStart;
+      const rangeEnd = Number.parseFloat(rawRangeEnd.replace(",", "."));
+      if (!Number.isFinite(rangeEnd)) return formattedStart;
+      return `${formattedStart}–${formatPublicPrice(rangeEnd, currency, settings)}`;
+    },
+  );
 }
 
 const sharedCommercialTerms = [
@@ -132,16 +141,16 @@ export function getPublicPricingTerms(
   if (currency === "rsd") {
     return {
       title: "Napomene za Srbiju",
-      badge: "Srbija - RSD sa PDV-om",
+      badge: "Srbija - RSD, PDV uračunat",
       lead: "Ovaj prikaz cenovnika je prilagođen klijentima iz Srbije.",
       bullets: [
-        "Cene su prikazane u dinarima (RSD), sa uračunatim PDV-om.",
-        "RSD iznosi se računaju iz osnovnog EUR cenovnika po podešenom kursu i važećoj PDV stopi.",
-        "Konačna ponuda i račun za klijente iz Srbije prate lokalne uslove naplate i oporezivanja.",
+        "Cene su prikazane u dinarima (RSD), kao bruto iznosi sa uračunatim PDV-om.",
+        "RSD iznosi se direktno računaju iz osnovnog EUR cenovnika po podešenom kursu; PDV je već sadržan u tom iznosu i ne dodaje se preko njega.",
+        "Konačna ponuda i račun za klijente iz Srbije izdvajaju osnovicu i PDV iz prikazane bruto cene.",
         ...sharedCommercialTerms,
       ],
       ctaLabel: "Zatražite ponudu za Srbiju",
-      shortNote: "Sve cene su prikazane u RSD, sa uračunatim PDV-om.",
+      shortNote: "Sve cene su prikazane u RSD kao bruto iznosi, sa uračunatim PDV-om.",
     };
   }
 

@@ -248,6 +248,8 @@ export default async function OrderDetailPage({
               reason: c.reason,
               totalCents: c.totalCents,
               billingCurrency: c.billingCurrency,
+              billingVatRate: c.billingVatRate,
+              billingEurToRsdRate: c.billingEurToRsdRate,
               billingTotalCents: c.billingTotalCents,
               status: c.status,
               paidAt: c.paidAt,

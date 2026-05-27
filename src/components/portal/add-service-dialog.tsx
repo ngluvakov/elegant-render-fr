@@ -32,7 +32,7 @@ export function AddServiceDialog({
   const [error, setError] = useState<string | null>(null);
   const [, start] = useTransition();
   const router = useRouter();
-  const { formatPrice } = useOrderCurrency();
+  const { formatPrice, formatPriceText } = useOrderCurrency();
 
   const availableByCategory = useMemo(() => {
     return categories.map((cat) => ({
@@ -135,7 +135,7 @@ export function AddServiceDialog({
                         {prod.label}
                       </p>
                       <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
-                        {prod.unitLabel}
+                        {formatPriceText(prod.unitLabel)}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">

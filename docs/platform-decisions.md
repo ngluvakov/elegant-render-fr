@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-05-27 - RSD cene sa PDV-om bez dodatnog uvećanja
+
+- **Oblast promene:** pricing | order lifecycle | docs
+- **Šta se promenilo:** RSD cene za Srbiju sada se računaju direktnim prevođenjem EUR iznosa po objavljenom kursu. PDV je uračunat u taj RSD bruto iznos i izdvaja se iz njega na checkout-u, predračunima i računima, umesto da se dodaje preko konvertovane cene.
+- **Zašto:** Cene za Srbiju i ostale zemlje treba da budu faktički iste, uz lokalno ispravan prikaz PDV-a za srpske račune.
+- **Uticaj na conversion:** Smanjuje se percepcija da su cene za Srbiju skuplje zbog dodatnog PDV sloja.
+- **Uticaj na design:** Copy u javnom cenovniku, checkout-u, AI Studio i profilu precizira “PDV uračunat”.
+- **Uticaj na code:** Centralni public/billing helper-i više ne množe RSD cenu sa `(1 + PDV)`, a breakdown računa osnovicu i PDV iz bruto RSD iznosa.
+- **Uticaj na docs:** Ažurirani su uslovi korišćenja, AI-readable pricing tekstovi i ovaj decision log.
+- **Povezani fajlovi:** `src/lib/catalog/display-currency.ts`, `src/lib/billing.ts`, `src/app/(marketing)/poruci/steps/step-review.tsx`, `src/app/(marketing)/pravno/uslovi/page.tsx`, `src/lib/llms.ts`, `docs/platform-decisions.md`
+- **Reference:** User request: "Hoću da cene u evrima budu prevedene u RSD, ali da u toj ceni bude već uračunat i PDV."
+
 ## 2026-05-25 - Superadmin account access update
 
 - **Oblast promene:** auth

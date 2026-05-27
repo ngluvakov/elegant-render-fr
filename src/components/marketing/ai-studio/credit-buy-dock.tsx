@@ -35,7 +35,7 @@ const INPUT_MAX = 9999;
 const SLIDER_MAX = 200;
 
 export function aiCreditTaxLabel(displayCurrency: DisplayCurrency) {
-  return displayCurrency === "rsd" ? "sa PDV" : "bez PDV";
+  return displayCurrency === "rsd" ? "PDV uračunat" : "bez PDV";
 }
 
 type CreditBuyDockProps = {

@@ -8,7 +8,8 @@
  */
 
 // Source of truth: docs/pricing/pillar-1-extracted.md
-// All prices in EUR, excluding VAT/PDV
+// Public list amounts are stored in EUR. Serbian RSD display converts
+// those amounts directly and treats VAT as included inside the gross price.
 
 import type { ServiceIcon } from "./services";
 

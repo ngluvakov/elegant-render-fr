@@ -7,6 +7,11 @@ import {
   resolveDiscount,
   type QuoteItem,
 } from "../src/lib/catalog/calculate";
+import { billingCentsFromEurCents } from "../src/lib/billing";
+import {
+  eurToPublicRsd,
+  formatPublicPriceText,
+} from "../src/lib/catalog/display-currency";
 
 type Case = {
   name: string;
@@ -293,6 +298,26 @@ console.log("• resolveDiscount: self-only creator returns null");
   const items = [qi("solo", "ext-360", "exterior")];
   const r = resolveDiscount(items[0], items);
   check("null result", r, null);
+}
+
+console.log("\n• RSD gross conversion keeps VAT included, not added");
+{
+  const settings = { eurToRsdRate: 117.2, serbiaVatRate: 0.2 };
+  check("public 100 EUR -> RSD", eurToPublicRsd(100, settings), 11720);
+  check(
+    "billing 100 EUR -> RSD cents",
+    billingCentsFromEurCents(10000, {
+      billingCurrency: "RSD",
+      billingVatRate: settings.serbiaVatRate,
+      billingEurToRsdRate: settings.eurToRsdRate,
+    }),
+    1172000,
+  );
+  check(
+    "range text conversion",
+    formatPublicPriceText("€10–15", "rsd", settings),
+    "1.172 RSD–1.758 RSD",
+  );
 }
 
 console.log(

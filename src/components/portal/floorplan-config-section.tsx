@@ -105,7 +105,7 @@ export function FloorplanConfigSection({
   const materialInputRef = useRef<HTMLInputElement>(null);
   const refInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { formatPrice } = useOrderCurrency();
+  const { formatPrice, formatPriceText } = useOrderCurrency();
 
   const totalEur = useMemo(() => {
     const calc = calculateQuote([
@@ -341,7 +341,7 @@ export function FloorplanConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 uključen, +€17 za 2., pa +€15 svaki sledeći
+              {formatPriceText("1 uključen, +€17 za 2., pa +€15 svaki sledeći")}
             </span>
           </div>
         </div>
@@ -375,7 +375,7 @@ export function FloorplanConfigSection({
           </select>
           {isFurnished && (
             <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
-              + Overlay nameštaja: €8
+              + Overlay nameštaja: {formatPrice(8)}
             </p>
           )}
         </div>
@@ -682,7 +682,7 @@ export function FloorplanConfigSection({
           <div className="flex items-center gap-2">
             {config.variantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +€{FP3D_VARIANT_EUR}
+                +{formatPrice(FP3D_VARIANT_EUR)}
               </span>
             )}
             <Switch
@@ -749,7 +749,7 @@ export function FloorplanConfigSection({
           <div className="flex items-center gap-2">
             {config.duplicateEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +€{FP3D_DUPLICATE_EUR}
+                +{formatPrice(FP3D_DUPLICATE_EUR)}
               </span>
             )}
             <Switch

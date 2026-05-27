@@ -394,7 +394,7 @@ export function LandscapeConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 uključen, +€45 svaki sledeći
+              1 uključen, +{formatPrice(45)} svaki sledeći
             </span>
           </div>
         </div>
@@ -500,7 +500,7 @@ export function LandscapeConfigSection({
           </div>
           {config.aerialEnabled && (
             <p className="flex-shrink-0 text-sm font-bold text-foreground tabular-nums">
-              +€{LAND_AERIAL_PRICE_EUR}
+              +{formatPrice(LAND_AERIAL_PRICE_EUR)}
             </p>
           )}
         </div>

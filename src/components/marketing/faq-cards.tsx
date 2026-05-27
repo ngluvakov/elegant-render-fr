@@ -6,8 +6,17 @@
 import { HelpCircle } from "lucide-react";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { FAQ_ITEMS } from "@/lib/content/site";
+import { formatPublicPriceText } from "@/lib/catalog/display-currency";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
-export function FaqCards() {
+export async function FaqCards() {
+  const [displayCurrency, pricingCatalog] = await Promise.all([
+    getPublicDisplayCurrency(),
+    getPublishedPricingCatalog(),
+  ]);
+  const pricingSettings = pricingCatalog.settings;
+
   return (
     <section id="faq" className="pb-16 pt-10 md:pb-20 md:pt-14 lg:pb-24 lg:pt-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
@@ -29,7 +38,11 @@ export function FaqCards() {
                 <div>
                   <h3 className="text-lg text-foreground">{item.question}</h3>
                   <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                    {item.answer}
+                    {formatPublicPriceText(
+                      item.answer,
+                      displayCurrency,
+                      pricingSettings,
+                    )}
                   </p>
                 </div>
               </div>

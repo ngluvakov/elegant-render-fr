@@ -94,14 +94,14 @@ function Row({
   value: number;
   sub?: string;
 }) {
-  const { formatPrice } = useOrderCurrency();
+  const { formatPrice, formatPriceText } = useOrderCurrency();
   return (
     <div className="flex items-baseline justify-between gap-2">
       <div className="min-w-0 truncate text-foreground">
         <span>{label}</span>
         {sub && (
           <span className="ml-1 text-[0.7rem] text-muted-foreground">
-            {sub}
+            {formatPriceText(sub)}
           </span>
         )}
       </div>

@@ -111,7 +111,11 @@ export default async function ServiceDetailPage({
                 buildFaqJsonLd(
                   service.faqs.map((f) => ({
                     question: f.q,
-                    answer: f.a,
+                    answer: formatPublicPriceText(
+                      f.a,
+                      displayCurrency,
+                      pricingSettings,
+                    ),
                   })),
                 ),
               ]
@@ -223,13 +227,21 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
               </h2>
               {service.problemBody && (
                 <p className="mt-5 text-base leading-7 text-muted-foreground">
-                  {service.problemBody}
+                  {formatPublicPriceText(
+                    service.problemBody,
+                    ctx.displayCurrency,
+                    ctx.pricingSettings,
+                  )}
                 </p>
               )}
               {service.problemResolution && (
                 <p className="mt-4 text-base leading-7 text-foreground/90">
                   <strong className="font-semibold">
-                    {service.problemResolution}
+                    {formatPublicPriceText(
+                      service.problemResolution,
+                      ctx.displayCurrency,
+                      ctx.pricingSettings,
+                    )}
                   </strong>
                 </p>
               )}
@@ -260,7 +272,11 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                     {benefit.title}
                   </h3>
                   <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                    {benefit.body}
+                    {formatPublicPriceText(
+                      benefit.body,
+                      ctx.displayCurrency,
+                      ctx.pricingSettings,
+                    )}
                   </p>
                 </article>
               ))}
@@ -368,7 +384,11 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                     {step.title}
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {step.body}
+                    {formatPublicPriceText(
+                      step.body,
+                      ctx.displayCurrency,
+                      ctx.pricingSettings,
+                    )}
                   </p>
                 </li>
               ))}
@@ -768,11 +788,29 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
       </div>
 
       <section className="mt-10 grid gap-4 md:grid-cols-3">
-        <InfoBlock title="Kada koristiti" text={service.highlight} />
-        <InfoBlock title="Šta poslati" text={service.materials} />
+        <InfoBlock
+          title="Kada koristiti"
+          text={formatPublicPriceText(
+            service.highlight,
+            ctx.displayCurrency,
+            ctx.pricingSettings,
+          )}
+        />
+        <InfoBlock
+          title="Šta poslati"
+          text={formatPublicPriceText(
+            service.materials,
+            ctx.displayCurrency,
+            ctx.pricingSettings,
+          )}
+        />
         <InfoBlock
           title="Šta dobijate"
-          text={`${service.variants[0].included} Dodatni obim se računa kroz javne doplate iz cenovnika.`}
+          text={formatPublicPriceText(
+            `${service.variants[0].included} Dodatni obim se računa kroz javne doplate iz cenovnika.`,
+            ctx.displayCurrency,
+            ctx.pricingSettings,
+          )}
         />
       </section>
 

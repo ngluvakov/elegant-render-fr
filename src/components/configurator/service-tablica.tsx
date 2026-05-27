@@ -21,7 +21,10 @@ import { Check, Building2, ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { resolveDiscount } from "@/lib/catalog/calculate";
 import { makePrimaryItem, makeUpsellTargetItem, getUpsellProducts } from "@/lib/catalog/upsell-helpers";
-import { formatPublicPrice } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPrice,
+  formatPublicPriceText,
+} from "@/lib/catalog/display-currency";
 import { useQuote } from "./quote-context";
 import { RelatedUpsellCard } from "./related-upsell-card";
 import { track } from "@/lib/posthog-events";
@@ -90,6 +93,11 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
 
   // ── Price figures ────────────────────────────────────────────────────────
   const displayUnitLabel = product.displayUnitLabel ?? product.unitLabel;
+  const formattedDisplayUnitLabel = formatPublicPriceText(
+    displayUnitLabel,
+    displayCurrency,
+    pricingSettings,
+  );
   const displayMinQty = product.displayMinQty;
   const displayPackageNote = product.displayPackageNote;
 
@@ -364,7 +372,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                 )}
               </p>
               <p className="text-lg text-muted-foreground mt-1">
-                / {displayUnitLabel}
+                / {formattedDisplayUnitLabel}
               </p>
             </>
           ) : (
@@ -392,14 +400,18 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
           {/* Package note — always visible (honesty anchor) */}
           {displayPackageNote && (
             <p className="text-xs text-muted-foreground italic mt-3">
-              {displayPackageNote}
+              {formatPublicPriceText(
+                displayPackageNote,
+                displayCurrency,
+                pricingSettings,
+              )}
             </p>
           )}
 
           {/* Issue 3a: "U paketu od X" annotation — only when no own discount showing */}
           {!showOwnDiscount && displayMinQty !== undefined && displayMinQty > 1 && (
             <p className="text-xs text-[color:var(--color-sage-deep)] mt-1.5">
-              U paketu od {displayMinQty} {pluralizeUnit(displayUnitLabel ?? "", displayMinQty)}
+              U paketu od {displayMinQty} {pluralizeUnit(formattedDisplayUnitLabel ?? "", displayMinQty)}
             </p>
           )}
         </div>

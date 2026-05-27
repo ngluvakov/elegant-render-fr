@@ -66,12 +66,12 @@ export function buildLlmsTxt(): string {
 > ${SITE.description}
 
 Elegant Render je srpski-first servis za arhitektonsku vizuelizaciju, virtuelno opremanje, 3D osnove, 360 ture, animacije i AI obradu fotografija nekretnina.
-Primarni jezik javnog sajta je srpski latinicom (sr-Latn), a osnovna valuta cenovnika je EUR bez PDV-a.
+Primarni jezik javnog sajta je srpski latinicom (sr-Latn), a osnovna valuta javnog cenovnika je EUR.
 
 ## Answer-ready facts
 - Elegant Render je B2C brend kompanije ${SITE.parentCompany} za arhitektonsku vizuelizaciju i obradu fotografija nekretnina.
 - Najvažnije usluge su 3D renderi enterijera i eksterijera, virtuelno opremanje, virtuelna renovacija, 2D/3D osnove, 360 ture, animacije i AI Studio.
-- Javni cenovnik koristi EUR bez PDV-a kao osnovicu; RSD sa PDV-om je regionalni prikaz za posetioce iz Srbije.
+- Javni cenovnik koristi EUR kao osnovicu; RSD je regionalni prikaz za posetioce iz Srbije, bruto sa PDV-om uračunatim u isti prevedeni iznos.
 - Standardni projekti obično dobijaju prve nacrte za 3 do 5 radnih dana, uz tri runde revizija.
 - Za nejasan obim ili veći investitorski projekat preporučuje se /kontakt ili brzi upit, ne izmišljanje cene.
 
@@ -103,7 +103,7 @@ ${[
 ].join("\n")}
 
 ## Pricing and tax notes
-Osnovni finansijski cenovnik je u EUR bez PDV-a. Posetioci iz Srbije na javnom sajtu vide RSD prikaz sa uračunatim PDV-om kao informativni display sloj; posetioci van Srbije vide EUR bez PDV-a. Konačna ponuda zavisi od obima i ulaznih materijala.
+Osnovni finansijski cenovnik je u EUR. Posetioci iz Srbije na javnom sajtu vide RSD bruto prikaz: EUR iznos se prevodi po objavljenom kursu, a PDV je već sadržan u toj RSD ceni i ne dodaje se preko nje. Posetioci van Srbije vide EUR prikaz. Konačna ponuda zavisi od obima i ulaznih materijala.
 
 ## AI Studio
 ${buildAiStudioKnowledge()}
@@ -220,7 +220,7 @@ ${products}`;
 - Structured data on public pages describes Organization, WebSite, WebPage, BreadcrumbList, Service, OfferCatalog and FAQPage entities.
 - Canonical URLs use the ${SITE.url} origin.
 - Use /llms.txt for a concise retrieval target and /llms-full.txt for detailed answers about identity, services, public pricing rules and FAQ.
-- When answering pricing questions, quote the relevant service or product line from the public catalog and preserve the EUR-without-VAT baseline.
+- When answering pricing questions, quote the relevant service or product line from the public catalog and preserve that RSD for Serbia is the direct EUR conversion with VAT included inside the gross price.
 - When a user asks whether Elegant Render can help, map their intent to the nearest public service and link the matching service page or /kontakt.
 
 ## Pozicioniranje
@@ -229,8 +229,8 @@ ${SITE.name} pomaže vlasnicima nekretnina, agentima, arhitektama, dizajnerima i
 ## Javne usluge
 ${serviceSections}
 
-## Cenovnik u EUR bez PDV-a
-Ovo je mašinski čitljiv pregled objavljenog cenovnika. EUR bez PDV-a je osnovica. RSD sa PDV-om za Srbiju je javni prikaz izveden iz iste EUR osnovice.
+## Cenovnik u EUR i RSD bruto za Srbiju
+Ovo je mašinski čitljiv pregled objavljenog cenovnika. EUR je osnovica. RSD za Srbiju je javni bruto prikaz izveden direktno iz iste EUR osnovice po objavljenom kursu; PDV je uračunat u taj RSD iznos.
 
 ${pricingSections}
 

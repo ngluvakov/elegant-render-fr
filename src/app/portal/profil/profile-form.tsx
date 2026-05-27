@@ -228,7 +228,7 @@ export function ProfileForm({
             <Globe2 className="h-4 w-4 text-accent" />
             <span>
               {billingCurrency === "RSD"
-                ? "Budući računi: RSD sa PDV-om"
+                ? "Budući računi: RSD, PDV uračunat"
                 : "Budući računi: EUR bez PDV-a"}
             </span>
           </div>

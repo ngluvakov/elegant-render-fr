@@ -11,7 +11,7 @@ export const metadata: Metadata = createPublicMetadata({
   path: "/pravno/uslovi",
 });
 
-const LAST_UPDATED = "2026-05-06";
+const LAST_UPDATED = "2026-05-27";
 
 export default function UsloviPage() {
   return (
@@ -102,8 +102,11 @@ export default function UsloviPage() {
           <p>Cene su izražene zavisno od zemlje posetioca:</p>
           <ul className="ml-5 list-disc space-y-2">
             <li>
-              <strong>Posetioci iz Srbije:</strong> u dinarima (RSD), sa
-              uračunatim PDV-om po stopi od 20%.
+              <strong>Posetioci iz Srbije:</strong> u dinarima (RSD), kao
+              bruto cena sa uračunatim PDV-om po stopi od 20%. RSD iznos se
+              direktno prevodi iz osnovnog EUR cenovnika po objavljenom kursu;
+              PDV se ne dodaje preko tog iznosa, već se iz njega izdvaja na
+              računu.
             </li>
             <li>
               <strong>Posetioci iz drugih zemalja:</strong> u evrima (EUR), bez

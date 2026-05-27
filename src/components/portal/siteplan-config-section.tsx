@@ -413,7 +413,7 @@ export function SiteplanConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 uključen, +€65 svaki sledeći
+              1 uključen, +{formatPrice(65)} svaki sledeći
             </span>
           </div>
         </div>
@@ -781,7 +781,7 @@ export function SiteplanConfigSection({
           <div className="flex items-center gap-2">
             {config.seasonVariantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +€{SP_SEASON_EUR}
+                +{formatPrice(SP_SEASON_EUR)}
               </span>
             )}
             <Switch
@@ -889,7 +889,7 @@ export function SiteplanConfigSection({
           <div className="flex items-center gap-2">
             {config.phaseVariantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +€{SP_PHASE_EUR}
+                +{formatPrice(SP_PHASE_EUR)}
               </span>
             )}
             <Switch

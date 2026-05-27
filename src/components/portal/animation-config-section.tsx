@@ -122,7 +122,7 @@ export function AnimationConfigSection({
   const initRef = useRef(true);
   const sourceInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { formatPrice } = useOrderCurrency();
+  const { formatPrice, formatPriceText } = useOrderCurrency();
 
   const showDayNight = animSupportsDayNight(config.sourceMode);
   const showSeason = animSupportsSeason(config.sourceMode);
@@ -337,7 +337,7 @@ export function AnimationConfigSection({
                     {m.shortLabel}
                   </span>
                   <span className="text-[0.7rem] font-bold text-accent tabular-nums">
-                    €{m.perSecondEur}/s
+                    {formatPrice(m.perSecondEur)}/s
                   </span>
                 </span>
                 <span className="text-[0.7rem] leading-snug text-muted-foreground">
@@ -424,7 +424,7 @@ export function AnimationConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              €{perSecondEur}/sek
+              {formatPrice(perSecondEur)}/sek
               {tierDiscountPct > 0 && (
                 <span className="ml-1 font-semibold text-[color:var(--color-sage-deep)]">
                   · −{tierDiscountPct}% tier
@@ -744,7 +744,7 @@ export function AnimationConfigSection({
                   Dodatna putanja kamere
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  Još jedan video iz istog modela — €5/sek po putanji
+                  {formatPriceText("Još jedan video iz istog modela — €5/sek po putanji")}
                 </span>
               </div>
             </div>
@@ -775,9 +775,9 @@ export function AnimationConfigSection({
           {config.extraPathsCount > 0 && (
             <p className="text-[0.7rem] text-muted-foreground">
               {config.extraPathsCount} ×{" "}
-              {config.durationSeconds}s × €5 ={" "}
+              {config.durationSeconds}s × {formatPrice(5)} ={" "}
               <span className="font-semibold text-accent">
-                +€{config.extraPathsCount * config.durationSeconds * 5}
+                +{formatPrice(config.extraPathsCount * config.durationSeconds * 5)}
               </span>
             </p>
           )}

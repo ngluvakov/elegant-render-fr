@@ -109,7 +109,7 @@ export function RenovationConfigSection({
   const materialInputRef = useRef<HTMLInputElement>(null);
   const extraInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { formatPrice } = useOrderCurrency();
+  const { formatPrice, formatPriceText } = useOrderCurrency();
 
   const totalEur = useMemo(() => {
     const calc = calculateQuote([
@@ -688,7 +688,9 @@ export function RenovationConfigSection({
             </div>
           </div>
           <p className="text-[0.7rem] text-muted-foreground">
-            +€{RENO_ANGLE_EUR} po dodatnom uglu (€53 od 4. ugla nadalje)
+            {formatPriceText(
+              `+€${RENO_ANGLE_EUR} po dodatnom uglu (€53 od 4. ugla nadalje)`,
+            )}
           </p>
 
           <Collapsible open={config.extraAnglesCount > 0}>
@@ -731,7 +733,7 @@ export function RenovationConfigSection({
           <div className="flex items-center gap-2">
             {config.variantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +€{RENO_VARIANT_EUR}
+                +{formatPrice(RENO_VARIANT_EUR)}
               </span>
             )}
             <Switch

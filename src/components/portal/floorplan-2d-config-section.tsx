@@ -102,7 +102,7 @@ export function Floorplan2dConfigSection({
   const sourceInputRef = useRef<HTMLInputElement>(null);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { formatPrice } = useOrderCurrency();
+  const { formatPrice, formatPriceText } = useOrderCurrency();
 
   const totalEur = useMemo(() => {
     const calc = calculateQuote([
@@ -339,7 +339,7 @@ export function Floorplan2dConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 uključen, +€12 za 2., pa +€10 svaki sledeći
+              {formatPriceText("1 uključen, +€12 za 2., pa +€10 svaki sledeći")}
             </span>
           </div>
         </div>
@@ -393,7 +393,7 @@ export function Floorplan2dConfigSection({
         </select>
         {config.displayType === "namestena" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
-            + Overlay nameštaja: €6
+            + Overlay nameštaja: {formatPrice(6)}
           </p>
         )}
       </div>
@@ -668,7 +668,7 @@ export function Floorplan2dConfigSection({
           <div className="flex items-center gap-2">
             {config.variantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +€{FP2D_VARIANT_EUR}
+                +{formatPrice(FP2D_VARIANT_EUR)}
               </span>
             )}
             <Switch
@@ -732,7 +732,7 @@ export function Floorplan2dConfigSection({
           <div className="flex items-center gap-2">
             {config.duplicateEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +€{FP2D_DUPLICATE_EUR}
+                +{formatPrice(FP2D_DUPLICATE_EUR)}
               </span>
             )}
             <Switch

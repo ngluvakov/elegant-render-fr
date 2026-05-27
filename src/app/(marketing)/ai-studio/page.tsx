@@ -46,6 +46,7 @@ import {
 import {
   formatPublicPrice,
   formatPublicPriceFromCents,
+  formatPublicPriceText,
   type DisplayCurrency,
 } from "@/lib/catalog/display-currency";
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
@@ -291,7 +292,7 @@ function toolStartingEur(
 
 function publicTaxNote(displayCurrency: DisplayCurrency): string {
   return displayCurrency === "rsd"
-    ? "RSD sa PDV-om."
+    ? "RSD bruto, PDV uračunat."
     : "EUR bez PDV-a.";
 }
 
@@ -301,6 +302,10 @@ export default async function AiStudioLandingPage() {
     getPublishedPricingCatalog(),
   ]);
   const pricingSettings = pricingCatalog.settings;
+  const formattedFaqs = AI_STUDIO_FAQS.map((item) => ({
+    ...item,
+    answer: formatPublicPriceText(item.answer, displayCurrency, pricingSettings),
+  }));
 
   return (
     <>
@@ -341,7 +346,7 @@ export default async function AiStudioLandingPage() {
               })),
             },
           },
-          buildFaqJsonLd(AI_STUDIO_FAQS),
+          buildFaqJsonLd(formattedFaqs),
         ]}
       />
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
@@ -374,7 +379,7 @@ export default async function AiStudioLandingPage() {
         pricingSettings={pricingSettings}
       />
       <TipsSection />
-      <FaqSection />
+      <FaqSection faqs={formattedFaqs} />
       <FinalCtaSection />
       <CreditBuyDockMobile
         pricingSettings={pricingSettings}
@@ -974,7 +979,11 @@ function TipsSection() {
   );
 }
 
-function FaqSection() {
+function FaqSection({
+  faqs,
+}: {
+  faqs: ReadonlyArray<{ question: string; answer: string }>;
+}) {
   return (
     <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
@@ -985,7 +994,7 @@ function FaqSection() {
           </h2>
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-2">
-          {AI_STUDIO_FAQS.map((item) => (
+          {faqs.map((item) => (
             <article
               key={item.question}
               className="rounded-2xl border border-border/60 bg-card/80 p-6 shadow-[0_4px_16px_rgba(28,26,25,0.03)]"

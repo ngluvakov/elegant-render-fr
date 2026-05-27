@@ -140,9 +140,7 @@ export function billingCentsFromEurCents(
 ): number {
   if (snapshot.billingCurrency === "EUR") return Math.round(eurCents);
   const eur = eurCents / 100;
-  const grossRsd = Math.round(
-    eur * snapshot.billingEurToRsdRate * (1 + snapshot.billingVatRate),
-  );
+  const grossRsd = Math.round(eur * snapshot.billingEurToRsdRate);
   return grossRsd * 100;
 }
 

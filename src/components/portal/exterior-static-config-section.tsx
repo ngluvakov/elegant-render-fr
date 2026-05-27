@@ -324,7 +324,7 @@ export function ExtStaticConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 uključen, +€48 svaki sledeći
+              1 uključen, +{formatPrice(48)} svaki sledeći
             </span>
           </div>
         </div>
@@ -384,7 +384,7 @@ export function ExtStaticConfigSection({
         </select>
         {config.renderingMode === "fotomontaza" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
-            + Fotomontaža: €50 (uključuje analizu perspektive, uklapanje
+            + Fotomontaža: {formatPrice(50)} (uključuje analizu perspektive, uklapanje
             kamere i osvetljenja, kompoziting)
           </p>
         )}

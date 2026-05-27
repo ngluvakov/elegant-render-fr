@@ -5,7 +5,7 @@
  * but renders them in the buyer's currency (RSD for RS, EUR otherwise)
  * to match how /cene and /poruci present prices. The order's
  * billingCurrency drives the choice; pricingSettings carries the EUR→RSD
- * rate + Serbia VAT rate used when converting EUR amounts to RSD.
+ * rate + Serbia VAT rate used when displaying and splitting RSD gross amounts.
  *
  * Wrap the order detail subtree in <OrderCurrencyProvider> and read with
  * useOrderCurrency() inside client components. Server children receive
@@ -17,6 +17,7 @@ import { createContext, useContext, useMemo, type ReactNode } from "react";
 import {
   formatPublicDiscountedPrice,
   formatPublicPrice,
+  formatPublicPriceText,
   type DisplayCurrency,
   type PublicDiscountedPriceParts,
   type PublicPricingFormatSettings,
@@ -26,6 +27,7 @@ type OrderCurrencyValue = {
   currency: DisplayCurrency;
   settings: PublicPricingFormatSettings;
   formatPrice: (amountEur: number) => string;
+  formatPriceText: (text: string) => string;
   formatDiscounted: (
     totalEur: number,
     originalTotalEur: number,
@@ -50,6 +52,8 @@ export function OrderCurrencyProvider({
       settings,
       formatPrice: (amountEur) =>
         formatPublicPrice(amountEur, currency, settings),
+      formatPriceText: (text) =>
+        formatPublicPriceText(text, currency, settings),
       formatDiscounted: (totalEur, originalTotalEur, pct) =>
         formatPublicDiscountedPrice(
           totalEur,

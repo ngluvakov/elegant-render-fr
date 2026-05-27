@@ -12,7 +12,10 @@ import {
 import { cn } from "@/lib/utils";
 import { resolveDiscount } from "@/lib/catalog/calculate";
 import { makeUpsellTargetItem } from "@/lib/catalog/upsell-helpers";
-import { formatPublicPrice } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPrice,
+  formatPublicPriceText,
+} from "@/lib/catalog/display-currency";
 import { useQuote } from "./quote-context";
 import { track } from "@/lib/posthog-events";
 import type {
@@ -60,6 +63,11 @@ export function ServiceDetailDrawer({
       : null;
 
   const displayUnitLabel = product.displayUnitLabel ?? product.unitLabel;
+  const formattedDisplayUnitLabel = formatPublicPriceText(
+    displayUnitLabel,
+    displayCurrency,
+    pricingSettings,
+  );
   const originalPerUnit = product.displayPerUnitEur ?? product.basePriceEur;
   const originalPackage = product.basePriceEur;
   const discountedPerUnit = discount
@@ -157,7 +165,7 @@ export function ServiceDetailDrawer({
                   <>od {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}</>
                 )}
                 <span className="ml-1 text-base font-medium text-muted-foreground">
-                  / {displayUnitLabel}
+                  / {formattedDisplayUnitLabel}
                 </span>
               </p>
             ) : (
@@ -183,7 +191,11 @@ export function ServiceDetailDrawer({
 
             {product.displayPackageNote && (
               <p className="mt-3 text-xs italic text-muted-foreground">
-                {product.displayPackageNote}
+                {formatPublicPriceText(
+                  product.displayPackageNote,
+                  displayCurrency,
+                  pricingSettings,
+                )}
               </p>
             )}
           </div>

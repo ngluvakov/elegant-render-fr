@@ -9,6 +9,9 @@ import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
+import { formatPublicPriceText } from "@/lib/catalog/display-currency";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 const PROOF_ITEMS = [
   {
@@ -41,7 +44,13 @@ const PROOF_ITEMS = [
   },
 ] as const;
 
-export function ResultsProof() {
+export async function ResultsProof() {
+  const [displayCurrency, pricingCatalog] = await Promise.all([
+    getPublicDisplayCurrency(),
+    getPublishedPricingCatalog(),
+  ]);
+  const pricingSettings = pricingCatalog.settings;
+
   return (
     <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
@@ -101,7 +110,11 @@ export function ResultsProof() {
                     {item.service}
                   </span>
                   <span className="rounded-full border border-border bg-background/70 px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                    {item.price}
+                    {formatPublicPriceText(
+                      item.price,
+                      displayCurrency,
+                      pricingSettings,
+                    )}
                   </span>
                 </div>
                 <h3 className="mt-4 text-2xl leading-tight text-foreground">
@@ -112,7 +125,11 @@ export function ResultsProof() {
                 </p>
                 <div className="mt-5 flex items-center justify-between gap-3 border-t border-border/60 pt-4">
                   <span className="text-xs font-medium text-muted-foreground">
-                    {item.timing}
+                    {formatPublicPriceText(
+                      item.timing,
+                      displayCurrency,
+                      pricingSettings,
+                    )}
                   </span>
                   <Link
                     href={item.href}

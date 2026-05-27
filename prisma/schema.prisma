@@ -740,10 +740,11 @@ model ProjectInquiryFile {
 
 // ─── Versioned pricing catalog ───────────────────────────
 //
-// EUR excluding VAT is the financial source of truth. Published books
+// EUR list amounts are the financial source of truth. Published books
 // feed public pricing, checkout, portal repricing, admin charges and AI
-// credit purchases. Draft books are editable by finance admins only and
-// do not affect live pricing until published.
+// credit purchases. Serbian RSD totals convert those EUR amounts directly
+// and split VAT out of the gross price. Draft books are editable by finance
+// admins only and do not affect live pricing until published.
 
 enum PricingBookStatus {
   draft

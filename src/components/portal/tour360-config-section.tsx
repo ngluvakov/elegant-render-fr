@@ -410,8 +410,8 @@ function Tour360FloorPanel({
               <p>
                 Po spratu je uključeno {TOUR360_INCLUDED_HOTSPOTS} hotspotova
                 + {TOUR360_INCLUDED_CAMERAS} statičkih kamera. Preko toga:
-                €{TOUR360_EXTRA_HOTSPOT_EUR} po dodatnom hotspot-u i
-                €{TOUR360_EXTRA_CAMERA_EUR} po dodatnoj kameri.
+                {formatPrice(TOUR360_EXTRA_HOTSPOT_EUR)} po dodatnom hotspot-u i
+                {formatPrice(TOUR360_EXTRA_CAMERA_EUR)} po dodatnoj kameri.
               </p>
             </div>
 
@@ -918,6 +918,7 @@ export function TourAssemblyCard({
   const router = useRouter();
   const [uploading, setUploading] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { formatPrice } = useOrderCurrency();
 
   const uploadLogo = useCallback(
     async (file: File) => {
@@ -981,7 +982,7 @@ export function TourAssemblyCard({
         </div>
         {assemblyCalc.enabled && (
           <p className="flex-shrink-0 text-sm font-bold text-foreground tabular-nums">
-            +€{assemblyCalc.totalCost}
+            +{formatPrice(assemblyCalc.totalCost)}
           </p>
         )}
       </div>
@@ -1004,7 +1005,7 @@ export function TourAssemblyCard({
                 </>
               ) : (
                 <>
-                  €{TOUR360_ASSEMBLY_BASE_EUR} (besplatno od{" "}
+                  {formatPrice(TOUR360_ASSEMBLY_BASE_EUR)} (besplatno od{" "}
                   {TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD} hotspotova
                   {hotspotsShortBy > 0
                     ? ` — fali još ${hotspotsShortBy}`
@@ -1056,7 +1057,7 @@ export function TourAssemblyCard({
                 </p>
               </div>
               <span className="flex-shrink-0 text-[0.72rem] font-semibold text-accent tabular-nums">
-                +€{TOUR360_FLOOR_PLAN_NAV_EUR}
+                +{formatPrice(TOUR360_FLOOR_PLAN_NAV_EUR)}
               </span>
             </div>
           </label>
@@ -1091,7 +1092,7 @@ export function TourAssemblyCard({
                 </p>
               </div>
               <span className="flex-shrink-0 text-[0.72rem] font-semibold text-accent tabular-nums">
-                +€{TOUR360_WHITE_LABEL_EUR}
+                +{formatPrice(TOUR360_WHITE_LABEL_EUR)}
               </span>
             </div>
           </label>
@@ -1188,14 +1189,14 @@ export function TourAssemblyCard({
               >
                 {assemblyCalc.freeByHotspotThreshold
                   ? "BESPLATNO"
-                  : `€${assemblyCalc.baseCost}`}
+                  : formatPrice(assemblyCalc.baseCost)}
               </span>
             </div>
             {assembly.floorPlanNavEnabled && (
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span>+ Navigacija planom</span>
                 <span className="font-semibold tabular-nums text-foreground">
-                  €{assemblyCalc.floorPlanNavCost}
+                  {formatPrice(assemblyCalc.floorPlanNavCost)}
                 </span>
               </div>
             )}
@@ -1203,14 +1204,14 @@ export function TourAssemblyCard({
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
                 <span>+ Brendirana tura</span>
                 <span className="font-semibold tabular-nums text-foreground">
-                  €{assemblyCalc.whiteLabelCost}
+                  {formatPrice(assemblyCalc.whiteLabelCost)}
                 </span>
               </div>
             )}
             <div className="mt-1 flex items-center justify-between gap-2 border-t border-border/30 pt-1 text-foreground">
               <span className="font-medium">Ukupno za turu</span>
               <span className="text-sm font-bold tabular-nums">
-                +€{assemblyCalc.totalCost}
+                +{formatPrice(assemblyCalc.totalCost)}
               </span>
             </div>
           </div>
@@ -1424,7 +1425,7 @@ export function Tour360ConfigSection({
           </div>
           {floors.length > 0 && (
             <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-1 text-[0.72rem] font-bold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
-              −30% · €{TOUR360_EXTRA_FLOOR_EUR}
+              −30% · {formatPrice(TOUR360_EXTRA_FLOOR_EUR)}
             </span>
           )}
         </button>

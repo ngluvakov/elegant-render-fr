@@ -329,7 +329,7 @@ export function DtdConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 uključena, +€{DTD_PHOTO_EUR} svaka sledeća
+              1 uključena, +{formatPrice(DTD_PHOTO_EUR)} svaka sledeća
             </span>
           </div>
         </div>
@@ -524,7 +524,7 @@ export function DtdConfigSection({
               <div className="flex items-center gap-2">
                 {config.shadowRemoval && (
                   <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                    +€{DTD_SHADOW_EUR}
+                    +{formatPrice(DTD_SHADOW_EUR)}
                   </span>
                 )}
                 <Switch

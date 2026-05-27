@@ -11,6 +11,9 @@ import {
   buildWebPageJsonLd,
   createPublicMetadata,
 } from "@/lib/seo";
+import { formatPublicPriceText } from "@/lib/catalog/display-currency";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Usluge",
@@ -24,7 +27,21 @@ export const metadata: Metadata = createPublicMetadata({
   ],
 });
 
-export default function UslugePage() {
+export default async function UslugePage() {
+  const [displayCurrency, pricingCatalog] = await Promise.all([
+    getPublicDisplayCurrency(),
+    getPublishedPricingCatalog(),
+  ]);
+  const pricingSettings = pricingCatalog.settings;
+  const servicesPageFaqs = SERVICES_PAGE_FAQS.map((item) => ({
+    ...item,
+    answer: formatPublicPriceText(
+      item.answer,
+      displayCurrency,
+      pricingSettings,
+    ),
+  }));
+
   return (
     <>
       <JsonLd
@@ -41,7 +58,7 @@ export default function UslugePage() {
           ]),
           buildServicesItemListJsonLd(),
           buildOfferCatalogJsonLd(),
-          buildFaqJsonLd(SERVICES_PAGE_FAQS),
+          buildFaqJsonLd(servicesPageFaqs),
         ]}
       />
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-12 md:pt-20">

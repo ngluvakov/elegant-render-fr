@@ -401,7 +401,7 @@ export function buildOfferCatalogJsonLd(
     "@id": `${absoluteUrl("/cene")}#offer-catalog`,
     name: "Elegant Render cenovnik",
     description:
-      "Osnovne cene arhitektonske vizuelizacije u EUR bez PDV-a. Regionalni prikaz cena je informativni display sloj.",
+      "Osnovne cene arhitektonske vizuelizacije u EUR. Za Srbiju se prikazuje RSD bruto cena sa PDV-om uračunatim u direktno prevedeni iznos.",
     url: absoluteUrl("/cene"),
     provider: {
       "@id": SEO.organizationId,
@@ -460,7 +460,9 @@ export function buildOrderingHowToJsonLd() {
   };
 }
 
-export function buildHomeJsonLd() {
+export function buildHomeJsonLd(
+  faqItems: ReadonlyArray<{ question: string; answer: string }> = FAQ_ITEMS,
+) {
   return [
     buildOrganizationJsonLd(),
     buildWebSiteJsonLd(),
@@ -471,6 +473,6 @@ export function buildHomeJsonLd() {
     }),
     buildServicesItemListJsonLd(SERVICES.filter((service) => service.featured)),
     buildOrderingHowToJsonLd(),
-    buildFaqJsonLd(FAQ_ITEMS),
+    buildFaqJsonLd(faqItems),
   ];
 }

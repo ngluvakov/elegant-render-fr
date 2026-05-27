@@ -10,7 +10,9 @@ import {
   buyerTypeForBilling,
 } from "@/lib/billing";
 import {
+  eurToPublicRsd,
   formatPublicPrice,
+  formatPublicRsdAmount,
   type PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 import { COUNTRIES } from "@/lib/iso-countries";
@@ -269,7 +271,7 @@ export function StepReview() {
           />
           <div className="flex items-center rounded-xl border border-border/40 bg-background/60 px-3 py-2 text-sm text-foreground">
             {buyerCurrency === "RSD"
-              ? "Račun za Srbiju: RSD sa PDV-om"
+              ? "Račun za Srbiju: RSD, PDV uračunat"
               : "Račun za inostranstvo: EUR bez PDV-a"}
           </div>
         </div>
@@ -388,32 +390,15 @@ function RsdTotalsBreakdown({
   totalEur: number;
   settings: PublicPricingFormatSettings | undefined;
 }) {
-  // formatPublicPrice for RSD already adds VAT. Reverse-engineer net
-  // and VAT slices for the breakdown — the exact same math the
-  // invoice generator uses, so what the customer sees here matches
-  // what lands in their PDF.
-  const grossLine = formatPublicPrice(totalEur, "rsd", settings);
-  const netLine = formatPublicPrice(
-    totalEur,
-    "rsd",
-    settings
-      ? {
-          eurToRsdRate: settings.eurToRsdRate,
-          serbiaVatRate: 0,
-        }
-      : undefined,
-  );
+  // RSD is the final gross price. Split VAT out of that amount so
+  // checkout mirrors the invoice/proforma breakdown.
+  const grossRsd = eurToPublicRsd(totalEur, settings);
   const vatRate = settings?.serbiaVatRate ?? 0.2;
-  const vatLine = formatPublicPrice(
-    totalEur,
-    "rsd",
-    settings
-      ? {
-          eurToRsdRate: settings.eurToRsdRate * vatRate,
-          serbiaVatRate: 0,
-        }
-      : undefined,
-  );
+  const netRsd = Math.round(grossRsd / (1 + vatRate));
+  const vatRsd = grossRsd - netRsd;
+  const grossLine = formatPublicRsdAmount(grossRsd);
+  const netLine = formatPublicRsdAmount(netRsd);
+  const vatLine = formatPublicRsdAmount(vatRsd);
 
   return (
     <div className="space-y-1.5 text-sm">

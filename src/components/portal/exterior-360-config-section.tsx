@@ -104,7 +104,7 @@ export function Ext360ConfigSection({
   const refInputRef = useRef<HTMLInputElement>(null);
   const locationPhotoInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { formatPrice } = useOrderCurrency();
+  const { formatPrice, formatPriceText } = useOrderCurrency();
 
   const renderingTotal = useMemo(() => {
     const calc = calculateQuote([
@@ -358,7 +358,7 @@ export function Ext360ConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 uključen, +€48 (€53 od 4.)
+              {formatPriceText("1 uključen, +€48 (€53 od 4.)")}
             </span>
           </div>
         </div>
@@ -414,7 +414,7 @@ export function Ext360ConfigSection({
         </select>
         {config.renderingMode === "fotomontaza" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
-            + Fotomontaža: €50 (uklapanje 3D modela u 360° panoramsku
+            + Fotomontaža: {formatPrice(50)} (uklapanje 3D modela u 360° panoramsku
             fotografiju lokacije)
           </p>
         )}

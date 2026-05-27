@@ -339,7 +339,7 @@ export function ItemRemovalConfigSection({
             <Plus className="h-3.5 w-3.5" />
           </button>
           <span className="ml-2 text-[0.7rem] text-muted-foreground">
-            1 uključena, +€{additionalPriceEur} svaka sledeća
+            1 uključena, +{formatPrice(additionalPriceEur)} svaka sledeća
           </span>
         </div>
       </div>

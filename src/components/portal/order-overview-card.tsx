@@ -8,6 +8,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { formatEur } from "@/lib/catalog/calculate";
+import { formatBillingMoney, type BillingCurrency } from "@/lib/billing";
 import { statusLabel, statusAccent } from "./status-utils";
 
 type OrderOverviewCardProps = {
@@ -18,6 +19,8 @@ type OrderOverviewCardProps = {
     status: string;
     totalEur: number;
     totalCents: number | null;
+    billingCurrency: BillingCurrency | null;
+    billingTotalCents: number | null;
     createdAt: Date;
     updatedAt: Date;
     customerNote: string | null;
@@ -29,6 +32,9 @@ export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
   const firstItem = order.items[0];
   const accent = statusAccent(order.status);
   const title = order.projectName ?? firstItem?.productLabel ?? "Porudžbina";
+  const total = order.billingCurrency && order.billingTotalCents != null
+    ? formatBillingMoney(order.billingTotalCents, order.billingCurrency)
+    : formatEur((order.totalCents ?? order.totalEur * 100) / 100);
 
   return (
     <Link
@@ -55,7 +61,7 @@ export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
 
       <div className="mt-4 flex items-center justify-between">
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
-          <span>{formatEur((order.totalCents ?? order.totalEur * 100) / 100)}</span>
+          <span>{total}</span>
           <span>
             {order.updatedAt.toLocaleDateString("sr-Latn-RS", {
               day: "numeric",

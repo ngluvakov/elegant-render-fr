@@ -14,6 +14,9 @@ import {
   buildWebPageJsonLd,
   createPublicMetadata,
 } from "@/lib/seo";
+import { formatPublicPriceText } from "@/lib/catalog/display-currency";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 const FAQ_DESCRIPTION =
   "Odgovori na najčešća pitanja o arhitektonskoj vizuelizaciji, cenama, rokovima, materijalima, revizijama i AI obradi fotografija nekretnina.";
@@ -36,15 +39,29 @@ const FAQ_GROUPS: readonly FaqGroup[] = [
   },
 ];
 
-const ALL_FAQS: FaqItem[] = FAQ_GROUPS.flatMap((group) => [...group.items]);
-
 export const metadata: Metadata = createPublicMetadata({
   title: "Često postavljana pitanja",
   description: FAQ_DESCRIPTION,
   path: "/cesto-postavljana-pitanja",
 });
 
-export default function CestoPostavljanaPitanjaPage() {
+export default async function CestoPostavljanaPitanjaPage() {
+  const [displayCurrency, pricingCatalog] = await Promise.all([
+    getPublicDisplayCurrency(),
+    getPublishedPricingCatalog(),
+  ]);
+  const pricingSettings = pricingCatalog.settings;
+  const formatAnswer = (answer: string) =>
+    formatPublicPriceText(answer, displayCurrency, pricingSettings);
+  const faqGroups = FAQ_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.map((item) => ({
+      ...item,
+      answer: formatAnswer(item.answer),
+    })),
+  }));
+  const allFaqs = faqGroups.flatMap((group) => group.items);
+
   return (
     <>
       <JsonLd
@@ -61,7 +78,7 @@ export default function CestoPostavljanaPitanjaPage() {
               path: "/cesto-postavljana-pitanja",
             },
           ]),
-          buildFaqJsonLd(ALL_FAQS),
+          buildFaqJsonLd(allFaqs),
         ]}
       />
       <main className="mx-auto w-full max-w-[min(96vw,1180px)] px-6 pb-24 pt-20 md:pt-28">
@@ -75,7 +92,7 @@ export default function CestoPostavljanaPitanjaPage() {
         </p>
 
         <div className="mt-14 space-y-12">
-          {FAQ_GROUPS.map((group) => (
+          {faqGroups.map((group) => (
             <section key={group.title} className="scroll-mt-24">
               <h2 className="text-3xl leading-tight text-foreground md:text-4xl">
                 {group.title}

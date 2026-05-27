@@ -5,6 +5,11 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { formatEur } from "@/lib/catalog/calculate";
+import {
+  billingCentsFromEurCents,
+  formatBillingMoney,
+  type BillingCurrency,
+} from "@/lib/billing";
 import { statusLabel, statusAccent } from "@/components/portal/status-utils";
 import { OrdersFilterBar } from "@/components/portal/orders-filter-bar";
 import { EmptyState } from "@/components/portal/empty-state";
@@ -19,6 +24,43 @@ export const metadata: Metadata = {
 };
 
 type SearchParams = Promise<{ status?: string; q?: string }>;
+
+type OrderMoneySnapshot = {
+  billingCurrency: BillingCurrency | null;
+  billingTotalCents: number | null;
+  billingVatRate: number | null;
+  billingEurToRsdRate: number | null;
+  totalCents: number | null;
+  totalEur: number;
+};
+
+function formatOrderTotal(order: OrderMoneySnapshot): string {
+  if (order.billingCurrency && order.billingTotalCents != null) {
+    return formatBillingMoney(order.billingTotalCents, order.billingCurrency);
+  }
+  return formatEur((order.totalCents ?? order.totalEur * 100) / 100);
+}
+
+function formatOrderEurAmount(
+  order: OrderMoneySnapshot,
+  amountEur: number,
+): string {
+  if (
+    order.billingCurrency &&
+    order.billingVatRate != null &&
+    order.billingEurToRsdRate != null
+  ) {
+    return formatBillingMoney(
+      billingCentsFromEurCents(Math.round(amountEur * 100), {
+        billingCurrency: order.billingCurrency,
+        billingVatRate: order.billingVatRate,
+        billingEurToRsdRate: order.billingEurToRsdRate,
+      }),
+      order.billingCurrency,
+    );
+  }
+  return formatEur(amountEur);
+}
 
 export default async function PorudzbinePage({
   searchParams,
@@ -135,11 +177,11 @@ export default async function PorudzbinePage({
                     </div>
                     <div className="relative pointer-events-none w-20 text-right">
                       <p className="text-sm font-semibold text-foreground">
-                        {formatEur((order.totalCents ?? order.totalEur * 100) / 100)}
+                        {formatOrderTotal(order)}
                       </p>
                       {savingsEur > 0 && (
                         <p className="mt-0.5 text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
-                          −{formatEur(savingsEur)} ušteda
+                          −{formatOrderEurAmount(order, savingsEur)} ušteda
                         </p>
                       )}
                     </div>
@@ -211,11 +253,11 @@ export default async function PorudzbinePage({
                       )}
                       <div className="text-right">
                         <p className="text-sm font-semibold text-foreground">
-                          {formatEur((order.totalCents ?? order.totalEur * 100) / 100)}
+                          {formatOrderTotal(order)}
                         </p>
                         {savingsEur > 0 && (
                           <p className="text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
-                            −{formatEur(savingsEur)}
+                            −{formatOrderEurAmount(order, savingsEur)}
                           </p>
                         )}
                       </div>

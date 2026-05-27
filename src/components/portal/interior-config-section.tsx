@@ -391,7 +391,7 @@ function FloorPanel({
               <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-accent/70" />
               <p>
                 Broj pored prostorije = kamere (renderi) u toj prostoriji. Preko
-                10 rendera na spratu = €{INT_STATIC_EXTRA_CAMERA_EUR} po kameri.
+                10 rendera na spratu = {formatPrice(INT_STATIC_EXTRA_CAMERA_EUR)} po kameri.
               </p>
             </div>
 
@@ -519,7 +519,7 @@ function FloorPanel({
                         )}
                         {isBeyondRooms && (
                           <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.62rem] font-semibold text-accent">
-                            +€{INT_STATIC_EXTRA_ROOM_EUR}
+                            +{formatPrice(INT_STATIC_EXTRA_ROOM_EUR)}
                           </span>
                         )}
                         <div className="inline-flex items-center rounded bg-secondary/60">
@@ -583,7 +583,7 @@ function FloorPanel({
                 Dodaj prostoriju
                 {calc.totalRooms >= 10 && (
                   <span className="text-[0.62rem] text-accent/80">
-                    (+€{INT_STATIC_EXTRA_ROOM_EUR})
+                    (+{formatPrice(INT_STATIC_EXTRA_ROOM_EUR)})
                   </span>
                 )}
               </button>
@@ -1160,7 +1160,7 @@ export function InteriorConfigSection({
           </div>
           {floors.length > 0 && (
             <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-1 text-[0.72rem] font-bold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
-              −30% · €{INT_STATIC_EXTRA_FLOOR_EUR}
+              −30% · {formatPrice(INT_STATIC_EXTRA_FLOOR_EUR)}
             </span>
           )}
         </button>

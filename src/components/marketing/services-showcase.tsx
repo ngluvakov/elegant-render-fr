@@ -33,7 +33,10 @@ import {
   usePublicCurrency,
   usePublicPricingSettings,
 } from "@/components/site/public-currency-provider";
-import { formatPublicPrice } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPrice,
+  formatPublicPriceText,
+} from "@/lib/catalog/display-currency";
 import { SERVICES_PAGE_FAQS } from "@/lib/content/site";
 
 // ─── Assets ──────────────────────────────────────────────
@@ -687,7 +690,11 @@ export function ServicesShowcase() {
                 </span>
               </summary>
               <p className="pt-3 text-sm leading-relaxed text-muted-foreground">
-                {item.answer}
+                {formatPublicPriceText(
+                  item.answer,
+                  displayCurrency,
+                  pricingSettings,
+                )}
               </p>
             </details>
           ))}

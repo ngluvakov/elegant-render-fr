@@ -219,7 +219,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "3D osnove prostora",
-    slug: "osnove",
+    slug: "3d-osnove",
     priceEur: 29,
     category: "osnove",
     short: "Top-down 3D prikaz rasporeda prostorija, nameštaja i funkcionalne organizacije.",
@@ -232,7 +232,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "2D osnove prostora",
-    slug: "osnove",
+    slug: "2d-osnove",
     priceEur: 20,
     category: "osnove",
     short: "Čiste i pregledne 2D osnove za marketing materijale, sajtove i oglase.",

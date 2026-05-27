@@ -1239,6 +1239,7 @@ export const SERVICES: Service[] = [
     shortName: "2D i 3D osnove",
     category: "planovi",
     icon: "file-image",
+    hideFromMenu: true,
     tagline: "Pregled prostora koji kupac razume na prvi pogled.",
     description:
       "Pregledni 2D ili 3D tlocrti — za oglas, prodaju, dozvolu ili planiranje uređenja. 2D daje čist tehnički prikaz; 3D daje atraktivniji prostorni prikaz koji kupac razume bez znanja arhitekture. Cena pokriva jedan nivo (sprat); dupliranje istog sprata košta samo trećinu cene.",
@@ -1360,6 +1361,263 @@ export const SERVICES: Service[] = [
         ],
         note: "2D osnove isporučujemo kroz White Rook partnersku mrežu.",
       },
+      {
+        id: "floorplan-3d",
+        title: "3D tlocrt (prostorni prikaz)",
+        basePrice: 29,
+        priceLabel: "€29",
+        unitLabel: "jedan sprat (3D plan)",
+        description:
+          "Kupac razume raspored na prvi pogled — bez čitanja simbola. Idealno za listing fotografiju.",
+        included:
+          "Jedan nivo u atraktivnom 3D prikazu sa rasporedom prostorija, oznakama i dimenzijama.",
+        addOns: [
+          "Dva nivoa (dupleks): €46",
+          "Svaki dodatni nivo: €15",
+          "Identičan sprat (dupliranje): €10 (66% popust)",
+          "Dodavanje nameštaja: €8",
+          "Varijanta dizajna (isti raspored, drugi nameštaj): €6",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "2d-osnove",
+    code: "floor-plan-2d-dedicated",
+    name: "2D osnove",
+    shortName: "2D osnove",
+    category: "planovi",
+    icon: "file-image",
+    tagline: "Čist 2D tlocrt — brz materijal za oglas i dokumentaciju.",
+    description:
+      "Pregledan vektorski 2D tlocrt sa rasporedom prostorija, oznakama na srpskom i dimenzijama u metrima. Standardni format za oglas nekretnine, regulatornu proceduru i klijentsku prezentaciju. €20 pokriva jedan nivo; identičan sprat (dupliranje sa promenom oznaka) košta samo €6 — 70% jeftinije.",
+    highlight:
+      "Najjeftiniji ulaz u profesionalan tlocrt za listing — bez 3D budžeta, sa formatom koji prati dokumentaciju i ugovor.",
+    materials:
+      "Pošaljite tehničke crteže (PDF/DWG), skice sa merama ili postojeću PDF osnovu. Prvi nacrt 1–3 radna dana.",
+    asset: "/artwork/listing-floorplan-2d.webp",
+    listingAsset: "/artwork/listing-floorplan-2d.webp",
+    detailAsset: "/artwork/listing-floorplan-2d.webp",
+    philosophy:
+      "2D plan je format koji prati dokumentaciju, oglas i ugovor. Cena pokriva jedan nivo u čistom vektorskom prikazu sa oznakama i dimenzijama. Identičan sprat (dupliranje sa promenom oznaka) košta samo €6 — 70% jeftinije. Tako zgrada sa više tipova stanova dobija celokupnu listing seriju za delić cene CAD studija. Isporuka kroz White Rook partnersku mrežu obezbeđuje konzistentan kvalitet i kratak rok.",
+    priceContext:
+      "€20 — jedan nivo (čist 2D vektorski plan). Identičan sprat (dupliranje): €6.",
+    forSegments: [
+      "Agencije nekretnina (listing materijali)",
+      "Investitori (tipovi stanova u zgradi)",
+      "Arhitekte (dokumentacija i prilozi)",
+    ],
+    problemHeading: "CAD eksport ne prodaje. Pregledan 2D plan — prodaje.",
+    problemBody:
+      "Agent oglasi stan sa direktnim CAD-eksportom — debele linije, oznake u milimetrima, scale bars i tehnički simboli za prozore i vrata. Kupac otvori, vidi crtež koji ne razume i zatvori oglas. Tehnička dokumentacija nije isto što i marketing materijal.",
+    problemResolution:
+      "Pregledan 2D plan zadržava preciznost CAD-a — tačne dimenzije, raspored, opise prostorija — ali u formatu koji laik razume: kolorisan, sa nazivima soba na srpskom, dimenzijama u metrima i opcijom nameštaja. Isti tlocrt, dva publikuma.",
+    benefits: [
+      {
+        icon: "speed",
+        title: "Najbrži ulaz u listing",
+        body: "€20, prvi nacrt za 1–3 radna dana. Najniža ulazna cena za profesionalan tlocrt koji se direktno koristi u oglasu.",
+      },
+      {
+        icon: "value",
+        title: "Trećina cene po dodatnom spratu",
+        body: "Identičan sprat (dupliranje sa promenom oznaka): samo €6 — 70% popust. Zgrada sa 5 tipova stanova dobija celu seriju za €44.",
+      },
+      {
+        icon: "trust",
+        title: "Standard koji prati dokumentaciju",
+        body: "2D tlocrt je format koji ugovori, banke i regulatorna procedura očekuju. Isti fajl koristite u prospektu i u sudskom prilogu.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite tehničku osnovu",
+        body: "PDF, DWG, skica sa merama ili fotografija postojećeg plana. Što jasniji ulaz (CAD), brže izrada.",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Izrada 2D plana",
+        body: "Tim crta čist vektorski plan sa oznakama, dimenzijama i nameštajem po želji. Prvi nacrt 1–3 radna dana.",
+      },
+      {
+        title: "Isporuka i revizije",
+        body: "Dobijate finalan PDF i vektorski fajl. Tri runde revizije su uključene u cenu — bez doplate.",
+      },
+    ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-osnove-03.webp",
+        alt: "2D osnova — čist tehnički plan sa oznakama i dimenzijama",
+      },
+      {
+        src: "/artwork/listing-floorplan-2d.webp",
+        alt: "2D osnova stana — kolorisan vektorski prikaz za oglas",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €20?",
+        a: "Jedan nivo u čistom 2D vektorskom prikazu sa rasporedom prostorija, oznakama na srpskom i dimenzijama u metrima. Identičan sprat (dupliranje sa promenom oznaka): €6 (70% popust). Verzija sa nameštajem: +€6. Promena boje/stila: +€4.",
+      },
+      {
+        q: "Razlika u odnosu na CAD eksport iz mog projekta?",
+        a: "CAD eksport prati tehnički standard projekta — debele linije, oznake u milimetrima, scale bars. Naš 2D plan je marketinški format: kolorisan, sa nameštajem ili bez, dimenzije čitljive laiku. Različita namena, ne alternative.",
+      },
+      {
+        q: "Kada birati 2D umesto 3D?",
+        a: "Za regulatornu proceduru, ugovor, tehničku dokumentaciju ili kad oglas prati tehnički standard branše. Za agencijski oglas i laičku prezentaciju 3D verzija (€29) daje bolji efekat — kupac brže razume raspored.",
+      },
+      {
+        q: "Da li radite više spratova zgrade?",
+        a: "Da. Dva nivoa (dupleks): €32. Svaki dodatni nivo: €10. Identičan sprat (dupliranje sa promenom oznaka): samo €6 — 70% popust.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prve nacrte šaljemo 1–3 radna dana od potvrde ponude i prijema tehničkih crteža. Tri runde revizije su uključene.",
+      },
+      {
+        q: "Šta dostavljam da biste počeli?",
+        a: "Tehničke crteže (PDF/DWG), skice sa merama ili fotografiju postojeće osnove. Što jasniji ulaz (CAD), brže izrada.",
+      },
+    ],
+    variants: [
+      {
+        id: "floorplan-2d",
+        title: "2D tlocrt (čist tehnički plan)",
+        basePrice: 20,
+        priceLabel: "€20",
+        unitLabel: "jedan sprat (2D plan)",
+        description:
+          "Brz ulaz za oglas — jasan tehnički tlocrt sa rasporedom i merama. Identičan sprat: €6.",
+        included:
+          "Jedan nivo u čistom 2D vektorskom prikazu. Uključuje raspored prostorija, oznake i dimenzije.",
+        addOns: [
+          "Dva nivoa (dupleks): €32",
+          "Svaki dodatni nivo: €10",
+          "Identičan sprat (dupliranje): €6 (70% popust)",
+          "Verzija sa nameštajem: €6",
+          "Promena boje / stila plana: €4",
+        ],
+        note: "2D osnove isporučujemo kroz White Rook partnersku mrežu.",
+      },
+    ],
+  },
+  {
+    slug: "3d-osnove",
+    code: "floor-plan-3d-dedicated",
+    name: "3D osnove",
+    shortName: "3D osnove",
+    category: "planovi",
+    icon: "layers",
+    tagline: "Prostorni 3D tlocrt koji kupac razume na prvi pogled.",
+    description:
+      "Atraktivan 3D prostorni prikaz tlocrta sa nameštajem, oznakama i bojama. Najjači format za agencijski oglas — kupac vidi raspored i namene bez čitanja tehničkih simbola. €29 pokriva jedan nivo; identičan sprat (dupliranje sa promenom oznaka) košta samo €10 — 66% jeftinije.",
+    highlight:
+      "Pravi izbor za listing fotografiju i prospekt — kupac na prvi pogled razume šta dobija.",
+    materials:
+      "Pošaljite tehničke crteže (PDF/DWG), skice sa merama ili postojeću PDF osnovu. Prvi nacrt 1–3 radna dana.",
+    asset: "/artwork/listing-floorplan-3d.webp",
+    listingAsset: "/artwork/listing-floorplan-3d.webp",
+    detailAsset: "/artwork/detail-osnove.webp",
+    detailBeforeAsset: "/artwork/problem-osnove-before.webp",
+    detailAfterAsset: "/artwork/problem-osnove-after.webp",
+    philosophy:
+      "3D prostorni prikaz je marketinški format — kupac vidi raspored sa nameštajem i bojom, bez čitanja oznaka. Cena €29 pokriva jedan nivo. Identičan sprat (dupliranje sa promenom oznaka) košta samo €10 — 66% jeftinije. Tako dupleks i zgrada sa više tipova stanova ulaze u realan listing budžet — bez ponovnog modelovanja po nivou.",
+    priceContext:
+      "€29 — jedan nivo (3D prostorni prikaz). Identičan sprat (dupliranje): €10.",
+    forSegments: [
+      "Agencije nekretnina (listing fotografija)",
+      "Investitori (tipovi stanova u zgradi)",
+      "Vlasnici (oglas i prodaja)",
+    ],
+    problemHeading: "Tehnički tlocrt plaši kupca. 3D prikaz — privlači.",
+    problemBody:
+      "Kupac otvori oglas sa 2D tehničkim tlocrtom — linije, oznake, simboli za prozore i vrata. Mora da uloži minut samo da razume gde je kuhinja. Sledeći oglas ima 3D prikaz sa nameštajem — i kupac klikne na poziv.",
+    problemResolution:
+      "3D prostorni prikaz pokazuje raspored kao ptičju perspektivu sa nameštajem na pravim mestima, materijalima podova i bojama zidova. Kupac vidi dom, ne shemu — i odluka kreće iz prvog kontakta.",
+    benefits: [
+      {
+        icon: "trust",
+        title: "Kupac razume bez tehničkog predznanja",
+        body: "Bez čitanja simbola — kupac vidi sobe, nameštaj i prolaz. Oglas filtrira ozbiljne pozive, neozbiljni otpadaju.",
+      },
+      {
+        icon: "speed",
+        title: "Brz materijal za listing",
+        body: "€29, prvi nacrt 1–3 radna dana. Direktno upotrebljivo u oglasima, prospektima i prezentacijama.",
+      },
+      {
+        icon: "value",
+        title: "Više tipova stanova jeftinije",
+        body: "Identičan sprat (dupliranje): samo €10 — 66% popust. Zgrada sa 4 tipa stana dobija kompletnu listing seriju za €59.",
+      },
+    ],
+    processSteps: [
+      {
+        title: "Pošaljite tehničku osnovu",
+        body: "PDF, DWG, skica sa merama ili fotografija postojećeg plana. Što jasniji ulaz (CAD), brže izrada.",
+      },
+      {
+        title: "Potvrda ponude",
+        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+      },
+      {
+        title: "Izrada 3D plana",
+        body: "Tim modeluje prostor u 3D, postavlja nameštaj, materijale i osvetljenje. Prvi nacrt 1–3 radna dana.",
+      },
+      {
+        title: "Isporuka i revizije",
+        body: "Dobijate finalnu sliku visoke rezolucije. Tri runde revizije su uključene u cenu — bez doplate.",
+      },
+    ],
+    portfolioImages: [
+      {
+        src: "/artwork/portfolio-osnove-01.webp",
+        alt: "3D osnova — porodična kuća sa rasporedom prostorija i nameštajem",
+      },
+      {
+        src: "/artwork/portfolio-osnove-02.webp",
+        alt: "3D osnova — stan u zgradi sa kompaktnim rasporedom",
+      },
+      {
+        src: "/artwork/portfolio-osnove-04.webp",
+        alt: "3D osnova — dupleks sa rasporedom oba sprata",
+      },
+      {
+        src: "/artwork/listing-floorplan-3d.webp",
+        alt: "3D osnova stana — prostorni prikaz za listing i prospekt",
+      },
+    ],
+    faqs: [
+      {
+        q: "Šta tačno dobijam za €29?",
+        a: "Jedan nivo u atraktivnom 3D prostornom prikazu sa rasporedom prostorija, oznakama, nameštajem i materijalima. Identičan sprat (dupliranje sa promenom oznaka): €10 (66% popust). Dodavanje nameštaja: +€8. Varijanta dizajna (isti raspored, drugi nameštaj): +€6.",
+      },
+      {
+        q: "Razlika u odnosu na render enterijera?",
+        a: "Render enterijera (€170 za sprat) prikazuje sobu iz nivoa očiju — kao da stojite unutra. 3D osnova je ptičja perspektiva celog sprata sa skinutim krovom — vidite raspored, ne sobu. Različita namena, često se naručuju zajedno za prospekt.",
+      },
+      {
+        q: "Kada birati 3D umesto 2D?",
+        a: "Za agencijski oglas, prospekt i klijentske prezentacije gde kupac nije arhitekta — 3D pobeđuje. Za regulatornu proceduru, ugovor ili tehnički prilog 2D verzija (€20) prati standard branše.",
+      },
+      {
+        q: "Da li mogu da naručim sa nameštajem ili bez?",
+        a: "Oba. Bez nameštaja je standardna opcija. Sa nameštajem: +€8. Varijanta dizajna (isti raspored, drugi nameštaj — korisno za A/B testove kupaca): +€6.",
+      },
+      {
+        q: "Da li radite više spratova zgrade?",
+        a: "Da. Dva nivoa (dupleks): €46. Svaki dodatni nivo: €15. Identičan sprat (dupliranje sa promenom oznaka): samo €10 — 66% popust.",
+      },
+      {
+        q: "Koliko traje izrada?",
+        a: "Prve nacrte šaljemo 1–3 radna dana od potvrde ponude i prijema tehničkih crteža. Tri runde revizije su uključene.",
+      },
+    ],
+    variants: [
       {
         id: "floorplan-3d",
         title: "3D tlocrt (prostorni prikaz)",

@@ -36,15 +36,15 @@ export type EventMap = {
 
   // Checkout / payment
   checkout_started: { cart_size: number; total_eur: number };
-  payment_started: { provider: "paypal" | "card_mock"; total_eur: number };
+  payment_started: { provider: "paypal" | "card_mock" | "nestpay"; total_eur: number };
   payment_completed: {
-    provider: "paypal" | "card_mock";
+    provider: "paypal" | "card_mock" | "nestpay";
     total_eur: number;
     order_number: string;
     was_inquiry?: boolean;
   };
   payment_failed: {
-    provider: "paypal" | "card_mock";
+    provider: "paypal" | "card_mock" | "nestpay";
     error_kind: string;
   };
   order_created: {

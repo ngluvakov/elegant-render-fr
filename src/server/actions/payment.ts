@@ -32,6 +32,50 @@ function getOrderAmountCents(order: { totalEur: number; totalCents: number | nul
   return order.totalCents ?? order.totalEur * 100;
 }
 
+export type FailedPaymentDetails = {
+  provider: "nestpay";
+  reason?: string;
+  procReturnCode?: string;
+  response?: string;
+  errMsg?: string;
+};
+
+/**
+ * Symmetric counterpart to `finishSuccessfulPayment`. Called from
+ * the Nestpay return handler when the bank reports a decline or
+ * error, and from the reconciler when a query confirms the same.
+ *
+ * Leaves the order in `awaiting_payment` rather than `cancelled` so
+ * the customer can retry from the same checkout state. The forensic
+ * snapshot (transId, procReturnCode, etc.) is persisted by the route
+ * handler before this is called — here we flip paymentStatus and fire
+ * the bank-mandated failure email.
+ */
+export async function finishFailedPayment(
+  orderId: string,
+  details: FailedPaymentDetails,
+) {
+  await prisma.order.updateMany({
+    where: { id: orderId, paymentStatus: { not: "completed" } },
+    data: { paymentStatus: "failed" },
+  });
+
+  await enqueueOutboxEvent({
+    type: "payment_failure_email",
+    payload: {
+      orderId,
+      reason: details.reason ?? null,
+      procReturnCode: details.procReturnCode ?? null,
+      response: details.response ?? null,
+      errMsg: details.errMsg ?? null,
+    },
+    // Per-attempt key: include transId so a same-order second decline
+    // still emails the customer. Falls back to the response code so
+    // we don't end up emailing twice when the bank retries the POST.
+    idempotencyKey: `payment_failure:${orderId}:${details.procReturnCode ?? details.response ?? "x"}`,
+  });
+}
+
 export async function finishSuccessfulPayment(
   orderId: string,
   options: { enqueueEmail?: boolean } = {},
@@ -74,12 +118,18 @@ export async function finishSuccessfulPayment(
   }
 
   if (enqueueEmail) {
-    // Enqueue confirmation email via outbox. Cron processor delivers it;
-    // if Resend has a transient outage, the row stays pending and retries.
+    // Nestpay orders receive the bank-format payment confirmation email
+    // (EPM standard 2.7 — 5 mandatory blocks + 7 transaction parameters)
+    // instead of the platform's generic order confirmation. The
+    // generic confirmation continues to fire for PayPal, card_mock,
+    // and wire_transfer orders where no bank-specific copy applies.
+    const isNestpay = order.paymentProvider === "nestpay";
     await enqueueOutboxEvent({
-      type: "order_confirmation_email",
+      type: isNestpay ? "payment_success_email" : "order_confirmation_email",
       payload: { orderId },
-      idempotencyKey: `order_confirmation:${orderId}`,
+      idempotencyKey: isNestpay
+        ? `payment_success:${orderId}`
+        : `order_confirmation:${orderId}`,
     });
   }
 }

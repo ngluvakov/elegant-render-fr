@@ -5,16 +5,26 @@ import { Check, CreditCard, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TurnstileWidget } from "@/components/ui/turnstile-widget";
+import { PaymentTrustBadges } from "@/components/marketing/payment-trust-badges";
 import {
+  PUBLIC_EUR_TO_RSD_RATE,
+  eurToPublicRsd,
   formatPublicPrice,
+  formatPublicPriceFromCents,
   type PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 import { track } from "@/lib/posthog-events";
 import { useCheckout } from "../checkout-context";
 import { PayPalButtons } from "../paypal-buttons";
-import {
-  mockCardPaymentAction,
-} from "@/server/actions/payment";
+import { NestpayRedirectForm } from "../nestpay-redirect-form";
+import { mockCardPaymentAction } from "@/server/actions/payment";
+import { initiateNestpayPayment } from "@/server/actions/nestpay";
+
+type PaymentMethod = "paypal" | "nestpay" | "card_mock";
+
+const NESTPAY_TEST_MODE =
+  process.env.NEXT_PUBLIC_NESTPAY_MODE !== "live";
 
 export function StepPayment() {
   const {
@@ -24,15 +34,19 @@ export function StepPayment() {
     setStep,
     displayCurrency,
     pricingCatalog,
+    initiallySignedIn,
   } = useCheckout();
-  const [method, setMethod] = useState<"paypal" | "card">("paypal");
+  const [method, setMethod] = useState<PaymentMethod>("nestpay");
   const [cardPending, setCardPending] = useState(false);
+  const [nestpayPending, setNestpayPending] = useState(false);
   const [error, setError] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [redirect, setRedirect] = useState<{
+    url: string;
+    fields: Record<string, string>;
+  } | null>(null);
 
-  // Mirror step-review: RS visitors see the RSD gross total
-  // with VAT included using the catalog's published rate; everyone else
-  // sees the canonical EUR figure stored on the order. PostHog
-  // tracking stays on EUR as the source-of-truth currency.
   const pricingSettings: PublicPricingFormatSettings | undefined =
     pricingCatalog
       ? {
@@ -50,6 +64,17 @@ export function StepPayment() {
       </div>
     );
   }
+
+  if (redirect) {
+    return <NestpayRedirectForm url={redirect.url} fields={redirect.fields} />;
+  }
+
+  const requiresTurnstile = !initiallySignedIn;
+  const hasTurnstileToken =
+    !requiresTurnstile || // no captcha needed
+    !process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || // captcha not configured
+    Boolean(turnstileToken);
+  const canSubmit = acceptedTerms && hasTurnstileToken;
 
   const handleMockCard = async () => {
     setCardPending(true);
@@ -76,6 +101,35 @@ export function StepPayment() {
     setPaymentComplete();
   };
 
+  const handleNestpay = async () => {
+    setNestpayPending(true);
+    setError("");
+    track("payment_started", {
+      provider: "nestpay",
+      total_eur: calculation.total,
+    });
+    const result = await initiateNestpayPayment({
+      orderId,
+      turnstileToken,
+    });
+    if ("error" in result) {
+      setError(result.error);
+      setNestpayPending(false);
+      track("payment_failed", {
+        provider: "nestpay",
+        error_kind: result.error.slice(0, 80),
+      });
+      return;
+    }
+    setRedirect(result);
+  };
+
+  // EUR-displayed visitors see the RSD conversion disclosure mandated by
+  // EPM standard 2.1.3. Computed client-side from the same exchange
+  // rate used by the configurator and checkout review.
+  const conversionRate = pricingSettings?.eurToRsdRate ?? PUBLIC_EUR_TO_RSD_RATE;
+  const rsdEquivalent = eurToPublicRsd(calculation.total, pricingSettings);
+
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
@@ -88,13 +142,41 @@ export function StepPayment() {
         </p>
 
         {error && (
-          <div className="mt-4 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <div
+            role="alert"
+            className="mt-4 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          >
             {error}
           </div>
         )}
 
         {/* Method selector */}
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => setMethod("nestpay")}
+            className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${
+              method === "nestpay"
+                ? "border-accent bg-accent/5"
+                : "border-border/60 bg-background/40 hover:border-accent/40"
+            }`}
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-foreground/10">
+              <CreditCard className="h-5 w-5 text-foreground" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                Kartica (Banca Intesa)
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Visa, Mastercard · 3D Secure
+              </p>
+            </div>
+            {method === "nestpay" && (
+              <Check className="ml-auto h-4 w-4 text-accent" />
+            )}
+          </button>
+
           <button
             type="button"
             onClick={() => setMethod("paypal")}
@@ -117,30 +199,90 @@ export function StepPayment() {
               <Check className="ml-auto h-4 w-4 text-accent" />
             )}
           </button>
-
-          <button
-            type="button"
-            onClick={() => setMethod("card")}
-            className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${
-              method === "card"
-                ? "border-accent bg-accent/5"
-                : "border-border/60 bg-background/40 hover:border-accent/40"
-            }`}
-          >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-foreground/10">
-              <CreditCard className="h-5 w-5 text-foreground" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground">Kartica</p>
-              <p className="text-xs text-muted-foreground">
-                Visa, Mastercard (test režim)
-              </p>
-            </div>
-            {method === "card" && (
-              <Check className="ml-auto h-4 w-4 text-accent" />
-            )}
-          </button>
         </div>
+
+        {/* Nestpay card */}
+        {method === "nestpay" && (
+          <div className="mt-6 space-y-4">
+            {displayCurrency === "eur" && (
+              <div className="rounded-lg border border-accent/20 bg-accent/5 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+                <strong className="text-foreground">Izjava o konverziji:</strong>{" "}
+                Iznos će biti naplaćen u dinarima u protivvrednosti od{" "}
+                <strong className="text-foreground">
+                  {formatPublicPriceFromCents(rsdEquivalent * 100, "rsd", pricingSettings)}
+                </strong>{" "}
+                prema kursu Banca Intesa AD Beograd primenjenom na dan
+                transakcije (~{conversionRate.toLocaleString("sr-Latn-RS", {
+                  maximumFractionDigits: 4,
+                })}{" "}
+                RSD / EUR). Konverziju vrši banka izdavalac kartice.
+              </div>
+            )}
+
+            <label className="flex items-start gap-3 text-sm text-muted-foreground">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-1 h-4 w-4 cursor-pointer"
+                aria-required
+              />
+              <span>
+                Saglasan/saglasna sam sa{" "}
+                <a
+                  href="/pravno/uslovi"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-accent underline"
+                >
+                  Opštim uslovima
+                </a>
+                ,{" "}
+                <a
+                  href="/pravno/privatnost"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-accent underline"
+                >
+                  Politikom privatnosti
+                </a>{" "}
+                i{" "}
+                <a
+                  href="/pravno/povracaj-sredstava"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-accent underline"
+                >
+                  Politikom povraćaja sredstava
+                </a>
+                .
+              </span>
+            </label>
+
+            {requiresTurnstile && (
+              <div aria-label="Sigurnosna provera">
+                <TurnstileWidget onVerify={setTurnstileToken} />
+              </div>
+            )}
+
+            <Button
+              variant="accent"
+              size="xl"
+              className="w-full"
+              onClick={handleNestpay}
+              disabled={nestpayPending || !canSubmit}
+            >
+              {nestpayPending
+                ? "Preusmeravanje…"
+                : `Plati ${formatTotal(calculation.total)} karticom`}
+            </Button>
+            <p className="text-center text-xs text-muted-foreground">
+              Bezbedno plaćanje — bićete preusmereni na zaštićenu stranicu
+              Banca Intesa za unos podataka kartice.
+            </p>
+            <PaymentTrustBadges className="justify-center" size="sm" />
+          </div>
+        )}
 
         {/* PayPal */}
         {method === "paypal" && (
@@ -153,12 +295,13 @@ export function StepPayment() {
           </div>
         )}
 
-        {/* Mock card */}
-        {method === "card" && (
+        {/* Legacy mock card — kept in test mode only so dev iteration
+            on the post-payment flow doesn't require hitting the real
+            Nestpay test gateway. Hidden in production. */}
+        {NESTPAY_TEST_MODE && method === "card_mock" && (
           <div className="mt-6 space-y-4">
             <p className="rounded-lg bg-secondary/60 px-4 py-2.5 text-xs text-muted-foreground">
-              Ovo je test režim. Unesite bilo koji podatak da simulirate
-              plaćanje.
+              Test režim. Unesite bilo koji podatak da simulirate plaćanje.
             </p>
             <div className="space-y-2">
               <Label>
@@ -190,9 +333,21 @@ export function StepPayment() {
               onClick={handleMockCard}
               disabled={cardPending}
             >
-              {cardPending ? "Obrada…" : `Plati ${formatTotal(calculation.total)}`}
+              {cardPending
+                ? "Obrada…"
+                : `Plati ${formatTotal(calculation.total)} (mock)`}
             </Button>
           </div>
+        )}
+
+        {NESTPAY_TEST_MODE && method !== "card_mock" && (
+          <button
+            type="button"
+            onClick={() => setMethod("card_mock")}
+            className="mt-4 text-xs text-muted-foreground underline-offset-2 hover:underline"
+          >
+            Koristi mock karticu (dev)
+          </button>
         )}
       </div>
 

@@ -203,6 +203,9 @@ export const NAV_LEGAL: NavItem[] = [
   { href: "/pravno/privatnost", label: "Politika privatnosti" },
   { href: "/pravno/uslovi", label: "Uslovi korišćenja" },
   { href: "/pravno/kolacici", label: "Politika kolačića" },
+  { href: "/pravno/reklamacije", label: "Politika reklamacija" },
+  { href: "/pravno/povracaj-sredstava", label: "Povraćaj sredstava" },
+  { href: "/pravno/dostava", label: "Dostava" },
   { href: "/pravno/sertifikati", label: "Sertifikati i standardi" },
 ];
 

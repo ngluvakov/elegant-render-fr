@@ -10,6 +10,7 @@
  */
 import { Resend } from "resend";
 import type { VrConfig } from "@/lib/catalog/vr-config";
+import { IMPRINT, formatAddress } from "@/lib/content/site";
 
 const FROM = process.env.EMAIL_FROM ?? "Elegant Render <noreply@elegantrender.rs>";
 const ADMIN_NOTIFY_EMAIL =
@@ -783,6 +784,261 @@ export async function sendVrProjectReadyEmail(args: {
           Link važi 7 dana. Možete ga koristiti samo jednom — nakon toga
           ćete biti prijavljeni i možete postaviti lozinku u portalu.
         </p>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}
+
+// ─── Nestpay (Banca Intesa) — payment success / failure ──
+//
+// Per EPM standard 2.7 the merchant must email the customer the
+// payment outcome with five mandatory blocks: outcome statement,
+// customer info, order details (line items + PDV breakdown), merchant
+// info, and the bank's transaction parameters (oid, AuthCode, TransId,
+// Response, ProcReturnCode, mdStatus, EXTRA.TRXDATE, plus timestamp).
+// For EUR-billed foreign buyers a sixth block discloses the RSD
+// equivalent and rate (standard 2.1.3 "Izjava o konverziji").
+
+export type NestpayEmailLineItem = {
+  label: string;
+  quantity: number;
+  unitPriceLabel: string;
+  totalLabel: string;
+};
+
+export type NestpayEmailTransaction = {
+  oid: string;
+  authCode: string;
+  transId: string;
+  response: string;
+  procReturnCode: string;
+  mdStatus: string;
+  trxDate: Date | null;
+};
+
+export type NestpayEmailCustomer = {
+  name: string | null;
+  email: string;
+  address: string | null;
+};
+
+export type NestpayEmailConversion = {
+  eurAmountLabel: string;
+  rsdAmountLabel: string;
+  rate: number;
+} | null;
+
+export type NestpayEmailTotals = {
+  totalLabel: string;
+  vatBreakdownLabel: string | null;
+};
+
+function renderTransactionBlock(tx: NestpayEmailTransaction): string {
+  const rows = [
+    ["Broj narudžbine (order ID)", tx.oid],
+    ["Autorizacioni kod (AuthCode)", tx.authCode || "—"],
+    ["Identifikator transakcije (TransId)", tx.transId || "—"],
+    ["Status transakcije (Response)", tx.response || "—"],
+    ["Kod statusa (ProcReturnCode)", tx.procReturnCode || "—"],
+    ["Statusni kod 3D transakcije (mdStatus)", tx.mdStatus || "—"],
+    [
+      "Datum transakcije (EXTRA.TRXDATE)",
+      tx.trxDate
+        ? tx.trxDate.toLocaleString("sr-Latn-RS", { hour12: false })
+        : "—",
+    ],
+  ];
+  return `
+    <table style="width:100%; font-size:13px; color:#1C1A19; border-collapse:collapse;">
+      ${rows
+        .map(
+          ([k, v]) => `
+            <tr>
+              <td style="padding:4px 8px 4px 0; color:#6e665d; vertical-align:top;">${escapeHtml(k)}</td>
+              <td style="padding:4px 0; font-family: monospace; word-break:break-all;">${escapeHtml(v)}</td>
+            </tr>`,
+        )
+        .join("")}
+    </table>
+  `;
+}
+
+function renderLineItemsTable(items: NestpayEmailLineItem[]): string {
+  if (!items.length) return "";
+  return `
+    <table style="width:100%; font-size:13px; color:#1C1A19; border-collapse:collapse;">
+      <thead>
+        <tr style="border-bottom:1px solid #d8cec4;">
+          <th align="left" style="padding:6px 6px 6px 0; font-weight:600;">Stavka</th>
+          <th align="right" style="padding:6px; font-weight:600;">Količina</th>
+          <th align="right" style="padding:6px; font-weight:600;">Jed. cena</th>
+          <th align="right" style="padding:6px 0 6px 6px; font-weight:600;">Ukupno</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${items
+          .map(
+            (line) => `
+              <tr style="border-bottom:1px solid #f0e8de;">
+                <td style="padding:6px 6px 6px 0;">${escapeHtml(line.label)}</td>
+                <td align="right" style="padding:6px;">${line.quantity}</td>
+                <td align="right" style="padding:6px;">${escapeHtml(line.unitPriceLabel)}</td>
+                <td align="right" style="padding:6px 0 6px 6px;">${escapeHtml(line.totalLabel)}</td>
+              </tr>`,
+          )
+          .join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderMerchantBlock(): string {
+  return `
+    <p style="margin:0; color:#1C1A19; line-height:1.6; font-size:13px;">
+      <strong>${escapeHtml(IMPRINT.shortName)}</strong><br/>
+      ${escapeHtml(IMPRINT.legalName)}<br/>
+      PIB ${escapeHtml(IMPRINT.taxId)} · MB ${escapeHtml(IMPRINT.registryNumber)}<br/>
+      ${escapeHtml(formatAddress())}<br/>
+      ${escapeHtml(IMPRINT.email)}
+    </p>
+  `;
+}
+
+function renderCustomerBlock(customer: NestpayEmailCustomer): string {
+  return `
+    <p style="margin:0; color:#1C1A19; line-height:1.6; font-size:13px;">
+      ${customer.name ? `<strong>${escapeHtml(customer.name)}</strong><br/>` : ""}
+      ${escapeHtml(customer.email)}<br/>
+      ${customer.address ? escapeHtml(customer.address) : ""}
+    </p>
+  `;
+}
+
+function renderConversionBlock(conv: NestpayEmailConversion): string {
+  if (!conv) return "";
+  return `
+    <div style="background:#fff7ed; border:1px solid #f3d6b6; border-radius:8px; padding:12px 16px; margin:16px 0;">
+      <p style="margin:0 0 6px; color:#1C1A19; font-size:13px;">
+        <strong>Izjava o konverziji</strong>
+      </p>
+      <p style="margin:0; color:#6e665d; line-height:1.55; font-size:13px;">
+        Iznos od <strong>${escapeHtml(conv.eurAmountLabel)}</strong> je naplaćen u dinarima u protivvrednosti od <strong>${escapeHtml(conv.rsdAmountLabel)}</strong> prema kursu Banca Intesa AD Beograd primenjenom na dan transakcije (~${conv.rate.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 4 })} RSD / EUR). Konverziju vrši banka izdavalac kartice.
+      </p>
+    </div>
+  `;
+}
+
+function renderTotalsBlock(totals: NestpayEmailTotals): string {
+  return `
+    <p style="margin:8px 0 0; color:#1C1A19; font-size:14px;">
+      ${
+        totals.vatBreakdownLabel
+          ? `<span style="color:#6e665d; font-size:13px;">${escapeHtml(totals.vatBreakdownLabel)}</span><br/>`
+          : ""
+      }
+      <strong>Ukupno za naplatu: ${escapeHtml(totals.totalLabel)}</strong>
+    </p>
+  `;
+}
+
+export async function sendPaymentSuccessEmail(args: {
+  to: string;
+  orderNumber: string;
+  customer: NestpayEmailCustomer;
+  lineItems: NestpayEmailLineItem[];
+  totals: NestpayEmailTotals;
+  conversion: NestpayEmailConversion;
+  transaction: NestpayEmailTransaction;
+}) {
+  const portalUrl = `${getAuthUrl()}/portal`;
+
+  await send({
+    to: args.to,
+    subject: `Potvrda plaćanja ${args.orderNumber} — Elegant Render`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Plaćanje uspešno</h2>
+        <p style="color: #1C1A19; line-height: 1.6; font-weight:600; margin:0 0 16px;">
+          Uspešno ste izvršili plaćanje — račun Vaše platne kartice je zadužen.
+        </p>
+
+        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o porudžbini</h3>
+        <p style="margin:0 0 8px; color:#1C1A19; font-size:13px;">
+          <strong>Broj porudžbine:</strong> ${escapeHtml(args.orderNumber)}
+        </p>
+        ${renderLineItemsTable(args.lineItems)}
+        ${renderTotalsBlock(args.totals)}
+        ${renderConversionBlock(args.conversion)}
+
+        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o kupcu</h3>
+        ${renderCustomerBlock(args.customer)}
+
+        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o trgovcu</h3>
+        ${renderMerchantBlock()}
+
+        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o transakciji</h3>
+        ${renderTransactionBlock(args.transaction)}
+
+        <p style="color: #6e665d; line-height: 1.6; margin-top:24px;">
+          Status porudžbine i dokumenta možete pratiti u portalu.
+        </p>
+        <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 8px 0;">
+          Otvorite portal
+        </a>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+      </div>
+    `,
+  });
+}
+
+export async function sendPaymentFailureEmail(args: {
+  to: string;
+  orderNumber: string;
+  customer: NestpayEmailCustomer;
+  lineItems: NestpayEmailLineItem[];
+  totals: NestpayEmailTotals;
+  conversion: NestpayEmailConversion;
+  transaction: NestpayEmailTransaction;
+  retryUrl: string;
+}) {
+  await send({
+    to: args.to,
+    subject: `Plaćanje neuspešno — porudžbina ${args.orderNumber}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Plaćanje neuspešno</h2>
+        <p style="color: #1C1A19; line-height: 1.6; font-weight:600; margin:0 0 16px;">
+          Plaćanje neuspešno — račun Vaše platne kartice nije zadužen.
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Vaša porudžbina je sačuvana i možete pokušati ponovo iz portala —
+          najčešći razlozi su pogrešan PIN/3DS kod, blokada od strane banke
+          izdavaoca, ili nedovoljna sredstva.
+        </p>
+
+        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o porudžbini</h3>
+        <p style="margin:0 0 8px; color:#1C1A19; font-size:13px;">
+          <strong>Broj porudžbine:</strong> ${escapeHtml(args.orderNumber)}
+        </p>
+        ${renderLineItemsTable(args.lineItems)}
+        ${renderTotalsBlock(args.totals)}
+        ${renderConversionBlock(args.conversion)}
+
+        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o kupcu</h3>
+        ${renderCustomerBlock(args.customer)}
+
+        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o trgovcu</h3>
+        ${renderMerchantBlock()}
+
+        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o transakciji</h3>
+        ${renderTransactionBlock(args.transaction)}
+
+        <a href="${args.retryUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
+          Pokušajte ponovo
+        </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
         <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
       </div>

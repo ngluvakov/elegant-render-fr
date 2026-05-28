@@ -64,6 +64,11 @@ export const rateLimiters = {
   // typing/retry loops at 15/hour per identifier to keep our
   // outbound budget healthy.
   viesPublic: makeLimiter(15, "1 h", "rl:vies-public"),
+  // Card-payment initiation. Each call mints a new bank-facing oid;
+  // unbounded retries would let a hostile client probe the gateway
+  // or spend our daily transaction quota. 15/hour comfortably covers
+  // an order with several legitimate decline-and-retry attempts.
+  nestpayInitiate: makeLimiter(15, "1 h", "rl:nestpay-init"),
 } as const;
 
 export type RateLimiterKey = keyof typeof rateLimiters;

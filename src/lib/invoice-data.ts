@@ -115,7 +115,7 @@ export function paymentMethodLabel(
   if (provider === "card_mock") {
     return isExport ? "Card payment" : "Platna kartica";
   }
-  if (provider === "intesa") {
+  if (provider === "nestpay") {
     return isExport ? "Card (Banca Intesa)" : "Platna kartica (Banca Intesa)";
   }
   return isExport ? "Online payment" : "Online plaćanje";

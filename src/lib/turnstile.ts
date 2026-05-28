@@ -1,0 +1,62 @@
+/**
+ * turnstile.ts — Cloudflare Turnstile server-side verification.
+ *
+ * Banca Intesa EPM guidelines require an anti-fraud captcha for guest
+ * checkouts (no account, paying as a one-off). Turnstile is privacy-
+ * friendly and doesn't add a visible "I am not a robot" puzzle in
+ * 95% of cases. The widget produces a token on the client; this helper
+ * exchanges it for a verdict against Cloudflare.
+ *
+ * If `TURNSTILE_SECRET_KEY` is unset (local dev, preview) the helper
+ * returns ok=true so the flow doesn't block. Production must set the
+ * secret in Vercel.
+ *
+ * Used by: server/actions/nestpay
+ */
+
+const VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+
+export type TurnstileVerifyResult = {
+  ok: boolean;
+  errorCodes: string[];
+};
+
+export async function verifyTurnstile(
+  token: string | null | undefined,
+  ip?: string | null,
+): Promise<TurnstileVerifyResult> {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) {
+    // Dev / preview short-circuit — no secret configured.
+    return { ok: true, errorCodes: [] };
+  }
+  if (!token) {
+    return { ok: false, errorCodes: ["missing-input-response"] };
+  }
+
+  const body = new URLSearchParams();
+  body.set("secret", secret);
+  body.set("response", token);
+  if (ip) body.set("remoteip", ip);
+
+  const res = await fetch(VERIFY_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body,
+    signal: AbortSignal.timeout(10_000),
+  });
+
+  if (!res.ok) {
+    return { ok: false, errorCodes: [`http-${res.status}`] };
+  }
+
+  const data = (await res.json()) as {
+    success: boolean;
+    "error-codes"?: string[];
+  };
+
+  return {
+    ok: Boolean(data.success),
+    errorCodes: data["error-codes"] ?? [],
+  };
+}

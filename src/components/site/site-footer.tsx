@@ -16,6 +16,7 @@ import { ExternalLink, Mail, MapPin } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { ConsentSettingsLink } from "@/components/site/consent-settings-link";
+import { PaymentTrustBadges } from "@/components/marketing/payment-trust-badges";
 import { SITE_FEATURES } from "@/lib/site-features";
 import {
   CERTIFIER,
@@ -234,6 +235,20 @@ export function SiteFooter() {
             >
               O sertifikatima →
             </Link>
+          </div>
+        </div>
+
+        {/* Payment trust strip — Banca Intesa EPM standards (poglavlje 2.2)
+            require these brand badges on the checkout footer with links
+            to the official Visa Secure / Mastercard ID Check / issuing
+            bank pages. Surfaced site-wide so the inspector sees them
+            on every public page. */}
+        <div className="border-b border-white/10 py-6">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-white/45">
+            Sigurno plaćanje
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-white/55">
+            <PaymentTrustBadges className="text-white/75" />
           </div>
         </div>
 

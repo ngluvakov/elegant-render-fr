@@ -1,6 +1,9 @@
 /**
- * PendingPaymentCard — Payment card for unpaid orders, supporting PayPal
- * and a mock card method. Shows total and switches to success state on completion.
+ * PendingPaymentCard — Payment card for unpaid orders, supporting
+ * Nestpay (Banca Intesa), PayPal, and (in test mode) a mock card path.
+ * Shows total and switches to success state on completion. For unpaid
+ * orders that already have a Nestpay snapshot from a prior failed
+ * attempt, this is the resume surface.
  *
  * Used on: /portal/porudzbine/[orderId] (order detail page, when unpaid).
  */
@@ -8,18 +11,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Check, CreditCard, Pencil } from "lucide-react";
+import { AlertCircle, Check, CreditCard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { formatEur } from "@/lib/catalog/calculate";
 import {
   formatBillingMoney,
   type BillingCurrency,
 } from "@/lib/billing";
 import { track } from "@/lib/posthog-events";
-import { mockCardPaymentAction } from "@/server/actions/payment";
+import { initiateNestpayPayment } from "@/server/actions/nestpay";
+import { NestpayRedirectForm } from "@/app/(marketing)/poruci/nestpay-redirect-form";
 import { PayPalPortalButtons } from "./paypal-portal-buttons";
 
 type PendingPaymentCardProps = {
@@ -37,10 +39,14 @@ export function PendingPaymentCard({
   billingCurrency,
   billingTotalCents,
 }: PendingPaymentCardProps) {
-  const [method, setMethod] = useState<"paypal" | "card">("paypal");
-  const [cardPending, setCardPending] = useState(false);
+  const [method, setMethod] = useState<"paypal" | "nestpay">("nestpay");
+  const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [redirect, setRedirect] = useState<{
+    url: string;
+    fields: Record<string, string>;
+  } | null>(null);
   const router = useRouter();
   const amountLabel =
     billingCurrency && billingTotalCents != null
@@ -61,27 +67,25 @@ export function PendingPaymentCard({
     );
   }
 
-  const handleMockCard = async () => {
-    setCardPending(true);
+  if (redirect) {
+    return <NestpayRedirectForm url={redirect.url} fields={redirect.fields} />;
+  }
+
+  const handleNestpay = async () => {
+    setPending(true);
     setError("");
-    track("payment_started", { provider: "card_mock", total_eur: totalEur });
-    const result = await mockCardPaymentAction(orderId);
-    if (result.error) {
+    track("payment_started", { provider: "nestpay", total_eur: totalEur });
+    const result = await initiateNestpayPayment({ orderId, turnstileToken: null });
+    if ("error" in result) {
       setError(result.error);
-      setCardPending(false);
+      setPending(false);
       track("payment_failed", {
-        provider: "card_mock",
+        provider: "nestpay",
         error_kind: result.error.slice(0, 80),
       });
       return;
     }
-    track("payment_completed", {
-      provider: "card_mock",
-      total_eur: totalEur,
-      order_number: orderId,
-    });
-    setSuccess(true);
-    setTimeout(() => router.refresh(), 1500);
+    setRedirect(result);
   };
 
   return (
@@ -105,8 +109,27 @@ export function PendingPaymentCard({
         </div>
       )}
 
-      {/* Method selector */}
       <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        <button
+          type="button"
+          onClick={() => setMethod("nestpay")}
+          className={cn(
+            "flex items-center gap-2 rounded-xl border p-3 text-left text-xs transition",
+            method === "nestpay"
+              ? "border-accent bg-accent/5"
+              : "border-border/40 hover:border-accent/40",
+          )}
+        >
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground/10">
+            <CreditCard className="h-4 w-4" />
+          </div>
+          <span className="font-medium text-foreground">
+            Kartica (Banca Intesa)
+          </span>
+          {method === "nestpay" && (
+            <Check className="ml-auto h-3 w-3 text-accent" />
+          )}
+        </button>
         <button
           type="button"
           onClick={() => setMethod("paypal")}
@@ -121,27 +144,30 @@ export function PendingPaymentCard({
             PP
           </div>
           <span className="font-medium text-foreground">PayPal</span>
-          {method === "paypal" && <Check className="ml-auto h-3 w-3 text-accent" />}
-        </button>
-        <button
-          type="button"
-          onClick={() => setMethod("card")}
-          className={cn(
-            "flex items-center gap-2 rounded-xl border p-3 text-left text-xs transition",
-            method === "card"
-              ? "border-accent bg-accent/5"
-              : "border-border/40 hover:border-accent/40",
+          {method === "paypal" && (
+            <Check className="ml-auto h-3 w-3 text-accent" />
           )}
-        >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground/10">
-            <CreditCard className="h-4 w-4" />
-          </div>
-          <span className="font-medium text-foreground">Kartica (test)</span>
-          {method === "card" && <Check className="ml-auto h-3 w-3 text-accent" />}
         </button>
       </div>
 
-      {/* PayPal */}
+      {method === "nestpay" && (
+        <div className="mt-4 space-y-3">
+          <Button
+            variant="accent"
+            size="xl"
+            className="w-full"
+            onClick={handleNestpay}
+            disabled={pending}
+          >
+            {pending ? "Preusmeravanje…" : `Plati ${amountLabel} karticom`}
+          </Button>
+          <p className="text-center text-[0.72rem] text-muted-foreground">
+            Bezbedno plaćanje — preusmeravamo Vas na zaštićenu stranicu Banca
+            Intesa za unos podataka kartice.
+          </p>
+        </div>
+      )}
+
       {method === "paypal" && (
         <div className="mt-4">
           <PayPalPortalButtons
@@ -152,49 +178,6 @@ export function PendingPaymentCard({
             }}
             onError={(msg) => setError(msg)}
           />
-        </div>
-      )}
-
-      {/* Mock card */}
-      {method === "card" && (
-        <div className="mt-4 space-y-3">
-          <p className="rounded-lg bg-secondary/60 px-3 py-2 text-[0.72rem] text-muted-foreground">
-            Test režim — unesite bilo koje podatke.
-          </p>
-          <div className="space-y-2">
-            <Label className="text-xs">
-              <Pencil className="h-3 w-3 text-accent/60" />
-              Broj kartice
-            </Label>
-            <Input defaultValue="4111 1111 1111 1111" className="h-8 text-xs" />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label className="text-xs">
-                <Pencil className="h-3 w-3 text-accent/60" />
-                Ističe
-              </Label>
-              <Input defaultValue="12/28" className="h-8 text-xs" />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs">
-                <Pencil className="h-3 w-3 text-accent/60" />
-                CVV
-              </Label>
-              <Input defaultValue="123" className="h-8 text-xs" />
-            </div>
-          </div>
-          <Button
-            variant="accent"
-            size="xl"
-            className="w-full"
-            onClick={handleMockCard}
-            disabled={cardPending}
-          >
-            {cardPending
-              ? "Obrada…"
-              : `Plati ${amountLabel}`}
-          </Button>
         </div>
       )}
     </div>

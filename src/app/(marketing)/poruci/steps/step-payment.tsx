@@ -23,8 +23,11 @@ import { initiateNestpayPayment } from "@/server/actions/nestpay";
 
 type PaymentMethod = "paypal" | "nestpay" | "card_mock";
 
+// Mock card path is dev-only. Render only when explicitly opted in
+// via NEXT_PUBLIC_NESTPAY_MODE=test; absence of the env var should
+// NOT expose a mock checkout on production.
 const NESTPAY_TEST_MODE =
-  process.env.NEXT_PUBLIC_NESTPAY_MODE !== "live";
+  process.env.NEXT_PUBLIC_NESTPAY_MODE === "test";
 
 export function StepPayment() {
   const {
@@ -108,20 +111,32 @@ export function StepPayment() {
       provider: "nestpay",
       total_eur: calculation.total,
     });
-    const result = await initiateNestpayPayment({
-      orderId,
-      turnstileToken,
-    });
-    if ("error" in result) {
-      setError(result.error);
+    try {
+      const result = await initiateNestpayPayment({
+        orderId,
+        turnstileToken,
+      });
+      if ("error" in result) {
+        setError(result.error);
+        setNestpayPending(false);
+        track("payment_failed", {
+          provider: "nestpay",
+          error_kind: result.error.slice(0, 80),
+        });
+        return;
+      }
+      setRedirect(result);
+    } catch (err) {
+      // Network failure or unhandled server rejection. Re-enable the
+      // button instead of leaving it stuck on "Preusmeravanje…".
+      const message = err instanceof Error ? err.message : "Nepoznata greška";
+      setError(`Greška mreže: ${message}`);
       setNestpayPending(false);
       track("payment_failed", {
         provider: "nestpay",
-        error_kind: result.error.slice(0, 80),
+        error_kind: message.slice(0, 80),
       });
-      return;
     }
-    setRedirect(result);
   };
 
   // EUR-displayed visitors see the RSD conversion disclosure mandated by

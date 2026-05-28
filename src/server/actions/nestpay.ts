@@ -61,6 +61,34 @@ type InitiateInput = {
 export async function initiateNestpayPayment(
   input: InitiateInput,
 ): Promise<NestpayInitiateResult> {
+  try {
+    return await initiateNestpayPaymentImpl(input);
+  } catch (err) {
+    // Surface ANY unhandled error to the client as a structured response
+    // so the calling UI can show a message and re-enable the button. An
+    // uncaught throw from a server action propagates to the client as a
+    // generic rejection and leaves the loading state stuck.
+    Sentry.captureException(err, {
+      tags: { area: "payment", flow: "nestpay-initiate" },
+      extra: { orderId: input.orderId },
+    });
+    const message = err instanceof Error ? err.message : String(err);
+    // Friendlier copy for the most common cause: env vars not set yet.
+    if (message.startsWith("[nestpay]")) {
+      return {
+        error:
+          "Plaćanje karticom još nije konfigurisano. Probajte PayPal ili nas kontaktirajte.",
+      };
+    }
+    return {
+      error: `Greška pri pokretanju plaćanja: ${message.slice(0, 200)}`,
+    };
+  }
+}
+
+async function initiateNestpayPaymentImpl(
+  input: InitiateInput,
+): Promise<NestpayInitiateResult> {
   const order = await prisma.order.findUnique({
     where: { id: input.orderId },
     include: { user: { select: { email: true, name: true } } },

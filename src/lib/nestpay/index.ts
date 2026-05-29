@@ -1,10 +1,16 @@
 export { getNestpayConfig } from "./config";
 export type { NestpayConfig, NestpayMode, NestpayTranType } from "./config";
 
-export { buildHashWithParams, verifyResponseHash } from "./hash";
+export {
+  buildHashWithParams,
+  buildRequestHashPlaintext,
+  buildRequestHashVer2,
+  verifyResponseHash,
+} from "./hash";
 export type {
   NestpayHashParam,
   NestpayHashOutput,
+  NestpayRequestHashInput,
   VerifyResponseHashResult,
 } from "./hash";
 
@@ -22,3 +28,5 @@ export type { NestpayReturnPayload } from "./response";
 
 export { queryOrderStatus } from "./status-query";
 export type { NestpayQueryResult } from "./status-query";
+
+export { getNestpayPublicBaseUrl } from "./url";

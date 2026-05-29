@@ -24,6 +24,7 @@ import { transitionOrder } from "@/lib/order/status-machine";
 import {
   buildHostedPaymentForm,
   getNestpayConfig,
+  getNestpayPublicBaseUrl,
   mintOid,
 } from "@/lib/nestpay";
 import {
@@ -40,13 +41,6 @@ import { verifyTurnstile } from "@/lib/turnstile";
 export type NestpayInitiateResult =
   | { error: string }
   | { url: string; fields: Record<string, string> };
-
-function getReturnBaseUrl(): string {
-  if (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  return process.env.AUTH_URL ?? "http://localhost:3000";
-}
 
 function getClientIp(forwardedFor: string | null): string | null {
   if (!forwardedFor) return null;
@@ -160,6 +154,7 @@ async function initiateNestpayPaymentImpl(
     data: {
       paymentProvider: "nestpay",
       paymentId: oid,
+      paymentStatus: "pending",
       nestpayChargedAmountCents: amountRsdCents,
       nestpayChargedCurrency: "RSD",
       nestpayChargeRate: chargeRate ?? undefined,
@@ -185,7 +180,7 @@ async function initiateNestpayPaymentImpl(
     }
   }
 
-  const returnUrl = `${getReturnBaseUrl()}/api/nestpay/return`;
+  const returnUrl = `${getNestpayPublicBaseUrl()}/api/nestpay/return`;
   const form = buildHostedPaymentForm({
     oid,
     amountRsdCents,

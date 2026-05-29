@@ -98,7 +98,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           error: "Hash verification failed (debug mode)",
           reason: verification.reason,
           received: verification.receivedHash ?? null,
-          computed: verification.computedHash ?? null,
+          attempts: verification.attempts ?? null,
           storeKeyLength: config.storeKey.length,
           storeKeyFingerprint: `${config.storeKey.slice(0, 2)}…${config.storeKey.slice(-2)}`,
           fields,

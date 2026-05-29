@@ -66,15 +66,41 @@ function lookupCI(
   return undefined;
 }
 
+export type HashVariant = "v1" | "v2" | "v3" | "v4" | "v5";
+
+// Different Nestpay deployments use slightly different plaintext
+// constructions for the HASHPARAMSVAL-based hash. We try all known
+// shapes and accept the first that matches the bank's HASH. The
+// matched variant is recorded so outgoing requests can mirror it.
+const HASH_VARIANTS: Array<{ name: HashVariant; build: (val: string, key: string) => string }> = [
+  { name: "v1", build: (val, key) => `${val}|${escapeValue(key)}` },
+  { name: "v2", build: (val, key) => `${val}|${key}` },
+  { name: "v3", build: (val, key) => `${val}${escapeValue(key)}` },
+  { name: "v4", build: (val, key) => `${val}${key}` },
+  { name: "v5", build: (val, key) => `${val}|${key}|` },
+];
+
 export type VerifyResponseHashResult = {
   ok: boolean;
   // Why it failed — for diagnostics. "no-hash" = bank didn't send HASH
   // at all; "no-hashparamsval" = bank used a non-HASHPARAMS format
-  // we don't know how to verify; "mismatch" = computed != received.
+  // we don't know how to verify; "mismatch" = none of the known
+  // plaintext variants matched (most likely the storeKey is wrong).
   reason?: "no-hash" | "no-hashparamsval" | "mismatch";
   receivedHash?: string;
   computedHash?: string;
+  matchedVariant?: HashVariant;
+  attempts?: Array<{ variant: HashVariant; computed: string }>;
 };
+
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
 
 export function verifyResponseHash(
   fields: Record<string, string>,
@@ -90,20 +116,29 @@ export function verifyResponseHash(
     return { ok: false, reason: "no-hashparamsval", receivedHash };
   }
 
-  const plaintext = `${hashParamsVal}|${escapeValue(storeKey)}`;
-  const computed = createHash("sha512")
-    .update(plaintext, "utf8")
-    .digest("base64");
+  const attempts: Array<{ variant: HashVariant; computed: string }> = [];
+  for (const variant of HASH_VARIANTS) {
+    const plaintext = variant.build(hashParamsVal, storeKey);
+    const computed = createHash("sha512")
+      .update(plaintext, "utf8")
+      .digest("base64");
+    attempts.push({ variant: variant.name, computed });
+    if (constantTimeEqual(computed, receivedHash)) {
+      return {
+        ok: true,
+        receivedHash,
+        computedHash: computed,
+        matchedVariant: variant.name,
+        attempts,
+      };
+    }
+  }
 
-  if (computed.length !== receivedHash.length) {
-    return { ok: false, reason: "mismatch", receivedHash, computedHash: computed };
-  }
-  let mismatch = 0;
-  for (let i = 0; i < computed.length; i++) {
-    mismatch |= computed.charCodeAt(i) ^ receivedHash.charCodeAt(i);
-  }
-  if (mismatch !== 0) {
-    return { ok: false, reason: "mismatch", receivedHash, computedHash: computed };
-  }
-  return { ok: true, receivedHash, computedHash: computed };
+  return {
+    ok: false,
+    reason: "mismatch",
+    receivedHash,
+    computedHash: attempts[0]?.computed,
+    attempts,
+  };
 }

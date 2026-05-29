@@ -25,6 +25,7 @@ import {
   parseNestpayTrxDate,
   verifyResponseHash,
 } from "@/lib/nestpay";
+import { getNestpayPublicBaseUrl } from "@/lib/nestpay/url";
 import { prisma } from "@/lib/db";
 import { transitionOrder } from "@/lib/order/status-machine";
 import {
@@ -35,15 +36,6 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function getBaseUrl(request: NextRequest): string {
-  const origin = request.headers.get("origin");
-  if (origin) return origin;
-  if (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  return process.env.AUTH_URL ?? "http://localhost:3000";
-}
-
 function redirect303(target: string): NextResponse {
   // 303 forces the browser to GET the next URL after a POST. 302 also
   // works in modern browsers but 303 is the spec-correct response.
@@ -51,7 +43,7 @@ function redirect303(target: string): NextResponse {
 }
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const baseUrl = getBaseUrl(request);
+  const baseUrl = getNestpayPublicBaseUrl();
 
   let formData: FormData;
   try {
@@ -155,7 +147,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       nestpayHostRefNum: payload.hostRefNum || null,
       nestpayExtraTrxDate: parseNestpayTrxDate(payload.extraTrxDate) ?? null,
       nestpayResponseRaw: fields,
-      nestpayResponseHash: fields.hash ?? null,
+      nestpayResponseHash: fields.hash ?? fields.HASH ?? null,
       nestpayLastQueryAt: new Date(),
     },
   });

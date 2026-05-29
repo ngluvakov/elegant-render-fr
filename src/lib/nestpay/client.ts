@@ -7,12 +7,10 @@
  * back to our okUrl/failUrl. The merchant secret (StoreKey) is used
  * to compute the request hash; it is NOT included in the POST body.
  *
- * Hash format is HASHPARAMS-based ver2 — we declare which params we
- * signed via the HASHPARAMS form field, the pipe-joined escaped
- * values via HASHPARAMSVAL, and the SHA-512 hash via `hash`. The
- * bank's verifier reads HASHPARAMSVAL and recomputes with its stored
- * StoreKey, so as long as both sides escape the same way the request
- * authenticates.
+ * Hash format is BIB's positional ver2 request template:
+ * clientid|oid|amount|okUrl|failUrl|trantype||rnd||||currency|StoreKey.
+ * StoreKey is appended only inside the SHA-512 plaintext and is never
+ * sent to the bank as a form field.
  *
  * Both `okUrl` and `failUrl` point at the same internal endpoint —
  * `/api/nestpay/return` — because the bank's `Response` field is the
@@ -21,7 +19,7 @@
  *
  * Used by: server/actions/nestpay
  */
-import { buildHashWithParams } from "./hash";
+import { buildRequestHashVer2 } from "./hash";
 import { mintRnd } from "./oid";
 import { getNestpayConfig } from "./config";
 
@@ -56,16 +54,6 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
   const rnd = mintRnd();
   const amount = formatRsdAmount(input.amountRsdCents);
 
-  // The set of params signed via HASHPARAMS. Order matters — the bank
-  // verifies by reading HASHPARAMSVAL in the same order. BIB Nestpay
-  // error responses echo HASHPARAMS = "clientid|oid|rnd" as their
-  // own canonical pattern, which is the minimum required to identify
-  // the merchant/attempt/nonce. Signing more params is permitted but
-  // some BIB deployments reject anything beyond this minimum, so we
-  // default to the 3-field signature and allow override via
-  // NESTPAY_HASH_PARAMS env (pipe-separated names) if the bank ever
-  // asks for a longer list.
-  const customHashParams = process.env.NESTPAY_HASH_PARAMS;
   const formData: Record<string, string> = {
     clientid: config.clientId,
     storetype: NESTPAY_STORE_TYPE,
@@ -81,26 +69,19 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
     encoding: NESTPAY_ENCODING,
   };
 
-  const hashParamNames = customHashParams
-    ? customHashParams.split("|").map((n) => n.trim()).filter(Boolean)
-    : ["clientid", "oid", "rnd"];
+  const hash = buildRequestHashVer2({
+    clientId: config.clientId,
+    oid: input.oid,
+    amount,
+    okUrl: input.returnUrl,
+    failUrl: input.returnUrl,
+    tranType: config.tranType,
+    rnd,
+    currency: NESTPAY_CURRENCY_RSD,
+    storeKey: config.storeKey,
+  });
 
-  const signedParams = hashParamNames.map((name) => ({
-    name,
-    value: formData[name] ?? "",
-  }));
-
-  const { hash, hashParams, hashParamsVal } = buildHashWithParams(
-    signedParams,
-    config.storeKey,
-  );
-
-  const fields: Record<string, string> = {
-    ...formData,
-    HASHPARAMS: hashParams,
-    HASHPARAMSVAL: hashParamsVal,
-    hash,
-  };
+  const fields: Record<string, string> = { ...formData, hash };
 
   if (input.buyerEmail) fields.email = input.buyerEmail;
   if (input.buyerName) fields.BillToName = input.buyerName;

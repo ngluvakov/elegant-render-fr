@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-05-29 - NestPay request HASH usaglašen sa Banca Intesa HPP formatom
+
+- **Oblast promene:** payments | order lifecycle
+- **Šta se promenilo:** Outgoing NestPay HPP POST sada računa `hash` isključivo po Banca Intesa positional `ver2` formatu `clientid|oid|amount|okUrl|failUrl|trantype||rnd||||currency|StoreKey` (SHA-512 base64). Iz outgoing forme su uklonjeni `HASHPARAMS` i `HASHPARAMSVAL`; response verifikacija i dalje prihvata bankin povratni `HASH`/`HASHPARAMS` format.
+- **Zašto:** Test plaćanje je padalo sa `3D-1004 Wrong security code`; dokumentacija/onboarding email banke za merchant POST očekuje positional request hash, dok je prethodni outgoing zahtev koristio response-style `HASHPARAMS` pristup.
+- **Uticaj na conversion:** Kartično plaćanje može proći bankin security check; retry posle neuspešnog pokušaja vraća `paymentStatus` na `pending`, pa reconciler može da oporavi izgubljene redirekcije.
+- **Uticaj na design:** Nema.
+- **Uticaj na code:** Dodati su request-specific hash helper-i, uklonjeni outgoing `HASHPARAMS` parametri, NestPay return redirect sada koristi konfigurisani `AUTH_URL` umesto request `Origin` header-a banke.
+- **Uticaj na docs:** Ažuriran ovaj decision log.
+- **Povezani fajlovi:** `src/lib/nestpay/hash.ts`, `src/lib/nestpay/client.ts`, `src/lib/nestpay/url.ts`, `src/app/api/nestpay/return/route.ts`, `src/server/actions/nestpay.ts`, `scripts/nestpay-hash-test.ts`, `docs/platform-decisions.md`
+- **Reference:** User-provided "NestPay Hash Fix Plan" i Banca Intesa onboarding smernice za HPP redirect merchant.
+
 ## 2026-05-29 - Banca Intesa Nestpay kartično plaćanje (3D Pay Hosting)
 
 - **Oblast promene:** payments | order lifecycle | conversion | architecture

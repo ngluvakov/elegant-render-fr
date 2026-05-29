@@ -1,29 +1,34 @@
 /**
- * hash.ts — Nestpay HASH ver2 builder and verifier (HASHPARAMS form).
+ * hash.ts — Nestpay HASH ver2 request builder and response verifier.
  *
- * Modern Asseco/BIB Nestpay ver2 uses an explicit HASHPARAMS layout
- * instead of the legacy positional template. We declare which params
- * we signed (HASHPARAMS), the pipe-joined escaped values (HASHPARAMSVAL),
- * and the hash:
+ * Banca Intesa's BIB onboarding email requires the merchant POST hash
+ * to use the positional 3D Pay Hosting plaintext:
  *
- *   HASH = base64( SHA-512( HASHPARAMSVAL + "|" + escape(StoreKey) ) )
+ *   clientid|oid|amount|okUrl|failUrl|trantype||rnd||||currency|StoreKey
  *
- * The bank's verifier reads HASHPARAMSVAL, appends its stored StoreKey,
- * SHA-512s, and compares. On error responses the bank echoes its own
- * HASH + HASHPARAMS + HASHPARAMSVAL so we can verify the response with
- * the exact same algorithm — no sort heuristics needed.
+ * Bank return POSTs, however, can include HASH/HASHPARAMS/HASHPARAMSVAL.
+ * We keep the response verifier tolerant of that HASHPARAMS shape while
+ * the outgoing form uses the explicit BIB positional request format.
  *
- * Escape rule (Asseco spec): backslash first, then pipe.
- *   `\` → `\\`
- *   `|` → `\|`
- *
- * StoreKey escapes the same way (it's the merchant secret and rarely
- * contains these characters, but the spec says to escape it).
+ * Escape rule for HASHPARAMS response verification: backslash first,
+ * then pipe (`\` → `\\`, `|` → `\|`).
  *
  * Used by: client.ts (request side) and /api/nestpay/return route
  * (response side).
  */
 import { createHash } from "node:crypto";
+
+export type NestpayRequestHashInput = {
+  clientId: string;
+  oid: string;
+  amount: string;
+  okUrl: string;
+  failUrl: string;
+  tranType: string;
+  rnd: string;
+  currency: string;
+  storeKey: string;
+};
 
 export type NestpayHashParam = {
   name: string;
@@ -38,6 +43,30 @@ export type NestpayHashOutput = {
 
 function escapeValue(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
+}
+
+export function buildRequestHashPlaintext(input: NestpayRequestHashInput): string {
+  return [
+    input.clientId,
+    input.oid,
+    input.amount,
+    input.okUrl,
+    input.failUrl,
+    input.tranType,
+    "",
+    input.rnd,
+    "",
+    "",
+    "",
+    input.currency,
+    input.storeKey,
+  ].join("|");
+}
+
+export function buildRequestHashVer2(input: NestpayRequestHashInput): string {
+  return createHash("sha512")
+    .update(buildRequestHashPlaintext(input), "utf8")
+    .digest("base64");
 }
 
 export function buildHashWithParams(

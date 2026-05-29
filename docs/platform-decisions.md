@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-05-29 - Turnstile uslov usklađen za NestPay iniciranje
+
+- **Oblast promene:** payments | auth | order lifecycle
+- **Šta se promenilo:** Cloudflare Turnstile se za NestPay plaćanje prikazuje i proverava za svaki pokušaj iniciranja plaćanja kada je Turnstile konfigurisan, bez posebnog izuzetka za ulogovane korisnike. Server dodatno proverava da ulogovana sesija ne pokušava da pokrene plaćanje za tuđu porudžbinu.
+- **Zašto:** Frontend je ranije sakrivao Turnstile za ulogovane korisnike, dok je backend i dalje očekivao token čim postoji `TURNSTILE_SECRET_KEY`, što je proizvodilo grešku "Verifikacija sigurnosne provere nije uspela" pre odlaska na banku.
+- **Uticaj na conversion:** Smanjuje lažne blokade na payment step-u; ako public Turnstile site key fali u produkcionom build-u, korisnik vidi jasnu konfiguracionu poruku umesto pokušaja koji backend odbija.
+- **Uticaj na design:** Payment step dobija vidljivu Turnstile proveru za kartično plaćanje kada je konfigurisana.
+- **Uticaj na code:** `src/app/(marketing)/poruci/steps/step-payment.tsx` sada vezuje prikaz Turnstile widget-a za `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, a `src/server/actions/nestpay.ts` zadržava server-side verifikaciju i dodaje ownership guard za ulogovane korisnike.
+- **Uticaj na docs:** Ispravljen naziv public env varijable na `NEXT_PUBLIC_TURNSTILE_SITE_KEY`.
+- **Povezani fajlovi:** `src/server/actions/nestpay.ts`, `src/app/(marketing)/poruci/steps/step-payment.tsx`, `src/lib/turnstile.ts`, `src/components/ui/turnstile-widget.tsx`, `docs/platform-decisions.md`
+- **Reference:** Payment test blokiran porukom "Verifikacija sigurnosne provere nije uspela" i potvrda da se Turnstile nije prikazao posle refresh-a.
+
 ## 2026-05-29 - NestPay request HASH usaglašen sa Banca Intesa HPP formatom
 
 - **Oblast promene:** payments | order lifecycle
@@ -38,13 +50,13 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Šta se promenilo:** Implementirana je integracija sa Banca Intesa Nestpay HPP redirect gateway-em (`storetype=3d_pay_hosting`, `hashAlgorithm=ver2`, `currency=941` RSD). Novi `paymentProvider=nestpay` postoji uz PayPal i wire transfer; legacy `card_mock` ostaje samo iza `NEXT_PUBLIC_NESTPAY_MODE=test` za dev. Bank kliring je u dinarima — RS kupci vide RSD bruto sa PDV razbijanjem, strani kupci vide EUR + obaveznu "Izjavu o konverziji" sa snapshotovanim RSD ekvivalentom (`Order.nestpayChargedAmountCents`, `nestpayChargeRate`).
 - **Zašto:** Lokalna karta (Visa/MC kroz domaću banku) je najjeftiniji i najpovoljniji način plaćanja za RS klijente; bez nje konverzija na "Plaćam" padaju jer PayPal i wire transfer ne pokrivaju ceo segment. Banca Intesa Nestpay je usaglašen sa Uputstvom za rad EPM v3.5 koje banka traži pre go-live.
 - **Uticaj na conversion:** Veća konverzija u step-payment-u (uklanjamo "samo PayPal" friction); single return URL + Status Query reconciler smanjuju "izgubljene transakcije" (zatvoren tab) sa 5+ min do pune recovery.
-- **Uticaj na design:** Novi izbor "Kartica (Banca Intesa)" tile na step-payment, obavezni "Saglasan sa Opštim uslovima" checkbox, Cloudflare Turnstile za guest, brand badge strip (Visa/Visa Secure/MC/MC ID Check/Banca Intesa) u footer-u i u step-payment-u. Uspeh/neuspeh strane prikazuju 7 transakcionih parametara po standardu 2.7.
+- **Uticaj na design:** Novi izbor "Kartica (Banca Intesa)" tile na step-payment, obavezni "Saglasan sa Opštim uslovima" checkbox, Cloudflare Turnstile za NestPay iniciranje, brand badge strip (Visa/Visa Secure/MC/MC ID Check/Banca Intesa) u footer-u i u step-payment-u. Uspeh/neuspeh strane prikazuju 7 transakcionih parametara po standardu 2.7.
 - **Uticaj na code:** `src/lib/nestpay/` (config + ver2 hash + oid + HPP client + CC5 status query + response parser); `src/server/actions/nestpay.ts` (`initiateNestpayPayment`); `src/server/actions/payment.ts` (`finishFailedPayment`, success email routing po provideru); `src/app/api/nestpay/return/route.ts` (jedinstveni okUrl + failUrl handler sa hash verifikacijom); `src/app/api/cron/nestpay-reconcile/route.ts` + `src/server/finance/reconcile-nestpay.ts` (Order Status Query reconciler, `*/5 * * * *`); `src/lib/email.ts` (`sendPaymentSuccessEmail`/`sendPaymentFailureEmail` sa 5 obaveznih blokova); `src/lib/outbox.ts` (handleri za `payment_success_email`, `payment_failure_email`); `src/components/ui/turnstile-widget.tsx`, `src/lib/turnstile.ts`; `src/components/marketing/payment-trust-badges.tsx`; nove pravne strane `pravno/reklamacije`, `pravno/povracaj-sredstava`, `pravno/dostava`.
 - **Uticaj na docs:** Ovaj decision log; `.env.example` proširen (NESTPAY_*, TURNSTILE_*).
 - **Povezani fajlovi:** vidi listu iznad + `prisma/schema.prisma`, `prisma/migrations/20260529000000_add_nestpay_provider/migration.sql`, `vercel.json`, `src/lib/content/site.ts` (NAV_LEGAL proširenje), `src/components/portal/pending-payment-card.tsx`, `src/app/(marketing)/poruci/steps/step-payment.tsx`, `src/app/(marketing)/poruci/nestpay-redirect-form.tsx`, `src/app/(marketing)/poruci/uspeh/page.tsx`, `src/app/(marketing)/poruci/neuspeh/page.tsx`.
 - **Reference:** User request: "Treba da na sajt implementiramo placanje karticama" + "Za strane kupce hocu da se vidi i Eur i konverzija u RSD". Plan: `~/.claude/plans/imam-jedno-takmicenje-izmedju-dreamy-reef.md`.
 - **Open items pre go-live:**
-  - U Vercel Production env unesi prave kredencijale: `NESTPAY_CLIENT_ID`, `NESTPAY_STORE_KEY`, `NESTPAY_QUERY_USERNAME`, `NESTPAY_QUERY_PASSWORD`, `NESTPAY_BASE_URL=https://bib.eway2pay.com/fim/est3Dgate`, `NESTPAY_QUERY_URL=https://bib.eway2pay.com/fim/api`, `NEXT_PUBLIC_NESTPAY_MODE=live`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`.
+  - U Vercel Production env unesi prave kredencijale: `NESTPAY_CLIENT_ID`, `NESTPAY_STORE_KEY`, `NESTPAY_QUERY_USERNAME`, `NESTPAY_QUERY_PASSWORD`, `NESTPAY_BASE_URL=https://bib.eway2pay.com/fim/est3Dgate`, `NESTPAY_QUERY_URL=https://bib.eway2pay.com/fim/api`, `NEXT_PUBLIC_NESTPAY_MODE=live`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`.
   - Smesti zvanične SVG logoe u `public/branding/payments/` (visa.svg, visa-secure.svg, mastercard.svg, mastercard-id-check.svg, banca-intesa.svg).
   - Konfiguriši okUrl + failUrl u Merchant Center-u na `https://elegantrender.rs/api/nestpay/return`.
   - Odradi sve test scenarije iz `docs/Placanje karticama/Primeri testnih case-ova.xls` (tab SMS test cases) sa Banca Intesa test karticama i export-uj transakcionu tabelu iz Merchant Center-a. Pošalji na `ecomm_podrska@bancaintesa.rs` zajedno sa screenshot-ima pravnih strana.

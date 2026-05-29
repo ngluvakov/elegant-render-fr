@@ -9,7 +9,7 @@
  * the server-side `verifyTurnstile` helper short-circuits to ok=true
  * in that case so the flow remains usable.
  *
- * Used by: checkout step-payment for guest card payment initiation.
+ * Used by: checkout step-payment for NestPay card payment initiation.
  */
 
 import { useEffect, useRef } from "react";

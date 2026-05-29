@@ -2,10 +2,11 @@
  * turnstile.ts — Cloudflare Turnstile server-side verification.
  *
  * Banca Intesa EPM guidelines require an anti-fraud captcha for guest
- * checkouts (no account, paying as a one-off). Turnstile is privacy-
- * friendly and doesn't add a visible "I am not a robot" puzzle in
- * 95% of cases. The widget produces a token on the client; this helper
- * exchanges it for a verdict against Cloudflare.
+ * checkouts. We run the same check for every NestPay initiation so the
+ * frontend and backend do not diverge based on auth state during payment
+ * testing. Turnstile is privacy-friendly and doesn't add a visible
+ * "I am not a robot" puzzle in 95% of cases. The widget produces a token
+ * on the client; this helper exchanges it for a verdict against Cloudflare.
  *
  * If `TURNSTILE_SECRET_KEY` is unset (local dev, preview) the helper
  * returns ok=true so the flow doesn't block. Production must set the

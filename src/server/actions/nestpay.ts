@@ -19,6 +19,7 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { transitionOrder } from "@/lib/order/status-machine";
 import {
@@ -98,6 +99,12 @@ async function initiateNestpayPaymentImpl(
   }
   if (order.status !== "draft" && order.status !== "awaiting_payment") {
     return { error: "Porudžbina nije u ispravnom statusu za plaćanje." };
+  }
+
+  const session = await auth();
+  const sessionUserId = session?.user?.id ?? null;
+  if (sessionUserId && sessionUserId !== order.userId) {
+    return { error: "Nemate pristup ovoj porudžbini." };
   }
 
   const identifier = await getServerActionIdentifier();

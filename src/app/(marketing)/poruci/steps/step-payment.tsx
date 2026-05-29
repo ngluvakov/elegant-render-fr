@@ -37,7 +37,6 @@ export function StepPayment() {
     setStep,
     displayCurrency,
     pricingCatalog,
-    initiallySignedIn,
   } = useCheckout();
   const [method, setMethod] = useState<PaymentMethod>("nestpay");
   const [cardPending, setCardPending] = useState(false);
@@ -72,12 +71,14 @@ export function StepPayment() {
     return <NestpayRedirectForm url={redirect.url} fields={redirect.fields} />;
   }
 
-  const requiresTurnstile = !initiallySignedIn;
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  const requiresTurnstile = Boolean(turnstileSiteKey);
+  const turnstileConfigMissing =
+    process.env.NODE_ENV === "production" && !turnstileSiteKey;
   const hasTurnstileToken =
-    !requiresTurnstile || // no captcha needed
-    !process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || // captcha not configured
-    Boolean(turnstileToken);
-  const canSubmit = acceptedTerms && hasTurnstileToken;
+    !requiresTurnstile || Boolean(turnstileToken);
+  const canSubmit =
+    acceptedTerms && hasTurnstileToken && !turnstileConfigMissing;
 
   const handleMockCard = async () => {
     setCardPending(true);
@@ -273,6 +274,16 @@ export function StepPayment() {
                 .
               </span>
             </label>
+
+            {turnstileConfigMissing && (
+              <div
+                role="alert"
+                className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs text-destructive"
+              >
+                Sigurnosna provera nije konfigurisana. Potrebno je podesiti
+                NEXT_PUBLIC_TURNSTILE_SITE_KEY u produkcionom okruženju.
+              </div>
+            )}
 
             {requiresTurnstile && (
               <div aria-label="Sigurnosna provera">

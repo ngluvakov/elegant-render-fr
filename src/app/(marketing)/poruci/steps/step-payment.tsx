@@ -172,52 +172,85 @@ export function StepPayment() {
           <button
             type="button"
             onClick={() => setMethod("nestpay")}
-            className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${
+            className={`relative flex h-full flex-col gap-4 rounded-xl border p-5 text-left transition ${
               method === "nestpay"
                 ? "border-accent bg-accent/5"
                 : "border-border/60 bg-background/40 hover:border-accent/40"
             }`}
           >
-            <div className="min-w-[96px] h-10 px-2 rounded-lg bg-background ring-1 ring-border/30 flex items-center gap-1.5 flex-shrink-0">
-              <Image src="/branding/payments/visa.png" alt="Visa" width={36} height={18} className="object-contain" style={{ height: 18, width: "auto" }} />
-              <Image src="/branding/payments/mastercard.svg" alt="Mastercard" width={18} height={18} className="object-contain" style={{ height: 18, width: "auto" }} />
-              <Image src="/branding/payments/maestro.svg" alt="Maestro" width={18} height={18} className="object-contain" style={{ height: 18, width: "auto" }} />
-              <Image src="/branding/payments/dinacard.png" alt="DinaCard" width={18} height={18} className="object-contain" style={{ height: 18, width: "auto" }} />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground">
+            {method === "nestpay" && (
+              <Check className="absolute right-4 top-4 h-4 w-4 text-accent" />
+            )}
+            <div className="pr-6">
+              <p className="text-base font-semibold text-foreground">
                 Platna kartica
               </p>
-              <p className="text-sm leading-snug max-w-[22rem] text-muted-foreground">
-                Visa, Mastercard, Maestro, DinaCard · zaštićeno 3D Secure tehnologijom
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                Visa, Mastercard, Maestro, DinaCard · zaštićeno 3D Secure
+                tehnologijom
               </p>
             </div>
-            {method === "nestpay" && (
-              <Check className="ml-auto h-4 w-4 text-accent" />
-            )}
+            <div className="mt-auto flex h-14 items-center justify-around gap-3 rounded-lg bg-background px-4 ring-1 ring-border/30">
+              <Image
+                src="/branding/payments/visa.png"
+                alt="Visa"
+                width={48}
+                height={28}
+                className="h-7 w-auto object-contain"
+              />
+              <Image
+                src="/branding/payments/mastercard.svg"
+                alt="Mastercard"
+                width={36}
+                height={28}
+                className="h-7 w-auto object-contain"
+              />
+              <Image
+                src="/branding/payments/maestro.svg"
+                alt="Maestro"
+                width={36}
+                height={28}
+                className="h-7 w-auto object-contain"
+              />
+              <Image
+                src="/branding/payments/dinacard.png"
+                alt="DinaCard"
+                width={36}
+                height={28}
+                className="h-7 w-auto object-contain"
+              />
+            </div>
           </button>
 
           <button
             type="button"
             onClick={() => setMethod("paypal")}
-            className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${
+            className={`relative flex h-full flex-col gap-4 rounded-xl border p-5 text-left transition ${
               method === "paypal"
                 ? "border-accent bg-accent/5"
                 : "border-border/60 bg-background/40 hover:border-accent/40"
             }`}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#0070ba] text-white text-xs font-bold">
-              PP
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground">PayPal</p>
-              <p className="text-xs text-muted-foreground">
-                Sigurno plaćanje putem PayPal-a
+            {method === "paypal" && (
+              <Check className="absolute right-4 top-4 h-4 w-4 text-accent" />
+            )}
+            <div className="pr-6">
+              <p className="text-base font-semibold text-foreground">PayPal</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                Sigurno plaćanje putem PayPal-a · zaštita kupca
               </p>
             </div>
-            {method === "paypal" && (
-              <Check className="ml-auto h-4 w-4 text-accent" />
-            )}
+            <div className="mt-auto flex h-14 items-center justify-center rounded-lg bg-background px-4 ring-1 ring-border/30">
+              {/* PayPal official wordmark colors: navy #003087 + blue #0070ba */}
+              <span
+                aria-label="PayPal"
+                className="select-none text-2xl font-bold tracking-tight"
+                style={{ fontFamily: "ui-sans-serif, system-ui, sans-serif" }}
+              >
+                <span style={{ color: "#003087" }}>Pay</span>
+                <span style={{ color: "#0070ba" }}>Pal</span>
+              </span>
+            </div>
           </button>
         </div>
 

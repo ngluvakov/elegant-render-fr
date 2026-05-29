@@ -2,8 +2,8 @@
  * nestpay.ts — Banca Intesa Nestpay HPP payment initiation.
  *
  * Exports `initiateNestpayPayment` — called by the checkout payment
- * step picker when the customer chooses the "Kartica (Banca Intesa)"
- * tile. Returns `{ url, fields }` for a hidden auto-submitting form
+ * step picker when the customer chooses the "Platna kartica" tile.
+ * Returns `{ url, fields }` for a hidden auto-submitting form
  * that redirects the customer to the bank's hosted card-entry page.
  *
  * The bank clears in RSD (currency=941) regardless of buyer locale.

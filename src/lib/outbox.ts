@@ -49,17 +49,10 @@ import {
   sendPortalAccessEmail,
   sendProformaIssuedEmail,
   sendVrProjectReadyEmail,
-  type NestpayEmailConversion,
-  type NestpayEmailLineItem,
-  type NestpayEmailTransaction,
 } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { UPLOADS_BUCKET } from "@/lib/file-scan";
-import { billingCentsFromEurCents, formatBillingMoney } from "@/lib/billing";
-import {
-  PUBLIC_EUR_TO_RSD_RATE,
-  PUBLIC_SERBIA_VAT_RATE,
-} from "@/lib/catalog/display-currency";
+import { getNestpayReceiptData } from "@/lib/nestpay/receipt-data";
 
 // ─── Producer ────────────────────────────────────────────
 
@@ -436,21 +429,10 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
 };
 
 // ─── Nestpay email data builder ─────────────────────────
-
-type NestpayEmailData = {
-  to: string;
-  orderNumber: string;
-  customer: {
-    name: string | null;
-    email: string;
-    address: string | null;
-  };
-  lineItems: NestpayEmailLineItem[];
-  totals: { totalLabel: string; vatBreakdownLabel: string | null };
-  conversion: NestpayEmailConversion;
-  transaction: NestpayEmailTransaction;
-  retryUrl: string;
-};
+//
+// Data shape + Prisma query lives in src/lib/nestpay/receipt-data.ts so the
+// uspeh/neuspeh pages can reuse it. This wrapper adds the email-only fields:
+// recipient address and a portal retry URL.
 
 function getAuthUrl(): string {
   if (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL) {
@@ -459,102 +441,18 @@ function getAuthUrl(): string {
   return process.env.AUTH_URL ?? "http://localhost:3000";
 }
 
-async function loadNestpayEmailData(
-  orderId: string,
-): Promise<NestpayEmailData | null> {
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
-    include: {
-      items: true,
-      user: { select: { email: true, name: true } },
-    },
-  });
-  if (!order || !order.user.email) return null;
-
-  const billingCurrency = order.billingCurrency ?? "EUR";
-  const billingVatRate =
-    order.billingVatRate ??
-    (billingCurrency === "RSD" ? PUBLIC_SERBIA_VAT_RATE : 0);
-  const rate = order.billingEurToRsdRate ?? PUBLIC_EUR_TO_RSD_RATE;
-
-  const snapshot = { billingCurrency, billingEurToRsdRate: rate, billingVatRate };
-
-  const lineItems: NestpayEmailLineItem[] = order.items.map((line) => {
-    const eurTotalCents = line.totalCents ?? line.totalEur * 100;
-    const quantity =
-      line.kind === "ai_credits" && line.aiCreditQuantity
-        ? line.aiCreditQuantity
-        : 1;
-    const lineGrossCents = billingCentsFromEurCents(eurTotalCents, snapshot);
-    const unitGrossCents = Math.round(lineGrossCents / Math.max(1, quantity));
-    return {
-      label: line.productLabel,
-      quantity,
-      unitPriceLabel: formatBillingMoney(unitGrossCents, billingCurrency),
-      totalLabel: formatBillingMoney(lineGrossCents, billingCurrency),
-    };
-  });
-
-  const billingTotalCents =
-    order.billingTotalCents ??
-    billingCentsFromEurCents(
-      order.totalCents ?? order.totalEur * 100,
-      snapshot,
-    );
-
-  let vatBreakdownLabel: string | null = null;
-  if (billingCurrency === "RSD" && billingVatRate > 0) {
-    const grossUnits = billingTotalCents / 100;
-    const netUnits = Math.round(grossUnits / (1 + billingVatRate));
-    const vatUnits = grossUnits - netUnits;
-    const fmt = (n: number) =>
-      `${n.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`;
-    vatBreakdownLabel = `Osnovica ${fmt(netUnits)} + PDV (20%) ${fmt(vatUnits)}`;
-  }
-
-  const conversion: NestpayEmailConversion =
-    billingCurrency === "EUR" && order.nestpayChargedAmountCents
-      ? {
-          eurAmountLabel: formatBillingMoney(billingTotalCents, "EUR"),
-          rsdAmountLabel: formatBillingMoney(
-            order.nestpayChargedAmountCents,
-            "RSD",
-          ),
-          rate: order.nestpayChargeRate ?? rate,
-        }
-      : null;
-
-  const buyerAddressLines: string[] = [];
-  if (order.companyName) buyerAddressLines.push(order.companyName);
-  if (order.companyAddress) buyerAddressLines.push(order.companyAddress);
-  if (order.companyTaxId) buyerAddressLines.push(`PIB ${order.companyTaxId}`);
-
-  const transaction: NestpayEmailTransaction = {
-    oid: order.paymentId ?? "",
-    authCode: order.nestpayAuthCode ?? "",
-    transId: order.nestpayTransId ?? "",
-    response: order.nestpayProcReturnCode === "00" ? "Approved" : (order.nestpayResponseRaw && typeof order.nestpayResponseRaw === "object" && "Response" in order.nestpayResponseRaw ? String(order.nestpayResponseRaw.Response) : ""),
-    procReturnCode: order.nestpayProcReturnCode ?? "",
-    mdStatus: order.nestpayMdStatus ?? "",
-    trxDate: order.nestpayExtraTrxDate,
-  };
-
+async function loadNestpayEmailData(orderId: string) {
+  const data = await getNestpayReceiptData(orderId);
+  if (!data) return null;
   return {
-    to: order.user.email,
-    orderNumber: order.orderNumber,
-    customer: {
-      name: order.user.name,
-      email: order.user.email,
-      address: buyerAddressLines.length ? buyerAddressLines.join(", ") : null,
-    },
-    lineItems,
-    totals: {
-      totalLabel: formatBillingMoney(billingTotalCents, billingCurrency),
-      vatBreakdownLabel,
-    },
-    conversion,
-    transaction,
-    retryUrl: `${getAuthUrl()}/portal/porudzbine/${order.id}`,
+    to: data.customer.email,
+    orderNumber: data.orderNumber,
+    customer: data.customer,
+    lineItems: data.lineItems,
+    totals: data.totals,
+    conversion: data.conversion,
+    transaction: data.transaction,
+    retryUrl: `${getAuthUrl()}/portal/porudzbine/${orderId}`,
   };
 }
 

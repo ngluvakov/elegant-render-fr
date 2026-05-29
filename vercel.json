@@ -10,7 +10,7 @@
     },
     {
       "path": "/api/cron/outbox-processor",
-      "schedule": "0 4 * * *"
+      "schedule": "*/5 * * * *"
     },
     {
       "path": "/api/cron/invoice-reconcile",

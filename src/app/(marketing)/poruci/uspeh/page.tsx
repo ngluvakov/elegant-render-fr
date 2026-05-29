@@ -15,25 +15,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { buttonVariants } from "@/components/ui/button";
-import { formatBillingMoney } from "@/lib/billing";
-import { IMPRINT, formatAddress } from "@/lib/content/site";
+import { getNestpayReceiptData } from "@/lib/nestpay/receipt-data";
+import { NestpayReceipt } from "@/components/marketing/nestpay-receipt";
 
 export const dynamic = "force-dynamic";
 
 type PageProps = {
   searchParams: Promise<{ oid?: string }>;
 };
-
-function row(label: string, value: string | null | undefined) {
-  return (
-    <div className="flex flex-col gap-1 sm:flex-row sm:gap-4">
-      <dt className="min-w-[220px] text-sm text-muted-foreground">{label}</dt>
-      <dd className="break-all font-mono text-sm text-foreground">
-        {value || "—"}
-      </dd>
-    </div>
-  );
-}
 
 export default async function NestpaySuccessPage({ searchParams }: PageProps) {
   const { oid } = await searchParams;
@@ -43,38 +32,14 @@ export default async function NestpaySuccessPage({ searchParams }: PageProps) {
     where: { paymentId: oid, paymentProvider: "nestpay" },
     select: {
       id: true,
-      orderNumber: true,
-      totalEur: true,
-      totalCents: true,
-      billingCurrency: true,
-      billingTotalCents: true,
-      nestpayTransId: true,
-      nestpayAuthCode: true,
-      nestpayProcReturnCode: true,
-      nestpayMdStatus: true,
-      nestpayHostRefNum: true,
-      nestpayExtraTrxDate: true,
-      nestpayChargedAmountCents: true,
-      nestpayChargedCurrency: true,
       paymentStatus: true,
-      paymentId: true,
     },
   });
   if (!order) notFound();
+  if (order.paymentStatus !== "completed") notFound();
 
-  const billingCurrency = order.billingCurrency ?? "EUR";
-  const billingTotalCents =
-    order.billingTotalCents ?? (order.totalCents ?? order.totalEur * 100);
-  const billingLabel = formatBillingMoney(billingTotalCents, billingCurrency);
-  const chargedRsdLabel =
-    order.nestpayChargedAmountCents != null
-      ? formatBillingMoney(order.nestpayChargedAmountCents, "RSD")
-      : null;
-  const trxDateLabel = order.nestpayExtraTrxDate
-    ? order.nestpayExtraTrxDate.toLocaleString("sr-Latn-RS", { hour12: false })
-    : null;
-  const response =
-    order.nestpayProcReturnCode === "00" ? "Approved" : order.paymentStatus;
+  const receipt = await getNestpayReceiptData(order.id);
+  if (!receipt) notFound();
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 px-4 py-12">
@@ -92,56 +57,7 @@ export default async function NestpaySuccessPage({ searchParams }: PageProps) {
         </p>
       </div>
 
-      <section className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
-        <h2 className="text-lg font-semibold text-foreground">
-          Podaci o porudžbini
-        </h2>
-        <dl className="mt-4 space-y-2">
-          {row("Broj porudžbine", order.orderNumber)}
-          {row("Ukupno za naplatu", billingLabel)}
-          {chargedRsdLabel && billingCurrency === "EUR"
-            ? row(
-                "Naplaćeno u RSD (Izjava o konverziji)",
-                chargedRsdLabel,
-              )
-            : null}
-        </dl>
-      </section>
-
-      <section className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
-        <h2 className="text-lg font-semibold text-foreground">
-          Podaci o transakciji
-        </h2>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Parametri propisani standardom rada e-commerce prodajnog mesta
-          (Banca Intesa, poglavlje 2.7).
-        </p>
-        <dl className="mt-4 space-y-2">
-          {row("Broj narudžbine (order ID)", order.paymentId)}
-          {row("Autorizacioni kod (AuthCode)", order.nestpayAuthCode)}
-          {row("Identifikator transakcije (TransId)", order.nestpayTransId)}
-          {row("Status transakcije (Response)", response)}
-          {row("Kod statusa (ProcReturnCode)", order.nestpayProcReturnCode)}
-          {row("Statusni kod 3D transakcije (mdStatus)", order.nestpayMdStatus)}
-          {row("Datum transakcije (EXTRA.TRXDATE)", trxDateLabel)}
-          {row("Host ref. broj (HostRefNum)", order.nestpayHostRefNum)}
-        </dl>
-      </section>
-
-      <section className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
-        <h2 className="text-lg font-semibold text-foreground">Trgovac</h2>
-        <p className="mt-3 text-sm text-foreground">
-          <strong>{IMPRINT.shortName}</strong>
-          <br />
-          {IMPRINT.legalName}
-          <br />
-          PIB {IMPRINT.taxId} · MB {IMPRINT.registryNumber}
-          <br />
-          {formatAddress()}
-          <br />
-          {IMPRINT.email}
-        </p>
-      </section>
+      <NestpayReceipt data={receipt} variant="success" />
 
       <div className="flex flex-wrap gap-3">
         <Link

@@ -124,7 +124,7 @@ export function PendingPaymentCard({
             <CreditCard className="h-4 w-4" />
           </div>
           <span className="font-medium text-foreground">
-            Kartica (Banca Intesa)
+            Platna kartica
           </span>
           {method === "nestpay" && (
             <Check className="ml-auto h-3 w-3 text-accent" />

@@ -956,7 +956,7 @@ export async function sendPaymentSuccessEmail(args: {
 
   await send({
     to: args.to,
-    subject: `Potvrda plaćanja ${args.orderNumber} — Elegant Render`,
+    subject: `Elegant Render: vaša porudžbina je primljena — ${args.orderNumber}`,
     html: `
       <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
         <h2 style="color: #1C1A19;">Plaćanje uspešno</h2>

@@ -32,6 +32,24 @@ const nextConfig: NextConfig = {
         destination: "/usluge/prikazi-dvorista",
         permanent: true,
       },
+      // Legal page consolidation (Banca Intesa checkout compliance, 2026-05-29).
+      // Three documents merged into one — old URLs 307 to anchors on the new page.
+      // 307 (not 308) so the slug can evolve without hard CDN caching.
+      {
+        source: "/pravno/uslovi",
+        destination: "/pravno/uslovi-koriscenja#uslovi",
+        permanent: false,
+      },
+      {
+        source: "/pravno/privatnost",
+        destination: "/pravno/uslovi-koriscenja#privatnost",
+        permanent: false,
+      },
+      {
+        source: "/pravno/povracaj-sredstava",
+        destination: "/pravno/uslovi-koriscenja#povracaj",
+        permanent: false,
+      },
     ];
   },
 };

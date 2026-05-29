@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Check, CreditCard, Pencil } from "lucide-react";
+import { Check, Pencil } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -177,15 +178,18 @@ export function StepPayment() {
                 : "border-border/60 bg-background/40 hover:border-accent/40"
             }`}
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-foreground/10">
-              <CreditCard className="h-5 w-5 text-foreground" />
+            <div className="min-w-[96px] h-10 px-2 rounded-lg bg-background ring-1 ring-border/30 flex items-center gap-1.5 flex-shrink-0">
+              <Image src="/branding/payments/visa.png" alt="Visa" width={36} height={18} className="object-contain" style={{ height: 18, width: "auto" }} />
+              <Image src="/branding/payments/mastercard.svg" alt="Mastercard" width={18} height={18} className="object-contain" style={{ height: 18, width: "auto" }} />
+              <Image src="/branding/payments/maestro.svg" alt="Maestro" width={18} height={18} className="object-contain" style={{ height: 18, width: "auto" }} />
+              <Image src="/branding/payments/dinacard.png" alt="DinaCard" width={18} height={18} className="object-contain" style={{ height: 18, width: "auto" }} />
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">
-                Kartica (Banca Intesa)
+                Platna kartica
               </p>
-              <p className="text-xs text-muted-foreground">
-                Visa, Mastercard · 3D Secure
+              <p className="text-sm leading-snug max-w-[22rem] text-muted-foreground">
+                Visa, Mastercard, Maestro, DinaCard · zaštićeno 3D Secure tehnologijom
               </p>
             </div>
             {method === "nestpay" && (
@@ -244,34 +248,16 @@ export function StepPayment() {
                 aria-required
               />
               <span>
-                Saglasan/saglasna sam sa{" "}
+                Pročitao/la sam i prihvatam{" "}
                 <a
-                  href="/pravno/uslovi"
+                  href="/pravno/uslovi-koriscenja"
                   target="_blank"
                   rel="noreferrer"
                   className="text-accent underline"
                 >
-                  Opštim uslovima
-                </a>
-                ,{" "}
-                <a
-                  href="/pravno/privatnost"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-accent underline"
-                >
-                  Politikom privatnosti
+                  Pravna dokumenta
                 </a>{" "}
-                i{" "}
-                <a
-                  href="/pravno/povracaj-sredstava"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-accent underline"
-                >
-                  Politikom povraćaja sredstava
-                </a>
-                .
+                (Opšti uslovi, Politika privatnosti i Politika povraćaja sredstava).
               </span>
             </label>
 

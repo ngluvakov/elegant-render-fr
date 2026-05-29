@@ -1,110 +1,179 @@
 "use client";
 
 /**
- * PaymentTrustBadges — Bank-mandated brand badges for the checkout
- * footer. EPM standard 2.2 requires linking the official Visa Secure
- * and Mastercard ID Check pages alongside the issuing bank (Banca
- * Intesa).
+ * PaymentTrustBadges — BI EPM §2.2 three-group badge bar.
  *
- * Brand assets live in /public/branding/payments/. While those assets
- * are absent, each badge falls back to a styled text chip so the page
- * never shows browser broken-image icons. The fallback is enabled
- * with a per-badge onError handler — once you drop the official SVGs
- * in place, the images take over automatically without code changes.
+ * Group 1 (acceptance): Visa, Mastercard, Maestro, DinaCard.
+ * Group 2 (security):   Mastercard ID Check, Visa Secure — linked to
+ *                        official programme pages per EPM §2.2 requirement.
+ * Group 3 (issuer):     Banca Intesa AD Beograd.
  *
- * Used by: footer (site-wide) and the checkout payment step.
+ * Assets live in /public/branding/payments/. On image load error the
+ * alt text is rendered as plain text; no decorative chip fallback.
+ *
+ * Size variants:
+ *   default — py-3 px-6, logo h-5, between-group gap-8.
+ *   sm      — py-2 px-4, logo h-4, between-group gap-6.
  */
 
-import { useState } from "react";
+import Image from "next/image";
 
-type Badge = {
-  label: string;
-  src: string;
-  href: string;
-  ariaLabel: string;
+type Size = "default" | "sm";
+
+export type PaymentTrustBadgesProps = {
+  className?: string;
+  size?: Size;
 };
 
-const BADGES: Badge[] = [
+type Logo = {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  href?: string;
+  ariaLabel?: string;
+};
+
+const ACCEPTANCE: Logo[] = [
   {
-    label: "Visa",
-    src: "/branding/payments/visa.svg",
-    href: "https://rs.visa.com/pay-with-visa/security-and-assistance/protected-everywhere.html",
-    ariaLabel: "Visa kartice",
+    src: "/branding/payments/visa.png",
+    alt: "Visa",
+    width: 60,
+    height: 20,
   },
   {
-    label: "Visa Secure",
-    src: "/branding/payments/visa-secure.svg",
-    href: "https://rs.visa.com/pay-with-visa/security-and-assistance/protected-everywhere.html",
-    ariaLabel: "Visa Secure — 3D Secure autentifikacija",
-  },
-  {
-    label: "Mastercard",
     src: "/branding/payments/mastercard.svg",
-    href: "https://www.mastercard.rs/sr-rs/korisnici/pronadite-karticu.html",
-    ariaLabel: "Mastercard kartice",
+    alt: "Mastercard",
+    width: 32,
+    height: 20,
   },
   {
-    label: "Mastercard ID Check",
+    src: "/branding/payments/maestro.svg",
+    alt: "Maestro",
+    width: 32,
+    height: 20,
+  },
+  {
+    src: "/branding/payments/dinacard.png",
+    alt: "DinaCard",
+    width: 20,
+    height: 20,
+  },
+];
+
+const SECURITY: Logo[] = [
+  {
     src: "/branding/payments/mastercard-id-check.svg",
+    alt: "Mastercard ID Check",
+    width: 56,
+    height: 20,
     href: "https://www.mastercard.rs/sr-rs/korisnici/pronadite-karticu.html",
     ariaLabel: "Mastercard ID Check — 3D Secure autentifikacija",
   },
   {
-    label: "Banca Intesa",
-    src: "/branding/payments/banca-intesa.svg",
-    href: "https://www.bancaintesa.rs",
+    src: "/branding/payments/visa-secure.png",
+    alt: "Visa Secure",
+    width: 56,
+    height: 20,
+    href: "https://rs.visa.com/pay-with-visa/security-and-assistance/protected-everywhere.html",
+    ariaLabel: "Visa Secure — 3D Secure autentifikacija",
+  },
+];
+
+const ISSUER: Logo[] = [
+  {
+    src: "/branding/payments/banca-intesa.png",
+    alt: "Banca Intesa",
+    width: 80,
+    height: 20,
+    href: "https://www.bancaintesa.rs/",
     ariaLabel: "Banca Intesa AD Beograd — payment gateway",
   },
 ];
 
-export type PaymentTrustBadgesProps = {
-  className?: string;
-  size?: "sm" | "md";
-};
+function LogoImg({
+  logo,
+  height,
+}: {
+  logo: Logo;
+  height: number;
+}) {
+  const scale = height / logo.height;
+  const w = Math.round(logo.width * scale);
 
-export function PaymentTrustBadges({
-  className = "",
-  size = "md",
-}: PaymentTrustBadgesProps) {
-  const itemHeight = size === "sm" ? 18 : 22;
   return (
-    <ul
-      className={`flex flex-wrap items-center gap-2 ${className}`}
-      aria-label="Prihvaćeni načini plaćanja i sigurnosni standardi"
-    >
-      {BADGES.map((badge) => (
-        <li key={badge.label}>
-          <BadgeLink badge={badge} height={itemHeight} />
-        </li>
-      ))}
-    </ul>
+    <Image
+      src={logo.src}
+      alt={logo.alt}
+      width={w}
+      height={height}
+      className="object-contain"
+      style={{ height, width: "auto" }}
+    />
   );
 }
 
-function BadgeLink({ badge, height }: { badge: Badge; height: number }) {
-  const [imgFailed, setImgFailed] = useState(false);
+function LogoItem({ logo, height }: { logo: Logo; height: number }) {
+  if (logo.href) {
+    return (
+      <a
+        href={logo.href}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={logo.ariaLabel ?? logo.alt}
+        title={logo.ariaLabel ?? logo.alt}
+        className="inline-flex items-center"
+      >
+        <LogoImg logo={logo} height={height} />
+      </a>
+    );
+  }
+  return <LogoImg logo={logo} height={height} />;
+}
+
+function Divider() {
+  return <span className="w-px h-5 bg-border/30 flex-shrink-0" aria-hidden="true" />;
+}
+
+export function PaymentTrustBadges({
+  className = "",
+  size = "default",
+}: PaymentTrustBadgesProps) {
+  const isSm = size === "sm";
+  const logoH = isSm ? 16 : 20;
+  const padY = isSm ? "py-2" : "py-3";
+  const padX = isSm ? "px-4" : "px-6";
+  const betweenGap = isSm ? "gap-6" : "gap-8";
+
   return (
-    <a
-      href={badge.href}
-      target="_blank"
-      rel="noreferrer noopener"
-      className="inline-flex items-center justify-center rounded-md border border-border/40 bg-card/80 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-foreground/70 transition hover:border-accent/40 hover:text-foreground"
-      aria-label={badge.ariaLabel}
-      title={badge.ariaLabel}
-      style={{ minHeight: height + 8 }}
+    <div
+      className={`bg-background rounded-xl ring-1 ring-border/40 ${padY} ${padX} flex flex-row flex-wrap items-center ${betweenGap} ${className}`}
+      aria-label="Prihvaćeni načini plaćanja i sigurnosni standardi"
     >
-      {imgFailed ? (
-        <span aria-hidden>{badge.label}</span>
-      ) : (
-        <img
-          src={badge.src}
-          alt={badge.label}
-          loading="lazy"
-          className="w-auto object-contain"
-          style={{ height }}
-          onError={() => setImgFailed(true)}
-        />
-      )}
-    </a>
+      {/* Group 1: Acceptance */}
+      <div className="flex items-center gap-2">
+        {ACCEPTANCE.map((logo) => (
+          <LogoItem key={logo.alt} logo={logo} height={logoH} />
+        ))}
+      </div>
+
+      <Divider />
+
+      {/* Group 2: Security programmes */}
+      <div className="flex items-center gap-2">
+        {SECURITY.map((logo) => (
+          <LogoItem key={logo.alt} logo={logo} height={logoH} />
+        ))}
+      </div>
+
+      <Divider />
+
+      {/* Group 3: Issuer */}
+      <div className="flex items-center gap-2">
+        {ISSUER.map((logo) => (
+          <LogoItem key={logo.alt} logo={logo} height={logoH} />
+        ))}
+      </div>
+    </div>
   );
 }

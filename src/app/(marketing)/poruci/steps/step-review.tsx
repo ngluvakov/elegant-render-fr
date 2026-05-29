@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { track } from "@/lib/posthog-events";
@@ -354,15 +353,10 @@ export function StepReview() {
           className="h-3.5 w-3.5 flex-shrink-0 cursor-pointer accent-accent"
         />
         <span className="text-xs leading-relaxed text-muted-foreground">
-          Pristajem da izrada počne odmah i da time odustajem od 14-dnevnog
-          povlačenja.{" "}
-          <Link
-            href="/pravno/uslovi"
-            target="_blank"
-            className="text-foreground/80 underline-offset-4 hover:underline"
-          >
-            Detalji
-          </Link>
+          Pristajem da izrada počne odmah po potvrdi porudžbine. Razumem da
+          time, u skladu sa Zakonom o zaštiti potrošača, gubim pravo na
+          odustanak u roku od 14 dana, jer usluga počinje da se izvršava pre
+          isteka tog roka.
         </span>
       </label>
 

@@ -57,30 +57,16 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
   const amount = formatRsdAmount(input.amountRsdCents);
 
   // The set of params signed via HASHPARAMS. Order matters — the bank
-  // verifies by reading HASHPARAMSVAL in the same order. We include
-  // every param the bank meaningfully cares about for routing and
-  // amount, in a deterministic order.
-  const signedParams = [
-    { name: "clientid", value: config.clientId },
-    { name: "storetype", value: NESTPAY_STORE_TYPE },
-    { name: "hashAlgorithm", value: NESTPAY_HASH_ALGO },
-    { name: "trantype", value: config.tranType },
-    { name: "amount", value: amount },
-    { name: "currency", value: NESTPAY_CURRENCY_RSD },
-    { name: "oid", value: input.oid },
-    { name: "okUrl", value: input.returnUrl },
-    { name: "failUrl", value: input.returnUrl },
-    { name: "lang", value: input.lang ?? "sr" },
-    { name: "rnd", value: rnd },
-    { name: "encoding", value: NESTPAY_ENCODING },
-  ];
-
-  const { hash, hashParams, hashParamsVal } = buildHashWithParams(
-    signedParams,
-    config.storeKey,
-  );
-
-  const fields: Record<string, string> = {
+  // verifies by reading HASHPARAMSVAL in the same order. BIB Nestpay
+  // error responses echo HASHPARAMS = "clientid|oid|rnd" as their
+  // own canonical pattern, which is the minimum required to identify
+  // the merchant/attempt/nonce. Signing more params is permitted but
+  // some BIB deployments reject anything beyond this minimum, so we
+  // default to the 3-field signature and allow override via
+  // NESTPAY_HASH_PARAMS env (pipe-separated names) if the bank ever
+  // asks for a longer list.
+  const customHashParams = process.env.NESTPAY_HASH_PARAMS;
+  const formData: Record<string, string> = {
     clientid: config.clientId,
     storetype: NESTPAY_STORE_TYPE,
     hashAlgorithm: NESTPAY_HASH_ALGO,
@@ -93,6 +79,24 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
     lang: input.lang ?? "sr",
     rnd,
     encoding: NESTPAY_ENCODING,
+  };
+
+  const hashParamNames = customHashParams
+    ? customHashParams.split("|").map((n) => n.trim()).filter(Boolean)
+    : ["clientid", "oid", "rnd"];
+
+  const signedParams = hashParamNames.map((name) => ({
+    name,
+    value: formData[name] ?? "",
+  }));
+
+  const { hash, hashParams, hashParamsVal } = buildHashWithParams(
+    signedParams,
+    config.storeKey,
+  );
+
+  const fields: Record<string, string> = {
+    ...formData,
     HASHPARAMS: hashParams,
     HASHPARAMSVAL: hashParamsVal,
     hash,

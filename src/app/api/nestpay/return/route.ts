@@ -14,6 +14,7 @@
  * Hash mismatch is treated as a potential tamper attempt: HTTP 400,
  * Sentry alert, no DB writes, generic redirect with no oid leaked.
  */
+import { createHash } from "node:crypto";
 import * as Sentry from "@sentry/nextjs";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
@@ -93,6 +94,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       process.env.NESTPAY_HASH_DEBUG === "1" &&
       process.env.NEXT_PUBLIC_NESTPAY_MODE !== "live"
     ) {
+      // SHA-256 of the storeKey so the user can prove env value === MC value
+      // locally without leaking the key. They run:
+      //   echo -n "their-store-key" | sha256sum
+      // and compare the first 16 hex chars to storeKeySha256.
+      const storeKeySha256 = createHash("sha256")
+        .update(config.storeKey, "utf8")
+        .digest("hex")
+        .slice(0, 16);
       return NextResponse.json(
         {
           error: "Hash verification failed (debug mode)",
@@ -101,6 +110,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           attempts: verification.attempts ?? null,
           storeKeyLength: config.storeKey.length,
           storeKeyFingerprint: `${config.storeKey.slice(0, 2)}…${config.storeKey.slice(-2)}`,
+          storeKeySha256,
+          clientId: config.clientId,
           fields,
         },
         { status: 400 },

@@ -31,7 +31,14 @@ function randomSuffix(length: number): string {
 export function mintOid(orderNumber: string, prefix: string): string {
   const cleanNumber = orderNumber.replace(/[\\|]/g, "");
   const cleanPrefix = prefix.replace(/[\\|]/g, "");
-  const candidate = `${cleanPrefix}${cleanNumber}-${randomSuffix(6)}`;
+  // Avoid prefix doubling when Order.orderNumber already starts with
+  // the configured prefix (e.g. orderNumber "ER-20260529-J3PT" +
+  // prefix "ER-" should not yield "ER-ER-20260529-J3PT-…").
+  const numberPart =
+    cleanPrefix && cleanNumber.startsWith(cleanPrefix)
+      ? cleanNumber
+      : `${cleanPrefix}${cleanNumber}`;
+  const candidate = `${numberPart}-${randomSuffix(6)}`;
   // Bank field length cap for oid is 64. Our pattern lands well under,
   // but truncate defensively.
   return candidate.slice(0, 60);

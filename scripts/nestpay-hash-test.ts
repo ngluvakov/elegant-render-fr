@@ -1,18 +1,19 @@
 /**
- * nestpay-hash-test.ts — Sanity tests for the Nestpay hash helpers.
+ * nestpay-hash-test.ts — Sanity tests for the Nestpay HASHPARAMS hash.
  *
  * Run: npx tsx scripts/nestpay-hash-test.ts
  *
  * Exercises:
- *   1. Request-side hash determinism + length (SHA-512 base64 = 88 chars).
- *   2. Response-side alphabetical sort, escape, and verify round-trip.
- *   3. Response hash mismatch is rejected.
+ *   1. buildHashWithParams determinism + length (SHA-512 base64 = 88).
+ *   2. HASHPARAMSVAL is pipe-joined and escaped.
+ *   3. Verification round-trip via HASHPARAMSVAL field.
+ *   4. Tamper / wrong storeKey rejection.
+ *   5. Case-insensitive HASH field lookup (bank uses uppercase).
  *
  * No DB or env required — the helpers are pure.
  */
 import {
-  buildRequestHashVer2,
-  buildResponseHashVer2,
+  buildHashWithParams,
   verifyResponseHash,
 } from "../src/lib/nestpay/hash";
 
@@ -27,118 +28,148 @@ function assert(condition: boolean, label: string) {
   }
 }
 
-function caseRequestHash() {
-  console.log("\n[case] request hash — ver2 positional");
-  const hash = buildRequestHashVer2({
-    clientId: "13IN999999",
-    oid: "ER-1001-AB12CD",
-    amount: "29300.00",
-    okUrl: "https://elegantrender.rs/api/nestpay/return",
-    failUrl: "https://elegantrender.rs/api/nestpay/return",
-    tranType: "Auth",
-    rnd: "8d5a3b4f6e2c1a9b0d4f",
-    currency: "941",
-    storeKey: "TEST-store-key-xyz",
-  });
-  assert(typeof hash === "string", "returns a string");
-  assert(hash.length === 88, `length === 88 (got ${hash.length})`);
-  assert(/^[A-Za-z0-9+/=]+$/.test(hash), "base64 character set");
-
-  const hash2 = buildRequestHashVer2({
-    clientId: "13IN999999",
-    oid: "ER-1001-AB12CD",
-    amount: "29300.00",
-    okUrl: "https://elegantrender.rs/api/nestpay/return",
-    failUrl: "https://elegantrender.rs/api/nestpay/return",
-    tranType: "Auth",
-    rnd: "8d5a3b4f6e2c1a9b0d4f",
-    currency: "941",
-    storeKey: "TEST-store-key-xyz",
-  });
-  assert(hash === hash2, "deterministic for identical inputs");
-
-  const hash3 = buildRequestHashVer2({
-    clientId: "13IN999999",
-    oid: "ER-1001-AB12CD",
-    amount: "29300.00",
-    okUrl: "https://elegantrender.rs/api/nestpay/return",
-    failUrl: "https://elegantrender.rs/api/nestpay/return",
-    tranType: "Auth",
-    rnd: "different-rnd-value-here-1234",
-    currency: "941",
-    storeKey: "TEST-store-key-xyz",
-  });
-  assert(hash !== hash3, "differs when rnd changes");
-}
-
-function caseResponseHashRoundtrip() {
-  console.log("\n[case] response hash — verify round-trip");
+function caseBuildHash() {
+  console.log("\n[case] buildHashWithParams — happy path");
   const storeKey = "TEST-store-key-xyz";
-  const fields: Record<string, string> = {
-    clientid: "13IN999999",
-    oid: "ER-1001-AB12CD",
-    amount: "29300.00",
-    Response: "Approved",
-    AuthCode: "ABC123",
-    TransId: "20260529001",
-    ProcReturnCode: "00",
-    mdStatus: "1",
-    HostRefNum: "999000111222",
-    EXTRA_TRXDATE: "20260529120304",
-    encoding: "utf-8",
-  };
-  const hash = buildResponseHashVer2(fields, storeKey);
-  assert(hash.length === 88, `length === 88 (got ${hash.length})`);
-  const verified = verifyResponseHash({ ...fields, hash }, storeKey);
-  assert(verified, "verifyResponseHash returns true for matching hash");
+  const params = [
+    { name: "clientid", value: "13IN999999" },
+    { name: "oid", value: "ER-1001-AB12CD" },
+    { name: "amount", value: "29300.00" },
+    { name: "okUrl", value: "https://elegantrender.rs/api/nestpay/return" },
+    { name: "failUrl", value: "https://elegantrender.rs/api/nestpay/return" },
+    { name: "trantype", value: "Auth" },
+    { name: "rnd", value: "8d5a3b4f6e2c1a9b0d4f" },
+    { name: "currency", value: "941" },
+  ];
+  const { hash, hashParams, hashParamsVal } = buildHashWithParams(
+    params,
+    storeKey,
+  );
+  assert(typeof hash === "string", "hash is a string");
+  assert(hash.length === 88, `hash length === 88 (got ${hash.length})`);
+  assert(/^[A-Za-z0-9+/=]+$/.test(hash), "hash is base64");
+  assert(
+    hashParams === "clientid|oid|amount|okUrl|failUrl|trantype|rnd|currency",
+    "HASHPARAMS lists names in order",
+  );
+  assert(
+    hashParamsVal ===
+      "13IN999999|ER-1001-AB12CD|29300.00|https://elegantrender.rs/api/nestpay/return|https://elegantrender.rs/api/nestpay/return|Auth|8d5a3b4f6e2c1a9b0d4f|941",
+    "HASHPARAMSVAL joins values in order",
+  );
+
+  const result2 = buildHashWithParams(params, storeKey);
+  assert(result2.hash === hash, "deterministic for identical inputs");
+
+  const result3 = buildHashWithParams(
+    [...params, { name: "extra", value: "newvalue" }],
+    storeKey,
+  );
+  assert(result3.hash !== hash, "differs when a param is added");
 }
 
-function caseResponseHashTamper() {
-  console.log("\n[case] response hash — tamper detection");
+function caseEscape() {
+  console.log("\n[case] buildHashWithParams — pipe and backslash escape");
+  const { hashParamsVal } = buildHashWithParams(
+    [{ name: "description", value: "value with | pipe and \\ backslash" }],
+    "key",
+  );
+  assert(
+    hashParamsVal === "value with \\| pipe and \\\\ backslash",
+    "values are pipe and backslash escaped",
+  );
+}
+
+function caseVerifyRoundtrip() {
+  console.log("\n[case] verifyResponseHash — round-trip");
   const storeKey = "TEST-store-key-xyz";
-  const fields: Record<string, string> = {
-    clientid: "13IN999999",
-    oid: "ER-1001-AB12CD",
-    amount: "29300.00",
+  const params = [
+    { name: "clientid", value: "13IN999999" },
+    { name: "oid", value: "ER-1001-AB12CD" },
+    { name: "rnd", value: "abc123" },
+  ];
+  const { hash, hashParams, hashParamsVal } = buildHashWithParams(
+    params,
+    storeKey,
+  );
+  // Bank uses uppercase HASH; we look up case-insensitively.
+  const responseFields = {
+    HASH: hash,
+    HASHPARAMS: hashParams,
+    HASHPARAMSVAL: hashParamsVal,
     Response: "Approved",
-    AuthCode: "ABC123",
-    TransId: "20260529001",
-    ProcReturnCode: "00",
-    mdStatus: "1",
-    HostRefNum: "999000111222",
-    EXTRA_TRXDATE: "20260529120304",
-    encoding: "utf-8",
   };
-  const hash = buildResponseHashVer2(fields, storeKey);
-  // Hostile actor flips the amount but doesn't have the storeKey to
-  // recompute the hash.
-  const tampered = { ...fields, hash, amount: "1.00" };
-  const verified = verifyResponseHash(tampered, storeKey);
-  assert(!verified, "verifyResponseHash returns false when a field is changed");
-
-  // Wrong storeKey on our side (env misconfigured) also fails.
-  const wrongKey = verifyResponseHash({ ...fields, hash }, "wrong-store-key");
-  assert(!wrongKey, "verifyResponseHash returns false with the wrong storeKey");
+  const result = verifyResponseHash(responseFields, storeKey);
+  assert(result.ok, `verification ok (reason: ${result.reason ?? "n/a"})`);
 }
 
-function caseResponseHashEscape() {
-  console.log("\n[case] response hash — escapes pipe and backslash");
-  const storeKey = "key|with|pipes";
-  const fields: Record<string, string> = {
-    description: 'value with | pipe and \\ backslash',
-    oid: "ER-1001",
-    encoding: "utf-8",
-  };
-  const hash = buildResponseHashVer2(fields, storeKey);
-  assert(hash.length === 88, "still 88 chars after escape");
-  const verified = verifyResponseHash({ ...fields, hash }, storeKey);
-  assert(verified, "round-trips when both sides apply the same escape");
+function caseVerifyLowercaseHash() {
+  console.log("\n[case] verifyResponseHash — lowercase hash field also works");
+  const storeKey = "TEST-store-key-xyz";
+  const { hash, hashParams, hashParamsVal } = buildHashWithParams(
+    [{ name: "clientid", value: "X" }],
+    storeKey,
+  );
+  const result = verifyResponseHash(
+    {
+      hash, // lowercase
+      HASHPARAMS: hashParams,
+      HASHPARAMSVAL: hashParamsVal,
+    },
+    storeKey,
+  );
+  assert(result.ok, "lowercase 'hash' field also verifies");
 }
 
-caseRequestHash();
-caseResponseHashRoundtrip();
-caseResponseHashTamper();
-caseResponseHashEscape();
+function caseVerifyTamper() {
+  console.log("\n[case] verifyResponseHash — tamper detection");
+  const storeKey = "TEST-store-key-xyz";
+  const { hash, hashParams, hashParamsVal } = buildHashWithParams(
+    [{ name: "clientid", value: "X" }],
+    storeKey,
+  );
+  const tampered = verifyResponseHash(
+    {
+      HASH: hash,
+      HASHPARAMS: hashParams,
+      HASHPARAMSVAL: hashParamsVal + "|injected",
+    },
+    storeKey,
+  );
+  assert(!tampered.ok, "tampered HASHPARAMSVAL fails");
+  assert(tampered.reason === "mismatch", "reason is mismatch");
 
-console.log(`\n${failures === 0 ? "All hash sanity checks passed." : `FAILED: ${failures} check(s) failed.`}`);
+  const wrongKey = verifyResponseHash(
+    {
+      HASH: hash,
+      HASHPARAMS: hashParams,
+      HASHPARAMSVAL: hashParamsVal,
+    },
+    "wrong-store-key",
+  );
+  assert(!wrongKey.ok, "wrong storeKey fails");
+}
+
+function caseVerifyMissingPieces() {
+  console.log("\n[case] verifyResponseHash — missing fields");
+  const noHash = verifyResponseHash({ HASHPARAMSVAL: "x|y" }, "k");
+  assert(!noHash.ok && noHash.reason === "no-hash", "missing HASH → no-hash");
+
+  const noVal = verifyResponseHash({ HASH: "abc" }, "k");
+  assert(
+    !noVal.ok && noVal.reason === "no-hashparamsval",
+    "missing HASHPARAMSVAL → no-hashparamsval",
+  );
+}
+
+caseBuildHash();
+caseEscape();
+caseVerifyRoundtrip();
+caseVerifyLowercaseHash();
+caseVerifyTamper();
+caseVerifyMissingPieces();
+
+console.log(
+  `\n${failures === 0 ? "All hash sanity checks passed." : `FAILED: ${failures} check(s) failed.`}`,
+);
 process.exit(failures === 0 ? 0 : 1);

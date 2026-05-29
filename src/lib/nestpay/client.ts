@@ -2,10 +2,17 @@
  * client.ts — Builds the Nestpay HPP request form.
  *
  * `buildHostedPaymentForm` returns the `{ url, fields }` that the
- * client-side auto-submit form will POST to the bank. The bank then
+ * client-side auto-submit form POSTs to the bank. The bank then
  * renders its hosted card-entry page, runs 3DS, and POSTs the result
  * back to our okUrl/failUrl. The merchant secret (StoreKey) is used
  * to compute the request hash; it is NOT included in the POST body.
+ *
+ * Hash format is HASHPARAMS-based ver2 — we declare which params we
+ * signed via the HASHPARAMS form field, the pipe-joined escaped
+ * values via HASHPARAMSVAL, and the SHA-512 hash via `hash`. The
+ * bank's verifier reads HASHPARAMSVAL and recomputes with its stored
+ * StoreKey, so as long as both sides escape the same way the request
+ * authenticates.
  *
  * Both `okUrl` and `failUrl` point at the same internal endpoint —
  * `/api/nestpay/return` — because the bank's `Response` field is the
@@ -14,7 +21,7 @@
  *
  * Used by: server/actions/nestpay
  */
-import { buildRequestHashVer2 } from "./hash";
+import { buildHashWithParams } from "./hash";
 import { mintRnd } from "./oid";
 import { getNestpayConfig } from "./config";
 
@@ -49,17 +56,29 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
   const rnd = mintRnd();
   const amount = formatRsdAmount(input.amountRsdCents);
 
-  const hash = buildRequestHashVer2({
-    clientId: config.clientId,
-    oid: input.oid,
-    amount,
-    okUrl: input.returnUrl,
-    failUrl: input.returnUrl,
-    tranType: config.tranType,
-    rnd,
-    currency: NESTPAY_CURRENCY_RSD,
-    storeKey: config.storeKey,
-  });
+  // The set of params signed via HASHPARAMS. Order matters — the bank
+  // verifies by reading HASHPARAMSVAL in the same order. We include
+  // every param the bank meaningfully cares about for routing and
+  // amount, in a deterministic order.
+  const signedParams = [
+    { name: "clientid", value: config.clientId },
+    { name: "storetype", value: NESTPAY_STORE_TYPE },
+    { name: "hashAlgorithm", value: NESTPAY_HASH_ALGO },
+    { name: "trantype", value: config.tranType },
+    { name: "amount", value: amount },
+    { name: "currency", value: NESTPAY_CURRENCY_RSD },
+    { name: "oid", value: input.oid },
+    { name: "okUrl", value: input.returnUrl },
+    { name: "failUrl", value: input.returnUrl },
+    { name: "lang", value: input.lang ?? "sr" },
+    { name: "rnd", value: rnd },
+    { name: "encoding", value: NESTPAY_ENCODING },
+  ];
+
+  const { hash, hashParams, hashParamsVal } = buildHashWithParams(
+    signedParams,
+    config.storeKey,
+  );
 
   const fields: Record<string, string> = {
     clientid: config.clientId,
@@ -74,6 +93,8 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
     lang: input.lang ?? "sr",
     rnd,
     encoding: NESTPAY_ENCODING,
+    HASHPARAMS: hashParams,
+    HASHPARAMSVAL: hashParamsVal,
     hash,
   };
 

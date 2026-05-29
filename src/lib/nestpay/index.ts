@@ -1,10 +1,11 @@
 export { getNestpayConfig } from "./config";
 export type { NestpayConfig, NestpayMode, NestpayTranType } from "./config";
 
-export {
-  buildRequestHashVer2,
-  buildResponseHashVer2,
-  verifyResponseHash,
+export { buildHashWithParams, verifyResponseHash } from "./hash";
+export type {
+  NestpayHashParam,
+  NestpayHashOutput,
+  VerifyResponseHashResult,
 } from "./hash";
 
 export { mintOid, mintRnd } from "./oid";

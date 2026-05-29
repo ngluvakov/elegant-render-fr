@@ -1,103 +1,109 @@
 /**
- * hash.ts — Nestpay HASH ver2 builder and verifier.
+ * hash.ts — Nestpay HASH ver2 builder and verifier (HASHPARAMS form).
  *
- * Two flavors per the bank's "3D Pay Hosting" spec (ISPC_Nestpay_
- * Merchant_Integration_3D_PayHosting.pdf, ch. 3 + appendix A):
+ * Modern Asseco/BIB Nestpay ver2 uses an explicit HASHPARAMS layout
+ * instead of the legacy positional template. We declare which params
+ * we signed (HASHPARAMS), the pipe-joined escaped values (HASHPARAMSVAL),
+ * and the hash:
  *
- *   1. REQUEST hash — positional plaintext with predefined empty slots
- *      where unused parameters would go. Spec format:
+ *   HASH = base64( SHA-512( HASHPARAMSVAL + "|" + escape(StoreKey) ) )
  *
- *      clientid|oid|amount|okurl|failurl|trantype||rnd||||currency|StoreKey
+ * The bank's verifier reads HASHPARAMSVAL, appends its stored StoreKey,
+ * SHA-512s, and compares. On error responses the bank echoes its own
+ * HASH + HASHPARAMS + HASHPARAMSVAL so we can verify the response with
+ * the exact same algorithm — no sort heuristics needed.
  *
- *      Send `hash = base64(SHA-512(plaintext))` as a form field on the
- *      POST to /fim/est3Dgate.
+ * Escape rule (Asseco spec): backslash first, then pipe.
+ *   `\` → `\\`
+ *   `|` → `\|`
  *
- *   2. RESPONSE hash — bank POSTs back to okUrl/failUrl with a `hash`
- *      field that authenticates the response. Plaintext is all received
- *      form fields except `hash` and `encoding`, sorted alphabetically
- *      by key (case-insensitive), values pipe-joined with `\` and `|`
- *      escaped, then `|StoreKey` appended. Same SHA-512 → base64.
+ * StoreKey escapes the same way (it's the merchant secret and rarely
+ * contains these characters, but the spec says to escape it).
  *
- * StoreKey is the merchant secret. It never appears in the POST body,
- * only inside the hash plaintext. Test and live keys differ; rotate
- * the live key every ~3 months per bank guidance.
- *
- * Used by: client.ts (request side) and the /api/nestpay/return route
- * handler (response side).
+ * Used by: client.ts (request side) and /api/nestpay/return route
+ * (response side).
  */
 import { createHash } from "node:crypto";
 
-export type NestpayRequestHashInput = {
-  clientId: string;
-  oid: string;
-  amount: string;
-  okUrl: string;
-  failUrl: string;
-  tranType: string;
-  rnd: string;
-  currency: string;
-  storeKey: string;
+export type NestpayHashParam = {
+  name: string;
+  value: string;
 };
 
-export function buildRequestHashVer2(input: NestpayRequestHashInput): string {
-  const plain = [
-    input.clientId,
-    input.oid,
-    input.amount,
-    input.okUrl,
-    input.failUrl,
-    input.tranType,
-    "",
-    input.rnd,
-    "",
-    "",
-    "",
-    input.currency,
-    input.storeKey,
-  ].join("|");
+export type NestpayHashOutput = {
+  hash: string;
+  hashParams: string;
+  hashParamsVal: string;
+};
 
-  return createHash("sha512").update(plain, "utf8").digest("base64");
-}
-
-// Backslash and pipe inside a value would otherwise collide with the
-// outer pipe separator. Per the Nestpay ver2 spec the escape order is
-// backslash FIRST so a literal `\|` in a value becomes `\\\|` rather
-// than `\\|` (which would round-trip incorrectly).
-function escapeFieldValue(value: string): string {
+function escapeValue(value: string): string {
   return value.replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
 }
 
-export function buildResponseHashVer2(
-  fields: Record<string, string>,
+export function buildHashWithParams(
+  params: NestpayHashParam[],
   storeKey: string,
-): string {
-  const keys = Object.keys(fields)
-    .filter((k) => k.toLowerCase() !== "hash" && k.toLowerCase() !== "encoding")
-    .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-
-  const parts: string[] = [];
-  for (const key of keys) {
-    parts.push(escapeFieldValue(fields[key] ?? ""));
-  }
-  parts.push(escapeFieldValue(storeKey));
-
-  const plain = parts.join("|");
-  return createHash("sha512").update(plain, "utf8").digest("base64");
+): NestpayHashOutput {
+  const hashParams = params.map((p) => p.name).join("|");
+  const escapedValues = params.map((p) => escapeValue(p.value ?? ""));
+  const hashParamsVal = escapedValues.join("|");
+  const plaintext = `${hashParamsVal}|${escapeValue(storeKey)}`;
+  const hash = createHash("sha512").update(plaintext, "utf8").digest("base64");
+  return { hash, hashParams, hashParamsVal };
 }
+
+// Case-insensitive lookup — bank fields are mixed case (HASH vs hash,
+// AuthCode vs authCode). Returns the first matching key's value.
+function lookupCI(
+  fields: Record<string, string>,
+  name: string,
+): string | undefined {
+  if (fields[name] !== undefined) return fields[name];
+  const lower = name.toLowerCase();
+  for (const key of Object.keys(fields)) {
+    if (key.toLowerCase() === lower) return fields[key];
+  }
+  return undefined;
+}
+
+export type VerifyResponseHashResult = {
+  ok: boolean;
+  // Why it failed — for diagnostics. "no-hash" = bank didn't send HASH
+  // at all; "no-hashparamsval" = bank used a non-HASHPARAMS format
+  // we don't know how to verify; "mismatch" = computed != received.
+  reason?: "no-hash" | "no-hashparamsval" | "mismatch";
+  receivedHash?: string;
+  computedHash?: string;
+};
 
 export function verifyResponseHash(
   fields: Record<string, string>,
   storeKey: string,
-): boolean {
-  const expected = buildResponseHashVer2(fields, storeKey);
-  const received = fields.hash ?? "";
-  if (expected.length !== received.length) return false;
-  // Constant-time compare to avoid leaking length / position info via
-  // timing. Both are base64 SHA-512 → 88 chars, so the length guard
-  // above already short-circuits common mismatches.
-  let mismatch = 0;
-  for (let i = 0; i < expected.length; i++) {
-    mismatch |= expected.charCodeAt(i) ^ received.charCodeAt(i);
+): VerifyResponseHashResult {
+  const receivedHash = lookupCI(fields, "HASH") ?? lookupCI(fields, "hash");
+  if (!receivedHash) {
+    return { ok: false, reason: "no-hash" };
   }
-  return mismatch === 0;
+
+  const hashParamsVal = lookupCI(fields, "HASHPARAMSVAL");
+  if (hashParamsVal === undefined) {
+    return { ok: false, reason: "no-hashparamsval", receivedHash };
+  }
+
+  const plaintext = `${hashParamsVal}|${escapeValue(storeKey)}`;
+  const computed = createHash("sha512")
+    .update(plaintext, "utf8")
+    .digest("base64");
+
+  if (computed.length !== receivedHash.length) {
+    return { ok: false, reason: "mismatch", receivedHash, computedHash: computed };
+  }
+  let mismatch = 0;
+  for (let i = 0; i < computed.length; i++) {
+    mismatch |= computed.charCodeAt(i) ^ receivedHash.charCodeAt(i);
+  }
+  if (mismatch !== 0) {
+    return { ok: false, reason: "mismatch", receivedHash, computedHash: computed };
+  }
+  return { ok: true, receivedHash, computedHash: computed };
 }

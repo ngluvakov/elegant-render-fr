@@ -18,6 +18,7 @@ import * as Sentry from "@sentry/nextjs";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import {
+  buildResponseHashVer2,
   getNestpayConfig,
   isApprovedResponse,
   parseNestpayReturn,
@@ -75,6 +76,39 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       tags: { area: "payment", flow: "nestpay-return", stage: "verify-hash" },
       extra: { keys: Object.keys(fields), oid: fields.oid ?? null },
     });
+
+    // Diagnostic mode — enabled by setting NESTPAY_HASH_DEBUG=1 in env.
+    // Returns the full picture (received vs computed hash, sorted keys
+    // used, all bank-posted fields) so you can see exactly why the
+    // verification failed. NEVER leave this enabled in production:
+    //   - StoreKey leaks indirectly via the computed-hash value
+    //   - Bank-posted fields may include cardholder fragments
+    // Reject for the live mode regardless of the flag.
+    if (
+      process.env.NESTPAY_HASH_DEBUG === "1" &&
+      process.env.NEXT_PUBLIC_NESTPAY_MODE !== "live"
+    ) {
+      const sortedKeys = Object.keys(fields)
+        .filter(
+          (k) => k.toLowerCase() !== "hash" && k.toLowerCase() !== "encoding",
+        )
+        .sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+      const computed = buildResponseHashVer2(fields, config.storeKey);
+      return NextResponse.json(
+        {
+          error: "Hash verification failed (debug mode)",
+          received: fields.hash ?? null,
+          computed,
+          match: computed === (fields.hash ?? ""),
+          sortedKeys,
+          storeKeyLength: config.storeKey.length,
+          storeKeyFingerprint: `${config.storeKey.slice(0, 2)}…${config.storeKey.slice(-2)}`,
+          fields,
+        },
+        { status: 400 },
+      );
+    }
+
     // Don't leak which field tripped the check; bank-side replay or
     // unrelated POSTs both look the same to a hostile observer.
     return new NextResponse("Hash verification failed", { status: 400 });

@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-05-30 - Google Ads/GTM conversion inventory
+
+- **Oblast promene:** conversion | docs
+- **Šta se promenilo:** Dodat je handoff dokument sa kompletnom mapom platformskih konverzija za Google Ads, GA4 i Google Tag Manager planiranje.
+- **Zašto:** Kampanje treba da optimizuju samo stvarne business konverzije, uz jasnu razliku između revenue, lead, micro-conversion i diagnostic signala.
+- **Uticaj na conversion:** Omogućava sledećem agentu da planira primary/secondary Ads konverzije bez nagađanja i da ne tretira payment start ili admin-only događaje kao kupovinu.
+- **Uticaj na design:** Nema.
+- **Uticaj na code:** Nema runtime promene; dokument posebno beleži da pre Ads launch-a treba proveriti hardcoded GTM bootstrap u `src/app/layout.tsx` u odnosu na consent dokumentaciju.
+- **Uticaj na docs:** Novi `docs/google-ads-gtm-conversions.md` i ovaj decision log entry.
+- **Povezani fajlovi:** `docs/google-ads-gtm-conversions.md`, `docs/platform-decisions.md`, `src/lib/posthog-events.ts`, `src/app/layout.tsx`
+- **Reference:** User request: "Napravi full listu i .md za sve vrste konverzija..." i odobren Google Ads / GTM Conversion Inventory plan.
+
 ## 2026-05-29 - Turnstile uslov usklađen za NestPay iniciranje
 
 - **Oblast promene:** payments | auth | order lifecycle

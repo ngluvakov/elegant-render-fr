@@ -16,26 +16,48 @@
 "use client";
 
 import { Suspense, useEffect, useRef } from "react";
-import { ChevronDown, Plus, Sparkles } from "lucide-react";
+import { ArrowRight, ChevronDown, Plus, Sparkles } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 import { QuoteProvider, useQuote } from "./quote-context";
 import { AiCreditAdder } from "./ai-credit-adder";
 import { QuoteItemCard } from "./quote-item";
 import { QuoteSummary } from "./quote-summary";
 import { MobileQuoteBar } from "./mobile-quote-bar";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
-import type { DisplayCurrency } from "@/lib/catalog/display-currency";
+import {
+  formatPublicPrice,
+  type DisplayCurrency,
+} from "@/lib/catalog/display-currency";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import { loadQuote } from "@/server/actions/quote";
 import { track } from "@/lib/posthog-events";
+import { stashCheckoutQuote } from "@/lib/checkout-session";
 
 export function ConfiguratorBody({
   hideQuoteSummary = false,
 }: { hideQuoteSummary?: boolean } = {}) {
-  const { calculation, addProduct, loadItems, pricingCatalog } = useQuote();
+  const {
+    items,
+    calculation,
+    addProduct,
+    loadItems,
+    pricingCatalog,
+    displayCurrency,
+    pricingSettings,
+  } = useQuote();
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const handleOrder = () => {
+    stashCheckoutQuote(items);
+    track("checkout_started", {
+      cart_size: calculation.items.length,
+      total_eur: calculation.total,
+    });
+    router.push("/poruci");
+  };
   const sharedToken = searchParams.get("q");
   const prefillProductId = searchParams.get("add");
   const prefillSourceMode = searchParams.get("sourceMode") ?? undefined;
@@ -185,6 +207,29 @@ export function ConfiguratorBody({
                 <Plus className="h-4 w-4" />
                 Dodaj još jednu uslugu
               </button>
+              <div className="mt-6 border-t border-border/40 pt-5">
+                <div className="mb-3 flex items-baseline justify-between gap-3">
+                  <span className="text-sm text-muted-foreground">Ukupno</span>
+                  <span className="text-2xl font-bold text-foreground tabular-nums">
+                    {formatPublicPrice(
+                      calculation.total,
+                      displayCurrency,
+                      pricingSettings,
+                    )}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleOrder}
+                  className={cn(
+                    buttonVariants({ variant: "accent", size: "xl" }),
+                    "w-full justify-center rounded-xl",
+                  )}
+                >
+                  Naruči
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                </button>
+              </div>
             </section>
           )}
 

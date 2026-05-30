@@ -22,6 +22,11 @@
 import { buildRequestHashVer2 } from "./hash";
 import { mintRnd } from "./oid";
 import { getNestpayConfig } from "./config";
+import {
+  nestpayTaksitField,
+  normalizeNestpayInstallmentCount,
+  type NestpayInstallmentCount,
+} from "./installments";
 
 const NESTPAY_CURRENCY_RSD = "941";
 const NESTPAY_STORE_TYPE = "3d_pay_hosting";
@@ -35,6 +40,7 @@ export type HostedPaymentInput = {
   buyerEmail?: string;
   buyerName?: string;
   returnUrl: string;
+  taksit?: NestpayInstallmentCount | number | null;
 };
 
 export type HostedPaymentForm = {
@@ -53,6 +59,7 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
   const config = getNestpayConfig();
   const rnd = mintRnd();
   const amount = formatRsdAmount(input.amountRsdCents);
+  const installmentCount = normalizeNestpayInstallmentCount(input.taksit);
 
   const formData: Record<string, string> = {
     clientid: config.clientId,
@@ -69,6 +76,8 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
     encoding: NESTPAY_ENCODING,
   };
 
+  const taksit = nestpayTaksitField(installmentCount);
+
   const hash = buildRequestHashVer2({
     clientId: config.clientId,
     oid: input.oid,
@@ -76,6 +85,7 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
     okUrl: input.returnUrl,
     failUrl: input.returnUrl,
     tranType: config.tranType,
+    instalment: taksit ?? "",
     rnd,
     currency: NESTPAY_CURRENCY_RSD,
     storeKey: config.storeKey,
@@ -83,6 +93,7 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
 
   const fields: Record<string, string> = { ...formData, hash };
 
+  if (taksit) fields.TAKSIT = taksit;
   if (input.buyerEmail) fields.email = input.buyerEmail;
   if (input.buyerName) fields.BillToName = input.buyerName;
 

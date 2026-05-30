@@ -30,3 +30,10 @@ export { queryOrderStatus } from "./status-query";
 export type { NestpayQueryResult } from "./status-query";
 
 export { getNestpayPublicBaseUrl } from "./url";
+
+export {
+  NESTPAY_INSTALLMENT_OPTIONS,
+  nestpayTaksitField,
+  normalizeNestpayInstallmentCount,
+} from "./installments";
+export type { NestpayInstallmentCount } from "./installments";

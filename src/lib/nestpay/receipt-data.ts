@@ -36,6 +36,7 @@ export type NestpayReceiptLineItem = {
 export type NestpayReceiptTotals = {
   totalLabel: string;
   vatBreakdownLabel: string | null;
+  installmentCount: number | null;
 };
 
 export type NestpayReceiptConversion = {
@@ -165,6 +166,10 @@ export async function getNestpayReceiptData(
     totals: {
       totalLabel: formatBillingMoney(billingTotalCents, billingCurrency),
       vatBreakdownLabel,
+      installmentCount:
+        order.nestpayInstallmentCount && order.nestpayInstallmentCount > 1
+          ? order.nestpayInstallmentCount
+          : null,
     },
     conversion,
     transaction,

@@ -4,8 +4,8 @@
  * PaymentTrustBadges — BI EPM §2.2 three-group badge bar.
  *
  * Group 1 (acceptance): Visa, Mastercard, Maestro, DinaCard.
- * Group 2 (security):   Mastercard ID Check, Visa Secure — linked to
- *                        official programme pages per EPM §2.2 requirement.
+ * Group 2 (security):   Mastercard ID Check, Visa Secure, DinaCard Secure
+ *                        — linked to official programme pages per EPM §2.2.
  * Group 3 (issuer):     Banca Intesa AD Beograd.
  *
  * Assets live in /public/branding/payments/. On image load error the
@@ -77,6 +77,14 @@ const SECURITY: Logo[] = [
     height: 20,
     href: "https://rs.visa.com/pay-with-visa/security-and-assistance/protected-everywhere.html",
     ariaLabel: "Visa Secure — 3D Secure autentifikacija",
+  },
+  {
+    src: "/branding/payments/dinacard-secure.png",
+    alt: "DinaCard Secure",
+    width: 56,
+    height: 20,
+    href: "https://www.dinacard.nbs.rs/",
+    ariaLabel: "DinaCard Secure — 3D Secure autentifikacija",
   },
 ];
 

@@ -25,6 +25,10 @@ export type NestpayRequestHashInput = {
   okUrl: string;
   failUrl: string;
   tranType: string;
+  // Position 7 of the BIB positional plaintext. Empty for single-shot
+  // payments — byte-identical to the legacy hash BI approved in #123.
+  // For instalment payments, the TAKSIT count is included here.
+  instalment?: string;
   rnd: string;
   currency: string;
   storeKey: string;
@@ -53,7 +57,7 @@ export function buildRequestHashPlaintext(input: NestpayRequestHashInput): strin
     input.okUrl,
     input.failUrl,
     input.tranType,
-    "",
+    input.instalment ?? "",
     input.rnd,
     "",
     "",

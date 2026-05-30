@@ -21,6 +21,7 @@ import { PayPalButtons } from "../paypal-buttons";
 import { NestpayRedirectForm } from "../nestpay-redirect-form";
 import { mockCardPaymentAction } from "@/server/actions/payment";
 import { initiateNestpayPayment } from "@/server/actions/nestpay";
+import { NESTPAY_INSTALLMENT_OPTIONS } from "@/lib/nestpay/installments";
 
 type PaymentMethod = "paypal" | "nestpay" | "card_mock";
 
@@ -34,6 +35,8 @@ export function StepPayment() {
   const {
     orderId,
     calculation,
+    installmentCount,
+    setInstallmentCount,
     setPaymentComplete,
     setStep,
     displayCurrency,
@@ -117,6 +120,7 @@ export function StepPayment() {
       const result = await initiateNestpayPayment({
         orderId,
         turnstileToken,
+        taksit: installmentCount,
       });
       if ("error" in result) {
         setError(result.error);
@@ -293,6 +297,44 @@ export function StepPayment() {
                 (Opšti uslovi, Politika privatnosti i Politika povraćaja sredstava).
               </span>
             </label>
+
+            <div className="rounded-lg border border-border/60 bg-background/40 p-4">
+              <label className="flex flex-col gap-2 text-sm">
+                <span className="font-semibold text-foreground">
+                  Plaćanje na rate
+                </span>
+                <span className="text-xs leading-relaxed text-muted-foreground">
+                  Podelite iznos na rate bez kamate — banka izdavalac kartice
+                  obračunava mesečne rate kupcu, a Banca Intesa nam isplaćuje
+                  ukupan iznos odjednom.
+                </span>
+                <select
+                  value={installmentCount}
+                  onChange={(event) =>
+                    setInstallmentCount(Number(event.target.value))
+                  }
+                  className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none transition focus:border-accent"
+                >
+                  {NESTPAY_INSTALLMENT_OPTIONS.map((count) => (
+                    <option key={count} value={count}>
+                      {count === 1
+                        ? "Jednokratno (puna cena odmah)"
+                        : `${count} ${count < 5 ? "rate" : "rata"} bez kamate`}
+                    </option>
+                  ))}
+                </select>
+                {installmentCount > 1 && (
+                  <p className="text-xs text-muted-foreground">
+                    Mesečna rata:{" "}
+                    <strong className="text-foreground">
+                      ~{formatTotal(calculation.total / installmentCount)}
+                    </strong>{" "}
+                    × {installmentCount}{" "}
+                    {installmentCount < 5 ? "rate" : "rata"}.
+                  </p>
+                )}
+              </label>
+            </div>
 
             {turnstileConfigMissing && (
               <div

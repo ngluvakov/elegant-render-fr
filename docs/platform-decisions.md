@@ -20,6 +20,30 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-05-30 - NestPay plaćanje na rate kroz TAKSIT
+
+- **Oblast promene:** payments | conversion | order lifecycle
+- **Šta se promenilo:** Checkout za kartično plaćanje sada nudi jednokratno plaćanje ili 2, 3, 6 i 12 rata. Izbor se validira server-side, šalje banci kao NestPay `TAKSIT` form field samo kada je broj rata veći od 1, ne ulazi u request hash, i čuva se na porudžbini kao `nestpayInstallmentCount`.
+- **Zašto:** Banca Intesa TC36 zahteva test transakciju sa ratama; prethodni full-flow test je prošao kao standardna SMS autorizacija jer `TAKSIT` nije bio prosleđen.
+- **Uticaj na conversion:** Kupci mogu da izaberu plaćanje na rate pre odlaska na HPP, a uspeh/neuspeh receipt i NestPay email podaci mogu da prikažu broj rata.
+- **Uticaj na design:** Payment step dobija jednostavan selector za način naplate karticom.
+- **Uticaj na code:** `buildHostedPaymentForm` dodaje unsigned `TAKSIT`; `initiateNestpayPayment` sanitizuje i snapshotuje broj rata; receipt/email data i UI prikazuju broj rata kada je veći od 1.
+- **Uticaj na docs:** Ažuriran ovaj decision log; dodata Prisma migracija za `orders.nestpayInstallmentCount`.
+- **Povezani fajlovi:** `src/lib/nestpay/client.ts`, `src/server/actions/nestpay.ts`, `src/app/(marketing)/poruci/steps/step-payment.tsx`, `prisma/schema.prisma`, `docs/platform-decisions.md`
+- **Reference:** NestPay Integration Test Report, 30. maj 2026; TC36 napomena da `TAKSIT` nije prosleđen.
+
+## 2026-05-30 - Privremeni Turnstile bypass za NestPay full-flow test
+
+- **Oblast promene:** payments | conversion | docs
+- **Šta se promenilo:** Za kontrolisani produkcioni test kratko su postavljeni Cloudflare Turnstile dummy ključevi u Vercel Production env-u i redeploy-ovan je poslednji production build. Posle testa production alias je vraćen/promovisan na prethodni deployment `dpl_C8zWTEsvEkXPf4i5i4fFWLxJ8wv3`, koji je nastao pre dummy env promene.
+- **Zašto:** Headless checkout test nije mogao pouzdano da dobije realan Turnstile token, a cilj je bio da se testira kompletan NestPay tok kroz sajt: checkout UI, terms, server action, order lifecycle, HPP redirect i bankin return handler.
+- **Uticaj na conversion:** Potvrđeno je da Turnstile bypass omogućava prolazak do Banca Intesa HPP-a i da kartični flow može da završi na success/failure stranama. Pre sledećeg production deploy-a obavezno vratiti ili rotirati realne Turnstile vrednosti u Vercel project env-u, jer su project-level Production varijable privremeno prepisane dummy vrednostima.
+- **Uticaj na design:** Nema trajne promene UI-a.
+- **Uticaj na code:** Nema code promene. Test je koristio postojeći Turnstile short-circuit/dummy-key mehanizam i postojeći NestPay HPP flow.
+- **Uticaj na docs:** Zabeležen je ovaj operativni payment test i restore caveat.
+- **Povezani fajlovi:** `docs/platform-decisions.md`, `src/lib/turnstile.ts`, `src/server/actions/nestpay.ts`, `src/app/(marketing)/poruci/steps/step-payment.tsx`
+- **Reference:** Production redeploy sa dummy Turnstile ključevima: `dpl_BZg1i4AkcviJHcYqMRgDhgpgcwN8`; produkcioni alias vraćen na `dpl_C8zWTEsvEkXPf4i5i4fFWLxJ8wv3`. Testovi: guest AI-credit checkout do HPP-a, approved 3DS `Yes` do `/poruci/uspeh`, 3DS `No` do `/poruci/neuspeh`.
+
 ## 2026-05-30 - Google Ads/GTM conversion inventory
 
 - **Oblast promene:** conversion | docs

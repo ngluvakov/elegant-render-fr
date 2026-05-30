@@ -59,6 +59,7 @@ export type CheckoutState = {
   customerNote: string;
   uploadedFiles: UploadedFile[];
   paymentComplete: boolean;
+  installmentCount: number;
   buyerInfo: BuyerInfoState;
   displayCurrency: DisplayCurrency;
   pricingCatalog?: ResolvedPricingCatalog;
@@ -73,6 +74,7 @@ type CheckoutContextValue = CheckoutState & {
   addFile: (file: UploadedFile) => void;
   removeFile: (storagePath: string) => void;
   setPaymentComplete: () => void;
+  setInstallmentCount: (count: number) => void;
   setBuyerInfo: (next: BuyerInfoState) => void;
 };
 
@@ -106,6 +108,7 @@ export function CheckoutProvider({
   const [customerNote, setCustomerNote] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [paymentComplete, setPaymentCompleteState] = useState(false);
+  const [installmentCount, setInstallmentCount] = useState(1);
   const [buyerInfo, setBuyerInfoState] =
     useState<BuyerInfoState>(initialBuyerInfo ?? EMPTY_BUYER_INFO);
 
@@ -158,6 +161,7 @@ export function CheckoutProvider({
       customerNote,
       uploadedFiles,
       paymentComplete,
+      installmentCount,
       buyerInfo,
       displayCurrency: effectiveDisplayCurrency,
       pricingCatalog,
@@ -169,12 +173,13 @@ export function CheckoutProvider({
       addFile,
       removeFile,
       setPaymentComplete: () => setPaymentCompleteState(true),
+      setInstallmentCount,
       setBuyerInfo,
     }),
     [
       step, initialItems, calculation, orderId, userId, initiallySignedIn,
       customerName, customerEmail, customerNote,
-      uploadedFiles, paymentComplete, buyerInfo,
+      uploadedFiles, paymentComplete, installmentCount, buyerInfo,
       effectiveDisplayCurrency, pricingCatalog,
       setCustomer, addFile, removeFile, setBuyerInfo,
     ],

@@ -293,6 +293,7 @@ model Order {
   nestpayChargedAmountCents Int?
   nestpayChargedCurrency    String?
   nestpayChargeRate         Float?
+  nestpayInstallmentCount   Int?
   // Invoice issuance — populated once, immediately after the payment
   // provider confirms `paymentStatus = completed`. invoiceNumber is
   // allocated atomically per calendar year via InvoiceCounter and is

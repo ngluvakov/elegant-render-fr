@@ -62,6 +62,9 @@ export function NestpayReceipt({ data, variant }: Props) {
         <dl className="mt-4 space-y-2">
           {row("Broj porudžbine", orderNumber)}
           {row("Ukupno za naplatu", totals.totalLabel)}
+          {totals.installmentCount
+            ? row("Broj rata", String(totals.installmentCount))
+            : null}
           {conversion
             ? row(
                 "Naplaćeno u RSD (Izjava o konverziji)",

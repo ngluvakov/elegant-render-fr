@@ -27,6 +27,7 @@ import {
   getNestpayConfig,
   getNestpayPublicBaseUrl,
   mintOid,
+  normalizeNestpayInstallmentCount,
 } from "@/lib/nestpay";
 import {
   PUBLIC_EUR_TO_RSD_RATE,
@@ -51,6 +52,7 @@ function getClientIp(forwardedFor: string | null): string | null {
 type InitiateInput = {
   orderId: string;
   turnstileToken?: string | null;
+  taksit?: number | null;
 };
 
 export async function initiateNestpayPayment(
@@ -147,6 +149,7 @@ async function initiateNestpayPaymentImpl(
 
   const config = getNestpayConfig();
   const oid = mintOid(order.orderNumber, config.oidPrefix);
+  const installmentCount = normalizeNestpayInstallmentCount(input.taksit);
 
   // Persist the new attempt's oid + provider BEFORE returning the form.
   // The bank's return POST keys back to us by oid; if we crashed after
@@ -165,6 +168,7 @@ async function initiateNestpayPaymentImpl(
       nestpayChargedAmountCents: amountRsdCents,
       nestpayChargedCurrency: "RSD",
       nestpayChargeRate: chargeRate ?? undefined,
+      nestpayInstallmentCount: installmentCount,
     },
   });
   if (persisted.count === 0) {
@@ -195,6 +199,7 @@ async function initiateNestpayPaymentImpl(
     buyerEmail: order.user.email ?? undefined,
     buyerName: order.user.name ?? undefined,
     returnUrl,
+    taksit: installmentCount,
   });
 
   return form;

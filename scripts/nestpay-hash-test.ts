@@ -96,6 +96,7 @@ function caseHostedPaymentForm() {
   assert(!("StoreKey" in form.fields), "StoreKey is not sent");
   assert(!("CallbackURL" in form.fields), "CallbackURL is not sent");
   assert(!("instalment" in form.fields), "instalment is not sent");
+  assert(!("TAKSIT" in form.fields), "TAKSIT is omitted for one-time payments");
   assert(!("HASHPARAMS" in form.fields), "HASHPARAMS is not sent");
   assert(!("HASHPARAMSVAL" in form.fields), "HASHPARAMSVAL is not sent");
 
@@ -111,6 +112,50 @@ function caseHostedPaymentForm() {
     storeKey: "TEST-store-key-xyz",
   });
   assert(form.fields.hash === expectedHash, "form hash signs the positional request template");
+
+  __setNestpayConfigForTests(null);
+}
+
+function caseHostedPaymentInstallments() {
+  console.log("\n[case] buildHostedPaymentForm — TAKSIT is an unsigned form field");
+  __setNestpayConfigForTests({
+    mode: "test",
+    clientId: "13IN004509",
+    storeKey: "TEST-store-key-xyz",
+    baseUrl: "https://testsecurepay.eway2pay.com/fim/est3Dgate",
+    queryUrl: "https://testsecurepay.eway2pay.com/fim/api",
+    queryUsername: "",
+    queryPassword: "",
+    tranType: "Auth",
+    oidPrefix: "ER-",
+  });
+
+  const base = {
+    oid: "ER-20260530-TAKSIT-000001",
+    amountRsdCents: 1_992_400,
+    returnUrl: "https://elegantrender.rs/api/nestpay/return",
+  };
+  const oneTime = buildHostedPaymentForm(base);
+  const threeRates = buildHostedPaymentForm({ ...base, taksit: 3 });
+
+  assert(threeRates.fields.TAKSIT === "3", "TAKSIT=3 is included for instalments");
+  assert(!("TAKSIT" in oneTime.fields), "TAKSIT is omitted when taksit=1/empty");
+
+  const expectedHash = buildRequestHashVer2({
+    clientId: "13IN004509",
+    oid: base.oid,
+    amount: "19924.00",
+    okUrl: base.returnUrl,
+    failUrl: base.returnUrl,
+    tranType: "Auth",
+    rnd: threeRates.fields.rnd,
+    currency: "941",
+    storeKey: "TEST-store-key-xyz",
+  });
+  assert(
+    threeRates.fields.hash === expectedHash,
+    "TAKSIT does not participate in the request hash",
+  );
 
   __setNestpayConfigForTests(null);
 }
@@ -270,6 +315,7 @@ function casePublicBaseUrl() {
 
 caseRequestHash();
 caseHostedPaymentForm();
+caseHostedPaymentInstallments();
 caseBuildHash();
 caseEscape();
 caseVerifyRoundtrip();

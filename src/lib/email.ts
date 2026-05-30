@@ -833,6 +833,7 @@ export type NestpayEmailConversion = {
 export type NestpayEmailTotals = {
   totalLabel: string;
   vatBreakdownLabel: string | null;
+  installmentCount?: number | null;
 };
 
 function renderTransactionBlock(tx: NestpayEmailTransaction): string {
@@ -939,6 +940,11 @@ function renderTotalsBlock(totals: NestpayEmailTotals): string {
           : ""
       }
       <strong>Ukupno za naplatu: ${escapeHtml(totals.totalLabel)}</strong>
+      ${
+        totals.installmentCount && totals.installmentCount > 1
+          ? `<br/><span style="color:#6e665d; font-size:13px;">Broj rata: ${totals.installmentCount}</span>`
+          : ""
+      }
     </p>
   `;
 }

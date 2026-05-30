@@ -22,6 +22,7 @@ import { NestpayRedirectForm } from "../nestpay-redirect-form";
 import { mockCardPaymentAction } from "@/server/actions/payment";
 import { initiateNestpayPayment } from "@/server/actions/nestpay";
 import { NESTPAY_INSTALLMENT_OPTIONS } from "@/lib/nestpay/installments";
+import { isTurnstileTestingSiteKey } from "@/lib/turnstile-keys";
 
 type PaymentMethod = "paypal" | "nestpay" | "card_mock";
 
@@ -76,13 +77,22 @@ export function StepPayment() {
   }
 
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-  const requiresTurnstile = Boolean(turnstileSiteKey);
+  const turnstileUsesTestingSiteKey =
+    process.env.NODE_ENV === "production" &&
+    isTurnstileTestingSiteKey(turnstileSiteKey);
+  const requiresTurnstile =
+    Boolean(turnstileSiteKey) && !turnstileUsesTestingSiteKey;
   const turnstileConfigMissing =
     process.env.NODE_ENV === "production" && !turnstileSiteKey;
+  const turnstileConfigError = turnstileConfigMissing
+    ? "Sigurnosna provera nije konfigurisana. Potrebno je podesiti NEXT_PUBLIC_TURNSTILE_SITE_KEY u produkcionom okruženju."
+    : turnstileUsesTestingSiteKey
+      ? "Sigurnosna provera koristi test ključ. Za završnu verziju potrebno je podesiti realan Cloudflare Turnstile site key."
+      : "";
   const hasTurnstileToken =
     !requiresTurnstile || Boolean(turnstileToken);
   const canSubmit =
-    acceptedTerms && hasTurnstileToken && !turnstileConfigMissing;
+    acceptedTerms && hasTurnstileToken && !turnstileConfigError;
 
   const handleMockCard = async () => {
     setCardPending(true);
@@ -336,13 +346,12 @@ export function StepPayment() {
               </label>
             </div>
 
-            {turnstileConfigMissing && (
+            {turnstileConfigError && (
               <div
                 role="alert"
                 className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs text-destructive"
               >
-                Sigurnosna provera nije konfigurisana. Potrebno je podesiti
-                NEXT_PUBLIC_TURNSTILE_SITE_KEY u produkcionom okruženju.
+                {turnstileConfigError}
               </div>
             )}
 

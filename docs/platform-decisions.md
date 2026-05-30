@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-05-30 - Turnstile vraćen na produkcioni režim posle NestPay proba
+
+- **Oblast promene:** payments | auth | conversion | docs
+- **Šta se promenilo:** Dodata je zaštita koja u produkcionom buildu blokira poznate Cloudflare Turnstile dummy/test site i secret ključeve za NestPay iniciranje. Turnstile ostaje obavezan za kartično plaćanje kada je konfigurisan, ali završna verzija više ne može slučajno ostati na test-bypass ključevima.
+- **Zašto:** Full-flow NestPay probe su potvrđene kao uspešne uz kontrolisani Turnstile bypass; posle toga sajt treba vratiti na završni produkcioni nivo sa realnim Cloudflare Turnstile ključevima.
+- **Uticaj na conversion:** Sprečava tihi odlazak u produkciju sa dummy captcha zaštitom; ako je produkcioni env i dalje na test ključevima, korisnik dobija jasnu konfiguracionu poruku umesto nejasnog payment failure-a.
+- **Uticaj na design:** Payment step može prikazati jasnu poruku da se koristi test Turnstile key dok se ne vrate realni production ključevi.
+- **Uticaj na code:** Dodat `src/lib/turnstile-keys.ts`; `step-payment.tsx` blokira poznate dummy site keys u produkciji; `verifyTurnstile` odbija poznate dummy secret keys u produkciji.
+- **Uticaj na docs:** `.env.example` i ovaj decision log preciziraju da su dummy Turnstile keys samo za lokalne/kontrolisane test deploy-e.
+- **Povezani fajlovi:** `src/lib/turnstile-keys.ts`, `src/lib/turnstile.ts`, `src/app/(marketing)/poruci/steps/step-payment.tsx`, `.env.example`, `docs/platform-decisions.md`
+- **Reference:** User update: "Probe su potvrdjene i uspesne. Sada sajt moze da bude na nivou zavrsne verzije." Cloudflare Turnstile docs: dummy site/secret keys are intended for testing.
+
 ## 2026-05-30 - NestPay plaćanje na rate kroz TAKSIT
 
 - **Oblast promene:** payments | conversion | order lifecycle

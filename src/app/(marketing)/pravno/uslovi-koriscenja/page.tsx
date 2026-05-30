@@ -115,8 +115,8 @@ export default function PravnaDokumentaPage() {
             </p>
             <p>
               Brand pod kojim se usluge isporučuju je{" "}
-              <strong>{SITE.name}</strong>. U daljem tekstu „Pružalac" ili
-              „mi", a pojedinačni korisnik se označava kao „Korisnik" ili „vi".
+              <strong>{SITE.name}</strong>. U daljem tekstu „Pružalac” ili
+              „mi”, a pojedinačni korisnik se označava kao „Korisnik” ili „vi”.
             </p>
           </LegalSection>
 
@@ -166,7 +166,7 @@ export default function PravnaDokumentaPage() {
             <p>
               Cene su konačne za izabrani opseg posla. Dodatni rad, izmene
               obima ili nove kategorije obračunavaju se po važećem cenovniku
-              ispod sekcije „Prilagodi" za svaku stavku.
+              ispod sekcije „Prilagodi” za svaku stavku.
             </p>
             <p>
               Plaćanje se vrši elektronski (kartice, instant transfer) ili
@@ -364,8 +364,8 @@ export default function PravnaDokumentaPage() {
           <LegalSection title="1. Ko je rukovalac podataka">
             <p>
               Rukovalac vaših ličnih podataka u smislu Zakona o zaštiti podataka
-              o ličnosti („ZZPL", Sl. glasnik RS br. 87/2018) i Opšte uredbe o
-              zaštiti podataka EU 2016/679 („GDPR") je:
+              o ličnosti („ZZPL”, Sl. glasnik RS br. 87/2018) i Opšte uredbe o
+              zaštiti podataka EU 2016/679 („GDPR”) je:
             </p>
             <p className="rounded-md border border-border/60 bg-secondary/30 p-4 font-mono text-[0.86rem] leading-relaxed">
               {IMPRINT.legalName}
@@ -407,7 +407,7 @@ export default function PravnaDokumentaPage() {
               </li>
               <li>
                 <strong>
-                  Pri podnošenju upita preko forme „Brzi upit":
+                  Pri podnošenju upita preko forme „Brzi upit”:
                 </strong>{" "}
                 ime, e-pošta, telefon (opciono), opis projekta, fajlovi.
               </li>
@@ -456,7 +456,7 @@ export default function PravnaDokumentaPage() {
                 <strong>Saglasnost</strong> (čl. 12. st. 1. tač. 1. ZZPL / čl.
                 6 ⒜ GDPR) — za neobavezne kategorije: analitiku, snimanje
                 sesija, marketing. Saglasnost možete povući u svakom trenutku
-                preko linka „Podešavanja kolačića" u podnožju sajta.
+                preko linka „Podešavanja kolačića” u podnožju sajta.
               </li>
               <li>
                 <strong>Legitimni interes</strong> (čl. 12. st. 1. tač. 6.
@@ -611,7 +611,7 @@ export default function PravnaDokumentaPage() {
                 ispravljamo bez odlaganja.
               </li>
               <li>
-                <strong>Brisanje („pravo na zaborav")</strong> — kada osnov za
+                <strong>Brisanje („pravo na zaborav”)</strong> — kada osnov za
                 obradu prestane.
               </li>
               <li>

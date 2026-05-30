@@ -15,6 +15,8 @@
  * Used by: server/actions/nestpay
  */
 
+import { isTurnstileTestingSecretKey } from "@/lib/turnstile-keys";
+
 const VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
 export type TurnstileVerifyResult = {
@@ -30,6 +32,12 @@ export async function verifyTurnstile(
   if (!secret) {
     // Dev / preview short-circuit — no secret configured.
     return { ok: true, errorCodes: [] };
+  }
+  if (
+    process.env.NODE_ENV === "production" &&
+    isTurnstileTestingSecretKey(secret)
+  ) {
+    return { ok: false, errorCodes: ["test-secret-in-production"] };
   }
   if (!token) {
     return { ok: false, errorCodes: ["missing-input-response"] };

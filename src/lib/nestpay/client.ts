@@ -76,8 +76,6 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
     encoding: NESTPAY_ENCODING,
   };
 
-  const taksit = nestpayTaksitField(installmentCount);
-
   const hash = buildRequestHashVer2({
     clientId: config.clientId,
     oid: input.oid,
@@ -85,7 +83,6 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
     okUrl: input.returnUrl,
     failUrl: input.returnUrl,
     tranType: config.tranType,
-    instalment: taksit ?? "",
     rnd,
     currency: NESTPAY_CURRENCY_RSD,
     storeKey: config.storeKey,
@@ -93,6 +90,7 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
 
   const fields: Record<string, string> = { ...formData, hash };
 
+  const taksit = nestpayTaksitField(installmentCount);
   if (taksit) fields.TAKSIT = taksit;
   if (input.buyerEmail) fields.email = input.buyerEmail;
   if (input.buyerName) fields.BillToName = input.buyerName;

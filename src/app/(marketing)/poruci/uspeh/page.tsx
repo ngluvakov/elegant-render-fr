@@ -17,6 +17,8 @@ import { prisma } from "@/lib/db";
 import { buttonVariants } from "@/components/ui/button";
 import { getNestpayReceiptData } from "@/lib/nestpay/receipt-data";
 import { NestpayReceipt } from "@/components/marketing/nestpay-receipt";
+import { DataLayerEvent } from "@/components/analytics/data-layer-event";
+import { buildPurchaseDataLayerEvent } from "@/server/analytics/google-conversions";
 
 export const dynamic = "force-dynamic";
 
@@ -40,9 +42,14 @@ export default async function NestpaySuccessPage({ searchParams }: PageProps) {
 
   const receipt = await getNestpayReceiptData(order.id);
   if (!receipt) notFound();
+  const purchaseEvent = await buildPurchaseDataLayerEvent(
+    order.id,
+    "nestpay_success_page",
+  );
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 px-4 py-12">
+      {purchaseEvent && <DataLayerEvent event={purchaseEvent} />}
       <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 md:p-8">
         <p className="text-xs font-semibold uppercase tracking-wider text-accent">
           Uspešno plaćanje

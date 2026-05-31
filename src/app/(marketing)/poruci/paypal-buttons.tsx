@@ -5,6 +5,7 @@ import {
   createPayPalOrderAction,
   capturePayPalOrderAction,
 } from "@/server/actions/payment";
+import { pushGoogleDataLayerEvent } from "@/lib/analytics/google-data-layer-client";
 
 type PayPalButtonsProps = {
   orderId: string;
@@ -66,6 +67,9 @@ export function PayPalButtons({ orderId, onSuccess, onError }: PayPalButtonsProp
         if (result.error) {
           onError(result.error);
           return;
+        }
+        if (result.purchaseEvent) {
+          pushGoogleDataLayerEvent(result.purchaseEvent);
         }
         onSuccess();
       },

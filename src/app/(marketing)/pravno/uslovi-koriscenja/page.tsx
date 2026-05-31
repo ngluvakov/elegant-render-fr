@@ -524,7 +524,7 @@ export default function PravnaDokumentaPage() {
                   <ProcessorRow
                     name="Google Tag Manager"
                     location="SAD / EU"
-                    purpose="Upravljanje mernim tagovima i dataLayer događajima, aktivno samo nakon saglasnosti za analitiku."
+                    purpose="Upravljanje mernim tagovima i dataLayer događajima, aktivno nakon saglasnosti za analitiku ili marketing, u zavisnosti od taga."
                   />
                   <ProcessorRow
                     name="LinkedIn Insight Tag"

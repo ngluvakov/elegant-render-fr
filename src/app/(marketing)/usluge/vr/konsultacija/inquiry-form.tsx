@@ -26,6 +26,7 @@ import {
 } from "@/components/site/public-currency-provider";
 import { submitVrInquiry } from "@/server/actions/vr-inquiry";
 import { track } from "@/lib/posthog-events";
+import { pushGoogleDataLayerEvent } from "@/lib/analytics/google-data-layer-client";
 import { formatPublicPrice } from "@/lib/catalog/display-currency";
 import {
   defaultVrConfig,
@@ -101,6 +102,16 @@ export function VrInquiryForm({
       return;
     }
     track("vr_inquiry_submitted", {
+      product_id: productId,
+      experience_type: config.experienceType,
+      target_device: config.targetDevice,
+    });
+    pushGoogleDataLayerEvent({
+      event: "er_generate_lead",
+      event_id: `lead:${res.inquiryId}`,
+      lead_type: "vr_inquiry",
+      source_path: window.location.pathname,
+      conversion_source: "vr_consultation_form",
       product_id: productId,
       experience_type: config.experienceType,
       target_device: config.targetDevice,

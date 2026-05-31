@@ -16,6 +16,7 @@ import {
 } from "@/lib/project-inquiry";
 import { submitProjectInquiry } from "@/server/actions/project-inquiry";
 import { track } from "@/lib/posthog-events";
+import { pushGoogleDataLayerEvent } from "@/lib/analytics/google-data-layer-client";
 
 export type InquiryFormSource = {
   source?: string;
@@ -232,6 +233,15 @@ export function ProjectInquiryForm({
 
     track("project_inquiry_submitted", {
       source: resolvedSource,
+      file_count: files.length,
+      has_quote_snapshot: Boolean(source?.quoteSnapshot),
+    });
+    pushGoogleDataLayerEvent({
+      event: "er_generate_lead",
+      event_id: `lead:${res.inquiryId}`,
+      lead_type: mode === "quick" ? "quick_inquiry" : "project_inquiry",
+      source_path: source?.sourcePath ?? window.location.pathname,
+      conversion_source: resolvedSource,
       file_count: files.length,
       has_quote_snapshot: Boolean(source?.quoteSnapshot),
     });

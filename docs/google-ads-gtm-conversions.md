@@ -1,7 +1,7 @@
 # Google Ads / GTM Conversion Inventory
 
 Ovaj dokument je handoff za agenta koji planira Google Ads, GA4 i Google Tag
-Manager merenje. Nije implementacija tagova. Cilj je da se ne nagađa šta je
+Manager merenje i trenutnu runtime implementaciju dataLayer događaja. Cilj je da se ne nagađa šta je
 konverzija na Elegant Render platformi, gde nastaje, koliku vrednost nosi i
 da li je spremna za Google Ads optimizaciju.
 
@@ -14,18 +14,18 @@ da li je spremna za Google Ads optimizaciju.
   `track()` i `captureServerEvent()`.
 - Consent se čuva u `localStorage` kroz `src/lib/consent.ts`. Kategorije su
   `necessary`, `analytics`, `marketing` i `recording`.
-- GTM/GA4 treba da rade samo uz odgovarajuću saglasnost. Trenutni Google
-  consent update drži `analytics_storage` po analytics consent-u, dok su
-  `ad_storage`, `ad_user_data` i `ad_personalization` postavljeni na `denied`.
+- GTM/GA4 treba da rade samo uz odgovarajuću saglasnost. Google Consent Mode
+  default je `denied`; `analytics_storage` prati analytics consent, a
+  `ad_storage`, `ad_user_data` i `ad_personalization` prate marketing consent.
 - LinkedIn Insight Tag (`9178042`) se učitava samo posle `marketing` consent-a.
-- Google trenutno dobija uglavnom `virtual_page_view` i consent signale; full
-  purchase/lead/conversion dataLayer događaji još nisu sistematski povezani.
+- Aplikacija sada šalje `er_begin_checkout`, `er_generate_lead` i
+  `er_purchase` dataLayer događaje kroz consent-aware helper-e; GTM treba da ih
+  mapira u GA4/Google Ads tagove.
 
-**Known caveat pre Ads launch-a:** `docs/gtm-post-launch.md` kaže da GTM radi
-samo kada je `NEXT_PUBLIC_GTM_ENABLED=true` i posle analytics consent-a, ali
-`src/app/layout.tsx` trenutno sadrži hardcoded GTM bootstrap i `noscript`
-iframe. Tracking agent treba prvo da proveri i uskladi stvarno ponašanje sa
-privacy dokumentacijom pre puštanja Google Ads kampanja.
+**Resolved caveat:** hardcoded GTM bootstrap i `noscript` iframe su uklonjeni iz
+`src/app/layout.tsx`. GTM učitavanje je centralizovano u
+`src/components/analytics/google-tag-manager-post-launch.tsx` i gated je preko
+`NEXT_PUBLIC_GTM_ENABLED` plus analytics ili marketing consent.
 
 ## Pravila merenja
 
@@ -87,12 +87,12 @@ privacy dokumentacijom pre puštanja Google Ads kampanja.
 
 | Konverzija | Source of truth | Trenutni signal | Google uloga | Sledeći korak |
 |---|---|---|---|---|
-| Plaćena service porudžbina | `finishSuccessfulPayment()` u `src/server/actions/payment.ts` posle PayPal/Nestpay/wire potvrde | Nema univerzalni Google dataLayer event | Primary Ads conversion + GA4 `purchase` | Dodati server/browser-safe conversion event sa `transaction_id=orderNumber`, `value`, `currency`, `items`. |
-| Plaćeni AI krediti | `applyPurchasedAiCreditsForOrder()` pozvan iz `finishSuccessfulPayment()` | Revenue se vidi kroz order item `kind=ai_credits` | Primary Ads conversion + GA4 `purchase` | Segmentirati `contains_ai_credits=true`; za credit-only porudžbine posebna Ads akcija ako budžet optimizuje AI Studio. |
-| Nestpay uspeh | `src/app/api/nestpay/return/route.ts` posle hash-verifikovanog approved POST-a | Redirect na `/poruci/uspeh?oid=...` | Primary purchase source | Ne oslanjati se samo na success page view; return handler/reconciler su source of truth. |
-| PayPal capture | `capturePayPalOrderAction()` u `src/server/actions/payment.ts` | Browser callback postoji, ali server potvrđuje capture | Primary purchase source | Emitovati conversion posle `paymentStatus=completed`, ne pre PayPal approve-a. |
+| Plaćena service porudžbina | `finishSuccessfulPayment()` u `src/server/actions/payment.ts` posle PayPal/Nestpay potvrde | `er_purchase` preko payment success client/server handoff-a | Primary Ads conversion + GA4 `purchase` | `transaction_id=orderNumber`, `value`, `currency`, `items`; wire transfer ostaje offline import kandidat. |
+| Plaćeni AI krediti | `applyPurchasedAiCreditsForOrder()` pozvan iz `finishSuccessfulPayment()` | `er_purchase` sa `contains_ai_credits=true` | Primary Ads conversion + GA4 `purchase` | Za credit-only porudžbine posebna Ads akcija ako budžet optimizuje AI Studio. |
+| Nestpay uspeh | `src/app/api/nestpay/return/route.ts` posle hash-verifikovanog approved POST-a | `/poruci/uspeh?oid=...` renderuje `er_purchase` iz persisted order snapshot-a | Primary purchase source | Success page ima browser dedupe; reconciler bez browser-a zahteva budući offline/server-side import. |
+| PayPal capture | `capturePayPalOrderAction()` u `src/server/actions/payment.ts` | Server action vraća `purchaseEvent`, klijent push-uje `er_purchase` | Primary purchase source | Event se emituje posle `paymentStatus=completed`, ne pre PayPal approve-a. |
 | Wire transfer paid | `src/server/actions/mark-wire-paid.ts` | Audit log `payment.wire_received` | Offline/primary revenue conversion | Za Google Ads uvesti offline conversion import ili server-side event; vezati za original `gclid/gbraid/wbraid` ako se čuva. |
-| Mock card payment | `mockCardPaymentAction()` | `payment_completed` client signal | Test only | Nikada ne uključivati u production Ads konverzije. |
+| Mock card payment | `mockCardPaymentAction()` | `er_purchase` samo u test-mode browser flow-u | Test only | Filtrirati iz production Ads konverzija. |
 | `additional_charge_paid` | `src/server/actions/charge-payment.ts` | PostHog server event | Secondary revenue / optional | Nije new customer acquisition; obično secondary/offline revenue, ne primary bidding. |
 
 ### Lead Conversions
@@ -101,8 +101,8 @@ privacy dokumentacijom pre puštanja Google Ads kampanja.
 |---|---|---|---|
 | `quick_inquiry_opened` | `src/components/inquiry/quick-inquiry-provider.tsx` | Secondary / form intent | Otvaranje forme nije lead submit. |
 | `contact_form_started` | `src/components/inquiry/project-inquiry-form.tsx` | Secondary / form intent | Samo za `mode="contact"` i prvi focus. |
-| `project_inquiry_submitted` | `project-inquiry-form.tsx` + `submitProjectInquiry()` | Primary Ads lead + GA4 `generate_lead` | Uspešan submit generic lead-a. Payload: `source`, `file_count`, `has_quote_snapshot`. |
-| `vr_inquiry_submitted` | `src/app/(marketing)/usluge/vr/konsultacija/inquiry-form.tsx` + `submitVrInquiry()` | Primary Ads lead + GA4 `generate_lead` | VR konsultacije su inquiry-only proizvod; high-value lead. |
+| `project_inquiry_submitted` | `project-inquiry-form.tsx` + `submitProjectInquiry()` | Primary Ads lead + GA4 `generate_lead` | Uspešan submit generic lead-a; klijent push-uje `er_generate_lead` sa `lead_type`, `source_path`, `file_count`, `has_quote_snapshot`. |
+| `vr_inquiry_submitted` | `src/app/(marketing)/usluge/vr/konsultacija/inquiry-form.tsx` + `submitVrInquiry()` | Primary Ads lead + GA4 `generate_lead` | VR konsultacije su inquiry-only proizvod; klijent push-uje `er_generate_lead` sa `lead_type=vr_inquiry`. |
 
 ### Lead Qualification / Offline Outcomes
 
@@ -165,11 +165,12 @@ privacy dokumentacijom pre puštanja Google Ads kampanja.
 - `admin_charge_requested`
 - Mock-card production events, ako se ikad pojave, treba filtrirati.
 
-## Future dataLayer Contract
+## Implemented dataLayer Contract
 
-Preporuka je da aplikacija gura platform-specific evente u `dataLayer`, a GTM
-ih mapira u GA4 recommended events i Google Ads conversion tags. Tako se kod ne
-vezuje za Ads label-e.
+Aplikacija gura platform-specific evente u `dataLayer`, a GTM ih mapira u GA4
+recommended events i Google Ads conversion tags. Kod se ne vezuje za Ads
+label-e; payload tipovi su u `src/lib/analytics/google-data-layer.ts`, a
+browser push/dedupe helper je u `src/lib/analytics/google-data-layer-client.ts`.
 
 ### Common Fields
 
@@ -253,14 +254,14 @@ Za AI kredite:
 
 ## Implementation Notes For Next Agent
 
-1. Pre koda uskladiti GTM bootstrap sa `docs/gtm-post-launch.md` i consent
-   očekivanjima. Trenutni hardcoded bootstrap u `src/app/layout.tsx` je blokada
-   za launch-ready Ads setup.
-2. Dodati mali typed helper za `window.dataLayer.push()` koji prima samo
-   dozvoljena polja i no-op je bez consent-a.
-3. Za purchase konverzije emitovati samo iz server-validated trenutka:
-   `finishSuccessfulPayment()`, Nestpay return/reconciler i wire-transfer
-   mark-paid. Paziti na idempotency da isti `transaction_id` ne duplira Ads.
+1. GTM bootstrap je usklađen sa `docs/gtm-post-launch.md`; ne vraćati hardcoded
+   layout bootstrap ili server-rendered `noscript`.
+2. Za nove Google događaje koristiti postojeći typed helper za
+   `window.dataLayer.push()` i ne slati evente bez marketing consent-a.
+3. Za purchase konverzije emitovati samo iz server-validated trenutka.
+   PayPal/mock vraćaju `purchaseEvent`; Nestpay success page ga gradi iz
+   persisted order snapshot-a. Wire transfer/reconciler su budući offline import
+   ili server-side tagging zadatak.
 4. Za lead submit koristiti postojeće uspešne server action rezultate, ne samo
    client submit click.
 5. GA4 recommended evente koristiti gde se uklapaju (`begin_checkout`,

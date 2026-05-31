@@ -30,6 +30,8 @@ import {
 import { saveQuote } from "@/server/actions/quote";
 import { track } from "@/lib/posthog-events";
 import { stashCheckoutQuote } from "@/lib/checkout-session";
+import { buildBeginCheckoutDataLayerEvent } from "@/lib/analytics/google-data-layer";
+import { pushGoogleDataLayerEvent } from "@/lib/analytics/google-data-layer-client";
 import { useQuote } from "./quote-context";
 
 export function QuoteSummary() {
@@ -55,6 +57,14 @@ export function QuoteSummary() {
 
   const handleOrder = () => {
     stashCheckoutQuote(items);
+    const beginCheckoutEvent = buildBeginCheckoutDataLayerEvent({
+      calculation,
+      displayCurrency,
+      pricingSettings,
+      sourcePath: window.location.pathname,
+      conversionSource: "quote_summary",
+    });
+    pushGoogleDataLayerEvent(beginCheckoutEvent);
     track("checkout_started", {
       cart_size: calculation.items.length,
       total_eur: calculation.total,

@@ -11,6 +11,7 @@ import {
   createPayPalOrderAction,
   capturePayPalOrderAction,
 } from "@/server/actions/payment";
+import { pushGoogleDataLayerEvent } from "@/lib/analytics/google-data-layer-client";
 
 type Props = {
   orderId: string;
@@ -60,6 +61,9 @@ export function PayPalPortalButtons({ orderId, onSuccess, onError }: Props) {
       onApprove: async (data: { orderID: string }) => {
         const result = await capturePayPalOrderAction(orderId, data.orderID);
         if (result.error) { onError(result.error); return; }
+        if (result.purchaseEvent) {
+          pushGoogleDataLayerEvent(result.purchaseEvent);
+        }
         onSuccess();
       },
       onError: (err: Error) => onError(err.message || "PayPal greška"),

@@ -23,6 +23,7 @@ import { mockCardPaymentAction } from "@/server/actions/payment";
 import { initiateNestpayPayment } from "@/server/actions/nestpay";
 import { NESTPAY_INSTALLMENT_OPTIONS } from "@/lib/nestpay/installments";
 import { isTurnstileTestingSiteKey } from "@/lib/turnstile-keys";
+import { pushGoogleDataLayerEvent } from "@/lib/analytics/google-data-layer-client";
 
 type PaymentMethod = "paypal" | "nestpay" | "card_mock";
 
@@ -116,6 +117,9 @@ export function StepPayment() {
       total_eur: calculation.total,
       order_number: orderId,
     });
+    if (result.purchaseEvent) {
+      pushGoogleDataLayerEvent(result.purchaseEvent);
+    }
     setPaymentComplete();
   };
 

@@ -91,7 +91,7 @@ const ANALYTICS: CookieEntry[] = [
     storage: "Script + dataLayer",
     provider: "Google Tag Manager",
     purpose:
-      "Upravljanje mernim tagovima i slanje dataLayer događaja nakon saglasnosti za analitiku. Sam po sebi ne postavlja kolačiće.",
+      "Upravljanje mernim tagovima i slanje dataLayer događaja nakon saglasnosti za analitiku ili marketing, u zavisnosti od taga. Sam po sebi ne postavlja kolačiće.",
     retention: "Tokom učitane stranice",
   },
 ];

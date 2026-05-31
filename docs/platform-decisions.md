@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-05-31 - Google Ads dataLayer konverzije
+
+- **Oblast promene:** conversion | payments | docs
+- **Šta se promenilo:** Implementirani su consent-aware `dataLayer` događaji `er_begin_checkout`, `er_generate_lead` i `er_purchase`; GTM bootstrap je uklonjen iz root layout-a i centralizovan iza `NEXT_PUBLIC_GTM_ENABLED` plus analytics/marketing consent.
+- **Zašto:** Google Ads/GTM container je spreman, ali platforma nije slala stvarne conversion payload-e za leadove i plaćene porudžbine.
+- **Uticaj na conversion:** Ads sada može da meri lead submit, begin checkout i server-confirmed purchase događaje; wire transfer ostaje budući offline conversion import da se ne bi atribuiralo admin browser-u.
+- **Uticaj na design:** Nema vizuelne promene; legal/cookie tekst precizira da GTM može raditi uz analytics ili marketing consent, u zavisnosti od taga.
+- **Uticaj na code:** Dodati typed Google dataLayer helper-i, payment success handoff za PayPal/mock, Nestpay success page event i lead/quote client push-evi.
+- **Uticaj na docs:** Ažurirani `docs/google-ads-gtm-conversions.md`, `docs/gtm-post-launch.md` i ovaj decision log.
+- **Povezani fajlovi:** `src/lib/analytics/google-data-layer.ts`, `src/components/analytics/google-tag-manager-post-launch.tsx`, `src/server/actions/payment.ts`, `src/app/(marketing)/poruci/uspeh/page.tsx`, `docs/google-ads-gtm-conversions.md`
+- **Reference:** User-provided "Instrukcije za developera: Google Ads Conversion Tracking (dataLayer)" i odobren implementation plan.
+
 ## 2026-05-30 - Turnstile vraćen na produkcioni režim posle NestPay proba
 
 - **Oblast promene:** payments | auth | conversion | docs

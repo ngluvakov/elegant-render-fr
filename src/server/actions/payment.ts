@@ -21,15 +21,32 @@ import { processMockCardPaymentCents } from "@/lib/payment/mock-card";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { applyPurchasedAiCreditsForOrder } from "@/server/actions/ai-credits";
 import { issueInvoice } from "@/server/actions/issue-invoice";
+import { buildPurchaseDataLayerEvent } from "@/server/analytics/google-conversions";
+import type { GooglePurchaseDataLayerEvent } from "@/lib/analytics/google-data-layer";
 
 export type PaymentResult = {
   error?: string;
   success?: boolean;
   paypalOrderId?: string;
+  purchaseEvent?: GooglePurchaseDataLayerEvent;
 };
 
 function getOrderAmountCents(order: { totalEur: number; totalCents: number | null }) {
   return order.totalCents ?? order.totalEur * 100;
+}
+
+async function paymentSuccessResult(
+  orderId: string,
+  conversionSource: Parameters<typeof buildPurchaseDataLayerEvent>[1],
+): Promise<PaymentResult> {
+  const purchaseEvent = await buildPurchaseDataLayerEvent(
+    orderId,
+    conversionSource,
+  );
+  return {
+    success: true,
+    ...(purchaseEvent ? { purchaseEvent } : {}),
+  };
 }
 
 export type FailedPaymentDetails = {
@@ -190,7 +207,7 @@ export async function capturePayPalOrderAction(
   if (!order) return { error: "Porudžbina nije pronađena." };
   if (order.paymentStatus === "completed") {
     await finishSuccessfulPayment(orderId, { enqueueEmail: false });
-    return { success: true };
+    return paymentSuccessResult(orderId, "paypal_capture_replay");
   }
 
   // Idempotency guard 1: pre-flight. If the order is already paid (the
@@ -198,7 +215,7 @@ export async function capturePayPalOrderAction(
   // response was lost) treat as success without re-charging the card.
   if (order.status === "paid") {
     await finishSuccessfulPayment(orderId, { enqueueEmail: false });
-    return { success: true };
+    return paymentSuccessResult(orderId, "paypal_capture_replay");
   }
 
   try {
@@ -222,14 +239,14 @@ export async function capturePayPalOrderAction(
     });
     if (result.count === 0) {
       // Concurrent request beat us; their flow handles the email.
-      return { success: true };
+      return paymentSuccessResult(orderId, "paypal_capture_race");
     }
 
     await transitionOrder(orderId, "paid", undefined, "PayPal plaćanje potvrđeno");
 
     await finishSuccessfulPayment(orderId);
 
-    return { success: true };
+    return paymentSuccessResult(orderId, "paypal_capture");
   } catch (err) {
     Sentry.captureException(err, {
       tags: { area: "payment", flow: "paypal-capture" },
@@ -253,7 +270,7 @@ export async function mockCardPaymentAction(
   // error (paid orders fail the draft/awaiting_payment filter).
   if (order.paymentStatus === "completed" || order.status === "paid") {
     await finishSuccessfulPayment(orderId, { enqueueEmail: false });
-    return { success: true };
+    return paymentSuccessResult(orderId, "mock_card_replay");
   }
 
   if (order.status !== "draft" && order.status !== "awaiting_payment") {
@@ -281,14 +298,14 @@ export async function mockCardPaymentAction(
       },
     });
     if (result.count === 0) {
-      return { success: true };
+      return paymentSuccessResult(orderId, "mock_card_race");
     }
 
     await transitionOrder(orderId, "paid", undefined, "Kartično plaćanje potvrđeno (test)");
 
     await finishSuccessfulPayment(orderId);
 
-    return { success: true };
+    return paymentSuccessResult(orderId, "mock_card_success");
   } catch (err) {
     Sentry.captureException(err, {
       tags: { area: "payment", flow: "card-mock-capture" },

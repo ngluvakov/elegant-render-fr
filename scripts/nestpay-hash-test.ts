@@ -117,7 +117,7 @@ function caseHostedPaymentForm() {
 }
 
 function caseHostedPaymentInstallments() {
-  console.log("\n[case] buildHostedPaymentForm — TAKSIT is an unsigned form field");
+  console.log("\n[case] buildHostedPaymentForm — TAKSIT requires explicit enablement");
   __setNestpayConfigForTests({
     mode: "test",
     clientId: "13IN004509",
@@ -136,9 +136,21 @@ function caseHostedPaymentInstallments() {
     returnUrl: "https://elegantrender.rs/api/nestpay/return",
   };
   const oneTime = buildHostedPaymentForm(base);
-  const threeRates = buildHostedPaymentForm({ ...base, taksit: 3 });
+  const disabledThreeRates = buildHostedPaymentForm({ ...base, taksit: 3 });
+  const enabledThreeRates = buildHostedPaymentForm({
+    ...base,
+    taksit: 3,
+    allowInstallments: true,
+  });
 
-  assert(threeRates.fields.TAKSIT === "3", "TAKSIT=3 is included for instalments");
+  assert(
+    !("TAKSIT" in disabledThreeRates.fields),
+    "TAKSIT is omitted unless instalments are explicitly enabled",
+  );
+  assert(
+    enabledThreeRates.fields.TAKSIT === "3",
+    "TAKSIT=3 is included when instalments are explicitly enabled",
+  );
   assert(!("TAKSIT" in oneTime.fields), "TAKSIT is omitted when taksit=1/empty");
 
   const expectedHash = buildRequestHashVer2({
@@ -148,12 +160,12 @@ function caseHostedPaymentInstallments() {
     okUrl: base.returnUrl,
     failUrl: base.returnUrl,
     tranType: "Auth",
-    rnd: threeRates.fields.rnd,
+    rnd: enabledThreeRates.fields.rnd,
     currency: "941",
     storeKey: "TEST-store-key-xyz",
   });
   assert(
-    threeRates.fields.hash === expectedHash,
+    enabledThreeRates.fields.hash === expectedHash,
     "TAKSIT does not participate in the request hash",
   );
 

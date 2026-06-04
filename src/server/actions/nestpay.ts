@@ -44,6 +44,9 @@ export type NestpayInitiateResult =
   | { error: string }
   | { url: string; fields: Record<string, string> };
 
+const NESTPAY_INSTALLMENTS_ENABLED =
+  process.env.NEXT_PUBLIC_NESTPAY_INSTALLMENTS_ENABLED === "true";
+
 function getClientIp(forwardedFor: string | null): string | null {
   if (!forwardedFor) return null;
   return forwardedFor.split(",")[0]?.trim() ?? null;
@@ -149,7 +152,9 @@ async function initiateNestpayPaymentImpl(
 
   const config = getNestpayConfig();
   const oid = mintOid(order.orderNumber, config.oidPrefix);
-  const installmentCount = normalizeNestpayInstallmentCount(input.taksit);
+  const installmentCount = NESTPAY_INSTALLMENTS_ENABLED
+    ? normalizeNestpayInstallmentCount(input.taksit)
+    : 1;
 
   // Persist the new attempt's oid + provider BEFORE returning the form.
   // The bank's return POST keys back to us by oid; if we crashed after
@@ -200,6 +205,7 @@ async function initiateNestpayPaymentImpl(
     buyerName: order.user.name ?? undefined,
     returnUrl,
     taksit: installmentCount,
+    allowInstallments: NESTPAY_INSTALLMENTS_ENABLED,
   });
 
   return form;

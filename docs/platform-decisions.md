@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-06-04 - NestPay rate privremeno iskljucene
+
+- **Oblast promene:** payments | conversion | order lifecycle | docs
+- **Sta se promenilo:** Placanje karticom na rate je sakriveno iza `NEXT_PUBLIC_NESTPAY_INSTALLMENTS_ENABLED=false`. Dok flag nije `true`, checkout ne prikazuje selector za rate, novi NestPay pokusaji se snapshotuju kao jednokratno placanje i HPP POST ne salje `TAKSIT`.
+- **Zasto:** Trenutni ugovor sa bankom izgleda ne pokriva placanje na rate, pa produkcija mora ostati na jednokratnom karticnom placanju dok banka/ugovor ne potvrde suprotno.
+- **Uticaj na conversion:** Kupac vise ne vidi izbor rata; karticno placanje ostaje dostupno kao standardno jednokratno placanje.
+- **Uticaj na design:** Payment step uklanja blok "Placanje na rate" osim kada je feature flag eksplicitno ukljucen.
+- **Uticaj na code:** Postojeca TAKSIT implementacija ostaje spremna za kasnije, ali `buildHostedPaymentForm` zahteva `allowInstallments: true`, a `initiateNestpayPayment` ignorise klijentski `taksit` dok je flag iskljucen.
+- **Uticaj na docs:** Ažurirani su `.env.example` i ovaj decision log.
+- **Povezani fajlovi:** `src/app/(marketing)/poruci/steps/step-payment.tsx`, `src/server/actions/nestpay.ts`, `src/lib/nestpay/client.ts`, `scripts/nestpay-hash-test.ts`, `.env.example`
+- **Reference:** User request: "sakrij placanje na rate... izgleda da to nemamo u nasem ugovoru"; approved implementation plan for temporary NestPay installments disablement.
+
 ## 2026-05-31 - Google Ads dataLayer konverzije
 
 - **Oblast promene:** conversion | payments | docs

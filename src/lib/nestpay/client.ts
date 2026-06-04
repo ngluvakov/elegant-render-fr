@@ -41,6 +41,7 @@ export type HostedPaymentInput = {
   buyerName?: string;
   returnUrl: string;
   taksit?: NestpayInstallmentCount | number | null;
+  allowInstallments?: boolean;
 };
 
 export type HostedPaymentForm = {
@@ -59,7 +60,9 @@ export function buildHostedPaymentForm(input: HostedPaymentInput): HostedPayment
   const config = getNestpayConfig();
   const rnd = mintRnd();
   const amount = formatRsdAmount(input.amountRsdCents);
-  const installmentCount = normalizeNestpayInstallmentCount(input.taksit);
+  const installmentCount = input.allowInstallments
+    ? normalizeNestpayInstallmentCount(input.taksit)
+    : 1;
 
   const formData: Record<string, string> = {
     clientid: config.clientId,

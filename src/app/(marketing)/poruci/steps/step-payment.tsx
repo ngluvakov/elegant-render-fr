@@ -206,11 +206,11 @@ export function StepPayment() {
                 Platna kartica
               </p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                Visa, Mastercard, Maestro, DinaCard · zaštićeno 3D Secure
-                tehnologijom
+                Visa, Mastercard, Maestro, DinaCard, American Express ·
+                zaštićeno 3D Secure tehnologijom
               </p>
             </div>
-            <div className="mt-auto flex h-14 items-center justify-around gap-3 rounded-lg bg-background px-4 ring-1 ring-border/30">
+            <div className="mt-auto flex h-14 items-center justify-around gap-2 rounded-lg bg-background px-3 ring-1 ring-border/30">
               <Image
                 src="/branding/payments/visa.png"
                 alt="Visa"
@@ -236,6 +236,13 @@ export function StepPayment() {
                 src="/branding/payments/dinacard.png"
                 alt="DinaCard"
                 width={36}
+                height={28}
+                className="h-7 w-auto object-contain"
+              />
+              <Image
+                src="/branding/payments/amex.png"
+                alt="American Express"
+                width={28}
                 height={28}
                 className="h-7 w-auto object-contain"
               />

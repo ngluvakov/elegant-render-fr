@@ -3,9 +3,10 @@
 /**
  * PaymentTrustBadges — BI EPM §2.2 three-group badge bar.
  *
- * Group 1 (acceptance): Visa, Mastercard, Maestro, DinaCard.
- * Group 2 (security):   Mastercard ID Check, Visa Secure, DinaCard Secure
- *                        — linked to official programme pages per EPM §2.2.
+ * Group 1 (acceptance): Visa, Mastercard, Maestro, DinaCard, American Express.
+ * Group 2 (security):   Mastercard ID Check, Visa Secure, DinaCard Secure,
+ *                        American Express SafeKey — linked to official
+ *                        programme pages per EPM §2.2.
  * Group 3 (issuer):     Banca Intesa AD Beograd.
  *
  * Assets live in /public/branding/payments/. On image load error the
@@ -59,6 +60,12 @@ const ACCEPTANCE: Logo[] = [
     width: 20,
     height: 20,
   },
+  {
+    src: "/branding/payments/amex.png",
+    alt: "American Express",
+    width: 20,
+    height: 20,
+  },
 ];
 
 const SECURITY: Logo[] = [
@@ -85,6 +92,14 @@ const SECURITY: Logo[] = [
     height: 20,
     href: "https://www.dinacard.nbs.rs/",
     ariaLabel: "DinaCard Secure — 3D Secure autentifikacija",
+  },
+  {
+    src: "/branding/payments/amex-safekey.png",
+    alt: "American Express SafeKey",
+    width: 20,
+    height: 20,
+    href: "https://www.americanexpress.com/en-us/benefits/safekey/",
+    ariaLabel: "American Express SafeKey — 3D Secure autentifikacija",
   },
 ];
 

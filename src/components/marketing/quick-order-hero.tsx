@@ -37,6 +37,7 @@ import {
   usePublicPricingSettings,
 } from "@/components/site/public-currency-provider";
 import { SERVICES, type ServiceIcon } from "@/lib/catalog/services";
+import { buildConfiguratorHref } from "@/lib/catalog/configurator-href";
 import { AI_EDIT_TYPES } from "@/lib/ai-studio/catalog";
 import { formatPublicPriceText } from "@/lib/catalog/display-currency";
 import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
@@ -61,54 +62,6 @@ const ICON_MAP: Record<ServiceIcon, LucideIcon> = {
 const SCROLL_STEP_PX = 220;
 
 const HERO_BEFORE_AFTER_DEMO_INTERVAL_MS = 10_000;
-
-type HeroCtaTarget = {
-  productId?: string;
-  sourceMode?: string;
-  group: string;
-};
-
-const SERVICE_CATEGORY_TO_GROUP: Record<string, string> = {
-  eksterijer: "renderi-eksterijera",
-  enterijer: "enterijer",
-  planovi: "planovi",
-  animacije: "animacija",
-  transformacija: "opremanje-renovacija",
-};
-
-const VARIANT_TO_CONFIGURATOR: Record<string, Omit<HeroCtaTarget, "group">> = {
-  "interior-static": { productId: "int-static" },
-  "interior-360": { productId: "int-360" },
-  "exterior-static": { productId: "ext-static" },
-  "exterior-360": { productId: "ext-360" },
-  "exterior-aerial": { productId: "ext-aerial" },
-  "staging-static": { productId: "vs-static" },
-  "staging-360": { productId: "vs-360" },
-  "renovation-main": { productId: "reno-image" },
-  "floorplan-2d": { productId: "fp2d-single" },
-  "floorplan-3d": { productId: "fp3d-single" },
-  "landscape-main": { productId: "land-static" },
-  "photomontage-main": { productId: "ext-static" },
-  "site-plan-main": { productId: "sp-first" },
-  "day-to-dusk-main": { productId: "dtd-image" },
-  "item-removal-main": { productId: "ir-simple" },
-  "animation-from-scratch": { productId: "anim", sourceMode: "scratch" },
-};
-
-function buildConfiguratorHref(variantId: string, serviceCategory: string) {
-  const group =
-    SERVICE_CATEGORY_TO_GROUP[serviceCategory] ?? "renderi-eksterijera";
-  const target = VARIANT_TO_CONFIGURATOR[variantId];
-  const params = new URLSearchParams({ group });
-  if (target?.productId) {
-    params.set("add", target.productId);
-  }
-  if (target?.sourceMode) {
-    params.set("sourceMode", target.sourceMode);
-  }
-  params.set("from", "home-hero");
-  return `/cene?${params.toString()}#configurator`;
-}
 
 export function QuickOrderHero() {
   const displayCurrency = usePublicCurrency();

@@ -24,6 +24,7 @@ import {
   type BenefitIcon,
   type Service,
 } from "@/lib/catalog/services";
+import { buildConfiguratorHref } from "@/lib/catalog/configurator-href";
 import {
   formatPublicPriceText,
   type DisplayCurrency,
@@ -505,6 +506,19 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
 
 function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
   const { service } = ctx;
+  if (service.problemEmbedSrc) {
+    return (
+      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+        <iframe
+          title={`${service.name} — interaktivna 360 tura`}
+          src={service.problemEmbedSrc}
+          className="h-full w-full border-0"
+          allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
+          loading="lazy"
+        />
+      </figure>
+    );
+  }
   if (service.problemAsset) {
     return (
       <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
@@ -652,18 +666,33 @@ function PricingCard({
         </p>
       )}
       <div className="mt-auto pt-6">
-        <QuickInquiryLink
-          size="lg"
-          variant={featured ? "accent" : "outline"}
-          className="w-full justify-center"
-          inquiry={{
-            source: "service-detail-pricing",
-            sourceLabel: `${ctx.service.name} — ${variant.title}`,
-            serviceType: ctx.service.name,
-          }}
-        >
-          Zatražite ponudu
-        </QuickInquiryLink>
+        {featured ? (
+          <ButtonLink
+            href={buildConfiguratorHref(
+              variant.id,
+              ctx.service.category,
+              "service-detail",
+            )}
+            size="lg"
+            variant="accent"
+            className="w-full justify-center"
+          >
+            Zatražite ponudu
+          </ButtonLink>
+        ) : (
+          <QuickInquiryLink
+            size="lg"
+            variant="outline"
+            className="w-full justify-center"
+            inquiry={{
+              source: "service-detail-pricing",
+              sourceLabel: `${ctx.service.name} — ${variant.title}`,
+              serviceType: ctx.service.name,
+            }}
+          >
+            Zatražite ponudu
+          </QuickInquiryLink>
+        )}
       </div>
     </article>
   );

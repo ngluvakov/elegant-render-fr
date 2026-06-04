@@ -150,6 +150,9 @@ export type Service = {
   /** Optional visual for the problem section (4:3). When unset, ProblemVisual
    *  falls back to BeforeAfterReveal → first portfolio image → detailAsset. */
   problemAsset?: string;
+  /** When set, the problem section renders an iframe (e.g. Kuula 360 tour)
+   *  instead of the before/after slider. Takes precedence over problemAsset. */
+  problemEmbedSrc?: string;
 
   /** Three reason-to-buy cards rendered as a 3-up grid. */
   benefits?: ServiceBenefit[];
@@ -281,6 +284,7 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-unutrasnji-renderi.webp",
     listingAsset: "/artwork/listing-interior-static.webp",
     detailAsset: "/artwork/detail-interior-static.webp",
+    problemAsset: "/artwork/problem-interior-static-after.webp",
     detailBeforeAsset: "/artwork/problem-interior-static-before.webp",
     detailAfterAsset: "/artwork/problem-interior-static-after.webp",
     philosophy:
@@ -414,8 +418,10 @@ export const SERVICES: Service[] = [
     detailAsset: "/artwork/detail-interior-360.webp",
     detailBeforeAsset: "/artwork/problem-interior-360-before.webp",
     detailAfterAsset: "/artwork/problem-interior-360-after.webp",
+    problemEmbedSrc:
+      "https://kuula.co/share/collection/71kZD?logo=1&info=0&logosize=40&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=2",
     detailEmbedSrc:
-      "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
+      "https://kuula.co/share/collection/71kZD?logo=1&info=0&logosize=40&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=2",
     philosophy:
       "Najveći deo posla je izrada 3D modela sprata — gradimo ga jednom i naplaćujemo jednom. Posle toga svaka dodatna interaktivna tačka u istoj sobi je €27, dodatna soba €45, dodatni statički ugao €10, drugi sprat €205 (30% jeftinije). Tako kompletan obilazak ulazi u realan investitorski budžet.",
     priceContext:

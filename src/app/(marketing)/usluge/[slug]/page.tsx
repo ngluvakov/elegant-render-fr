@@ -677,7 +677,7 @@ function PricingCard({
             variant="accent"
             className="w-full justify-center"
           >
-            Zatražite ponudu
+            Izračunajte cenu i naručite
           </ButtonLink>
         ) : (
           <QuickInquiryLink

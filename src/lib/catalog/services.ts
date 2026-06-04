@@ -1239,7 +1239,7 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "osnove",
+    slug: "2d-i-3d-osnove",
     code: "floor-plans",
     name: "2D i 3D osnove",
     shortName: "2D i 3D osnove",
@@ -1864,7 +1864,7 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "prikazi-dvorista",
+    slug: "uredjenje-pejzaza",
     code: "landscape-rendering",
     name: "Uređenje pejzaža",
     shortName: "Uređenje pejzaža",
@@ -2128,7 +2128,7 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "3d-situacioni",
+    slug: "situacioni-planovi",
     code: "3d-site-plans",
     name: "Situacioni planovi",
     shortName: "Situacioni planovi",
@@ -2258,7 +2258,7 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "dan-u-noc",
+    slug: "dnevni-u-nocni-prikaz",
     code: "day-to-dusk",
     name: "Dnevni u noćni prikaz",
     shortName: "Dnevni u noćni prikaz",
@@ -2389,7 +2389,7 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "uklanjanje-elemenata",
+    slug: "uklanjanje-predmeta",
     code: "item-removal",
     name: "Uklanjanje predmeta",
     shortName: "Uklanjanje predmeta",

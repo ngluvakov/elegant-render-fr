@@ -26,10 +26,31 @@ const nextConfig: NextConfig = {
         destination: "/usluge/vr-tura",
         permanent: true,
       },
-      // Friendly alias: people type "uredjenje-pejzaza" but slug is prikazi-dvorista.
+      // Slug rename pass (2026-06-04): canonical slugs now follow service
+      // name. Old URLs (Google Ads, SEO index, bookmarks) 301 to new ones.
       {
-        source: "/usluge/uredjenje-pejzaza",
-        destination: "/usluge/prikazi-dvorista",
+        source: "/usluge/prikazi-dvorista",
+        destination: "/usluge/uredjenje-pejzaza",
+        permanent: true,
+      },
+      {
+        source: "/usluge/osnove",
+        destination: "/usluge/2d-i-3d-osnove",
+        permanent: true,
+      },
+      {
+        source: "/usluge/3d-situacioni",
+        destination: "/usluge/situacioni-planovi",
+        permanent: true,
+      },
+      {
+        source: "/usluge/dan-u-noc",
+        destination: "/usluge/dnevni-u-nocni-prikaz",
+        permanent: true,
+      },
+      {
+        source: "/usluge/uklanjanje-elemenata",
+        destination: "/usluge/uklanjanje-predmeta",
         permanent: true,
       },
       // Legal page consolidation (Banca Intesa checkout compliance, 2026-05-29).

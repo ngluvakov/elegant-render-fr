@@ -40,7 +40,7 @@ const FOOTER_SERVICES: NavItem[] = [
   { href: "/usluge/virtuelno-opremanje", label: "Virtuelno opremanje" },
   { href: "/usluge/vr-tura", label: "VR tura" },
   { href: "/usluge/arhitektonska-animacija", label: "Arhitektonska animacija" },
-  { href: "/usluge/3d-situacioni", label: "3D situacioni planovi" },
+  { href: "/usluge/situacioni-planovi", label: "3D situacioni planovi" },
 ];
 
 const KOMPANIJA_LINKS: NavItem[] = [

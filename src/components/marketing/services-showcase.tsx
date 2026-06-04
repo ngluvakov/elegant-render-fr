@@ -190,7 +190,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Uređenje pejzaža",
-    slug: "prikazi-dvorista",
+    slug: "uredjenje-pejzaza",
     priceEur: 220,
     category: "renderi",
     short: "Prikaz dvorišta, vrta, parkovskog ili spoljnog uređenja sa vegetacijom i terenom.",
@@ -248,7 +248,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "3D site planovi",
-    slug: "3d-situacioni",
+    slug: "situacioni-planovi",
     priceEur: 350,
     category: "osnove",
     short: "Pregled cele parcele sa objektima, pristupima, zelenilom i širim odnosom prostora.",
@@ -322,7 +322,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Dnevni u noćni prikaz",
-    slug: "dan-u-noc",
+    slug: "dnevni-u-nocni-prikaz",
     priceEur: 10,
     category: "nekretnine",
     short: "Pretvaranje dnevne fotografije eksterijera u atraktivniji sumrak.",
@@ -338,7 +338,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Uklanjanje elemenata",
-    slug: "uklanjanje-elemenata",
+    slug: "uklanjanje-predmeta",
     priceEur: 12,
     category: "nekretnine",
     short: "Digitalno uklanjanje nereda i neželjenih objekata sa fotografije prostora.",

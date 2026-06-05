@@ -19,7 +19,7 @@ const PROOF_ITEMS = [
     service: "Unutrašnji renderi",
     price: "od €170",
     timing: "prvi nacrti 3-5 radnih dana",
-    body: "Jedna porudžbina pokriva ceo sprat sa do 10 opremljenih prostorija i neograničen broj uglova iz tih soba.",
+    body: "Jedna porudžbina pokriva ceo sprat: 10 statičkih rendera enterijera + tlocrt sprata.",
     href: "/cene?group=enterijer&add=int-static&from=home-proof#configurator",
     image: "/artwork/expert-unutrasnji-renderi.webp",
   },

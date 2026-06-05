@@ -214,7 +214,7 @@ export const SERVICES: Service[] = [
     hideFromMenu: true,
     tagline: "Pokažite kupcima dom još pre nego što izvođači stignu na lokaciju.",
     description:
-      "Pokažite kupcima ili klijentima kako će izgledati svaka prostorija budućeg doma — još pre nego što počnu radovi. Jedna porudžbina pokriva ceo sprat sa do 10 opremljenih prostorija i neograničen broj uglova kamere iz tih soba. Prodajte stan iz prospekta, dogovorite klijenta na izboru materijala, ili predstavite enterijer pre nego što ga izgradite.",
+      "Pokažite kupcima ili klijentima kako će izgledati svaka prostorija budućeg doma — još pre nego što počnu radovi. Jedna porudžbina pokriva ceo sprat — 10 statičkih rendera enterijera + tlocrt sprata. Prodajte stan iz prospekta, dogovorite klijenta na izboru materijala, ili predstavite enterijer pre nego što ga izgradite.",
     highlight:
       "Za stanove u izgradnji, kuće pred renoviranje i investitorske jedinice — jedna investicija pokriva ceo sprat, ne pojedinačnu sobu.",
     materials:
@@ -224,7 +224,7 @@ export const SERVICES: Service[] = [
     philosophy:
       "Najveći deo posla je izrada 3D modela — gradimo ga jednom i naplaćujemo jednom. Nakon toga svaki novi ugao, promena nameštaja ili doba dana kreće od €10, ne od pune cene rendera. Tako planirate marketing budžet u sezoni pre-prodaje bez neprijatnih iznenađenja.",
     priceContext:
-      "Ceo sprat sa do 10 opremljenih prostorija + neograničen broj rendera iz tih soba.",
+      "Ceo sprat — 10 statičkih rendera enterijera + tlocrt sprata.",
     forSegments: [
       "Investitori (multi-unit)",
       "Arhitekte enterijera",
@@ -237,11 +237,11 @@ export const SERVICES: Service[] = [
         title: "Klasični prikaz — po spratu",
         basePrice: 170,
         priceLabel: "€170",
-        unitLabel: "ceo sprat sa do 10 prostorija",
+        unitLabel: "ceo sprat — 10 statičkih rendera",
         description:
-          "Najjača kombinacija za prospekt i prezentaciju investitorskih jedinica — jedna investicija pokriva ceo sprat sa neograničenim brojem uglova.",
+          "Najjača kombinacija za prospekt i prezentaciju investitorskih jedinica — jedna investicija pokriva ceo sprat: 10 statičkih rendera + tlocrt.",
         included:
-          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje do 10 opremljenih prostorija, neograničen broj uglova kamere iz tih soba i tlocrt sprata. Svaki sledeći sprat: €120 (30% jeftiniji).",
+          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje 10 statičkih rendera enterijera i tlocrt sprata. Svaki sledeći sprat: €120 (30% jeftiniji).",
         addOns: [
           "11. i svaka sledeća opremljena soba: €28",
           "Dodatni ugao kamere u postojećoj sobi: €10",
@@ -276,7 +276,7 @@ export const SERVICES: Service[] = [
     icon: "home",
     tagline: "Pokažite kupcima dom još pre nego što počnu radovi.",
     description:
-      "Fotorealistični prikaz svake prostorije budućeg stana ili kuće — sa tačnim materijalima, rasporedom nameštaja i prirodnim svetlom. €170 pokriva ceo sprat sa do 10 opremljenih prostorija i neograničen broj uglova kamere iz tih soba. Prodajte off-plan jedinicu kupcu koji vidi tačno šta dobija.",
+      "Fotorealistični prikaz svake prostorije budućeg stana ili kuće — sa tačnim materijalima, rasporedom nameštaja i prirodnim svetlom. €170 pokriva ceo sprat — 10 statičkih rendera enterijera + tlocrt sprata. Prodajte off-plan jedinicu kupcu koji vidi tačno šta dobija.",
     highlight:
       "Pravi izbor za prospekt off-plan jedinica, klijentske prezentacije izbora materijala i marketing pred otvaranje prodaje.",
     materials:
@@ -290,7 +290,7 @@ export const SERVICES: Service[] = [
     philosophy:
       "Najveći deo posla je izrada 3D modela sprata — gradimo ga jednom i naplaćujemo jednom. Posle toga svaki novi ugao iste sobe je €10, dodatna soba na istom spratu €28, drugi sprat €120 (30% jeftinije). Tako planirate marketing budžet u sezoni pre-prodaje bez iznenađenja.",
     priceContext:
-      "€170 — ceo sprat sa do 10 opremljenih prostorija + neograničen broj rendera iz tih soba.",
+      "€170 — ceo sprat: 10 statičkih rendera enterijera + tlocrt sprata.",
     forSegments: [
       "Investitori (multi-unit pre-prodaja)",
       "Arhitekte enterijera (klijentske prezentacije)",
@@ -315,7 +315,7 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "Jedan paket pokriva ceo sprat",
-        body: "€170 obuhvata do 10 prostorija sa neograničenim brojem uglova. Po sobi to izlazi manje od €20 — kategorijski jeftinije od pojedinačnog naručivanja.",
+        body: "€170 obuhvata 10 statičkih rendera enterijera + tlocrt sprata. Po renderu to izlazi €17 — kategorijski jeftinije od pojedinačnog naručivanja.",
       },
     ],
     processSteps: [
@@ -357,11 +357,11 @@ export const SERVICES: Service[] = [
     faqs: [
       {
         q: "Šta tačno dobijam za €170?",
-        a: "Kompletan 3D model jednog sprata sa do 10 opremljenih prostorija i neograničenim brojem uglova kamere iz tih soba. Uključen je i tlocrt sprata. Svaki sledeći sprat: €120 (30% jeftinije). 11. soba na istom spratu: €28.",
+        a: "Kompletan 3D model jednog sprata sa 10 statičkih rendera enterijera i tlocrtom sprata. Svaki sledeći sprat: €120 (30% jeftinije). 11. soba na istom spratu: €28.",
       },
       {
         q: "Razlika u odnosu na pojedinačnu sobu kod konkurencije?",
-        a: "Standardno tržište naplaćuje po sobi. Mi naplaćujemo po spratu — €170 za do 10 prostorija. Po sobi to izlazi manje od €20. Logika je da je model već izgrađen kad pređemo iz sobe u sobu — naplata jednom umesto deset puta.",
+        a: "Standardno tržište naplaćuje po sobi. Mi naplaćujemo po spratu — €170 za 10 statičkih rendera. Po renderu to izlazi €17. Logika je da je model već izgrađen kad pređemo iz sobe u sobu — naplata jednom umesto deset puta.",
       },
       {
         q: "Mogu li kasnije da menjam materijale ili nameštaj?",
@@ -386,11 +386,11 @@ export const SERVICES: Service[] = [
         title: "Klasični prikaz — po spratu",
         basePrice: 170,
         priceLabel: "€170",
-        unitLabel: "ceo sprat sa do 10 prostorija",
+        unitLabel: "ceo sprat — 10 statičkih rendera",
         description:
-          "Jedna porudžbina pokriva ceo sprat sa neograničenim brojem uglova. Svaki sledeći sprat 30% jeftiniji.",
+          "Jedna porudžbina pokriva ceo sprat: 10 statičkih rendera + tlocrt. Svaki sledeći sprat 30% jeftiniji.",
         included:
-          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje do 10 opremljenih prostorija, neograničen broj uglova kamere iz tih soba i tlocrt sprata. Svaki sledeći sprat: €120 (30% jeftiniji).",
+          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje 10 statičkih rendera enterijera i tlocrt sprata. Svaki sledeći sprat: €120 (30% jeftiniji).",
         addOns: [
           "11. i svaka sledeća opremljena soba: €28",
           "Dodatni ugao kamere u postojećoj sobi: €10",

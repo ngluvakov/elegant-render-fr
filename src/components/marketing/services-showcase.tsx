@@ -117,7 +117,7 @@ const SERVICES: Service[] = [
     category: "renderi",
     short: "Vizuelizacija enterijera pre opremanja, renovacije ili prodaje prostora.",
     audience: "Za vlasnike stanova, arhitekte, dizajnere i manje investitore.",
-    includes: ["Do 10 prostorija po spratu", "3D osnova uključena", "3 kruga korekcija"],
+    includes: ["10 statičkih rendera + tlocrt", "3D osnova uključena", "3 kruga korekcija"],
     icon: "home",
     badge: "Najtraženije",
     imageSrc: "/artwork/listing-interior-static.webp",

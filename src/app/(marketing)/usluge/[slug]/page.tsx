@@ -47,6 +47,11 @@ export function generateStaticParams() {
   return SERVICES.map((service) => ({ slug: service.slug }));
 }
 
+/** Auto-play the before/after swipe demo on viewport entry, repeating on this
+ *  interval — mirrors the home hero / AI Studio behavior so service-page
+ *  sliders hint their interactivity. */
+const SERVICE_BEFORE_AFTER_DEMO_INTERVAL_MS = 7000;
+
 export async function generateMetadata({
   params,
 }: {
@@ -321,21 +326,47 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
           <div className="mx-auto max-w-2xl text-center">
             <SectionKicker align="center">Cene</SectionKicker>
             <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-              Transparentne cene. Bez nagađanja.
+              {service.pricingLead?.heading ?? "Transparentne cene. Bez nagađanja."}
             </h2>
             <p className="mt-4 text-base leading-7 text-muted-foreground">
-              Osnovna cena pokriva izgradnju 3D modela i prvi finalni render.
-              Svaki sledeći ugao iz istog modela je drastično jeftiniji — jer
-              je model već tu.
+              {service.pricingLead
+                ? formatPublicPriceText(
+                    service.pricingLead.body,
+                    ctx.displayCurrency,
+                    ctx.pricingSettings,
+                  )
+                : "Osnovna cena pokriva izgradnju 3D modela i prvi finalni render. Svaki sledeći ugao iz istog modela je drastično jeftiniji — jer je model već tu."}
             </p>
           </div>
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {service.variants.map((variant, idx) => (
+          <div
+            className={[
+              "mt-12 grid gap-6",
+              service.variants.length +
+                (service.crossSellVariants?.length ?? 0) >=
+              3
+                ? "md:grid-cols-3"
+                : service.variants.length +
+                      (service.crossSellVariants?.length ?? 0) ===
+                    2
+                  ? "mx-auto max-w-4xl md:grid-cols-2"
+                  : "mx-auto max-w-md",
+            ].join(" ")}
+          >
+            {[
+              ...service.variants.map((variant, idx) => ({
+                variant,
+                featured: idx === 0,
+              })),
+              ...(service.crossSellVariants ?? []).map((variant) => ({
+                variant,
+                featured: false,
+              })),
+            ].map(({ variant, featured }) => (
               <PricingCard
                 key={variant.id}
                 ctx={ctx}
                 variant={variant}
-                featured={idx === 0}
+                featured={featured}
               />
             ))}
           </div>
@@ -539,6 +570,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
         afterSrc={service.detailAfterAsset}
         alt={service.name}
         sizes="(max-width: 768px) 100vw, 480px"
+        autoDemoIntervalMs={SERVICE_BEFORE_AFTER_DEMO_INTERVAL_MS}
         className="aspect-[4/3] w-full rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]"
       >
         <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-background/95">
@@ -595,7 +627,11 @@ function PricingCard({
     >
       {featured && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-accent-foreground">
-          Najčešće naručivano
+          {ctx.service.variants.length +
+            (ctx.service.crossSellVariants?.length ?? 0) >
+          1
+            ? "Naš izbor"
+            : "Kompletna usluga"}
         </span>
       )}
       <h3 className="font-heading text-xl text-foreground">{variant.title}</h3>
@@ -666,15 +702,15 @@ function PricingCard({
         </p>
       )}
       <div className="mt-auto pt-6">
-        {featured ? (
+        {featured || variant.configuratorCategory ? (
           <ButtonLink
             href={buildConfiguratorHref(
               variant.id,
-              ctx.service.category,
+              variant.configuratorCategory ?? ctx.service.category,
               "service-detail",
             )}
             size="lg"
-            variant="accent"
+            variant={featured ? "accent" : "outline"}
             className="w-full justify-center"
           >
             Izračunajte cenu i naručite
@@ -738,6 +774,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
           afterSrc={service.detailAfterAsset}
           alt={service.name}
           sizes="(max-width: 768px) 100vw, 896px"
+          autoDemoIntervalMs={SERVICE_BEFORE_AFTER_DEMO_INTERVAL_MS}
           className="mt-10 aspect-[16/9] w-full rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]"
         >
           <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-background/95">

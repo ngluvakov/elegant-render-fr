@@ -38,6 +38,11 @@ export type PricingVariant = {
   addOns: string[];
   /** Optional caveat or rule the customer should see. */
   note?: string;
+  /** Override the category used to build the configurator deep-link. Set on
+   *  cross-sell cards whose product lives in a different category than the
+   *  host service (e.g. a "transformacija" reno card on an "eksterijer" page),
+   *  so the deep-link resolves the correct configurator group. */
+  configuratorCategory?: ServiceCategory;
 };
 
 export type ServiceIcon =
@@ -126,6 +131,15 @@ export type Service = {
   /** Why this service is priced the way it is (customer-value framing). */
   philosophy: string;
   variants: PricingVariant[];
+  /** Extra pricing cards rendered after `variants` on the detail page only —
+   *  cross-sell options whose product lives in another service/category (e.g.
+   *  the cheaper "virtuelna renovacija iz fotografije" on the landscape page).
+   *  Display-only: NOT consumed by the home quick-order hero or the quote. */
+  crossSellVariants?: PricingVariant[];
+  /** Optional heading/body shown above the pricing cards. Use to frame a
+   *  multi-option choice (e.g. "Dva načina…"). Falls back to the generic
+   *  pricing header when unset. */
+  pricingLead?: { heading: string; body: string };
   /** Feature this service in the quick-order picker on the home page. */
   featured?: boolean;
   /** Delivered via White Rook partner network rather than in-house. */
@@ -1870,9 +1884,10 @@ export const SERVICES: Service[] = [
     shortName: "Uređenje pejzaža",
     category: "eksterijer",
     icon: "tree",
-    tagline: "Dvorište, bašta ili park — pre nego što biljke porastu.",
+    tagline:
+      "3D pejzaž iz plana ili nova slika Vašeg dvorišta — bez čekanja da biljke porastu.",
     description:
-      "Prikaz uređenog spoljnog prostora — dvorišta, bašte, parka ili pristupne staze — pre nego što izvođači stignu na lokaciju. Idealno za prezentaciju klijentu pre potpisivanja ugovora ili reklamu pred otvaranje. Svaki sledeći ugao iste lokacije: 80% jeftiniji.",
+      "Dve opcije — jedan rezultat: vidite uređen spoljni prostor pre nego što počnu radovi ili pre nego što potrošite na sadnju. Pejzažni render (3D) iz plana kreće od €220. Virtuelna renovacija iz fotografije postojećeg dvorišta kreće od €66.",
     highlight:
       "Prikladno za pejzažne arhitekte koji predstavljaju projekat klijentu i investitore za zajedničke prostore u kompleksima.",
     materials:
@@ -1884,7 +1899,7 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-prikazi-dvorista-before.webp",
     detailAfterAsset: "/artwork/problem-prikazi-dvorista-after.webp",
     philosophy:
-      "Cena pokriva modelovanje terena, sadnju vegetacije i prvi prikaz. Pošto je teren izgrađen, svaki sledeći ugao iste lokacije je €45 — 80% jeftinije. Doplata postoji samo ako novi ugao zahteva teren koji nije bio u modelu.",
+      "Cena pejzažnog rendera (€220) pokriva modelovanje terena, vegetaciju u zrelom stanju i prvi prikaz. Svaki sledeći ugao iste lokacije je €45 — 80% jeftiniji, jer je teren već izgrađen. Virtuelna renovacija (€66) radi drugačije: nema 3D modela — postavljamo nove materijale i biljke direktno na Vašu fotografiju. Brže, povoljnije, ali vezano za ugao koji ste snimili. Doplate za renovaciju: drugi ugao €59, 4. i svaki sledeći €53, drugo dvorište €56. Sve cene bez PDV-a.",
     priceContext:
       "€220 — kompletan teren + vegetacija + prvi prikaz. Sledeći ugao: €45 (80% jeftiniji).",
     forSegments: [
@@ -1896,7 +1911,7 @@ export const SERVICES: Service[] = [
     problemBody:
       "Klijent gleda crtež pejzaža sa simbolima i ne vidi kako će dvorište zaista izgledati. Bez vizuelnog pejzaža, prodavac ne može da odbrani cenu uređenja, investitor ne dobija odobrenje, kupac parcele ne vidi potencijal.",
     problemResolution:
-      "Pejzažni render pretvara situacioni plan u fotorealističan prikaz uređenog prostora — sa zrelom vegetacijom, popločanim stazama i akcent elementima u pravom kontekstu i svetlu.",
+      "Pejzažni render (€220) gradi kompletan 3D model terena i vegetacije iz plana — svaki sledeći ugao iste lokacije je €45. Virtuelna renovacija (€66) preuređuje Vaše postojeće dvorište direktno na fotografiji — bez 3D modela, brže i povoljnije.",
     benefits: [
       {
         icon: "trust",
@@ -1933,6 +1948,10 @@ export const SERVICES: Service[] = [
       },
     ],
     faqs: [
+      {
+        q: "Zašto je virtuelna renovacija jeftinija od 3D rendera?",
+        a: "Pejzažni render (€220) gradi kompletan 3D model terena i vegetacije iz osnove — to je dugotrajan proces koji omogućava slobodan izbor ugla kamere i prikaz iz vazduha. Virtuelna renovacija (€66) ne gradi 3D model — nove materijale i biljke postavljamo direktno na Vašu fotografiju. Brži je i povoljniji postupak, ali je vezan za ugao i perspektivu snimljene fotografije. Ako prostora još nema ili trebate više uglova, 3D render je jedina opcija.",
+      },
       {
         q: "Šta tačno dobijam za €220?",
         a: "Kompletno modelovanje terena, postavljanje vegetacije i staza i prvi finalni render. Svaki sledeći ugao iste lokacije: €45 (80% popust). Doplata za neviđenu stranu terena: +25% jednom po modelu. Pogled iz vazduha na celu lokaciju: €380.",
@@ -1976,22 +1995,47 @@ export const SERVICES: Service[] = [
         alt: "Uređenje pejzaža — javni prostor sa popločanom stazom i zrelim sadnicama",
       },
     ],
+    pricingLead: {
+      heading: "Kako odabrati pravu opciju?",
+      body: "Prostora još nema — gradite iz plana, trebaju Vam različiti uglovi ili pogled iz vazduha? Izaberite Pejzažni render (3D). Dvorište već postoji — želite da vidite kako će izgledati posle uređenja, brzo i bez 3D modela? Izaberite Virtuelnu renovaciju.",
+    },
     variants: [
       {
         id: "landscape-main",
-        title: "Pejzažni render",
+        title: "Pejzažni render (3D)",
         basePrice: 220,
         priceLabel: "€220",
         unitLabel: "teren + vegetacija + prvi prikaz",
         description:
-          "Kompletan teren sa vegetacijom i prvi render. Sledeći ugao iste lokacije: €45.",
+          "Kompletan 3D model terena i vegetacije iz plana. Pravi izbor kada prostor još ne postoji — gradnja, projektovanje ili prezentacija investitoru. Svaki sledeći ugao iste lokacije 80% jeftiniji.",
         included:
-          "Kompletno modelovanje terena, postavljanje vegetacije i staza, i 1 finalni render (ugao gledanja).",
+          "Kompletno modelovanje terena, postavljanje vegetacije u zrelom stanju, staza i materijala, i 1 finalni render. Tri runde revizije uključene.",
         addOns: [
-          "Dodatni ugao iste lokacije: €45 (80% popust)",
+          "Sledeći ugao iste lokacije: €45 (80% jeftiniji)",
           "Doplata za neviđenu stranu terena: +25% jednom po modelu",
           "Pogled iz vazduha na celu lokaciju: €380",
         ],
+        note: "Počinjete od situacionog plana, visinskih kota i specifikacije biljaka. Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude.",
+      },
+    ],
+    crossSellVariants: [
+      {
+        id: "landscape-reno",
+        title: "Virtuelna renovacija iz fotografije",
+        basePrice: 66,
+        priceLabel: "€66",
+        unitLabel: "prvi prikaz renoviranog dvorišta",
+        description:
+          "Pošaljite fotografiju postojećeg dvorišta — mi preuređujemo prostor direktno na slici, bez 3D modela. Brže i povoljnije od pejzažnog rendera. Pravi izbor kada imate fotografiju i samo želite videti kako bi izgledalo uređeno.",
+        included:
+          "Kompletna vizuelna transformacija dvorišta na osnovu Vaše fotografije — novi pod, vegetacija, staze, fiksirani elementi i nameštaj terasa.",
+        addOns: [
+          "Drugi ugao iste lokacije: €59 (10% jeftiniji)",
+          "4. i svaki sledeći ugao: €53 (20% jeftiniji)",
+          "Drugo dvorište iste nekretnine: €56 (15% jeftiniji)",
+        ],
+        note: "Počinjete od fotografije postojećeg stanja i referenci za nove materijale i biljke. Ova opcija je vezana za ugao fotografije — za slobodan izbor kamere koristite Pejzažni render (3D).",
+        configuratorCategory: "transformacija",
       },
     ],
   },

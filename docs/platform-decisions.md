@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-06-06 - Pejzaž: dvostruka opcija + preimenovanje oznake na karticama usluga
+
+- **Oblast promene:** conversion | pricing | design | docs
+- **Šta se promenilo:** (1) `/usluge/uredjenje-pejzaza` je preokvirena kao izbor dve opcije — premium "Pejzažni render (3D)" €220 i jeftinija "Virtuelna renovacija iz fotografije" €66 (postojeći `reno-image`). Dodat je uvodni blok "Kako odabrati pravu opciju?" iznad kartica i druga kartica na dnu. (2) Oznaka na pricing karticama više nije "Najčešće naručivano": kada usluga ima 2+ opcije prikazuje se "Naš izbor" na preporučenoj (prvoj) kartici, a kada ima samo jednu opciju "Kompletna usluga".
+- **Zašto:** "Najčešće naručivano" je sugerisalo da je kartica neka druga, srodna usluga, a ne baš ona koju je korisnik otvorio. Pejzaž logički spada i u renovaciju, pa kupcu treba ponuditi povoljniji put kroz statičku sliku.
+- **Uticaj na conversion:** Dve jasne cenovne tačke (€220 / €66) sa CTA "Izračunajte cenu i naručite" koji vodi pravo u konfigurator sa već dodatim proizvodom (`land-static` odn. `reno-image`); jeftinija opcija snižava prag ulaska.
+- **Uticaj na design:** Sekundarna (jeftinija) kartica ostaje `outline` bez clay oznake/ivice (clay samo na primarnoj); raspored 2-up (`md:grid-cols-2`, `max-w-4xl`), na mobilnom se kartice slažu vertikalno. Pregledali Elegant Gentlemen (Beaumont approve-with-notes).
+- **Uticaj na code:** `PricingVariant` dobio opcioni `configuratorCategory` (override grupe za deep-link); `Service` dobio `crossSellVariants` (display-only, NE ulazi u home hero/quote) i `pricingLead`. `VARIANT_TO_CONFIGURATOR` dobio `landscape-reno → reno-image`. Cene celobrojne; bez Prisma izmena.
+- **Uticaj na docs:** Ovaj decision log.
+- **Povezani fajlovi:** `src/lib/catalog/services.ts`, `src/lib/catalog/configurator-href.ts`, `src/app/(marketing)/usluge/[slug]/page.tsx`
+- **Reference:** User request ("Ova usluga ujedno spada i u kategoriju renovacije… u kartice na dnu obavezno stavi i virtuelnu renovaciju"; "izmisliš neki naziv" umesto "Najčešće naručivano"); Elegant Gentlemen round-table (Ashford copy, Beaumont design, Carrington stack).
+
 ## 2026-06-04 - NestPay rate privremeno iskljucene
 
 - **Oblast promene:** payments | conversion | order lifecycle | docs

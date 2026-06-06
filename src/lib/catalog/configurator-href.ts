@@ -26,6 +26,7 @@ export const VARIANT_TO_CONFIGURATOR: Record<string, ConfiguratorTarget> = {
   "staging-static": { productId: "vs-static" },
   "staging-360": { productId: "vs-360" },
   "renovation-main": { productId: "reno-image" },
+  "landscape-reno": { productId: "reno-image" },
   "floorplan-2d": { productId: "fp2d-single" },
   "floorplan-3d": { productId: "fp3d-single" },
   "landscape-main": { productId: "land-static" },

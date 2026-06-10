@@ -4,6 +4,7 @@ import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ConfiguratorBody } from "@/components/configurator/pricing-configurator";
+import { PricingAssistantGuideContext } from "@/components/chat/pricing-guide-context";
 import { QuoteProvider } from "@/components/configurator/quote-context";
 import { QuoteSummary } from "@/components/configurator/quote-summary";
 import { StandaloneAiCredits } from "@/components/configurator/standalone-ai-credits";
@@ -78,6 +79,9 @@ export default async function CenePage() {
         displayCurrency={displayCurrency}
         pricingCatalog={pricingCatalog}
       >
+        {/* Feeds the live cart into the assistant guide store so the tip
+            bubble + AI recognize what the user is configuring. */}
+        <PricingAssistantGuideContext />
         <StandaloneAiCredits />
 
         {/* Service matrix — left sidebar of categories + right table of services

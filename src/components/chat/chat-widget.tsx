@@ -1,10 +1,12 @@
 /**
  * ChatWidget — Floating AI assistant button + chat drawer.
  * Persists conversation and open/closed state across page navigations
- * via sessionStorage. Appears on marketing pages except AI Studio, where
- * the mobile credit dock owns the bottom-right/bottom-fixed space.
+ * via sessionStorage. The contextual tip bubble is shown by default and
+ * its dismissal is session-scoped (resets next session). Appears on every
+ * marketing/portal page, including AI Studio, where it lifts above the
+ * fixed mobile credit dock.
  *
- * Used on: (marketing)/layout.tsx
+ * Used on: (marketing)/layout.tsx, portal/layout.tsx
  */
 "use client";
 
@@ -52,8 +54,10 @@ function loadOpen(): boolean {
 }
 
 function loadGuideDismissed(): boolean {
+  // Session-scoped: once the user closes the tip bubble it stays closed for
+  // the rest of the session, but advice is shown again in a new session.
   try {
-    return localStorage.getItem(STORAGE_KEY_GUIDE_DISMISSED) === "1";
+    return sessionStorage.getItem(STORAGE_KEY_GUIDE_DISMISSED) === "1";
   } catch {}
   return false;
 }
@@ -105,6 +109,24 @@ export function ChatWidget() {
     hydrated &&
     Boolean(activeTip || hasReadinessAttention) &&
     (!guideDismissed || hasReadinessAttention);
+
+  // Lift the FAB + tip bubble above page-level fixed mobile bars so they don't
+  // overlap: the AI Studio credit dock (lg:hidden, always present) and the
+  // cenovnik MobileQuoteBar (xl:hidden, only when the cart has items). Driven
+  // by the injected guide context, not pathname, so it stays route-agnostic.
+  const liftForDock = guideContext?.page === "ai_studio";
+  const liftForQuoteBar =
+    guideContext?.page === "pricing" && (guideContext?.cartItemCount ?? 0) > 0;
+  const fabBottomClass = liftForDock
+    ? "bottom-[5.75rem] sm:bottom-[6.5rem] lg:bottom-6"
+    : liftForQuoteBar
+      ? "bottom-[5.5rem] sm:bottom-[6rem] xl:bottom-6"
+      : "bottom-5 sm:bottom-6";
+  const bubbleBottomClass = liftForDock
+    ? "bottom-[9.5rem] sm:bottom-[10.5rem] lg:bottom-24"
+    : liftForQuoteBar
+      ? "bottom-[9.25rem] sm:bottom-[10rem] xl:bottom-24"
+      : "bottom-[4.75rem] sm:bottom-24";
 
   // Load persisted state after hydration
   useEffect(() => {
@@ -163,7 +185,7 @@ export function ChatWidget() {
   const dismissGuide = () => {
     setGuideDismissed(true);
     try {
-      localStorage.setItem(STORAGE_KEY_GUIDE_DISMISSED, "1");
+      sessionStorage.setItem(STORAGE_KEY_GUIDE_DISMISSED, "1");
     } catch {}
   };
 
@@ -235,7 +257,7 @@ export function ChatWidget() {
     [chatSessionId, guideContext, messages, pathname],
   );
 
-  if (!hydrated || !consentDecided || pathname === "/ai-studio") return null;
+  if (!hydrated || !consentDecided) return null;
 
   return (
     <>
@@ -244,7 +266,8 @@ export function ChatWidget() {
         type="button"
         onClick={toggleOpen}
         className={cn(
-          "fixed bottom-5 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-[0_8px_30px_rgba(28,26,25,0.15)] transition-all hover:scale-105 sm:bottom-6 sm:right-6 sm:h-14 sm:w-14",
+          "fixed right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-[0_8px_30px_rgba(28,26,25,0.15)] transition-all hover:scale-105 sm:right-6 sm:h-14 sm:w-14",
+          fabBottomClass,
           open
             ? "bg-foreground text-background"
             : "bg-accent text-white",
@@ -261,7 +284,8 @@ export function ChatWidget() {
       {showGuideBubble && (
         <div
           className={cn(
-            "fixed bottom-[4.75rem] right-4 z-40 w-[min(19rem,calc(100vw-5.25rem))] rounded-2xl border px-3.5 py-3 pr-9 text-foreground shadow-[0_14px_42px_rgba(28,26,25,0.14)] backdrop-blur animate-in fade-in slide-in-from-bottom-2 duration-300 after:absolute after:-bottom-1.5 after:right-5 after:h-3 after:w-3 after:rotate-45 after:border-b after:border-r sm:bottom-24 sm:right-6 sm:w-80 sm:px-4",
+            "fixed right-4 z-40 w-[min(19rem,calc(100vw-5.25rem))] rounded-2xl border px-3.5 py-3 pr-9 text-foreground shadow-[0_14px_42px_rgba(28,26,25,0.14)] backdrop-blur animate-in fade-in slide-in-from-bottom-2 duration-300 after:absolute after:-bottom-1.5 after:right-5 after:h-3 after:w-3 after:rotate-45 after:border-b after:border-r sm:right-6 sm:w-80 sm:px-4",
+            bubbleBottomClass,
             missingItems.length > 0
               ? "border-[color:var(--color-ember)]/55 bg-[color:var(--color-sand-soft)]/95 after:border-[color:var(--color-ember)]/55 after:bg-[color:var(--color-sand-soft)]/95"
               : readinessWarnings.length > 0

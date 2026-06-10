@@ -37,6 +37,12 @@ export type AssistantGuideContext = {
   missingItems?: string[];
   readinessWarnings?: string[];
   canGenerate?: boolean;
+  // Cenovnik (/cene) cart awareness — set by PricingAssistantGuideContext so
+  // the assistant (bubble tips + AI) can recognize what the user is building.
+  cartItemCount?: number;
+  cartTotalEur?: number;
+  cartOriginalTotalEur?: number;
+  cartHasDiscount?: boolean;
 };
 
 type Listener = () => void;

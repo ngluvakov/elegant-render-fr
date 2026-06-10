@@ -365,6 +365,50 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
     priority: 70,
     when: (context) => context.hasFiles === false,
   },
+  // ── Cenovnik (/cene) — cart-aware purchase advice ──────────
+  {
+    id: "pricing-empty-cart",
+    label: "Krenite od cilja",
+    body:
+      "Izaberite uslugu iz tabele i cena se računa odmah. Ako niste sigurni šta vam treba, pitajte me ovde.",
+    pages: ["pricing"],
+    priority: 100,
+    when: (context) => !(context.productIds && context.productIds.length),
+  },
+  {
+    id: "pricing-exterior-second-view",
+    label: "Drugi prikaz je jeftiniji",
+    body:
+      "Imate eksterijer u korpi — drugi prikaz iz istog modela (360 ili iz vazduha) košta znatno manje jer je model već izgrađen.",
+    pages: ["pricing"],
+    productIds: ["ext-static", "exterior-static"],
+    priority: 96,
+    when: (context) =>
+      !(context.productIds ?? []).some((id) =>
+        ["ext-360", "ext-aerial", "exterior-360", "exterior-aerial"].includes(
+          id,
+        ),
+      ),
+  },
+  {
+    id: "pricing-animation-active",
+    label: "Animacija uz model",
+    body:
+      "Animacija je znatno povoljnija uz aktivan 3D model nego iz nule. Ako već naručujete render, dodajte je u istoj porudžbini.",
+    pages: ["pricing"],
+    productIds: ["anim", "animation-from-scratch"],
+    priority: 95,
+  },
+  {
+    id: "pricing-model-first-discount",
+    label: "Model se gradi jednom",
+    body:
+      "Više prikaza iz istog modela = niža cena po prikazu. Prva isporuka nosi pun iznos, svaki sledeći je jeftiniji.",
+    pages: ["pricing"],
+    priority: 94,
+    when: (context) =>
+      (context.productIds?.length ?? 0) >= 2 || context.cartHasDiscount === true,
+  },
 ];
 
 function stripRule(rule: ChatGuideRule): ChatGuideTip {

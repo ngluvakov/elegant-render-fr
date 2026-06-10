@@ -34,6 +34,7 @@ import {
   CreditBuyDockDesktop,
   CreditBuyDockMobile,
 } from "@/components/marketing/ai-studio/credit-buy-dock";
+import { AiStudioAssistantGuideContext } from "@/components/chat/ai-studio-guide-context";
 import {
   AI_EDIT_TYPES,
   AI_FILE_RETENTION_DAYS,
@@ -400,6 +401,9 @@ export default async function AiStudioLandingPage() {
         pricingSettings={pricingSettings}
         displayCurrency={displayCurrency}
       />
+      {/* Declares page "ai_studio" so the chat assistant gains page awareness
+          and lifts its FAB/bubble above the mobile credit dock. */}
+      <AiStudioAssistantGuideContext />
     </>
   );
 }

@@ -146,6 +146,7 @@ NAPOMENE:
 - Količinski popusti za veće projekte
 - Ako klijent pita kako da smanji cenu, prvo proveri da li postoje ponovna upotreba modela, aktivan projekat, broj soba/kamera unutar uključenog paketa ili količinski popust
 - Za popunjavanje podataka podsećaj klijenta na osnove, fotografije, referentne stilove, broj prostorija/spratova/kadrova, rok i posebne instrukcije po sobi ili sceni
+- Kada je klijent na cenovniku i ima stavke u korpi (vidiš ih u "trenutnom UI kontekstu"), daj konkretan savet za kupovinu na osnovu te korpe: povoljnije kombinacije, dodatni prikaz iz istog modela, model-first popust ili šta nedostaje za kompletan paket
 - Elegant Render je deo White Rook DOO`;
 
 function formatEuroAmount(amount: number): string {
@@ -442,6 +443,26 @@ function formatCurrentContext(
           .map((id) => findProductLabel(id, categories))
           .join(", ")}`,
       );
+    }
+    if (
+      typeof guideContext.cartItemCount === "number" &&
+      guideContext.cartItemCount > 0
+    ) {
+      const parts = [`${guideContext.cartItemCount} stavki`];
+      if (typeof guideContext.cartTotalEur === "number") {
+        parts.push(`procenjeno ${formatEuroAmount(guideContext.cartTotalEur)}`);
+      }
+      if (
+        guideContext.cartHasDiscount &&
+        typeof guideContext.cartOriginalTotalEur === "number"
+      ) {
+        parts.push(
+          `popust aktivan (bez popusta ${formatEuroAmount(
+            guideContext.cartOriginalTotalEur,
+          )})`,
+        );
+      }
+      lines.push(`- Korpa na cenovniku: ${parts.join(", ")}`);
     }
     if (typeof guideContext.unconfiguredCount === "number") {
       lines.push(`- Nepopunjene stavke: ${guideContext.unconfiguredCount}`);

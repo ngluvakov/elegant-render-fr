@@ -2668,3 +2668,55 @@ export function formatStartingPrice(service: Service): string {
   const first = service.variants[0];
   return first.priceLabel;
 }
+
+export type ServiceImageRole =
+  | "hero"
+  | "listing"
+  | "detail"
+  | "problem"
+  | "before"
+  | "after"
+  | "portfolio"
+  | "og";
+
+function firstSentence(value: string): string {
+  const normalized = value.replace(/\s+/g, " ").trim();
+  const match = normalized.match(/^(.+?[.!?])(?:\s|$)/);
+  return match?.[1] ?? normalized;
+}
+
+export function buildServiceImageAlt(
+  service: Service,
+  role: ServiceImageRole = "detail",
+): string {
+  const category = CATEGORY_LABELS[service.category].toLowerCase();
+
+  switch (role) {
+    case "before":
+      return `${service.name} - ulazni kadar pre vizuelne obrade`;
+    case "after":
+      return `${service.name} - finalni vizual posle obrade`;
+    case "problem":
+      return `${service.name} - primer problema i rešenja za ${category}`;
+    case "listing":
+      return `${service.name} - primer usluge iz kategorije ${category}`;
+    case "portfolio":
+      return `${service.name} - portfolio primer realizovanog vizuala`;
+    case "hero":
+      return `${service.name} - ${service.tagline}`;
+    case "og":
+      return `${service.name} - Elegant Render ${category}`;
+    case "detail":
+    default:
+      return `${service.name} - primer arhitektonske vizuelizacije Elegant Render`;
+  }
+}
+
+export function buildServiceImageCaption(
+  service: Service,
+  role: ServiceImageRole = "detail",
+): string {
+  return `${buildServiceImageAlt(service, role)}. ${firstSentence(
+    service.description,
+  )}`;
+}

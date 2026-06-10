@@ -45,6 +45,8 @@ type Props = {
   beforeSrc: string;
   afterSrc: string;
   alt: string;
+  beforeAlt?: string;
+  afterAlt?: string;
   sizes?: string;
   className?: string;
   fallback?: ReactNode;
@@ -55,6 +57,8 @@ export function BeforeAfterShowcase({
   beforeSrc,
   afterSrc,
   alt,
+  beforeAlt = `Pre: ${alt}`,
+  afterAlt = `Posle: ${alt}`,
   sizes = "(max-width: 768px) 100vw, 1200px",
   className,
   fallback,
@@ -186,14 +190,14 @@ export function BeforeAfterShowcase({
       )}
       <Image
         src={beforeSrc}
-        alt=""
+        alt={beforeAlt}
         fill
         sizes={sizes}
         className="object-cover"
       />
       <Image
         src={afterSrc}
-        alt={alt}
+        alt={afterAlt}
         fill
         sizes={sizes}
         className="before-after-after-layer object-cover"

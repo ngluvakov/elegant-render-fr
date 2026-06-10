@@ -36,7 +36,11 @@ import {
   usePublicCurrency,
   usePublicPricingSettings,
 } from "@/components/site/public-currency-provider";
-import { SERVICES, type ServiceIcon } from "@/lib/catalog/services";
+import {
+  SERVICES,
+  buildServiceImageAlt,
+  type ServiceIcon,
+} from "@/lib/catalog/services";
 import { buildConfiguratorHref } from "@/lib/catalog/configurator-href";
 import { AI_EDIT_TYPES } from "@/lib/ai-studio/catalog";
 import { formatPublicPriceText } from "@/lib/catalog/display-currency";
@@ -106,6 +110,9 @@ export function QuickOrderHero() {
       afterAsset: selectedService.afterAsset,
       objectAsset: undefined as string | undefined,
       embedSrc: selectedService.embedSrc,
+      imageAlt: buildServiceImageAlt(selectedService, "hero"),
+      beforeAlt: buildServiceImageAlt(selectedService, "before"),
+      afterAlt: buildServiceImageAlt(selectedService, "after"),
       IconEl: ICON_MAP[selectedService.icon],
       fromPriceText: `od ${priceText(selectedService.variants[0].priceLabel)}`,
       priceContext: selectedService.priceContext
@@ -231,7 +238,9 @@ export function QuickOrderHero() {
                   <BeforeAfterReveal
                     beforeSrc={view.beforeAsset}
                     afterSrc={view.afterAsset}
-                    alt={view.name}
+                    alt={view.afterAlt}
+                    beforeAlt={view.beforeAlt}
+                    afterAlt={view.afterAlt}
                     sizes="(max-width: 768px) 100vw, 55vw"
                     className="aspect-[4/3] w-full rounded-2xl border border-border bg-secondary md:aspect-[3/2]"
                     autoDemoIntervalMs={HERO_BEFORE_AFTER_DEMO_INTERVAL_MS}
@@ -271,7 +280,7 @@ export function QuickOrderHero() {
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-secondary md:aspect-[3/2]">
                     <Image
                       src={view.asset}
-                      alt={view.name}
+                      alt={view.imageAlt}
                       fill
                       sizes="(max-width: 768px) 100vw, 55vw"
                       className="object-cover"

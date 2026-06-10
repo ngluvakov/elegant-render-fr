@@ -373,6 +373,18 @@ const SCENARIOS = [
   },
 ];
 
+function serviceCardImageAlt(service: Service): string {
+  return `${service.name} - ${service.short}`;
+}
+
+function serviceCardBeforeAlt(service: Service): string {
+  return `${service.name} - prikaz pre vizuelne obrade`;
+}
+
+function serviceCardAfterAlt(service: Service): string {
+  return `${service.name} - rezultat posle vizuelne obrade`;
+}
+
 // ─── Component ───────────────────────────────────────────
 
 export function ServicesShowcase() {
@@ -395,7 +407,7 @@ export function ServicesShowcase() {
         <div className="relative h-[420px] md:h-[500px]">
           <Image
             src={ARTWORK.hero}
-            alt="Elegant Render enterijer"
+            alt="Elegant Render enterijer - fotorealističan primer arhitektonske vizuelizacije"
             fill
             className="object-cover"
             priority
@@ -475,7 +487,9 @@ export function ServicesShowcase() {
                 <BeforeAfterReveal
                   beforeSrc={service.beforeSrc}
                   afterSrc={service.afterSrc}
-                  alt={service.name}
+                  alt={serviceCardAfterAlt(service)}
+                  beforeAlt={serviceCardBeforeAlt(service)}
+                  afterAlt={serviceCardAfterAlt(service)}
                   sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
                   className="relative z-10 h-48 w-full bg-secondary/40"
                 >
@@ -495,7 +509,7 @@ export function ServicesShowcase() {
                 <div className="relative h-48 overflow-hidden">
                   <Image
                     src={service.imageSrc}
-                    alt={service.name}
+                    alt={serviceCardImageAlt(service)}
                     fill
                     sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
@@ -628,7 +642,7 @@ export function ServicesShowcase() {
           <div className="relative h-full min-h-[320px]">
             <Image
               src={ARTWORK.floorplan}
-              alt="3D osnova prostora"
+              alt="3D osnova prostora - pregledan plan stana za marketing nekretnine"
               fill
               className="object-cover"
             />

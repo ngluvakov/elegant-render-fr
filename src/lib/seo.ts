@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import type { ConfiguratorCategory } from "@/lib/catalog/configurator";
 import type { Service } from "@/lib/catalog/services";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
-import { SERVICES } from "@/lib/catalog/services";
+import {
+  SERVICES,
+  buildServiceImageAlt,
+  buildServiceImageCaption,
+} from "@/lib/catalog/services";
 import {
   FAQ_ITEMS,
   PLATFORM_PRINCIPLES,
@@ -45,6 +49,29 @@ export const SEO = {
   websiteId: `${SITE.url}/#website`,
   keywords: DISCOVERY_KEYWORDS,
 } as const;
+
+type SeoImageObjectOptions = {
+  src: string;
+  name: string;
+  caption: string;
+};
+
+function buildSeoImageObject({
+  src,
+  name,
+  caption,
+}: SeoImageObjectOptions) {
+  const url = absoluteUrl(src);
+  return {
+    "@type": "ImageObject",
+    url,
+    contentUrl: url,
+    name,
+    caption,
+    description: caption,
+    inLanguage: SEO.htmlLang,
+  };
+}
 
 export const INDEXABLE_ROBOTS: Metadata["robots"] = {
   index: true,
@@ -307,6 +334,13 @@ export function buildFaqJsonLd(
 
 export function buildServiceJsonLd(service: Service) {
   const serviceUrl = absoluteUrl(`/usluge/${service.slug}`);
+  const image =
+    service.detailAsset ??
+    service.detailAfterAsset ??
+    service.listingAsset ??
+    service.asset ??
+    DEFAULT_OG_IMAGE;
+
   return {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -348,7 +382,11 @@ export function buildServiceJsonLd(service: Service) {
         }
       : {}),
     url: serviceUrl,
-    image: absoluteUrl(service.detailAsset ?? service.asset ?? DEFAULT_OG_IMAGE),
+    image: buildSeoImageObject({
+      src: image,
+      name: buildServiceImageAlt(service, "detail"),
+      caption: buildServiceImageCaption(service, "detail"),
+    }),
     offers: {
       "@type": "OfferCatalog",
       "@id": `${serviceUrl}#offers`,

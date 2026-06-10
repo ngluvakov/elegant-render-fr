@@ -217,7 +217,7 @@ export function SiteFooter() {
             >
               <Image
                 src={CERTIFIER.badgeAsset.src}
-                alt=""
+                alt={CERTIFIER.badgeAsset.alt}
                 width={CERTIFIER.badgeAsset.width}
                 height={CERTIFIER.badgeAsset.height}
                 className="h-9 w-auto"

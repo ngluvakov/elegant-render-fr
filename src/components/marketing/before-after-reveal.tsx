@@ -32,6 +32,8 @@ type Props = {
   beforeSrc: string;
   afterSrc: string;
   alt: string;
+  beforeAlt?: string;
+  afterAlt?: string;
   /** Sizes hint for next/image. Defaults to a mid-page card. */
   sizes?: string;
   /** Classes for the outer media div — caller controls aspect ratio, radius, bg. */
@@ -50,6 +52,8 @@ export function BeforeAfterReveal({
   beforeSrc,
   afterSrc,
   alt,
+  beforeAlt = `Pre: ${alt}`,
+  afterAlt = `Posle: ${alt}`,
   sizes = "(max-width: 768px) 100vw, 55vw",
   className,
   fallback,
@@ -185,14 +189,14 @@ export function BeforeAfterReveal({
       )}
       <Image
         src={beforeSrc}
-        alt=""
+        alt={beforeAlt}
         fill
         sizes={sizes}
         className="object-cover"
       />
       <Image
         src={afterSrc}
-        alt={alt}
+        alt={afterAlt}
         fill
         sizes={sizes}
         className="before-after-after-layer object-cover"

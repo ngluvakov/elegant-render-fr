@@ -178,7 +178,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={`/artwork/tablica-${product.id}.webp`}
-            alt={product.label}
+            alt={`${product.label} - ${category.description}`}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover object-center"
             onError={() => setImgFailed(true)}

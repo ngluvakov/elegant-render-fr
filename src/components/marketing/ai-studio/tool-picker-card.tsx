@@ -104,7 +104,9 @@ function BeforeAfterCard({
       <BeforeAfterReveal
         beforeSrc={beforeSrc!}
         afterSrc={afterSrc!}
-        alt={label}
+        alt={`Posle AI obrade: ${label}`}
+        beforeAlt={`Pre AI obrade: ${label}`}
+        afterAlt={`Posle AI obrade: ${label}`}
         sizes="(max-width: 768px) 50vw, 25vw"
         className={cn("aspect-[4/3] bg-gradient-to-br", gradient)}
         fallback={
@@ -158,7 +160,7 @@ function FallbackCard({
         {imageSrc && (
           <Image
             src={imageSrc}
-            alt={label}
+            alt={`${label} - primer AI Studio alata`}
             fill
             sizes="(max-width: 768px) 50vw, 25vw"
             className="object-cover"

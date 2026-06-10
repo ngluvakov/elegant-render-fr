@@ -62,11 +62,17 @@ import {
   createPublicMetadata,
 } from "@/lib/seo";
 
+const AI_STUDIO_OG_IMAGE = "/artwork/ai-tool-virtual_staging-after.webp";
+const AI_STUDIO_IMAGE_ALT =
+  "AI Studio - primer virtuelnog opremanja praznog prostora za oglas nekretnine";
+
 export const metadata: Metadata = createPublicMetadata({
   title: "AI Studio",
   description:
     "Brza AI obrada fotografija nekretnina: uklanjanje elemenata, dan-u-noć, zamena neba, boja zidova, staging, dodavanje ili zamena nameštaja/dekora, renovacija i redesign.",
   path: "/ai-studio",
+  image: AI_STUDIO_OG_IMAGE,
+  imageAlt: AI_STUDIO_IMAGE_ALT,
   keywords: [
     "AI obrada fotografija nekretnina",
     "AI virtual staging",
@@ -215,7 +221,7 @@ const workflow = [
 
 const heroProof = {
   beforeSrc: "/artwork/ai-tool-virtual_staging-before.webp",
-  afterSrc: "/artwork/ai-tool-virtual_staging-after.webp",
+  afterSrc: AI_STUDIO_OG_IMAGE,
   title: "Prazan prostor u prodajni kadar",
   text: "Before/after primer iz AI Studio alata za virtuelno opremanje.",
 };
@@ -329,6 +335,15 @@ export default async function AiStudioLandingPage() {
             url: absoluteUrl("/ai-studio"),
             provider: {
               "@id": SEO.organizationId,
+            },
+            image: {
+              "@type": "ImageObject",
+              url: absoluteUrl(AI_STUDIO_OG_IMAGE),
+              contentUrl: absoluteUrl(AI_STUDIO_OG_IMAGE),
+              name: AI_STUDIO_IMAGE_ALT,
+              caption:
+                "AI Studio prikazuje kako prazna fotografija enterijera postaje prodajni vizual kroz virtuelno opremanje.",
+              inLanguage: SEO.htmlLang,
             },
             offers: {
               "@type": "OfferCatalog",
@@ -459,7 +474,9 @@ function HeroContent({
         <BeforeAfterReveal
           beforeSrc={heroProof.beforeSrc}
           afterSrc={heroProof.afterSrc}
-          alt={heroProof.title}
+          alt={AI_STUDIO_IMAGE_ALT}
+          beforeAlt="AI Studio - prazna prostorija pre virtuelnog opremanja"
+          afterAlt={AI_STUDIO_IMAGE_ALT}
           sizes="(max-width: 768px) 100vw, 36vw"
           className="aspect-[4/3] bg-secondary"
           autoDemoIntervalMs={7000}

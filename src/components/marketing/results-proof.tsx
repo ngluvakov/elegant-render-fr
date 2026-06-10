@@ -22,6 +22,8 @@ const PROOF_ITEMS = [
     body: "Jedna porudžbina pokriva ceo sprat: 10 statičkih rendera enterijera + tlocrt sprata.",
     href: "/cene?group=enterijer&add=int-static&from=home-proof#configurator",
     image: "/artwork/expert-unutrasnji-renderi.webp",
+    imageAlt:
+      "Unutrašnji renderi - opremljen enterijer spreman za prodaju iz prospekta",
   },
   {
     title: "Prazna soba postaje oglas koji se lakše razume",
@@ -32,6 +34,9 @@ const PROOF_ITEMS = [
     href: "/cene?group=opremanje-renovacija&add=vs-static&from=home-proof#configurator",
     before: "/artwork/expert-virtuelno-opremanje-before.webp",
     after: "/artwork/expert-virtuelno-opremanje-after.webp",
+    beforeAlt: "Virtuelno opremanje - prazna soba pre digitalnog staginga",
+    afterAlt:
+      "Virtuelno opremanje - opremljena soba spremna za oglas nekretnine",
   },
   {
     title: "Eksterijer sa jasnim budžetom za dodatne uglove",
@@ -41,6 +46,8 @@ const PROOF_ITEMS = [
     body: "Prvi kadar pokriva izradu 3D modela objekta, a svaka sledeća kamera iz istog modela je znatno povoljnija.",
     href: "/cene?group=renderi-eksterijera&add=ext-static&from=home-proof#configurator",
     image: "/artwork/expert-spoljasnji-renderi.webp",
+    imageAlt:
+      "Spoljašnji renderi - fotorealističan prikaz eksterijera objekta",
   },
 ] as const;
 
@@ -85,7 +92,9 @@ export async function ResultsProof() {
                 <BeforeAfterReveal
                   beforeSrc={item.before}
                   afterSrc={item.after}
-                  alt={item.service}
+                  alt={item.afterAlt}
+                  beforeAlt={item.beforeAlt}
+                  afterAlt={item.afterAlt}
                   sizes="(max-width: 1024px) 100vw, 33vw"
                   className="aspect-[4/3] w-full bg-secondary"
                 >
@@ -97,7 +106,7 @@ export async function ResultsProof() {
                 <div className="relative aspect-[4/3] w-full bg-secondary">
                   <Image
                     src={item.image}
-                    alt={item.service}
+                    alt={item.imageAlt}
                     fill
                     sizes="(max-width: 1024px) 100vw, 33vw"
                     className="object-cover"

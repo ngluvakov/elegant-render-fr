@@ -1493,7 +1493,7 @@ function StudioControls({
                       {item.image && (
                         <Image
                           src={item.image}
-                          alt=""
+                          alt={`Primer stila: ${item.label}`}
                           width={160}
                           height={90}
                           className="h-16 w-full object-cover"
@@ -2617,7 +2617,7 @@ function HistoryPanel({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={item.resultUrl}
-                    alt=""
+                    alt={`AI rezultat: ${getAiEditType(item.editType).label}`}
                     className="h-16 w-16 shrink-0 rounded-xl object-cover"
                   />
                 ) : (

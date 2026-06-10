@@ -20,6 +20,9 @@ export const metadata: Metadata = createPublicMetadata({
   description:
     "Kompletna ponuda arhitektonske vizuelizacije — renderi, animacije, 360 ture, virtuelno opremanje i adaptacije prostora.",
   path: "/usluge",
+  image: "/artwork/elegant-render-services-triptych-1.webp",
+  imageAlt:
+    "Elegant Render usluge - arhitektonska vizuelizacija, renderi, 360 ture i virtuelno opremanje",
   keywords: [
     "usluge arhitektonske vizuelizacije",
     "renderi enterijera i eksterijera",

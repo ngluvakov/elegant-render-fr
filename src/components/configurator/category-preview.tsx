@@ -170,6 +170,7 @@ function PreviewCard({
   onClick: () => void;
 }) {
   const [mediaLoaded, setMediaLoaded] = useState(false);
+  const mediaAlt = `${label} - ${blurb}`;
 
   return (
     <Link
@@ -195,7 +196,7 @@ function PreviewCard({
             loop
             playsInline
             preload="metadata"
-            aria-label={label}
+            aria-label={mediaAlt}
             onLoadedData={() => setMediaLoaded(true)}
             onError={() => setMediaLoaded(false)}
             className={cn(
@@ -207,7 +208,7 @@ function PreviewCard({
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={imageSrc}
-            alt={label}
+            alt={mediaAlt}
             loading="lazy"
             onLoad={() => setMediaLoaded(true)}
             onError={() => setMediaLoaded(false)}

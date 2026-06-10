@@ -289,7 +289,7 @@ function DiagnosticThumb({ label, url }: { label: string; url: string | null }) 
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={url}
-            alt={label}
+            alt={`AI Studio dijagnostika - ${label}`}
             className="h-full w-full object-cover"
             loading="lazy"
           />

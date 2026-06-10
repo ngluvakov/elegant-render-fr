@@ -20,6 +20,7 @@ import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
 import {
   CATEGORY_LABELS,
   SERVICES,
+  buildServiceImageAlt,
   getServiceBySlug,
   type BenefitIcon,
   type Service,
@@ -69,7 +70,7 @@ export async function generateMetadata({
       service.detailAfterAsset ??
       service.listingAsset ??
       service.asset,
-    imageAlt: `${service.name} - Elegant Render`,
+    imageAlt: buildServiceImageAlt(service, "og"),
     keywords: [service.name, service.shortName, CATEGORY_LABELS[service.category]],
   });
 }
@@ -159,7 +160,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         {service.detailAsset && (
           <Image
             src={service.detailAsset}
-            alt={service.name}
+            alt={buildServiceImageAlt(service, "hero")}
             fill
             sizes="100vw"
             className="object-cover"
@@ -561,7 +562,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
       <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
         <Image
           src={service.problemAsset}
-          alt={`${service.name} — vizuelno objašnjenje problema`}
+          alt={buildServiceImageAlt(service, "problem")}
           fill
           sizes="(max-width: 768px) 100vw, 480px"
           className="object-cover"
@@ -574,7 +575,9 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
       <BeforeAfterReveal
         beforeSrc={service.detailBeforeAsset}
         afterSrc={service.detailAfterAsset}
-        alt={service.name}
+        alt={buildServiceImageAlt(service, "after")}
+        beforeAlt={buildServiceImageAlt(service, "before")}
+        afterAlt={buildServiceImageAlt(service, "after")}
         sizes="(max-width: 768px) 100vw, 480px"
         autoDemoIntervalMs={SERVICE_BEFORE_AFTER_DEMO_INTERVAL_MS}
         className="aspect-[4/3] w-full rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]"
@@ -604,7 +607,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
       <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
         <Image
           src={service.detailAsset}
-          alt={service.name}
+          alt={buildServiceImageAlt(service, "detail")}
           fill
           sizes="(max-width: 768px) 100vw, 480px"
           className="object-cover"
@@ -821,7 +824,9 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
         <BeforeAfterReveal
           beforeSrc={service.detailBeforeAsset}
           afterSrc={service.detailAfterAsset}
-          alt={service.name}
+          alt={buildServiceImageAlt(service, "after")}
+          beforeAlt={buildServiceImageAlt(service, "before")}
+          afterAlt={buildServiceImageAlt(service, "after")}
           sizes="(max-width: 768px) 100vw, 896px"
           autoDemoIntervalMs={SERVICE_BEFORE_AFTER_DEMO_INTERVAL_MS}
           className="mt-10 aspect-[16/9] w-full rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]"
@@ -844,7 +849,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
         <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]">
           <Image
             src={service.detailAsset}
-            alt={service.name}
+            alt={buildServiceImageAlt(service, "detail")}
             fill
             sizes="(max-width: 768px) 100vw, 896px"
             className="object-cover"

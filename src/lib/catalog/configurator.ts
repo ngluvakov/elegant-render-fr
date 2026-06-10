@@ -266,15 +266,15 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "terrain-model", discountPct: 25, reason: "Okruženje postoji iz situacionog/pejzažnog prikaza" },
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
-        label: "Prikaz iz vazduha",
+        label: "3D prikaz ulice i okruženja",
         basePriceEur: 420,
-        unitLabel: "model + okruženje iz vazduha",
+        unitLabel: "model + okruženje + prvi ugao",
         displayPerUnitEur: 210,
-        displayUnitLabel: "render iz vazduha",
-        displayPackageNote: "Paket uključuje 3D model, okruženje i 2 ugla. Svaki sledeći ugao: €48.",
+        displayUnitLabel: "render",
+        displayPackageNote: "Paket uključuje 3D model, okruženje i 2 ugla (ulična ili vazdušna perspektiva). Svaki sledeći ugao: €48.",
         includes: [
           "Pun 3D model + okruženje",
-          "Kamera iz vazduha",
+          "Ulična ili vazdušna perspektiva",
           "2 ugla uključena",
         ],
         disclaimers: [
@@ -283,8 +283,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         addOns: [
           {
             id: "ext-aerial-cam",
-            label: "Dodatni ugao iz vazduha",
-            description: "Nova tačka gledanja iz vazduha",
+            label: "Dodatni ugao",
+            description: "Nova tačka gledanja (ulična ili vazdušna)",
             priceEur: 48,
             priceType: "fixed",
             includedQty: 1,

@@ -247,7 +247,7 @@ export function defaultExtAerialConfig(): ExtAerialConfig {
   return {
     complexName: "Kompleks 1",
     cameraCount: 1,
-    aerialView: "ptica",
+    aerialView: "polu-aerial",
     showParcelBoundaries: false,
   };
 }

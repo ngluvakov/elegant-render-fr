@@ -38,6 +38,10 @@ export type PricingVariant = {
   addOns: string[];
   /** Optional caveat or rule the customer should see. */
   note?: string;
+  /** Optional price breakdown shown right under the price headline (e.g.
+   *  "Render eksterijera €250 + Fotomontaža €50"). Renders as a muted
+   *  annotation, currency-aware via formatPublicPriceText. */
+  decomposition?: string;
   /** Override the category used to build the configurator deep-link. Set on
    *  cross-sell cards whose product lives in a different category than the
    *  host service (e.g. a "transformacija" reno card on an "eksterijer" page),
@@ -140,6 +144,13 @@ export type Service = {
    *  multi-option choice (e.g. "Dva načina…"). Falls back to the generic
    *  pricing header when unset. */
   pricingLead?: { heading: string; body: string };
+  /** Optional scannable two-method comparison shown above the pricing cards.
+   *  `a` is this page's primary method (highlighted), `b` the cross-sell. */
+  comparison?: {
+    aLabel: string;
+    bLabel: string;
+    rows: { label: string; a: string; b: string }[];
+  };
   /** Feature this service in the quick-order picker on the home page. */
   featured?: boolean;
   /** Delivered via White Rook partner network rather than in-house. */
@@ -695,13 +706,13 @@ export const SERVICES: Service[] = [
       },
       {
         id: "exterior-aerial",
-        title: "Prikaz iz vazduha",
+        title: "3D prikaz ulice (streetscape)",
         basePrice: 420,
         priceLabel: "€420",
-        unitLabel: "prikaz objekta + okruženja iz vazduha",
+        unitLabel: "objekat + okruženje, ulična ili vazdušna perspektiva",
         description:
-          "Za masterplane, parcele i investitorske prezentacije gde se vidi širi kontekst objekta, parking, prilazi.",
-        included: "Pun 3D model objekta + okruženje + prvi prikaz iz vazduha.",
+          "Objekat sa susednim kućama modelovan u 3D — ulična perspektiva ili pogled iz vazduha. Za kontekst ulice, parcele i investitorske prezentacije.",
+        included: "Pun 3D model objekta + okruženje + prvi prikaz (ulična ili vazdušna perspektiva).",
         addOns: ["Doplata za prikaz zadnje strane objekta: +25% jednom"],
       },
     ],
@@ -838,53 +849,53 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "prikazi-iz-vazduha",
+    slug: "3d-prikaz-ulice",
     code: "exterior-aerial-dedicated",
-    name: "Prikazi iz vazduha",
-    shortName: "Prikazi iz vazduha",
+    name: "3D prikaz ulice (streetscape)",
+    shortName: "3D prikaz ulice",
     category: "eksterijer",
     icon: "camera",
-    tagline: "Tlocrt ne govori gde ste. Prikaz iz vazduha — govori.",
+    tagline: "Vaš objekat na ulici, iz svakog ugla koji Vam treba.",
     description:
-      "Aerial prikaz objekta u kontekstu — parcela, ulazni koridori, susedna izgradnja, zelenilo. Idealno za urbanističku dozvolu, javnu raspravu, prezentacije fondu ili odboru, i marketing parcele. €420 pokriva kompletan 3D model objekta i okruženja sa prvim prikazom; svaki sledeći ugao iz iste strane modela je €48.",
+      "3D prikaz ulice (streetscape) (€420) modeluje celo okruženje — susedne kuće, ulicu i parcelu — i prikazuje Vaš objekat primarno iz ulične perspektive, a po potrebi i iz vazduha. Pravi izbor kada lokacija još ne postoji, teško je dostupna ili trebate slobodan izbor ugla. Za lokacije koje postoje i mogu se fotografisati postoji jeftiniji metod — render u stvarnoj fotografiji od €300.",
     highlight:
       "Prava prezentacija lokacije i konteksta — za urbanističku dozvolu, board prezentacije i investitorske ponude.",
     materials:
       "Pošaljite arhitektonske nacrte (PDF/DWG), situacioni plan sa katastarskom podlogom, opciono fotografije lokacije. Prvi nacrt 3–5 radnih dana.",
-    asset: "/artwork/listing-exterior-aerial.webp",
-    listingAsset: "/artwork/listing-exterior-aerial.webp",
-    detailAsset: "/artwork/detail-exterior-aerial.webp",
-    detailBeforeAsset: "/artwork/problem-aerial-before.webp",
-    detailAfterAsset: "/artwork/problem-aerial-after.webp",
+    asset: "/artwork/listing-streetscape.webp",
+    listingAsset: "/artwork/listing-streetscape.webp",
+    detailAsset: "/artwork/detail-streetscape.webp",
+    detailBeforeAsset: "/artwork/problem-streetscape-before.webp",
+    detailAfterAsset: "/artwork/problem-streetscape-after.webp",
     philosophy:
-      "Najveći trošak je izgradnja modela parcele i okruženja. Cena €420 pokriva pun 3D model objekta i konteksta, sa prvim prikazom iz vazduha. Svaki sledeći ugao iz iste strane modela je €48 (80% jeftinije). Doplata za prikaz zadnje strane (+25%): €105, jednokratno. Tako kompletna prezentacija lokacije ulazi u realan budžet — bez ponovnog modelovanja po slici.",
+      "Cena od €420 pokriva izgradnju punog 3D modela objekta i modelovanog okruženja, sa dva ugla uključena. Pošto je model već izgrađen, svaki sledeći ugao košta €48 — 80% jeftinije. Neviđena ili zadnja strana objekta dodaje se jednom (+25%, €105). Nema naknadnih iznenađenja — sve je javno u cenovniku.",
     priceContext:
-      "€420 — pun 3D model objekta + okruženje + prvi prikaz iz vazduha. Sledeći ugao: €48.",
+      "€420 — pun 3D model objekta + okruženja + prvi prikaz. Sledeći ugao: €48.",
     forSegments: [
       "Developeri (masterplani)",
       "Investitori (parcele i kompleksi)",
       "Arhitekte (regulatorne prezentacije)",
     ],
-    problemHeading: "Tlocrt ne govori gde ste. Prikaz iz vazduha — govori.",
+    problemHeading: "Lokacija ne postoji. Kupac ne može da čeka da se sagradi.",
     problemBody:
-      "Investitor dolazi na prezentaciju sa fasciklom nacrta. Regulatorno telo, fond ili partner gleda u oznake ulica i katastarskih parcela koje ne može da poveže sa stvarnim prostorom. Odluka se odlaže.",
+      "Investitor prodaje stanove u izgradnji. Lokacija je prazan plac ili tek započeta gradnja. Fotografija okruženja ne postoji, dron nema šta da snimi, a kupac traži vizuelni dokaz da će zgrada zaista biti na toj ulici, između tih suseda, na toj parceli. Bez toga — kupac odlazi kod nekog ko ima sliku.",
     problemResolution:
-      "Prikaz iz vazduha stavlja Vaš objekat na mapu okruženja — vidljivi su parcela, ulazni koridori, zelenilo i susedna izgradnja, na jednoj slici koja objašnjava lokaciju bolje od svakog tlocrta.",
+      "3D prikaz ulice gradi celo okruženje iz nacrta i katastarskih podataka. Susedne kuće, ulica, zelenilo i objekat — sve na istoj slici. Kupac vidi buduću ulicu pre nego što je asfaltirana.",
     benefits: [
       {
-        icon: "trust",
-        title: "Vizuelizacija za javnu raspravu",
-        body: "Urbanistička komisija i regulatorno telo dobijaju prikaz koji smešta objekat u kontekst parcele i okruženja — u formatu koji procedura prihvata.",
+        icon: "context",
+        title: "Slobodan izbor ugla",
+        body: "Okruženje je u 3D — možete tražiti uličnu perspektivu, pogled iz dvorišta, vazdušni ugao ili svaki drugi. Nema ograničenja fotografije.",
       },
       {
-        icon: "context",
-        title: "Pregled koji board razume",
-        body: "Fond, partner ili banka ne čita DWG. Prikaz iz vazduha daje celokupan obuhvat lokacije na jednoj slici — bez objašnjavanja šta koja linija znači.",
+        icon: "speed",
+        title: "Bez čekanja na pristup lokaciji",
+        body: "Gradimo iz nacrta i katastarskih podataka. Nema potrebe za fotografisanjem, dronom ili obilaskom lokacije — radi se odmah čim dostavite crteže.",
       },
       {
         icon: "value",
-        title: "Prospekt koji prodaje lokaciju",
-        body: "Kupac parcele ili stana u kompleksu odmah vidi okruženje, pristupne puteve i susednu izgradnju. Ne mora da zamišlja — vidi.",
+        title: "Kompletna prezentacija u jednoj porudžbini",
+        body: "Ulična perspektiva za prospekt, vazdušni ugao za board prezentaciju, zadnja strana za regulatorni materijal — sve iz istog modela. Svaki sledeći ugao €48.",
       },
     ],
     processSteps: [
@@ -907,63 +918,97 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-aerial-01.webp",
-        alt: "Stambeni kompleks, ptičja perspektiva — parcela, pristupni putevi i zelenilo — Elegant Render",
+        src: "/artwork/portfolio-streetscape-01.webp",
+        alt: "3D prikaz ulice — niz savremenih kuća u nizu, ulična perspektiva sa susedima — Elegant Render",
       },
       {
-        src: "/artwork/portfolio-aerial-02.webp",
-        alt: "Individualna vila, ptičja perspektiva — parcela, pristupni putevi i zelenilo — Elegant Render",
+        src: "/artwork/portfolio-streetscape-02.webp",
+        alt: "3D prikaz ulice — ugaona stambena zgrada sa lokalom u prizemlju u urbanom okruženju — Elegant Render",
       },
       {
-        src: "/artwork/portfolio-aerial-03.webp",
-        alt: "Mešovita namena, ptičja perspektiva — parcela, pristupni putevi i zelenilo — Elegant Render",
+        src: "/artwork/portfolio-streetscape-03.webp",
+        alt: "3D prikaz ulice — poslovni objekat sa lokalima na bulevaru, ulična perspektiva — Elegant Render",
       },
       {
-        src: "/artwork/portfolio-aerial-04.webp",
-        alt: "Poslovni objekat, ptičja perspektiva — parcela, pristupni putevi i zelenilo — Elegant Render",
+        src: "/artwork/portfolio-streetscape-04.webp",
+        alt: "3D prikaz ulice — klasična vila u nizu susednih objekata — Elegant Render",
       },
     ],
     faqs: [
       {
         q: "Šta tačno dobijam za €420?",
-        a: "Pun 3D model objekta i okruženja, sa prvim prikazom iz vazduha. Paket uključuje 2 ugla. Svaki dodatni ugao: €48. Doplata za prikaz zadnje strane (+25%): €105, jednokratno.",
+        a: "Pun 3D model Vašeg objekta i modelovanog okruženja (susedne kuće, ulica, parcela), primarno iz ulične perspektive — sa 2 ugla uključena. Svaki sledeći ugao: €48. Neviđena/zadnja strana objekta: +25% (€105), jednokratno. Tri runde revizije su uključene.",
       },
       {
-        q: "Razlika od klasičnog rendera eksterijera?",
-        a: "Klasični render eksterijera (€250) je ugao sa tla — fasada u prvom planu, okruženje sugerisano. Aerial (€420) daje ptičju perspektivu: vidi se cela parcela, ulazni koridori i susedna izgradnja. Različita namena — nisu alternative.",
+        q: "Da li je okruženje tačno ili aproksimacija?",
+        a: "Okruženje je modelovana aproksimacija — susedne kuće se grade na osnovu katastarskih podataka i referentnih fotografija, ali nisu piksel-tačna kopija stvarnog stanja. Ako Vam je potrebno piksel-realno okruženje (npr. za urbanističku komisiju koja traži stvarni kontekst), razmotrite render u stvarnoj fotografiji lokacije (€300).",
       },
       {
-        q: "Razlika od fotografije dronom?",
-        a: "Fotografija dronom snima ono što postoji na terenu. Aerial render gradi se iz DWG/PDF nacrta — može se napraviti pre nego što je kamen postavljen, sa tačnim materijalima fasade i oblikovanim okruženjem.",
+        q: "Razlika u odnosu na render u stvarnoj fotografiji (€300)?",
+        a: "Render u fotografiji lokacije koristi stvarnu fotografiju kao pozadinu — okruženje je piksel-realno, ali ste vezani za ugao snimljene fotografije. 3D prikaz ulice modeluje celo okruženje u 3D — možete birati bilo koji ugao, ali okruženje je aproksimacija. Ako lokacija postoji i može se fotografisati, render u fotografiji je jeftiniji i verodostojniji. Ako lokacija ne postoji ili trebate više uglova, 3D prikaz ulice je jedina opcija.",
       },
       {
         q: "Šta dostavljam da biste počeli?",
-        a: "Arhitektonske nacrte u PDF ili DWG formatu (osnove, fasade, situacioni plan sa katastarskom podlogom). Po želji: specifikacija materijala fasade i fotografije lokacije za kontekst.",
+        a: "Arhitektonske nacrte (osnove, preseke, fasade) u PDF ili DWG formatu i situacioni plan sa katastarskom podlogom. Po želji: specifikacija materijala fasade i fotografije lokacije ili okruženja za referencu.",
+      },
+      {
+        q: "Da li usluga uključuje aerial (ptičju perspektivu) ili samo uličnu?",
+        a: "Primarni format je ulična perspektiva (eye-level) — objekat na ulici, kao što ga vidi prolaznik. Aerial pogled (iz vazduha) je dostupan kao dodatni ugao iz istog modela za €48. Oba izlaze iz istog modelovanog okruženja.",
       },
       {
         q: "Koliko traje izrada?",
         a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema nacrta. Tri runde revizije su uključene — bez doplate.",
       },
-      {
-        q: "Da li se može koristiti u regulatornoj proceduri?",
-        a: "Prikaz je arhitektonska vizuelizacija — ne zamenjuje tehnički elaborat, ali se standardno koristi kao prilog u materijalima za javnu raspravu i investitorske prezentacije.",
-      },
     ],
+    pricingLead: {
+      heading: "Dva metoda, isti cilj — jedan pravi izbor za Vašu lokaciju.",
+      body: "3D prikaz ulice (€420) je pravi izbor kada lokacija ne postoji ili zahtevate slobodan izbor ugla kamere — okruženje se modeluje u 3D. Render u stvarnoj fotografiji (€300) je pravi izbor kada lokacija postoji i može se fotografisati — okruženje je piksel-realno jer dolazi iz stvarne fotografije. Odaberite prema tome šta imate u rukama.",
+    },
+    comparison: {
+      aLabel: "3D prikaz ulice — €420",
+      bLabel: "Render u fotografiji — €300",
+      rows: [
+        { label: "Ulazni materijal", a: "Arhitektonski nacrti", b: "Stvarna fotografija lokacije" },
+        { label: "Okruženje", a: "Modelovano u 3D (aproksimacija)", b: "Piksel-realno (prava fotografija)" },
+        { label: "Izbor ugla", a: "Bilo koji ugao (ulica ili iz vazduha)", b: "Vezan za ugao fotografije" },
+        { label: "Kada izabrati", a: "Lokacija ne postoji ili treba više uglova", b: "Lokacija postoji i može se fotografisati" },
+      ],
+    },
     variants: [
       {
         id: "exterior-aerial",
-        title: "Prikaz iz vazduha",
+        title: "3D prikaz ulice (streetscape)",
         basePrice: 420,
         priceLabel: "€420",
-        unitLabel: "prikaz objekta + okruženja iz vazduha",
+        unitLabel: "pun 3D model objekta + okruženja, ulična perspektiva",
         description:
-          "Za masterplane, parcele i investitorske prezentacije gde se vidi širi kontekst objekta, parking, prilazi.",
+          "Celo okruženje se modeluje u 3D — susedne kuće, ulica, parcela. Primarni prikaz je ulična perspektiva; aerial i drugi uglovi dostupni kao doplate iz istog modela.",
         included:
-          "Pun 3D model objekta + okruženje + prvi prikaz iz vazduha.",
+          "Pun 3D model objekta i okruženja, 2 ugla uključena (primarno ulična perspektiva). Tri runde revizije uključene.",
         addOns: [
-          "Dodatni ugao iz vazduha: €48 (80% popust)",
-          "Doplata za prikaz zadnje strane (+25%): €105 jednokratno",
+          "Dodatni ugao (ulični ili aerial): €48 (80% jeftinije)",
+          "Neviđena/zadnja strana objekta: +25% (€105 jednokratno)",
         ],
+        note: "Doplata za zadnju stranu naplaćuje se jednom po modelu — nakon toga svi uglovi ulaze u standardnu dopunu.",
+      },
+    ],
+    crossSellVariants: [
+      {
+        id: "photomontage-main",
+        title: "Render u stvarnoj fotografiji lokacije",
+        basePrice: 300,
+        priceLabel: "€300",
+        unitLabel: "3D model + uklapanje u fotografiju lokacije",
+        description:
+          "Kada lokacija postoji i može se fotografisati — 3D model se uklapa u stvarnu fotografiju. Piksel-realno okruženje, niža cena.",
+        included:
+          "Kompletan 3D model objekta, uklapanje u jednu fotografiju lokacije, usklađeno svetlo i senke. Jedan finalni render.",
+        addOns: [
+          "Dodatni ugao iz iste fotografije: €55 (82% jeftinije)",
+          "Druga fotografija iste lokacije: €85",
+          "Neviđena strana objekta: +25% jednokratno",
+        ],
+        note: "Render eksterijera €250 + Fotomontaža +€50. Pravi izbor kada lokacija postoji i može se fotografisati — maksimalna verodostojnost za komisije i javne rasprave.",
       },
     ],
   },
@@ -2040,15 +2085,16 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "fotomontaza",
+    slug: "render-u-stvarnoj-fotografiji",
     code: "photomontage",
-    name: "Fotomontaža",
-    shortName: "Fotomontaža",
+    name: "Render u stvarnoj fotografiji lokacije",
+    shortName: "Render u fotografiji",
     category: "eksterijer",
     icon: "camera",
-    tagline: "Vaš objekat na stvarnoj fotografiji lokacije.",
+    tagline:
+      "Render eksterijera u fotografiji Vaše lokacije — za €50 više od standardnog rendera.",
     description:
-      "Vaš budući objekat pažljivo uklopljen u realnu fotografiju lokacije — sa istim osvetljenjem, senkama i okruženjem kao na originalnoj slici. Verodostojan prikaz za nadležne organe (urbanistička dozvola, javna rasprava), prezentaciju klijentu i marketing pre izgradnje. Sledeći ugao iste fotografije: 82% jeftiniji.",
+      "Ovo je standardni render eksterijera (€250) sa uključenom opcijom Fotomontaža (+€50 = ukupno €300). Tih €50 znači da 3D model objekta ne smeštamo u sintetičko okruženje — već ga uklapamo direktno u fotografiju lokacije koju Vi dostavite, sa usklađenim svetlom, senkama i perspektivom. Rezultat izgleda kao da je zgrada već tu. Idealno za urbanističku komisiju, javnu raspravu i investitorske prezentacije gde komisija mora videti Vaš objekat u stvarnom kontekstu ulice. Render eksterijera možete naručiti i bez ove opcije — samo €250, sa sintetičkim okruženjem. Drugi metod (3D prikaz ulice, €420) modeluje celo okruženje u 3D — pravi izbor kada lokacija nije dostupna za fotografisanje ili trebate slobodan izbor ugla.",
     highlight:
       "Za projekte u kojima realističnost i autentičnost lokacije presudno menjaju doživljaj projekta — dozvole, javne rasprave, investitorske prezentacije.",
     materials:
@@ -2060,7 +2106,7 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-fotomontaza-before.webp",
     detailAfterAsset: "/artwork/problem-fotomontaza-after.webp",
     philosophy:
-      "Najveći trošak je analiza fotografije i uklapanje kamere, svetla i senki. Kad je uklapanje urađeno, dodatni ugao iz iste fotografije košta samo €55 (82% jeftiniji), a nova fotografija iste lokacije €85.",
+      "Cena se sastoji od dva dela. Render eksterijera (€250) pokriva izgradnju kompletnog 3D modela Vašeg objekta i prvi finalni render. To je isti model, isti posao — bez obzira da li iza njega stoji sintetičko okruženje ili fotografija lokacije. Fotomontaža (+€50) je opcija koja menja samo pozadinu: umesto modelovanog okruženja, 3D model se uklapa u stvarnu fotografiju — usklađujemo perspektivu, svetlo i senke sa momentom snimanja. Taj doplatak je opravdan jer analiza fotografije i usklađivanje perspektive zahtevaju poseban rad koji standardni render nema. Render eksterijera je dostupan i samostalno za €250 — kada Vam sintetičko okruženje odgovara. Ako trebate više uglova: sledeći ugao iz iste fotografije je €55 (82% jeftinije), druga fotografija iste lokacije €85, neviđena strana objekta +25% jednom po modelu.",
     priceContext:
       "€300 — uklapanje + prvi prikaz. Sledeći ugao iste fotografije: €55 (82% jeftiniji).",
     forSegments: [
@@ -2068,26 +2114,26 @@ export const SERVICES: Service[] = [
       "Arhitekte (klijentske prezentacije)",
       "Studija za masterplan i razvojne projekte",
     ],
-    problemHeading: "Render ne ubeđuje regulatora. Fotografija — ubeđuje.",
+    problemHeading: "Komisija ne zamišlja. Komisija vidi fotografiju.",
     problemBody:
-      "Investitor ide u urbanističku komisiju ili na javnu raspravu sa renderom — i čuje pitanja: kako će izgledati u kontekstu susednih zgrada? Kako se uklapa u ulicu? Render daje umetnički prikaz, ne tehnički dokaz.",
+      "Arhitektonski nacrt kaže koliko je zgrada visoka i gde stoji. Ne kaže kako izgleda u dvorištu između susednih kuća, u popodnevnom svetlu, sa zelenilom koje već postoji na toj ulici. Urbanistička komisija ili kupac parcele traže upravo to — i bez toga donose odluku na osnovu pretpostavke.",
     problemResolution:
-      "Fotomontaža uklapa Vaš 3D model u realnu fotografiju lokacije sa istim osvetljenjem, senkama i okruženjem. Komisija dobija dokaz, ne crtež. Investitor dobija dozvolu, ne odlaganje.",
+      "Fotografišete lokaciju, šaljete nam nacrte — mi uklapamo 3D model u Vašu fotografiju. Perspektiva, senke i osvetljenje su usklađeni sa stvarnim trenutkom snimanja. Komisija vidi tačno šta će stajati na tom mestu.",
     benefits: [
       {
         icon: "trust",
-        title: "Dokaz za regulatorne procedure",
-        body: "Urbanistička komisija prihvata fotomontažu kao verodostojan prilog. Javna rasprava ne pita „kako će izgledati“ — vidi.",
+        title: "Piksel-realno okruženje",
+        body: "Susedne kuće, drveće, ograda, senke — sve je stvarno jer dolazi iz Vaše fotografije. Niko ne može da tvrdi da je okruženje 'ulepšano' ili izmišljeno.",
       },
       {
         icon: "context",
-        title: "Tačan kontekst lokacije",
-        body: "Susedne zgrade, ulica, stabla — sve kako stvarno postoji. Bez interpretacije, bez „umetničke slobode“.",
+        title: "Idealno za regulatorne procedure",
+        body: "Urbanistička komisija i javna rasprava traže prikaz u stvarnom kontekstu. Render u fotografiji lokacije ispunjava taj uslov direktno — bez dodatnih objašnjenja.",
       },
       {
         icon: "value",
-        title: "Više uglova iste fotografije za malo",
-        body: "€300 pokriva analizu i prvi prikaz. Dodatni ugao iz iste fotografije: €55 (82% popust). Druga fotografija iste lokacije: €85.",
+        title: "Ekonomično za više uglova",
+        body: "Prva fotografija je €300 — svaki sledeći ugao iz iste fotografije je €55 (82% jeftinije). Tri kadra iste lokacije ukupno izlaze €410.",
       },
     ],
     processSteps: [
@@ -2110,28 +2156,32 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
+        q: "Od čega se sastoji cena od €300? Mogu li naručiti samo render eksterijera?",
+        a: "€300 su dva zasebna dela: render eksterijera (€250) + opcija Fotomontaža (+€50). Render eksterijera uključuje izgradnju kompletnog 3D modela objekta i jedan finalni render — to je osnova. Fotomontaža (+€50) znači da taj 3D model umesto u sintetičko okruženje uklapamo u stvarnu fotografiju lokacije koju Vi dostavite, sa usklađenim svetlom, senkama i perspektivom. Ako Vam sintetičko okruženje odgovara (npr. za prodajni prospekt bez regulatorne svrhe), možete naručiti samo render eksterijera za €250 — opcija Fotomontaža nije obavezna.",
+      },
+      {
         q: "Šta tačno dobijam za €300?",
-        a: "Analiza fotografije lokacije, uklapanje 3D modela objekta i prvi finalni prikaz. Dodatni ugao iz iste fotografije: €55 (82% popust). Druga fotografija iste lokacije: €85 (72% popust). Doplata za neviđenu stranu objekta: +25% jednom.",
+        a: "Kompletan 3D model Vašeg objekta i jedan finalni render — 3D model uklapa se u fotografiju lokacije koju Vi dostavite, sa usklađenim svetlom, senkama i perspektivom. Uključene su tri runde revizije.",
       },
       {
-        q: "Razlika u odnosu na render eksterijera (€250)?",
-        a: "Render eksterijera gradi sve od nule — objekat, okruženje, materijale, svetlo. Fotomontaža (€300) uklapa objekat u stvarnu fotografiju lokacije sa postojećim svetlom i kontekstom. Različite namene.",
+        q: "Ko snima fotografiju lokacije?",
+        a: "Vi — ili neko koga angažujete. Dovoljan je i telefon sa dobrom kamerom, pod uslovom da je fotografija oštra i snimljena iz visine oka (ne iz auto-sedišta). Šaljemo Vam kratko uputstvo za snimanje kad potvrdite porudžbinu.",
       },
       {
-        q: "Da li je prihvatljiva za urbanističku komisiju?",
-        a: "Da. Fotomontaža je standardno prihvaćeni prilog u materijalima za urbanističku dozvolu, javnu raspravu i investitorske prezentacije. Verodostojnost komisija ceni iznad render kvaliteta.",
+        q: "Razlika u odnosu na 3D prikaz ulice (€420)?",
+        a: "Render u fotografiji koristi stvarnu fotografiju lokacije kao pozadinu — okruženje je piksel-realno, ali ste vezani za ugao snimljene fotografije. 3D prikaz ulice modeluje celo okruženje u 3D — možete birati bilo koji ugao, ali okruženje je aproksimacija, ne stvarna fotografija. Ako lokacija postoji i može se fotografisati, render u fotografiji daje verodostojniji rezultat za manje novca.",
       },
       {
-        q: "Mogu li da pošaljem fotografiju sa telefona?",
-        a: "Tehnički je moguće, ali ne preporučujemo — kvalitet fotografije direktno utiče na kvalitet finalnog prikaza. Idealno: profesionalna fotografija ili DSLR/mirrorless snimak, najmanje 4000px na dužoj strani.",
+        q: "Da li ova usluga važi i za kuće, ne samo zgrade?",
+        a: "Da. Metod ne zavisi od tipa objekta — važi za porodične kuće, stambene zgrade, poslovne objekte i svaki drugi tip čije nacrte možete dostaviti.",
+      },
+      {
+        q: "Šta ako lokacija nije fotografisana iz pravog ugla?",
+        a: "Pre početka rada proveravamo fotografiju i javljamo se ako ugao ne funkcioniše za predviđeni kadar. U tom slučaju možete dostaviti novu fotografiju ili preći na 3D prikaz ulice — koji ne zavisi od fotografije.",
       },
       {
         q: "Koliko traje izrada?",
-        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema fotografije i 3D modela ili crteža. Tri runde revizije su uključene.",
-      },
-      {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Fotografiju lokacije u dobroj rezoluciji (DSLR ili mirrorless, najmanje 4000px) i 3D model objekta (FBX, OBJ, SKP) ili arhitektonske crteže (PDF, DWG) iz kojih izgradimo model.",
+        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema nacrta i fotografije. Tri runde revizije su uključene — bez doplate.",
       },
     ],
     portfolioImages: [
@@ -2152,22 +2202,56 @@ export const SERVICES: Service[] = [
         alt: "Fotomontaža — vila uklopljena u prirodno okruženje",
       },
     ],
+    pricingLead: {
+      heading: "Dva metoda, isti cilj — jedan pravi izbor za Vašu lokaciju.",
+      body: "Render u stvarnoj fotografiji (€300) je pravi izbor kada lokacija postoji i može se fotografisati — daje maksimalnu verodostojnost jer koristi stvarno okruženje. 3D prikaz ulice (€420) je pravi izbor kada lokacija još ne postoji, teško je dostupna ili trebate više uglova bez ograničenja fotografije. Odaberite prema tome šta imate u rukama.",
+    },
+    comparison: {
+      aLabel: "Render u fotografiji — €300",
+      bLabel: "3D prikaz ulice — €420",
+      rows: [
+        { label: "Ulazni materijal", a: "Stvarna fotografija lokacije", b: "Arhitektonski nacrti" },
+        { label: "Okruženje", a: "Piksel-realno (prava fotografija)", b: "Modelovano u 3D (aproksimacija)" },
+        { label: "Izbor ugla", a: "Vezan za ugao fotografije", b: "Bilo koji ugao (ulica ili iz vazduha)" },
+        { label: "Kada izabrati", a: "Lokacija postoji i može se fotografisati", b: "Lokacija ne postoji ili treba više uglova" },
+      ],
+    },
     variants: [
       {
         id: "photomontage-main",
-        title: "Fotomontaža objekta",
+        title: "Render u stvarnoj fotografiji lokacije",
         basePrice: 300,
         priceLabel: "€300",
-        unitLabel: "uklapanje + prvi prikaz",
+        unitLabel: "render eksterijera €250 + Fotomontaža +€50",
+        decomposition: "Render eksterijera €250 + Fotomontaža €50",
         description:
-          "Pun rad analize i uklapanja za prvu sliku. Sledeći ugao iz iste fotografije: €55.",
+          "3D model objekta se uklapa u fotografiju lokacije koju Vi dostavite — usklađeno svetlo, senke i perspektiva. Maksimalna verodostojnost za komisije, javne rasprave i prezentacije kupcu.",
         included:
-          "Uklapanje 3D modela objekta u Vašu fotografiju stvarne lokacije. Uključuje usklađivanje osvetljenja, senki i kompozicije.",
+          "Kompletan 3D model objekta (isto što i standardni render eksterijera), postavljanje scene i osvetljenja usklađenih sa fotografijom lokacije, jedno uklapanje u jednu fotografiju koju Vi dostavite — jedan finalni render. Tri runde revizije uključene. Fotomontaža opcija je pre-uključena u konfiguratoru — korpa prikazuje stavku po stavku: render eksterijera €250 + Fotomontaža €50 = €300.",
         addOns: [
-          "Dodatni ugao iz iste fotografije: €55 (82% popust)",
-          "Druga fotografija iste lokacije: €85 (72% popust)",
-          "Doplata za neviđenu stranu objekta: +25% jednom",
+          "Dodatni ugao iz iste fotografije: €55 (82% jeftinije)",
+          "Druga fotografija iste lokacije (drugi ugao snimanja): €85",
+          "Neviđena strana objekta: +25% jednokratno",
         ],
+        note: "Cena: render eksterijera €250 + Fotomontaža +€50 = €300. Render eksterijera možete naručiti i bez Fotomontaže — samo €250 sa sintetičkim okruženjem. Fotomontaža opcija dodaje uklapanje u stvarnu fotografiju lokacije.",
+      },
+    ],
+    crossSellVariants: [
+      {
+        id: "exterior-aerial",
+        title: "3D prikaz ulice (streetscape)",
+        basePrice: 420,
+        priceLabel: "€420",
+        unitLabel: "pun 3D model objekta + okruženja",
+        description:
+          "Kada lokacija ne postoji ili trebate više uglova bez ograničenja fotografije — celo okruženje se modeluje u 3D, primarno iz ulične perspektive.",
+        included:
+          "Pun 3D model objekta i okruženja (susedne kuće, ulica, parcela), ulična perspektiva i 2 ugla uključena.",
+        addOns: [
+          "Dodatni ugao: €48 (80% jeftinije)",
+          "Neviđena/zadnja strana objekta: +25% (€105 jednokratno)",
+        ],
+        note: "Pravi izbor kada lokacija još nije dostupna za fotografisanje ili trebate slobodan izbor ugla kamere.",
       },
     ],
   },
@@ -2244,8 +2328,8 @@ export const SERVICES: Service[] = [
         a: "Modelovanje cele parcele (teren, objekti, putevi, parking, vegetacija, pejzaž) i prvi finalni prikaz iz vazduha. Dodatni ugao iste parcele: €65 (81% popust). Sezonska varijanta (zima/leto): €85. Prikaz po fazama izgradnje: €95.",
       },
       {
-        q: "Razlika u odnosu na prikaz iz vazduha (€420)?",
-        a: "Aerial render (€420) je fokusiran na jedan objekat sa okruženjem. Situacioni plan (€350) prikazuje celu parcelu sa svim objektima i razvojem — masterplan nivo. Aerial je za pojedinačan objekat, situacioni za kompleks.",
+        q: "Razlika u odnosu na 3D prikaz ulice (€420)?",
+        a: "3D prikaz ulice (€420) je fokusiran na jedan objekat sa okruženjem (susedne kuće, ulica). Situacioni plan (€350) prikazuje celu parcelu sa svim objektima i razvojem — masterplan nivo, iz vazduha. Prvi je za pojedinačan objekat u kontekstu ulice, drugi za ceo kompleks odozgo.",
       },
       {
         q: "Da li se može koristiti za urbanističku dozvolu?",

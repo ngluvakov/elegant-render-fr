@@ -30,7 +30,7 @@ export const VARIANT_TO_CONFIGURATOR: Record<string, ConfiguratorTarget> = {
   "floorplan-2d": { productId: "fp2d-single" },
   "floorplan-3d": { productId: "fp3d-single" },
   "landscape-main": { productId: "land-static" },
-  "photomontage-main": { productId: "ext-static" },
+  "photomontage-main": { productId: "ext-static", sourceMode: "fotomontaza" },
   "site-plan-main": { productId: "sp-first" },
   "day-to-dusk-main": { productId: "dtd-image" },
   "item-removal-main": { productId: "ir-simple" },

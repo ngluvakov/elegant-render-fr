@@ -338,6 +338,9 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                 : "Osnovna cena pokriva izgradnju 3D modela i prvi finalni render. Svaki sledeći ugao iz istog modela je drastično jeftiniji — jer je model već tu."}
             </p>
           </div>
+          {service.comparison && (
+            <PricingComparison comparison={service.comparison} />
+          )}
           <div
             className={[
               "mt-12 grid gap-6",
@@ -356,17 +359,20 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
               ...service.variants.map((variant, idx) => ({
                 variant,
                 featured: idx === 0,
+                isCrossSell: false,
               })),
               ...(service.crossSellVariants ?? []).map((variant) => ({
                 variant,
                 featured: false,
+                isCrossSell: true,
               })),
-            ].map(({ variant, featured }) => (
+            ].map(({ variant, featured, isCrossSell }) => (
               <PricingCard
                 key={variant.id}
                 ctx={ctx}
                 variant={variant}
                 featured={featured}
+                isCrossSell={isCrossSell}
               />
             ))}
           </div>
@@ -609,14 +615,48 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
   return null;
 }
 
+function PricingComparison({
+  comparison,
+}: {
+  comparison: NonNullable<Service["comparison"]>;
+}) {
+  return (
+    <div className="mx-auto mt-10 max-w-3xl overflow-hidden rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10">
+      <div className="grid grid-cols-3 border-b border-[color:var(--color-sage)]/25 bg-[color:var(--color-sage)]/15 text-[0.68rem] font-semibold uppercase tracking-[0.12em]">
+        <div className="px-3 py-3 text-muted-foreground sm:px-4">Metod</div>
+        <div className="px-3 py-3 text-foreground sm:px-4">{comparison.aLabel}</div>
+        <div className="px-3 py-3 text-muted-foreground sm:px-4">
+          {comparison.bLabel}
+        </div>
+      </div>
+      <div className="divide-y divide-[color:var(--color-sage)]/15">
+        {comparison.rows.map((row) => (
+          <div
+            key={row.label}
+            className="grid grid-cols-3 text-[0.8rem] leading-5 sm:text-sm sm:leading-6"
+          >
+            <div className="px-3 py-3 font-medium text-muted-foreground sm:px-4">
+              {row.label}
+            </div>
+            <div className="px-3 py-3 text-foreground sm:px-4">{row.a}</div>
+            <div className="px-3 py-3 text-muted-foreground sm:px-4">{row.b}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function PricingCard({
   ctx,
   variant,
   featured,
+  isCrossSell = false,
 }: {
   ctx: RenderCtx;
   variant: Service["variants"][number];
   featured: boolean;
+  isCrossSell?: boolean;
 }) {
   return (
     <article
@@ -657,6 +697,15 @@ function PricingCard({
             ctx.pricingSettings,
           )}
         </p>
+        {variant.decomposition && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            {formatPublicPriceText(
+              variant.decomposition,
+              ctx.displayCurrency,
+              ctx.pricingSettings,
+            )}
+          </p>
+        )}
       </div>
       <p className="mt-6 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
         U ceni
@@ -702,7 +751,7 @@ function PricingCard({
         </p>
       )}
       <div className="mt-auto pt-6">
-        {featured || variant.configuratorCategory ? (
+        {featured || isCrossSell || variant.configuratorCategory ? (
           <ButtonLink
             href={buildConfiguratorHref(
               variant.id,

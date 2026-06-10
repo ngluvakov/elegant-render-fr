@@ -53,6 +53,19 @@ const nextConfig: NextConfig = {
         destination: "/usluge/uklanjanje-predmeta",
         permanent: true,
       },
+      // Rename pass (2026-06-09): aerial → street-level streetscape, and
+      // photomontage → "render u stvarnoj fotografiji". Clearer names; old
+      // URLs (Ads, SEO, bookmarks) 301 to the new canonical slugs.
+      {
+        source: "/usluge/prikazi-iz-vazduha",
+        destination: "/usluge/3d-prikaz-ulice",
+        permanent: true,
+      },
+      {
+        source: "/usluge/fotomontaza",
+        destination: "/usluge/render-u-stvarnoj-fotografiji",
+        permanent: true,
+      },
       // Legal page consolidation (Banca Intesa checkout compliance, 2026-05-29).
       // Three documents merged into one — old URLs 307 to anchors on the new page.
       // 307 (not 308) so the slug can evolve without hard CDN caching.

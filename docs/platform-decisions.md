@@ -20,6 +20,30 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-06-11 - Render u fotografiji: transparentna razgradnja €250 + €50 + pre-uključen add-on
+
+- **Oblast promene:** conversion | pricing | docs
+- **Šta se promenilo:** Stranica "Render u stvarnoj fotografiji lokacije" sada otvoreno objašnjava da je to **standardni render eksterijera `ext-static` (€250) + opcija `ext-static-photo` "Fotomontaža" (+€50) = €300**, i da se render eksterijera može naručiti i samostalno za €250. Razgradnja se prikazuje kao zaseban red ispod cene (novo `PricingVariant.decomposition` polje), plus philosophy + FAQ. Deep-link "Naruči" sada nosi `sourceMode=fotomontaza` i `ADD_PRODUCT` pre-uključuje `ext-static-photo` (qty 1), pa korpa pokazuje **€250 + €50 = €300 stavku po stavku**.
+- **Zašto:** Poštenje/poverenje — klijent mora razumeti da plaća €50 add-on na osnovni render, ne misteriozni €300 proizvod; ujedno jak prodajni ugao (mali upgrade, velika verodostojnost). Rešava raniji deep-link mismatch (korpa je pokazivala €250 umesto €300).
+- **Uticaj na conversion:** Itemizovana korpa = ultimativna transparentnost; klijent vidi tačno za šta plaća; render eksterijera (€250) ponuđen kao samostalna jeftinija opcija.
+- **Uticaj na code:** `PricingVariant.decomposition?`; `VARIANT_TO_CONFIGURATOR["photomontage-main"].sourceMode="fotomontaza"`; `ADD_PRODUCT` postavlja `ext-static-photo=1` samo kada `productId==="ext-static" && sourceMode==="fotomontaza"` (izolovano, `maxQty:1` sprečava dvostruko naplaćivanje; portal `extStaticAddOnQuantitiesFor` u lock-stepu). Cene celobrojne; bez Prisma izmena.
+- **Uticaj na docs:** Ovaj decision log.
+- **Povezani fajlovi:** `src/lib/catalog/services.ts`, `src/lib/catalog/configurator-href.ts`, `src/components/configurator/quote-context.tsx`, `src/app/(marketing)/usluge/[slug]/page.tsx`
+- **Reference:** User request ("tell the client what it really is... it's a 50eur addon to a base exterior render"); Elegant Gentlemen round-table (Ashford copy, Beaumont decomposition placement, Carrington number/engine verifikacija).
+
+## 2026-06-09 - Streetscape & "render u fotografiji": preimenovanje + uzajamni dual-option
+
+- **Oblast promene:** conversion | pricing | design | docs
+- **Šta se promenilo:** Dve eksterijerne usluge su preimenovane i preokvirene kao dva METODA istog cilja (objekat u stvarnom okruženju): (1) `prikazi-iz-vazduha` → **"3D prikaz ulice (streetscape)"** (slug `3d-prikaz-ulice`), reframe sa ptičje perspektive na uličnu (aerial ostaje kao dodatni ugao); (2) `fotomontaza` → **"Render u stvarnoj fotografiji lokacije"** (slug `render-u-stvarnoj-fotografiji`). Svaka stranica sada ima jasnu diferencijaciju (pricingLead + nova `comparison` tabela + FAQ) i nudi onaj drugi metod kao cross-sell karticu. `ext-aerial` proizvod relabelovan na ugaono-neutralno; `spoljasnji-renderi` master varijanta i `situacioni-planovi` FAQ usklađeni. Default kamere aerial proizvoda spuštena na `polu-aerial`.
+- **Zašto:** Stari nazivi nisu jasno objašnjavali šta usluga jeste; "prikazi iz vazduha" je zapravo streetscape (objekat sa susedima), a postoje dva načina izrade (uklapanje u stvarnu fotografiju vs 3D modelovanje okruženja). Klijentu mora biti kristalno jasna razlika.
+- **Uticaj na conversion:** Dva metoda jasno razgraničena sa cenama (€300 / €420) i CTA "Izračunajte cenu i naručite" → konfigurator; svaka stranica unakrsno nudi drugi metod.
+- **Uticaj na design:** Nova `comparison` tabela (sage, ne clay) iznad kartica; cross-sell kartica outline. Pregledali Elegant Gentlemen (Ashford copy, Beaumont design approve-with-notes, Carrington stack). Streetscape stranica privremeno koristi postojeće aerial slike kao "vazdušni ugao" primere dok ne stignu ulične vizuelizacije.
+- **Uticaj na code:** `Service` dobio `comparison`; reuse `crossSellVariants`/`pricingLead`/`configuratorCategory`; `PricingCard` dobio `isCrossSell` (same-category cross-sell deep-linkuje). 301 redirecti dodati u `next.config.ts`. Cene celobrojne; bez Prisma izmena.
+- **Poznato ograničenje:** deep-link "Render u fotografiji" preselektuje `ext-static` (€250) bez `ext-static-photo` (fotomontaža) moda — postojeće ponašanje (nije regresija). Pravi fix traži izmenu quote-context reducera (Carrington Approach A) — zaseban zadatak.
+- **Uticaj na docs:** Ovaj decision log.
+- **Povezani fajlovi:** `src/lib/catalog/services.ts`, `src/lib/catalog/configurator.ts`, `src/lib/catalog/configurator-href.ts`, `src/lib/catalog/exterior-config.ts`, `src/app/(marketing)/usluge/[slug]/page.tsx`, `src/components/marketing/services-showcase.tsx`, `next.config.ts`
+- **Reference:** User request (jasna diferencijacija streetscape vs render u fotografiji, preimenovanje, cross-sell na obe stranice, promptovi za nove vizuelizacije); Elegant Gentlemen round-table.
+
 ## 2026-06-06 - Pejzaž: dvostruka opcija + preimenovanje oznake na karticama usluga
 
 - **Oblast promene:** conversion | pricing | design | docs

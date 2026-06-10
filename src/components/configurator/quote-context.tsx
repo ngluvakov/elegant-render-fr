@@ -91,6 +91,16 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
       for (const ao of product.addOns) {
         defaultQuantities[ao.id] = ao.includedQty;
       }
+      // "Render u stvarnoj fotografiji" deep-links to ext-static with
+      // sourceMode=fotomontaza — pre-enable the €50 Fotomontaža add-on so the
+      // cart itemizes render €250 + Fotomontaža €50 = €300 (matches the
+      // service page's price breakdown).
+      if (
+        action.productId === "ext-static" &&
+        action.sourceMode === "fotomontaza"
+      ) {
+        defaultQuantities["ext-static-photo"] = 1;
+      }
       // int-static and int-360 are priced via per-floor configJson on the
       // server (calcInteriorTotal / calcTour360Total) rather than catalog
       // add-ons. Initialize the matching client-side config so /cene's

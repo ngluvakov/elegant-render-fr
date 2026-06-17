@@ -1,22 +1,14 @@
 /**
- * payment.ts — PayPal and mock card payment server actions.
+ * payment.ts — shared payment completion hooks and dev mock-card action.
  *
- * Exports createPayPalOrderAction, capturePayPalOrderAction, and
- * mockCardPaymentAction. Each transitions order status and sends
- * confirmation email on successful capture.
- *
- * Used by: poruci/steps/step-payment, paypal-buttons,
- *          portal/pending-payment-card, paypal-portal-buttons
+ * NestPay return/reconciliation, wire transfer marking, and the test-only
+ * mock card path all use the same success/failure hooks.
  */
 "use server";
 
 import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/lib/db";
 import { transitionOrder } from "@/lib/order/status-machine";
-import {
-  createPayPalOrderCents as createPPOrder,
-  capturePayPalOrder as capturePPOrder,
-} from "@/lib/payment/paypal";
 import { processMockCardPaymentCents } from "@/lib/payment/mock-card";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { applyPurchasedAiCreditsForOrder } from "@/server/actions/ai-credits";
@@ -27,12 +19,11 @@ import type { GooglePurchaseDataLayerEvent } from "@/lib/analytics/google-data-l
 export type PaymentResult = {
   error?: string;
   success?: boolean;
-  paypalOrderId?: string;
   purchaseEvent?: GooglePurchaseDataLayerEvent;
 };
 
-function getOrderAmountCents(order: { totalEur: number; totalCents: number | null }) {
-  return order.totalCents ?? order.totalEur * 100;
+function getOrderAmountCents(order: { totalRsd: number; totalCents: number | null }) {
+  return order.totalCents ?? order.totalRsd * 100;
 }
 
 async function paymentSuccessResult(
@@ -135,11 +126,11 @@ export async function finishSuccessfulPayment(
   }
 
   if (enqueueEmail) {
-    // Nestpay orders receive the bank-format payment confirmation email
+    // NestPay orders receive the bank-format payment confirmation email
     // (EPM standard 2.7 — 5 mandatory blocks + 7 transaction parameters)
     // instead of the platform's generic order confirmation. The
-    // generic confirmation continues to fire for PayPal, card_mock,
-    // and wire_transfer orders where no bank-specific copy applies.
+    // generic confirmation continues to fire for card_mock and
+    // wire_transfer orders where no bank-specific copy applies.
     const isNestpay = order.paymentProvider === "nestpay";
     await enqueueOutboxEvent({
       type: isNestpay ? "payment_success_email" : "order_confirmation_email",
@@ -148,111 +139,6 @@ export async function finishSuccessfulPayment(
         ? `payment_success:${orderId}`
         : `order_confirmation:${orderId}`,
     });
-  }
-}
-
-// ─── PayPal ──────────────────────────────────────────────
-
-export async function createPayPalOrderAction(
-  orderId: string,
-): Promise<PaymentResult> {
-  const order = await prisma.order.findUnique({ where: { id: orderId } });
-  if (!order) return { error: "Porudžbina nije pronađena." };
-  if (order.status !== "draft" && order.status !== "awaiting_payment") {
-    return { error: "Porudžbina nije u ispravnom statusu za plaćanje." };
-  }
-
-  // Idempotency: if a PayPal order id is already attached to this Order
-  // and we haven't captured yet, reuse it instead of creating a second
-  // PayPal order. Without this, a double-click on the PayPal button
-  // creates two PayPal orders and orphans the first.
-  if (
-    order.paymentProvider === "paypal" &&
-    order.paymentId &&
-    order.paymentStatus !== "completed"
-  ) {
-    return { paypalOrderId: order.paymentId };
-  }
-
-  try {
-    const paypalOrderId = await createPPOrder(getOrderAmountCents(order));
-
-    await prisma.order.update({
-      where: { id: orderId },
-      data: {
-        paymentProvider: "paypal",
-        paymentId: paypalOrderId,
-      },
-    });
-
-    if (order.status === "draft") {
-      await transitionOrder(orderId, "awaiting_payment", undefined, "PayPal plaćanje započeto");
-    }
-
-    return { paypalOrderId };
-  } catch (err) {
-    Sentry.captureException(err, {
-      tags: { area: "payment", flow: "paypal-create" },
-      extra: { orderId },
-    });
-    return { error: `PayPal greška: ${err instanceof Error ? err.message : "Nepoznata greška"}` };
-  }
-}
-
-export async function capturePayPalOrderAction(
-  orderId: string,
-  paypalOrderId: string,
-): Promise<PaymentResult> {
-  const order = await prisma.order.findUnique({ where: { id: orderId } });
-  if (!order) return { error: "Porudžbina nije pronađena." };
-  if (order.paymentStatus === "completed") {
-    await finishSuccessfulPayment(orderId, { enqueueEmail: false });
-    return paymentSuccessResult(orderId, "paypal_capture_replay");
-  }
-
-  // Idempotency guard 1: pre-flight. If the order is already paid (the
-  // user double-clicked, or a previous capture succeeded but the
-  // response was lost) treat as success without re-charging the card.
-  if (order.status === "paid") {
-    await finishSuccessfulPayment(orderId, { enqueueEmail: false });
-    return paymentSuccessResult(orderId, "paypal_capture_replay");
-  }
-
-  try {
-    const { capturedAmountCents, status } = await capturePPOrder(paypalOrderId);
-
-    if (status !== "COMPLETED") {
-      return { error: "PayPal plaćanje nije uspelo." };
-    }
-
-    if (capturedAmountCents !== getOrderAmountCents(order)) {
-      return { error: "Iznos plaćanja se ne poklapa." };
-    }
-
-    // Idempotency guard 2: race-safe atomic transition. Two concurrent
-    // captures both pass the pre-flight check above; updateMany with the
-    // `paymentStatus != completed` condition lets exactly one succeed.
-    // The loser sees count=0 and short-circuits without re-emailing.
-    const result = await prisma.order.updateMany({
-      where: { id: orderId, paymentStatus: { not: "completed" } },
-      data: { paymentStatus: "completed" },
-    });
-    if (result.count === 0) {
-      // Concurrent request beat us; their flow handles the email.
-      return paymentSuccessResult(orderId, "paypal_capture_race");
-    }
-
-    await transitionOrder(orderId, "paid", undefined, "PayPal plaćanje potvrđeno");
-
-    await finishSuccessfulPayment(orderId);
-
-    return paymentSuccessResult(orderId, "paypal_capture");
-  } catch (err) {
-    Sentry.captureException(err, {
-      tags: { area: "payment", flow: "paypal-capture" },
-      extra: { orderId, paypalOrderId },
-    });
-    return { error: `Greška pri potvrdi: ${err instanceof Error ? err.message : "Nepoznata greška"}` };
   }
 }
 

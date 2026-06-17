@@ -5,7 +5,7 @@
  * drives:
  *   - which add-ons are available (path always; daynight not on
  *     active; season only on scratch)
- *   - per-second pricing (€15 / €10 / €8) — resolved by
+ *   - per-second pricing (1.758 RSD / 1.172 RSD / 938 RSD) — resolved by
  *     getEffectiveProduct(productId, sourceMode) in the catalog
  *   - cross-product creates/consumes (resolved the same way)
  *
@@ -30,28 +30,28 @@ export const ANIM_SOURCE_MODES: ReadonlyArray<{
   id: AnimSourceMode;
   label: string;
   shortLabel: string;
-  perSecondEur: number;
+  perSecondRsd: number;
   description: string;
 }> = [
   {
     id: "scratch",
     label: "Animacija (od nule)",
     shortLabel: "Od nule",
-    perSecondEur: 15,
+    perSecondRsd: 15,
     description: "Pravimo 3D model i animaciju — kreće od skica/foto-referenci.",
   },
   {
     id: "existing",
     label: "Animacija (postojeći model)",
     shortLabel: "Postojeći model",
-    perSecondEur: 10,
+    perSecondRsd: 10,
     description: "Već imate 3D model — mi pravimo animaciju iz njega.",
   },
   {
     id: "active",
     label: "Animacija (aktivan projekat)",
     shortLabel: "Aktivan projekat",
-    perSecondEur: 8,
+    perSecondRsd: 8,
     description: "Imate aktivan render projekat kod nas — koristimo isti model.",
   },
 ];
@@ -68,8 +68,8 @@ export function animSourceModeLabel(mode: AnimSourceMode): string {
   return ANIM_SOURCE_MODES.find((m) => m.id === mode)?.label ?? mode;
 }
 
-export function animPerSecondEur(mode: AnimSourceMode): number {
-  return ANIM_SOURCE_MODES.find((m) => m.id === mode)?.perSecondEur ?? 15;
+export function animPerSecondRsd(mode: AnimSourceMode): number {
+  return ANIM_SOURCE_MODES.find((m) => m.id === mode)?.perSecondRsd ?? 15;
 }
 
 export function animSupportsDayNight(mode: AnimSourceMode): boolean {
@@ -314,7 +314,7 @@ export function addOnQuantitiesFor(
 ): Record<string, number> {
   const q: Record<string, number> = {};
 
-  // Each extra path is billed as €5/sec of path-seconds. We approximate
+  // Each extra path is billed as 586 RSD/sec of path-seconds. We approximate
   // path length = main animation length, so quantity = pathCount × seconds.
   if (config.extraPathsCount > 0 && config.durationSeconds > 0) {
     q["anim-path"] = config.extraPathsCount * config.durationSeconds;

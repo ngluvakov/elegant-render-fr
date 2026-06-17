@@ -57,15 +57,15 @@ import {
   ROOM_STYLES,
   SEASONS,
   TIMES_OF_DAY,
-  TOUR360_ASSEMBLY_BASE_EUR,
+  TOUR360_ASSEMBLY_BASE_RSD,
   TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD,
-  TOUR360_EXTRA_CAMERA_EUR,
-  TOUR360_EXTRA_FLOOR_EUR,
-  TOUR360_EXTRA_HOTSPOT_EUR,
-  TOUR360_FLOOR_PLAN_NAV_EUR,
+  TOUR360_EXTRA_CAMERA_RSD,
+  TOUR360_EXTRA_FLOOR_RSD,
+  TOUR360_EXTRA_HOTSPOT_RSD,
+  TOUR360_FLOOR_PLAN_NAV_RSD,
   TOUR360_INCLUDED_CAMERAS,
   TOUR360_INCLUDED_HOTSPOTS,
-  TOUR360_WHITE_LABEL_EUR,
+  TOUR360_WHITE_LABEL_RSD,
   type RoomStyleId,
   type SeasonId,
   type StyleMode,
@@ -97,14 +97,14 @@ function floorPricingRows(calc: Tour360FloorCalc) {
     rows.push({
       label: `+${calc.extraHotspots} dodatn${calc.extraHotspots === 1 ? "i hotspot" : "ih hotspotova"}`,
       value: calc.extraHotspotsCost,
-      sub: `€${TOUR360_EXTRA_HOTSPOT_EUR}/kom`,
+      sub: `${TOUR360_EXTRA_HOTSPOT_RSD.toLocaleString("sr-Latn-RS")} RSD/kom`,
     });
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
       label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "a stat. kamera" : "ih stat. kamera"}`,
       value: calc.extraCamerasCost,
-      sub: `€${TOUR360_EXTRA_CAMERA_EUR}/kom`,
+      sub: `${TOUR360_EXTRA_CAMERA_RSD.toLocaleString("sr-Latn-RS")} RSD/kom`,
     });
   }
   return rows;
@@ -410,8 +410,8 @@ function Tour360FloorPanel({
               <p>
                 Po spratu je uključeno {TOUR360_INCLUDED_HOTSPOTS} hotspotova
                 + {TOUR360_INCLUDED_CAMERAS} statičkih kamera. Preko toga:
-                {formatPrice(TOUR360_EXTRA_HOTSPOT_EUR)} po dodatnom hotspot-u i
-                {formatPrice(TOUR360_EXTRA_CAMERA_EUR)} po dodatnoj kameri.
+                {formatPrice(TOUR360_EXTRA_HOTSPOT_RSD)} po dodatnom hotspot-u i
+                {formatPrice(TOUR360_EXTRA_CAMERA_RSD)} po dodatnoj kameri.
               </p>
             </div>
 
@@ -1005,7 +1005,7 @@ export function TourAssemblyCard({
                 </>
               ) : (
                 <>
-                  {formatPrice(TOUR360_ASSEMBLY_BASE_EUR)} (besplatno od{" "}
+                  {formatPrice(TOUR360_ASSEMBLY_BASE_RSD)} (besplatno od{" "}
                   {TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD} hotspotova
                   {hotspotsShortBy > 0
                     ? ` — fali još ${hotspotsShortBy}`
@@ -1057,7 +1057,7 @@ export function TourAssemblyCard({
                 </p>
               </div>
               <span className="flex-shrink-0 text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(TOUR360_FLOOR_PLAN_NAV_EUR)}
+                +{formatPrice(TOUR360_FLOOR_PLAN_NAV_RSD)}
               </span>
             </div>
           </label>
@@ -1092,7 +1092,7 @@ export function TourAssemblyCard({
                 </p>
               </div>
               <span className="flex-shrink-0 text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(TOUR360_WHITE_LABEL_EUR)}
+                +{formatPrice(TOUR360_WHITE_LABEL_RSD)}
               </span>
             </div>
           </label>
@@ -1331,7 +1331,7 @@ export function Tour360ConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(calc.totalEur)}
+            {formatPrice(calc.totalRsd)}
           </p>
         </div>
       </div>
@@ -1425,7 +1425,7 @@ export function Tour360ConfigSection({
           </div>
           {floors.length > 0 && (
             <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-1 text-[0.72rem] font-bold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
-              −30% · {formatPrice(TOUR360_EXTRA_FLOOR_EUR)}
+              −30% · {formatPrice(TOUR360_EXTRA_FLOOR_RSD)}
             </span>
           )}
         </button>

@@ -24,11 +24,11 @@ type OrderDetailHeroProps = {
   orderId: string;
   orderNumber: string;
   status: string;
-  totalEur: number;
+  totalRsd: number;
   totalCents?: number | null;
   billingCurrency?: BillingCurrency | null;
   billingTotalCents?: number | null;
-  savingsEur?: number;
+  savingsRsd?: number;
   createdAt: Date;
   updatedAt: Date;
   projectName: string | null;
@@ -42,11 +42,11 @@ export function OrderDetailHero({
   orderId,
   orderNumber,
   status,
-  totalEur,
+  totalRsd,
   totalCents,
   billingCurrency,
   billingTotalCents,
-  savingsEur = 0,
+  savingsRsd = 0,
   createdAt,
   updatedAt,
   projectName,
@@ -106,14 +106,14 @@ export function OrderDetailHero({
               {billingCurrency && billingTotalCents != null
                 ? formatBillingMoney(billingTotalCents, billingCurrency)
                 : formatPublicPrice(
-                    (totalCents ?? totalEur * 100) / 100,
+                    (totalCents ?? totalRsd * 100) / 100,
                     displayCurrency,
                     pricingSettings,
                   )}
             </p>
-            {savingsEur > 0 && (
+            {savingsRsd > 0 && (
               <p className="text-xs font-semibold text-[color:var(--color-sage-deep)]">
-                −{formatPublicPrice(savingsEur, displayCurrency, pricingSettings)}{" "}
+                −{formatPublicPrice(savingsRsd, displayCurrency, pricingSettings)}{" "}
                 ušteđeno
               </p>
             )}

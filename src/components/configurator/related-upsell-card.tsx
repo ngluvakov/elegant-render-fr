@@ -39,7 +39,7 @@ export function RelatedUpsellCard({
   const siblings: QuoteItem[] = [primaryItem, ...cartItems];
   const discount = resolveDiscount(targetItem, siblings, pricingCatalog);
 
-  const originalPrice = relatedProduct.displayPerUnitEur ?? relatedProduct.basePriceEur;
+  const originalPrice = relatedProduct.displayPerUnitRsd ?? relatedProduct.basePriceRsd;
   const discountedPrice = discount
     ? Math.round(originalPrice * (1 - discount.pct / 100))
     : null;

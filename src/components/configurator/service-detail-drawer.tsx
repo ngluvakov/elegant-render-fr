@@ -68,8 +68,8 @@ export function ServiceDetailDrawer({
     displayCurrency,
     pricingSettings,
   );
-  const originalPerUnit = product.displayPerUnitEur ?? product.basePriceEur;
-  const originalPackage = product.basePriceEur;
+  const originalPerUnit = product.displayPerUnitRsd ?? product.basePriceRsd;
+  const originalPackage = product.basePriceRsd;
   const discountedPerUnit = discount
     ? Math.round(originalPerUnit * (1 - discount.pct / 100))
     : null;
@@ -152,7 +152,7 @@ export function ServiceDetailDrawer({
               )}
             </p>
 
-            {product.displayPerUnitEur !== undefined ? (
+            {product.displayPerUnitRsd !== undefined ? (
               <p className="mt-1 text-3xl font-bold leading-none text-foreground">
                 {discount ? (
                   <>
@@ -234,8 +234,8 @@ export function ServiceDetailDrawer({
                       <span className="font-medium text-foreground">{ao.label}</span>
                       <span className="shrink-0 text-foreground">
                         {ao.priceType === "percent"
-                          ? `+${ao.priceEur}%`
-                          : `+${formatPublicPrice(ao.priceEur, displayCurrency, pricingSettings)}`}
+                          ? `+${ao.priceRsd}%`
+                          : `+${formatPublicPrice(ao.priceRsd, displayCurrency, pricingSettings)}`}
                       </span>
                     </div>
                     {ao.description && (

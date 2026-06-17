@@ -5,7 +5,7 @@
  * Closes the loop opened by issueProforma: the customer paid the
  * predračun off-platform (bank transfer), and the admin now flips the
  * order to paid + completed payment. That triggers the same
- * post-payment hook (finishSuccessfulPayment) used by PayPal/card —
+ * post-payment hook (finishSuccessfulPayment) used by card payments —
  * konačni račun is issued, AI credits are applied, the customer
  * receives the order_confirmation_email with the invoice attached.
  *
@@ -50,7 +50,7 @@ export async function markWireTransferPaid(
     }
 
     // Atomic flip: paymentStatus + provider in one update with a
-    // not-completed guard, mirroring the PayPal/card pattern. If two
+    // not-completed guard, mirroring the card payment pattern. If two
     // admins click the button at the same time, only one wins.
     const result = await prisma.order.updateMany({
       where: { id: orderId, paymentStatus: { not: "completed" } },
@@ -83,7 +83,7 @@ export async function markWireTransferPaid(
       "Uplata po predračunu primljena",
     );
 
-    // Same hook as PayPal/card: applies AI credits, transitions
+    // Same hook as card payments: applies AI credits, transitions
     // AI-only orders to closed, issues the konačni račun, and
     // enqueues the confirmation email with the invoice attached.
     await finishSuccessfulPayment(orderId);
@@ -94,7 +94,7 @@ export async function markWireTransferPaid(
       entityId: orderId,
       metadata: {
         proformaNumber: order.proformaNumber,
-        totalEur: order.totalEur,
+        totalRsd: order.totalRsd,
         buyerType: order.buyerType,
       },
     });

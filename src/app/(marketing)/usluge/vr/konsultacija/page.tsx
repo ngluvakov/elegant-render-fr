@@ -76,7 +76,7 @@ export default async function VrConsultationPage({
     return {
       id,
       label: lookup?.product.label ?? id,
-      basePriceEur: lookup?.product.basePriceEur ?? 0,
+      basePriceRsd: lookup?.product.basePriceRsd ?? 0,
     };
   });
 
@@ -112,8 +112,8 @@ export default async function VrConsultationPage({
               itemListElement: products.map((product) => ({
                 "@type": "Offer",
                 name: product.label,
-                price: product.basePriceEur,
-                priceCurrency: "EUR",
+                price: product.basePriceRsd,
+                priceCurrency: "RSD",
                 availability: "https://schema.org/PreOrder",
                 url: absoluteUrl("/usluge/vr/konsultacija"),
               })),

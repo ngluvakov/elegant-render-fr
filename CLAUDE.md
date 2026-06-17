@@ -2,7 +2,7 @@
 
 # Elegant Render Platform
 
-B2C architectural visualization service (Elegant Render, sub-brand of White Rook DOO). Serbian site (`sr-Latn-RS`), EUR pricing excluding VAT/PDV, all prices stored as **integers**.
+B2C architectural visualization service (Elegant Render, sub-brand of White Rook DOO). Serbian site (`sr-Latn-RS`), RSD-only gross pricing with PDV included, all major-unit prices stored as **integers**.
 
 ## Stack deviations from defaults
 

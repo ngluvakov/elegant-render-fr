@@ -2,8 +2,7 @@
  * receipt-data.ts — Shared NestPay receipt builder.
  *
  * Loads + formats the customer-facing data for a NestPay-paid order:
- * line items with billing-currency labels, VAT breakdown for RSD,
- * EUR→RSD conversion snapshot, customer block, and the seven EPM 2.7
+ * line items with RSD billing labels, VAT breakdown, customer block, and the seven EPM 2.7
  * transaction parameters. Consumed by:
  *   - /poruci/uspeh and /poruci/neuspeh server components (HTML page).
  *   - outbox handlers payment_success_email / payment_failure_email
@@ -14,11 +13,8 @@
  * never touch floats.
  */
 import { prisma } from "@/lib/db";
-import { billingCentsFromEurCents, formatBillingMoney } from "@/lib/billing";
-import {
-  PUBLIC_EUR_TO_RSD_RATE,
-  PUBLIC_SERBIA_VAT_RATE,
-} from "@/lib/catalog/display-currency";
+import { billingCentsFromRsdCents, formatBillingMoney } from "@/lib/billing";
+import { PUBLIC_SERBIA_VAT_RATE } from "@/lib/catalog/display-currency";
 
 export type NestpayReceiptCustomer = {
   name: string | null;
@@ -39,11 +35,7 @@ export type NestpayReceiptTotals = {
   installmentCount: number | null;
 };
 
-export type NestpayReceiptConversion = {
-  eurAmountLabel: string;
-  rsdAmountLabel: string;
-  rate: number;
-} | null;
+export type NestpayReceiptConversion = null;
 
 export type NestpayReceiptTransaction = {
   oid: string;
@@ -77,20 +69,18 @@ export async function getNestpayReceiptData(
   });
   if (!order || !order.user.email) return null;
 
-  const billingCurrency = order.billingCurrency ?? "EUR";
-  const billingVatRate =
-    order.billingVatRate ??
-    (billingCurrency === "RSD" ? PUBLIC_SERBIA_VAT_RATE : 0);
-  const rate = order.billingEurToRsdRate ?? PUBLIC_EUR_TO_RSD_RATE;
-  const snapshot = { billingCurrency, billingEurToRsdRate: rate, billingVatRate };
+  const billingCurrency = "RSD";
+  const billingVatRate = order.billingVatRate ?? PUBLIC_SERBIA_VAT_RATE;
+  const rate = 1;
+  const snapshot = { billingCurrency, billingRsdRate: rate, billingVatRate };
 
   const lineItems: NestpayReceiptLineItem[] = order.items.map((line) => {
-    const eurTotalCents = line.totalCents ?? line.totalEur * 100;
+    const rsdTotalCents = line.totalCents ?? line.totalRsd * 100;
     const quantity =
       line.kind === "ai_credits" && line.aiCreditQuantity
         ? line.aiCreditQuantity
         : 1;
-    const lineGrossCents = billingCentsFromEurCents(eurTotalCents, snapshot);
+    const lineGrossCents = billingCentsFromRsdCents(rsdTotalCents, snapshot);
     const unitGrossCents = Math.round(lineGrossCents / Math.max(1, quantity));
     return {
       label: line.productLabel,
@@ -102,13 +92,13 @@ export async function getNestpayReceiptData(
 
   const billingTotalCents =
     order.billingTotalCents ??
-    billingCentsFromEurCents(
-      order.totalCents ?? order.totalEur * 100,
+    billingCentsFromRsdCents(
+      order.totalCents ?? order.totalRsd * 100,
       snapshot,
     );
 
   let vatBreakdownLabel: string | null = null;
-  if (billingCurrency === "RSD" && billingVatRate > 0) {
+  if (billingVatRate > 0) {
     const grossUnits = billingTotalCents / 100;
     const netUnits = Math.round(grossUnits / (1 + billingVatRate));
     const vatUnits = grossUnits - netUnits;
@@ -117,17 +107,7 @@ export async function getNestpayReceiptData(
     vatBreakdownLabel = `Osnovica ${fmt(netUnits)} + PDV (20%) ${fmt(vatUnits)}`;
   }
 
-  const conversion: NestpayReceiptConversion =
-    billingCurrency === "EUR" && order.nestpayChargedAmountCents
-      ? {
-          eurAmountLabel: formatBillingMoney(billingTotalCents, "EUR"),
-          rsdAmountLabel: formatBillingMoney(
-            order.nestpayChargedAmountCents,
-            "RSD",
-          ),
-          rate: order.nestpayChargeRate ?? rate,
-        }
-      : null;
+  const conversion: NestpayReceiptConversion = null;
 
   const buyerAddressLines: string[] = [];
   if (order.companyName) buyerAddressLines.push(order.companyName);

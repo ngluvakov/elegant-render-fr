@@ -50,7 +50,7 @@ const NECESSARY: CookieEntry[] = [
     storage: "Cookie",
     provider: "Elegant Render",
     purpose:
-      "Zemlja posetioca radi prikaza cena u odgovarajućoj valuti (RSD ili EUR).",
+      "Zemlja posetioca za regionalni kontekst i validaciju podataka kupca; cene ostaju u RSD.",
     retention: "30 dana",
   },
   {

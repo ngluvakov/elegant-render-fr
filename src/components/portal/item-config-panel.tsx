@@ -81,8 +81,8 @@ type ItemData = {
   productId: string;
   productLabel: string;
   categoryLabel: string;
-  totalEur: number;
-  originalTotalEur: number | null;
+  totalRsd: number;
+  originalTotalRsd: number | null;
   discountPct: number | null;
   discountReason: string | null;
   clientNote: string | null;
@@ -248,8 +248,8 @@ export function ItemConfigPanel({
               {item.categoryLabel} ·{" "}
               {(() => {
                 const { primary, struck } = formatDiscounted(
-                  item.totalEur,
-                  item.originalTotalEur ?? item.totalEur,
+                  item.totalRsd,
+                  item.originalTotalRsd ?? item.totalRsd,
                   item.discountPct ?? 0,
                 );
                 return struck ? (

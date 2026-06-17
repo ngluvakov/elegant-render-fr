@@ -1,11 +1,10 @@
-import {
-  getDisplayCurrencyForCountry,
-  type DisplayCurrency,
-  type PublicPricingFormatSettings,
+import type {
+  DisplayCurrency,
+  PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 import type { BuyerType } from "@/lib/buyer-validation";
 
-export type BillingCurrency = "RSD" | "EUR";
+export type BillingCurrency = "RSD";
 
 export type BillingSnapshotInput = {
   buyerType: BuyerType;
@@ -27,7 +26,7 @@ export type BillingSnapshot = {
   companyCountryCode: string | null;
   billingCurrency: BillingCurrency;
   billingVatRate: number;
-  billingEurToRsdRate: number;
+  billingRsdRate: number;
 };
 
 export const SERBIA_COUNTRY_CODE = "RS";
@@ -66,29 +65,31 @@ export function buyerTypeForBilling(
 }
 
 export function billingCurrencyForCountry(
-  countryCode: string | null | undefined,
+  _countryCode: string | null | undefined,
 ): BillingCurrency {
-  return countryCode?.trim().toUpperCase() === SERBIA_COUNTRY_CODE
-    ? "RSD"
-    : "EUR";
+  void _countryCode;
+  return "RSD";
 }
 
 export function displayCurrencyForBillingCountry(
-  countryCode: string | null | undefined,
+  _countryCode: string | null | undefined,
 ): DisplayCurrency {
-  return getDisplayCurrencyForCountry(countryCode);
+  void _countryCode;
+  return "rsd";
 }
 
 export function displayCurrencyForBillingCurrency(
-  currency: BillingCurrency | null | undefined,
+  _currency: BillingCurrency | null | undefined,
 ): DisplayCurrency {
-  return currency === "RSD" ? "rsd" : "eur";
+  void _currency;
+  return "rsd";
 }
 
 export function isExportBillingCurrency(
-  currency: BillingCurrency | null | undefined,
+  _currency: BillingCurrency | null | undefined,
 ): boolean {
-  return currency === "EUR";
+  void _currency;
+  return false;
 }
 
 export function buildBillingSnapshot(
@@ -97,7 +98,6 @@ export function buildBillingSnapshot(
   fallbackCountryCode?: string | null,
 ): BillingSnapshot {
   const buyerCountryCode = billingCountryForBuyer(input, fallbackCountryCode);
-  const billingCurrency = billingCurrencyForCountry(buyerCountryCode);
   const buyerType =
     input.buyerType === "individual"
       ? "individual"
@@ -125,35 +125,25 @@ export function buildBillingSnapshot(
     buyerCountryCode,
     ...companyFields,
     companyCountryCode,
-    billingCurrency,
-    billingVatRate: billingCurrency === "RSD" ? settings.serbiaVatRate : 0,
-    billingEurToRsdRate: settings.eurToRsdRate,
+    billingCurrency: "RSD",
+    billingVatRate: settings.serbiaVatRate,
+    billingRsdRate: 1,
   };
 }
 
-export function billingCentsFromEurCents(
-  eurCents: number,
-  snapshot: Pick<
-    BillingSnapshot,
-    "billingCurrency" | "billingEurToRsdRate" | "billingVatRate"
-  >,
+export function billingCentsFromRsdCents(
+  rsdCents: number,
+  _snapshot?: unknown,
 ): number {
-  if (snapshot.billingCurrency === "EUR") return Math.round(eurCents);
-  const eur = eurCents / 100;
-  const grossRsd = Math.round(eur * snapshot.billingEurToRsdRate);
-  return grossRsd * 100;
+  void _snapshot;
+  return Math.round(rsdCents);
 }
 
 export function formatBillingMoney(
   cents: number,
-  currency: BillingCurrency,
+  _currency: BillingCurrency | null | undefined = "RSD",
 ): string {
+  void _currency;
   const value = cents / 100;
-  if (currency === "RSD") {
-    return `${value.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`;
-  }
-  return `€${value.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+  return `${value.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`;
 }

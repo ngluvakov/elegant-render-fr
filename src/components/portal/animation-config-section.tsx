@@ -3,7 +3,7 @@
  * `anim` product. Source mode (scratch / existing / active) lives on
  * config.sourceMode and drives:
  *   - the type badge label
- *   - per-second base price (€15 / €10 / €8)
+ *   - per-second base price (1.758 RSD / 1.172 RSD / 938 RSD)
  *   - which add-on suffix gets driven for paths/daynight
  *   - visibility of upsell options (daynight not on active; season
  *     only on scratch)
@@ -63,7 +63,7 @@ import {
   ANIM_TIMES_OF_DAY,
   ANIM_TYPES,
   addOnQuantitiesFor,
-  animPerSecondEur,
+  animPerSecondRsd,
   animSourceModeLabel,
   animSupportsDayNight,
   animSupportsSeason,
@@ -126,10 +126,10 @@ export function AnimationConfigSection({
 
   const showDayNight = animSupportsDayNight(config.sourceMode);
   const showSeason = animSupportsSeason(config.sourceMode);
-  const perSecondEur = animPerSecondEur(config.sourceMode);
+  const perSecondRsd = animPerSecondRsd(config.sourceMode);
   const tierDiscountPct = animTierDiscountPct(config.durationSeconds);
 
-  const totalEur = useMemo(() => {
+  const totalRsd = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -140,7 +140,7 @@ export function AnimationConfigSection({
         sourceMode: config.sourceMode,
       },
     ]);
-    return calc.items[0]?.totalEur ?? 0;
+    return calc.items[0]?.totalRsd ?? 0;
   }, [itemId, config]);
 
   useEffect(() => {
@@ -297,7 +297,7 @@ export function AnimationConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalEur)}
+            {formatPrice(totalRsd)}
           </p>
         </div>
       </div>
@@ -337,7 +337,7 @@ export function AnimationConfigSection({
                     {m.shortLabel}
                   </span>
                   <span className="text-[0.7rem] font-bold text-accent tabular-nums">
-                    {formatPrice(m.perSecondEur)}/s
+                    {formatPrice(m.perSecondRsd)}/s
                   </span>
                 </span>
                 <span className="text-[0.7rem] leading-snug text-muted-foreground">
@@ -424,7 +424,7 @@ export function AnimationConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              {formatPrice(perSecondEur)}/sek
+              {formatPrice(perSecondRsd)}/sek
               {tierDiscountPct > 0 && (
                 <span className="ml-1 font-semibold text-[color:var(--color-sage-deep)]">
                   · −{tierDiscountPct}% tier
@@ -744,7 +744,7 @@ export function AnimationConfigSection({
                   Dodatna putanja kamere
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  {formatPriceText("Još jedan video iz istog modela — €5/sek po putanji")}
+                  {formatPriceText("Još jedan video iz istog modela — 586 RSD/sek po putanji")}
                 </span>
               </div>
             </div>

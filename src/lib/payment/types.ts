@@ -2,9 +2,9 @@
  * types.ts — Shared payment type definitions.
  *
  * Exports PaymentResult and CreatePaymentResult types used across
- * payment providers (PayPal, mock card).
+ * payment providers (NestPay, mock card).
  *
- * Used by: payment/paypal, payment/mock-card (type reference)
+ * Used by: payment/mock-card (type reference)
  */
 export type PaymentResult = {
   success: boolean;

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatRsd } from "@/lib/catalog/calculate";
 import { statusLabel, statusAccent } from "@/components/portal/status-utils";
 import { AdminFilterBar } from "./admin-filter-bar";
 import { adminHas, requireAnyAdminPermission } from "@/lib/admin-auth";
@@ -84,7 +84,7 @@ export default async function AdminPage({
       : Promise.resolve([]),
     canViewProjects
       ? prisma.order.findMany({
-          select: { status: true, totalEur: true, paymentStatus: true },
+          select: { status: true, totalRsd: true, paymentStatus: true },
         })
       : Promise.resolve([]),
     canViewUsers || canViewProjects
@@ -101,7 +101,7 @@ export default async function AdminPage({
   // Stats from all orders (not filtered)
   const totalRevenue = allOrders
     .filter((o) => o.paymentStatus === "completed")
-    .reduce((sum, o) => sum + o.totalEur, 0);
+    .reduce((sum, o) => sum + o.totalRsd, 0);
 
   const activeCount = allOrders.filter((o) =>
     ["paid", "in_progress", "in_review", "revision_requested"].includes(o.status),
@@ -159,7 +159,7 @@ export default async function AdminPage({
               </div>
               <div>
                 <p className="text-xl font-bold text-foreground">
-                  {formatEur(totalRevenue)}
+                  {formatRsd(totalRevenue)}
                 </p>
                 <p className="text-[0.72rem] text-muted-foreground">Ukupan prihod</p>
               </div>
@@ -301,7 +301,7 @@ export default async function AdminPage({
 
               {/* Amount */}
               <p className="mt-1 w-20 text-right text-sm font-semibold text-foreground lg:mt-0">
-                {canViewFinance ? formatEur(order.totalEur) : "—"}
+                {canViewFinance ? formatRsd(order.totalRsd) : "—"}
               </p>
 
               {/* Action */}

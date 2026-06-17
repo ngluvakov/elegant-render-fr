@@ -115,7 +115,7 @@ export function Ext360ConfigSection({
         addOnQuantities: ext360AddOnQuantitiesFor(config),
       },
     ]);
-    return calc.items[0]?.totalEur ?? 0;
+    return calc.items[0]?.totalRsd ?? 0;
   }, [itemId, config]);
 
   const assemblyCalc = useMemo(
@@ -123,7 +123,7 @@ export function Ext360ConfigSection({
     [config.tourAssembly, config.hotspotCount],
   );
 
-  const totalEur = renderingTotal + assemblyCalc.totalCost;
+  const totalRsd = renderingTotal + assemblyCalc.totalCost;
 
   useEffect(() => {
     if (!editable) return;
@@ -288,7 +288,7 @@ export function Ext360ConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalEur)}
+            {formatPrice(totalRsd)}
           </p>
         </div>
       </div>
@@ -358,7 +358,7 @@ export function Ext360ConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              {formatPriceText("1 uključen, +€48 (€53 od 4.)")}
+              {formatPriceText("1 uključen, +5.626 RSD (6.212 RSD od 4.)")}
             </span>
           </div>
         </div>

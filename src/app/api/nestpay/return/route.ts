@@ -32,6 +32,10 @@ import {
   finishFailedPayment,
   finishSuccessfulPayment,
 } from "@/server/actions/payment";
+import {
+  finishFailedChargePayment,
+  finishSuccessfulChargePayment,
+} from "@/server/actions/charge-payment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -125,12 +129,60 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     select: { id: true, status: true, paymentStatus: true },
   });
   if (!order) {
-    Sentry.captureMessage("[nestpay] order not found for verified oid", {
-      level: "warning",
-      tags: { area: "payment", flow: "nestpay-return", stage: "lookup" },
-      extra: { oid: payload.oid },
+    const charge = await prisma.orderCharge.findFirst({
+      where: { paymentId: payload.oid, paymentProvider: "nestpay" },
+      select: { id: true, orderId: true, paymentStatus: true },
     });
-    return redirect303(`${baseUrl}/poruci/neuspeh?oid=${encodeURIComponent(payload.oid)}`);
+
+    if (!charge) {
+      Sentry.captureMessage("[nestpay] payment target not found for verified oid", {
+        level: "warning",
+        tags: { area: "payment", flow: "nestpay-return", stage: "lookup" },
+        extra: { oid: payload.oid },
+      });
+      return redirect303(`${baseUrl}/poruci/neuspeh?oid=${encodeURIComponent(payload.oid)}`);
+    }
+
+    await prisma.orderCharge.update({
+      where: { id: charge.id },
+      data: {
+        nestpayTransId: payload.transId || null,
+        nestpayAuthCode: payload.authCode || null,
+        nestpayProcReturnCode: payload.procReturnCode || null,
+        nestpayMdStatus: payload.mdStatus || null,
+        nestpayHostRefNum: payload.hostRefNum || null,
+        nestpayExtraTrxDate: parseNestpayTrxDate(payload.extraTrxDate) ?? null,
+        nestpayResponseRaw: fields,
+        nestpayResponseHash: fields.hash ?? fields.HASH ?? null,
+        nestpayLastQueryAt: new Date(),
+      },
+    });
+
+    if (isApprovedResponse(payload)) {
+      try {
+        await finishSuccessfulChargePayment(charge.id, "nestpay");
+      } catch (err) {
+        Sentry.captureException(err, {
+          tags: { area: "payment", flow: "nestpay-return", stage: "finish-charge-success" },
+          extra: { chargeId: charge.id, oid: payload.oid },
+        });
+      }
+      return redirect303(
+        `${baseUrl}/portal/porudzbine/${charge.orderId}?chargePayment=success`,
+      );
+    }
+
+    try {
+      await finishFailedChargePayment(charge.id);
+    } catch (err) {
+      Sentry.captureException(err, {
+        tags: { area: "payment", flow: "nestpay-return", stage: "finish-charge-failure" },
+        extra: { chargeId: charge.id, oid: payload.oid },
+      });
+    }
+    return redirect303(
+      `${baseUrl}/portal/porudzbine/${charge.orderId}?chargePayment=failed`,
+    );
   }
 
   // Persist the forensic snapshot regardless of outcome — the inspection

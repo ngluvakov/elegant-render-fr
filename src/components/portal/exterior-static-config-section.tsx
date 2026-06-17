@@ -100,7 +100,7 @@ export function ExtStaticConfigSection({
   const router = useRouter();
   const { formatPrice } = useOrderCurrency();
 
-  const totalEur = useMemo(() => {
+  const totalRsd = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -109,7 +109,7 @@ export function ExtStaticConfigSection({
         addOnQuantities: extStaticAddOnQuantitiesFor(config),
       },
     ]);
-    return calc.items[0]?.totalEur ?? 0;
+    return calc.items[0]?.totalRsd ?? 0;
   }, [itemId, config]);
 
   useEffect(() => {
@@ -274,7 +274,7 @@ export function ExtStaticConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalEur)}
+            {formatPrice(totalRsd)}
           </p>
         </div>
       </div>

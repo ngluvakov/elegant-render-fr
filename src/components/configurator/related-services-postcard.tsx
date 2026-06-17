@@ -98,7 +98,7 @@ export function RelatedServicesPostcard({ productId }: Props) {
       <div className="space-y-2.5">
         {relatedProducts.map(({ id, product, categoryId, discount }) => {
           const original =
-            product.displayPerUnitEur ?? product.basePriceEur;
+            product.displayPerUnitRsd ?? product.basePriceRsd;
           const discounted = discount
             ? Math.round(original * (1 - discount.pct / 100))
             : null;

@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatRsd } from "@/lib/catalog/calculate";
 import { formatBillingMoney, type BillingCurrency } from "@/lib/billing";
 import { statusLabel, statusAccent } from "./status-utils";
 
@@ -17,7 +17,7 @@ type OrderOverviewCardProps = {
     orderNumber: string;
     projectName: string | null;
     status: string;
-    totalEur: number;
+    totalRsd: number;
     totalCents: number | null;
     billingCurrency: BillingCurrency | null;
     billingTotalCents: number | null;
@@ -34,7 +34,7 @@ export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
   const title = order.projectName ?? firstItem?.productLabel ?? "Porudžbina";
   const total = order.billingCurrency && order.billingTotalCents != null
     ? formatBillingMoney(order.billingTotalCents, order.billingCurrency)
-    : formatEur((order.totalCents ?? order.totalEur * 100) / 100);
+    : formatRsd((order.totalCents ?? order.totalRsd * 100) / 100);
 
   return (
     <Link

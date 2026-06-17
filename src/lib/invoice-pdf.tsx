@@ -48,7 +48,7 @@ export type InvoiceData = {
     email?: string | null;
   };
   items: InvoiceLineItem[];
-  currency: "RSD" | "EUR";
+  currency: "RSD";
   paymentMethod: string;
 };
 
@@ -195,15 +195,10 @@ const styles = StyleSheet.create({
   },
 });
 
-function formatMoney(cents: number, currency: "RSD" | "EUR"): string {
+function formatMoney(cents: number, _currency: "RSD"): string {
+  void _currency;
   const value = cents / 100;
-  if (currency === "RSD") {
-    return `${value.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`;
-  }
-  return `€${value.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+  return `${value.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`;
 }
 
 function formatDate(date: Date, locale: "sr-Latn-RS" | "en-GB"): string {
@@ -273,10 +268,9 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Buffer> {
 }
 
 function InvoiceDocument({ data }: { data: InvoiceData }) {
-  const layoutKey =
-    data.currency === "EUR" ? "company_foreign" : data.buyerType;
+  const layoutKey = data.buyerType;
   const t = STRINGS[layoutKey];
-  const locale = data.currency === "EUR" ? "en-GB" : "sr-Latn-RS";
+  const locale = "sr-Latn-RS";
 
   const subtotalCents = data.items.reduce(
     (sum, it) => sum + it.quantity * it.unitPriceNetCents,
@@ -337,11 +331,11 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
                 {data.recipient.mb ? ` · MB ${data.recipient.mb}` : ""}
               </Text>
             )}
-            {data.recipient.taxId && data.currency === "EUR" && (
-              <Text style={styles.partyMono}>VAT ID {data.recipient.taxId}</Text>
+            {data.recipient.taxId && data.buyerType === "company_foreign" && (
+              <Text style={styles.partyMono}>Tax ID {data.recipient.taxId}</Text>
             )}
             {data.recipient.countryCode &&
-              data.currency === "EUR" && (
+              data.buyerType === "company_foreign" && (
                 <Text style={styles.partyText}>
                   Country: {data.recipient.countryCode}
                 </Text>
@@ -433,12 +427,6 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
 }
 
 function buildNotes(data: InvoiceData): string[] {
-  if (data.currency === "EUR") {
-    return [
-      "Reverse charge — VAT is not charged on this invoice. Place of supply is outside the Republic of Serbia (čl. 24/25 ZPDV; equivalent to EU VAT Directive 2006/112/EZ Art. 44 / 196).",
-      "Buyer is responsible for accounting VAT in their own jurisdiction.",
-    ];
-  }
   if (data.buyerType === "individual") {
     return [
       "PDV obračunat po stopi 20% i uračunat u prikazane iznose.",

@@ -68,13 +68,13 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
   // the breakdown the resolver produced.
   const editorDiscount =
     breakdown.discountPct > 0 &&
-    breakdown.originalTotalEur > breakdown.totalEur &&
+    breakdown.originalTotalRsd > breakdown.totalRsd &&
     breakdown.discountReason
       ? {
           pct: breakdown.discountPct,
           reason: breakdown.discountReason,
-          originalTotalEur: breakdown.originalTotalEur,
-          totalEur: breakdown.totalEur,
+          originalTotalRsd: breakdown.originalTotalRsd,
+          totalRsd: breakdown.totalRsd,
         }
       : null;
 
@@ -112,8 +112,8 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           <div className="flex items-center gap-3">
             {(() => {
               const { primary, struck, badge } = formatPublicDiscountedPrice(
-                breakdown.totalEur,
-                breakdown.originalTotalEur,
+                breakdown.totalRsd,
+                breakdown.originalTotalRsd,
                 breakdown.discountPct,
                 displayCurrency,
                 pricingSettings,
@@ -223,7 +223,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
                 {formatPublicPrice(
-                  product.durationConfig.perSecondEur,
+                  product.durationConfig.perSecondRsd,
                   displayCurrency,
                   pricingSettings,
                 )}
@@ -301,8 +301,8 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                       quantity={item.addOnQuantities[def.id] ?? def.includedQty}
                       includedQty={def.includedQty}
                       maxQty={def.maxQty}
-                      priceEur={aoBreakdown?.unitPriceEur ?? def.priceEur}
-                      basePriceEur={def.priceEur}
+                      priceRsd={aoBreakdown?.unitPriceRsd ?? def.priceRsd}
+                      basePriceRsd={def.priceRsd}
                       priceType={def.priceType}
                       isVolumeRate={aoBreakdown?.isVolumeRate ?? false}
                       volumeRules={def.volumeRules}

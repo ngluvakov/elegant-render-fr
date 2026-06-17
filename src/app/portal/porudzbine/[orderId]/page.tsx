@@ -108,8 +108,8 @@ export default async function OrderDetailPage({
   const serviceItems = order.items.filter((item) => item.kind === "service");
   const sourceFiles = order.files.filter((f) => f.kind === "source" || f.kind === "revision");
   const deliverableFiles = order.files.filter((f) => f.kind === "deliverable");
-  const savingsEur = order.items.reduce(
-    (sum, i) => sum + Math.max(0, (i.originalTotalEur ?? i.totalEur) - i.totalEur),
+  const savingsRsd = order.items.reduce(
+    (sum, i) => sum + Math.max(0, (i.originalTotalRsd ?? i.totalRsd) - i.totalRsd),
     0,
   );
   const isDraft = order.status === "draft";
@@ -147,11 +147,11 @@ export default async function OrderDetailPage({
         orderId={order.id}
         orderNumber={order.orderNumber}
         status={order.status}
-        totalEur={order.totalEur}
+        totalRsd={order.totalRsd}
         totalCents={order.totalCents}
         billingCurrency={order.billingCurrency}
         billingTotalCents={order.billingTotalCents}
-        savingsEur={savingsEur}
+        savingsRsd={savingsRsd}
         createdAt={order.createdAt}
         updatedAt={order.updatedAt}
         projectName={order.projectName}
@@ -212,8 +212,8 @@ export default async function OrderDetailPage({
                       productId: item.productId,
                       productLabel: item.productLabel,
                       categoryLabel: item.categoryLabel,
-                      totalEur: item.totalEur,
-                      originalTotalEur: item.originalTotalEur,
+                      totalRsd: item.totalRsd,
+                      originalTotalRsd: item.originalTotalRsd,
                       discountPct: item.discountPct,
                       discountReason: item.discountReason,
                       clientNote: item.clientNote,
@@ -249,7 +249,7 @@ export default async function OrderDetailPage({
               totalCents: c.totalCents,
               billingCurrency: c.billingCurrency,
               billingVatRate: c.billingVatRate,
-              billingEurToRsdRate: c.billingEurToRsdRate,
+              billingRsdRate: c.billingRsdRate,
               billingTotalCents: c.billingTotalCents,
               status: c.status,
               paidAt: c.paidAt,
@@ -286,7 +286,7 @@ export default async function OrderDetailPage({
                 orderNumber={order.orderNumber}
                 proformaNumber={order.proformaNumber}
                 proformaIssuedAt={order.proformaIssuedAt}
-                totalEur={order.totalEur}
+                totalRsd={order.totalRsd}
                 totalCents={order.totalCents}
                 billingCurrency={order.billingCurrency}
                 billingTotalCents={order.billingTotalCents}
@@ -296,7 +296,7 @@ export default async function OrderDetailPage({
             order.paymentMethod !== "wire_transfer" && (
               <PendingPaymentCard
                 orderId={order.id}
-                totalEur={order.totalEur}
+                totalRsd={order.totalRsd}
                 totalCents={order.totalCents}
                 billingCurrency={order.billingCurrency}
                 billingTotalCents={order.billingTotalCents}

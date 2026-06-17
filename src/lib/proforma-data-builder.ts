@@ -18,9 +18,10 @@
 import type { ProformaData, ProformaLineItem } from "@/lib/proforma-pdf";
 import {
   invoiceCurrencyForBuyer,
-  invoiceGrossCentsFromEurCents,
+  invoiceGrossCentsFromRsdCents,
   invoiceVatRateForBuyer,
 } from "@/lib/invoice-data";
+import type { BillingCurrency } from "@/lib/billing";
 
 type OrderForProforma = {
   orderNumber: string;
@@ -31,14 +32,14 @@ type OrderForProforma = {
   companyMb: string | null;
   companyAddress: string | null;
   companyCountryCode: string | null;
-  billingCurrency?: "RSD" | "EUR" | null;
+  billingCurrency?: BillingCurrency | null;
   billingVatRate?: number | null;
-  billingEurToRsdRate?: number | null;
+  billingRsdRate?: number | null;
   user: { name: string | null; email: string | null };
   items: Array<{
     productLabel: string;
     totalCents: number | null;
-    totalEur: number;
+    totalRsd: number;
   }>;
 };
 
@@ -62,10 +63,10 @@ export function buildProformaDataForOrder(
 
   const recipient = buildRecipient(order);
   const items: ProformaLineItem[] = order.items
-    .filter((it) => (it.totalCents ?? Math.round(it.totalEur * 100)) > 0)
+    .filter((it) => (it.totalCents ?? Math.round(it.totalRsd * 100)) > 0)
     .map((it) => {
-      const totalCents = it.totalCents ?? Math.round(it.totalEur * 100);
-      const grossUnitCents = invoiceGrossCentsFromEurCents(totalCents, order);
+      const totalCents = it.totalCents ?? Math.round(it.totalRsd * 100);
+      const grossUnitCents = invoiceGrossCentsFromRsdCents(totalCents, order);
       const unitNet =
         vatRate > 0
           ? Math.round(grossUnitCents / (1 + vatRate))

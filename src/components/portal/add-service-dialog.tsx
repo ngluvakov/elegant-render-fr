@@ -140,7 +140,7 @@ export function AddServiceDialog({
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-semibold text-foreground">
-                        {formatPrice(prod.basePriceEur)}
+                        {formatPrice(prod.basePriceRsd)}
                       </span>
                       <button
                         type="button"

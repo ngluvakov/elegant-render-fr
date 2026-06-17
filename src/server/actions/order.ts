@@ -33,7 +33,7 @@ import {
   type BuyerInfoInput,
 } from "@/lib/buyer-validation";
 import {
-  billingCentsFromEurCents,
+  billingCentsFromRsdCents,
   buildBillingSnapshot,
   type BillingSnapshotInput,
 } from "@/lib/billing";
@@ -151,7 +151,7 @@ export async function createOrder(
   );
   const billingTotalCents = calculation.items.reduce(
     (sum, item) =>
-      sum + billingCentsFromEurCents(item.totalCents, billingSnapshot),
+      sum + billingCentsFromRsdCents(item.totalCents, billingSnapshot),
     0,
   );
 
@@ -162,8 +162,8 @@ export async function createOrder(
   const premiumItems = calculation.items.filter(
     (item) => item.kind === "service",
   );
-  const premiumTotalEur = premiumItems.reduce(
-    (sum, item) => sum + item.totalEur,
+  const premiumTotalRsd = premiumItems.reduce(
+    (sum, item) => sum + item.totalRsd,
     0,
   );
 
@@ -171,9 +171,9 @@ export async function createOrder(
     data: {
       orderNumber,
       userId,
-      totalEur: Math.round(calculation.total),
+      totalRsd: Math.round(calculation.total),
       totalCents: calculation.totalCents,
-      premiumTotalEur: Math.round(premiumTotalEur),
+      premiumTotalRsd: Math.round(premiumTotalRsd),
       containsAiCredits,
       customerNote: customerNote || null,
       withdrawalWaivedAt,
@@ -186,7 +186,7 @@ export async function createOrder(
       companyCountryCode: billingSnapshot.companyCountryCode,
       billingCurrency: billingSnapshot.billingCurrency,
       billingVatRate: billingSnapshot.billingVatRate,
-      billingEurToRsdRate: billingSnapshot.billingEurToRsdRate,
+      billingRsdRate: billingSnapshot.billingRsdRate,
       billingTotalCents,
       items: {
         create: calculation.items.map((item) => {
@@ -211,16 +211,16 @@ export async function createOrder(
             kind: item.kind,
             productLabel: item.productLabel,
             categoryLabel: item.categoryLabel,
-            basePriceEur: Math.round(item.basePriceEur),
+            basePriceRsd: Math.round(item.basePriceRsd),
             basePriceCents: item.basePriceCents,
-            totalEur: Math.round(item.totalEur),
+            totalRsd: Math.round(item.totalRsd),
             totalCents: item.totalCents,
             aiCreditQuantity: item.aiCreditQuantity ?? null,
             aiCreditUnits: item.aiCreditUnits ?? null,
             addOnsJson: item.addOns,
             durationSeconds: item.durationSeconds ?? null,
             durationDiscount: item.durationDiscount ?? null,
-            originalTotalEur: Math.round(item.originalTotalEur),
+            originalTotalRsd: Math.round(item.originalTotalRsd),
             discountPct: item.discountPct,
             discountReason: item.discountReason,
             ...(configJson !== undefined ? { configJson } : {}),
@@ -272,12 +272,8 @@ export async function createEmptyDraft(): Promise<OrderResult> {
   const session = await auth();
   if (!session?.user?.id) return { error: "Niste prijavljeni." };
 
-  // Snapshot the user's billing identity onto the draft so totals
-  // display in their currency (RSD for RS, EUR otherwise) from the
-  // moment the draft is created — matches how createOrder seeds the
-  // snapshot during checkout. Without this the portal would show EUR
-  // for items added inside an RS-customer's draft until the draft
-  // funnels through /poruci.
+  // Snapshot the user's billing identity onto the draft so totals display
+  // in RSD from the moment the draft is created — matching createOrder.
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
@@ -309,7 +305,7 @@ export async function createEmptyDraft(): Promise<OrderResult> {
     data: {
       orderNumber: generateOrderNumber(),
       userId: session.user.id,
-      totalEur: 0,
+      totalRsd: 0,
       totalCents: 0,
       buyerType: billingSnapshot.buyerType,
       buyerCountryCode: billingSnapshot.buyerCountryCode,
@@ -320,7 +316,7 @@ export async function createEmptyDraft(): Promise<OrderResult> {
       companyCountryCode: billingSnapshot.companyCountryCode,
       billingCurrency: billingSnapshot.billingCurrency,
       billingVatRate: billingSnapshot.billingVatRate,
-      billingEurToRsdRate: billingSnapshot.billingEurToRsdRate,
+      billingRsdRate: billingSnapshot.billingRsdRate,
       billingTotalCents: 0,
       items: { create: [] },
       statusEvents: {

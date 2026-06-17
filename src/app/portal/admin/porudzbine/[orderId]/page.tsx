@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatRsd } from "@/lib/catalog/calculate";
 import { statusLabel, statusAccent } from "@/components/portal/status-utils";
 import { StatusTracker } from "@/components/portal/status-tracker";
 import { AdminCommentComposer } from "./admin-comment-composer";
@@ -113,7 +113,7 @@ export default async function AdminOrderDetailPage({
           </Badge>
           {canViewFinance && (
             <p className="text-2xl font-bold text-foreground">
-              {formatEur(order.totalEur)}
+              {formatRsd(order.totalRsd)}
             </p>
           )}
         </div>
@@ -286,15 +286,15 @@ export default async function AdminOrderDetailPage({
                   </div>
                   {canViewFinance && (
                     <span className="ml-2 text-right font-semibold text-foreground">
-                      {item.originalTotalEur != null &&
+                      {item.originalTotalRsd != null &&
                         item.discountPct != null &&
                         item.discountPct > 0 &&
-                        item.originalTotalEur > item.totalEur && (
+                        item.originalTotalRsd > item.totalRsd && (
                           <span className="mr-1 text-[0.7rem] font-normal text-muted-foreground/60 line-through">
-                            {formatEur(item.originalTotalEur)}
+                            {formatRsd(item.originalTotalRsd)}
                           </span>
                         )}
-                      {formatEur(item.totalEur)}
+                      {formatRsd(item.totalRsd)}
                     </span>
                   )}
                 </div>

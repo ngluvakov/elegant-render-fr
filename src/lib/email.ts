@@ -66,17 +66,15 @@ async function send(args: {
   }
 }
 
-function formatEmailEur(amount: number): string {
-  return amount % 1 === 0 ? `€${amount.toFixed(0)}` : `€${amount.toFixed(2)}`;
+function formatEmailRsd(amount: number): string {
+  return `${Math.round(amount).toLocaleString("sr-Latn-RS", {
+    maximumFractionDigits: 0,
+  })} RSD`;
 }
 
-function formatEmailMoney(cents: number, currency: "RSD" | "EUR"): string {
-  if (currency === "RSD") {
-    return `${(cents / 100).toLocaleString("sr-Latn-RS", {
-      maximumFractionDigits: 0,
-    })} RSD`;
-  }
-  return formatEmailEur(cents / 100);
+function formatEmailMoney(cents: number, _currency: "RSD" | null = "RSD"): string {
+  void _currency;
+  return formatEmailRsd(cents / 100);
 }
 
 // ─── Email templates ─────────────────────────────────────
@@ -177,11 +175,11 @@ export async function sendPortalAccessEmail(
 export async function sendOrderConfirmationEmail(
   to: string,
   orderNumber: string,
-  totalEur: number,
+  totalRsd: number,
   amountLabel?: string,
 ) {
   const portalUrl = `${getAuthUrl()}/portal`;
-  const totalLabel = amountLabel ?? formatEmailEur(totalEur);
+  const totalLabel = amountLabel ?? formatEmailRsd(totalRsd);
 
   await send({
     to,
@@ -220,13 +218,13 @@ export async function sendOrderConfirmationEmail(
 export async function sendInvoiceIssuedEmail(args: {
   to: string;
   invoiceNumber: string;
-  totalEur: number;
+  totalRsd: number;
   amountLabel?: string;
   pdfBuffer: Buffer;
 }) {
   const portalUrl = `${getAuthUrl()}/portal`;
   const filename = `racun-${args.invoiceNumber}.pdf`;
-  const amountLabel = args.amountLabel ?? formatEmailEur(args.totalEur);
+  const amountLabel = args.amountLabel ?? formatEmailRsd(args.totalRsd);
 
   await send({
     to: args.to,
@@ -265,7 +263,7 @@ export async function sendInvoiceIssuedEmail(args: {
 export async function sendProformaIssuedEmail(args: {
   to: string;
   proformaNumber: string;
-  totalEur: number;
+  totalRsd: number;
   amountLabel?: string;
   dueDate: Date;
   pdfBuffer: Buffer;
@@ -276,7 +274,7 @@ export async function sendProformaIssuedEmail(args: {
     month: "2-digit",
     year: "numeric",
   });
-  const amountLabel = args.amountLabel ?? formatEmailEur(args.totalEur);
+  const amountLabel = args.amountLabel ?? formatEmailRsd(args.totalRsd);
 
   await send({
     to: args.to,
@@ -580,7 +578,7 @@ export async function sendAdditionalChargeRequestedEmail(args: {
   orderNumber: string;
   orderId: string;
   totalCents: number;
-  billingCurrency?: "RSD" | "EUR" | null;
+  billingCurrency?: "RSD" | null;
   billingTotalCents?: number | null;
   reason: string;
   lines: Array<{
@@ -591,18 +589,18 @@ export async function sendAdditionalChargeRequestedEmail(args: {
   }>;
 }) {
   const portalUrl = `${getAuthUrl()}/portal/porudzbine/${args.orderId}`;
-  const totalEur = args.totalCents / 100;
+  const totalRsd = args.totalCents / 100;
   const totalLabel =
     args.billingCurrency && args.billingTotalCents != null
       ? formatEmailMoney(args.billingTotalCents, args.billingCurrency)
-      : formatEmailEur(totalEur);
+      : formatEmailRsd(totalRsd);
   const linesHtml = args.lines
     .map((line) => {
       const subtotal = (line.amountCents * line.quantity) / 100;
       const subtotalLabel =
         args.billingCurrency && line.billingSubtotalCents != null
           ? formatEmailMoney(line.billingSubtotalCents, args.billingCurrency)
-          : formatEmailEur(subtotal);
+          : formatEmailRsd(subtotal);
       return `<li>
         ${escapeHtml(line.label)}
         ${line.quantity > 1 ? ` × ${line.quantity}` : ""}
@@ -653,15 +651,15 @@ export async function sendAdditionalChargePaidEmail(args: {
   orderNumber: string;
   orderId: string;
   totalCents: number;
-  billingCurrency?: "RSD" | "EUR" | null;
+  billingCurrency?: "RSD" | null;
   billingTotalCents?: number | null;
 }) {
   const portalUrl = `${getAuthUrl()}/portal/porudzbine/${args.orderId}`;
-  const totalEur = args.totalCents / 100;
+  const totalRsd = args.totalCents / 100;
   const totalLabel =
     args.billingCurrency && args.billingTotalCents != null
       ? formatEmailMoney(args.billingTotalCents, args.billingCurrency)
-      : formatEmailEur(totalEur);
+      : formatEmailRsd(totalRsd);
 
   await send({
     to: args.to,
@@ -744,7 +742,7 @@ export async function sendVrProjectReadyEmail(args: {
   contactName: string;
   productLabel: string;
   projectName: string;
-  priceEur: number;
+  priceRsd: number;
   orderNumber: string;
   orderId: string;
   token: string;
@@ -770,7 +768,7 @@ export async function sendVrProjectReadyEmail(args: {
             <strong>Projekat:</strong> ${escapeHtml(args.projectName)}<br/>
             <strong>Usluga:</strong> ${escapeHtml(args.productLabel)}<br/>
             <strong>Broj porudžbine:</strong> ${escapeHtml(args.orderNumber)}<br/>
-            <strong>Iznos:</strong> €${args.priceEur}
+            <strong>Iznos:</strong> ${formatEmailRsd(args.priceRsd)}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
@@ -798,8 +796,7 @@ export async function sendVrProjectReadyEmail(args: {
 // customer info, order details (line items + PDV breakdown), merchant
 // info, and the bank's transaction parameters (oid, AuthCode, TransId,
 // Response, ProcReturnCode, mdStatus, EXTRA.TRXDATE, plus timestamp).
-// For EUR-billed foreign buyers a sixth block discloses the RSD
-// equivalent and rate (standard 2.1.3 "Izjava o konverziji").
+// All customer-facing amounts are RSD gross amounts.
 
 export type NestpayEmailLineItem = {
   label: string;
@@ -824,11 +821,7 @@ export type NestpayEmailCustomer = {
   address: string | null;
 };
 
-export type NestpayEmailConversion = {
-  eurAmountLabel: string;
-  rsdAmountLabel: string;
-  rate: number;
-} | null;
+export type NestpayEmailConversion = null;
 
 export type NestpayEmailTotals = {
   totalLabel: string;
@@ -917,18 +910,9 @@ function renderCustomerBlock(customer: NestpayEmailCustomer): string {
   `;
 }
 
-function renderConversionBlock(conv: NestpayEmailConversion): string {
-  if (!conv) return "";
-  return `
-    <div style="background:#fff7ed; border:1px solid #f3d6b6; border-radius:8px; padding:12px 16px; margin:16px 0;">
-      <p style="margin:0 0 6px; color:#1C1A19; font-size:13px;">
-        <strong>Izjava o konverziji</strong>
-      </p>
-      <p style="margin:0; color:#6e665d; line-height:1.55; font-size:13px;">
-        Iznos od <strong>${escapeHtml(conv.eurAmountLabel)}</strong> je naplaćen u dinarima u protivvrednosti od <strong>${escapeHtml(conv.rsdAmountLabel)}</strong> prema kursu Banca Intesa AD Beograd primenjenom na dan transakcije (~${conv.rate.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 4 })} RSD / EUR). Konverziju vrši banka izdavalac kartice.
-      </p>
-    </div>
-  `;
+function renderConversionBlock(_conv: NestpayEmailConversion): string {
+  void _conv;
+  return "";
 }
 
 function renderTotalsBlock(totals: NestpayEmailTotals): string {

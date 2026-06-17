@@ -9,7 +9,7 @@
  * Server-rendered: no auth gate. The order is looked up by oid; anyone
  * who knows the oid can see the receipt. The oid is the bank-facing
  * id and was never broadcast — they had to complete the flow to know
- * it. Same trust model as PayPal's return URL.
+ * it. Same trust model as the hosted card return URL.
  */
 import Link from "next/link";
 import { notFound } from "next/navigation";

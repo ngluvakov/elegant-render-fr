@@ -284,23 +284,22 @@ const MOBILE_LABEL_BY_TOOL: Record<AiEditType, string> = {
 
 /**
  * Lowest-tier single-purchase starting price for a tool, stored internally
- * in EUR because AI credits and checkout remain EUR-based.
+ * in RSD because AI credits and checkout are RSD-only.
  */
-function toolStartingEur(
+function toolStartingRsd(
   units: number,
   tiers: AiCreditTier[],
   unitsPerCredit: number,
 ): number {
   const sorted = [...tiers].sort((a, b) => b.minCredits - a.minCredits);
   const lowestTier = sorted[sorted.length - 1];
-  const eurPerCredit = lowestTier.centsPerCredit / 100;
-  return (units / unitsPerCredit) * eurPerCredit;
+  const rsdPerCredit = lowestTier.centsPerCredit / 100;
+  return (units / unitsPerCredit) * rsdPerCredit;
 }
 
-function publicTaxNote(displayCurrency: DisplayCurrency): string {
-  return displayCurrency === "rsd"
-    ? "RSD bruto, PDV uračunat."
-    : "EUR bez PDV-a.";
+function publicTaxNote(_displayCurrency: DisplayCurrency): string {
+  void _displayCurrency;
+  return "RSD bruto, PDV uračunat.";
 }
 
 export default async function AiStudioLandingPage() {
@@ -353,8 +352,8 @@ export default async function AiStudioLandingPage() {
                 "@type": "Offer",
                 name: item.label,
                 description: toolDetails[item.id].benefit,
-                priceCurrency: "EUR",
-                price: toolStartingEur(
+                priceCurrency: "RSD",
+                price: toolStartingRsd(
                   item.units,
                   pricingSettings.aiCreditTiers,
                   pricingSettings.aiCreditUnitsPerCredit,
@@ -416,7 +415,7 @@ function HeroContent({
   pricingSettings: PricingSettings;
 }) {
   const simpleStarting = formatPublicPrice(
-    toolStartingEur(
+    toolStartingRsd(
       1,
       pricingSettings.aiCreditTiers,
       pricingSettings.aiCreditUnitsPerCredit,
@@ -540,7 +539,7 @@ function ToolPickerGrid({
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
         {AI_EDIT_TYPES.map((item) => {
           const detail = toolDetails[item.id];
-          const startingEur = toolStartingEur(
+          const startingRsd = toolStartingRsd(
             item.units,
             pricingSettings.aiCreditTiers,
             pricingSettings.aiCreditUnitsPerCredit,
@@ -561,8 +560,8 @@ function ToolPickerGrid({
                 item.units,
                 pricingSettings.aiCreditUnitsPerCredit,
               )}
-              startingEurLabel={formatPublicPrice(
-                startingEur,
+              startingRsdLabel={formatPublicPrice(
+                startingRsd,
                 displayCurrency,
                 pricingSettings,
               )}
@@ -787,7 +786,7 @@ function ComparisonSection({
               "Treba bolji oglas za nekretninu",
               "Treba čišćenje ili stilizacija postojeće slike",
               `Cena: od ${formatPublicPrice(
-                toolStartingEur(
+                toolStartingRsd(
                   1,
                   pricingSettings.aiCreditTiers,
                   pricingSettings.aiCreditUnitsPerCredit,

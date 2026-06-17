@@ -11,7 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
-  BadgeEuro,
+  BadgeDollarSign,
   Building2,
   CheckCircle2,
   ChevronRight,
@@ -62,7 +62,7 @@ type FilterKey = "sve" | "renderi" | "osnove" | "360" | "nekretnine";
 type Service = {
   name: string;
   slug: string;
-  priceEur: number;
+  priceRsd: number;
   category: Exclude<FilterKey, "sve">;
   short: string;
   audience: string;
@@ -113,7 +113,7 @@ const SERVICES: Service[] = [
   {
     name: "Unutrašnji renderi",
     slug: "render-enterijera",
-    priceEur: 170,
+    priceRsd: 170,
     category: "renderi",
     short: "Vizuelizacija enterijera pre opremanja, renovacije ili prodaje prostora.",
     audience: "Za vlasnike stanova, arhitekte, dizajnere i manje investitore.",
@@ -126,7 +126,7 @@ const SERVICES: Service[] = [
   {
     name: "360 enterijeri",
     slug: "360-tura-enterijera",
-    priceEur: 295,
+    priceRsd: 295,
     category: "360",
     short: "Interaktivna 360 tura kroz prostor sa dodatnim statičnim uglovima kamere.",
     audience: "Za prezentacije stanova, vila, salona i ugostiteljskih prostora.",
@@ -144,7 +144,7 @@ const SERVICES: Service[] = [
   {
     name: "Spoljašnji renderi",
     slug: "spoljasnji-renderi",
-    priceEur: 250,
+    priceRsd: 250,
     category: "renderi",
     short: "Realističan prikaz kuće, zgrade ili fasade sa materijalima i okruženjem.",
     audience: "Za privatne kuće, manje stambene projekte i arhitektonske prezentacije.",
@@ -157,7 +157,7 @@ const SERVICES: Service[] = [
   {
     name: "360 eksterijeri",
     slug: "360-eksterijer",
-    priceEur: 335,
+    priceRsd: 335,
     category: "360",
     short: "VR-spreman prikaz eksterijera sa interaktivnim tačkama gledanja.",
     audience: "Za marketing prodaje kuća, vila i manjih razvojnih projekata.",
@@ -174,7 +174,7 @@ const SERVICES: Service[] = [
   {
     name: "3D prikaz ulice (streetscape)",
     slug: "3d-prikaz-ulice",
-    priceEur: 420,
+    priceRsd: 420,
     category: "renderi",
     short: "Objekat sa susednim kućama, modelovan u 3D — prikaz iz ulice (a po potrebi i iz vazduha).",
     audience: "Za objekte kod kojih je važan kontekst ulice, susedstva i parcele.",
@@ -191,7 +191,7 @@ const SERVICES: Service[] = [
   {
     name: "Uređenje pejzaža",
     slug: "uredjenje-pejzaza",
-    priceEur: 220,
+    priceRsd: 220,
     category: "renderi",
     short: "Prikaz dvorišta, vrta, parkovskog ili spoljnog uređenja sa vegetacijom i terenom.",
     audience: "Za privatne kuće, vile i projekte gde je važan spoljašnji ambijent.",
@@ -207,7 +207,7 @@ const SERVICES: Service[] = [
   {
     name: "Render u stvarnoj fotografiji lokacije",
     slug: "render-u-stvarnoj-fotografiji",
-    priceEur: 300,
+    priceRsd: 300,
     category: "renderi",
     short: "Vaš budući objekat uklopljen u stvarnu fotografiju lokacije — sa pravim okruženjem i svetlom.",
     audience: "Za dozvole, javne rasprave i prezentacije gde je važna verodostojnost lokacije.",
@@ -223,7 +223,7 @@ const SERVICES: Service[] = [
   {
     name: "3D osnove prostora",
     slug: "3d-osnove",
-    priceEur: 29,
+    priceRsd: 29,
     category: "osnove",
     short: "Top-down 3D prikaz rasporeda prostorija, nameštaja i funkcionalne organizacije.",
     audience: "Za oglase, prezentacije stanova i lakše razumevanje rasporeda.",
@@ -236,7 +236,7 @@ const SERVICES: Service[] = [
   {
     name: "2D osnove prostora",
     slug: "2d-osnove",
-    priceEur: 20,
+    priceRsd: 20,
     category: "osnove",
     short: "Čiste i pregledne 2D osnove za marketing materijale, sajtove i oglase.",
     audience: "Za agente, vlasnike stanova i prodajne prezentacije nekretnina.",
@@ -249,7 +249,7 @@ const SERVICES: Service[] = [
   {
     name: "3D site planovi",
     slug: "situacioni-planovi",
-    priceEur: 350,
+    priceRsd: 350,
     category: "osnove",
     short: "Pregled cele parcele sa objektima, pristupima, zelenilom i širim odnosom prostora.",
     audience: "Za kuće, vile, manje komplekse i prodajne brošure projekata.",
@@ -262,7 +262,7 @@ const SERVICES: Service[] = [
   {
     name: "Arhitektonska animacija",
     slug: "arhitektonska-animacija",
-    priceEur: 225,
+    priceRsd: 225,
     category: "360",
     short: "Video walkthrough i flythrough prikaz za snažniji prodajni utisak.",
     audience: "Za projekte kojima statični kadar nije dovoljan da pokaže prostor.",
@@ -276,7 +276,7 @@ const SERVICES: Service[] = [
   {
     name: "VR tura",
     slug: "vr-tura",
-    priceEur: 20,
+    priceRsd: 20,
     category: "360",
     short: "Web bazirane ture koje povezuju 360 kadrove u interaktivno iskustvo.",
     audience: "Za oglašavanje, prezentacije nekretnina i prodaju na daljinu.",
@@ -291,7 +291,7 @@ const SERVICES: Service[] = [
   {
     name: "Virtuelno opremanje prostora",
     slug: "virtuelno-opremanje",
-    priceEur: 18,
+    priceRsd: 18,
     category: "nekretnine",
     short: "Digitalno opremanje prazne prostorije na osnovu postojeće fotografije.",
     audience: "Za vlasnike nekretnina, agente i investitore koji žele bolji oglas.",
@@ -307,7 +307,7 @@ const SERVICES: Service[] = [
   {
     name: "Virtuelna renovacija prostora",
     slug: "virtuelna-renovacija",
-    priceEur: 66,
+    priceRsd: 66,
     category: "nekretnine",
     short: "Prikaz kako bi prostor izgledao nakon adaptacije i promene materijala.",
     audience: "Za kupce nekretnina, vlasnike i dizajnere koji žele jasan pre-posle scenario.",
@@ -323,7 +323,7 @@ const SERVICES: Service[] = [
   {
     name: "Dnevni u noćni prikaz",
     slug: "dnevni-u-nocni-prikaz",
-    priceEur: 10,
+    priceRsd: 10,
     category: "nekretnine",
     short: "Pretvaranje dnevne fotografije eksterijera u atraktivniji sumrak.",
     audience: "Za oglase kojima treba jači prvi utisak.",
@@ -339,7 +339,7 @@ const SERVICES: Service[] = [
   {
     name: "Uklanjanje elemenata",
     slug: "uklanjanje-predmeta",
-    priceEur: 12,
+    priceRsd: 12,
     category: "nekretnine",
     short: "Digitalno uklanjanje nereda i neželjenih objekata sa fotografije prostora.",
     audience: "Za pripremu nekretnine za oglas, izdavanje ili prezentaciju.",
@@ -533,7 +533,7 @@ export function ServicesShowcase() {
                 <span className="text-xl font-bold text-foreground">
                   Od{" "}
                   {formatPublicPrice(
-                    service.priceEur,
+                    service.priceRsd,
                     displayCurrency,
                     pricingSettings,
                   )}
@@ -660,7 +660,7 @@ export function ServicesShowcase() {
         <div className="grid gap-4 sm:grid-cols-2">
           {[
             { icon: Send, title: "1. Pošaljete materijale", text: "Fotografije, plan, skicu ili samo kratak opis." },
-            { icon: BadgeEuro, title: "2. Dobijete predlog", text: "Preporuka usluge, cena i obim koji ima smisla." },
+            { icon: BadgeDollarSign, title: "2. Dobijete predlog", text: "Preporuka usluge, cena i obim koji ima smisla." },
             { icon: Clock3, title: "3. Prikaz i korekcije", text: "Vizuelni predlog, zatim fino podešavanje." },
             { icon: CheckCircle2, title: "4. Final za oglas", text: "Isporuka spremna za prodaju ili prezentaciju." },
           ].map((step) => {

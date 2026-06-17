@@ -333,7 +333,7 @@ export async function syncPricingBookRows(
         categoryId: category.id,
         label: product.label,
         unitLabel: product.unitLabel,
-        basePriceEur: product.basePriceEur,
+        basePriceRsd: product.basePriceRsd,
         includesJson: product.includes as Prisma.InputJsonValue,
         inquiryOnly: product.inquiryOnly ?? false,
         sortOrder,
@@ -345,7 +345,7 @@ export async function syncPricingBookRows(
           addOnId: addOn.id,
           label: addOn.label,
           description: addOn.description,
-          priceEur: addOn.priceEur,
+          priceRsd: addOn.priceRsd,
           priceType: addOn.priceType,
           includedQty: addOn.includedQty,
           maxQty: Number.isFinite(addOn.maxQty) ? addOn.maxQty : null,
@@ -376,7 +376,7 @@ export async function syncPricingBookRows(
         durations.push(durationRow(bookId, product, null));
         Object.entries(product.sourceModeRules ?? {}).forEach(
           ([sourceMode, override]) => {
-            if (!override.perSecondEur) return;
+            if (!override.perSecondRsd) return;
             durations.push(durationRow(bookId, product, sourceMode));
           },
         );
@@ -394,7 +394,7 @@ export async function syncPricingBookRows(
         bookId,
         key: "global",
         valueJson: {
-          eurToRsdRate: settings.eurToRsdRate,
+          rsdRate: settings.rsdRate,
           serbiaVatRate: settings.serbiaVatRate,
           aiCreditUnitsPerCredit: settings.aiCreditUnitsPerCredit,
           aiCreditExpiresAfterMonths: settings.aiCreditExpiresAfterMonths,
@@ -428,7 +428,7 @@ function durationRow(
     minSeconds: config.minSeconds,
     defaultSeconds: config.defaultSeconds,
     maxSeconds: Number.isFinite(config.maxSeconds) ? config.maxSeconds : null,
-    perSecondEur: override?.perSecondEur ?? config.perSecondEur,
+    perSecondRsd: override?.perSecondRsd ?? config.perSecondRsd,
     discountTiersJson: config.discountTiers.map((tier) => ({
       ...tier,
       maxSec: Number.isFinite(tier.maxSec) ? tier.maxSec : null,

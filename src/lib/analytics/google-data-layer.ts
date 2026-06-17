@@ -1,14 +1,11 @@
-import {
-  PUBLIC_EUR_TO_RSD_RATE,
-  type DisplayCurrency,
-  type PublicPricingFormatSettings,
-} from "@/lib/catalog/display-currency";
+import type { DisplayCurrency } from "@/lib/catalog/display-currency";
+import type { PublicPricingFormatSettings } from "@/lib/catalog/display-currency";
 import type {
   LineItemBreakdown,
   QuoteCalculation,
 } from "@/lib/catalog/calculate";
 
-export type GoogleConversionCurrency = "EUR" | "RSD";
+export type GoogleConversionCurrency = "RSD";
 
 export type GoogleDataLayerItem = {
   item_id: string;
@@ -80,39 +77,12 @@ export function centsToDataLayerValue(cents: number): number {
   return Number((Math.max(0, Math.round(cents)) / 100).toFixed(2));
 }
 
-function publicCurrencyFromDisplay(
-  displayCurrency: DisplayCurrency,
-): GoogleConversionCurrency {
-  return displayCurrency === "rsd" ? "RSD" : "EUR";
-}
-
-function publicCentsFromEurCents(
-  eurCents: number,
-  displayCurrency: DisplayCurrency,
-  pricingSettings?: PublicPricingFormatSettings,
-): number {
-  if (displayCurrency === "eur") return Math.round(eurCents);
-  const rate = pricingSettings?.eurToRsdRate ?? PUBLIC_EUR_TO_RSD_RATE;
-  const rsd = Math.round((eurCents / 100) * rate);
-  return rsd * 100;
-}
-
-function quoteItemToDataLayerItem(
-  item: LineItemBreakdown,
-  displayCurrency: DisplayCurrency,
-  pricingSettings?: PublicPricingFormatSettings,
-): GoogleDataLayerItem {
-  const priceCents = publicCentsFromEurCents(
-    item.totalCents,
-    displayCurrency,
-    pricingSettings,
-  );
-
+function quoteItemToDataLayerItem(item: LineItemBreakdown): GoogleDataLayerItem {
   return {
     item_id: item.productId,
     item_name: item.productLabel,
     item_category: item.categoryLabel,
-    price: centsToDataLayerValue(priceCents),
+    price: centsToDataLayerValue(item.totalCents),
     quantity: 1,
     product_id: item.productId,
     item_kind: item.kind,
@@ -124,29 +94,19 @@ function quoteItemToDataLayerItem(
 
 export function buildBeginCheckoutDataLayerEvent({
   calculation,
-  displayCurrency,
-  pricingSettings,
   sourcePath,
   conversionSource = "quote_summary",
 }: BuildBeginCheckoutArgs): GoogleCommerceDataLayerEvent {
-  const currency = publicCurrencyFromDisplay(displayCurrency);
-  const valueCents = publicCentsFromEurCents(
-    calculation.totalCents,
-    displayCurrency,
-    pricingSettings,
-  );
-  const value = centsToDataLayerValue(valueCents);
+  const value = centsToDataLayerValue(calculation.totalCents);
 
   return {
     event: "er_begin_checkout",
     event_id: `begin_checkout:${Date.now()}`,
     value,
-    currency,
+    currency: "RSD",
     transaction_value: value,
-    transaction_currency: currency,
-    items: calculation.items.map((item) =>
-      quoteItemToDataLayerItem(item, displayCurrency, pricingSettings),
-    ),
+    transaction_currency: "RSD",
+    items: calculation.items.map(quoteItemToDataLayerItem),
     ...(sourcePath ? { source_path: sourcePath } : {}),
     conversion_source: conversionSource,
   };

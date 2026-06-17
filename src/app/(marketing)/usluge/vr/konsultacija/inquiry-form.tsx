@@ -45,7 +45,7 @@ import {
 type ProductOption = {
   id: VrProductId;
   label: string;
-  basePriceEur: number;
+  basePriceRsd: number;
 };
 
 type Props = {
@@ -169,7 +169,7 @@ export function VrInquiryForm({
                 <span className="text-[0.78rem] text-muted-foreground">
                   Od{" "}
                   {formatPublicPrice(
-                    p.basePriceEur,
+                    p.basePriceRsd,
                     displayCurrency,
                     pricingSettings,
                   )}{" "}

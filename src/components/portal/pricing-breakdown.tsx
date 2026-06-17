@@ -43,18 +43,18 @@ export function PricingBreakdown({
   let lineRows: ExplicitRow[];
   let total: number;
   if (breakdown) {
-    const billableAddOns = breakdown.addOns.filter((a) => a.totalEur > 0);
+    const billableAddOns = breakdown.addOns.filter((a) => a.totalRsd > 0);
     lineRows = [
-      { label: baseLabel, value: breakdown.basePriceEur },
+      { label: baseLabel, value: breakdown.basePriceRsd },
       ...billableAddOns.map((a) => ({
         label: a.billableQty > 1 ? `${a.label} × ${a.billableQty}` : a.label,
-        value: a.totalEur,
+        value: a.totalRsd,
         sub: a.isVolumeRate
-          ? `veća količina ${formatPrice(a.unitPriceEur)}/kom`
+          ? `veća količina ${formatPrice(a.unitPriceRsd)}/kom`
           : undefined,
       })),
     ];
-    total = breakdown.totalEur + extrasTotal;
+    total = breakdown.totalRsd + extrasTotal;
   } else if (rows && totalOverride !== undefined) {
     lineRows = rows;
     total = totalOverride + extrasTotal;

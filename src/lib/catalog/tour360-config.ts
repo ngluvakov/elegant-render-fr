@@ -5,9 +5,9 @@
  * cameras) and a per-item TourAssembly section.
  *
  * Prices reuse the values from the existing int-360 catalog entry so the
- * per-floor model just re-packages them: floor base €295 / extra floor
- * €205 (-30%), included 10 rooms + 10 hotspots + 10 static cameras,
- * extras €45 / €27 / €10 respectively. TourAssembly toggles are
+ * per-floor model just re-packages them: floor base 34.574 RSD / extra floor
+ * 24.026 RSD (-30%), included 10 rooms + 10 hotspots + 10 static cameras,
+ * extras 5.274 RSD / 3.164 RSD / 1.172 RSD respectively. TourAssembly toggles are
  * operational flags in v1 (no price impact).
  */
 
@@ -66,10 +66,10 @@ export {
   defaultTourAssembly,
   calcTourAssemblyCost,
   sanitizeTourAssembly,
-  TOUR_ASSEMBLY_BASE_EUR as TOUR360_ASSEMBLY_BASE_EUR,
+  TOUR_ASSEMBLY_BASE_RSD as TOUR360_ASSEMBLY_BASE_RSD,
   TOUR_ASSEMBLY_FREE_HOTSPOT_THRESHOLD as TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD,
-  TOUR_FLOOR_PLAN_NAV_EUR as TOUR360_FLOOR_PLAN_NAV_EUR,
-  TOUR_WHITE_LABEL_EUR as TOUR360_WHITE_LABEL_EUR,
+  TOUR_FLOOR_PLAN_NAV_RSD as TOUR360_FLOOR_PLAN_NAV_RSD,
+  TOUR_WHITE_LABEL_RSD as TOUR360_WHITE_LABEL_RSD,
 } from "./tour-assembly";
 export type {
   TourAssembly,
@@ -89,30 +89,30 @@ export type Tour360Config = {
   tourAssembly: TourAssembly;
 };
 
-export const TOUR360_FIRST_FLOOR_EUR = 295;
-export const TOUR360_EXTRA_FLOOR_EUR = 205;          // -30% multi-floor
+export const TOUR360_FIRST_FLOOR_RSD = 34574;
+export const TOUR360_EXTRA_FLOOR_RSD = 24026;          // -30% multi-floor
 export const TOUR360_INCLUDED_HOTSPOTS = 10;         // total hotspots / floor
 export const TOUR360_INCLUDED_CAMERAS = 10;          // static cameras / floor
-export const TOUR360_EXTRA_HOTSPOT_EUR = 27;         // 11th+ hotspot per floor
-export const TOUR360_EXTRA_CAMERA_EUR = 10;          // 11th+ static camera
+export const TOUR360_EXTRA_HOTSPOT_RSD = 3164;         // 11th+ hotspot per floor
+export const TOUR360_EXTRA_CAMERA_RSD = 1172;          // 11th+ static camera
 
 export type Tour360Pricing = {
-  firstFloorEur: number;
-  extraFloorEur: number;
+  firstFloorRsd: number;
+  extraFloorRsd: number;
   includedHotspots: number;
   includedCameras: number;
-  extraHotspotEur: number;
-  extraCameraEur: number;
+  extraHotspotRsd: number;
+  extraCameraRsd: number;
   assembly: TourAssemblyPricing;
 };
 
 export const DEFAULT_TOUR360_PRICING: Tour360Pricing = {
-  firstFloorEur: TOUR360_FIRST_FLOOR_EUR,
-  extraFloorEur: TOUR360_EXTRA_FLOOR_EUR,
+  firstFloorRsd: TOUR360_FIRST_FLOOR_RSD,
+  extraFloorRsd: TOUR360_EXTRA_FLOOR_RSD,
   includedHotspots: TOUR360_INCLUDED_HOTSPOTS,
   includedCameras: TOUR360_INCLUDED_CAMERAS,
-  extraHotspotEur: TOUR360_EXTRA_HOTSPOT_EUR,
-  extraCameraEur: TOUR360_EXTRA_CAMERA_EUR,
+  extraHotspotRsd: TOUR360_EXTRA_HOTSPOT_RSD,
+  extraCameraRsd: TOUR360_EXTRA_CAMERA_RSD,
   assembly: DEFAULT_TOUR_ASSEMBLY_PRICING,
 };
 
@@ -133,7 +133,7 @@ export type Tour360FloorCalc = {
 
 export type Tour360Calc = {
   floors: Tour360FloorCalc[];
-  totalEur: number;
+  totalRsd: number;
   floorCount: number;
   totalHotspots: number;
   assembly: TourAssemblyCalc;
@@ -157,12 +157,12 @@ export function calcTour360Floor(
   const extraHotspots = Math.max(0, totalHotspots - pricing.includedHotspots);
   const extraCameras = Math.max(0, totalCameras - pricing.includedCameras);
 
-  const extraHotspotsCost = extraHotspots * pricing.extraHotspotEur;
-  const extraCamerasCost = extraCameras * pricing.extraCameraEur;
+  const extraHotspotsCost = extraHotspots * pricing.extraHotspotRsd;
+  const extraCamerasCost = extraCameras * pricing.extraCameraRsd;
 
   const baseCost = isFirstFloor
-    ? pricing.firstFloorEur
-    : pricing.extraFloorEur;
+    ? pricing.firstFloorRsd
+    : pricing.extraFloorRsd;
 
   return {
     totalRooms,
@@ -199,7 +199,7 @@ export function calcTour360Total(
     floorCount: floors.length,
     totalHotspots,
     assembly,
-    totalEur:
+    totalRsd:
       floorCalcs.reduce((s, f) => s + f.floorTotal, 0) + assembly.totalCost,
   };
 }

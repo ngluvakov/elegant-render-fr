@@ -149,20 +149,12 @@ export default function PravnaDokumentaPage() {
           </LegalSection>
 
           <LegalSection title="4. Cene i način plaćanja">
-            <p>Cene su izražene zavisno od zemlje posetioca:</p>
-            <ul className="ml-5 list-disc space-y-2">
-              <li>
-                <strong>Posetioci iz Srbije:</strong> u dinarima (RSD), kao
-                bruto cena sa uračunatim PDV-om po stopi od 20%. RSD iznos se
-                direktno prevodi iz osnovnog EUR cenovnika po objavljenom kursu;
-                PDV se ne dodaje preko tog iznosa, već se iz njega izdvaja na
-                računu.
-              </li>
-              <li>
-                <strong>Posetioci iz drugih zemalja:</strong> u evrima (EUR),
-                bez PDV-a.
-              </li>
-            </ul>
+            <p>
+              Sve javne i obračunske cene su izražene u dinarima (RSD), kao
+              bruto cena sa uračunatim PDV-om po stopi od 20%. Ne postoji
+              različit cenovnik za posetioce iz Srbije i posetioce iz drugih
+              zemalja.
+            </p>
             <p>
               Cene su konačne za izabrani opseg posla. Dodatni rad, izmene
               obima ili nove kategorije obračunavaju se po važećem cenovniku
@@ -771,31 +763,25 @@ export default function PravnaDokumentaPage() {
                 zavisi od banke izdavaoca kartice.
               </li>
               <li>
-                Plaćanje PayPal-om → povraćaj direktno na PayPal nalog.
-                PayPal vraća sredstva najčešće odmah, ali do prikazivanja na
-                izvodu može proći do 5 radnih dana.
-              </li>
-              <li>
                 Uplata na račun → vraćamo na isti račun sa kojeg je uplata
                 stigla. Klijent dostavlja IBAN/broj računa u email odgovoru.
               </li>
             </ul>
             <p>
               U svim slučajevima povraćaj je u visini iznosa koji ste platili
-              — bez troškova obrade, osim eventualnih kursnih razlika koje
-              primenjuje banka izdavalac kartice prilikom konverzije.
+              — bez troškova obrade, osim eventualnih razlika koje vaša banka
+              može prikazati ako račun kartice vodi u drugoj valuti.
             </p>
           </LegalSection>
 
-          <LegalSection title="3. Izjava o konverziji (strani kupci)">
+          <LegalSection title="3. Napomena za kartice vezane za drugu valutu">
             <p>
               Banca Intesa AD Beograd vrši kliring transakcija u dinarima
-              (RSD). Ako vaša banka izdavalac karte vodi račun u drugoj
-              valuti (EUR, USD…), naplata se vrši kroz konverziju iznosa u
-              dinare prema kursu Banca Intesa AD Beograd na dan transakcije.
-              Pri povraćaju, banka izdavalac primenjuje važeći kurs na dan
-              povraćaja — kursne razlike između ova dva trenutka mogu uticati
-              na konačnu sumu prikazanu na vašem izvodu.
+              (RSD). Ako vaša banka izdavalac kartice vodi račun u drugoj
+              valuti, ona može prikazati sopstvenu konverziju RSD iznosa na
+              vašem izvodu. Pri povraćaju, banka izdavalac primenjuje svoja
+              pravila i važeći kurs na dan povraćaja, što može uticati na
+              konačnu sumu prikazanu na izvodu.
             </p>
           </LegalSection>
 

@@ -218,7 +218,7 @@ export const ORDERING_STEPS = [
     step: "01",
     title: "Novi ugao gledanja",
     description:
-      "Osnovni eksterijer košta €250. Svaki sledeći ugao gledanja iste zgrade je samo €48 (ušteda od 81%).",
+      "Osnovni eksterijer košta 29.300 RSD. Svaki sledeći ugao gledanja iste zgrade je samo 5.626 RSD (ušteda od 81%).",
   },
   {
     step: "02",
@@ -385,8 +385,8 @@ export function buildOrganizationJsonLd() {
       },
     ],
     areaServed: ["RS", "EU", "Worldwide"],
-    currenciesAccepted: "EUR, RSD",
-    priceRange: "€€",
+    currenciesAccepted: "RSD",
+    priceRange: "RSD",
     serviceType: [
       "Arhitektonska vizuelizacija",
       "3D renderi",

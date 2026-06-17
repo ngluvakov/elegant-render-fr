@@ -1,7 +1,7 @@
 /**
  * DtdConfigSection — Per-item configurator for the dtd-image product
  * (Dan u noć / Day-to-Dusk). Photo-count stepper drives dtd-volume
- * (€8 per extra photo). Shadow-removal toggle drives dtd-shadow (€5
+ * (938 RSD per extra photo). Shadow-removal toggle drives dtd-shadow (586 RSD
  * one-time). Rush-delivery toggle drives dtd-rush (+50% percent).
  */
 "use client";
@@ -56,8 +56,8 @@ import {
   updateDtdConfig,
 } from "@/server/actions/item-config";
 
-const DTD_PHOTO_EUR = 8;       // dtd-volume per extra photo
-const DTD_SHADOW_EUR = 5;      // dtd-shadow one-time
+const DTD_PHOTO_RSD = 938;     // dtd-volume per extra photo
+const DTD_SHADOW_RSD = 586;    // dtd-shadow one-time
 const DTD_RUSH_PERCENT = 50;   // dtd-rush +50% on item total
 
 type ItemFile = {
@@ -101,7 +101,7 @@ export function DtdConfigSection({
   const refInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const totalEur = useMemo(() => {
+  const totalRsd = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -110,7 +110,7 @@ export function DtdConfigSection({
         addOnQuantities: addOnQuantitiesFor(config),
       },
     ]);
-    return calc.items[0]?.totalEur ?? 0;
+    return calc.items[0]?.totalRsd ?? 0;
   }, [itemId, config]);
 
   useEffect(() => {
@@ -274,7 +274,7 @@ export function DtdConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalEur)}
+            {formatPrice(totalRsd)}
           </p>
         </div>
       </div>
@@ -329,7 +329,7 @@ export function DtdConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 uključena, +{formatPrice(DTD_PHOTO_EUR)} svaka sledeća
+              1 uključena, +{formatPrice(DTD_PHOTO_RSD)} svaka sledeća
             </span>
           </div>
         </div>
@@ -524,7 +524,7 @@ export function DtdConfigSection({
               <div className="flex items-center gap-2">
                 {config.shadowRemoval && (
                   <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                    +{formatPrice(DTD_SHADOW_EUR)}
+                    +{formatPrice(DTD_SHADOW_RSD)}
                   </span>
                 )}
                 <Switch

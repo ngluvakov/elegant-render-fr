@@ -30,8 +30,8 @@ export function PricingAssistantGuideContext() {
     // Total line count (incl. credits) — matches MobileQuoteBar visibility,
     // used for the bottom-bar lift and the AI's cart summary.
     cartItemCount: calculation.items.length,
-    cartTotalEur: calculation.total,
-    cartOriginalTotalEur: calculation.originalTotal,
+    cartTotalRsd: calculation.total,
+    cartOriginalTotalRsd: calculation.originalTotal,
     cartHasDiscount: calculation.originalTotal > calculation.total,
   });
 

@@ -101,8 +101,8 @@ export async function convertInquiryToOrder(
       inquiry.quoteSnapshotJson,
       catalog,
     );
-    const seedTotalEur = itemSeeds.reduce(
-      (sum, item) => sum + item.totalEur,
+    const seedTotalRsd = itemSeeds.reduce(
+      (sum, item) => sum + item.totalRsd,
       0,
     );
 
@@ -117,8 +117,8 @@ export async function convertInquiryToOrder(
           buyerType,
           companyName: inquiry.company ?? null,
           customerNote,
-          totalEur: seedTotalEur,
-          totalCents: seedTotalEur * 100,
+          totalRsd: seedTotalRsd,
+          totalCents: seedTotalRsd * 100,
           sourceInquiryId: inquiryId,
           items: {
             create: itemSeeds.map((seed) => ({
@@ -126,8 +126,8 @@ export async function convertInquiryToOrder(
               productLabel: seed.productLabel,
               categoryId: seed.categoryId,
               categoryLabel: seed.categoryLabel,
-              basePriceEur: seed.basePriceEur,
-              totalEur: seed.totalEur,
+              basePriceRsd: seed.basePriceRsd,
+              totalRsd: seed.totalRsd,
               kind: "service" as const,
               addOnsJson: [],
             })),
@@ -180,7 +180,7 @@ export async function convertInquiryToOrder(
         userId,
         actorId: admin.id,
         itemsSeeded: itemSeeds.length,
-        seedTotalEur,
+        seedTotalRsd,
         filesForwarded: forwardResult.forwarded,
         filesSkipped: forwardResult.skipped,
         fileErrors: forwardResult.errors,

@@ -4,12 +4,9 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { track } from "@/lib/posthog-events";
 import { validateBuyerInfo } from "@/lib/buyer-validation";
+import { buyerTypeForBilling } from "@/lib/billing";
 import {
-  billingCurrencyForCountry,
-  buyerTypeForBilling,
-} from "@/lib/billing";
-import {
-  eurToPublicRsd,
+  formatAsPublicRsd,
   formatPublicPrice,
   formatPublicRsdAmount,
   type PublicPricingFormatSettings,
@@ -37,18 +34,17 @@ export function StepReview() {
     (buyerInfo.buyerType === "company_rs"
       ? "RS"
       : buyerInfo.companyCountryCode);
-  const buyerCurrency = billingCurrencyForCountry(buyerCountryCode);
   const isSerbianBuyer = buyerCountryCode === "RS";
 
   const pricingSettings: PublicPricingFormatSettings | undefined = pricingCatalog
     ? {
-        eurToRsdRate: pricingCatalog.settings.eurToRsdRate,
+        rsdRate: pricingCatalog.settings.rsdRate,
         serbiaVatRate: pricingCatalog.settings.serbiaVatRate,
       }
     : undefined;
 
-  const fmt = (eur: number) =>
-    formatPublicPrice(eur, displayCurrency, pricingSettings);
+  const fmt = (rsd: number) =>
+    formatPublicPrice(rsd, displayCurrency, pricingSettings);
 
   const buyerError = useMemo(
     () => validateBuyerInfo(buyerInfo),
@@ -125,7 +121,7 @@ export function StepReview() {
     if (result.orderId && result.orderNumber) {
       track("order_created", {
         order_number: result.orderNumber,
-        total_eur: calculation.total,
+        total_rsd: calculation.total,
         item_count: calculation.items.length,
       });
       setOrderId(result.orderId);
@@ -173,12 +169,12 @@ export function StepReview() {
                     .filter((ao) => ao.billableQty > 0)
                     .map((ao) => (
                       <p key={ao.addOnId} className="mt-1 text-xs text-accent">
-                        + {ao.billableQty}× {ao.label} ({fmt(ao.totalEur)})
+                        + {ao.billableQty}× {ao.label} ({fmt(ao.totalRsd)})
                       </p>
                     ))}
                 </div>
                 <p className="flex-shrink-0 text-base font-semibold text-foreground">
-                  {fmt(item.totalEur)}
+                  {fmt(item.totalRsd)}
                 </p>
               </div>
             </div>
@@ -214,15 +210,11 @@ export function StepReview() {
           </div>
         )}
 
-        {/* Totals — currency-aware. For RS visitors we break out
-            osnovica + PDV + ukupno because that's how customers
-            (especially B2B) expect to see it. For foreign visitors
-            it's a single EUR line — the "no VAT" notice goes on the
-            issued PDF anyway. */}
+        {/* Totals: all buyers see the same RSD gross amount with PDV included. */}
         <div className="mt-8 border-t border-border/40 pt-4">
           {displayCurrency === "rsd" ? (
             <RsdTotalsBreakdown
-              totalEur={calculation.total}
+              totalRsd={calculation.total}
               settings={pricingSettings}
             />
           ) : (
@@ -244,8 +236,8 @@ export function StepReview() {
           Podaci za račun
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Određuje valutu i podatke koji će biti zaključani na računu za ovu
-          porudžbinu.
+          Određuje podatke koji će biti zaključani na računu za ovu
+          porudžbinu. Iznos je uvek u RSD.
         </p>
 
         <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -269,9 +261,7 @@ export function StepReview() {
             onChange={updateBuyerCountry}
           />
           <div className="flex items-center rounded-xl border border-border/40 bg-background/60 px-3 py-2 text-sm text-foreground">
-            {buyerCurrency === "RSD"
-              ? "Račun za Srbiju: RSD, PDV uračunat"
-              : "Račun za inostranstvo: EUR bez PDV-a"}
+            Račun: RSD, PDV uračunat
           </div>
         </div>
 
@@ -378,15 +368,15 @@ export function StepReview() {
 }
 
 function RsdTotalsBreakdown({
-  totalEur,
+  totalRsd,
   settings,
 }: {
-  totalEur: number;
+  totalRsd: number;
   settings: PublicPricingFormatSettings | undefined;
 }) {
   // RSD is the final gross price. Split VAT out of that amount so
   // checkout mirrors the invoice/proforma breakdown.
-  const grossRsd = eurToPublicRsd(totalEur, settings);
+  const grossRsd = formatAsPublicRsd(totalRsd, settings);
   const vatRate = settings?.serbiaVatRate ?? 0.2;
   const netRsd = Math.round(grossRsd / (1 + vatRate));
   const vatRsd = grossRsd - netRsd;

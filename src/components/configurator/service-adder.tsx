@@ -238,12 +238,12 @@ function ProductCard({
           <p className="text-xl font-semibold text-foreground">
             {product.durationConfig
               ? formatPublicPrice(
-                  product.durationConfig.perSecondEur,
+                  product.durationConfig.perSecondRsd,
                   displayCurrency,
                   pricingSettings,
                 )
               : formatPublicPrice(
-                  product.basePriceEur,
+                  product.basePriceRsd,
                   displayCurrency,
                   pricingSettings,
                 )}
@@ -331,9 +331,9 @@ function AnimationCard({
   const [mode, setMode] = useState<AnimSourceMode>("scratch");
   const modeMeta = ANIM_SOURCE_MODES.find((m) => m.id === mode);
   const perSec =
-    product.sourceModeRules?.[mode]?.perSecondEur ??
-    modeMeta?.perSecondEur ??
-    product.durationConfig?.perSecondEur ??
+    product.sourceModeRules?.[mode]?.perSecondRsd ??
+    modeMeta?.perSecondRsd ??
+    product.durationConfig?.perSecondRsd ??
     15;
 
   return (
@@ -383,8 +383,8 @@ function AnimationCard({
                 </span>
                 <span className="text-[0.7rem] font-bold text-accent tabular-nums">
                   {formatPublicPrice(
-                    product.sourceModeRules?.[m.id]?.perSecondEur ??
-                      m.perSecondEur,
+                    product.sourceModeRules?.[m.id]?.perSecondRsd ??
+                      m.perSecondRsd,
                     displayCurrency,
                     pricingSettings,
                   )}

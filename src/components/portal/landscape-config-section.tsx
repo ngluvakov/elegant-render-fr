@@ -3,7 +3,7 @@
  * product (Pejzažni render). Single-level config (no floors): name,
  * camera stepper (drives land-cam add-on), style, description, source +
  * site-photo uploads, an Aerial Upsell card surfaced above the advanced
- * toggle (land-aerial add-on, +€380), then the advanced collapsible
+ * toggle (land-aerial add-on, +44.536 RSD), then the advanced collapsible
  * (atmosphere / terrain / optional elements / references).
  */
 "use client";
@@ -76,7 +76,7 @@ import {
   updateLandscapeConfig,
 } from "@/server/actions/item-config";
 
-const LAND_AERIAL_PRICE_EUR = 380;
+const LAND_AERIAL_PRICE_RSD = 44536;
 
 type ItemFile = {
   id: string;
@@ -137,7 +137,7 @@ export function LandscapeConfigSection({
     ]);
     return calc.items[0]!;
   }, [itemId, config.cameraCount, config.aerialEnabled]);
-  const totalEur = breakdown.totalEur;
+  const totalRsd = breakdown.totalRsd;
 
   useEffect(() => {
     if (!editable) return;
@@ -339,7 +339,7 @@ export function LandscapeConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalEur)}
+            {formatPrice(totalRsd)}
           </p>
         </div>
       </div>
@@ -487,7 +487,7 @@ export function LandscapeConfigSection({
       )}
 
       {/* Aerial upsell — surfaced above the advanced toggle so the
-          €380 add-on is visible without expanding fine-tuning. */}
+          44.536 RSD add-on is visible without expanding fine-tuning. */}
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -500,7 +500,7 @@ export function LandscapeConfigSection({
           </div>
           {config.aerialEnabled && (
             <p className="flex-shrink-0 text-sm font-bold text-foreground tabular-nums">
-              +{formatPrice(LAND_AERIAL_PRICE_EUR)}
+              +{formatPrice(LAND_AERIAL_PRICE_RSD)}
             </p>
           )}
         </div>

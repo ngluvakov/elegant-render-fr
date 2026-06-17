@@ -109,7 +109,7 @@ export function itemRemovalProductLabel(
     : "Složeno uklanjanje";
 }
 
-export function itemRemovalAdditionalPriceEur(
+export function itemRemovalAdditionalPriceRsd(
   productId: ItemRemovalProductId,
 ): number {
   return productId === "ir-simple" ? 8 : 18;

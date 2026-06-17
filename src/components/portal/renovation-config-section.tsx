@@ -63,10 +63,10 @@ import {
   updateRenovationConfig,
 } from "@/server/actions/item-config";
 
-// Catalog prices (kept inline for the +€N hints; source of truth is
+// Catalog prices (kept inline for the +N RSD hints; source of truth is
 // configurator.ts).
-const RENO_ANGLE_EUR = 59;       // drops to €53 from 4th onward (volume rule)
-const RENO_VARIANT_EUR = 56;     // reno-room (drops to €50 from 6th onward)
+const RENO_ANGLE_RSD = 6915;     // drops to 6.212 RSD from 4th onward (volume rule)
+const RENO_VARIANT_RSD = 6563;   // reno-room (drops to 5.860 RSD from 6th onward)
 
 type ItemFile = {
   id: string;
@@ -111,7 +111,7 @@ export function RenovationConfigSection({
   const router = useRouter();
   const { formatPrice, formatPriceText } = useOrderCurrency();
 
-  const totalEur = useMemo(() => {
+  const totalRsd = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -120,7 +120,7 @@ export function RenovationConfigSection({
         addOnQuantities: addOnQuantitiesFor(config),
       },
     ]);
-    return calc.items[0]?.totalEur ?? 0;
+    return calc.items[0]?.totalRsd ?? 0;
   }, [itemId, config]);
 
   useEffect(() => {
@@ -284,7 +284,7 @@ export function RenovationConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalEur)}
+            {formatPrice(totalRsd)}
           </p>
         </div>
       </div>
@@ -689,7 +689,7 @@ export function RenovationConfigSection({
           </div>
           <p className="text-[0.7rem] text-muted-foreground">
             {formatPriceText(
-              `+€${RENO_ANGLE_EUR} po dodatnom uglu (€53 od 4. ugla nadalje)`,
+              `+${RENO_ANGLE_RSD.toLocaleString("sr-Latn-RS")} RSD po dodatnom uglu (6.212 RSD od 4. ugla nadalje)`,
             )}
           </p>
 
@@ -733,7 +733,7 @@ export function RenovationConfigSection({
           <div className="flex items-center gap-2">
             {config.variantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(RENO_VARIANT_EUR)}
+                +{formatPrice(RENO_VARIANT_RSD)}
               </span>
             )}
             <Switch

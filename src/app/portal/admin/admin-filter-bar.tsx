@@ -74,7 +74,7 @@ export function AdminFilterBar() {
         title="Filter po načinu plaćanja"
       >
         <option value="">Sva plaćanja</option>
-        <option value="online_payment">Online (PayPal/kartica)</option>
+        <option value="online_payment">Online kartica</option>
         <option value="wire_transfer">Žiro-račun (predračun)</option>
       </select>
     </div>

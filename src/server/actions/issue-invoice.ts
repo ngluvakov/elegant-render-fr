@@ -28,7 +28,7 @@ import { renderInvoicePdf, type InvoiceData } from "@/lib/invoice-pdf";
 import {
   buildInvoiceLineItem,
   buildInvoiceRecipient,
-  invoiceGrossCentsFromEurCents,
+  invoiceGrossCentsFromRsdCents,
   invoiceCurrencyForBuyer,
   invoiceVatRateForBuyer,
   isExportInvoice,
@@ -52,7 +52,7 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
     });
     if (!order) return { ok: false, reason: "order_not_found" };
 
-    // Idempotency — invoice already issued (e.g. PayPal capture
+    // Idempotency — invoice already issued (e.g. payment callback
     // retried after a transient error). Return the existing number.
     if (order.invoiceNumber) {
       return { ok: true, invoiceNumber: order.invoiceNumber };
@@ -67,12 +67,12 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
     const vatRate = invoiceVatRateForBuyer(order);
     const recipient = buildInvoiceRecipient(order);
     const items = order.items
-      .filter((it) => (it.totalCents ?? Math.round(it.totalEur * 100)) > 0)
+      .filter((it) => (it.totalCents ?? Math.round(it.totalRsd * 100)) > 0)
       .map((it) => {
-        const totalCents = it.totalCents ?? Math.round(it.totalEur * 100);
+        const totalCents = it.totalCents ?? Math.round(it.totalRsd * 100);
         return buildInvoiceLineItem({
           description: it.productLabel,
-          grossUnitCents: invoiceGrossCentsFromEurCents(totalCents, order),
+          grossUnitCents: invoiceGrossCentsFromRsdCents(totalCents, order),
           vatRate,
         });
       });
@@ -128,7 +128,7 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
           orderId,
           to: order.user.email,
           invoiceNumber: allocation.formatted,
-          totalEur: order.totalEur,
+          totalRsd: order.totalRsd,
           billingCurrency: currency,
           billingTotalCents: order.billingTotalCents,
           pdfPath: storagePath,
@@ -145,7 +145,7 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
         invoiceNumber: allocation.formatted,
         buyerType,
         currency,
-        totalEur: order.totalEur,
+        totalRsd: order.totalRsd,
         billingTotalCents: order.billingTotalCents,
         pdfPath: storagePath,
       },

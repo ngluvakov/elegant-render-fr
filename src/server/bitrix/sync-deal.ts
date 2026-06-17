@@ -19,7 +19,7 @@ export async function syncNewDeal(orderId: string) {
       user: true,
       items: {
         where: { kind: "service" },
-        select: { productLabel: true, categoryLabel: true, totalEur: true },
+        select: { productLabel: true, categoryLabel: true, totalRsd: true },
       },
     },
   });
@@ -34,7 +34,10 @@ export async function syncNewDeal(orderId: string) {
 
   const firstItem = order.items[0];
   const itemsDescription = order.items
-    .map((i) => `${i.productLabel} (${i.categoryLabel}) — €${i.totalEur}`)
+    .map(
+      (i) =>
+        `${i.productLabel} (${i.categoryLabel}) — ${i.totalRsd.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`,
+    )
     .join("\n");
 
   const stageId = orderStatusToStage(order.status as OrderStatus);
@@ -45,8 +48,8 @@ export async function syncNewDeal(orderId: string) {
       CATEGORY_ID: process.env.BITRIX24_PIPELINE_ID,
       STAGE_ID: stageId,
       CONTACT_ID: contactId,
-      OPPORTUNITY: order.premiumTotalEur ?? order.totalEur,
-      CURRENCY_ID: "EUR",
+      OPPORTUNITY: order.premiumTotalRsd ?? order.totalRsd,
+      CURRENCY_ID: "RSD",
       COMMENTS: `Portal: ${process.env.AUTH_URL}/portal/admin/porudzbine/${order.id}\n\nStavke:\n${itemsDescription}${order.customerNote ? `\n\nNapomena: ${order.customerNote}` : ""}`,
     },
   }, { entityType: "deal", entityId: orderId, direction: "outbound" });

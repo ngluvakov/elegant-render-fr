@@ -325,10 +325,10 @@ export type AiCreditTier = {
 };
 
 export const AI_CREDIT_TIERS: AiCreditTier[] = [
-  { minCredits: 100, centsPerCredit: 38 },
-  { minCredits: 50, centsPerCredit: 40 },
-  { minCredits: 25, centsPerCredit: 45 },
-  { minCredits: 1, centsPerCredit: 50 },
+  { minCredits: 100, centsPerCredit: 4500 },
+  { minCredits: 50, centsPerCredit: 4700 },
+  { minCredits: 25, centsPerCredit: 5300 },
+  { minCredits: 1, centsPerCredit: 5900 },
 ] as const;
 
 export function getAiEditType(id: AiEditType): AiEditTypeDefinition {
@@ -460,13 +460,13 @@ export function calculateAiCreditPurchase(
   };
 }
 
-export function centsToEur(cents: number): number {
+export function centsToRsd(cents: number): number {
   return cents / 100;
 }
 
 export function formatCents(cents: number): string {
   const value = cents / 100;
-  return value % 1 === 0 ? `€${value.toFixed(0)}` : `€${value.toFixed(2)}`;
+  return `${value.toLocaleString("sr-RS", { maximumFractionDigits: 0 })} RSD`;
 }
 
 export function formatCreditsFromUnits(

@@ -64,7 +64,7 @@ export function ServiceMatrixRow({
   const hasActiveDiscount =
     discount !== null && !isPreviewDiscount && cartItems.length > 0;
 
-  const originalPerUnit = product.displayPerUnitEur ?? product.basePriceEur;
+  const originalPerUnit = product.displayPerUnitRsd ?? product.basePriceRsd;
   const discountedPerUnit = discount
     ? Math.round(originalPerUnit * (1 - discount.pct / 100))
     : null;

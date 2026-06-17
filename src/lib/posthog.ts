@@ -2,7 +2,7 @@
  * posthog.ts — Server-side PostHog client + capture helper.
  *
  * Used from server actions to emit events that fire too late to be
- * captured client-side (payment_completed after PayPal capture,
+ * captured client-side (payment_completed after online card capture,
  * order_created after the DB insert, vr_inquiry_converted from the
  * admin convert action, etc.).
  *

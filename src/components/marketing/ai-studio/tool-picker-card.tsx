@@ -69,7 +69,7 @@ type Props = {
   iconName: ToolPickerIconName;
   gradient: string;
   creditsLabel: string;
-  startingEurLabel: string;
+  startingRsdLabel: string;
 };
 
 export function ToolPickerCard(props: Props) {
@@ -92,7 +92,7 @@ function BeforeAfterCard({
   iconName,
   gradient,
   creditsLabel,
-  startingEurLabel,
+  startingRsdLabel,
 }: Props) {
   const Icon = ICON_MAP[iconName];
 
@@ -123,7 +123,7 @@ function BeforeAfterCard({
         shortLabel={shortLabel}
         blurb={blurb}
         creditsLabel={creditsLabel}
-        startingEurLabel={startingEurLabel}
+        startingRsdLabel={startingRsdLabel}
       />
     </Link>
   );
@@ -140,7 +140,7 @@ function FallbackCard({
   iconName,
   gradient,
   creditsLabel,
-  startingEurLabel,
+  startingRsdLabel,
 }: Props) {
   const Icon = ICON_MAP[iconName];
   return (
@@ -172,7 +172,7 @@ function FallbackCard({
         shortLabel={shortLabel}
         blurb={blurb}
         creditsLabel={creditsLabel}
-        startingEurLabel={startingEurLabel}
+        startingRsdLabel={startingRsdLabel}
       />
     </Link>
   );
@@ -185,13 +185,13 @@ function CardFooter({
   shortLabel,
   blurb,
   creditsLabel,
-  startingEurLabel,
+  startingRsdLabel,
 }: {
   label: string;
   shortLabel: string;
   blurb: string;
   creditsLabel: string;
-  startingEurLabel: string;
+  startingRsdLabel: string;
 }) {
   return (
     <div className="flex flex-1 flex-col gap-1.5 p-4">
@@ -206,7 +206,7 @@ function CardFooter({
         <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           od{" "}
           <span className="text-base font-bold normal-case tracking-normal text-foreground">
-            {startingEurLabel}
+            {startingRsdLabel}
           </span>
         </p>
         <span className="text-[0.65rem] text-muted-foreground">

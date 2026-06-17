@@ -46,7 +46,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   addOnQuantitiesFor,
-  itemRemovalAdditionalPriceEur,
+  itemRemovalAdditionalPriceRsd,
   itemRemovalProductLabel,
   type ItemRemovalConfig,
   type ItemRemovalProductId,
@@ -106,9 +106,9 @@ export function ItemRemovalConfigSection({
   const { formatPrice } = useOrderCurrency();
 
   const isComplex = productId === "ir-complex";
-  const additionalPriceEur = itemRemovalAdditionalPriceEur(productId);
+  const additionalPriceRsd = itemRemovalAdditionalPriceRsd(productId);
 
-  const totalEur = useMemo(() => {
+  const totalRsd = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -117,7 +117,7 @@ export function ItemRemovalConfigSection({
         addOnQuantities: addOnQuantitiesFor(config, productId),
       },
     ]);
-    return calc.items[0]?.totalEur ?? 0;
+    return calc.items[0]?.totalRsd ?? 0;
   }, [itemId, productId, config]);
 
   useEffect(() => {
@@ -285,7 +285,7 @@ export function ItemRemovalConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalEur)}
+            {formatPrice(totalRsd)}
           </p>
         </div>
       </div>
@@ -339,7 +339,7 @@ export function ItemRemovalConfigSection({
             <Plus className="h-3.5 w-3.5" />
           </button>
           <span className="ml-2 text-[0.7rem] text-muted-foreground">
-            1 uključena, +{formatPrice(additionalPriceEur)} svaka sledeća
+            1 uključena, +{formatPrice(additionalPriceRsd)} svaka sledeća
           </span>
         </div>
       </div>

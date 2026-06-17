@@ -9,7 +9,7 @@
  */
 
 /*
-  Pricing sourced from docs/pricing/pillar-1-extracted.md (White Rook Model-First Pricing, Pillar 1, EUR).
+  Pricing sourced from the RSD catalog derived from docs/pricing/pillar-1-extracted.md.
   Do not invent tier names, bundle prices, or math that does not appear in the PDF.
   Some services have multiple variants (e.g. Static vs 360 Interior); others have a single variant.
 */
@@ -24,9 +24,9 @@ export type ServiceCategory =
 export type PricingVariant = {
   id: string;
   title: string;
-  /** Whole-euro amount, used for comparisons and starting-from displays. */
+  /** Whole-dinar amount, used for comparisons and starting-from displays. */
   basePrice: number;
-  /** Human price label — may include unit suffix (e.g. "€15/sec"). */
+  /** Human price label — may include unit suffix (e.g. "1.758 RSD/sec"). */
   priceLabel: string;
   /** Per-unit basis (e.g. "osnovni paket po spratu", "prvi kadar"). */
   unitLabel: string;
@@ -39,7 +39,7 @@ export type PricingVariant = {
   /** Optional caveat or rule the customer should see. */
   note?: string;
   /** Optional price breakdown shown right under the price headline (e.g.
-   *  "Render eksterijera €250 + Fotomontaža €50"). Renders as a muted
+   *  "Render eksterijera 29.300 RSD + Fotomontaža 5.860 RSD"). Renders as a muted
    *  annotation, currency-aware via formatPublicPriceText. */
   decomposition?: string;
   /** Override the category used to build the configurator deep-link. Set on
@@ -123,9 +123,9 @@ export type Service = {
    *  on /usluge — distinct from home (3:2 thumbnail) and detail (16:9
    *  hero) so each surface has its own visual identity. */
   listingAsset?: string;
-  /** Plain-language line that shows next to "od €X" everywhere a price
+  /** Plain-language line that shows next to "od X RSD" everywhere a price
    *  is displayed (picker, services grid, hero chip). Anchors the price
-   *  to the quantity it covers so customers don't read €170 as "one
+   *  to the quantity it covers so customers don't read 19.924 RSD as "one
    *  render" when it's actually "whole floor + unlimited renders". */
   priceContext?: string;
   /** Optional list of target customer segments shown as "Idealno za:"
@@ -247,7 +247,7 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-unutrasnji-renderi.webp",
     detailAsset: "/artwork/detail-unutrasnji-renderi.webp",
     philosophy:
-      "Najveći deo posla je izrada 3D modela — gradimo ga jednom i naplaćujemo jednom. Nakon toga svaki novi ugao, promena nameštaja ili doba dana kreće od €10, ne od pune cene rendera. Tako planirate marketing budžet u sezoni pre-prodaje bez neprijatnih iznenađenja.",
+      "Najveći deo posla je izrada 3D modela — gradimo ga jednom i naplaćujemo jednom. Nakon toga svaki novi ugao, promena nameštaja ili doba dana kreće od 1.172 RSD, ne od pune cene rendera. Tako planirate marketing budžet u sezoni pre-prodaje bez neprijatnih iznenađenja.",
     priceContext:
       "Ceo sprat — 10 statičkih rendera enterijera + tlocrt sprata.",
     forSegments: [
@@ -261,33 +261,33 @@ export const SERVICES: Service[] = [
         id: "interior-static",
         title: "Klasični prikaz — po spratu",
         basePrice: 170,
-        priceLabel: "€170",
+        priceLabel: "19.924 RSD",
         unitLabel: "ceo sprat — 10 statičkih rendera",
         description:
           "Najjača kombinacija za prospekt i prezentaciju investitorskih jedinica — jedna investicija pokriva ceo sprat: 10 statičkih rendera + tlocrt.",
         included:
-          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje 10 statičkih rendera enterijera i tlocrt sprata. Svaki sledeći sprat: €120 (30% jeftiniji).",
+          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje 10 statičkih rendera enterijera i tlocrt sprata. Svaki sledeći sprat: 14.064 RSD (30% jeftiniji).",
         addOns: [
-          "11. i svaka sledeća opremljena soba: €28",
-          "Dodatni ugao kamere u postojećoj sobi: €10",
-          "Dodatni sprat: €120 (30% popust)",
+          "11. i svaka sledeća opremljena soba: 3.282 RSD",
+          "Dodatni ugao kamere u postojećoj sobi: 1.172 RSD",
+          "Dodatni sprat: 14.064 RSD (30% popust)",
         ],
       },
       {
         id: "interior-360",
         title: "Interaktivna 360 tura — po spratu",
         basePrice: 295,
-        priceLabel: "€295",
+        priceLabel: "34.574 RSD",
         unitLabel: "ceo sprat u 360 turi",
         description:
           "Kupac obilazi prostor mišem kao u igri — savršeno za online prezentaciju nekretnine i remote pre-prodaju.",
         included:
           "Do 10 interaktivnih soba u 360 turi (klijent ulazi i obilazi prostor) + 10 dodatnih statičkih uglova kamere + tlocrt sprata.",
         addOns: [
-          "11. i svaka sledeća interaktivna soba: €45",
-          "Dodatna interaktivna tačka u postojećoj sobi: €27",
-          "Dodatni statički ugao kamere: €10",
-          "Dodatni sprat (360 tura): €205 (30% popust)",
+          "11. i svaka sledeća interaktivna soba: 5.274 RSD",
+          "Dodatna interaktivna tačka u postojećoj sobi: 3.164 RSD",
+          "Dodatni statički ugao kamere: 1.172 RSD",
+          "Dodatni sprat (360 tura): 24.026 RSD (30% popust)",
         ],
       },
     ],
@@ -301,7 +301,7 @@ export const SERVICES: Service[] = [
     icon: "home",
     tagline: "Pokažite kupcima dom još pre nego što počnu radovi.",
     description:
-      "Fotorealistični prikaz svake prostorije budućeg stana ili kuće — sa tačnim materijalima, rasporedom nameštaja i prirodnim svetlom. €170 pokriva ceo sprat — 10 statičkih rendera enterijera + tlocrt sprata. Prodajte off-plan jedinicu kupcu koji vidi tačno šta dobija.",
+      "Fotorealistični prikaz svake prostorije budućeg stana ili kuće — sa tačnim materijalima, rasporedom nameštaja i prirodnim svetlom. 19.924 RSD pokriva ceo sprat — 10 statičkih rendera enterijera + tlocrt sprata. Prodajte off-plan jedinicu kupcu koji vidi tačno šta dobija.",
     highlight:
       "Pravi izbor za prospekt off-plan jedinica, klijentske prezentacije izbora materijala i marketing pred otvaranje prodaje.",
     materials:
@@ -313,9 +313,9 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-interior-static-before.webp",
     detailAfterAsset: "/artwork/problem-interior-static-after.webp",
     philosophy:
-      "Najveći deo posla je izrada 3D modela sprata — gradimo ga jednom i naplaćujemo jednom. Posle toga svaki novi ugao iste sobe je €10, dodatna soba na istom spratu €28, drugi sprat €120 (30% jeftinije). Tako planirate marketing budžet u sezoni pre-prodaje bez iznenađenja.",
+      "Najveći deo posla je izrada 3D modela sprata — gradimo ga jednom i naplaćujemo jednom. Posle toga svaki novi ugao iste sobe je 1.172 RSD, dodatna soba na istom spratu 3.282 RSD, drugi sprat 14.064 RSD (30% jeftinije). Tako planirate marketing budžet u sezoni pre-prodaje bez iznenađenja.",
     priceContext:
-      "€170 — ceo sprat: 10 statičkih rendera enterijera + tlocrt sprata.",
+      "19.924 RSD — ceo sprat: 10 statičkih rendera enterijera + tlocrt sprata.",
     forSegments: [
       "Investitori (multi-unit pre-prodaja)",
       "Arhitekte enterijera (klijentske prezentacije)",
@@ -340,7 +340,7 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "Jedan paket pokriva ceo sprat",
-        body: "€170 obuhvata 10 statičkih rendera enterijera + tlocrt sprata. Po renderu to izlazi €17 — kategorijski jeftinije od pojedinačnog naručivanja.",
+        body: "19.924 RSD obuhvata 10 statičkih rendera enterijera + tlocrt sprata. Po renderu to izlazi 1.992 RSD — kategorijski jeftinije od pojedinačnog naručivanja.",
       },
     ],
     processSteps: [
@@ -381,12 +381,12 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €170?",
-        a: "Kompletan 3D model jednog sprata sa 10 statičkih rendera enterijera i tlocrtom sprata. Svaki sledeći sprat: €120 (30% jeftinije). 11. soba na istom spratu: €28.",
+        q: "Šta tačno dobijam za 19.924 RSD?",
+        a: "Kompletan 3D model jednog sprata sa 10 statičkih rendera enterijera i tlocrtom sprata. Svaki sledeći sprat: 14.064 RSD (30% jeftinije). 11. soba na istom spratu: 3.282 RSD.",
       },
       {
         q: "Razlika u odnosu na pojedinačnu sobu kod konkurencije?",
-        a: "Standardno tržište naplaćuje po sobi. Mi naplaćujemo po spratu — €170 za 10 statičkih rendera. Po renderu to izlazi €17. Logika je da je model već izgrađen kad pređemo iz sobe u sobu — naplata jednom umesto deset puta.",
+        a: "Standardno tržište naplaćuje po sobi. Mi naplaćujemo po spratu — 19.924 RSD za 10 statičkih rendera. Po renderu to izlazi 1.992 RSD. Logika je da je model već izgrađen kad pređemo iz sobe u sobu — naplata jednom umesto deset puta.",
       },
       {
         q: "Mogu li kasnije da menjam materijale ili nameštaj?",
@@ -410,16 +410,16 @@ export const SERVICES: Service[] = [
         id: "interior-static",
         title: "Klasični prikaz — po spratu",
         basePrice: 170,
-        priceLabel: "€170",
+        priceLabel: "19.924 RSD",
         unitLabel: "ceo sprat — 10 statičkih rendera",
         description:
           "Jedna porudžbina pokriva ceo sprat: 10 statičkih rendera + tlocrt. Svaki sledeći sprat 30% jeftiniji.",
         included:
-          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje 10 statičkih rendera enterijera i tlocrt sprata. Svaki sledeći sprat: €120 (30% jeftiniji).",
+          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje 10 statičkih rendera enterijera i tlocrt sprata. Svaki sledeći sprat: 14.064 RSD (30% jeftiniji).",
         addOns: [
-          "11. i svaka sledeća opremljena soba: €28",
-          "Dodatni ugao kamere u postojećoj sobi: €10",
-          "Dodatni sprat: €120 (30% popust)",
+          "11. i svaka sledeća opremljena soba: 3.282 RSD",
+          "Dodatni ugao kamere u postojećoj sobi: 1.172 RSD",
+          "Dodatni sprat: 14.064 RSD (30% popust)",
         ],
       },
     ],
@@ -433,7 +433,7 @@ export const SERVICES: Service[] = [
     icon: "home",
     tagline: "Kupac obilazi stan iz fotelje — pre nego što je sagrađen.",
     description:
-      "Interaktivna 360 tura kroz ceo sprat. Klijent otvara link u pretraživaču ili VR uređaju, prelazi iz sobe u sobu, sam istražuje raspored i materijale. €295 pokriva do 10 interaktivnih soba + 10 dodatnih statičkih uglova kamere + tlocrt sprata.",
+      "Interaktivna 360 tura kroz ceo sprat. Klijent otvara link u pretraživaču ili VR uređaju, prelazi iz sobe u sobu, sam istražuje raspored i materijale. 34.574 RSD pokriva do 10 interaktivnih soba + 10 dodatnih statičkih uglova kamere + tlocrt sprata.",
     highlight:
       "Prezentacija za udaljenog kupca i odluku bez termina za pokazivanje uživo — investitori za off-plan, agencije za remote kupovinu.",
     materials:
@@ -448,9 +448,9 @@ export const SERVICES: Service[] = [
     detailEmbedSrc:
       "https://kuula.co/share/collection/71kZD?logo=1&info=0&logosize=40&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=2",
     philosophy:
-      "Najveći deo posla je izrada 3D modela sprata — gradimo ga jednom i naplaćujemo jednom. Posle toga svaka dodatna interaktivna tačka u istoj sobi je €27, dodatna soba €45, dodatni statički ugao €10, drugi sprat €205 (30% jeftinije). Tako kompletan obilazak ulazi u realan investitorski budžet.",
+      "Najveći deo posla je izrada 3D modela sprata — gradimo ga jednom i naplaćujemo jednom. Posle toga svaka dodatna interaktivna tačka u istoj sobi je 3.164 RSD, dodatna soba 5.274 RSD, dodatni statički ugao 1.172 RSD, drugi sprat 24.026 RSD (30% jeftinije). Tako kompletan obilazak ulazi u realan investitorski budžet.",
     priceContext:
-      "€295 — ceo sprat u 360 turi sa do 10 interaktivnih soba + 10 statičkih uglova + tlocrt.",
+      "34.574 RSD — ceo sprat u 360 turi sa do 10 interaktivnih soba + 10 statičkih uglova + tlocrt.",
     forSegments: [
       "Investitori (off-plan pre-prodaja)",
       "Agencije nekretnina (remote demo)",
@@ -475,7 +475,7 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "Jedan paket pokriva ceo sprat",
-        body: "€295 obuhvata do 10 interaktivnih soba i 10 statičkih uglova. Po sobi to izlazi ispod €30 — manje od pojedinačnog 360 rendera kod konkurencije.",
+        body: "34.574 RSD obuhvata do 10 interaktivnih soba i 10 statičkih uglova. Po sobi to izlazi ispod 3.516 RSD — manje od pojedinačnog 360 rendera kod konkurencije.",
       },
     ],
     processSteps: [
@@ -520,11 +520,11 @@ export const SERVICES: Service[] = [
         a: "Šaljemo link i embed kod. Klijent otvara kroz pretraživač — bez instalacije i bez naloga. Radi na telefonu, računaru i Meta Quest VR uređaju (VR mod je ugrađen u turu).",
       },
       {
-        q: "Šta tačno dobijam za €295?",
-        a: "Kompletan 3D model jednog sprata sa do 10 interaktivnih soba u 360 turi, dodatnih 10 statičkih uglova kamere i tlocrt sprata. 11. i svaka sledeća interaktivna soba: €45. Dodatna interaktivna tačka: €27. Dodatni statički ugao: €10. Sledeći sprat: €205 (30% popust).",
+        q: "Šta tačno dobijam za 34.574 RSD?",
+        a: "Kompletan 3D model jednog sprata sa do 10 interaktivnih soba u 360 turi, dodatnih 10 statičkih uglova kamere i tlocrt sprata. 11. i svaka sledeća interaktivna soba: 5.274 RSD. Dodatna interaktivna tačka: 3.164 RSD. Dodatni statički ugao: 1.172 RSD. Sledeći sprat: 24.026 RSD (30% popust).",
       },
       {
-        q: "Razlika u odnosu na statički render enterijera (€170)?",
+        q: "Razlika u odnosu na statički render enterijera (19.924 RSD)?",
         a: "Statički render daje fiksne uglove kamere — kupac vidi sliku iz jedne pozicije. 360 tura povezuje sve sobe u prolaz — kupac sam ulazi u prostor, rotira pogled, prelazi između tačaka. Različita namena, ne alternative.",
       },
       {
@@ -545,17 +545,17 @@ export const SERVICES: Service[] = [
         id: "interior-360",
         title: "Interaktivna 360 tura — po spratu",
         basePrice: 295,
-        priceLabel: "€295",
+        priceLabel: "34.574 RSD",
         unitLabel: "ceo sprat u 360 turi",
         description:
           "Kupac obilazi prostor mišem kao u igri — savršeno za online prezentaciju nekretnine i remote pre-prodaju.",
         included:
           "Do 10 interaktivnih soba u 360 turi (klijent ulazi i obilazi prostor) + 10 dodatnih statičkih uglova kamere + tlocrt sprata.",
         addOns: [
-          "11. i svaka sledeća interaktivna soba: €45",
-          "Dodatna interaktivna tačka u postojećoj sobi: €27",
-          "Dodatni statički ugao kamere: €10",
-          "Dodatni sprat (360 tura): €205 (30% popust)",
+          "11. i svaka sledeća interaktivna soba: 5.274 RSD",
+          "Dodatna interaktivna tačka u postojećoj sobi: 3.164 RSD",
+          "Dodatni statički ugao kamere: 1.172 RSD",
+          "Dodatni sprat (360 tura): 24.026 RSD (30% popust)",
         ],
       },
     ],
@@ -570,7 +570,7 @@ export const SERVICES: Service[] = [
     hideFromMenu: true,
     tagline: "Prodajte zgradu pre nego što počnu radovi.",
     description:
-      "Realistični prikazi fasada, kuća i poslovnih objekata — za prospekt, dozvolu, oglas ili klijentsku prezentaciju. Cena pokriva izradu kompletnog 3D modela objekta i prvi render. Pošto je model već izgrađen, svaki sledeći ugao kamere koji koristi istu stranu zgrade košta samo €48 — 80% jeftinije.",
+      "Realistični prikazi fasada, kuća i poslovnih objekata — za prospekt, dozvolu, oglas ili klijentsku prezentaciju. Cena pokriva izradu kompletnog 3D modela objekta i prvi render. Pošto je model već izgrađen, svaki sledeći ugao kamere koji koristi istu stranu zgrade košta samo 5.626 RSD — 80% jeftinije.",
     highlight:
       "Najpogodnije za investitore koji rade pre-prodaju, arhitekte koji predstavljaju projekat klijentu i kuće u izgradnji koje treba reklamirati.",
     materials:
@@ -578,9 +578,9 @@ export const SERVICES: Service[] = [
     asset: "/artwork/expert-spoljasnji-renderi.webp",
     detailAsset: "/artwork/detail-spoljasnji-renderi.webp",
     philosophy:
-      "Najveći trošak je izrada 3D modela zgrade — gradimo ga jednom, a svaki sledeći ugao iz iste strane modela je €48 (80% jeftiniji). Doplata postoji samo ako kadar zahteva geometriju neviđene strane objekta. Tako pakovanje od 4-5 rendera ulazi u realan investicioni budžet, a ne traži novu porudžbinu po svakom kadru.",
+      "Najveći trošak je izrada 3D modela zgrade — gradimo ga jednom, a svaki sledeći ugao iz iste strane modela je 5.626 RSD (80% jeftiniji). Doplata postoji samo ako kadar zahteva geometriju neviđene strane objekta. Tako pakovanje od 4-5 rendera ulazi u realan investicioni budžet, a ne traži novu porudžbinu po svakom kadru.",
     priceContext:
-      "Pun 3D model objekta + prvi render. Sledeći ugao iste strane: €48 (80% jeftiniji).",
+      "Pun 3D model objekta + prvi render. Sledeći ugao iste strane: 5.626 RSD (80% jeftiniji).",
     forSegments: [
       "Investitori (pre-prodaja jedinica)",
       "Arhitekte (prezentacije klijentu)",
@@ -659,8 +659,8 @@ export const SERVICES: Service[] = [
         a: "AI alati su dobri za inspiraciju, ali ne mogu da naprave precizan prikaz Vašeg specifičnog objekta na osnovu DWG/PDF nacrta. Naši renderi su tehnički tačni — svaki prozor, materijal i proporcija odgovaraju realnoj građevini, što je presudno kada prodajete nekretninu.",
       },
       {
-        q: "Da li je €250 cena za jednu sliku?",
-        a: "€250 pokriva izgradnju kompletnog 3D modela Vaše zgrade i prvi finalni render. Pošto je model već napravljen, svaki sledeći ugao iste strane objekta košta samo €48 — 80% jeftiniji. Na primer, četiri ugla istog objekta su €394 ukupno (€250 + 3 × €48).",
+        q: "Da li je 29.300 RSD cena za jednu sliku?",
+        a: "29.300 RSD pokriva izgradnju kompletnog 3D modela Vaše zgrade i prvi finalni render. Pošto je model već napravljen, svaki sledeći ugao iste strane objekta košta samo 5.626 RSD — 80% jeftiniji. Na primer, četiri ugla istog objekta su 46.177 RSD ukupno (29.300 RSD + 3 × 5.626 RSD).",
       },
       {
         q: "Šta treba da dostavim da biste počeli?",
@@ -668,7 +668,7 @@ export const SERVICES: Service[] = [
       },
       {
         q: "Da li radite i porodične kuće, ili samo velike projekte?",
-        a: "Radimo projekte svih veličina — od porodičnih kuća do stambenih kompleksa i poslovnih objekata. Cena modela i prvog ugla je ista: €250.",
+        a: "Radimo projekte svih veličina — od porodičnih kuća do stambenih kompleksa i poslovnih objekata. Cena modela i prvog ugla je ista: 29.300 RSD.",
       },
     ],
     variants: [
@@ -676,14 +676,14 @@ export const SERVICES: Service[] = [
         id: "exterior-static",
         title: "Klasični prikaz fasade",
         basePrice: 250,
-        priceLabel: "€250",
+        priceLabel: "29.300 RSD",
         unitLabel: "3D model + prvi render",
         description:
           "Ulazna tačka za prospekt: pun 3D model zgrade i prvi finalni render. Svaki sledeći ugao 80% jeftiniji.",
         included:
-          "Izgradnja punog 3D modela objekta, postavljanje scene, osvetljenja, materijala i 1 finalni render (ugao kamere). Sledeći ugao iste strane: samo €48.",
+          "Izgradnja punog 3D modela objekta, postavljanje scene, osvetljenja, materijala i 1 finalni render (ugao kamere). Sledeći ugao iste strane: samo 5.626 RSD.",
         addOns: [
-          "Dodatni ugao kamere iste strane objekta: €48 (80% popust)",
+          "Dodatni ugao kamere iste strane objekta: 5.626 RSD (80% popust)",
           "Doplata za neviđenu stranu objekta: +25% jednom po modelu",
         ],
         note: "Doplata za neviđenu stranu naplaćuje se jednom; nakon nje svi naredni uglovi ulaze u standardnu dodatnu cenu.",
@@ -692,23 +692,23 @@ export const SERVICES: Service[] = [
         id: "exterior-360",
         title: "Interaktivna 360 panorama",
         basePrice: 335,
-        priceLabel: "€335",
+        priceLabel: "39.262 RSD",
         unitLabel: "3D model + prva 360 panorama",
         description:
           "Klijent se okreće oko zgrade mišem ili VR uređajem. Idealno za remote prezentacije i online prospekt.",
         included:
           "Pun 3D model objekta + prva interaktivna 360 panorama spremna za VR uređaje (Meta Quest itd.).",
         addOns: [
-          "Dodatna interaktivna tačka, ista strana modela: €48",
-          "Dodatna tačka koja zahteva neviđenu stranu: €60",
-          "Za 5+ dodatnih tačaka: €53 po tački (popust na količinu)",
+          "Dodatna interaktivna tačka, ista strana modela: 5.626 RSD",
+          "Dodatna tačka koja zahteva neviđenu stranu: 7.032 RSD",
+          "Za 5+ dodatnih tačaka: 6.212 RSD po tački (popust na količinu)",
         ],
       },
       {
         id: "exterior-aerial",
         title: "3D prikaz ulice (streetscape)",
         basePrice: 420,
-        priceLabel: "€420",
+        priceLabel: "49.224 RSD",
         unitLabel: "objekat + okruženje, ulična ili vazdušna perspektiva",
         description:
           "Objekat sa susednim kućama modelovan u 3D — ulična perspektiva ili pogled iz vazduha. Za kontekst ulice, parcele i investitorske prezentacije.",
@@ -736,9 +736,9 @@ export const SERVICES: Service[] = [
     detailEmbedSrc:
       "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     philosophy:
-      "Najveći trošak je izgradnja 3D modela. Cena €335 pokriva pun model i prvu interaktivnu 360 panoramu. Svaka sledeća tačka iz iste strane modela: €48 (80% jeftinije). Tačka koja zahteva neviđenu stranu: €60 jednokratno. Za 5+ tačaka popust pada na €53 po tački — kompletan obilazak objekta ulazi u realan investitorski budžet.",
+      "Najveći trošak je izgradnja 3D modela. Cena 39.262 RSD pokriva pun model i prvu interaktivnu 360 panoramu. Svaka sledeća tačka iz iste strane modela: 5.626 RSD (80% jeftinije). Tačka koja zahteva neviđenu stranu: 7.032 RSD jednokratno. Za 5+ tačaka popust pada na 6.212 RSD po tački — kompletan obilazak objekta ulazi u realan investitorski budžet.",
     priceContext:
-      "€335 — pun 3D model + prva 360 panorama spremna za VR. Sledeća tačka iste strane: €48.",
+      "39.262 RSD — pun 3D model + prva 360 panorama spremna za VR. Sledeća tačka iste strane: 5.626 RSD.",
     forSegments: [
       "Investitori (off-plan pre-prodaja)",
       "Agencije nekretnina (remote demo)",
@@ -764,7 +764,7 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "Niža cena od fizičke makete",
-        body: "Pun 3D model i interaktivna panorama za €335. Fizička maketa istog objekta košta višestruko više i ne može da se menja kad arhitekta promeni materijal.",
+        body: "Pun 3D model i interaktivna panorama za 39.262 RSD. Fizička maketa istog objekta košta višestruko više i ne može da se menja kad arhitekta promeni materijal.",
       },
     ],
     processSteps: [
@@ -809,12 +809,12 @@ export const SERVICES: Service[] = [
         a: "Šaljemo link i embed kod. Klijent otvara kroz pretraživač — bez instalacije i bez naloga. Radi na telefonu, računaru i Meta Quest VR uređaju (VR mod je ugrađen u panoramu).",
       },
       {
-        q: "Šta tačno uključuje cena od €335?",
-        a: "Pun 3D model objekta i prva interaktivna 360 panorama spremna za VR. Svaka dodatna tačka gledanja iz iste strane modela: €48. Tačka koja zahteva neviđenu stranu: €60 (jednokratno). Za 5+ dodatnih tačaka: €53 po tački.",
+        q: "Šta tačno uključuje cena od 39.262 RSD?",
+        a: "Pun 3D model objekta i prva interaktivna 360 panorama spremna za VR. Svaka dodatna tačka gledanja iz iste strane modela: 5.626 RSD. Tačka koja zahteva neviđenu stranu: 7.032 RSD (jednokratno). Za 5+ dodatnih tačaka: 6.212 RSD po tački.",
       },
       {
         q: "Razlika u odnosu na klasični render?",
-        a: "Klasični spoljašnji render (€250) je jedna slika iz jednog ugla. 360 panorama (€335) je interaktivan prikaz kroz koji klijent sam prolazi — 360° pogled iz tačke, sa mogućnošću dodavanja više tačaka po objektu.",
+        a: "Klasični spoljašnji render (29.300 RSD) je jedna slika iz jednog ugla. 360 panorama (39.262 RSD) je interaktivan prikaz kroz koji klijent sam prolazi — 360° pogled iz tačke, sa mogućnošću dodavanja više tačaka po objektu.",
       },
       {
         q: "Da li radi u VR headset-u?",
@@ -834,16 +834,16 @@ export const SERVICES: Service[] = [
         id: "exterior-360",
         title: "Interaktivna 360 panorama",
         basePrice: 335,
-        priceLabel: "€335",
+        priceLabel: "39.262 RSD",
         unitLabel: "3D model + prva 360 panorama",
         description:
           "Klijent se okreće oko zgrade mišem ili VR uređajem. Idealno za remote prezentacije i online prospekt.",
         included:
           "Pun 3D model objekta + prva interaktivna 360 panorama spremna za VR uređaje (Meta Quest itd.).",
         addOns: [
-          "Dodatna interaktivna tačka, ista strana modela: €48",
-          "Dodatna tačka koja zahteva neviđenu stranu: €60",
-          "Za 5+ dodatnih tačaka: €53 po tački (popust na količinu)",
+          "Dodatna interaktivna tačka, ista strana modela: 5.626 RSD",
+          "Dodatna tačka koja zahteva neviđenu stranu: 7.032 RSD",
+          "Za 5+ dodatnih tačaka: 6.212 RSD po tački (popust na količinu)",
         ],
       },
     ],
@@ -857,7 +857,7 @@ export const SERVICES: Service[] = [
     icon: "camera",
     tagline: "Vaš objekat na ulici, iz svakog ugla koji Vam treba.",
     description:
-      "3D prikaz ulice (streetscape) (€420) modeluje celo okruženje — susedne kuće, ulicu i parcelu — i prikazuje Vaš objekat primarno iz ulične perspektive, a po potrebi i iz vazduha. Pravi izbor kada lokacija još ne postoji, teško je dostupna ili trebate slobodan izbor ugla. Za lokacije koje postoje i mogu se fotografisati postoji jeftiniji metod — render u stvarnoj fotografiji od €300.",
+      "3D prikaz ulice (streetscape) (49.224 RSD) modeluje celo okruženje — susedne kuće, ulicu i parcelu — i prikazuje Vaš objekat primarno iz ulične perspektive, a po potrebi i iz vazduha. Pravi izbor kada lokacija još ne postoji, teško je dostupna ili trebate slobodan izbor ugla. Za lokacije koje postoje i mogu se fotografisati postoji jeftiniji metod — render u stvarnoj fotografiji od 35.160 RSD.",
     highlight:
       "Prava prezentacija lokacije i konteksta — za urbanističku dozvolu, board prezentacije i investitorske ponude.",
     materials:
@@ -868,9 +868,9 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-streetscape-before.webp",
     detailAfterAsset: "/artwork/problem-streetscape-after.webp",
     philosophy:
-      "Cena od €420 pokriva izgradnju punog 3D modela objekta i modelovanog okruženja, sa dva ugla uključena. Pošto je model već izgrađen, svaki sledeći ugao košta €48 — 80% jeftinije. Neviđena ili zadnja strana objekta dodaje se jednom (+25%, €105). Nema naknadnih iznenađenja — sve je javno u cenovniku.",
+      "Cena od 49.224 RSD pokriva izgradnju punog 3D modela objekta i modelovanog okruženja, sa dva ugla uključena. Pošto je model već izgrađen, svaki sledeći ugao košta 5.626 RSD — 80% jeftinije. Neviđena ili zadnja strana objekta dodaje se jednom (+25%, 12.306 RSD). Nema naknadnih iznenađenja — sve je javno u cenovniku.",
     priceContext:
-      "€420 — pun 3D model objekta + okruženja + prvi prikaz. Sledeći ugao: €48.",
+      "49.224 RSD — pun 3D model objekta + okruženja + prvi prikaz. Sledeći ugao: 5.626 RSD.",
     forSegments: [
       "Developeri (masterplani)",
       "Investitori (parcele i kompleksi)",
@@ -895,7 +895,7 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "Kompletna prezentacija u jednoj porudžbini",
-        body: "Ulična perspektiva za prospekt, vazdušni ugao za board prezentaciju, zadnja strana za regulatorni materijal — sve iz istog modela. Svaki sledeći ugao €48.",
+        body: "Ulična perspektiva za prospekt, vazdušni ugao za board prezentaciju, zadnja strana za regulatorni materijal — sve iz istog modela. Svaki sledeći ugao 5.626 RSD.",
       },
     ],
     processSteps: [
@@ -936,15 +936,15 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €420?",
-        a: "Pun 3D model Vašeg objekta i modelovanog okruženja (susedne kuće, ulica, parcela), primarno iz ulične perspektive — sa 2 ugla uključena. Svaki sledeći ugao: €48. Neviđena/zadnja strana objekta: +25% (€105), jednokratno. Tri runde revizije su uključene.",
+        q: "Šta tačno dobijam za 49.224 RSD?",
+        a: "Pun 3D model Vašeg objekta i modelovanog okruženja (susedne kuće, ulica, parcela), primarno iz ulične perspektive — sa 2 ugla uključena. Svaki sledeći ugao: 5.626 RSD. Neviđena/zadnja strana objekta: +25% (12.306 RSD), jednokratno. Tri runde revizije su uključene.",
       },
       {
         q: "Da li je okruženje tačno ili aproksimacija?",
-        a: "Okruženje je modelovana aproksimacija — susedne kuće se grade na osnovu katastarskih podataka i referentnih fotografija, ali nisu piksel-tačna kopija stvarnog stanja. Ako Vam je potrebno piksel-realno okruženje (npr. za urbanističku komisiju koja traži stvarni kontekst), razmotrite render u stvarnoj fotografiji lokacije (€300).",
+        a: "Okruženje je modelovana aproksimacija — susedne kuće se grade na osnovu katastarskih podataka i referentnih fotografija, ali nisu piksel-tačna kopija stvarnog stanja. Ako Vam je potrebno piksel-realno okruženje (npr. za urbanističku komisiju koja traži stvarni kontekst), razmotrite render u stvarnoj fotografiji lokacije (35.160 RSD).",
       },
       {
-        q: "Razlika u odnosu na render u stvarnoj fotografiji (€300)?",
+        q: "Razlika u odnosu na render u stvarnoj fotografiji (35.160 RSD)?",
         a: "Render u fotografiji lokacije koristi stvarnu fotografiju kao pozadinu — okruženje je piksel-realno, ali ste vezani za ugao snimljene fotografije. 3D prikaz ulice modeluje celo okruženje u 3D — možete birati bilo koji ugao, ali okruženje je aproksimacija. Ako lokacija postoji i može se fotografisati, render u fotografiji je jeftiniji i verodostojniji. Ako lokacija ne postoji ili trebate više uglova, 3D prikaz ulice je jedina opcija.",
       },
       {
@@ -953,7 +953,7 @@ export const SERVICES: Service[] = [
       },
       {
         q: "Da li usluga uključuje aerial (ptičju perspektivu) ili samo uličnu?",
-        a: "Primarni format je ulična perspektiva (eye-level) — objekat na ulici, kao što ga vidi prolaznik. Aerial pogled (iz vazduha) je dostupan kao dodatni ugao iz istog modela za €48. Oba izlaze iz istog modelovanog okruženja.",
+        a: "Primarni format je ulična perspektiva (eye-level) — objekat na ulici, kao što ga vidi prolaznik. Aerial pogled (iz vazduha) je dostupan kao dodatni ugao iz istog modela za 5.626 RSD. Oba izlaze iz istog modelovanog okruženja.",
       },
       {
         q: "Koliko traje izrada?",
@@ -962,11 +962,11 @@ export const SERVICES: Service[] = [
     ],
     pricingLead: {
       heading: "Dva metoda, isti cilj — jedan pravi izbor za Vašu lokaciju.",
-      body: "3D prikaz ulice (€420) je pravi izbor kada lokacija ne postoji ili zahtevate slobodan izbor ugla kamere — okruženje se modeluje u 3D. Render u stvarnoj fotografiji (€300) je pravi izbor kada lokacija postoji i može se fotografisati — okruženje je piksel-realno jer dolazi iz stvarne fotografije. Odaberite prema tome šta imate u rukama.",
+      body: "3D prikaz ulice (49.224 RSD) je pravi izbor kada lokacija ne postoji ili zahtevate slobodan izbor ugla kamere — okruženje se modeluje u 3D. Render u stvarnoj fotografiji (35.160 RSD) je pravi izbor kada lokacija postoji i može se fotografisati — okruženje je piksel-realno jer dolazi iz stvarne fotografije. Odaberite prema tome šta imate u rukama.",
     },
     comparison: {
-      aLabel: "3D prikaz ulice — €420",
-      bLabel: "Render u fotografiji — €300",
+      aLabel: "3D prikaz ulice — 49.224 RSD",
+      bLabel: "Render u fotografiji — 35.160 RSD",
       rows: [
         { label: "Ulazni materijal", a: "Arhitektonski nacrti", b: "Stvarna fotografija lokacije" },
         { label: "Okruženje", a: "Modelovano u 3D (aproksimacija)", b: "Piksel-realno (prava fotografija)" },
@@ -979,15 +979,15 @@ export const SERVICES: Service[] = [
         id: "exterior-aerial",
         title: "3D prikaz ulice (streetscape)",
         basePrice: 420,
-        priceLabel: "€420",
+        priceLabel: "49.224 RSD",
         unitLabel: "pun 3D model objekta + okruženja, ulična perspektiva",
         description:
           "Celo okruženje se modeluje u 3D — susedne kuće, ulica, parcela. Primarni prikaz je ulična perspektiva; aerial i drugi uglovi dostupni kao doplate iz istog modela.",
         included:
           "Pun 3D model objekta i okruženja, 2 ugla uključena (primarno ulična perspektiva). Tri runde revizije uključene.",
         addOns: [
-          "Dodatni ugao (ulični ili aerial): €48 (80% jeftinije)",
-          "Neviđena/zadnja strana objekta: +25% (€105 jednokratno)",
+          "Dodatni ugao (ulični ili aerial): 5.626 RSD (80% jeftinije)",
+          "Neviđena/zadnja strana objekta: +25% (12.306 RSD jednokratno)",
         ],
         note: "Doplata za zadnju stranu naplaćuje se jednom po modelu — nakon toga svi uglovi ulaze u standardnu dopunu.",
       },
@@ -997,18 +997,18 @@ export const SERVICES: Service[] = [
         id: "photomontage-main",
         title: "Render u stvarnoj fotografiji lokacije",
         basePrice: 300,
-        priceLabel: "€300",
+        priceLabel: "35.160 RSD",
         unitLabel: "3D model + uklapanje u fotografiju lokacije",
         description:
           "Kada lokacija postoji i može se fotografisati — 3D model se uklapa u stvarnu fotografiju. Piksel-realno okruženje, niža cena.",
         included:
           "Kompletan 3D model objekta, uklapanje u jednu fotografiju lokacije, usklađeno svetlo i senke. Jedan finalni render.",
         addOns: [
-          "Dodatni ugao iz iste fotografije: €55 (82% jeftinije)",
-          "Druga fotografija iste lokacije: €85",
+          "Dodatni ugao iz iste fotografije: 6.446 RSD (82% jeftinije)",
+          "Druga fotografija iste lokacije: 9.962 RSD",
           "Neviđena strana objekta: +25% jednokratno",
         ],
-        note: "Render eksterijera €250 + Fotomontaža +€50. Pravi izbor kada lokacija postoji i može se fotografisati — maksimalna verodostojnost za komisije i javne rasprave.",
+        note: "Render eksterijera 29.300 RSD + Fotomontaža +5.860 RSD. Pravi izbor kada lokacija postoji i može se fotografisati — maksimalna verodostojnost za komisije i javne rasprave.",
       },
     ],
   },
@@ -1033,9 +1033,9 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-virtuelno-opremanje-before.webp",
     detailAfterAsset: "/artwork/problem-virtuelno-opremanje-after.webp",
     philosophy:
-      "Prva slika pokriva izbor nameštaja, stila i osvetljenja. Kad je stil definisan, svaki dodatni ugao iste sobe je 33% jeftiniji, druga soba 17% jeftinija, a od 10+ slika cena pada na €13/sliku. Tako celokupna nekretnina dobija kompletan oglasni paket za delić cene fizičkog opremanja.",
+      "Prva slika pokriva izbor nameštaja, stila i osvetljenja. Kad je stil definisan, svaki dodatni ugao iste sobe je 33% jeftiniji, druga soba 17% jeftinija, a od 10+ slika cena pada na 1.524 RSD/sliku. Tako celokupna nekretnina dobija kompletan oglasni paket za delić cene fizičkog opremanja.",
     priceContext:
-      "€18 prva slika · €15 druga soba · od €13/sliku za pakovanje 10+ slika.",
+      "2.110 RSD prva slika · 1.758 RSD druga soba · od 1.524 RSD/sliku za pakovanje 10+ slika.",
     forSegments: [
       "Agencije nekretnina",
       "Vlasnici praznih jedinica",
@@ -1056,12 +1056,12 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "100× jeftinije od fizičkog opremanja",
-        body: "Pravi nameštaj za prezentaciju stana košta hiljade evra i traje danima. Virtuelno €18 po slici, €13 za pakovanje 10+ slika.",
+        body: "Pravi nameštaj za prezentaciju stana košta hiljade evra i traje danima. Virtuelno 2.110 RSD po slici, 1.524 RSD za pakovanje 10+ slika.",
       },
       {
         icon: "trust",
         title: "Stil koji odgovara kupcu",
-        body: "Birate iz nekoliko pravaca — moderni minimalist, warm Scandinavian, klasičan. Promena stila iste sobe: €12.",
+        body: "Birate iz nekoliko pravaca — moderni minimalist, warm Scandinavian, klasičan. Promena stila iste sobe: 1.406 RSD.",
       },
     ],
     processSteps: [
@@ -1084,8 +1084,8 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €18?",
-        a: "Fotorealistično opremanje jedne prazne prostorije na osnovu Vaše fotografije — uključen izbor nameštaja, postavljanje i usklađivanje osvetljenja. Dodatni ugao iste sobe: €12 (33% popust). Druga soba iste nekretnine: €15 (17% popust). Pakovanje 10+ slika: €13 po slici (28% popust).",
+        q: "Šta tačno dobijam za 2.110 RSD?",
+        a: "Fotorealistično opremanje jedne prazne prostorije na osnovu Vaše fotografije — uključen izbor nameštaja, postavljanje i usklađivanje osvetljenja. Dodatni ugao iste sobe: 1.406 RSD (33% popust). Druga soba iste nekretnine: 1.758 RSD (17% popust). Pakovanje 10+ slika: 1.524 RSD po slici (28% popust).",
       },
       {
         q: "Da li deluje stvarno?",
@@ -1093,7 +1093,7 @@ export const SERVICES: Service[] = [
       },
       {
         q: "Mogu li da promenim stil ako mi se ne dopadne?",
-        a: "Da. Promena stila opremanja iste sobe: €12. Pre toga su uključene tri runde revizije bez doplate — u njima menjamo nameštaj, materijale i osvetljenje dok rezultat ne bude tačan.",
+        a: "Da. Promena stila opremanja iste sobe: 1.406 RSD. Pre toga su uključene tri runde revizije bez doplate — u njima menjamo nameštaj, materijale i osvetljenje dok rezultat ne bude tačan.",
       },
       {
         q: "Koliko traje izrada?",
@@ -1101,7 +1101,7 @@ export const SERVICES: Service[] = [
       },
       {
         q: "Da li radite za agencije sa puno listinga?",
-        a: "Da. Pakovanje 10+ slika je €13 po slici (28% popust). Stalni agenti mogu da dogovore prioritet izrade i konzistentnu stilsku liniju kroz sve listinge.",
+        a: "Da. Pakovanje 10+ slika je 1.524 RSD po slici (28% popust). Stalni agenti mogu da dogovore prioritet izrade i konzistentnu stilsku liniju kroz sve listinge.",
       },
       {
         q: "Šta dostavljam da biste počeli?",
@@ -1131,34 +1131,34 @@ export const SERVICES: Service[] = [
         id: "staging-static",
         title: "Klasično opremanje fotografije",
         basePrice: 18,
-        priceLabel: "€18",
+        priceLabel: "2.110 RSD",
         unitLabel: "prva opremljena slika",
         description:
-          "Brz upgrade oglasa: prazna soba postaje atraktivna scena za €18. Svaka sledeća soba 17% jeftinija.",
+          "Brz upgrade oglasa: prazna soba postaje atraktivna scena za 2.110 RSD. Svaka sledeća soba 17% jeftinija.",
         included:
           "Fotorealistično opremanje jedne prazne prostorije na osnovu Vaše fotografije. Uključuje izbor nameštaja, postavljanje i usklađivanje osvetljenja.",
         addOns: [
-          "Dodatni ugao iste sobe: €12 (33% popust)",
-          "Druga soba iste nekretnine: €15 (17% popust)",
-          "Pakovanje 10+ slika: €13 po slici (28% popust)",
-          "Promena stila opremanja iste sobe: €12",
+          "Dodatni ugao iste sobe: 1.406 RSD (33% popust)",
+          "Druga soba iste nekretnine: 1.758 RSD (17% popust)",
+          "Pakovanje 10+ slika: 1.524 RSD po slici (28% popust)",
+          "Promena stila opremanja iste sobe: 1.406 RSD",
         ],
       },
       {
         id: "staging-360",
         title: "Interaktivno 360 opremanje",
         basePrice: 34,
-        priceLabel: "€34",
+        priceLabel: "3.985 RSD",
         unitLabel: "prva opremljena 360 panorama",
         description:
           "Kupac obilazi opremljenu sobu mišem — savršeno za online oglas ili remote prikaz potencijalnom kupcu.",
         included:
           "Kompletno opremanje prve prostorije u 360 panorami koja se pregledava na sajtu ili VR uređaju.",
         addOns: [
-          "Dodatna interaktivna tačka iste sobe: €24 (30% popust)",
-          "Druga soba iste nekretnine: €28 (18% popust)",
-          "Pakovanje 6+ tačaka: €24 po tački",
-          "Promena stila opremanja iste sobe: €22",
+          "Dodatna interaktivna tačka iste sobe: 2.813 RSD (30% popust)",
+          "Druga soba iste nekretnine: 3.282 RSD (18% popust)",
+          "Pakovanje 6+ tačaka: 2.813 RSD po tački",
+          "Promena stila opremanja iste sobe: 2.578 RSD",
         ],
       },
     ],
@@ -1186,7 +1186,7 @@ export const SERVICES: Service[] = [
     philosophy:
       "Prva slika pokriva kompletan dizajn renovacije i izbor materijala. Kad je vizuelni pravac postavljen, svaki dodatni ugao iste prostorije je 10% jeftiniji, a od 4. ugla 20% jeftiniji. Druga soba iste nekretnine: 15% popust. Tako kompletna nekretnina ulazi u realan budžet pre nego što krenu zidari.",
     priceContext:
-      "€66 prvi prikaz · od €53 dodatni ugao · €56 druga soba (15% popust).",
+      "7.735 RSD prvi prikaz · od 6.212 RSD dodatni ugao · 6.563 RSD druga soba (15% popust).",
     forSegments: [
       "Vlasnici nekretnina pred renoviranje",
       "Arhitekte enterijera",
@@ -1212,7 +1212,7 @@ export const SERVICES: Service[] = [
       {
         icon: "trust",
         title: "Više varijanti za malo",
-        body: "€66 prvi prikaz. Dodatni ugao iste sobe €59 (10% popust), od 4. ugla €53 (20% popust). Druga soba 15% jeftinija. Kompletna nekretnina ulazi u realan budžet.",
+        body: "7.735 RSD prvi prikaz. Dodatni ugao iste sobe 6.915 RSD (10% popust), od 4. ugla 6.212 RSD (20% popust). Druga soba 15% jeftinija. Kompletna nekretnina ulazi u realan budžet.",
       },
     ],
     processSteps: [
@@ -1235,12 +1235,12 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €66?",
-        a: "Kompletna vizuelna transformacija jedne prostorije na osnovu Vaše fotografije — uključuje promenu podova, zidova, fiksiranih elemenata i nameštaja. Dodatni ugao iste sobe: €59 (10% popust). 4. i svaki sledeći ugao: €53 (20% popust). Druga soba: €56 (15% popust).",
+        q: "Šta tačno dobijam za 7.735 RSD?",
+        a: "Kompletna vizuelna transformacija jedne prostorije na osnovu Vaše fotografije — uključuje promenu podova, zidova, fiksiranih elemenata i nameštaja. Dodatni ugao iste sobe: 6.915 RSD (10% popust). 4. i svaki sledeći ugao: 6.212 RSD (20% popust). Druga soba: 6.563 RSD (15% popust).",
       },
       {
-        q: "Razlika u odnosu na virtuelno opremanje (€18)?",
-        a: "Virtuelno opremanje (€18) menja samo nameštaj — zidovi, podovi i fiksirani elementi ostaju isti. Virtuelna renovacija (€66) menja sve — pločice, podove, ormare, kuhinju. Različite namene.",
+        q: "Razlika u odnosu na virtuelno opremanje (2.110 RSD)?",
+        a: "Virtuelno opremanje (2.110 RSD) menja samo nameštaj — zidovi, podovi i fiksirani elementi ostaju isti. Virtuelna renovacija (7.735 RSD) menja sve — pločice, podove, ormare, kuhinju. Različite namene.",
       },
       {
         q: "Koliko stvarno štedim?",
@@ -1282,17 +1282,17 @@ export const SERVICES: Service[] = [
         id: "renovation-main",
         title: "Vizuelna renovacija prostorije",
         basePrice: 66,
-        priceLabel: "€66",
+        priceLabel: "7.735 RSD",
         unitLabel: "prvi prikaz renovirane sobe",
         description:
           "Prvi prikaz pokriva kompletan dizajn — izbor podova, zidova, fiksiranih elemenata i nameštaja. Dodatni uglovi 10–20% jeftiniji.",
         included:
           "Kompletna vizuelna transformacija jedne prostorije na osnovu Vaše fotografije. Uključuje promenu podova, zidova, fiksiranih elemenata i nameštaja.",
         addOns: [
-          "Dodatni ugao iste sobe: €59 (10% popust)",
-          "4. i svaki sledeći ugao iste sobe: €53 (20% popust)",
-          "Druga soba iste nekretnine: €56 (15% popust)",
-          "6. i svaka sledeća soba iste nekretnine: €50 (24% popust)",
+          "Dodatni ugao iste sobe: 6.915 RSD (10% popust)",
+          "4. i svaki sledeći ugao iste sobe: 6.212 RSD (20% popust)",
+          "Druga soba iste nekretnine: 6.563 RSD (15% popust)",
+          "6. i svaka sledeća soba iste nekretnine: 5.860 RSD (24% popust)",
         ],
       },
     ],
@@ -1319,7 +1319,7 @@ export const SERVICES: Service[] = [
     philosophy:
       "Cena pokriva izradu osnove za jedan nivo. Svaki sledeći nivo iste zgrade je 50–66% jeftiniji jer je stilski predložak već postavljen. Identičan sprat (dupliranje sa promenom oznaka) košta samo trećinu osnovne cene. Tako celokupna zgrada dobija pregledne osnove za delić cene CAD studija.",
     priceContext:
-      "€20 jedan nivo (2D čist plan) / €29 jedan nivo (3D plan). Dodatni nivo: €10–15.",
+      "2.344 RSD jedan nivo (2D čist plan) / 3.399 RSD jedan nivo (3D plan). Dodatni nivo: 1.172 RSD–15.",
     forSegments: [
       "Agencije nekretnina (listing materijali)",
       "Investitori (tipovi stanova u zgradi)",
@@ -1340,7 +1340,7 @@ export const SERVICES: Service[] = [
       {
         icon: "speed",
         title: "Brz materijal za listing",
-        body: "€20 za 2D, €29 za 3D — jedan dan rada, dobijate fajl za oglas, prospekt i prezentaciju.",
+        body: "2.344 RSD za 2D, 3.399 RSD za 3D — jedan dan rada, dobijate fajl za oglas, prospekt i prezentaciju.",
       },
       {
         icon: "value",
@@ -1368,8 +1368,8 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €20 / €29?",
-        a: "€20 daje jedan nivo u čistom 2D vektorskom prikazu sa rasporedom prostorija, oznakama i dimenzijama. €29 daje 3D verziju istog nivoa — prostorni prikaz koji kupac razume bez znanja arhitekture. Identičan sprat (dupliranje): €6 (2D) / €10 (3D).",
+        q: "Šta tačno dobijam za 2.344 RSD / 3.399 RSD?",
+        a: "2.344 RSD daje jedan nivo u čistom 2D vektorskom prikazu sa rasporedom prostorija, oznakama i dimenzijama. 3.399 RSD daje 3D verziju istog nivoa — prostorni prikaz koji kupac razume bez znanja arhitekture. Identičan sprat (dupliranje): 703 RSD (2D) / 1.172 RSD (3D).",
       },
       {
         q: "2D ili 3D — šta da biram?",
@@ -1377,7 +1377,7 @@ export const SERVICES: Service[] = [
       },
       {
         q: "Da li se može dodati nameštaj?",
-        a: "Da. Verzija sa nameštajem: €6 (2D) ili €8 (3D). Varijanta dizajna (isti raspored, drugi nameštaj): €6.",
+        a: "Da. Verzija sa nameštajem: 703 RSD (2D) ili 938 RSD (3D). Varijanta dizajna (isti raspored, drugi nameštaj): 703 RSD.",
       },
       {
         q: "Koliko traje izrada?",
@@ -1411,18 +1411,18 @@ export const SERVICES: Service[] = [
         id: "floorplan-2d",
         title: "2D tlocrt (čist tehnički plan)",
         basePrice: 20,
-        priceLabel: "€20",
+        priceLabel: "2.344 RSD",
         unitLabel: "jedan sprat (2D plan)",
         description:
-          "Brz ulaz za oglas — jasan tehnički tlocrt sa rasporedom i merama. Identičan sprat: €6.",
+          "Brz ulaz za oglas — jasan tehnički tlocrt sa rasporedom i merama. Identičan sprat: 703 RSD.",
         included:
           "Jedan nivo u čistom 2D vektorskom prikazu. Uključuje raspored prostorija, oznake i dimenzije.",
         addOns: [
-          "Dva nivoa (dupleks): €32",
-          "Svaki dodatni nivo: €10",
-          "Identičan sprat (dupliranje): €6 (70% popust)",
-          "Verzija sa nameštajem: €6",
-          "Promena boje / stila plana: €4",
+          "Dva nivoa (dupleks): 3.750 RSD",
+          "Svaki dodatni nivo: 1.172 RSD",
+          "Identičan sprat (dupliranje): 703 RSD (70% popust)",
+          "Verzija sa nameštajem: 703 RSD",
+          "Promena boje / stila plana: 469 RSD",
         ],
         note: "2D osnove isporučujemo kroz White Rook partnersku mrežu.",
       },
@@ -1430,18 +1430,18 @@ export const SERVICES: Service[] = [
         id: "floorplan-3d",
         title: "3D tlocrt (prostorni prikaz)",
         basePrice: 29,
-        priceLabel: "€29",
+        priceLabel: "3.399 RSD",
         unitLabel: "jedan sprat (3D plan)",
         description:
           "Kupac razume raspored na prvi pogled — bez čitanja simbola. Idealno za listing fotografiju.",
         included:
           "Jedan nivo u atraktivnom 3D prikazu sa rasporedom prostorija, oznakama i dimenzijama.",
         addOns: [
-          "Dva nivoa (dupleks): €46",
-          "Svaki dodatni nivo: €15",
-          "Identičan sprat (dupliranje): €10 (66% popust)",
-          "Dodavanje nameštaja: €8",
-          "Varijanta dizajna (isti raspored, drugi nameštaj): €6",
+          "Dva nivoa (dupleks): 5.391 RSD",
+          "Svaki dodatni nivo: 1.758 RSD",
+          "Identičan sprat (dupliranje): 1.172 RSD (66% popust)",
+          "Dodavanje nameštaja: 938 RSD",
+          "Varijanta dizajna (isti raspored, drugi nameštaj): 703 RSD",
         ],
       },
     ],
@@ -1455,7 +1455,7 @@ export const SERVICES: Service[] = [
     icon: "file-image",
     tagline: "Čist 2D tlocrt — brz materijal za oglas i dokumentaciju.",
     description:
-      "Pregledan vektorski 2D tlocrt sa rasporedom prostorija, oznakama na srpskom i dimenzijama u metrima. Standardni format za oglas nekretnine, regulatornu proceduru i klijentsku prezentaciju. €20 pokriva jedan nivo; identičan sprat (dupliranje sa promenom oznaka) košta samo €6 — 70% jeftinije.",
+      "Pregledan vektorski 2D tlocrt sa rasporedom prostorija, oznakama na srpskom i dimenzijama u metrima. Standardni format za oglas nekretnine, regulatornu proceduru i klijentsku prezentaciju. 2.344 RSD pokriva jedan nivo; identičan sprat (dupliranje sa promenom oznaka) košta samo 703 RSD — 70% jeftinije.",
     highlight:
       "Najjeftiniji ulaz u profesionalan tlocrt za listing — bez 3D budžeta, sa formatom koji prati dokumentaciju i ugovor.",
     materials:
@@ -1464,9 +1464,9 @@ export const SERVICES: Service[] = [
     listingAsset: "/artwork/listing-floorplan-2d.webp",
     detailAsset: "/artwork/listing-floorplan-2d.webp",
     philosophy:
-      "2D plan je format koji prati dokumentaciju, oglas i ugovor. Cena pokriva jedan nivo u čistom vektorskom prikazu sa oznakama i dimenzijama. Identičan sprat (dupliranje sa promenom oznaka) košta samo €6 — 70% jeftinije. Tako zgrada sa više tipova stanova dobija celokupnu listing seriju za delić cene CAD studija. Isporuka kroz White Rook partnersku mrežu obezbeđuje konzistentan kvalitet i kratak rok.",
+      "2D plan je format koji prati dokumentaciju, oglas i ugovor. Cena pokriva jedan nivo u čistom vektorskom prikazu sa oznakama i dimenzijama. Identičan sprat (dupliranje sa promenom oznaka) košta samo 703 RSD — 70% jeftinije. Tako zgrada sa više tipova stanova dobija celokupnu listing seriju za delić cene CAD studija. Isporuka kroz White Rook partnersku mrežu obezbeđuje konzistentan kvalitet i kratak rok.",
     priceContext:
-      "€20 — jedan nivo (čist 2D vektorski plan). Identičan sprat (dupliranje): €6.",
+      "2.344 RSD — jedan nivo (čist 2D vektorski plan). Identičan sprat (dupliranje): 703 RSD.",
     forSegments: [
       "Agencije nekretnina (listing materijali)",
       "Investitori (tipovi stanova u zgradi)",
@@ -1481,12 +1481,12 @@ export const SERVICES: Service[] = [
       {
         icon: "speed",
         title: "Najbrži ulaz u listing",
-        body: "€20, prvi nacrt za 1–3 radna dana. Najniža ulazna cena za profesionalan tlocrt koji se direktno koristi u oglasu.",
+        body: "2.344 RSD, prvi nacrt za 1–3 radna dana. Najniža ulazna cena za profesionalan tlocrt koji se direktno koristi u oglasu.",
       },
       {
         icon: "value",
         title: "Trećina cene po dodatnom spratu",
-        body: "Identičan sprat (dupliranje sa promenom oznaka): samo €6 — 70% popust. Zgrada sa 5 tipova stanova dobija celu seriju za €44.",
+        body: "Identičan sprat (dupliranje sa promenom oznaka): samo 703 RSD — 70% popust. Zgrada sa 5 tipova stanova dobija celu seriju za 5.157 RSD.",
       },
       {
         icon: "trust",
@@ -1524,8 +1524,8 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €20?",
-        a: "Jedan nivo u čistom 2D vektorskom prikazu sa rasporedom prostorija, oznakama na srpskom i dimenzijama u metrima. Identičan sprat (dupliranje sa promenom oznaka): €6 (70% popust). Verzija sa nameštajem: +€6. Promena boje/stila: +€4.",
+        q: "Šta tačno dobijam za 2.344 RSD?",
+        a: "Jedan nivo u čistom 2D vektorskom prikazu sa rasporedom prostorija, oznakama na srpskom i dimenzijama u metrima. Identičan sprat (dupliranje sa promenom oznaka): 703 RSD (70% popust). Verzija sa nameštajem: +703 RSD. Promena boje/stila: +469 RSD.",
       },
       {
         q: "Razlika u odnosu na CAD eksport iz mog projekta?",
@@ -1533,11 +1533,11 @@ export const SERVICES: Service[] = [
       },
       {
         q: "Kada birati 2D umesto 3D?",
-        a: "Za regulatornu proceduru, ugovor, tehničku dokumentaciju ili kad oglas prati tehnički standard branše. Za agencijski oglas i laičku prezentaciju 3D verzija (€29) daje bolji efekat — kupac brže razume raspored.",
+        a: "Za regulatornu proceduru, ugovor, tehničku dokumentaciju ili kad oglas prati tehnički standard branše. Za agencijski oglas i laičku prezentaciju 3D verzija (3.399 RSD) daje bolji efekat — kupac brže razume raspored.",
       },
       {
         q: "Da li radite više spratova zgrade?",
-        a: "Da. Dva nivoa (dupleks): €32. Svaki dodatni nivo: €10. Identičan sprat (dupliranje sa promenom oznaka): samo €6 — 70% popust.",
+        a: "Da. Dva nivoa (dupleks): 3.750 RSD. Svaki dodatni nivo: 1.172 RSD. Identičan sprat (dupliranje sa promenom oznaka): samo 703 RSD — 70% popust.",
       },
       {
         q: "Koliko traje izrada?",
@@ -1553,18 +1553,18 @@ export const SERVICES: Service[] = [
         id: "floorplan-2d",
         title: "2D tlocrt (čist tehnički plan)",
         basePrice: 20,
-        priceLabel: "€20",
+        priceLabel: "2.344 RSD",
         unitLabel: "jedan sprat (2D plan)",
         description:
-          "Brz ulaz za oglas — jasan tehnički tlocrt sa rasporedom i merama. Identičan sprat: €6.",
+          "Brz ulaz za oglas — jasan tehnički tlocrt sa rasporedom i merama. Identičan sprat: 703 RSD.",
         included:
           "Jedan nivo u čistom 2D vektorskom prikazu. Uključuje raspored prostorija, oznake i dimenzije.",
         addOns: [
-          "Dva nivoa (dupleks): €32",
-          "Svaki dodatni nivo: €10",
-          "Identičan sprat (dupliranje): €6 (70% popust)",
-          "Verzija sa nameštajem: €6",
-          "Promena boje / stila plana: €4",
+          "Dva nivoa (dupleks): 3.750 RSD",
+          "Svaki dodatni nivo: 1.172 RSD",
+          "Identičan sprat (dupliranje): 703 RSD (70% popust)",
+          "Verzija sa nameštajem: 703 RSD",
+          "Promena boje / stila plana: 469 RSD",
         ],
         note: "2D osnove isporučujemo kroz White Rook partnersku mrežu.",
       },
@@ -1579,7 +1579,7 @@ export const SERVICES: Service[] = [
     icon: "layers",
     tagline: "Prostorni 3D tlocrt koji kupac razume na prvi pogled.",
     description:
-      "Atraktivan 3D prostorni prikaz tlocrta sa nameštajem, oznakama i bojama. Najjači format za agencijski oglas — kupac vidi raspored i namene bez čitanja tehničkih simbola. €29 pokriva jedan nivo; identičan sprat (dupliranje sa promenom oznaka) košta samo €10 — 66% jeftinije.",
+      "Atraktivan 3D prostorni prikaz tlocrta sa nameštajem, oznakama i bojama. Najjači format za agencijski oglas — kupac vidi raspored i namene bez čitanja tehničkih simbola. 3.399 RSD pokriva jedan nivo; identičan sprat (dupliranje sa promenom oznaka) košta samo 1.172 RSD — 66% jeftinije.",
     highlight:
       "Pravi izbor za listing fotografiju i prospekt — kupac na prvi pogled razume šta dobija.",
     materials:
@@ -1590,9 +1590,9 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-osnove-before.webp",
     detailAfterAsset: "/artwork/problem-osnove-after.webp",
     philosophy:
-      "3D prostorni prikaz je marketinški format — kupac vidi raspored sa nameštajem i bojom, bez čitanja oznaka. Cena €29 pokriva jedan nivo. Identičan sprat (dupliranje sa promenom oznaka) košta samo €10 — 66% jeftinije. Tako dupleks i zgrada sa više tipova stanova ulaze u realan listing budžet — bez ponovnog modelovanja po nivou.",
+      "3D prostorni prikaz je marketinški format — kupac vidi raspored sa nameštajem i bojom, bez čitanja oznaka. Cena 3.399 RSD pokriva jedan nivo. Identičan sprat (dupliranje sa promenom oznaka) košta samo 1.172 RSD — 66% jeftinije. Tako dupleks i zgrada sa više tipova stanova ulaze u realan listing budžet — bez ponovnog modelovanja po nivou.",
     priceContext:
-      "€29 — jedan nivo (3D prostorni prikaz). Identičan sprat (dupliranje): €10.",
+      "3.399 RSD — jedan nivo (3D prostorni prikaz). Identičan sprat (dupliranje): 1.172 RSD.",
     forSegments: [
       "Agencije nekretnina (listing fotografija)",
       "Investitori (tipovi stanova u zgradi)",
@@ -1612,12 +1612,12 @@ export const SERVICES: Service[] = [
       {
         icon: "speed",
         title: "Brz materijal za listing",
-        body: "€29, prvi nacrt 1–3 radna dana. Direktno upotrebljivo u oglasima, prospektima i prezentacijama.",
+        body: "3.399 RSD, prvi nacrt 1–3 radna dana. Direktno upotrebljivo u oglasima, prospektima i prezentacijama.",
       },
       {
         icon: "value",
         title: "Više tipova stanova jeftinije",
-        body: "Identičan sprat (dupliranje): samo €10 — 66% popust. Zgrada sa 4 tipa stana dobija kompletnu listing seriju za €59.",
+        body: "Identičan sprat (dupliranje): samo 1.172 RSD — 66% popust. Zgrada sa 4 tipa stana dobija kompletnu listing seriju za 6.915 RSD.",
       },
     ],
     processSteps: [
@@ -1658,24 +1658,24 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €29?",
-        a: "Jedan nivo u atraktivnom 3D prostornom prikazu sa rasporedom prostorija, oznakama, nameštajem i materijalima. Identičan sprat (dupliranje sa promenom oznaka): €10 (66% popust). Dodavanje nameštaja: +€8. Varijanta dizajna (isti raspored, drugi nameštaj): +€6.",
+        q: "Šta tačno dobijam za 3.399 RSD?",
+        a: "Jedan nivo u atraktivnom 3D prostornom prikazu sa rasporedom prostorija, oznakama, nameštajem i materijalima. Identičan sprat (dupliranje sa promenom oznaka): 1.172 RSD (66% popust). Dodavanje nameštaja: +938 RSD. Varijanta dizajna (isti raspored, drugi nameštaj): +703 RSD.",
       },
       {
         q: "Razlika u odnosu na render enterijera?",
-        a: "Render enterijera (€170 za sprat) prikazuje sobu iz nivoa očiju — kao da stojite unutra. 3D osnova je ptičja perspektiva celog sprata sa skinutim krovom — vidite raspored, ne sobu. Različita namena, često se naručuju zajedno za prospekt.",
+        a: "Render enterijera (19.924 RSD za sprat) prikazuje sobu iz nivoa očiju — kao da stojite unutra. 3D osnova je ptičja perspektiva celog sprata sa skinutim krovom — vidite raspored, ne sobu. Različita namena, često se naručuju zajedno za prospekt.",
       },
       {
         q: "Kada birati 3D umesto 2D?",
-        a: "Za agencijski oglas, prospekt i klijentske prezentacije gde kupac nije arhitekta — 3D pobeđuje. Za regulatornu proceduru, ugovor ili tehnički prilog 2D verzija (€20) prati standard branše.",
+        a: "Za agencijski oglas, prospekt i klijentske prezentacije gde kupac nije arhitekta — 3D pobeđuje. Za regulatornu proceduru, ugovor ili tehnički prilog 2D verzija (2.344 RSD) prati standard branše.",
       },
       {
         q: "Da li mogu da naručim sa nameštajem ili bez?",
-        a: "Oba. Bez nameštaja je standardna opcija. Sa nameštajem: +€8. Varijanta dizajna (isti raspored, drugi nameštaj — korisno za A/B testove kupaca): +€6.",
+        a: "Oba. Bez nameštaja je standardna opcija. Sa nameštajem: +938 RSD. Varijanta dizajna (isti raspored, drugi nameštaj — korisno za A/B testove kupaca): +703 RSD.",
       },
       {
         q: "Da li radite više spratova zgrade?",
-        a: "Da. Dva nivoa (dupleks): €46. Svaki dodatni nivo: €15. Identičan sprat (dupliranje sa promenom oznaka): samo €10 — 66% popust.",
+        a: "Da. Dva nivoa (dupleks): 5.391 RSD. Svaki dodatni nivo: 1.758 RSD. Identičan sprat (dupliranje sa promenom oznaka): samo 1.172 RSD — 66% popust.",
       },
       {
         q: "Koliko traje izrada?",
@@ -1687,18 +1687,18 @@ export const SERVICES: Service[] = [
         id: "floorplan-3d",
         title: "3D tlocrt (prostorni prikaz)",
         basePrice: 29,
-        priceLabel: "€29",
+        priceLabel: "3.399 RSD",
         unitLabel: "jedan sprat (3D plan)",
         description:
           "Kupac razume raspored na prvi pogled — bez čitanja simbola. Idealno za listing fotografiju.",
         included:
           "Jedan nivo u atraktivnom 3D prikazu sa rasporedom prostorija, oznakama i dimenzijama.",
         addOns: [
-          "Dva nivoa (dupleks): €46",
-          "Svaki dodatni nivo: €15",
-          "Identičan sprat (dupliranje): €10 (66% popust)",
-          "Dodavanje nameštaja: €8",
-          "Varijanta dizajna (isti raspored, drugi nameštaj): €6",
+          "Dva nivoa (dupleks): 5.391 RSD",
+          "Svaki dodatni nivo: 1.758 RSD",
+          "Identičan sprat (dupliranje): 1.172 RSD (66% popust)",
+          "Dodavanje nameštaja: 938 RSD",
+          "Varijanta dizajna (isti raspored, drugi nameštaj): 703 RSD",
         ],
       },
     ],
@@ -1723,9 +1723,9 @@ export const SERVICES: Service[] = [
     detailEmbedSrc:
       "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     philosophy:
-      "Sami 360 paketi (Eksterijer €335, Enterijer €295) već uključuju jednu ili više interaktivnih tačaka i embed kod. VR tura postaje korisna kada povezujete više panorama iz različitih projekata ili dodajete navigaciju po tlocrtu — tada je sklapanje i hosting zaseban posao.",
+      "Sami 360 paketi (Eksterijer 39.262 RSD, Enterijer 34.574 RSD) već uključuju jednu ili više interaktivnih tačaka i embed kod. VR tura postaje korisna kada povezujete više panorama iz različitih projekata ili dodajete navigaciju po tlocrtu — tada je sklapanje i hosting zaseban posao.",
     priceContext:
-      "€20 — sklapanje + hosting + embed kod. Navigacija po tlocrtu: €15. Branding ture: €35.",
+      "2.344 RSD — sklapanje + hosting + embed kod. Navigacija po tlocrtu: 1.758 RSD. Branding ture: 4.102 RSD.",
     forSegments: [
       "Investitori (kompletna prezentacija projekta)",
       "Agencije nekretnina (više stanova u istoj turi)",
@@ -1751,7 +1751,7 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "Pristupačan dodatak na već naručene panorame",
-        body: "€20 osnovno sklapanje. Navigacija po tlocrtu: €15. Branding ture sa Vašim logoom: €35.",
+        body: "2.344 RSD osnovno sklapanje. Navigacija po tlocrtu: 1.758 RSD. Branding ture sa Vašim logoom: 4.102 RSD.",
       },
     ],
     processSteps: [
@@ -1775,7 +1775,7 @@ export const SERVICES: Service[] = [
     faqs: [
       {
         q: "Da li VR tura uključuje izradu panorame?",
-        a: "Ne. VR tura je dodatak na već izrađene panorame. Ako prvo treba da izradimo panorame, naručite 360 eksterijer (€335) ili 360 turu enterijera (€295) — ti paketi već uključuju jednu interaktivnu tačku i embed kod za pojedinačnu panoramu.",
+        a: "Ne. VR tura je dodatak na već izrađene panorame. Ako prvo treba da izradimo panorame, naručite 360 eksterijer (39.262 RSD) ili 360 turu enterijera (34.574 RSD) — ti paketi već uključuju jednu interaktivnu tačku i embed kod za pojedinačnu panoramu.",
       },
       {
         q: "Šta ako moje panorame nisu od vas?",
@@ -1799,15 +1799,15 @@ export const SERVICES: Service[] = [
         id: "tour-assembly",
         title: "VR tura — sklapanje i hosting",
         basePrice: 20,
-        priceLabel: "€20",
+        priceLabel: "2.344 RSD",
         unitLabel: "sklapanje i hosting interaktivne ture",
         description:
           "Kada već postoji set 360 panorama, ovaj korak ih spaja u jedinstvenu interaktivnu turu na sajtu.",
         included:
           "Sklapanje virtuelne 360 ture iz postojećih panorama, hosting i deljenje preko linka ili embed-a na sajtu.",
         addOns: [
-          "Interaktivna navigacija po tlocrtu: €15",
-          "Tura sa Vašim brendom (logo, boje): €35",
+          "Interaktivna navigacija po tlocrtu: 1.758 RSD",
+          "Tura sa Vašim brendom (logo, boje): 4.102 RSD",
         ],
         note: "Ovo je dodatak na već izrađene 360 panorame, ne cena za samu izradu 360 sadržaja.",
       },
@@ -1822,16 +1822,16 @@ export const SERVICES: Service[] = [
     icon: "layers",
     tagline: "Marketinški film u kome kamera leti kroz objekat.",
     description:
-      "Arhitektonska animacija pretvara Vaš 3D model u 30-sekundni film u kojem kamera leti kroz objekat, otkrivajući prostor scenom po scenom. Marketinški alat za prospekt, investitorske prezentacije i kampanje na društvenim mrežama. Minimum 15 sekundi (€225).",
+      "Arhitektonska animacija pretvara Vaš 3D model u 30-sekundni film u kojem kamera leti kroz objekat, otkrivajući prostor scenom po scenom. Marketinški alat za prospekt, investitorske prezentacije i kampanje na društvenim mrežama. Minimum 15 sekundi (26.370 RSD).",
     highlight:
       "Za investitore koji žele dramatičnu prezentaciju kompleksa i agencije koje žele da listing bude više od galerije slika.",
     materials:
       "Pošaljite osnove, fasade i, ako postoji, već izrađen 3D model. Definišite željenu putanju kamere i ključne momente.",
     asset: PORTFOLIO_ASSET,
     philosophy:
-      "Najveći trošak je izgradnja 3D modela. Animacija od nule: €15/sek. Iz postojećeg modela: €10/sek (33% jeftinije). Aktivan projekat (model još uvek u radu): €8/sek (47% jeftinije). Duže animacije dobijaju automatski popust: preko 60 sek −20%, preko 2 minuta −25%.",
+      "Najveći trošak je izgradnja 3D modela. Animacija od nule: 1.758 RSD/sek. Iz postojećeg modela: 1.172 RSD/sek (33% jeftinije). Aktivan projekat (model još uvek u radu): 938 RSD/sek (47% jeftinije). Duže animacije dobijaju automatski popust: preko 60 sek −20%, preko 2 minuta −25%.",
     priceContext:
-      "€15/sek od nule · €10/sek iz postojećeg modela · minimum 15 sek (€225).",
+      "1.758 RSD/sek od nule · 1.172 RSD/sek iz postojećeg modela · minimum 15 sek (26.370 RSD).",
     forSegments: [
       "Investitori (marketing kampanje)",
       "Agencije nekretnina (premium listing)",
@@ -1852,7 +1852,7 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "Niža cena iz postojećeg modela",
-        body: "Ako smo Vam već izradili spoljašnji ili unutrašnji render, model je tu — animacija je €10/sek umesto €15/sek (33% popust). Aktivan projekat: €8/sek (47% popust).",
+        body: "Ako smo Vam već izradili spoljašnji ili unutrašnji render, model je tu — animacija je 1.172 RSD/sek umesto 1.758 RSD/sek (33% popust). Aktivan projekat: 938 RSD/sek (47% popust).",
       },
       {
         icon: "trust",
@@ -1880,8 +1880,8 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €225?",
-        a: "15 sekundi animacije iz novog 3D modela. Cena po sekundi: €15. Ako već imamo Vaš model: €10/sek (€150 za 15 sek). Aktivan projekat (model u izradi): €8/sek (€120 za 15 sek).",
+        q: "Šta tačno dobijam za 26.370 RSD?",
+        a: "15 sekundi animacije iz novog 3D modela. Cena po sekundi: 1.758 RSD. Ako već imamo Vaš model: 1.172 RSD/sek (17.580 RSD za 15 sek). Aktivan projekat (model u izradi): 938 RSD/sek (14.064 RSD za 15 sek).",
       },
       {
         q: "Razlika od video walkthrough-a?",
@@ -1905,16 +1905,16 @@ export const SERVICES: Service[] = [
         id: "animation-from-scratch",
         title: "Arhitektonska animacija (od nule)",
         basePrice: 15,
-        priceLabel: "€15/sek",
-        unitLabel: "po sekundi (minimum 15 sek = €225)",
+        priceLabel: "1.758 RSD/sek",
+        unitLabel: "po sekundi (minimum 15 sek = 26.370 RSD)",
         description:
           "Marketinški film u kome kamera leti kroz objekat. Minimum 15 sekundi. Ako već imamo Vaš model: 33% popust.",
         included:
           "Kompletna izgradnja 3D modela + dizajn putanje kamere + renderovanje animacije (minimum 15 sek).",
         addOns: [
-          "Ako već imamo Vaš 3D model: €10/sek (33% popust)",
-          "Aktivan projekat renderovanja: €8/sek (47% popust)",
-          "Dodatna putanja kamere kroz isti model: €5/sek",
+          "Ako već imamo Vaš 3D model: 1.172 RSD/sek (33% popust)",
+          "Aktivan projekat renderovanja: 938 RSD/sek (47% popust)",
+          "Dodatna putanja kamere kroz isti model: 586 RSD/sek",
           "Verzija sa noćnim osvetljenjem: +30%",
           "Sezonska varijanta (zima/leto): +40%",
           "Popust na dužinu: 31–60s −10%, 61–120s −20%, 120s+ −25%",
@@ -1932,7 +1932,7 @@ export const SERVICES: Service[] = [
     tagline:
       "3D pejzaž iz plana ili nova slika Vašeg dvorišta — bez čekanja da biljke porastu.",
     description:
-      "Dve opcije — jedan rezultat: vidite uređen spoljni prostor pre nego što počnu radovi ili pre nego što potrošite na sadnju. Pejzažni render (3D) iz plana kreće od €220. Virtuelna renovacija iz fotografije postojećeg dvorišta kreće od €66.",
+      "Dve opcije — jedan rezultat: vidite uređen spoljni prostor pre nego što počnu radovi ili pre nego što potrošite na sadnju. Pejzažni render (3D) iz plana kreće od 25.784 RSD. Virtuelna renovacija iz fotografije postojećeg dvorišta kreće od 7.735 RSD.",
     highlight:
       "Prikladno za pejzažne arhitekte koji predstavljaju projekat klijentu i investitore za zajedničke prostore u kompleksima.",
     materials:
@@ -1944,9 +1944,9 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-prikazi-dvorista-before.webp",
     detailAfterAsset: "/artwork/problem-prikazi-dvorista-after.webp",
     philosophy:
-      "Cena pejzažnog rendera (€220) pokriva modelovanje terena, vegetaciju u zrelom stanju i prvi prikaz. Svaki sledeći ugao iste lokacije je €45 — 80% jeftiniji, jer je teren već izgrađen. Virtuelna renovacija (€66) radi drugačije: nema 3D modela — postavljamo nove materijale i biljke direktno na Vašu fotografiju. Brže, povoljnije, ali vezano za ugao koji ste snimili. Doplate za renovaciju: drugi ugao €59, 4. i svaki sledeći €53, drugo dvorište €56. Sve cene bez PDV-a.",
+      "Cena pejzažnog rendera (25.784 RSD) pokriva modelovanje terena, vegetaciju u zrelom stanju i prvi prikaz. Svaki sledeći ugao iste lokacije je 5.274 RSD — 80% jeftiniji, jer je teren već izgrađen. Virtuelna renovacija (7.735 RSD) radi drugačije: nema 3D modela — postavljamo nove materijale i biljke direktno na Vašu fotografiju. Brže, povoljnije, ali vezano za ugao koji ste snimili. Doplate za renovaciju: drugi ugao 6.915 RSD, 4. i svaki sledeći 6.212 RSD, drugo dvorište 6.563 RSD. Sve cene bez PDV-a.",
     priceContext:
-      "€220 — kompletan teren + vegetacija + prvi prikaz. Sledeći ugao: €45 (80% jeftiniji).",
+      "25.784 RSD — kompletan teren + vegetacija + prvi prikaz. Sledeći ugao: 5.274 RSD (80% jeftiniji).",
     forSegments: [
       "Pejzažne arhitekte (klijentske prezentacije)",
       "Investitori (zajednički prostori u kompleksima)",
@@ -1956,7 +1956,7 @@ export const SERVICES: Service[] = [
     problemBody:
       "Klijent gleda crtež pejzaža sa simbolima i ne vidi kako će dvorište zaista izgledati. Bez vizuelnog pejzaža, prodavac ne može da odbrani cenu uređenja, investitor ne dobija odobrenje, kupac parcele ne vidi potencijal.",
     problemResolution:
-      "Pejzažni render (€220) gradi kompletan 3D model terena i vegetacije iz plana — svaki sledeći ugao iste lokacije je €45. Virtuelna renovacija (€66) preuređuje Vaše postojeće dvorište direktno na fotografiji — bez 3D modela, brže i povoljnije.",
+      "Pejzažni render (25.784 RSD) gradi kompletan 3D model terena i vegetacije iz plana — svaki sledeći ugao iste lokacije je 5.274 RSD. Virtuelna renovacija (7.735 RSD) preuređuje Vaše postojeće dvorište direktno na fotografiji — bez 3D modela, brže i povoljnije.",
     benefits: [
       {
         icon: "trust",
@@ -1971,7 +1971,7 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "Više uglova jednom modelovan teren",
-        body: "€220 pokriva kompletan teren i prvi prikaz. Svaki sledeći ugao iste lokacije: €45 (80% jeftiniji).",
+        body: "25.784 RSD pokriva kompletan teren i prvi prikaz. Svaki sledeći ugao iste lokacije: 5.274 RSD (80% jeftiniji).",
       },
     ],
     processSteps: [
@@ -1995,11 +1995,11 @@ export const SERVICES: Service[] = [
     faqs: [
       {
         q: "Zašto je virtuelna renovacija jeftinija od 3D rendera?",
-        a: "Pejzažni render (€220) gradi kompletan 3D model terena i vegetacije iz osnove — to je dugotrajan proces koji omogućava slobodan izbor ugla kamere i prikaz iz vazduha. Virtuelna renovacija (€66) ne gradi 3D model — nove materijale i biljke postavljamo direktno na Vašu fotografiju. Brži je i povoljniji postupak, ali je vezan za ugao i perspektivu snimljene fotografije. Ako prostora još nema ili trebate više uglova, 3D render je jedina opcija.",
+        a: "Pejzažni render (25.784 RSD) gradi kompletan 3D model terena i vegetacije iz osnove — to je dugotrajan proces koji omogućava slobodan izbor ugla kamere i prikaz iz vazduha. Virtuelna renovacija (7.735 RSD) ne gradi 3D model — nove materijale i biljke postavljamo direktno na Vašu fotografiju. Brži je i povoljniji postupak, ali je vezan za ugao i perspektivu snimljene fotografije. Ako prostora još nema ili trebate više uglova, 3D render je jedina opcija.",
       },
       {
-        q: "Šta tačno dobijam za €220?",
-        a: "Kompletno modelovanje terena, postavljanje vegetacije i staza i prvi finalni render. Svaki sledeći ugao iste lokacije: €45 (80% popust). Doplata za neviđenu stranu terena: +25% jednom po modelu. Pogled iz vazduha na celu lokaciju: €380.",
+        q: "Šta tačno dobijam za 25.784 RSD?",
+        a: "Kompletno modelovanje terena, postavljanje vegetacije i staza i prvi finalni render. Svaki sledeći ugao iste lokacije: 5.274 RSD (80% popust). Doplata za neviđenu stranu terena: +25% jednom po modelu. Pogled iz vazduha na celu lokaciju: 44.536 RSD.",
       },
       {
         q: "Razlika u odnosu na klasičan render eksterijera?",
@@ -2011,7 +2011,7 @@ export const SERVICES: Service[] = [
       },
       {
         q: "Da li radite i za stambene komplekse, ne samo privatna dvorišta?",
-        a: "Da. Zajednički prostori u stambenim kompleksima su jednako uobičajen scenario. Razlika je samo u veličini terena — cena ostaje €220 za prvi prikaz, dodatni uglovi €45.",
+        a: "Da. Zajednički prostori u stambenim kompleksima su jednako uobičajen scenario. Razlika je samo u veličini terena — cena ostaje 25.784 RSD za prvi prikaz, dodatni uglovi 5.274 RSD.",
       },
       {
         q: "Koliko traje izrada?",
@@ -2049,16 +2049,16 @@ export const SERVICES: Service[] = [
         id: "landscape-main",
         title: "Pejzažni render (3D)",
         basePrice: 220,
-        priceLabel: "€220",
+        priceLabel: "25.784 RSD",
         unitLabel: "teren + vegetacija + prvi prikaz",
         description:
           "Kompletan 3D model terena i vegetacije iz plana. Pravi izbor kada prostor još ne postoji — gradnja, projektovanje ili prezentacija investitoru. Svaki sledeći ugao iste lokacije 80% jeftiniji.",
         included:
           "Kompletno modelovanje terena, postavljanje vegetacije u zrelom stanju, staza i materijala, i 1 finalni render. Tri runde revizije uključene.",
         addOns: [
-          "Sledeći ugao iste lokacije: €45 (80% jeftiniji)",
+          "Sledeći ugao iste lokacije: 5.274 RSD (80% jeftiniji)",
           "Doplata za neviđenu stranu terena: +25% jednom po modelu",
-          "Pogled iz vazduha na celu lokaciju: €380",
+          "Pogled iz vazduha na celu lokaciju: 44.536 RSD",
         ],
         note: "Počinjete od situacionog plana, visinskih kota i specifikacije biljaka. Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude.",
       },
@@ -2068,16 +2068,16 @@ export const SERVICES: Service[] = [
         id: "landscape-reno",
         title: "Virtuelna renovacija iz fotografije",
         basePrice: 66,
-        priceLabel: "€66",
+        priceLabel: "7.735 RSD",
         unitLabel: "prvi prikaz renoviranog dvorišta",
         description:
           "Pošaljite fotografiju postojećeg dvorišta — mi preuređujemo prostor direktno na slici, bez 3D modela. Brže i povoljnije od pejzažnog rendera. Pravi izbor kada imate fotografiju i samo želite videti kako bi izgledalo uređeno.",
         included:
           "Kompletna vizuelna transformacija dvorišta na osnovu Vaše fotografije — novi pod, vegetacija, staze, fiksirani elementi i nameštaj terasa.",
         addOns: [
-          "Drugi ugao iste lokacije: €59 (10% jeftiniji)",
-          "4. i svaki sledeći ugao: €53 (20% jeftiniji)",
-          "Drugo dvorište iste nekretnine: €56 (15% jeftiniji)",
+          "Drugi ugao iste lokacije: 6.915 RSD (10% jeftiniji)",
+          "4. i svaki sledeći ugao: 6.212 RSD (20% jeftiniji)",
+          "Drugo dvorište iste nekretnine: 6.563 RSD (15% jeftiniji)",
         ],
         note: "Počinjete od fotografije postojećeg stanja i referenci za nove materijale i biljke. Ova opcija je vezana za ugao fotografije — za slobodan izbor kamere koristite Pejzažni render (3D).",
         configuratorCategory: "transformacija",
@@ -2092,9 +2092,9 @@ export const SERVICES: Service[] = [
     category: "eksterijer",
     icon: "camera",
     tagline:
-      "Render eksterijera u fotografiji Vaše lokacije — za €50 više od standardnog rendera.",
+      "Render eksterijera u fotografiji Vaše lokacije — za 5.860 RSD više od standardnog rendera.",
     description:
-      "Ovo je standardni render eksterijera (€250) sa uključenom opcijom Fotomontaža (+€50 = ukupno €300). Tih €50 znači da 3D model objekta ne smeštamo u sintetičko okruženje — već ga uklapamo direktno u fotografiju lokacije koju Vi dostavite, sa usklađenim svetlom, senkama i perspektivom. Rezultat izgleda kao da je zgrada već tu. Idealno za urbanističku komisiju, javnu raspravu i investitorske prezentacije gde komisija mora videti Vaš objekat u stvarnom kontekstu ulice. Render eksterijera možete naručiti i bez ove opcije — samo €250, sa sintetičkim okruženjem. Drugi metod (3D prikaz ulice, €420) modeluje celo okruženje u 3D — pravi izbor kada lokacija nije dostupna za fotografisanje ili trebate slobodan izbor ugla.",
+      "Ovo je standardni render eksterijera (29.300 RSD) sa uključenom opcijom Fotomontaža (+5.860 RSD = ukupno 35.160 RSD). Tih 5.860 RSD znači da 3D model objekta ne smeštamo u sintetičko okruženje — već ga uklapamo direktno u fotografiju lokacije koju Vi dostavite, sa usklađenim svetlom, senkama i perspektivom. Rezultat izgleda kao da je zgrada već tu. Idealno za urbanističku komisiju, javnu raspravu i investitorske prezentacije gde komisija mora videti Vaš objekat u stvarnom kontekstu ulice. Render eksterijera možete naručiti i bez ove opcije — samo 29.300 RSD, sa sintetičkim okruženjem. Drugi metod (3D prikaz ulice, 49.224 RSD) modeluje celo okruženje u 3D — pravi izbor kada lokacija nije dostupna za fotografisanje ili trebate slobodan izbor ugla.",
     highlight:
       "Za projekte u kojima realističnost i autentičnost lokacije presudno menjaju doživljaj projekta — dozvole, javne rasprave, investitorske prezentacije.",
     materials:
@@ -2106,9 +2106,9 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-fotomontaza-before.webp",
     detailAfterAsset: "/artwork/problem-fotomontaza-after.webp",
     philosophy:
-      "Cena se sastoji od dva dela. Render eksterijera (€250) pokriva izgradnju kompletnog 3D modela Vašeg objekta i prvi finalni render. To je isti model, isti posao — bez obzira da li iza njega stoji sintetičko okruženje ili fotografija lokacije. Fotomontaža (+€50) je opcija koja menja samo pozadinu: umesto modelovanog okruženja, 3D model se uklapa u stvarnu fotografiju — usklađujemo perspektivu, svetlo i senke sa momentom snimanja. Taj doplatak je opravdan jer analiza fotografije i usklađivanje perspektive zahtevaju poseban rad koji standardni render nema. Render eksterijera je dostupan i samostalno za €250 — kada Vam sintetičko okruženje odgovara. Ako trebate više uglova: sledeći ugao iz iste fotografije je €55 (82% jeftinije), druga fotografija iste lokacije €85, neviđena strana objekta +25% jednom po modelu.",
+      "Cena se sastoji od dva dela. Render eksterijera (29.300 RSD) pokriva izgradnju kompletnog 3D modela Vašeg objekta i prvi finalni render. To je isti model, isti posao — bez obzira da li iza njega stoji sintetičko okruženje ili fotografija lokacije. Fotomontaža (+5.860 RSD) je opcija koja menja samo pozadinu: umesto modelovanog okruženja, 3D model se uklapa u stvarnu fotografiju — usklađujemo perspektivu, svetlo i senke sa momentom snimanja. Taj doplatak je opravdan jer analiza fotografije i usklađivanje perspektive zahtevaju poseban rad koji standardni render nema. Render eksterijera je dostupan i samostalno za 29.300 RSD — kada Vam sintetičko okruženje odgovara. Ako trebate više uglova: sledeći ugao iz iste fotografije je 6.446 RSD (82% jeftinije), druga fotografija iste lokacije 9.962 RSD, neviđena strana objekta +25% jednom po modelu.",
     priceContext:
-      "€300 — uklapanje + prvi prikaz. Sledeći ugao iste fotografije: €55 (82% jeftiniji).",
+      "35.160 RSD — uklapanje + prvi prikaz. Sledeći ugao iste fotografije: 6.446 RSD (82% jeftiniji).",
     forSegments: [
       "Investitori (urbanistička dozvola, javna rasprava)",
       "Arhitekte (klijentske prezentacije)",
@@ -2133,7 +2133,7 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "Ekonomično za više uglova",
-        body: "Prva fotografija je €300 — svaki sledeći ugao iz iste fotografije je €55 (82% jeftinije). Tri kadra iste lokacije ukupno izlaze €410.",
+        body: "Prva fotografija je 35.160 RSD — svaki sledeći ugao iz iste fotografije je 6.446 RSD (82% jeftinije). Tri kadra iste lokacije ukupno izlaze 48.052 RSD.",
       },
     ],
     processSteps: [
@@ -2156,11 +2156,11 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
-        q: "Od čega se sastoji cena od €300? Mogu li naručiti samo render eksterijera?",
-        a: "€300 su dva zasebna dela: render eksterijera (€250) + opcija Fotomontaža (+€50). Render eksterijera uključuje izgradnju kompletnog 3D modela objekta i jedan finalni render — to je osnova. Fotomontaža (+€50) znači da taj 3D model umesto u sintetičko okruženje uklapamo u stvarnu fotografiju lokacije koju Vi dostavite, sa usklađenim svetlom, senkama i perspektivom. Ako Vam sintetičko okruženje odgovara (npr. za prodajni prospekt bez regulatorne svrhe), možete naručiti samo render eksterijera za €250 — opcija Fotomontaža nije obavezna.",
+        q: "Od čega se sastoji cena od 35.160 RSD? Mogu li naručiti samo render eksterijera?",
+        a: "35.160 RSD su dva zasebna dela: render eksterijera (29.300 RSD) + opcija Fotomontaža (+5.860 RSD). Render eksterijera uključuje izgradnju kompletnog 3D modela objekta i jedan finalni render — to je osnova. Fotomontaža (+5.860 RSD) znači da taj 3D model umesto u sintetičko okruženje uklapamo u stvarnu fotografiju lokacije koju Vi dostavite, sa usklađenim svetlom, senkama i perspektivom. Ako Vam sintetičko okruženje odgovara (npr. za prodajni prospekt bez regulatorne svrhe), možete naručiti samo render eksterijera za 29.300 RSD — opcija Fotomontaža nije obavezna.",
       },
       {
-        q: "Šta tačno dobijam za €300?",
+        q: "Šta tačno dobijam za 35.160 RSD?",
         a: "Kompletan 3D model Vašeg objekta i jedan finalni render — 3D model uklapa se u fotografiju lokacije koju Vi dostavite, sa usklađenim svetlom, senkama i perspektivom. Uključene su tri runde revizije.",
       },
       {
@@ -2168,7 +2168,7 @@ export const SERVICES: Service[] = [
         a: "Vi — ili neko koga angažujete. Dovoljan je i telefon sa dobrom kamerom, pod uslovom da je fotografija oštra i snimljena iz visine oka (ne iz auto-sedišta). Šaljemo Vam kratko uputstvo za snimanje kad potvrdite porudžbinu.",
       },
       {
-        q: "Razlika u odnosu na 3D prikaz ulice (€420)?",
+        q: "Razlika u odnosu na 3D prikaz ulice (49.224 RSD)?",
         a: "Render u fotografiji koristi stvarnu fotografiju lokacije kao pozadinu — okruženje je piksel-realno, ali ste vezani za ugao snimljene fotografije. 3D prikaz ulice modeluje celo okruženje u 3D — možete birati bilo koji ugao, ali okruženje je aproksimacija, ne stvarna fotografija. Ako lokacija postoji i može se fotografisati, render u fotografiji daje verodostojniji rezultat za manje novca.",
       },
       {
@@ -2204,11 +2204,11 @@ export const SERVICES: Service[] = [
     ],
     pricingLead: {
       heading: "Dva metoda, isti cilj — jedan pravi izbor za Vašu lokaciju.",
-      body: "Render u stvarnoj fotografiji (€300) je pravi izbor kada lokacija postoji i može se fotografisati — daje maksimalnu verodostojnost jer koristi stvarno okruženje. 3D prikaz ulice (€420) je pravi izbor kada lokacija još ne postoji, teško je dostupna ili trebate više uglova bez ograničenja fotografije. Odaberite prema tome šta imate u rukama.",
+      body: "Render u stvarnoj fotografiji (35.160 RSD) je pravi izbor kada lokacija postoji i može se fotografisati — daje maksimalnu verodostojnost jer koristi stvarno okruženje. 3D prikaz ulice (49.224 RSD) je pravi izbor kada lokacija još ne postoji, teško je dostupna ili trebate više uglova bez ograničenja fotografije. Odaberite prema tome šta imate u rukama.",
     },
     comparison: {
-      aLabel: "Render u fotografiji — €300",
-      bLabel: "3D prikaz ulice — €420",
+      aLabel: "Render u fotografiji — 35.160 RSD",
+      bLabel: "3D prikaz ulice — 49.224 RSD",
       rows: [
         { label: "Ulazni materijal", a: "Stvarna fotografija lokacije", b: "Arhitektonski nacrti" },
         { label: "Okruženje", a: "Piksel-realno (prava fotografija)", b: "Modelovano u 3D (aproksimacija)" },
@@ -2221,19 +2221,19 @@ export const SERVICES: Service[] = [
         id: "photomontage-main",
         title: "Render u stvarnoj fotografiji lokacije",
         basePrice: 300,
-        priceLabel: "€300",
-        unitLabel: "render eksterijera €250 + Fotomontaža +€50",
-        decomposition: "Render eksterijera €250 + Fotomontaža €50",
+        priceLabel: "35.160 RSD",
+        unitLabel: "render eksterijera 29.300 RSD + Fotomontaža +5.860 RSD",
+        decomposition: "Render eksterijera 29.300 RSD + Fotomontaža 5.860 RSD",
         description:
           "3D model objekta se uklapa u fotografiju lokacije koju Vi dostavite — usklađeno svetlo, senke i perspektiva. Maksimalna verodostojnost za komisije, javne rasprave i prezentacije kupcu.",
         included:
-          "Kompletan 3D model objekta (isto što i standardni render eksterijera), postavljanje scene i osvetljenja usklađenih sa fotografijom lokacije, jedno uklapanje u jednu fotografiju koju Vi dostavite — jedan finalni render. Tri runde revizije uključene. Fotomontaža opcija je pre-uključena u konfiguratoru — korpa prikazuje stavku po stavku: render eksterijera €250 + Fotomontaža €50 = €300.",
+          "Kompletan 3D model objekta (isto što i standardni render eksterijera), postavljanje scene i osvetljenja usklađenih sa fotografijom lokacije, jedno uklapanje u jednu fotografiju koju Vi dostavite — jedan finalni render. Tri runde revizije uključene. Fotomontaža opcija je pre-uključena u konfiguratoru — korpa prikazuje stavku po stavku: render eksterijera 29.300 RSD + Fotomontaža 5.860 RSD = 35.160 RSD.",
         addOns: [
-          "Dodatni ugao iz iste fotografije: €55 (82% jeftinije)",
-          "Druga fotografija iste lokacije (drugi ugao snimanja): €85",
+          "Dodatni ugao iz iste fotografije: 6.446 RSD (82% jeftinije)",
+          "Druga fotografija iste lokacije (drugi ugao snimanja): 9.962 RSD",
           "Neviđena strana objekta: +25% jednokratno",
         ],
-        note: "Cena: render eksterijera €250 + Fotomontaža +€50 = €300. Render eksterijera možete naručiti i bez Fotomontaže — samo €250 sa sintetičkim okruženjem. Fotomontaža opcija dodaje uklapanje u stvarnu fotografiju lokacije.",
+        note: "Cena: render eksterijera 29.300 RSD + Fotomontaža +5.860 RSD = 35.160 RSD. Render eksterijera možete naručiti i bez Fotomontaže — samo 29.300 RSD sa sintetičkim okruženjem. Fotomontaža opcija dodaje uklapanje u stvarnu fotografiju lokacije.",
       },
     ],
     crossSellVariants: [
@@ -2241,15 +2241,15 @@ export const SERVICES: Service[] = [
         id: "exterior-aerial",
         title: "3D prikaz ulice (streetscape)",
         basePrice: 420,
-        priceLabel: "€420",
+        priceLabel: "49.224 RSD",
         unitLabel: "pun 3D model objekta + okruženja",
         description:
           "Kada lokacija ne postoji ili trebate više uglova bez ograničenja fotografije — celo okruženje se modeluje u 3D, primarno iz ulične perspektive.",
         included:
           "Pun 3D model objekta i okruženja (susedne kuće, ulica, parcela), ulična perspektiva i 2 ugla uključena.",
         addOns: [
-          "Dodatni ugao: €48 (80% jeftinije)",
-          "Neviđena/zadnja strana objekta: +25% (€105 jednokratno)",
+          "Dodatni ugao: 5.626 RSD (80% jeftinije)",
+          "Neviđena/zadnja strana objekta: +25% (12.306 RSD jednokratno)",
         ],
         note: "Pravi izbor kada lokacija još nije dostupna za fotografisanje ili trebate slobodan izbor ugla kamere.",
       },
@@ -2274,9 +2274,9 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-3d-situacioni-before.webp",
     detailAfterAsset: "/artwork/problem-3d-situacioni-after.webp",
     philosophy:
-      "Cena pokriva izradu kompletnog terena, postavljanje objekata, puteva i pejzaža. Pošto je scena izgrađena, svaki sledeći ugao košta €65 (81% jeftinije), sezonska varijanta (zima/leto) €85, a prikaz po fazama izgradnje €95. Tako investitor ima vizuelni materijal za sve faze kampanje — fazu pre prodaje, fazu otvaranja prvog objekta itd. — iz jednog modela.",
+      "Cena pokriva izradu kompletnog terena, postavljanje objekata, puteva i pejzaža. Pošto je scena izgrađena, svaki sledeći ugao košta 7.618 RSD (81% jeftinije), sezonska varijanta (zima/leto) 9.962 RSD, a prikaz po fazama izgradnje 11.134 RSD. Tako investitor ima vizuelni materijal za sve faze kampanje — fazu pre prodaje, fazu otvaranja prvog objekta itd. — iz jednog modela.",
     priceContext:
-      "€350 — cela parcela: teren + objekti + pejzaž + prvi prikaz iz vazduha.",
+      "41.020 RSD — cela parcela: teren + objekti + pejzaž + prvi prikaz iz vazduha.",
     forSegments: [
       "Investitori i developeri",
       "Urbanisti i studija za masterplan",
@@ -2301,7 +2301,7 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "Više vizuala iz iste scene",
-        body: "€350 pokriva kompletan teren. Dodatni ugao €65, sezonska varijanta €85, prikaz po fazama izgradnje €95 — bez ponovnog modelovanja.",
+        body: "41.020 RSD pokriva kompletan teren. Dodatni ugao 7.618 RSD, sezonska varijanta 9.962 RSD, prikaz po fazama izgradnje 11.134 RSD — bez ponovnog modelovanja.",
       },
     ],
     processSteps: [
@@ -2324,12 +2324,12 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €350?",
-        a: "Modelovanje cele parcele (teren, objekti, putevi, parking, vegetacija, pejzaž) i prvi finalni prikaz iz vazduha. Dodatni ugao iste parcele: €65 (81% popust). Sezonska varijanta (zima/leto): €85. Prikaz po fazama izgradnje: €95.",
+        q: "Šta tačno dobijam za 41.020 RSD?",
+        a: "Modelovanje cele parcele (teren, objekti, putevi, parking, vegetacija, pejzaž) i prvi finalni prikaz iz vazduha. Dodatni ugao iste parcele: 7.618 RSD (81% popust). Sezonska varijanta (zima/leto): 9.962 RSD. Prikaz po fazama izgradnje: 11.134 RSD.",
       },
       {
-        q: "Razlika u odnosu na 3D prikaz ulice (€420)?",
-        a: "3D prikaz ulice (€420) je fokusiran na jedan objekat sa okruženjem (susedne kuće, ulica). Situacioni plan (€350) prikazuje celu parcelu sa svim objektima i razvojem — masterplan nivo, iz vazduha. Prvi je za pojedinačan objekat u kontekstu ulice, drugi za ceo kompleks odozgo.",
+        q: "Razlika u odnosu na 3D prikaz ulice (49.224 RSD)?",
+        a: "3D prikaz ulice (49.224 RSD) je fokusiran na jedan objekat sa okruženjem (susedne kuće, ulica). Situacioni plan (41.020 RSD) prikazuje celu parcelu sa svim objektima i razvojem — masterplan nivo, iz vazduha. Prvi je za pojedinačan objekat u kontekstu ulice, drugi za ceo kompleks odozgo.",
       },
       {
         q: "Da li se može koristiti za urbanističku dozvolu?",
@@ -2337,7 +2337,7 @@ export const SERVICES: Service[] = [
       },
       {
         q: "Mogu li da naručim faze izgradnje?",
-        a: "Da. Prikaz po fazama izgradnje (€95) prikazuje istu parcelu u različitim fazama razvoja — pre, prva faza završena, druga faza u nazaku itd. Investitorska kampanja dobija vizuelni materijal za svaku fazu.",
+        a: "Da. Prikaz po fazama izgradnje (11.134 RSD) prikazuje istu parcelu u različitim fazama razvoja — pre, prva faza završena, druga faza u nazaku itd. Investitorska kampanja dobija vizuelni materijal za svaku fazu.",
       },
       {
         q: "Koliko traje izrada?",
@@ -2371,16 +2371,16 @@ export const SERVICES: Service[] = [
         id: "site-plan-main",
         title: "3D situacioni prikaz",
         basePrice: 350,
-        priceLabel: "€350",
+        priceLabel: "41.020 RSD",
         unitLabel: "kompletna parcela + prvi prikaz iz vazduha",
         description:
-          "Pun teren, svi objekti, putevi i pejzaž — investitorski materijal. Sledeći ugao iste parcele: €65.",
+          "Pun teren, svi objekti, putevi i pejzaž — investitorski materijal. Sledeći ugao iste parcele: 7.618 RSD.",
         included:
           "Modelovanje cele parcele: teren, objekti, putevi, parking, vegetacija i pejzaž. Uključuje 1 finalni prikaz iz vazduha.",
         addOns: [
-          "Dodatni ugao iste parcele: €65 (81% popust)",
-          "Sezonska varijanta (zima/leto): €85",
-          "Prikaz po fazama izgradnje (vidljivost po fazi): €95",
+          "Dodatni ugao iste parcele: 7.618 RSD (81% popust)",
+          "Sezonska varijanta (zima/leto): 9.962 RSD",
+          "Prikaz po fazama izgradnje (vidljivost po fazi): 11.134 RSD",
         ],
       },
     ],
@@ -2394,7 +2394,7 @@ export const SERVICES: Service[] = [
     icon: "sun",
     tagline: "Dnevni kadar dobija topao večernji utisak.",
     description:
-      "Zamena neba, korekcija osvetljenja i topla atmosfera prozora — dnevna fotografija eksterijera postaje atraktivan večernji oglas. Za 10+ slika cena pada na €8/slika (20% popust).",
+      "Zamena neba, korekcija osvetljenja i topla atmosfera prozora — dnevna fotografija eksterijera postaje atraktivan večernji oglas. Za 10+ slika cena pada na 938 RSD/slika (20% popust).",
     highlight:
       "Za agente nekretnina i investitore kada ista scena treba i u dnevnoj i u večernjoj verziji za marketing kampanju.",
     materials: "Pošaljite nam dnevne fotografije eksterijera visoke rezolucije.",
@@ -2406,8 +2406,8 @@ export const SERVICES: Service[] = [
     detailAfterAsset: "/artwork/problem-dan-u-noc-after.webp",
     outsourced: true,
     philosophy:
-      "Brza post-produkcija sa jasnom cenom po slici. Pakovanje 10+ slika: €8/slika (20% popust). Hitna isporuka u roku od 24h: +50%.",
-    priceContext: "€10 po slici · €8 po slici za pakovanje 10+.",
+      "Brza post-produkcija sa jasnom cenom po slici. Pakovanje 10+ slika: 938 RSD/slika (20% popust). Hitna isporuka u roku od 24h: +50%.",
+    priceContext: "1.172 RSD po slici · 938 RSD po slici za pakovanje 10+.",
     forSegments: [
       "Agencije nekretnina (dramatic listing photo)",
       "Investitori (kampanje sa dnevno/večernjim varijantama)",
@@ -2426,8 +2426,8 @@ export const SERVICES: Service[] = [
       },
       {
         icon: "value",
-        title: "€10 po slici, €8 za pakovanje",
-        body: "Jedna slika €10, pakovanje 10+ slika pada na €8 po slici (20% popust). Kompletna kampanja stana ili kuće za delić cene novog snimanja.",
+        title: "1.172 RSD po slici, 938 RSD za pakovanje",
+        body: "Jedna slika 1.172 RSD, pakovanje 10+ slika pada na 938 RSD po slici (20% popust). Kompletna kampanja stana ili kuće za delić cene novog snimanja.",
       },
       {
         icon: "trust",
@@ -2450,13 +2450,13 @@ export const SERVICES: Service[] = [
       },
       {
         title: "Isporuka",
-        body: "Dobijate finalne slike spremne za listing i kampanje. Po želji uz uklanjanje neželjenih senki za €5 po slici.",
+        body: "Dobijate finalne slike spremne za listing i kampanje. Po želji uz uklanjanje neželjenih senki za 586 RSD po slici.",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €10?",
-        a: "Transformacija jedne dnevne fotografije eksterijera u dramatičan večernji prikaz — uključuje zamenu neba i podešavanje osvetljenja. Uklanjanje neželjenih senki: €5 po slici. Pakovanje 10+ slika: €8 po slici (20% popust). Hitna isporuka u 24h: +50%.",
+        q: "Šta tačno dobijam za 1.172 RSD?",
+        a: "Transformacija jedne dnevne fotografije eksterijera u dramatičan večernji prikaz — uključuje zamenu neba i podešavanje osvetljenja. Uklanjanje neželjenih senki: 586 RSD po slici. Pakovanje 10+ slika: 938 RSD po slici (20% popust). Hitna isporuka u 24h: +50%.",
       },
       {
         q: "Da li deluje stvarno ili kao filter?",
@@ -2472,7 +2472,7 @@ export const SERVICES: Service[] = [
       },
       {
         q: "Da li radite za agencije sa puno listinga?",
-        a: "Da. Pakovanje 10+ slika je €8 po slici (20% popust). Stalni agenti mogu da dogovore prioritet izrade i konzistentnu light-grading liniju kroz sve listinge.",
+        a: "Da. Pakovanje 10+ slika je 938 RSD po slici (20% popust). Stalni agenti mogu da dogovore prioritet izrade i konzistentnu light-grading liniju kroz sve listinge.",
       },
       {
         q: "Šta dostavljam da biste počeli?",
@@ -2502,15 +2502,15 @@ export const SERVICES: Service[] = [
         id: "day-to-dusk-main",
         title: "Dnevni u noćni prikaz",
         basePrice: 10,
-        priceLabel: "€10",
+        priceLabel: "1.172 RSD",
         unitLabel: "po slici",
         description:
-          "Zamena neba, lighting i kolor grejding za jednu sliku. Pakovanje 10+: €8/sliku.",
+          "Zamena neba, lighting i kolor grejding za jednu sliku. Pakovanje 10+: 938 RSD/sliku.",
         included:
           "Transformacija jedne dnevne fotografije eksterijera u dramatičan večernji prikaz. Uključuje zamenu neba i podešavanje osvetljenja.",
         addOns: [
-          "Uklanjanje neželjenih senki: €5",
-          "Pakovanje 10+ slika: €8 po slici (20% popust)",
+          "Uklanjanje neželjenih senki: 586 RSD",
+          "Pakovanje 10+ slika: 938 RSD po slici (20% popust)",
           "Hitna isporuka u 24h: +50%",
         ],
       },
@@ -2538,9 +2538,9 @@ export const SERVICES: Service[] = [
     detailAfterAsset: "/artwork/problem-uklanjanje-elemenata-after.webp",
     outsourced: true,
     philosophy:
-      "Jednostavno uklanjanje (sitnice, lične stvari): €12. Kompleksno (veliki objekat sa rekonstrukcijom pozadine): €25. Pakovanje 10+ slika: €10 jednostavno / €20 kompleksno po slici.",
+      "Jednostavno uklanjanje (sitnice, lične stvari): 1.406 RSD. Kompleksno (veliki objekat sa rekonstrukcijom pozadine): 2.930 RSD. Pakovanje 10+ slika: 1.172 RSD jednostavno / 2.344 RSD kompleksno po slici.",
     priceContext:
-      "€12 jednostavno / €25 kompleksno · pakovanje 10+: €10 / €20.",
+      "1.406 RSD jednostavno / 2.930 RSD kompleksno · pakovanje 10+: 1.172 RSD / 2.344 RSD.",
     forSegments: [
       "Agencije nekretnina (čist listing photo)",
       "Fotografi (post-produkcija praznih jedinica)",
@@ -2560,7 +2560,7 @@ export const SERVICES: Service[] = [
       {
         icon: "value",
         title: "Dva tier-a po složenosti",
-        body: "Sitnice i lične stvari: €12. Veliki objekat sa rekonstrukcijom pozadine: €25. Pakovanje 10+ slika spušta na €10 / €20 po slici.",
+        body: "Sitnice i lične stvari: 1.406 RSD. Veliki objekat sa rekonstrukcijom pozadine: 2.930 RSD. Pakovanje 10+ slika spušta na 1.172 RSD / 2.344 RSD po slici.",
       },
       {
         icon: "trust",
@@ -2575,7 +2575,7 @@ export const SERVICES: Service[] = [
       },
       {
         title: "Potvrda ponude",
-        body: "Šaljemo cenu (jednostavno €12 ili kompleksno €25) i rok najkasnije narednog radnog dana.",
+        body: "Šaljemo cenu (jednostavno 1.406 RSD ili kompleksno 2.930 RSD) i rok najkasnije narednog radnog dana.",
       },
       {
         title: "Uklanjanje",
@@ -2588,8 +2588,8 @@ export const SERVICES: Service[] = [
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €12?",
-        a: "Digitalno uklanjanje sitnica i ličnih stvari sa jedne fotografije. Kompleksno uklanjanje (veliki objekat sa rekonstrukcijom pozadine): €25. Dodatna slika — jednostavno: €8 (33% popust). Dodatna slika — kompleksno: €18 (28% popust). Pakovanje 10+: €10 / €20 po slici.",
+        q: "Šta tačno dobijam za 1.406 RSD?",
+        a: "Digitalno uklanjanje sitnica i ličnih stvari sa jedne fotografije. Kompleksno uklanjanje (veliki objekat sa rekonstrukcijom pozadine): 2.930 RSD. Dodatna slika — jednostavno: 938 RSD (33% popust). Dodatna slika — kompleksno: 2.110 RSD (28% popust). Pakovanje 10+: 1.172 RSD / 2.344 RSD po slici.",
       },
       {
         q: "Kako da znam da li je moj slučaj jednostavan ili kompleksan?",
@@ -2631,17 +2631,17 @@ export const SERVICES: Service[] = [
         id: "item-removal-main",
         title: "Uklanjanje predmeta",
         basePrice: 12,
-        priceLabel: "€12",
+        priceLabel: "1.406 RSD",
         unitLabel: "po slici (jednostavno)",
         description:
-          "€12 jednostavno (sitnice, lične stvari) / €25 kompleksno (veliki objekti). Pakovanje 10+: popust na količinu.",
+          "1.406 RSD jednostavno (sitnice, lične stvari) / 2.930 RSD kompleksno (veliki objekti). Pakovanje 10+: popust na količinu.",
         included:
           "Digitalno uklanjanje predmeta, nereda ili ličnih stvari sa jedne fotografije, uz rekonstrukciju pozadine.",
         addOns: [
-          "Kompleksno uklanjanje (rekonstrukcija pozadine): €25",
-          "Dodatna slika — jednostavno: €8 (33% popust)",
-          "Dodatna slika — kompleksno: €18 (28% popust)",
-          "Pakovanje 10+ slika: €10 jednostavno / €20 kompleksno",
+          "Kompleksno uklanjanje (rekonstrukcija pozadine): 2.930 RSD",
+          "Dodatna slika — jednostavno: 938 RSD (33% popust)",
+          "Dodatna slika — kompleksno: 2.110 RSD (28% popust)",
+          "Pakovanje 10+ slika: 1.172 RSD jednostavno / 2.344 RSD kompleksno",
         ],
       },
     ],

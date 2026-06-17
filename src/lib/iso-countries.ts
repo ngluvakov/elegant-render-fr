@@ -6,7 +6,7 @@
  * (it ends up on the invoice). The `label` is the customer-facing
  * Serbian name.
  *
- * Top of the list carries common European + Balkan markets so the
+ * Top of the list carries common regional + Balkan markets so the
  * 90% case is one click instead of a scroll. The rest follows
  * Serbian-locale alphabetical order.
  *

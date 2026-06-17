@@ -108,7 +108,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
     await sendOrderConfirmationEmail(
       order.user.email,
       order.orderNumber,
-      order.totalCents ? order.totalCents / 100 : order.totalEur,
+      order.totalCents ? order.totalCents / 100 : order.totalRsd,
       order.billingCurrency && order.billingTotalCents != null
         ? formatOutboxMoney(order.billingTotalCents, order.billingCurrency)
         : undefined,
@@ -132,7 +132,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       "contactName",
       "productLabel",
       "projectName",
-      "priceEur",
+      "priceRsd",
       "orderNumber",
       "orderId",
       "token",
@@ -147,7 +147,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       contactName: String(payload.contactName),
       productLabel: String(payload.productLabel),
       projectName: String(payload.projectName),
-      priceEur: Number(payload.priceEur),
+      priceRsd: Number(payload.priceRsd),
       orderNumber: String(payload.orderNumber),
       orderId: String(payload.orderId),
       token: String(payload.token),
@@ -213,10 +213,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       payload.billingTotalCents == null
         ? null
         : Number(payload.billingTotalCents);
-    const billingCurrency =
-      payload.billingCurrency === "RSD" || payload.billingCurrency === "EUR"
-        ? payload.billingCurrency
-        : null;
+    const billingCurrency = payload.billingCurrency === "RSD" ? "RSD" : null;
     const reason = String(payload.reason ?? "");
     const rawLines = payload.lines;
     if (!to || !orderNumber || !orderId || !Number.isFinite(totalCents) || !Array.isArray(rawLines)) {
@@ -265,10 +262,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       payload.billingTotalCents == null
         ? null
         : Number(payload.billingTotalCents);
-    const billingCurrency =
-      payload.billingCurrency === "RSD" || payload.billingCurrency === "EUR"
-        ? payload.billingCurrency
-        : null;
+    const billingCurrency = payload.billingCurrency === "RSD" ? "RSD" : null;
     if (!to || !orderNumber || !orderId || !Number.isFinite(totalCents)) {
       throw new Error("additional_charge_paid_email: missing required field(s)");
     }
@@ -287,17 +281,14 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
   invoice_issued_email: async (payload) => {
     const to = String(payload.to ?? "");
     const invoiceNumber = String(payload.invoiceNumber ?? "");
-    const totalEur = Number(payload.totalEur);
+    const totalRsd = Number(payload.totalRsd);
     const billingTotalCents =
       payload.billingTotalCents == null
         ? null
         : Number(payload.billingTotalCents);
-    const billingCurrency =
-      payload.billingCurrency === "RSD" || payload.billingCurrency === "EUR"
-        ? payload.billingCurrency
-        : null;
+    const billingCurrency = payload.billingCurrency === "RSD" ? "RSD" : null;
     const pdfPath = String(payload.pdfPath ?? "");
-    if (!to || !invoiceNumber || !pdfPath || !Number.isFinite(totalEur)) {
+    if (!to || !invoiceNumber || !pdfPath || !Number.isFinite(totalRsd)) {
       throw new Error("invoice_issued_email: missing required field(s)");
     }
     // Pull the rendered PDF straight from Supabase storage. We
@@ -318,7 +309,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
     await sendInvoiceIssuedEmail({
       to,
       invoiceNumber,
-      totalEur,
+      totalRsd,
       amountLabel:
         billingCurrency && isFiniteNumber(billingTotalCents)
           ? formatOutboxMoney(billingTotalCents, billingCurrency)
@@ -330,22 +321,19 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
   proforma_issued_email: async (payload) => {
     const to = String(payload.to ?? "");
     const proformaNumber = String(payload.proformaNumber ?? "");
-    const totalEur = Number(payload.totalEur);
+    const totalRsd = Number(payload.totalRsd);
     const billingTotalCents =
       payload.billingTotalCents == null
         ? null
         : Number(payload.billingTotalCents);
-    const billingCurrency =
-      payload.billingCurrency === "RSD" || payload.billingCurrency === "EUR"
-        ? payload.billingCurrency
-        : null;
+    const billingCurrency = payload.billingCurrency === "RSD" ? "RSD" : null;
     const pdfPath = String(payload.pdfPath ?? "");
     const dueDate = new Date(String(payload.dueDate ?? ""));
     if (
       !to ||
       !proformaNumber ||
       !pdfPath ||
-      !Number.isFinite(totalEur) ||
+      !Number.isFinite(totalRsd) ||
       Number.isNaN(dueDate.getTime())
     ) {
       throw new Error("proforma_issued_email: missing required field(s)");
@@ -364,7 +352,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
     await sendProformaIssuedEmail({
       to,
       proformaNumber,
-      totalEur,
+      totalRsd,
       amountLabel:
         billingCurrency && isFiniteNumber(billingTotalCents)
           ? formatOutboxMoney(billingTotalCents, billingCurrency)
@@ -472,14 +460,11 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
-function formatOutboxMoney(cents: number, currency: "RSD" | "EUR"): string {
-  if (currency === "RSD") {
-    return `${(cents / 100).toLocaleString("sr-Latn-RS", {
-      maximumFractionDigits: 0,
-    })} RSD`;
-  }
-  const eur = cents / 100;
-  return eur % 1 === 0 ? `€${eur.toFixed(0)}` : `€${eur.toFixed(2)}`;
+function formatOutboxMoney(cents: number, _currency: "RSD" | null = "RSD"): string {
+  void _currency;
+  return `${(cents / 100).toLocaleString("sr-Latn-RS", {
+    maximumFractionDigits: 0,
+  })} RSD`;
 }
 
 export type ProcessBatchResult = {

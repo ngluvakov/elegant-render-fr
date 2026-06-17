@@ -67,7 +67,7 @@ export function QuoteSummary() {
     pushGoogleDataLayerEvent(beginCheckoutEvent);
     track("checkout_started", {
       cart_size: calculation.items.length,
-      total_eur: calculation.total,
+      total_rsd: calculation.total,
     });
     router.push("/poruci");
   };
@@ -78,19 +78,19 @@ export function QuoteSummary() {
       sourceLabel: "Preuzmite moju ponudu",
       serviceType: "Već izabrane stavke iz konfiguratora",
       quoteSnapshot: {
-        totalEur: calculation.total,
-        originalTotalEur: calculation.originalTotal,
+        totalRsd: calculation.total,
+        originalTotalRsd: calculation.originalTotal,
         items: calculation.items.map((item) => ({
           productId: item.productId,
           productLabel: item.productLabel,
           categoryLabel: item.categoryLabel,
-          totalEur: item.totalEur,
+          totalRsd: item.totalRsd,
           addOns: item.addOns
             .filter((addOn) => addOn.billableQty > 0)
             .map((addOn) => ({
               label: addOn.label,
               qty: addOn.billableQty,
-              totalEur: addOn.totalEur,
+              totalRsd: addOn.totalRsd,
             })),
         })),
       },
@@ -116,7 +116,7 @@ export function QuoteSummary() {
     setShareState({ kind: "saved", url, copied: false });
     track("quote_saved", {
       cart_size: calculation.items.length,
-      total_eur: calculation.total,
+      total_rsd: calculation.total,
     });
   };
 
@@ -183,8 +183,8 @@ export function QuoteSummary() {
             (a) => a.billableQty > 0,
           ).length;
           const { primary, struck } = formatPublicDiscountedPrice(
-            item.totalEur,
-            item.originalTotalEur,
+            item.totalRsd,
+            item.originalTotalRsd,
             item.discountPct,
             displayCurrency,
             pricingSettings,

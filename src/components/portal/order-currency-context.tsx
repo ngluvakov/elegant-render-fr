@@ -1,11 +1,10 @@
 /**
  * OrderCurrencyContext — Per-order display currency for the portal.
  *
- * The portal stores EUR amounts in the DB (integer cents on OrderItem)
- * but renders them in the buyer's currency (RSD for RS, EUR otherwise)
- * to match how /cene and /poruci present prices. The order's
- * billingCurrency drives the choice; pricingSettings carries the EUR→RSD
- * rate + Serbia VAT rate used when displaying and splitting RSD gross amounts.
+ * The portal stores RSD amounts in the DB (integer cents on OrderItem)
+ * and renders every order in RSD to match /cene and /poruci.
+ * pricingSettings carries Serbia VAT rate used when displaying and splitting
+ * RSD gross amounts.
  *
  * Wrap the order detail subtree in <OrderCurrencyProvider> and read with
  * useOrderCurrency() inside client components. Server children receive
@@ -26,11 +25,11 @@ import {
 type OrderCurrencyValue = {
   currency: DisplayCurrency;
   settings: PublicPricingFormatSettings;
-  formatPrice: (amountEur: number) => string;
+  formatPrice: (amountRsd: number) => string;
   formatPriceText: (text: string) => string;
   formatDiscounted: (
-    totalEur: number,
-    originalTotalEur: number,
+    totalRsd: number,
+    originalTotalRsd: number,
     pct: number,
   ) => PublicDiscountedPriceParts;
 };
@@ -50,14 +49,14 @@ export function OrderCurrencyProvider({
     () => ({
       currency,
       settings,
-      formatPrice: (amountEur) =>
-        formatPublicPrice(amountEur, currency, settings),
+      formatPrice: (amountRsd) =>
+        formatPublicPrice(amountRsd, currency, settings),
       formatPriceText: (text) =>
         formatPublicPriceText(text, currency, settings),
-      formatDiscounted: (totalEur, originalTotalEur, pct) =>
+      formatDiscounted: (totalRsd, originalTotalRsd, pct) =>
         formatPublicDiscountedPrice(
-          totalEur,
-          originalTotalEur,
+          totalRsd,
+          originalTotalRsd,
           pct,
           currency,
           settings,

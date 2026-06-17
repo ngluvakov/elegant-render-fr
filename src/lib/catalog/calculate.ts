@@ -37,7 +37,7 @@ import {
 import {
   AI_CREDIT_PRODUCT_ID,
   calculateAiCreditPurchase,
-  centsToEur,
+  centsToRsd,
   formatCents,
   isAiCreditProduct,
 } from "@/lib/ai-studio/catalog";
@@ -81,8 +81,8 @@ export type AddOnBreakdown = {
   quantity: number;
   includedQty: number;
   billableQty: number;
-  unitPriceEur: number;
-  totalEur: number;
+  unitPriceRsd: number;
+  totalRsd: number;
   isVolumeRate: boolean;
 };
 
@@ -92,16 +92,16 @@ export type LineItemBreakdown = {
   productLabel: string;
   categoryLabel: string;
   kind: "service" | "ai_credits";
-  basePriceEur: number;
+  basePriceRsd: number;
   basePriceCents: number;
   durationSeconds?: number;
   durationDiscount?: number;
   addOns: AddOnBreakdown[];
-  totalEur: number;
+  totalRsd: number;
   totalCents: number;
-  originalBasePriceEur: number;
+  originalBasePriceRsd: number;
   originalBasePriceCents: number;
-  originalTotalEur: number;
+  originalTotalRsd: number;
   originalTotalCents: number;
   aiCreditQuantity?: number;
   aiCreditUnits?: number;
@@ -147,33 +147,33 @@ function calculateAddOn(
       quantity,
       includedQty: def.includedQty,
       billableQty,
-      unitPriceEur: def.priceEur,
-      totalEur: 0,
+      unitPriceRsd: def.priceRsd,
+      totalRsd: 0,
       isVolumeRate: false,
     };
   }
 
   // Fixed add-ons with potential volume rules
-  let totalEur = 0;
+  let totalRsd = 0;
   let isVolumeRate = false;
-  let effectiveUnitPrice = def.priceEur;
+  let effectiveUnitPrice = def.priceRsd;
 
   if (def.volumeRules.length > 0) {
     // Calculate per-unit with volume tiers
     for (let q = 1; q <= billableQty; q++) {
       const totalQtyIncludingIncluded = def.includedQty + q;
-      let unitPrice = def.priceEur;
+      let unitPrice = def.priceRsd;
       for (const rule of def.volumeRules) {
         if (totalQtyIncludingIncluded > rule.afterQty) {
-          unitPrice = rule.priceEur;
+          unitPrice = rule.priceRsd;
           isVolumeRate = true;
         }
       }
       effectiveUnitPrice = unitPrice;
-      totalEur += unitPrice;
+      totalRsd += unitPrice;
     }
   } else {
-    totalEur = def.priceEur * billableQty;
+    totalRsd = def.priceRsd * billableQty;
   }
 
   return {
@@ -182,8 +182,8 @@ function calculateAddOn(
     quantity,
     includedQty: def.includedQty,
     billableQty,
-    unitPriceEur: effectiveUnitPrice,
-    totalEur: Math.round(totalEur),
+    unitPriceRsd: effectiveUnitPrice,
+    totalRsd: Math.round(totalRsd),
     isVolumeRate,
   };
 }
@@ -207,9 +207,9 @@ function applyPercentAddOns(
     const def = product.addOns.find((ao) => ao.id === breakdown.addOnId);
     if (def?.priceType === "percent" && breakdown.billableQty > 0) {
       const pctAmount =
-        subtotalBeforePercent * (def.priceEur / 100) * breakdown.billableQty;
-      breakdown.totalEur = Math.round(pctAmount);
-      percentTotal += breakdown.totalEur;
+        subtotalBeforePercent * (def.priceRsd / 100) * breakdown.billableQty;
+      breakdown.totalRsd = Math.round(pctAmount);
+      percentTotal += breakdown.totalRsd;
     }
   }
 
@@ -231,9 +231,9 @@ function calculateItem(
   if (product.durationConfig) {
     const discount = getDurationDiscount(product.durationConfig, seconds);
     durationDiscount = discount;
-    baseTotal = product.durationConfig.perSecondEur * seconds * (1 - discount);
+    baseTotal = product.durationConfig.perSecondRsd * seconds * (1 - discount);
   } else {
-    baseTotal = product.basePriceEur;
+    baseTotal = product.basePriceRsd;
   }
 
   // Calculate fixed add-ons
@@ -245,7 +245,7 @@ function calculateItem(
     const breakdown = calculateAddOn(def, qty);
     addOnBreakdowns.push(breakdown);
     if (def.priceType !== "percent") {
-      fixedAddOnTotal += breakdown.totalEur;
+      fixedAddOnTotal += breakdown.totalRsd;
     }
   }
 
@@ -258,7 +258,7 @@ function calculateItem(
   );
 
   const basePriceRounded = Math.round(baseTotal);
-  const totalEur = Math.round(baseTotal + fixedAddOnTotal + percentTotal);
+  const totalRsd = Math.round(baseTotal + fixedAddOnTotal + percentTotal);
 
   return {
     instanceId: item.instanceId,
@@ -266,17 +266,17 @@ function calculateItem(
     productLabel: product.label,
     categoryLabel,
     kind: "service",
-    basePriceEur: basePriceRounded,
+    basePriceRsd: basePriceRounded,
     basePriceCents: basePriceRounded * 100,
     durationSeconds: product.durationConfig ? seconds : undefined,
     durationDiscount,
     addOns: addOnBreakdowns,
-    totalEur,
-    totalCents: totalEur * 100,
-    originalBasePriceEur: basePriceRounded,
+    totalRsd,
+    totalCents: totalRsd * 100,
+    originalBasePriceRsd: basePriceRounded,
     originalBasePriceCents: basePriceRounded * 100,
-    originalTotalEur: totalEur,
-    originalTotalCents: totalEur * 100,
+    originalTotalRsd: totalRsd,
+    originalTotalCents: totalRsd * 100,
     discountPct: 0,
     discountReason: null,
   };
@@ -292,21 +292,21 @@ function calculateAiCreditItem(
     pricingSettings.aiCreditTiers,
     pricingSettings.aiCreditUnitsPerCredit,
   );
-  const totalEur = centsToEur(purchase.totalCents);
+  const totalRsd = centsToRsd(purchase.totalCents);
   return {
     instanceId: item.instanceId,
     productId: AI_CREDIT_PRODUCT_ID,
     productLabel: "AI Studio krediti",
     categoryLabel: "AI Studio",
     kind: "ai_credits",
-    basePriceEur: totalEur,
+    basePriceRsd: totalRsd,
     basePriceCents: purchase.totalCents,
     addOns: [],
-    totalEur,
+    totalRsd,
     totalCents: purchase.totalCents,
-    originalBasePriceEur: totalEur,
+    originalBasePriceRsd: totalRsd,
     originalBasePriceCents: purchase.totalCents,
-    originalTotalEur: totalEur,
+    originalTotalRsd: totalRsd,
     originalTotalCents: purchase.totalCents,
     aiCreditQuantity: purchase.credits,
     aiCreditUnits: purchase.units,
@@ -345,7 +345,7 @@ function buildAssetInventory(
       list.push({
         instanceId: item.instanceId,
         productId: item.productId,
-        basePrice: result.product.basePriceEur,
+        basePrice: result.product.basePriceRsd,
         fromActive: item.fromActiveExternalOrder === true,
       });
       inv.set(asset, list);
@@ -435,23 +435,23 @@ function applyDiscount(
   pct: number,
   reason: string,
 ): void {
-  const discountedBase = Math.round(breakdown.originalBasePriceEur * (1 - pct / 100));
+  const discountedBase = Math.round(breakdown.originalBasePriceRsd * (1 - pct / 100));
   const fixedAddOnTotal = breakdown.addOns
     .filter((ao) => {
       const def = product.addOns.find((a) => a.id === ao.addOnId);
       return def && def.priceType !== "percent";
     })
-    .reduce((sum, ao) => sum + ao.totalEur, 0);
+    .reduce((sum, ao) => sum + ao.totalRsd, 0);
   const percentTotal = applyPercentAddOns(
     breakdown.addOns,
     product,
     discountedBase,
     fixedAddOnTotal,
   );
-  breakdown.basePriceEur = discountedBase;
-  breakdown.totalEur = Math.round(discountedBase + fixedAddOnTotal + percentTotal);
-  breakdown.basePriceCents = breakdown.basePriceEur * 100;
-  breakdown.totalCents = breakdown.totalEur * 100;
+  breakdown.basePriceRsd = discountedBase;
+  breakdown.totalRsd = Math.round(discountedBase + fixedAddOnTotal + percentTotal);
+  breakdown.basePriceCents = breakdown.basePriceRsd * 100;
+  breakdown.totalCents = breakdown.totalRsd * 100;
   breakdown.discountPct = pct;
   breakdown.discountReason = reason;
 }
@@ -513,9 +513,9 @@ export function calculateQuote(
 
   return {
     items: breakdowns,
-    total: breakdowns.reduce((sum, b) => sum + b.totalEur, 0),
+    total: breakdowns.reduce((sum, b) => sum + b.totalRsd, 0),
     totalCents: breakdowns.reduce((sum, b) => sum + b.totalCents, 0),
-    originalTotal: breakdowns.reduce((sum, b) => sum + b.originalTotalEur, 0),
+    originalTotal: breakdowns.reduce((sum, b) => sum + b.originalTotalRsd, 0),
     originalTotalCents: breakdowns.reduce(
       (sum, b) => sum + b.originalTotalCents,
       0,
@@ -527,7 +527,7 @@ export function calculateQuote(
 
 export type SpecialItemPricing = {
   preDiscount: number;
-  totalEur: number;
+  totalRsd: number;
   discount: { pct: number; reason: string } | null;
 };
 
@@ -546,12 +546,12 @@ export function priceInteriorItem(
   const preDiscount = calcInteriorTotal(
     floors,
     getPricingSettings(pricingCatalog).specialPricing.interior,
-  ).totalEur;
+  ).totalRsd;
   const discount = resolveDiscount(target, siblings, pricingCatalog);
-  const totalEur = discount
+  const totalRsd = discount
     ? Math.round(preDiscount * (1 - discount.pct / 100))
     : preDiscount;
-  return { preDiscount, totalEur, discount };
+  return { preDiscount, totalRsd, discount };
 }
 
 /**
@@ -569,12 +569,12 @@ export function priceTour360Item(
     config.floors,
     config.tourAssembly,
     getPricingSettings(pricingCatalog).specialPricing.tour360,
-  ).totalEur;
+  ).totalRsd;
   const discount = resolveDiscount(target, siblings, pricingCatalog);
-  const totalEur = discount
+  const totalRsd = discount
     ? Math.round(preDiscount * (1 - discount.pct / 100))
     : preDiscount;
-  return { preDiscount, totalEur, discount };
+  return { preDiscount, totalRsd, discount };
 }
 
 function buildSpecialBreakdown(
@@ -582,7 +582,7 @@ function buildSpecialBreakdown(
   lookup: { product: ConfiguratorProduct; category: ConfiguratorCategory },
   pricing: SpecialItemPricing,
 ): LineItemBreakdown {
-  const { preDiscount, totalEur, discount } = pricing;
+  const { preDiscount, totalRsd, discount } = pricing;
   const discountedBase = discount
     ? Math.round(preDiscount * (1 - discount.pct / 100))
     : preDiscount;
@@ -592,17 +592,17 @@ function buildSpecialBreakdown(
     productLabel: lookup.product.label,
     categoryLabel: lookup.category.label,
     kind: "service",
-    basePriceEur: discountedBase,
+    basePriceRsd: discountedBase,
     basePriceCents: discountedBase * 100,
     // Special items express their breakdown via configJson, not catalog
     // add-ons — the editor (interior-quote-editor / portal config section)
     // owns the row-level breakdown UI directly.
     addOns: [],
-    totalEur,
-    totalCents: totalEur * 100,
-    originalBasePriceEur: preDiscount,
+    totalRsd,
+    totalCents: totalRsd * 100,
+    originalBasePriceRsd: preDiscount,
     originalBasePriceCents: preDiscount * 100,
-    originalTotalEur: preDiscount,
+    originalTotalRsd: preDiscount,
     originalTotalCents: preDiscount * 100,
     discountPct: discount?.pct ?? 0,
     discountReason: discount?.reason ?? null,
@@ -706,10 +706,10 @@ export function priceItems(
 
   return {
     items: orderedBreakdowns,
-    total: orderedBreakdowns.reduce((s, b) => s + b.totalEur, 0),
+    total: orderedBreakdowns.reduce((s, b) => s + b.totalRsd, 0),
     totalCents: orderedBreakdowns.reduce((s, b) => s + b.totalCents, 0),
     originalTotal: orderedBreakdowns.reduce(
-      (s, b) => s + b.originalTotalEur,
+      (s, b) => s + b.originalTotalRsd,
       0,
     ),
     originalTotalCents: orderedBreakdowns.reduce(
@@ -721,7 +721,7 @@ export function priceItems(
 
 // ─── Format helpers ──────────────────────────────────────
 
-export function formatEur(amount: number): string {
+export function formatRsd(amount: number): string {
   return formatCents(Math.round(amount * 100));
 }
 
@@ -737,11 +737,11 @@ export function formatDiscountedPrice(
   pct: number,
 ): DiscountedPriceParts {
   if (pct <= 0 || total >= originalTotal) {
-    return { primary: formatEur(total), struck: null, badge: null };
+    return { primary: formatRsd(total), struck: null, badge: null };
   }
   return {
-    primary: formatEur(total),
-    struck: formatEur(originalTotal),
+    primary: formatRsd(total),
+    struck: formatRsd(originalTotal),
     badge: `−${pct}%`,
   };
 }

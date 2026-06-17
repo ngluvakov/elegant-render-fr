@@ -26,7 +26,7 @@ import { requirePermission } from "@/lib/admin-auth";
 import { recordAuditLog } from "@/lib/audit";
 import {
   invoiceCurrencyForBuyer,
-  invoiceGrossCentsFromEurCents,
+  invoiceGrossCentsFromRsdCents,
   invoiceVatRateForBuyer,
 } from "@/lib/invoice-data";
 
@@ -110,8 +110,8 @@ export async function GET(request: Request) {
     const vatRate = invoiceVatRateForBuyer(order);
     const grossCents =
       order.billingTotalCents ??
-      invoiceGrossCentsFromEurCents(
-        order.totalCents ?? order.totalEur * 100,
+      invoiceGrossCentsFromRsdCents(
+        order.totalCents ?? order.totalRsd * 100,
         order,
       );
     const netCents =
@@ -186,8 +186,9 @@ function formatNumber(n: number, decimals: number): string {
   return n.toFixed(decimals);
 }
 
-function formatMoneyNumber(cents: number, currency: "RSD" | "EUR"): string {
-  return formatNumber(cents / 100, currency === "RSD" ? 0 : 2);
+function formatMoneyNumber(cents: number, _currency: "RSD"): string {
+  void _currency;
+  return formatNumber(cents / 100, 0);
 }
 
 function formatIsoDate(d: Date): string {

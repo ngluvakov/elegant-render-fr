@@ -60,10 +60,10 @@ import {
   updateFloorplanConfig,
 } from "@/server/actions/item-config";
 
-// Catalog prices (kept inline for the "+ €N" hints; source of truth is
+// Catalog prices (kept inline for the "+N RSD" hints; source of truth is
 // configurator.ts).
-const FP3D_VARIANT_EUR = 6;
-const FP3D_DUPLICATE_EUR = 10;
+const FP3D_VARIANT_RSD = 703;
+const FP3D_DUPLICATE_RSD = 1172;
 
 type ItemFile = {
   id: string;
@@ -107,7 +107,7 @@ export function FloorplanConfigSection({
   const router = useRouter();
   const { formatPrice, formatPriceText } = useOrderCurrency();
 
-  const totalEur = useMemo(() => {
+  const totalRsd = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -116,7 +116,7 @@ export function FloorplanConfigSection({
         addOnQuantities: addOnQuantitiesFor(config),
       },
     ]);
-    return calc.items[0]?.totalEur ?? 0;
+    return calc.items[0]?.totalRsd ?? 0;
   }, [itemId, config]);
 
   useEffect(() => {
@@ -286,7 +286,7 @@ export function FloorplanConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalEur)}
+            {formatPrice(totalRsd)}
           </p>
         </div>
       </div>
@@ -341,7 +341,7 @@ export function FloorplanConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              {formatPriceText("1 uključen, +€17 za 2., pa +€15 svaki sledeći")}
+              {formatPriceText("1 uključen, +1.992 RSD za 2., pa +1.758 RSD svaki sledeći")}
             </span>
           </div>
         </div>
@@ -682,7 +682,7 @@ export function FloorplanConfigSection({
           <div className="flex items-center gap-2">
             {config.variantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(FP3D_VARIANT_EUR)}
+                +{formatPrice(FP3D_VARIANT_RSD)}
               </span>
             )}
             <Switch
@@ -749,7 +749,7 @@ export function FloorplanConfigSection({
           <div className="flex items-center gap-2">
             {config.duplicateEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(FP3D_DUPLICATE_EUR)}
+                +{formatPrice(FP3D_DUPLICATE_RSD)}
               </span>
             )}
             <Switch

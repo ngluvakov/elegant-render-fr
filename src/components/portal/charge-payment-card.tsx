@@ -1,26 +1,22 @@
 /**
- * ChargePaymentCard — Customer-facing payment widget for one OrderCharge.
- *
- * Mirrors PendingPaymentCard but operates on a charge: PayPal +
- * mock card, shared idempotency guards, refresh on success. Renders
- * in a list inside OrderChargesCard.
+ * ChargePaymentCard — customer-facing payment widget for one OrderCharge.
  */
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, CreditCard, Pencil } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatRsd } from "@/lib/catalog/calculate";
 import {
   formatBillingMoney,
   type BillingCurrency,
 } from "@/lib/billing";
 import { mockCardChargePaymentAction } from "@/server/actions/charge-payment";
-import { PayPalChargeButtons } from "./paypal-charge-buttons";
+import { initiateNestpayChargePayment } from "@/server/actions/nestpay";
+import { NestpayRedirectForm } from "@/app/(marketing)/poruci/nestpay-redirect-form";
 
 type Props = {
   chargeId: string;
@@ -29,21 +25,29 @@ type Props = {
   billingTotalCents: number | null;
 };
 
+const NESTPAY_TEST_MODE =
+  process.env.NEXT_PUBLIC_NESTPAY_MODE === "test";
+
 export function ChargePaymentCard({
   chargeId,
   totalCents,
   billingCurrency,
   billingTotalCents,
 }: Props) {
-  const [method, setMethod] = useState<"paypal" | "card">("paypal");
+  const [method, setMethod] = useState<"nestpay" | "card_mock">("nestpay");
+  const [pending, setPending] = useState(false);
   const [cardPending, setCardPending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [redirect, setRedirect] = useState<{
+    url: string;
+    fields: Record<string, string>;
+  } | null>(null);
   const router = useRouter();
   const amountLabel =
     billingCurrency && billingTotalCents != null
       ? formatBillingMoney(billingTotalCents, billingCurrency)
-      : formatEur(totalCents / 100);
+      : formatRsd(totalCents / 100);
 
   if (success) {
     return (
@@ -53,6 +57,25 @@ export function ChargePaymentCard({
       </div>
     );
   }
+
+  if (redirect) {
+    return <NestpayRedirectForm url={redirect.url} fields={redirect.fields} />;
+  }
+
+  const handleNestpay = async () => {
+    setPending(true);
+    setError("");
+    const result = await initiateNestpayChargePayment({
+      chargeId,
+      turnstileToken: null,
+    });
+    if ("error" in result) {
+      setError(result.error);
+      setPending(false);
+      return;
+    }
+    setRedirect(result);
+  };
 
   const handleMockCard = async () => {
     setCardPending(true);
@@ -75,55 +98,29 @@ export function ChargePaymentCard({
         </div>
       )}
 
-      <div className="grid gap-2 sm:grid-cols-2">
-        <button
-          type="button"
-          onClick={() => setMethod("paypal")}
-          className={cn(
-            "flex items-center gap-2 rounded-lg border p-2.5 text-left text-xs transition",
-            method === "paypal"
-              ? "border-accent bg-accent/5"
-              : "border-border/40 hover:border-accent/40",
-          )}
-        >
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#0070ba] text-[0.6rem] font-bold text-white">
-            PP
-          </div>
-          <span className="font-medium text-foreground">PayPal</span>
-          {method === "paypal" && <Check className="ml-auto h-3 w-3 text-accent" />}
-        </button>
-        <button
-          type="button"
-          onClick={() => setMethod("card")}
-          className={cn(
-            "flex items-center gap-2 rounded-lg border p-2.5 text-left text-xs transition",
-            method === "card"
-              ? "border-accent bg-accent/5"
-              : "border-border/40 hover:border-accent/40",
-          )}
-        >
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground/10">
-            <CreditCard className="h-4 w-4" />
-          </div>
-          <span className="font-medium text-foreground">Kartica (test)</span>
-          {method === "card" && <Check className="ml-auto h-3 w-3 text-accent" />}
-        </button>
+      <div className="flex items-center gap-2 rounded-lg border border-accent bg-accent/5 p-2.5 text-left text-xs">
+        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground/10">
+          <CreditCard className="h-4 w-4" />
+        </div>
+        <span className="font-medium text-foreground">Platna kartica</span>
+        <Check className="ml-auto h-3 w-3 text-accent" />
       </div>
 
-      {method === "paypal" && (
-        <div className="mt-3">
-          <PayPalChargeButtons
-            chargeId={chargeId}
-            onSuccess={() => {
-              setSuccess(true);
-              setTimeout(() => router.refresh(), 1200);
-            }}
-            onError={(msg) => setError(msg)}
-          />
+      {method === "nestpay" && (
+        <div className="mt-3 space-y-2">
+          <Button
+            variant="accent"
+            size="lg"
+            className="w-full"
+            onClick={handleNestpay}
+            disabled={pending}
+          >
+            {pending ? "Preusmeravanje…" : `Plati ${amountLabel}`}
+          </Button>
         </div>
       )}
 
-      {method === "card" && (
+      {NESTPAY_TEST_MODE && method === "card_mock" && (
         <div className="mt-3 space-y-2">
           <p className="rounded-lg bg-secondary/60 px-3 py-2 text-[0.68rem] text-muted-foreground">
             Test režim — unesite bilo koje podatke.
@@ -158,9 +155,23 @@ export function ChargePaymentCard({
             onClick={handleMockCard}
             disabled={cardPending}
           >
-            {cardPending ? "Obrada…" : `Plati ${amountLabel}`}
+            {cardPending ? "Obrada…" : `Plati ${amountLabel} (mock)`}
           </Button>
         </div>
+      )}
+
+      {NESTPAY_TEST_MODE && (
+        <button
+          type="button"
+          onClick={() =>
+            setMethod(method === "nestpay" ? "card_mock" : "nestpay")
+          }
+          className="mt-3 text-[0.68rem] text-muted-foreground underline-offset-2 hover:underline"
+        >
+          {method === "nestpay"
+            ? "Koristi mock karticu (dev)"
+            : "Nazad na NestPay"}
+        </button>
       )}
     </div>
   );

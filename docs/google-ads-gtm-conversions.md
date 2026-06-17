@@ -78,7 +78,7 @@ da li je spremna za Google Ads optimizaciju.
 
 | Događaj | Trenutni izvor | Google uloga | Napomena |
 |---|---|---|---|
-| `order_created` | `src/app/(marketing)/poruci/steps/step-review.tsx` | Secondary Ads/GA4 goal | Order postoji, ali nije plaćen. Nosi `order_number`, `total_eur`, `item_count`. |
+| `order_created` | `src/app/(marketing)/poruci/steps/step-review.tsx` | Secondary Ads/GA4 goal | Order postoji, ali nije plaćen. Nosi `order_number`, `total_rsd`, `item_count`. |
 | `payment_started` | `src/app/(marketing)/poruci/steps/step-payment.tsx`, `src/components/portal/pending-payment-card.tsx` | Secondary / funnel step | Nosi provider i total. Ne tretirati kao kupovinu. |
 | `payment_failed` | `step-payment.tsx`, `pending-payment-card.tsx` | Diagnostic | Korisno za Ads landing QA i payment friction. |
 | `payment_completed` | `step-payment.tsx` | Legacy/test-only signal | Trenutno se pouzdano emituje samo za `card_mock` browser flow. Za real Ads revenue koristiti payment source of truth. |
@@ -87,10 +87,9 @@ da li je spremna za Google Ads optimizaciju.
 
 | Konverzija | Source of truth | Trenutni signal | Google uloga | Sledeći korak |
 |---|---|---|---|---|
-| Plaćena service porudžbina | `finishSuccessfulPayment()` u `src/server/actions/payment.ts` posle PayPal/Nestpay potvrde | `er_purchase` preko payment success client/server handoff-a | Primary Ads conversion + GA4 `purchase` | `transaction_id=orderNumber`, `value`, `currency`, `items`; wire transfer ostaje offline import kandidat. |
+| Plaćena service porudžbina | `finishSuccessfulPayment()` u `src/server/actions/payment.ts` posle NestPay potvrde | `er_purchase` preko payment success client/server handoff-a | Primary Ads conversion + GA4 `purchase` | `transaction_id=orderNumber`, `value`, `currency`, `items`; wire transfer ostaje offline import kandidat. |
 | Plaćeni AI krediti | `applyPurchasedAiCreditsForOrder()` pozvan iz `finishSuccessfulPayment()` | `er_purchase` sa `contains_ai_credits=true` | Primary Ads conversion + GA4 `purchase` | Za credit-only porudžbine posebna Ads akcija ako budžet optimizuje AI Studio. |
 | Nestpay uspeh | `src/app/api/nestpay/return/route.ts` posle hash-verifikovanog approved POST-a | `/poruci/uspeh?oid=...` renderuje `er_purchase` iz persisted order snapshot-a | Primary purchase source | Success page ima browser dedupe; reconciler bez browser-a zahteva budući offline/server-side import. |
-| PayPal capture | `capturePayPalOrderAction()` u `src/server/actions/payment.ts` | Server action vraća `purchaseEvent`, klijent push-uje `er_purchase` | Primary purchase source | Event se emituje posle `paymentStatus=completed`, ne pre PayPal approve-a. |
 | Wire transfer paid | `src/server/actions/mark-wire-paid.ts` | Audit log `payment.wire_received` | Offline/primary revenue conversion | Za Google Ads uvesti offline conversion import ili server-side event; vezati za original `gclid/gbraid/wbraid` ako se čuva. |
 | Mock card payment | `mockCardPaymentAction()` | `er_purchase` samo u test-mode browser flow-u | Test only | Filtrirati iz production Ads konverzija. |
 | `additional_charge_paid` | `src/server/actions/charge-payment.ts` | PostHog server event | Secondary revenue / optional | Nije new customer acquisition; obično secondary/offline revenue, ne primary bidding. |
@@ -180,13 +179,13 @@ browser push/dedupe helper je u `src/lib/analytics/google-data-layer-client.ts`.
 | `event_id` | string | Da za konverzije | UUID/idempotency key za dedupe između browser/server signala. |
 | `transaction_id` | string | Da za revenue | `Order.orderNumber`, `OrderCharge.id` ili stabilan payment id. |
 | `value` | number | Da za revenue | Naplaćeni iznos u major units, npr. `120.00`. |
-| `currency` | string | Da za revenue | `RSD` ili `EUR`; koristiti billing currency, ne UI-only currency. |
+| `currency` | string | Da za revenue | Uvek `RSD`; koristiti billing currency, ne UI-only currency. |
 | `items` | array | Da za ecommerce | GA4 item lista sa product/category podacima. |
 | `product_id` | string | Po potrebi | Glavni product za micro/lead evente. |
 | `category_id` | string | Po potrebi | Catalog category. |
 | `lead_type` | string | Za lead | `project_inquiry`, `vr_inquiry`, `quick_inquiry`, `contact`. |
 | `source_path` | string | Za lead/quote | Ruta na kojoj je intent nastao. |
-| `payment_provider` | string | Za payment | `nestpay`, `paypal`, `wire_transfer`, `card_mock`. |
+| `payment_provider` | string | Za payment | `nestpay`, `wire_transfer`, `card_mock`. |
 | `buyer_type` | string | Za revenue | `individual`, `company_rs`, `company_foreign`. |
 | `contains_ai_credits` | boolean | Za order | Segmentacija service vs AI credit order-a. |
 | `is_new_customer` | boolean | Po mogućnosti | Korisno za Ads value rules; izvesti server-side. |
@@ -259,9 +258,9 @@ Za AI kredite:
 2. Za nove Google događaje koristiti postojeći typed helper za
    `window.dataLayer.push()` i ne slati evente bez marketing consent-a.
 3. Za purchase konverzije emitovati samo iz server-validated trenutka.
-   PayPal/mock vraćaju `purchaseEvent`; Nestpay success page ga gradi iz
-   persisted order snapshot-a. Wire transfer/reconciler su budući offline import
-   ili server-side tagging zadatak.
+   NestPay success page ga gradi iz persisted order snapshot-a; mock kartica je
+   test-only. Wire transfer/reconciler su budući offline import ili server-side
+   tagging zadatak.
 4. Za lead submit koristiti postojeće uspešne server action rezultate, ne samo
    client submit click.
 5. GA4 recommended evente koristiti gde se uklapaju (`begin_checkout`,

@@ -195,14 +195,13 @@ enum PaymentStatus {
 }
 
 enum PaymentProvider {
-  paypal
   card_mock
   wire_transfer
   nestpay
 }
 
 /// How the customer is expected to pay this order.
-/// - `online_payment` (default): card / PayPal at checkout. Konačni račun
+/// - `online_payment` (default): NestPay card checkout. Konačni račun
 ///   issued automatically by finishSuccessfulPayment hook.
 /// - `wire_transfer`: admin-issued offer flow. Predračun (proforma) is
 ///   sent to customer; once funds land, admin marks paid → triggers
@@ -214,7 +213,6 @@ enum PaymentMethod {
 
 enum BillingCurrency {
   RSD
-  EUR
 }
 
 model Order {
@@ -227,9 +225,9 @@ model Order {
   paymentProvider     PaymentProvider?
   paymentId           String?
   bitrix24DealId      String?          @unique
-  totalEur            Int
+  totalRsd            Int
   totalCents          Int?
-  premiumTotalEur     Int?
+  premiumTotalRsd     Int?
   containsAiCredits   Boolean          @default(false)
   aiCreditsAppliedAt  DateTime?
   customerNote        String?          @db.Text
@@ -256,7 +254,7 @@ model Order {
   companyCountryCode  String?
   billingCurrency     BillingCurrency?
   billingVatRate      Float?
-  billingEurToRsdRate Float?
+  billingRsdRate      Float?
   billingTotalCents   Int?
   // VIES (VAT Information Exchange System) verification snapshot for
   // company_foreign orders. Populated when admin clicks "Proveri VAT
@@ -275,10 +273,8 @@ model Order {
   // with a hash-verified payload, or by the Order Status Query
   // reconciler when the redirect is lost. nestpayChargedAmountCents +
   // nestpayChargedCurrency + nestpayChargeRate snapshot the actual
-  // RSD amount charged on the card (Banca Intesa clears in RSD, so
-  // EUR-billed foreign buyers have a converted RSD amount captured
-  // here at the rate displayed to them at checkout — required by
-  // EPM standard 2.1.3 "Izjava o konverziji"). nestpayResponseRaw
+  // RSD amount charged on the card (Banca Intesa clears in RSD).
+  // nestpayResponseRaw
   // keeps the full POST body for forensic audit; nestpayLastQueryAt
   // throttles the reconciler.
   nestpayTransId            String?
@@ -348,9 +344,9 @@ model OrderItem {
   productLabel     String
   categoryLabel    String
   kind             OrderItemKind @default(service)
-  basePriceEur     Int
+  basePriceRsd     Int
   basePriceCents   Int?
-  totalEur         Int
+  totalRsd         Int
   totalCents       Int?
   aiCreditQuantity Int?
   aiCreditUnits    Int?
@@ -359,7 +355,7 @@ model OrderItem {
   durationDiscount Float?
   clientNote       String?       @db.Text
   configJson       Json?
-  originalTotalEur Int?
+  originalTotalRsd Int?
   discountPct      Int?
   discountReason   String?       @db.Text
 
@@ -438,10 +434,9 @@ model OrderComment {
 // Out-of-scope work after the original order is paid: a forgotten
 // service, an extra room, an edit beyond the included revisions, or
 // any custom item negotiated by phone/email. Modeled separately from
-// Order because Order.totalCents is immutable (the PayPal capture
-// path relies on the locked-in amount for idempotency). Each charge
-// gets its own payment lifecycle; the customer pays through the same
-// providers as the original checkout.
+// Order because Order.totalCents is immutable once payment starts.
+// Each charge gets its own payment lifecycle; the customer pays through
+// the same NestPay checkout path as the original order.
 
 enum OrderChargeStatus {
   pending
@@ -464,7 +459,7 @@ model OrderCharge {
   companyCountryCode  String?
   billingCurrency     BillingCurrency?
   billingVatRate      Float?
-  billingEurToRsdRate Float?
+  billingRsdRate      Float?
   billingTotalCents   Int?
   status              OrderChargeStatus @default(pending)
   paymentProvider     PaymentProvider?
@@ -778,10 +773,10 @@ model ProjectInquiryFile {
 
 // ─── Versioned pricing catalog ───────────────────────────
 //
-// EUR list amounts are the financial source of truth. Published books
+// RSD list amounts are the financial source of truth. Published books
 // feed public pricing, checkout, portal repricing, admin charges and AI
-// credit purchases. Serbian RSD totals convert those EUR amounts directly
-// and split VAT out of the gross price. Draft books are editable by finance
+// credit purchases. RSD gross prices include PDV and split VAT out of the
+// gross price. Draft books are editable by finance
 // admins only and do not affect live pricing until published.
 
 enum PricingBookStatus {
@@ -822,7 +817,7 @@ model PricingProduct {
   categoryId   String
   label        String
   unitLabel    String
-  basePriceEur Float
+  basePriceRsd Float
   includesJson Json
   inquiryOnly  Boolean  @default(false)
   sortOrder    Int      @default(0)
@@ -842,7 +837,7 @@ model PricingAddOn {
   addOnId         String
   label           String
   description     String
-  priceEur        Float
+  priceRsd        Float
   priceType       String
   includedQty     Int
   maxQty          Int?
@@ -885,7 +880,7 @@ model PricingDurationRule {
   minSeconds        Int
   defaultSeconds    Int
   maxSeconds        Int?
-  perSecondEur      Float
+  perSecondRsd      Float
   discountTiersJson Json
   updatedAt         DateTime @updatedAt
 

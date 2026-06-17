@@ -29,7 +29,7 @@ export type PricingDraftVisualPatch =
       productId: string;
       label: string;
       unitLabel: string;
-      basePriceEur: number;
+      basePriceRsd: number;
       includes: string[];
       inquiryOnly: boolean;
     }
@@ -39,7 +39,7 @@ export type PricingDraftVisualPatch =
       addOnId: string;
       label: string;
       description: string;
-      priceEur: number;
+      priceRsd: number;
       includedQty: number;
       maxQty: number | null;
       volumeRules: VolumeRule[];
@@ -58,7 +58,7 @@ export type PricingDraftVisualPatch =
       minSeconds: number;
       defaultSeconds: number;
       maxSeconds: number | null;
-      perSecondEur: number;
+      perSecondRsd: number;
       discountTiers: DurationConfig["discountTiers"];
     }
   | {
@@ -82,7 +82,7 @@ export async function savePricingDraftChange(formData: FormData) {
           categories: updateProduct(categories, text(formData, "productId"), {
             label: text(formData, "label"),
             unitLabel: text(formData, "unitLabel"),
-            basePriceEur: numberValue(formData, "basePriceEur"),
+            basePriceRsd: numberValue(formData, "basePriceRsd"),
             includes: lines(text(formData, "includes")),
             inquiryOnly: boolValue(formData, "inquiryOnly"),
           }),
@@ -99,7 +99,7 @@ export async function savePricingDraftChange(formData: FormData) {
             {
               label: text(formData, "label"),
               description: text(formData, "description"),
-              priceEur: numberValue(formData, "priceEur"),
+              priceRsd: numberValue(formData, "priceRsd"),
               includedQty: intValue(formData, "includedQty"),
               maxQty: nullableIntValue(formData, "maxQty"),
               volumeRules: jsonValue<VolumeRule[]>(
@@ -137,7 +137,7 @@ export async function savePricingDraftChange(formData: FormData) {
               minSeconds: intValue(formData, "minSeconds"),
               defaultSeconds: intValue(formData, "defaultSeconds"),
               maxSeconds: nullableIntValue(formData, "maxSeconds"),
-              perSecondEur: numberValue(formData, "perSecondEur"),
+              perSecondRsd: numberValue(formData, "perSecondRsd"),
               discountTiers: jsonValue<DurationConfig["discountTiers"]>(
                 text(formData, "discountTiersJson"),
                 [],
@@ -181,7 +181,7 @@ export async function savePricingDraftVisualPatch(
           categories: updateProduct(categories, normalized.productId, {
             label: normalized.label,
             unitLabel: normalized.unitLabel,
-            basePriceEur: normalized.basePriceEur,
+            basePriceRsd: normalized.basePriceRsd,
             includes: normalized.includes,
             inquiryOnly: normalized.inquiryOnly,
           }),
@@ -198,7 +198,7 @@ export async function savePricingDraftVisualPatch(
             {
               label: normalized.label,
               description: normalized.description,
-              priceEur: normalized.priceEur,
+              priceRsd: normalized.priceRsd,
               includedQty: normalized.includedQty,
               maxQty: normalized.maxQty,
               volumeRules: normalized.volumeRules,
@@ -233,7 +233,7 @@ export async function savePricingDraftVisualPatch(
               minSeconds: normalized.minSeconds,
               defaultSeconds: normalized.defaultSeconds,
               maxSeconds: normalized.maxSeconds,
-              perSecondEur: normalized.perSecondEur,
+              perSecondRsd: normalized.perSecondRsd,
               discountTiers: normalized.discountTiers,
             },
           ),
@@ -288,7 +288,7 @@ function updateProduct(
   productId: string,
   patch: Pick<
     ConfiguratorProduct,
-    "label" | "unitLabel" | "basePriceEur" | "includes" | "inquiryOnly"
+    "label" | "unitLabel" | "basePriceRsd" | "includes" | "inquiryOnly"
   >,
 ): ConfiguratorCategory[] {
   return categories.map((category) => ({
@@ -305,7 +305,7 @@ function updateAddOn(
   addOnId: string,
   patch: Pick<
     ConfiguratorAddOn,
-    "label" | "description" | "priceEur" | "includedQty" | "volumeRules"
+    "label" | "description" | "priceRsd" | "includedQty" | "volumeRules"
   > & { maxQty: number | null },
 ): ConfiguratorCategory[] {
   return categories.map((category) => ({
@@ -361,7 +361,7 @@ function updateDurationRule(
             ...product.sourceModeRules,
             [sourceMode]: {
               ...(product.sourceModeRules?.[sourceMode] ?? {}),
-              perSecondEur: patch.perSecondEur,
+              perSecondRsd: patch.perSecondRsd,
             },
           },
         };
@@ -372,7 +372,7 @@ function updateDurationRule(
           minSeconds: patch.minSeconds,
           defaultSeconds: patch.defaultSeconds,
           maxSeconds: patch.maxSeconds ?? Infinity,
-          perSecondEur: patch.perSecondEur,
+          perSecondRsd: patch.perSecondRsd,
           discountTiers: patch.discountTiers,
         },
       };
@@ -386,7 +386,7 @@ function updateSettings(
 ): PricingSettings {
   return {
     ...settings,
-    eurToRsdRate: numberValue(formData, "eurToRsdRate"),
+    rsdRate: numberValue(formData, "rsdRate"),
     serbiaVatRate: numberValue(formData, "serbiaVatRate"),
     aiCreditExpiresAfterMonths: intValue(
       formData,
@@ -460,7 +460,7 @@ function normalizeVisualPatch(
       productId: requiredText(patch.productId, "productId"),
       label: requiredText(patch.label, "Naziv"),
       unitLabel: requiredText(patch.unitLabel, "Unit label"),
-      basePriceEur: positiveNumber(patch.basePriceEur, "Osnovna cena"),
+      basePriceRsd: positiveNumber(patch.basePriceRsd, "Osnovna cena"),
       includes: patch.includes
         .map((item) => item.trim())
         .filter(Boolean)
@@ -476,7 +476,7 @@ function normalizeVisualPatch(
       addOnId: requiredText(patch.addOnId, "addOnId"),
       label: requiredText(patch.label, "Naziv dodatka"),
       description: patch.description.trim(),
-      priceEur: nonNegativeNumber(patch.priceEur, "Cena dodatka"),
+      priceRsd: nonNegativeNumber(patch.priceRsd, "Cena dodatka"),
       includedQty: nonNegativeInteger(patch.includedQty, "Uključeno"),
       maxQty:
         patch.maxQty === null
@@ -519,7 +519,7 @@ function normalizeVisualPatch(
       minSeconds,
       defaultSeconds,
       maxSeconds,
-      perSecondEur: positiveNumber(patch.perSecondEur, "Cena po sekundi"),
+      perSecondRsd: positiveNumber(patch.perSecondRsd, "Cena po sekundi"),
       discountTiers: normalizeDurationTiers(patch.discountTiers),
     };
   }
@@ -532,7 +532,7 @@ function normalizeVisualPatch(
 
 function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
   return {
-    eurToRsdRate: positiveNumber(settings.eurToRsdRate, "EUR/RSD kurs"),
+    rsdRate: positiveNumber(settings.rsdRate, "RSD kurs"),
     serbiaVatRate: percentRatio(settings.serbiaVatRate, "PDV Srbija"),
     aiCreditUnitsPerCredit: positiveInteger(
       settings.aiCreditUnitsPerCredit,
@@ -553,12 +553,12 @@ function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
       .sort((a, b) => b.minCredits - a.minCredits),
     specialPricing: {
       interior: {
-        firstFloorEur: positiveNumber(
-          settings.specialPricing.interior.firstFloorEur,
+        firstFloorRsd: positiveNumber(
+          settings.specialPricing.interior.firstFloorRsd,
           "Enterijer prvi sprat",
         ),
-        extraFloorEur: positiveNumber(
-          settings.specialPricing.interior.extraFloorEur,
+        extraFloorRsd: positiveNumber(
+          settings.specialPricing.interior.extraFloorRsd,
           "Enterijer dodatni sprat",
         ),
         includedRooms: nonNegativeInteger(
@@ -569,22 +569,22 @@ function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
           settings.specialPricing.interior.includedCameras,
           "Enterijer uključeni kadrovi",
         ),
-        extraRoomEur: positiveNumber(
-          settings.specialPricing.interior.extraRoomEur,
+        extraRoomRsd: positiveNumber(
+          settings.specialPricing.interior.extraRoomRsd,
           "Enterijer doplata prostorije",
         ),
-        extraCameraEur: positiveNumber(
-          settings.specialPricing.interior.extraCameraEur,
+        extraCameraRsd: positiveNumber(
+          settings.specialPricing.interior.extraCameraRsd,
           "Enterijer doplata kadra",
         ),
       },
       tour360: {
-        firstFloorEur: positiveNumber(
-          settings.specialPricing.tour360.firstFloorEur,
+        firstFloorRsd: positiveNumber(
+          settings.specialPricing.tour360.firstFloorRsd,
           "360 prvi sprat",
         ),
-        extraFloorEur: positiveNumber(
-          settings.specialPricing.tour360.extraFloorEur,
+        extraFloorRsd: positiveNumber(
+          settings.specialPricing.tour360.extraFloorRsd,
           "360 dodatni sprat",
         ),
         includedHotspots: nonNegativeInteger(
@@ -595,48 +595,48 @@ function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
           settings.specialPricing.tour360.includedCameras,
           "360 uključeni kadrovi",
         ),
-        extraHotspotEur: positiveNumber(
-          settings.specialPricing.tour360.extraHotspotEur,
+        extraHotspotRsd: positiveNumber(
+          settings.specialPricing.tour360.extraHotspotRsd,
           "360 doplata hotspota",
         ),
-        extraCameraEur: positiveNumber(
-          settings.specialPricing.tour360.extraCameraEur,
+        extraCameraRsd: positiveNumber(
+          settings.specialPricing.tour360.extraCameraRsd,
           "360 doplata kadra",
         ),
         assembly: {
-          baseEur: nonNegativeNumber(
-            settings.specialPricing.tour360.assembly.baseEur,
+          baseRsd: nonNegativeNumber(
+            settings.specialPricing.tour360.assembly.baseRsd,
             "Tour assembly baza",
           ),
           freeHotspotThreshold: nonNegativeInteger(
             settings.specialPricing.tour360.assembly.freeHotspotThreshold,
             "Tour assembly free hotspot prag",
           ),
-          floorPlanNavEur: nonNegativeNumber(
-            settings.specialPricing.tour360.assembly.floorPlanNavEur,
+          floorPlanNavRsd: nonNegativeNumber(
+            settings.specialPricing.tour360.assembly.floorPlanNavRsd,
             "Tour floorplan navigacija",
           ),
-          whiteLabelEur: nonNegativeNumber(
-            settings.specialPricing.tour360.assembly.whiteLabelEur,
+          whiteLabelRsd: nonNegativeNumber(
+            settings.specialPricing.tour360.assembly.whiteLabelRsd,
             "Tour white-label",
           ),
         },
       },
       tourAssembly: {
-        baseEur: nonNegativeNumber(
-          settings.specialPricing.tourAssembly.baseEur,
+        baseRsd: nonNegativeNumber(
+          settings.specialPricing.tourAssembly.baseRsd,
           "Tour assembly baza",
         ),
         freeHotspotThreshold: nonNegativeInteger(
           settings.specialPricing.tourAssembly.freeHotspotThreshold,
           "Tour assembly free hotspot prag",
         ),
-        floorPlanNavEur: nonNegativeNumber(
-          settings.specialPricing.tourAssembly.floorPlanNavEur,
+        floorPlanNavRsd: nonNegativeNumber(
+          settings.specialPricing.tourAssembly.floorPlanNavRsd,
           "Tour floorplan navigacija",
         ),
-        whiteLabelEur: nonNegativeNumber(
-          settings.specialPricing.tourAssembly.whiteLabelEur,
+        whiteLabelRsd: nonNegativeNumber(
+          settings.specialPricing.tourAssembly.whiteLabelRsd,
           "Tour white-label",
         ),
       },
@@ -648,7 +648,7 @@ function normalizeVolumeRules(rules: VolumeRule[]): VolumeRule[] {
   return rules
     .map((rule) => ({
       afterQty: nonNegativeInteger(rule.afterQty, "Volume prag"),
-      priceEur: nonNegativeNumber(rule.priceEur, "Volume cena"),
+      priceRsd: nonNegativeNumber(rule.priceRsd, "Volume cena"),
     }))
     .sort((a, b) => a.afterQty - b.afterQty);
 }

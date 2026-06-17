@@ -193,7 +193,7 @@ export function Tour360QuoteEditor({
       />
 
       <ItemTotal
-        preDiscountEur={calc.totalEur}
+        preDiscountRsd={calc.totalRsd}
         discount={discount}
         displayCurrency={displayCurrency}
         pricingSettings={pricingSettings}
@@ -360,7 +360,7 @@ function FloorBreakdown({
   ];
   if (calc.extraHotspotsCost > 0) {
     rows.push({
-      label: `+${calc.extraHotspots} dodatn${calc.extraHotspots === 1 ? "i hotspot" : "ih hotspotova"} · ${formatPublicPrice(pricing?.extraHotspotEur ?? 27, displayCurrency, pricingSettings)}/kom`,
+      label: `+${calc.extraHotspots} dodatn${calc.extraHotspots === 1 ? "i hotspot" : "ih hotspotova"} · ${formatPublicPrice(pricing?.extraHotspotRsd ?? 27, displayCurrency, pricingSettings)}/kom`,
       value: formatPublicPrice(
         calc.extraHotspotsCost,
         displayCurrency,
@@ -370,7 +370,7 @@ function FloorBreakdown({
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
-      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(pricing?.extraCameraEur ?? 10, displayCurrency, pricingSettings)}/kom`,
+      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(pricing?.extraCameraRsd ?? 10, displayCurrency, pricingSettings)}/kom`,
       value: formatPublicPrice(
         calc.extraCamerasCost,
         displayCurrency,
@@ -430,7 +430,7 @@ function TourAssemblySection({
   const webOn = assembly.webTourEnabled;
   const assemblyPricing = pricing?.assembly;
   const freeThreshold = assemblyPricing?.freeHotspotThreshold ?? 5;
-  const baseEur = assemblyPricing?.baseEur ?? 20;
+  const baseRsd = assemblyPricing?.baseRsd ?? 20;
   const hotspotsToFree = Math.max(
     0,
     freeThreshold - totalHotspots,
@@ -438,8 +438,8 @@ function TourAssemblySection({
   const baseLabel = webTourFree
     ? `besplatno (${freeThreshold}+ hotspotova)`
     : webOn
-      ? `+${formatPublicPrice(baseEur, displayCurrency, pricingSettings)}${hotspotsToFree > 0 ? ` (besplatno sa još ${hotspotsToFree} hotspot${hotspotsToFree === 1 ? "om" : "ova"})` : ""}`
-      : `+${formatPublicPrice(baseEur, displayCurrency, pricingSettings)} (besplatno sa ${freeThreshold}+ hotspotova)`;
+      ? `+${formatPublicPrice(baseRsd, displayCurrency, pricingSettings)}${hotspotsToFree > 0 ? ` (besplatno sa još ${hotspotsToFree} hotspot${hotspotsToFree === 1 ? "om" : "ova"})` : ""}`
+      : `+${formatPublicPrice(baseRsd, displayCurrency, pricingSettings)} (besplatno sa ${freeThreshold}+ hotspotova)`;
 
   return (
     <div className="rounded-xl border border-border/60 bg-card/60 p-4">
@@ -471,7 +471,7 @@ function TourAssemblySection({
         <ToggleRow
           label="Navigacija po osnovi sprata"
           sub={`+${formatPublicPrice(
-            assemblyPricing?.floorPlanNavEur ?? 15,
+            assemblyPricing?.floorPlanNavRsd ?? 15,
             displayCurrency,
             pricingSettings,
           )}`}
@@ -483,7 +483,7 @@ function TourAssemblySection({
         <ToggleRow
           label="White-label brending"
           sub={`+${formatPublicPrice(
-            assemblyPricing?.whiteLabelEur ?? 35,
+            assemblyPricing?.whiteLabelRsd ?? 35,
             displayCurrency,
             pricingSettings,
           )} · logo se postavlja u portalu`}

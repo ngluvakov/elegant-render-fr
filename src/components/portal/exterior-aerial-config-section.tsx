@@ -95,7 +95,7 @@ export function ExtAerialConfigSection({
   const router = useRouter();
   const { formatPrice } = useOrderCurrency();
 
-  const totalEur = useMemo(() => {
+  const totalRsd = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -104,7 +104,7 @@ export function ExtAerialConfigSection({
         addOnQuantities: extAerialAddOnQuantitiesFor(config),
       },
     ]);
-    return calc.items[0]?.totalEur ?? 0;
+    return calc.items[0]?.totalRsd ?? 0;
   }, [itemId, config]);
 
   useEffect(() => {
@@ -267,7 +267,7 @@ export function ExtAerialConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalEur)}
+            {formatPrice(totalRsd)}
           </p>
         </div>
       </div>

@@ -16,7 +16,7 @@ B2C architectural visualization service — a sub-brand of **White Rook DOO**. C
 | Database | PostgreSQL on Supabase (via Prisma 7) |
 | Auth | Auth.js v5 (NextAuth) — email/password + Google OAuth |
 | File Storage | Supabase Storage (private bucket `order-files`) |
-| Payments | PayPal REST API v2 (sandbox) + mock card provider |
+| Payments | Banca Intesa NestPay HPP + dev mock card provider behind test mode |
 | CRM Sync | Bitrix24 REST API (two-way deal/comment/file sync) |
 | Email | Nodemailer via DirectAdmin SMTP (noreply@elegantrender.rs) |
 | Hosting | Vercel |
@@ -55,7 +55,7 @@ Platform/
 │   │   │       ├── page.tsx       # Server component shell
 │   │   │       ├── checkout-wizard.tsx  # Client component: 4-step wizard
 │   │   │       ├── checkout-context.tsx # Checkout state management
-│   │   │       ├── paypal-buttons.tsx   # PayPal JS SDK integration
+│   │   │       ├── nestpay-redirect-form.tsx # Hosted card payment handoff
 │   │   │       └── steps/         # Step 1: details, 2: upload, 3: review, 4: payment
 │   │   │
 │   │   ├── (auth)/                # Route group: auth pages (NO header/footer)
@@ -113,7 +113,7 @@ Platform/
 │   │   │   ├── activity-feed.tsx        # Recent events
 │   │   │   ├── empty-state.tsx          # Reusable empty state
 │   │   │   ├── status-utils.ts          # Status labels + badge colors + step definitions
-│   │   │   └── paypal-portal-buttons.tsx # PayPal SDK for portal payments
+│   │   │   └── pending-payment-card.tsx # NestPay portal payment handoff
 │   │   ├── site/                  # SiteHeader, SiteFooter
 │   │   └── ui/                    # shadcn/ui primitives (button, card, input, etc.)
 │   │
@@ -133,7 +133,6 @@ Platform/
 │   │   │   └── generate-number.ts # ER-YYYYMMDD-XXXX order number generator
 │   │   ├── payment/
 │   │   │   ├── types.ts           # PaymentResult types
-│   │   │   ├── paypal.ts          # PayPal REST API v2 (create + capture orders)
 │   │   │   └── mock-card.ts       # Simulated card payment (dev only)
 │   │   └── bitrix24/
 │   │       ├── client.ts          # REST client (rate-limited, retried, logged)
@@ -147,7 +146,7 @@ Platform/
 │   │   │   ├── profile.ts         # Update user profile
 │   │   │   ├── checkout.ts        # Guest user creation during checkout
 │   │   │   ├── order.ts           # Create order + confirm file upload → Bitrix24 sync
-│   │   │   ├── payment.ts         # PayPal create/capture + mock card → email + status
+│   │   │   ├── payment.ts         # Payment completion hooks + mock card → email + status
 │   │   │   ├── comment.ts         # Create/list order comments → Bitrix24 sync
 │   │   │   ├── rework.ts          # Client rework request → status transition
 │   │   │   └── admin.ts           # Admin: team comments, status, deliverables → Bitrix24
@@ -187,7 +186,7 @@ Platform/
     → Step 1: Guest details or auto-skip if logged in
     → Step 2: File upload to Supabase Storage
     → Step 3: Review (server-side price re-verification)
-    → Step 4: Payment (PayPal or mock card)
+    → Step 4: Payment (NestPay card, or dev mock card in test mode)
       → createOrder() → prisma.order.create + syncNewDeal() → Bitrix24
       → payment capture → transitionOrder(paid) → syncDealStatus()
       → sendOrderConfirmationEmail()

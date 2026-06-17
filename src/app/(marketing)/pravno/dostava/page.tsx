@@ -82,9 +82,9 @@ export default function DostavaPage() {
         <Section title="4. Ograničenja">
           <p>
             Dostavljamo svuda u svetu — isporuka je digitalna i nije vezana za
-            geografsku oblast. Cene su prikazane u dinarima (RSD) za kupce iz
-            Srbije i u evrima (EUR) za sve ostale; za detalje o valuti
-            naplate pogledajte{" "}
+            geografsku oblast. Cene i naplata su uvek prikazane u dinarima
+            (RSD); za dodatnu napomenu o karticama vezanim za drugu valutu
+            pogledajte{" "}
             <Link
               href="/pravno/povracaj-sredstava"
               className="text-foreground underline-offset-4 hover:underline"

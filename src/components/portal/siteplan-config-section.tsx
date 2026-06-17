@@ -70,8 +70,8 @@ import {
   updateSiteplanConfig,
 } from "@/server/actions/item-config";
 
-const SP_SEASON_EUR = 85;
-const SP_PHASE_EUR = 95;
+const SP_SEASON_RSD = 9962;
+const SP_PHASE_RSD = 11134;
 
 type ItemFile = {
   id: string;
@@ -126,7 +126,7 @@ export function SiteplanConfigSection({
     ]);
     return calc.items[0]!;
   }, [itemId, config]);
-  const totalEur = breakdown.totalEur;
+  const totalRsd = breakdown.totalRsd;
 
   useEffect(() => {
     if (!editable) return;
@@ -325,7 +325,7 @@ export function SiteplanConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalEur)}
+            {formatPrice(totalRsd)}
           </p>
         </div>
       </div>
@@ -781,7 +781,7 @@ export function SiteplanConfigSection({
           <div className="flex items-center gap-2">
             {config.seasonVariantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(SP_SEASON_EUR)}
+                +{formatPrice(SP_SEASON_RSD)}
               </span>
             )}
             <Switch
@@ -889,7 +889,7 @@ export function SiteplanConfigSection({
           <div className="flex items-center gap-2">
             {config.phaseVariantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(SP_PHASE_EUR)}
+                +{formatPrice(SP_PHASE_RSD)}
               </span>
             )}
             <Switch

@@ -5,7 +5,7 @@
  */
 import {
   invoiceCurrencyForBuyer,
-  invoiceGrossCentsFromEurCents,
+  invoiceGrossCentsFromRsdCents,
 } from "@/lib/invoice-data";
 import type { BillingCurrency } from "@/lib/billing";
 
@@ -27,10 +27,10 @@ type OrderInput = {
   companyCountryCode: string | null;
   billingCurrency?: BillingCurrency | null;
   billingVatRate?: number | null;
-  billingEurToRsdRate?: number | null;
+  billingRsdRate?: number | null;
   billingTotalCents?: number | null;
   totalCents: number | null;
-  totalEur: number;
+  totalRsd: number;
   proformaNumber: string | null;
   proformaIssuedAt: Date | null;
   proformaPdfPath: string | null;
@@ -48,7 +48,7 @@ type ChargeInput = {
   companyCountryCode?: string | null;
   billingCurrency?: BillingCurrency | null;
   billingVatRate?: number | null;
-  billingEurToRsdRate?: number | null;
+  billingRsdRate?: number | null;
   billingTotalCents?: number | null;
   status: "pending" | "paid" | "cancelled";
   invoiceNumber: string | null;
@@ -109,8 +109,8 @@ export function buildInvoiceList(
         charge.companyCountryCode ?? order.companyCountryCode ?? null,
       billingCurrency: charge.billingCurrency ?? order.billingCurrency ?? null,
       billingVatRate: charge.billingVatRate ?? order.billingVatRate ?? null,
-      billingEurToRsdRate:
-        charge.billingEurToRsdRate ?? order.billingEurToRsdRate ?? null,
+      billingRsdRate:
+        charge.billingRsdRate ?? order.billingRsdRate ?? null,
     };
     docs.push({
       id: `charge:${charge.id}`,
@@ -119,7 +119,7 @@ export function buildInvoiceList(
       issuedAt: charge.invoiceIssuedAt,
       amountCents:
         charge.billingTotalCents ??
-        invoiceGrossCentsFromEurCents(charge.totalCents, chargeBuyer),
+        invoiceGrossCentsFromRsdCents(charge.totalCents, chargeBuyer),
       currency: invoiceCurrencyForBuyer(chargeBuyer),
       label: `Račun za doplatu${reasonHint}`,
       href: `/api/portal/charge-invoice/${charge.id}`,
@@ -130,8 +130,8 @@ export function buildInvoiceList(
 }
 
 function orderAmountCents(order: OrderInput): number {
-  return invoiceGrossCentsFromEurCents(
-    order.totalCents ?? order.totalEur * 100,
+  return invoiceGrossCentsFromRsdCents(
+    order.totalCents ?? order.totalRsd * 100,
     order,
   );
 }

@@ -10,7 +10,7 @@
  *
  * Naming: snake_case events, descriptive past tense (`order_created`,
  * not `create_order`). Booleans as `was_*` (`was_inquiry`). Currencies
- * suffixed `_eur`. Counts suffixed `_count`. Avoid PII.
+ * suffixed `_rsd`. Counts suffixed `_count`. Avoid PII.
  */
 import posthog from "posthog-js";
 
@@ -31,25 +31,25 @@ export type EventMap = {
     category_id: string;
     source_mode?: string;
   };
-  quote_saved: { cart_size: number; total_eur: number };
+  quote_saved: { cart_size: number; total_rsd: number };
   quote_loaded_from_share: { cart_size: number; token_age_days?: number };
 
   // Checkout / payment
-  checkout_started: { cart_size: number; total_eur: number };
-  payment_started: { provider: "paypal" | "card_mock" | "nestpay"; total_eur: number };
+  checkout_started: { cart_size: number; total_rsd: number };
+  payment_started: { provider: "card_mock" | "nestpay"; total_rsd: number };
   payment_completed: {
-    provider: "paypal" | "card_mock" | "nestpay";
-    total_eur: number;
+    provider: "card_mock" | "nestpay";
+    total_rsd: number;
     order_number: string;
     was_inquiry?: boolean;
   };
   payment_failed: {
-    provider: "paypal" | "card_mock" | "nestpay";
+    provider: "card_mock" | "nestpay";
     error_kind: string;
   };
   order_created: {
     order_number: string;
-    total_eur: number;
+    total_rsd: number;
     item_count: number;
   };
 
@@ -62,7 +62,7 @@ export type EventMap = {
   vr_inquiry_converted: {
     inquiry_id: string;
     order_number: string;
-    price_eur: number;
+    price_rsd: number;
   };
   quick_inquiry_opened: { source: string; source_path?: string };
   contact_form_started: { source: string; source_path?: string };
@@ -150,7 +150,7 @@ export type EventMap = {
     charge_id: string;
     order_id: string;
     total_cents: number;
-    provider: "paypal" | "card_mock";
+    provider: "nestpay" | "card_mock";
   };
 };
 

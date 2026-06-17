@@ -164,7 +164,7 @@ export type ConvertInquiryResult =
 
 export async function convertVrInquiryToOrder(args: {
   inquiryId: string;
-  priceEur: number;
+  priceRsd: number;
   projectName?: string;
 }): Promise<ConvertInquiryResult> {
   let admin;
@@ -174,8 +174,8 @@ export async function convertVrInquiryToOrder(args: {
     return { error: "Nemate pristup." };
   }
 
-  const priceEur = Math.round(Number(args.priceEur));
-  if (!Number.isFinite(priceEur) || priceEur <= 0) {
+  const priceRsd = Math.round(Number(args.priceRsd));
+  if (!Number.isFinite(priceRsd) || priceRsd <= 0) {
     return { error: "Cena mora biti veća od 0." };
   }
 
@@ -233,7 +233,7 @@ export async function convertVrInquiryToOrder(args: {
         userId,
         projectName,
         status: "awaiting_payment",
-        totalEur: priceEur,
+        totalRsd: priceRsd,
         items: {
           create: [
             {
@@ -241,10 +241,10 @@ export async function convertVrInquiryToOrder(args: {
               categoryId: category.id,
               productLabel: product.label,
               categoryLabel: category.label,
-              basePriceEur: priceEur,
-              totalEur: priceEur,
+              basePriceRsd: priceRsd,
+              totalRsd: priceRsd,
               addOnsJson: [],
-              originalTotalEur: priceEur,
+              originalTotalRsd: priceRsd,
               discountPct: 0,
               discountReason: null,
               configJson: config as unknown as object,
@@ -304,7 +304,7 @@ export async function convertVrInquiryToOrder(args: {
       contactName: inquiry.contactName,
       productLabel: product.label,
       projectName,
-      priceEur,
+      priceRsd,
       orderNumber: order.orderNumber,
       orderId: order.id,
       token,

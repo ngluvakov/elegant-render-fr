@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-06-17 - RSD-only cene i uklanjanje PayPal-a
+
+- **Oblast promene:** pricing | payments | order lifecycle | conversion | CRM sync | docs | architecture
+- **Šta se promenilo:** Platforma je prebačena na jedinu javnu i obračunsku valutu RSD. Svi posetioci vide iste bruto RSD cene sa PDV-om uključenim; zemlja kupca ostaje samo za identitet/adresu i validaciju podataka na računu. PayPal je uklonjen iz checkout-a, portala, dodatnih naplata, server akcija, env primera i aktivne dokumentacije. NestPay ostaje realni online card flow, a mock kartica postoji samo iza test moda.
+- **Zašto:** Vlasnik želi jedinstven cenovnik bez razlike između stranih posetilaca i posetilaca iz Srbije, i bez PayPal opcije plaćanja. Time se smanjuje copy/checkout kompleksnost i uklanja paralelni payment provider koji više nije deo ponude.
+- **Uticaj na conversion:** Korisnik više ne bira ili vidi različite valute; checkout prikazuje jedan card payment path. Manje je objašnjenja oko konverzije, a dodatne naplate sada imaju NestPay put plaćanja.
+- **Uticaj na design:** Payment step i portal pending/additional-charge kartice prikazuju NestPay i test mock opciju; javni cenovnik, checkout review, profil, AI Studio i pravne strane koriste RSD-only copy.
+- **Uticaj na code:** Prisma domain model uklanja aktivne EUR/PayPal enum vrednosti i preimenuje pricing/order polja u `*Rsd`; pricing engine, billing helpers, analytics payloads, PDF/CSV/email formatiranje, Bitrix sync i NestPay receipt flow emituju RSD. Dodat je reset script za brisanje test transakcionih podataka uz očuvanje korisnika/auth/admin identiteta.
+- **Uticaj na docs:** Ažurirani su `.env.example`, `README.md`, `TESTING.md`, `CLAUDE.md`, `docs/google-ads-gtm-conversions.md`, `docs/ai-studio-usluge.md`, pravne strane, AI-readable tekstovi i ovaj decision log.
+- **Povezani fajlovi:** `prisma/schema.prisma`, `prisma/migrations/20260617120000_rsd_only_no_paypal/migration.sql`, `scripts/reset-test-data-keep-users.ts`, `src/lib/catalog/display-currency.ts`, `src/lib/billing.ts`, `src/server/actions/nestpay.ts`, `src/server/actions/payment.ts`, `src/server/actions/charge-payment.ts`, `src/app/(marketing)/poruci/steps/step-payment.tsx`, `src/components/portal/pending-payment-card.tsx`, `src/components/portal/charge-payment-card.tsx`, `src/lib/analytics/google-data-layer.ts`, `src/lib/invoice-data.ts`, `src/lib/invoice-pdf.tsx`, `src/lib/proforma-pdf.tsx`, `src/server/bitrix/sync-deal.ts`
+- **Reference:** User request: "uklonim opciju za PayPal placanje... sve cene budu u RSD... Ne zelim da postoji razlika izmedju stranih posetilaca i posetilaca iz Srbije."
+
 ## 2026-06-11 - Render u fotografiji: transparentna razgradnja €250 + €50 + pre-uključen add-on
 
 - **Oblast promene:** conversion | pricing | docs

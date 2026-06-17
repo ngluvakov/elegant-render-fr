@@ -122,13 +122,13 @@ export function StagingConfigSection({
   const angleStepperLabel = is360
     ? "Dodatni hotspot iste sobe"
     : "Dodatni ugao iste sobe";
-  const angleAddOnPriceEur = is360 ? 24 : 12;
-  const restylePriceEur = is360 ? 22 : 12;
+  const angleAddOnPriceRsd = is360 ? 24 : 12;
+  const restylePriceRsd = is360 ? 22 : 12;
   const sourceAcceptHint = is360
     ? "Sferične (equirectangular) panorame"
     : "Obične fotografije praznog prostora";
 
-  const totalEur = useMemo(() => {
+  const totalRsd = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -137,7 +137,7 @@ export function StagingConfigSection({
         addOnQuantities: addOnQuantitiesFor(config, productId),
       },
     ]);
-    return calc.items[0]?.totalEur ?? 0;
+    return calc.items[0]?.totalRsd ?? 0;
   }, [itemId, productId, config]);
 
   useEffect(() => {
@@ -342,7 +342,7 @@ export function StagingConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalEur)}
+            {formatPrice(totalRsd)}
           </p>
         </div>
       </div>
@@ -765,10 +765,10 @@ export function StagingConfigSection({
             </div>
           </div>
           <p className="text-[0.7rem] text-muted-foreground">
-            +{formatPrice(angleAddOnPriceEur)} po dodatnom {angleAddOnLabel}u
+            +{formatPrice(angleAddOnPriceRsd)} po dodatnom {angleAddOnLabel}u
             {config.extraAnglesCount > 0 && (
               <span className="ml-1 font-semibold text-accent">
-                · ukupno +{formatPrice(config.extraAnglesCount * angleAddOnPriceEur)}
+                · ukupno +{formatPrice(config.extraAnglesCount * angleAddOnPriceRsd)}
               </span>
             )}
           </p>
@@ -810,7 +810,7 @@ export function StagingConfigSection({
           <div className="flex items-center gap-2">
             {config.restyleEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(restylePriceEur)}
+                +{formatPrice(restylePriceRsd)}
               </span>
             )}
             <Switch

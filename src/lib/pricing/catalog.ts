@@ -10,39 +10,39 @@ import {
   CONFIGURATOR_CATEGORIES,
 } from "@/lib/catalog/configurator";
 import {
-  PUBLIC_EUR_TO_RSD_RATE,
+  PUBLIC_RSD_RATE,
   PUBLIC_SERBIA_VAT_RATE,
 } from "@/lib/catalog/display-currency";
 import {
-  INT_STATIC_EXTRA_CAMERA_EUR,
-  INT_STATIC_EXTRA_FLOOR_EUR,
-  INT_STATIC_EXTRA_ROOM_EUR,
-  INT_STATIC_FIRST_FLOOR_EUR,
+  INT_STATIC_EXTRA_CAMERA_RSD,
+  INT_STATIC_EXTRA_FLOOR_RSD,
+  INT_STATIC_EXTRA_ROOM_RSD,
+  INT_STATIC_FIRST_FLOOR_RSD,
   INT_STATIC_INCLUDED_CAMERAS,
   INT_STATIC_INCLUDED_ROOMS,
   type InteriorPricing,
 } from "@/lib/catalog/interior-config";
 import {
-  TOUR360_EXTRA_CAMERA_EUR,
-  TOUR360_EXTRA_FLOOR_EUR,
-  TOUR360_EXTRA_HOTSPOT_EUR,
-  TOUR360_FIRST_FLOOR_EUR,
+  TOUR360_EXTRA_CAMERA_RSD,
+  TOUR360_EXTRA_FLOOR_RSD,
+  TOUR360_EXTRA_HOTSPOT_RSD,
+  TOUR360_FIRST_FLOOR_RSD,
   TOUR360_INCLUDED_CAMERAS,
   TOUR360_INCLUDED_HOTSPOTS,
   type Tour360Pricing,
 } from "@/lib/catalog/tour360-config";
 import {
-  TOUR_ASSEMBLY_BASE_EUR,
+  TOUR_ASSEMBLY_BASE_RSD,
   TOUR_ASSEMBLY_FREE_HOTSPOT_THRESHOLD,
-  TOUR_FLOOR_PLAN_NAV_EUR,
-  TOUR_WHITE_LABEL_EUR,
+  TOUR_FLOOR_PLAN_NAV_RSD,
+  TOUR_WHITE_LABEL_RSD,
   type TourAssemblyPricing,
 } from "@/lib/catalog/tour-assembly";
 
 export type PricingBookViewStatus = "static" | "draft" | "published";
 
 export type PricingSettings = {
-  eurToRsdRate: number;
+  rsdRate: number;
   serbiaVatRate: number;
   aiCreditUnitsPerCredit: number;
   aiCreditExpiresAfterMonths: number;
@@ -65,39 +65,39 @@ export type ResolvedPricingCatalog = {
 };
 
 export const DEFAULT_PRICING_SETTINGS: PricingSettings = {
-  eurToRsdRate: PUBLIC_EUR_TO_RSD_RATE,
+  rsdRate: PUBLIC_RSD_RATE,
   serbiaVatRate: PUBLIC_SERBIA_VAT_RATE,
   aiCreditUnitsPerCredit: AI_CREDIT_UNITS_PER_CREDIT,
   aiCreditExpiresAfterMonths: AI_CREDIT_EXPIRES_AFTER_MONTHS,
   aiCreditTiers: [...AI_CREDIT_TIERS],
   specialPricing: {
     interior: {
-      firstFloorEur: INT_STATIC_FIRST_FLOOR_EUR,
-      extraFloorEur: INT_STATIC_EXTRA_FLOOR_EUR,
+      firstFloorRsd: INT_STATIC_FIRST_FLOOR_RSD,
+      extraFloorRsd: INT_STATIC_EXTRA_FLOOR_RSD,
       includedRooms: INT_STATIC_INCLUDED_ROOMS,
       includedCameras: INT_STATIC_INCLUDED_CAMERAS,
-      extraRoomEur: INT_STATIC_EXTRA_ROOM_EUR,
-      extraCameraEur: INT_STATIC_EXTRA_CAMERA_EUR,
+      extraRoomRsd: INT_STATIC_EXTRA_ROOM_RSD,
+      extraCameraRsd: INT_STATIC_EXTRA_CAMERA_RSD,
     },
     tour360: {
-      firstFloorEur: TOUR360_FIRST_FLOOR_EUR,
-      extraFloorEur: TOUR360_EXTRA_FLOOR_EUR,
+      firstFloorRsd: TOUR360_FIRST_FLOOR_RSD,
+      extraFloorRsd: TOUR360_EXTRA_FLOOR_RSD,
       includedHotspots: TOUR360_INCLUDED_HOTSPOTS,
       includedCameras: TOUR360_INCLUDED_CAMERAS,
-      extraHotspotEur: TOUR360_EXTRA_HOTSPOT_EUR,
-      extraCameraEur: TOUR360_EXTRA_CAMERA_EUR,
+      extraHotspotRsd: TOUR360_EXTRA_HOTSPOT_RSD,
+      extraCameraRsd: TOUR360_EXTRA_CAMERA_RSD,
       assembly: {
-        baseEur: TOUR_ASSEMBLY_BASE_EUR,
+        baseRsd: TOUR_ASSEMBLY_BASE_RSD,
         freeHotspotThreshold: TOUR_ASSEMBLY_FREE_HOTSPOT_THRESHOLD,
-        floorPlanNavEur: TOUR_FLOOR_PLAN_NAV_EUR,
-        whiteLabelEur: TOUR_WHITE_LABEL_EUR,
+        floorPlanNavRsd: TOUR_FLOOR_PLAN_NAV_RSD,
+        whiteLabelRsd: TOUR_WHITE_LABEL_RSD,
       },
     },
     tourAssembly: {
-      baseEur: TOUR_ASSEMBLY_BASE_EUR,
+      baseRsd: TOUR_ASSEMBLY_BASE_RSD,
       freeHotspotThreshold: TOUR_ASSEMBLY_FREE_HOTSPOT_THRESHOLD,
-      floorPlanNavEur: TOUR_FLOOR_PLAN_NAV_EUR,
-      whiteLabelEur: TOUR_WHITE_LABEL_EUR,
+      floorPlanNavRsd: TOUR_FLOOR_PLAN_NAV_RSD,
+      whiteLabelRsd: TOUR_WHITE_LABEL_RSD,
     },
   },
 };
@@ -139,9 +139,9 @@ export function normalizePricingSettings(input: unknown): PricingSettings {
       : DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly;
 
   return {
-    eurToRsdRate: positiveNumber(
-      raw.eurToRsdRate,
-      DEFAULT_PRICING_SETTINGS.eurToRsdRate,
+    rsdRate: positiveNumber(
+      raw.rsdRate,
+      DEFAULT_PRICING_SETTINGS.rsdRate,
     ),
     serbiaVatRate: nonNegativeNumber(
       raw.serbiaVatRate,
@@ -158,13 +158,13 @@ export function normalizePricingSettings(input: unknown): PricingSettings {
     aiCreditTiers: normalizeAiCreditTiers(raw.aiCreditTiers),
     specialPricing: {
       interior: {
-        firstFloorEur: positiveNumber(
-          interior.firstFloorEur,
-          DEFAULT_PRICING_SETTINGS.specialPricing.interior.firstFloorEur,
+        firstFloorRsd: positiveNumber(
+          interior.firstFloorRsd,
+          DEFAULT_PRICING_SETTINGS.specialPricing.interior.firstFloorRsd,
         ),
-        extraFloorEur: positiveNumber(
-          interior.extraFloorEur,
-          DEFAULT_PRICING_SETTINGS.specialPricing.interior.extraFloorEur,
+        extraFloorRsd: positiveNumber(
+          interior.extraFloorRsd,
+          DEFAULT_PRICING_SETTINGS.specialPricing.interior.extraFloorRsd,
         ),
         includedRooms: nonNegativeInteger(
           interior.includedRooms,
@@ -174,23 +174,23 @@ export function normalizePricingSettings(input: unknown): PricingSettings {
           interior.includedCameras,
           DEFAULT_PRICING_SETTINGS.specialPricing.interior.includedCameras,
         ),
-        extraRoomEur: positiveNumber(
-          interior.extraRoomEur,
-          DEFAULT_PRICING_SETTINGS.specialPricing.interior.extraRoomEur,
+        extraRoomRsd: positiveNumber(
+          interior.extraRoomRsd,
+          DEFAULT_PRICING_SETTINGS.specialPricing.interior.extraRoomRsd,
         ),
-        extraCameraEur: positiveNumber(
-          interior.extraCameraEur,
-          DEFAULT_PRICING_SETTINGS.specialPricing.interior.extraCameraEur,
+        extraCameraRsd: positiveNumber(
+          interior.extraCameraRsd,
+          DEFAULT_PRICING_SETTINGS.specialPricing.interior.extraCameraRsd,
         ),
       },
       tour360: {
-        firstFloorEur: positiveNumber(
-          tour360.firstFloorEur,
-          DEFAULT_PRICING_SETTINGS.specialPricing.tour360.firstFloorEur,
+        firstFloorRsd: positiveNumber(
+          tour360.firstFloorRsd,
+          DEFAULT_PRICING_SETTINGS.specialPricing.tour360.firstFloorRsd,
         ),
-        extraFloorEur: positiveNumber(
-          tour360.extraFloorEur,
-          DEFAULT_PRICING_SETTINGS.specialPricing.tour360.extraFloorEur,
+        extraFloorRsd: positiveNumber(
+          tour360.extraFloorRsd,
+          DEFAULT_PRICING_SETTINGS.specialPricing.tour360.extraFloorRsd,
         ),
         includedHotspots: nonNegativeInteger(
           tour360.includedHotspots,
@@ -200,51 +200,51 @@ export function normalizePricingSettings(input: unknown): PricingSettings {
           tour360.includedCameras,
           DEFAULT_PRICING_SETTINGS.specialPricing.tour360.includedCameras,
         ),
-        extraHotspotEur: positiveNumber(
-          tour360.extraHotspotEur,
-          DEFAULT_PRICING_SETTINGS.specialPricing.tour360.extraHotspotEur,
+        extraHotspotRsd: positiveNumber(
+          tour360.extraHotspotRsd,
+          DEFAULT_PRICING_SETTINGS.specialPricing.tour360.extraHotspotRsd,
         ),
-        extraCameraEur: positiveNumber(
-          tour360.extraCameraEur,
-          DEFAULT_PRICING_SETTINGS.specialPricing.tour360.extraCameraEur,
+        extraCameraRsd: positiveNumber(
+          tour360.extraCameraRsd,
+          DEFAULT_PRICING_SETTINGS.specialPricing.tour360.extraCameraRsd,
         ),
         assembly: {
-          baseEur: nonNegativeNumber(
-            tourAssembly.baseEur,
-            DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.baseEur,
+          baseRsd: nonNegativeNumber(
+            tourAssembly.baseRsd,
+            DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.baseRsd,
           ),
           freeHotspotThreshold: nonNegativeInteger(
             tourAssembly.freeHotspotThreshold,
             DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly
               .freeHotspotThreshold,
           ),
-          floorPlanNavEur: nonNegativeNumber(
-            tourAssembly.floorPlanNavEur,
-            DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.floorPlanNavEur,
+          floorPlanNavRsd: nonNegativeNumber(
+            tourAssembly.floorPlanNavRsd,
+            DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.floorPlanNavRsd,
           ),
-          whiteLabelEur: nonNegativeNumber(
-            tourAssembly.whiteLabelEur,
-            DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.whiteLabelEur,
+          whiteLabelRsd: nonNegativeNumber(
+            tourAssembly.whiteLabelRsd,
+            DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.whiteLabelRsd,
           ),
         },
       },
       tourAssembly: {
-        baseEur: nonNegativeNumber(
-          tourAssembly.baseEur,
-          DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.baseEur,
+        baseRsd: nonNegativeNumber(
+          tourAssembly.baseRsd,
+          DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.baseRsd,
         ),
         freeHotspotThreshold: nonNegativeInteger(
           tourAssembly.freeHotspotThreshold,
           DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly
             .freeHotspotThreshold,
         ),
-        floorPlanNavEur: nonNegativeNumber(
-          tourAssembly.floorPlanNavEur,
-          DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.floorPlanNavEur,
+        floorPlanNavRsd: nonNegativeNumber(
+          tourAssembly.floorPlanNavRsd,
+          DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.floorPlanNavRsd,
         ),
-        whiteLabelEur: nonNegativeNumber(
-          tourAssembly.whiteLabelEur,
-          DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.whiteLabelEur,
+        whiteLabelRsd: nonNegativeNumber(
+          tourAssembly.whiteLabelRsd,
+          DEFAULT_PRICING_SETTINGS.specialPricing.tourAssembly.whiteLabelRsd,
         ),
       },
     },

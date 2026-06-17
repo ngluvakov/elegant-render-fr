@@ -45,8 +45,7 @@ function monoRow(label: string, value: string | null | undefined) {
 const CARD = "rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8";
 
 export function NestpayReceipt({ data, variant }: Props) {
-  const { orderNumber, customer, lineItems, totals, conversion, transaction } =
-    data;
+  const { orderNumber, customer, lineItems, totals, transaction } = data;
 
   const trxDateLabel = transaction.trxDate
     ? transaction.trxDate.toLocaleString("sr-Latn-RS", { hour12: false })
@@ -64,12 +63,6 @@ export function NestpayReceipt({ data, variant }: Props) {
           {row("Ukupno za naplatu", totals.totalLabel)}
           {totals.installmentCount
             ? row("Broj rata", String(totals.installmentCount))
-            : null}
-          {conversion
-            ? row(
-                "Naplaćeno u RSD (Izjava o konverziji)",
-                `${conversion.rsdAmountLabel} · kurs ~${conversion.rate.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 4 })} RSD/EUR`,
-              )
             : null}
           {totals.vatBreakdownLabel
             ? row("PDV (20%)", totals.vatBreakdownLabel)

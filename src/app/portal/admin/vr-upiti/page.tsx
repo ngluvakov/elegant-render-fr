@@ -265,9 +265,9 @@ export default async function VrInquiriesPage({
                     <VrInquiryConvertForm
                       inquiryId={inq.id}
                       defaultProjectName={cfg.projectName}
-                      defaultPriceEur={
+                      defaultPriceRsd={
                         getConfiguratorProduct(inq.productId)?.product
-                          .basePriceEur ?? 0
+                          .basePriceRsd ?? 0
                       }
                       convertedOrderId={inq.convertedOrderId}
                       convertedOrderNumber={

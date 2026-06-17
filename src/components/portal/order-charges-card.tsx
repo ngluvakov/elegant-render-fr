@@ -5,9 +5,9 @@
  */
 import { Receipt } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatRsd } from "@/lib/catalog/calculate";
 import {
-  billingCentsFromEurCents,
+  billingCentsFromRsdCents,
   formatBillingMoney,
   type BillingCurrency,
 } from "@/lib/billing";
@@ -19,7 +19,7 @@ export type ChargeView = {
   totalCents: number;
   billingCurrency: BillingCurrency | null;
   billingVatRate: number | null;
-  billingEurToRsdRate: number | null;
+  billingRsdRate: number | null;
   billingTotalCents: number | null;
   status: "pending" | "paid" | "cancelled";
   paidAt: Date | null;
@@ -149,23 +149,23 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
 function formatChargeTotal(charge: ChargeView): string {
   return charge.billingCurrency && charge.billingTotalCents != null
     ? formatBillingMoney(charge.billingTotalCents, charge.billingCurrency)
-    : formatEur(charge.totalCents / 100);
+    : formatRsd(charge.totalCents / 100);
 }
 
-function formatChargeLine(charge: ChargeView, eurCents: number): string {
+function formatChargeLine(charge: ChargeView, rsdCents: number): string {
   if (
     charge.billingCurrency &&
     charge.billingVatRate != null &&
-    charge.billingEurToRsdRate != null
+    charge.billingRsdRate != null
   ) {
     return formatBillingMoney(
-      billingCentsFromEurCents(eurCents, {
+      billingCentsFromRsdCents(rsdCents, {
         billingCurrency: charge.billingCurrency,
         billingVatRate: charge.billingVatRate,
-        billingEurToRsdRate: charge.billingEurToRsdRate,
+        billingRsdRate: charge.billingRsdRate,
       }),
       charge.billingCurrency,
     );
   }
-  return formatEur(eurCents / 100);
+  return formatRsd(rsdCents / 100);
 }

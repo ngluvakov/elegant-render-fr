@@ -67,7 +67,7 @@ export default async function InvoiceExportPage({
           invoiceNumber: true,
           invoiceIssuedAt: true,
           orderNumber: true,
-          totalEur: true,
+          totalRsd: true,
           buyerType: true,
           companyName: true,
           companyTaxId: true,
@@ -81,7 +81,7 @@ export default async function InvoiceExportPage({
   const totals = orders.reduce(
     (acc, o) => {
       acc.count += 1;
-      acc.gross += o.totalEur;
+      acc.gross += o.totalRsd;
       return acc;
     },
     { count: 0, gross: 0 },
@@ -152,8 +152,8 @@ export default async function InvoiceExportPage({
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         <Stat label="Broj računa" value={totals.count.toString()} />
         <Stat
-          label="Ukupno bruto (EUR)"
-          value={formatEur(totals.gross)}
+          label="Ukupno bruto (RSD)"
+          value={formatRsd(totals.gross)}
         />
         <Stat
           label="Opseg"
@@ -181,7 +181,7 @@ export default async function InvoiceExportPage({
                   <th className="px-2 py-3">Porudžbina</th>
                   <th className="px-2 py-3">Kupac</th>
                   <th className="px-2 py-3">PIB / VAT</th>
-                  <th className="px-2 py-3 text-right">Bruto (EUR)</th>
+                  <th className="px-2 py-3 text-right">Bruto (RSD)</th>
                   <th className="px-2 py-3">Status</th>
                 </tr>
               </thead>
@@ -214,7 +214,7 @@ export default async function InvoiceExportPage({
                         {order.companyTaxId ?? "—"}
                       </td>
                       <td className="px-2 py-3 text-right tabular-nums">
-                        {formatEur(order.totalEur)}
+                        {formatRsd(order.totalRsd)}
                       </td>
                       <td className="px-2 py-3 text-[0.78rem] text-muted-foreground">
                         {order.paymentStatus}
@@ -244,12 +244,12 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function formatEur(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
+function formatRsd(amount: number): string {
+  return new Intl.NumberFormat("sr-Latn-RS", {
     style: "currency",
-    currency: "EUR",
+    currency: "RSD",
     minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(amount);
 }
 

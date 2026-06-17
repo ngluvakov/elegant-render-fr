@@ -101,8 +101,8 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
   const displayMinQty = product.displayMinQty;
   const displayPackageNote = product.displayPackageNote;
 
-  const originalPerUnit = product.displayPerUnitEur ?? product.basePriceEur;
-  const originalPackage = product.basePriceEur;
+  const originalPerUnit = product.displayPerUnitRsd ?? product.basePriceRsd;
+  const originalPackage = product.basePriceRsd;
 
   const discountedPerUnit = showOwnDiscount
     ? Math.round(originalPerUnit * (1 - ownDiscount.pct / 100))
@@ -357,7 +357,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
           </p>
 
           {/* Hero per-unit figure */}
-          {product.displayPerUnitEur !== undefined ? (
+          {product.displayPerUnitRsd !== undefined ? (
             <>
               <p className="text-5xl font-bold text-foreground leading-none mt-1">
                 {showOwnDiscount ? (

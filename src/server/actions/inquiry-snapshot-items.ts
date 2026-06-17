@@ -5,15 +5,15 @@
  *
  * The snapshot is a frozen view of what the customer saw on the
  * "Preuzmite moju ponudu" surface (configurator → quote-summary). It
- * carries productId + productLabel + totalEur per line — enough for
+ * carries productId + productLabel + totalRsd per line — enough for
  * us to recreate the cart shape on the order side. Addon details
  * (categoryLabel-level extras, durationDiscount, configJson) are
  * dropped — admin can re-add via the configurator if needed.
  *
- * Pricing strategy: we keep the snapshot's `totalEur` so what the
- * customer saw == what lands on the draft. basePriceEur comes from
+ * Pricing strategy: we keep the snapshot's `totalRsd` so what the
+ * customer saw == what lands on the draft. basePriceRsd comes from
  * today's catalog (the snapshot doesn't carry it). If catalog
- * prices have moved, totalEur and basePriceEur can disagree —
+ * prices have moved, totalRsd and basePriceRsd can disagree —
  * that's intentional, admin can re-price by re-adding via the
  * configurator before issuing the predračun.
  */
@@ -24,15 +24,15 @@ export type InquiryItemSeed = {
   productLabel: string;
   categoryId: string;
   categoryLabel: string;
-  basePriceEur: number;
-  totalEur: number;
+  basePriceRsd: number;
+  totalRsd: number;
 };
 
 type SnapshotItem = {
   productId?: unknown;
   productLabel?: unknown;
   categoryLabel?: unknown;
-  totalEur?: unknown;
+  totalRsd?: unknown;
 };
 
 export function parseInquirySnapshotItems(
@@ -52,7 +52,7 @@ export function parseInquirySnapshotItems(
       productLabel: string;
       categoryId: string;
       categoryLabel: string;
-      basePriceEur: number;
+      basePriceRsd: number;
     }
   >();
   for (const category of catalog.categories) {
@@ -61,7 +61,7 @@ export function parseInquirySnapshotItems(
         productLabel: product.label,
         categoryId: category.id,
         categoryLabel: category.label,
-        basePriceEur: product.basePriceEur,
+        basePriceRsd: product.basePriceRsd,
       });
     }
   }
@@ -84,7 +84,7 @@ export function parseInquirySnapshotItems(
     const lookup = productIndex.get(productId);
     if (!lookup) continue; // catalog drift — product removed/renamed
 
-    const totalRaw = typeof item.totalEur === "number" ? item.totalEur : NaN;
+    const totalRaw = typeof item.totalRsd === "number" ? item.totalRsd : NaN;
     if (!Number.isFinite(totalRaw) || totalRaw <= 0) continue;
 
     seeds.push({
@@ -95,8 +95,8 @@ export function parseInquirySnapshotItems(
           : lookup.productLabel,
       categoryId: lookup.categoryId,
       categoryLabel: lookup.categoryLabel,
-      basePriceEur: lookup.basePriceEur,
-      totalEur: Math.round(totalRaw),
+      basePriceRsd: lookup.basePriceRsd,
+      totalRsd: Math.round(totalRaw),
     });
   }
 

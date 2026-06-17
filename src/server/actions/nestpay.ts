@@ -1,17 +1,13 @@
 /**
  * nestpay.ts — Banca Intesa Nestpay HPP payment initiation.
  *
- * Exports `initiateNestpayPayment` — called by the checkout payment
- * step picker when the customer chooses the "Platna kartica" tile.
+ * Exports `initiateNestpayPayment` and `initiateNestpayChargePayment` —
+ * called when the customer chooses card payment.
  * Returns `{ url, fields }` for a hidden auto-submitting form
  * that redirects the customer to the bank's hosted card-entry page.
  *
- * The bank clears in RSD (currency=941) regardless of buyer locale.
- * Serbian (RSD-billed) orders use the snapshotted billingTotalCents.
- * Foreign (EUR-billed) orders are converted at the public rate at
- * initiation time, and the converted amount + rate are snapshotted on
- * the order for invoice reconciliation per EPM standard 2.1.3
- * "Izjava o konverziji".
+ * The bank clears in RSD (currency=941). Orders and additional charges
+ * use the snapshotted RSD billingTotalCents.
  *
  * Used by: src/app/(marketing)/poruci/steps/step-payment.tsx
  */
@@ -29,10 +25,6 @@ import {
   mintOid,
   normalizeNestpayInstallmentCount,
 } from "@/lib/nestpay";
-import {
-  PUBLIC_EUR_TO_RSD_RATE,
-  eurToPublicRsd,
-} from "@/lib/catalog/display-currency";
 import {
   checkRateLimit,
   getServerActionIdentifier,
@@ -58,6 +50,12 @@ type InitiateInput = {
   taksit?: number | null;
 };
 
+type InitiateChargeInput = {
+  chargeId: string;
+  turnstileToken?: string | null;
+  taksit?: number | null;
+};
+
 export async function initiateNestpayPayment(
   input: InitiateInput,
 ): Promise<NestpayInitiateResult> {
@@ -77,7 +75,29 @@ export async function initiateNestpayPayment(
     if (message.startsWith("[nestpay]")) {
       return {
         error:
-          "Plaćanje karticom još nije konfigurisano. Probajte PayPal ili nas kontaktirajte.",
+          "Plaćanje karticom još nije konfigurisano. Kontaktirajte nas.",
+      };
+    }
+    return {
+      error: `Greška pri pokretanju plaćanja: ${message.slice(0, 200)}`,
+    };
+  }
+}
+
+export async function initiateNestpayChargePayment(
+  input: InitiateChargeInput,
+): Promise<NestpayInitiateResult> {
+  try {
+    return await initiateNestpayChargePaymentImpl(input);
+  } catch (err) {
+    Sentry.captureException(err, {
+      tags: { area: "payment", flow: "nestpay-charge-initiate" },
+      extra: { chargeId: input.chargeId },
+    });
+    const message = err instanceof Error ? err.message : String(err);
+    if (message.startsWith("[nestpay]")) {
+      return {
+        error: "Plaćanje karticom još nije konfigurisano. Kontaktirajte nas.",
       };
     }
     return {
@@ -95,9 +115,8 @@ async function initiateNestpayPaymentImpl(
   });
   if (!order) return { error: "Porudžbina nije pronađena." };
 
-  // Idempotency / state guard. Match the PayPal action's tolerance:
-  // a double-click on an order that already completed shouldn't return
-  // an error to the user — but for Nestpay we re-render the success
+  // Idempotency / state guard. A double-click on an order that already
+  // completed shouldn't return an error to the user, but for NestPay we re-render the success
   // page directly rather than continuing the redirect dance.
   if (order.paymentStatus === "completed" || order.status === "paid") {
     return { error: "Porudžbina je već plaćena." };
@@ -128,23 +147,10 @@ async function initiateNestpayPaymentImpl(
     };
   }
 
-  // Resolve the amount in RSD cents (paras). Banca Intesa clears in
-  // RSD; the customer's display currency is independent.
-  let amountRsdCents: number;
-  let chargeRate: number | null;
-  if (order.billingCurrency === "RSD") {
-    if (order.billingTotalCents == null) {
-      return { error: "Iznos porudžbine nije izračunat. Osvežite stranu." };
-    }
-    amountRsdCents = order.billingTotalCents;
-    chargeRate = order.billingEurToRsdRate ?? PUBLIC_EUR_TO_RSD_RATE;
-  } else {
-    const eurAmount = order.totalCents
-      ? order.totalCents / 100
-      : order.totalEur;
-    amountRsdCents = eurToPublicRsd(eurAmount) * 100;
-    chargeRate = PUBLIC_EUR_TO_RSD_RATE;
+  if (order.billingTotalCents == null) {
+    return { error: "Iznos porudžbine nije izračunat. Osvežite stranu." };
   }
+  const amountRsdCents = order.billingTotalCents;
 
   if (!Number.isFinite(amountRsdCents) || amountRsdCents <= 0) {
     return { error: "Iznos porudžbine je neispravan." };
@@ -172,7 +178,7 @@ async function initiateNestpayPaymentImpl(
       paymentStatus: "pending",
       nestpayChargedAmountCents: amountRsdCents,
       nestpayChargedCurrency: "RSD",
-      nestpayChargeRate: chargeRate ?? undefined,
+      nestpayChargeRate: 1,
       nestpayInstallmentCount: installmentCount,
     },
   });
@@ -209,4 +215,88 @@ async function initiateNestpayPaymentImpl(
   });
 
   return form;
+}
+
+async function initiateNestpayChargePaymentImpl(
+  input: InitiateChargeInput,
+): Promise<NestpayInitiateResult> {
+  const charge = await prisma.orderCharge.findUnique({
+    where: { id: input.chargeId },
+    include: {
+      order: {
+        include: { user: { select: { email: true, name: true } } },
+      },
+    },
+  });
+  if (!charge) return { error: "Naplata nije pronađena." };
+  if (charge.status === "cancelled") return { error: "Naplata je otkazana." };
+  if (charge.paymentStatus === "completed" || charge.status === "paid") {
+    return { error: "Naplata je već plaćena." };
+  }
+
+  const session = await auth();
+  const sessionUserId = session?.user?.id ?? null;
+  if (sessionUserId && sessionUserId !== charge.order.userId) {
+    return { error: "Nemate pristup ovoj naplati." };
+  }
+
+  const identifier = await getServerActionIdentifier();
+  const rate = await checkRateLimit("nestpayInitiate", identifier);
+  if (!rate.ok) {
+    return { error: rateLimitMessage(rate.retryAfterSeconds) };
+  }
+
+  const headerList = await headers();
+  const clientIp = getClientIp(headerList.get("x-forwarded-for"));
+  const turnstile = await verifyTurnstile(input.turnstileToken, clientIp);
+  if (!turnstile.ok) {
+    return {
+      error:
+        "Verifikacija sigurnosne provere nije uspela. Osvežite stranu i pokušajte ponovo.",
+    };
+  }
+
+  const amountRsdCents = charge.billingTotalCents ?? charge.totalCents;
+  if (!Number.isFinite(amountRsdCents) || amountRsdCents <= 0) {
+    return { error: "Iznos naplate je neispravan." };
+  }
+
+  const config = getNestpayConfig();
+  const oid = mintOid(
+    `${charge.order.orderNumber}-CHG-${charge.id.slice(-6).toUpperCase()}`,
+    config.oidPrefix,
+  );
+  const installmentCount = NESTPAY_INSTALLMENTS_ENABLED
+    ? normalizeNestpayInstallmentCount(input.taksit)
+    : 1;
+
+  const persisted = await prisma.orderCharge.updateMany({
+    where: {
+      id: input.chargeId,
+      paymentStatus: { not: "completed" },
+    },
+    data: {
+      paymentProvider: "nestpay",
+      paymentId: oid,
+      paymentStatus: "pending",
+      nestpayChargedAmountCents: amountRsdCents,
+      nestpayChargedCurrency: "RSD",
+      nestpayChargeRate: 1,
+    },
+  });
+  if (persisted.count === 0) {
+    return { error: "Naplata je već plaćena." };
+  }
+
+  const returnUrl = `${getNestpayPublicBaseUrl()}/api/nestpay/return`;
+  return buildHostedPaymentForm({
+    oid,
+    amountRsdCents,
+    lang: "sr",
+    buyerEmail: charge.order.user.email ?? undefined,
+    buyerName: charge.order.user.name ?? undefined,
+    returnUrl,
+    taksit: installmentCount,
+    allowInstallments: NESTPAY_INSTALLMENTS_ENABLED,
+  });
 }

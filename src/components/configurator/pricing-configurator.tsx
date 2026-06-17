@@ -54,7 +54,7 @@ export function ConfiguratorBody({
     stashCheckoutQuote(items);
     track("checkout_started", {
       cart_size: calculation.items.length,
-      total_eur: calculation.total,
+      total_rsd: calculation.total,
     });
     router.push("/poruci");
   };

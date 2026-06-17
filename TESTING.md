@@ -141,19 +141,19 @@ Kompletna checklist za end-to-end testiranje cele platforme.
 - [ ] Prikazuje tačan total
 - [ ] "Nastavi na plaćanje" kreira porudžbinu u bazi
 
-### 4.5 Mock kartica
-- [ ] Izaberi "Kartica" metod
+### 4.5 Mock kartica (samo test mode)
+- [ ] Sa `NEXT_PUBLIC_NESTPAY_MODE=test`, izaberi mock karticu
 - [ ] Polja su pre-popunjena (4111... / 12/28 / 123)
 - [ ] Klikni "Plati" → simulacija uspešna
 - [ ] Prikazuje potvrdu "Porudžbina primljena!"
 - [ ] Proveri inbox — stigao confirmation email
 
-### 4.6 PayPal sandbox
-- [ ] Izaberi "PayPal" metod
-- [ ] PayPal dugme se učitava
-- [ ] Klikni → otvara PayPal sandbox popup
-- [ ] Prijavi se sa sandbox buyer nalogom
-- [ ] Potvrdi plaćanje → vraća na potvrdu
+### 4.6 NestPay kartično plaćanje
+- [ ] Izaberi "Kartica (Banca Intesa)" metod
+- [ ] Turnstile se prikazuje kada su ključevi podešeni
+- [ ] Klikni "Nastavi na plaćanje" → generiše se NestPay redirect forma
+- [ ] HPP payload šalje `currency=941` i RSD amount u minor-unit formatu
+- [ ] Uspešan bank return vodi na `/poruci/uspeh`
 - [ ] Proveri inbox — stigao confirmation email
 
 ### 4.7 Direktan pristup bez quote-a
@@ -200,7 +200,7 @@ Kompletna checklist za end-to-end testiranje cele platforme.
 
 ### 5.7 Pending payment
 - [ ] Neplaćena porudžbina prikazuje "Čeka uplatu" karticu
-- [ ] PayPal i mock kartica opcije su dostupne
+- [ ] NestPay kartica je dostupna; mock kartica samo u test modu
 - [ ] Plaćanje uspeva → status se ažurira
 
 ### 5.8 Profil
@@ -308,7 +308,7 @@ Kompletna checklist za end-to-end testiranje cele platforme.
 
 - [ ] Pogrešan URL → prikazuje 404 stranicu sa "Nazad na početnu" linkom
 - [ ] Nevalidni checkout podaci → prikazuje grešku (ne puca)
-- [ ] PayPal greška → prikazuje poruku o grešci
+- [ ] NestPay greška ili odbijen return → prikazuje poruku o grešci
 - [ ] Upload prevelikog fajla (>50MB) → prikazuje poruku
 - [ ] Nepostojeci orderId u portalu → 404
 
@@ -323,7 +323,7 @@ Kada sadržaj bude spreman:
 - [ ] Poveži elegantrender.rs domen sa Vercel
 - [ ] Ažuriraj `AUTH_URL` na `https://elegantrender.rs`
 - [ ] Dodaj `https://elegantrender.rs/api/auth/callback/google` u Google OAuth redirect URIs
-- [ ] Promeni `PAYPAL_MODE=live` i zameni sandbox kredencijale
+- [ ] Promeni `NEXT_PUBLIC_NESTPAY_MODE=live` i postavi produkcione NestPay kredencijale
 - [ ] Ukloni `robots: { index: false }` iz root layout-a
 - [ ] Uključi Supabase point-in-time recovery
 - [ ] Proveri Sentry monitoring (kada se instalira)

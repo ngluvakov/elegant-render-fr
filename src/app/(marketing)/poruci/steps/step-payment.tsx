@@ -9,15 +9,11 @@ import { Label } from "@/components/ui/label";
 import { TurnstileWidget } from "@/components/ui/turnstile-widget";
 import { PaymentTrustBadges } from "@/components/marketing/payment-trust-badges";
 import {
-  PUBLIC_EUR_TO_RSD_RATE,
-  eurToPublicRsd,
   formatPublicPrice,
-  formatPublicPriceFromCents,
   type PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 import { track } from "@/lib/posthog-events";
 import { useCheckout } from "../checkout-context";
-import { PayPalButtons } from "../paypal-buttons";
 import { NestpayRedirectForm } from "../nestpay-redirect-form";
 import { mockCardPaymentAction } from "@/server/actions/payment";
 import { initiateNestpayPayment } from "@/server/actions/nestpay";
@@ -25,7 +21,7 @@ import { NESTPAY_INSTALLMENT_OPTIONS } from "@/lib/nestpay/installments";
 import { isTurnstileTestingSiteKey } from "@/lib/turnstile-keys";
 import { pushGoogleDataLayerEvent } from "@/lib/analytics/google-data-layer-client";
 
-type PaymentMethod = "paypal" | "nestpay" | "card_mock";
+type PaymentMethod = "nestpay" | "card_mock";
 
 // Mock card path is dev-only. Render only when explicitly opted in
 // via NEXT_PUBLIC_NESTPAY_MODE=test; absence of the env var should
@@ -60,12 +56,12 @@ export function StepPayment() {
   const pricingSettings: PublicPricingFormatSettings | undefined =
     pricingCatalog
       ? {
-          eurToRsdRate: pricingCatalog.settings.eurToRsdRate,
+          rsdRate: pricingCatalog.settings.rsdRate,
           serbiaVatRate: pricingCatalog.settings.serbiaVatRate,
         }
       : undefined;
-  const formatTotal = (eur: number) =>
-    formatPublicPrice(eur, displayCurrency, pricingSettings);
+  const formatTotal = (amountRsd: number) =>
+    formatPublicPrice(amountRsd, displayCurrency, pricingSettings);
 
   if (!orderId) {
     return (
@@ -102,7 +98,7 @@ export function StepPayment() {
     setError("");
     track("payment_started", {
       provider: "card_mock",
-      total_eur: calculation.total,
+      total_rsd: calculation.total,
     });
     const result = await mockCardPaymentAction(orderId);
     if (result.error) {
@@ -116,7 +112,7 @@ export function StepPayment() {
     }
     track("payment_completed", {
       provider: "card_mock",
-      total_eur: calculation.total,
+      total_rsd: calculation.total,
       order_number: orderId,
     });
     if (result.purchaseEvent) {
@@ -130,7 +126,7 @@ export function StepPayment() {
     setError("");
     track("payment_started", {
       provider: "nestpay",
-      total_eur: calculation.total,
+      total_rsd: calculation.total,
     });
     try {
       const result = await initiateNestpayPayment({
@@ -161,12 +157,6 @@ export function StepPayment() {
     }
   };
 
-  // EUR-displayed visitors see the RSD conversion disclosure mandated by
-  // EPM standard 2.1.3. Computed client-side from the same exchange
-  // rate used by the configurator and checkout review.
-  const conversionRate = pricingSettings?.eurToRsdRate ?? PUBLIC_EUR_TO_RSD_RATE;
-  const rsdEquivalent = eurToPublicRsd(calculation.total, pricingSettings);
-
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
@@ -188,7 +178,7 @@ export function StepPayment() {
         )}
 
         {/* Method selector */}
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="mt-6 grid gap-3">
           <button
             type="button"
             onClick={() => setMethod("nestpay")}
@@ -249,56 +239,11 @@ export function StepPayment() {
             </div>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setMethod("paypal")}
-            className={`relative flex h-full flex-col gap-4 rounded-xl border p-5 text-left transition ${
-              method === "paypal"
-                ? "border-accent bg-accent/5"
-                : "border-border/60 bg-background/40 hover:border-accent/40"
-            }`}
-          >
-            {method === "paypal" && (
-              <Check className="absolute right-4 top-4 h-4 w-4 text-accent" />
-            )}
-            <div className="pr-6">
-              <p className="text-base font-semibold text-foreground">PayPal</p>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                Sigurno plaćanje putem PayPal-a · zaštita kupca
-              </p>
-            </div>
-            <div className="mt-auto flex h-14 items-center justify-center rounded-lg bg-background px-4 ring-1 ring-border/30">
-              {/* PayPal official wordmark colors: navy #003087 + blue #0070ba */}
-              <span
-                aria-label="PayPal"
-                className="select-none text-2xl font-bold tracking-tight"
-                style={{ fontFamily: "ui-sans-serif, system-ui, sans-serif" }}
-              >
-                <span style={{ color: "#003087" }}>Pay</span>
-                <span style={{ color: "#0070ba" }}>Pal</span>
-              </span>
-            </div>
-          </button>
         </div>
 
         {/* Nestpay card */}
         {method === "nestpay" && (
           <div className="mt-6 space-y-4">
-            {displayCurrency === "eur" && (
-              <div className="rounded-lg border border-accent/20 bg-accent/5 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-                <strong className="text-foreground">Izjava o konverziji:</strong>{" "}
-                Iznos će biti naplaćen u dinarima u protivvrednosti od{" "}
-                <strong className="text-foreground">
-                  {formatPublicPriceFromCents(rsdEquivalent * 100, "rsd", pricingSettings)}
-                </strong>{" "}
-                prema kursu Banca Intesa AD Beograd primenjenom na dan
-                transakcije (~{conversionRate.toLocaleString("sr-Latn-RS", {
-                  maximumFractionDigits: 4,
-                })}{" "}
-                RSD / EUR). Konverziju vrši banka izdavalac kartice.
-              </div>
-            )}
-
             <label className="flex items-start gap-3 text-sm text-muted-foreground">
               <input
                 type="checkbox"
@@ -392,17 +337,6 @@ export function StepPayment() {
               Banca Intesa za unos podataka kartice.
             </p>
             <PaymentTrustBadges className="justify-center" size="sm" />
-          </div>
-        )}
-
-        {/* PayPal */}
-        {method === "paypal" && (
-          <div className="mt-6">
-            <PayPalButtons
-              orderId={orderId}
-              onSuccess={() => setPaymentComplete()}
-              onError={(msg) => setError(msg)}
-            />
           </div>
         )}
 

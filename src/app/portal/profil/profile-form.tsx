@@ -6,10 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { COUNTRIES } from "@/lib/iso-countries";
-import {
-  billingCurrencyForCountry,
-  buyerTypeForBilling,
-} from "@/lib/billing";
+import { buyerTypeForBilling } from "@/lib/billing";
 import type { BuyerType } from "@/lib/buyer-validation";
 import {
   updateProfileAction,
@@ -51,7 +48,6 @@ export function ProfileForm({
     defaultBilling.countryCode || "RS",
   );
 
-  const billingCurrency = billingCurrencyForCountry(billingCountryCode);
   const derivedBuyerType = useMemo(
     () => buyerTypeForBilling(billingKind, billingCountryCode),
     [billingKind, billingCountryCode],
@@ -226,11 +222,7 @@ export function ProfileForm({
           </label>
           <div className="flex items-center gap-2 rounded-xl border border-border/40 bg-background/60 px-3 py-2 text-sm text-foreground">
             <Globe2 className="h-4 w-4 text-accent" />
-            <span>
-              {billingCurrency === "RSD"
-                ? "Budući računi: RSD, PDV uračunat"
-                : "Budući računi: EUR bez PDV-a"}
-            </span>
+            <span>Budući računi: RSD, PDV uračunat</span>
           </div>
         </div>
 

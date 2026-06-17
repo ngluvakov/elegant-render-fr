@@ -18,7 +18,7 @@ import { renderInvoicePdf, type InvoiceData } from "@/lib/invoice-pdf";
 import {
   buildInvoiceLineItem,
   buildInvoiceRecipient,
-  invoiceGrossCentsFromEurCents,
+  invoiceGrossCentsFromRsdCents,
   invoiceCurrencyForBuyer,
   invoiceVatRateForBuyer,
   isExportInvoice,
@@ -74,8 +74,8 @@ export async function issueChargeInvoice(
           : order.companyCountryCode,
       billingCurrency: charge.billingCurrency ?? order.billingCurrency,
       billingVatRate: charge.billingVatRate ?? order.billingVatRate,
-      billingEurToRsdRate:
-        charge.billingEurToRsdRate ?? order.billingEurToRsdRate,
+      billingRsdRate:
+        charge.billingRsdRate ?? order.billingRsdRate,
       user: order.user,
     };
     const buyerType = invoiceBuyer.buyerType;
@@ -88,7 +88,7 @@ export async function issueChargeInvoice(
       .map((it) =>
         buildInvoiceLineItem({
           description: it.label,
-          grossUnitCents: invoiceGrossCentsFromEurCents(
+          grossUnitCents: invoiceGrossCentsFromRsdCents(
             it.amountCents,
             invoiceBuyer,
           ),
@@ -145,7 +145,7 @@ export async function issueChargeInvoice(
           chargeId,
           to: order.user.email,
           invoiceNumber: allocation.formatted,
-          totalEur: charge.totalCents / 100,
+          totalRsd: charge.totalCents / 100,
           billingCurrency: currency,
           billingTotalCents: charge.billingTotalCents,
           pdfPath: storagePath,
@@ -163,7 +163,7 @@ export async function issueChargeInvoice(
         invoiceNumber: allocation.formatted,
         buyerType,
         currency,
-        totalEur: charge.totalCents / 100,
+        totalRsd: charge.totalCents / 100,
         billingTotalCents: charge.billingTotalCents,
         pdfPath: storagePath,
       },

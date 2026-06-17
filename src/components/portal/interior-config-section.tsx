@@ -4,7 +4,7 @@
  * Each floor is a self-contained subset: rooms + cameras (with the
  * per-room camera noun), description, per-floor files (OrderFile.floorId),
  * and an advanced-settings switch (references / per-room details / tech
- * notes). First floor base = €170; every additional floor = €120 (30%
+ * notes). First floor base = 19.924 RSD; every additional floor = 14.064 RSD (30%
  * discount over the standalone price). Autosaves the floors array to
  * OrderItem.configJson with a 600ms debounce.
  */
@@ -45,9 +45,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   calcInteriorTotal,
-  INT_STATIC_EXTRA_CAMERA_EUR,
-  INT_STATIC_EXTRA_FLOOR_EUR,
-  INT_STATIC_EXTRA_ROOM_EUR,
+  INT_STATIC_EXTRA_CAMERA_RSD,
+  INT_STATIC_EXTRA_FLOOR_RSD,
+  INT_STATIC_EXTRA_ROOM_RSD,
   INT_STATIC_INCLUDED_CAMERAS,
   makeFloorId,
   newFloor,
@@ -82,14 +82,14 @@ function floorPricingRows(calc: InteriorFloorCalc) {
     rows.push({
       label: `+${calc.extraRooms} dodatn${calc.extraRooms === 1 ? "a prostorija" : "ih prostorija"}`,
       value: calc.extraRoomsCost,
-      sub: `€${INT_STATIC_EXTRA_ROOM_EUR}/kom`,
+      sub: `${INT_STATIC_EXTRA_ROOM_RSD.toLocaleString("sr-Latn-RS")} RSD/kom`,
     });
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
       label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"}`,
       value: calc.extraCamerasCost,
-      sub: `€${INT_STATIC_EXTRA_CAMERA_EUR}/kom`,
+      sub: `${INT_STATIC_EXTRA_CAMERA_RSD.toLocaleString("sr-Latn-RS")} RSD/kom`,
     });
   }
   return rows;
@@ -391,7 +391,7 @@ function FloorPanel({
               <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-accent/70" />
               <p>
                 Broj pored prostorije = kamere (renderi) u toj prostoriji. Preko
-                10 rendera na spratu = {formatPrice(INT_STATIC_EXTRA_CAMERA_EUR)} po kameri.
+                10 rendera na spratu = {formatPrice(INT_STATIC_EXTRA_CAMERA_RSD)} po kameri.
               </p>
             </div>
 
@@ -519,7 +519,7 @@ function FloorPanel({
                         )}
                         {isBeyondRooms && (
                           <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.62rem] font-semibold text-accent">
-                            +{formatPrice(INT_STATIC_EXTRA_ROOM_EUR)}
+                            +{formatPrice(INT_STATIC_EXTRA_ROOM_RSD)}
                           </span>
                         )}
                         <div className="inline-flex items-center rounded bg-secondary/60">
@@ -583,7 +583,7 @@ function FloorPanel({
                 Dodaj prostoriju
                 {calc.totalRooms >= 10 && (
                   <span className="text-[0.62rem] text-accent/80">
-                    (+{formatPrice(INT_STATIC_EXTRA_ROOM_EUR)})
+                    (+{formatPrice(INT_STATIC_EXTRA_ROOM_RSD)})
                   </span>
                 )}
               </button>
@@ -1078,7 +1078,7 @@ export function InteriorConfigSection({
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(calc.totalEur)}
+            {formatPrice(calc.totalRsd)}
           </p>
         </div>
       </div>
@@ -1160,7 +1160,7 @@ export function InteriorConfigSection({
           </div>
           {floors.length > 0 && (
             <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-1 text-[0.72rem] font-bold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
-              −30% · {formatPrice(INT_STATIC_EXTRA_FLOOR_EUR)}
+              −30% · {formatPrice(INT_STATIC_EXTRA_FLOOR_RSD)}
             </span>
           )}
         </button>

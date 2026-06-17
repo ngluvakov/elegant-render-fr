@@ -26,7 +26,7 @@ export default async function AiStudioCreditsPage() {
       })
     : null;
   // Match /poruci's resolution order: stored profile country first, then
-  // IP geo, then EUR default. Lets logged-in RS users see RSD even when
+  // IP geo, then RSD default. Lets logged-in users see the RSD-only pricing even when
   // the IP header is missing (e.g. local dev) and vice versa.
   const countryCode = user?.billingCountryCode ?? publicCountryCode ?? "";
   const displayCurrency = getDisplayCurrencyForCountry(countryCode);

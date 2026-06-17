@@ -120,7 +120,7 @@ import {
 } from "@/lib/catalog/exterior-config";
 import { calcTourAssemblyCost } from "@/lib/catalog/tour-assembly";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
-import { billingCentsFromEurCents } from "@/lib/billing";
+import { billingCentsFromRsdCents } from "@/lib/billing";
 
 export type ItemConfigResult = {
   error?: string;
@@ -237,7 +237,7 @@ export async function repriceOrder(orderId: string) {
       referencedOrderId: true,
       billingCurrency: true,
       billingVatRate: true,
-      billingEurToRsdRate: true,
+      billingRsdRate: true,
     },
   });
   const items = await prisma.orderItem.findMany({
@@ -309,7 +309,7 @@ export async function repriceOrder(orderId: string) {
       .map((i) => i.id),
   );
   // ext-360 items with a config get the same special-case treatment as
-  // int-360 because their per-item Tour Assembly cost (€20/€15/€35) is
+  // int-360 because their per-item Tour Assembly cost (2.344 RSD/1.758 RSD/4.102 RSD) is
   // not modeled as a catalog add-on — we add it on top in the loop.
   const ext360IdsWithConfig = new Set(
     items
@@ -354,11 +354,11 @@ export async function repriceOrder(orderId: string) {
   let containsAiCredits = false;
 
   for (const i of items) {
-    const existingTotalCents = i.totalCents ?? i.totalEur * 100;
+    const existingTotalCents = i.totalCents ?? i.totalRsd * 100;
 
     // Inquiry-only items (e.g. converted VR projects) carry a manually
     // set price agreed during consultation — never recompute from the
-    // catalog, just keep the existing totalEur.
+    // catalog, just keep the existing totalRsd.
     const lookup = getConfiguratorProduct(i.productId, pricingCatalog.categories);
     if (i.kind === "ai_credits") {
       const bd = breakdownById.get(i.id);
@@ -366,14 +366,14 @@ export async function repriceOrder(orderId: string) {
         await prisma.orderItem.update({
           where: { id: i.id },
           data: {
-            basePriceEur: Math.round(bd.basePriceEur),
+            basePriceRsd: Math.round(bd.basePriceRsd),
             basePriceCents: bd.basePriceCents,
-            totalEur: Math.round(bd.totalEur),
+            totalRsd: Math.round(bd.totalRsd),
             totalCents: bd.totalCents,
             aiCreditQuantity: bd.aiCreditQuantity ?? i.aiCreditQuantity,
             aiCreditUnits: bd.aiCreditUnits ?? i.aiCreditUnits,
             addOnsJson: [],
-            originalTotalEur: Math.round(bd.originalTotalEur),
+            originalTotalRsd: Math.round(bd.originalTotalRsd),
             discountPct: 0,
             discountReason: null,
           },
@@ -401,7 +401,7 @@ export async function repriceOrder(orderId: string) {
       const preDiscount = calcInteriorTotal(
         floors,
         specialPricing.interior,
-      ).totalEur;
+      ).totalRsd;
       const target = quoteItems.find((q) => q.instanceId === i.id);
       const discount = target
         ? resolveDiscount(
@@ -410,22 +410,22 @@ export async function repriceOrder(orderId: string) {
             pricingCatalog,
           )
         : null;
-      const totalEur = discount
+      const totalRsd = discount
         ? Math.round(preDiscount * (1 - discount.pct / 100))
         : preDiscount;
       await prisma.orderItem.update({
         where: { id: i.id },
         data: {
-          totalEur,
+          totalRsd,
           basePriceCents: preDiscount * 100,
-          totalCents: totalEur * 100,
-          originalTotalEur: preDiscount,
+          totalCents: totalRsd * 100,
+          originalTotalRsd: preDiscount,
           discountPct: discount?.pct ?? 0,
           discountReason: discount?.reason ?? null,
         },
       });
-      orderTotalCents += totalEur * 100;
-      premiumTotalCents += totalEur * 100;
+      orderTotalCents += totalRsd * 100;
+      premiumTotalCents += totalRsd * 100;
       continue;
     }
 
@@ -437,7 +437,7 @@ export async function repriceOrder(orderId: string) {
         cfg.floors,
         cfg.tourAssembly,
         specialPricing.tour360,
-      ).totalEur;
+      ).totalRsd;
       const target = quoteItems.find((q) => q.instanceId === i.id);
       const discount = target
         ? resolveDiscount(
@@ -446,22 +446,22 @@ export async function repriceOrder(orderId: string) {
             pricingCatalog,
           )
         : null;
-      const totalEur = discount
+      const totalRsd = discount
         ? Math.round(preDiscount * (1 - discount.pct / 100))
         : preDiscount;
       await prisma.orderItem.update({
         where: { id: i.id },
         data: {
-          totalEur,
+          totalRsd,
           basePriceCents: preDiscount * 100,
-          totalCents: totalEur * 100,
-          originalTotalEur: preDiscount,
+          totalCents: totalRsd * 100,
+          originalTotalRsd: preDiscount,
           discountPct: discount?.pct ?? 0,
           discountReason: discount?.reason ?? null,
         },
       });
-      orderTotalCents += totalEur * 100;
-      premiumTotalCents += totalEur * 100;
+      orderTotalCents += totalRsd * 100;
+      premiumTotalCents += totalRsd * 100;
       continue;
     }
 
@@ -484,7 +484,7 @@ export async function repriceOrder(orderId: string) {
         [],
         pricingCatalog,
       ).items[0];
-      const renderingCost = renderingBreakdown?.totalEur ?? i.totalEur;
+      const renderingCost = renderingBreakdown?.totalRsd ?? i.totalRsd;
       const assemblyCost = calcTourAssemblyCost(
         cfg.tourAssembly ?? {
           webTourEnabled: false,
@@ -503,23 +503,23 @@ export async function repriceOrder(orderId: string) {
             pricingCatalog,
           )
         : null;
-      const totalEur = discount
+      const totalRsd = discount
         ? Math.round(preDiscount * (1 - discount.pct / 100))
         : preDiscount;
       await prisma.orderItem.update({
         where: { id: i.id },
         data: {
-          totalEur,
+          totalRsd,
           basePriceCents: preDiscount * 100,
-          totalCents: totalEur * 100,
-          originalTotalEur: preDiscount,
+          totalCents: totalRsd * 100,
+          originalTotalRsd: preDiscount,
           addOnsJson: renderingBreakdown?.addOns ?? [],
           discountPct: discount?.pct ?? 0,
           discountReason: discount?.reason ?? null,
         },
       });
-      orderTotalCents += totalEur * 100;
-      premiumTotalCents += totalEur * 100;
+      orderTotalCents += totalRsd * 100;
+      premiumTotalCents += totalRsd * 100;
       continue;
     }
 
@@ -533,14 +533,14 @@ export async function repriceOrder(orderId: string) {
     await prisma.orderItem.update({
       where: { id: i.id },
       data: {
-        basePriceEur: bd.basePriceEur,
+        basePriceRsd: bd.basePriceRsd,
         basePriceCents: bd.basePriceCents,
-        totalEur: bd.totalEur,
+        totalRsd: bd.totalRsd,
         totalCents: bd.totalCents,
         addOnsJson: bd.addOns,
         durationSeconds: bd.durationSeconds ?? null,
         durationDiscount: bd.durationDiscount ?? null,
-        originalTotalEur: bd.originalTotalEur,
+        originalTotalRsd: bd.originalTotalRsd,
         discountPct: bd.discountPct,
         discountReason: bd.discountReason,
       },
@@ -550,21 +550,21 @@ export async function repriceOrder(orderId: string) {
   }
 
   const billingTotalCents = order?.billingCurrency
-    ? billingCentsFromEurCents(orderTotalCents, {
+    ? billingCentsFromRsdCents(orderTotalCents, {
         billingCurrency: order.billingCurrency,
         billingVatRate:
           order.billingVatRate ?? pricingCatalog.settings.serbiaVatRate,
-        billingEurToRsdRate:
-          order.billingEurToRsdRate ?? pricingCatalog.settings.eurToRsdRate,
+        billingRsdRate:
+          order.billingRsdRate ?? pricingCatalog.settings.rsdRate,
       })
     : undefined;
 
   await prisma.order.update({
     where: { id: orderId },
     data: {
-      totalEur: Math.round(orderTotalCents / 100),
+      totalRsd: Math.round(orderTotalCents / 100),
       totalCents: orderTotalCents,
-      premiumTotalEur: Math.round(premiumTotalCents / 100),
+      premiumTotalRsd: Math.round(premiumTotalCents / 100),
       ...(billingTotalCents !== undefined ? { billingTotalCents } : {}),
       containsAiCredits,
     },
@@ -642,7 +642,7 @@ export async function addOrderItem(
   if (!breakdown) return { error: "Greška u izračunu." };
 
   // int-static and int-360 always start with one default floor so the
-  // price is stable (€170 / €295) and the UI has something to show.
+  // price is stable (19.924 RSD / 34.574 RSD) and the UI has something to show.
   // land-static seeds its default landscape config so the configurator
   // opens with name/stepper pre-filled.
   const initialConfigJson: Prisma.InputJsonValue | undefined =
@@ -685,10 +685,10 @@ export async function addOrderItem(
                                   : undefined;
   const initialTotal =
     productId === "int-static"
-      ? pricingCatalog.settings.specialPricing.interior.firstFloorEur
+      ? pricingCatalog.settings.specialPricing.interior.firstFloorRsd
       : productId === "int-360"
-        ? pricingCatalog.settings.specialPricing.tour360.firstFloorEur
-        : breakdown.totalEur;
+        ? pricingCatalog.settings.specialPricing.tour360.firstFloorRsd
+        : breakdown.totalRsd;
 
   const created = await prisma.orderItem.create({
     data: {
@@ -697,8 +697,8 @@ export async function addOrderItem(
       categoryId: lookup.category.id,
       productLabel: breakdown.productLabel,
       categoryLabel: breakdown.categoryLabel,
-      basePriceEur: breakdown.basePriceEur,
-      totalEur: initialTotal,
+      basePriceRsd: breakdown.basePriceRsd,
+      totalRsd: initialTotal,
       addOnsJson: breakdown.addOns,
       durationSeconds: breakdown.durationSeconds ?? null,
       durationDiscount: breakdown.durationDiscount ?? null,
@@ -854,7 +854,7 @@ export async function updateTour360Config(
     .slice(0, 20)
     .map(sanitizeTour360Floor);
   const sanitizedAssembly = sanitizeTourAssembly(config.tourAssembly);
-  const { totalEur } = calcTour360Total(sanitizedFloors, sanitizedAssembly);
+  const { totalRsd } = calcTour360Total(sanitizedFloors, sanitizedAssembly);
 
   await prisma.orderItem.update({
     where: { id: itemId },
@@ -863,7 +863,7 @@ export async function updateTour360Config(
         floors: sanitizedFloors,
         tourAssembly: sanitizedAssembly,
       } as unknown as Prisma.InputJsonValue,
-      totalEur,
+      totalRsd,
     },
   });
 
@@ -1182,8 +1182,8 @@ export async function swapStagingType(
         categoryId: "staging",
         productLabel: lookup.product.label,
         categoryLabel: lookup.category.label,
-        basePriceEur: lookup.product.basePriceEur,
-        totalEur: breakdown.totalEur,
+        basePriceRsd: lookup.product.basePriceRsd,
+        totalRsd: breakdown.totalRsd,
         configJson: sanitized as unknown as Prisma.InputJsonValue,
         addOnsJson: breakdown.addOns as unknown as Prisma.InputJsonValue,
       },
@@ -1504,13 +1504,13 @@ export async function updateInteriorFloors(
     return { error: "Izmene dozvoljene samo u nacrtu." };
 
   const sanitized = floors.slice(0, 20).map(sanitizeFloor);
-  const { totalEur } = calcInteriorTotal(sanitized);
+  const { totalRsd } = calcInteriorTotal(sanitized);
 
   await prisma.orderItem.update({
     where: { id: itemId },
     data: {
       configJson: { floors: sanitized } as unknown as Prisma.InputJsonValue,
-      totalEur,
+      totalRsd,
     },
   });
 

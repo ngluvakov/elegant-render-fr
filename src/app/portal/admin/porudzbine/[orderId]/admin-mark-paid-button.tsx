@@ -2,7 +2,7 @@
  * AdminMarkPaidButton — admin trigger to record a wire transfer
  * payment against an order on the predračun flow. Server action
  * (markWireTransferPaid) flips paymentStatus + transitions to paid
- * and runs the same finishSuccessfulPayment hook used by PayPal/card.
+ * and runs the same finishSuccessfulPayment hook used by card payments.
  *
  * Inline confirm pattern: first click reveals "Potvrdi" + "Otkaži"
  * to prevent a stray click from issuing the konačni račun. Mirrors

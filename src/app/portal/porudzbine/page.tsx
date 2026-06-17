@@ -4,9 +4,9 @@ import { Search } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatRsd } from "@/lib/catalog/calculate";
 import {
-  billingCentsFromEurCents,
+  billingCentsFromRsdCents,
   formatBillingMoney,
   type BillingCurrency,
 } from "@/lib/billing";
@@ -29,37 +29,37 @@ type OrderMoneySnapshot = {
   billingCurrency: BillingCurrency | null;
   billingTotalCents: number | null;
   billingVatRate: number | null;
-  billingEurToRsdRate: number | null;
+  billingRsdRate: number | null;
   totalCents: number | null;
-  totalEur: number;
+  totalRsd: number;
 };
 
 function formatOrderTotal(order: OrderMoneySnapshot): string {
   if (order.billingCurrency && order.billingTotalCents != null) {
     return formatBillingMoney(order.billingTotalCents, order.billingCurrency);
   }
-  return formatEur((order.totalCents ?? order.totalEur * 100) / 100);
+  return formatRsd((order.totalCents ?? order.totalRsd * 100) / 100);
 }
 
-function formatOrderEurAmount(
+function formatOrderRsdAmount(
   order: OrderMoneySnapshot,
-  amountEur: number,
+  amountRsd: number,
 ): string {
   if (
     order.billingCurrency &&
     order.billingVatRate != null &&
-    order.billingEurToRsdRate != null
+    order.billingRsdRate != null
   ) {
     return formatBillingMoney(
-      billingCentsFromEurCents(Math.round(amountEur * 100), {
+      billingCentsFromRsdCents(Math.round(amountRsd * 100), {
         billingCurrency: order.billingCurrency,
         billingVatRate: order.billingVatRate,
-        billingEurToRsdRate: order.billingEurToRsdRate,
+        billingRsdRate: order.billingRsdRate,
       }),
       order.billingCurrency,
     );
   }
-  return formatEur(amountEur);
+  return formatRsd(amountRsd);
 }
 
 export default async function PorudzbinePage({
@@ -84,8 +84,8 @@ export default async function PorudzbinePage({
         select: {
           productLabel: true,
           categoryLabel: true,
-          totalEur: true,
-          originalTotalEur: true,
+          totalRsd: true,
+          originalTotalRsd: true,
         },
         orderBy: { id: "asc" },
       },
@@ -138,9 +138,9 @@ export default async function PorudzbinePage({
                   order.projectName ??
                   firstItem?.productLabel ??
                   "Porudžbina";
-                const savingsEur = order.items.reduce(
+                const savingsRsd = order.items.reduce(
                   (s, i) =>
-                    s + Math.max(0, (i.originalTotalEur ?? i.totalEur) - i.totalEur),
+                    s + Math.max(0, (i.originalTotalRsd ?? i.totalRsd) - i.totalRsd),
                   0,
                 );
                 return (
@@ -179,9 +179,9 @@ export default async function PorudzbinePage({
                       <p className="text-sm font-semibold text-foreground">
                         {formatOrderTotal(order)}
                       </p>
-                      {savingsEur > 0 && (
+                      {savingsRsd > 0 && (
                         <p className="mt-0.5 text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
-                          −{formatOrderEurAmount(order, savingsEur)} ušteda
+                          −{formatOrderRsdAmount(order, savingsRsd)} ušteda
                         </p>
                       )}
                     </div>
@@ -209,9 +209,9 @@ export default async function PorudzbinePage({
                 order.projectName ??
                 firstItem?.productLabel ??
                 "Porudžbina";
-              const savingsEur = order.items.reduce(
+              const savingsRsd = order.items.reduce(
                 (s, i) =>
-                  s + Math.max(0, (i.originalTotalEur ?? i.totalEur) - i.totalEur),
+                  s + Math.max(0, (i.originalTotalRsd ?? i.totalRsd) - i.totalRsd),
                 0,
               );
               return (
@@ -255,9 +255,9 @@ export default async function PorudzbinePage({
                         <p className="text-sm font-semibold text-foreground">
                           {formatOrderTotal(order)}
                         </p>
-                        {savingsEur > 0 && (
+                        {savingsRsd > 0 && (
                           <p className="text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
-                            −{formatOrderEurAmount(order, savingsEur)}
+                            −{formatOrderRsdAmount(order, savingsRsd)}
                           </p>
                         )}
                       </div>

@@ -366,7 +366,7 @@ export function buildServiceJsonLd(service: Service) {
       },
       {
         "@type": "AdministrativeArea",
-        name: "Europe",
+        name: "Regional markets",
       },
       {
         "@type": "Place",
@@ -396,7 +396,7 @@ export function buildServiceJsonLd(service: Service) {
         name: variant.title,
         description: variant.description,
         price: variant.basePrice,
-        priceCurrency: "EUR",
+        priceCurrency: "RSD",
         url: serviceUrl,
         itemOffered: {
           "@type": "Service",
@@ -406,7 +406,7 @@ export function buildServiceJsonLd(service: Service) {
         priceSpecification: {
           "@type": "UnitPriceSpecification",
           price: variant.basePrice,
-          priceCurrency: "EUR",
+          priceCurrency: "RSD",
           unitText: variant.unitLabel,
         },
       })),
@@ -439,7 +439,7 @@ export function buildOfferCatalogJsonLd(
     "@id": `${absoluteUrl("/cene")}#offer-catalog`,
     name: "Elegant Render cenovnik",
     description:
-      "Osnovne cene arhitektonske vizuelizacije u EUR. Za Srbiju se prikazuje RSD bruto cena sa PDV-om uračunatim u direktno prevedeni iznos.",
+      "Osnovne cene arhitektonske vizuelizacije su u RSD, bruto sa PDV-om uračunatim.",
     url: absoluteUrl("/cene"),
     provider: {
       "@id": SEO.organizationId,
@@ -452,8 +452,8 @@ export function buildOfferCatalogJsonLd(
         "@type": "Offer",
         name: product.label,
         description: product.includes.join(", "),
-        price: product.basePriceEur,
-        priceCurrency: "EUR",
+        price: product.basePriceRsd,
+        priceCurrency: "RSD",
         url: absoluteUrl("/cene"),
         availability: product.inquiryOnly
           ? "https://schema.org/PreOrder"
@@ -468,8 +468,8 @@ export function buildOfferCatalogJsonLd(
         },
         priceSpecification: {
           "@type": "UnitPriceSpecification",
-          price: product.basePriceEur,
-          priceCurrency: "EUR",
+          price: product.basePriceRsd,
+          priceCurrency: "RSD",
           unitText: product.unitLabel,
         },
       })),

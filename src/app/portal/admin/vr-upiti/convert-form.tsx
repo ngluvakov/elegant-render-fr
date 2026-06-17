@@ -13,7 +13,7 @@ import { track } from "@/lib/posthog-events";
 type Props = {
   inquiryId: string;
   defaultProjectName: string;
-  defaultPriceEur: number;
+  defaultPriceRsd: number;
   convertedOrderId: string | null;
   convertedOrderNumber?: string;
 };
@@ -21,12 +21,12 @@ type Props = {
 export function VrInquiryConvertForm({
   inquiryId,
   defaultProjectName,
-  defaultPriceEur,
+  defaultPriceRsd,
   convertedOrderId,
   convertedOrderNumber,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [priceEur, setPriceEur] = useState(String(defaultPriceEur));
+  const [priceRsd, setPriceRsd] = useState(String(defaultPriceRsd));
   const [projectName, setProjectName] = useState(defaultProjectName);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -62,7 +62,7 @@ export function VrInquiryConvertForm({
     startTransition(async () => {
       const res = await convertVrInquiryToOrder({
         inquiryId,
-        priceEur: Number(priceEur),
+        priceRsd: Number(priceRsd),
         projectName: projectName.trim() || undefined,
       });
       if ("error" in res) {
@@ -72,7 +72,7 @@ export function VrInquiryConvertForm({
       track("vr_inquiry_converted", {
         inquiry_id: inquiryId,
         order_number: res.orderNumber,
-        price_eur: Number(priceEur),
+        price_rsd: Number(priceRsd),
       });
       router.refresh();
     });
@@ -98,15 +98,15 @@ export function VrInquiryConvertForm({
         </div>
         <div className="space-y-1.5">
           <Label htmlFor={`price-${inquiryId}`} className="text-[0.72rem]">
-            Cena (EUR)
+            Cena (RSD)
           </Label>
           <Input
             id={`price-${inquiryId}`}
             type="number"
             min={1}
             step={1}
-            value={priceEur}
-            onChange={(e) => setPriceEur(e.target.value)}
+            value={priceRsd}
+            onChange={(e) => setPriceRsd(e.target.value)}
             disabled={pending}
             className="w-32"
           />

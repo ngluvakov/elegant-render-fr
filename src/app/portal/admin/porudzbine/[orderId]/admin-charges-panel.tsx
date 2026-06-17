@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatRsd } from "@/lib/catalog/calculate";
 import {
   adminCancelCharge,
   adminCreateCharge,
@@ -39,7 +39,7 @@ type CatalogOption = {
   productId: string;
   label: string;
   categoryLabel: string;
-  basePriceEur: number;
+  basePriceRsd: number;
 };
 
 const CATALOG_OPTIONS: CatalogOption[] = CONFIGURATOR_CATEGORIES.flatMap((cat) =>
@@ -47,7 +47,7 @@ const CATALOG_OPTIONS: CatalogOption[] = CONFIGURATOR_CATEGORIES.flatMap((cat) =
     productId: p.id,
     label: p.label,
     categoryLabel: cat.label,
-    basePriceEur: p.basePriceEur,
+    basePriceRsd: p.basePriceRsd,
   })),
 );
 
@@ -56,7 +56,7 @@ type RowState = {
   source: "catalog" | "custom";
   productId: string | null;
   label: string;
-  amountEur: string; // input as string for editability
+  amountRsd: string; // input as string for editability
   quantity: string;
 };
 
@@ -66,7 +66,7 @@ function blankRow(): RowState {
     source: "custom",
     productId: null,
     label: "",
-    amountEur: "",
+    amountRsd: "",
     quantity: "1",
   };
 }
@@ -100,10 +100,10 @@ export function AdminChargesPanel({
 
   const totalCents = useMemo(() => {
     return rows.reduce((sum, row) => {
-      const eur = Number(row.amountEur);
+      const rsd = Number(row.amountRsd);
       const qty = Math.max(1, Math.floor(Number(row.quantity) || 0));
-      if (!Number.isFinite(eur) || eur <= 0) return sum;
-      return sum + Math.round(eur * 100) * qty;
+      if (!Number.isFinite(rsd) || rsd <= 0) return sum;
+      return sum + Math.round(rsd * 100) * qty;
     }, 0);
   }, [rows]);
 
@@ -124,7 +124,7 @@ export function AdminChargesPanel({
       source: "catalog",
       productId: opt.productId,
       label: `${opt.categoryLabel} — ${opt.label}`,
-      amountEur: opt.basePriceEur.toString(),
+      amountRsd: opt.basePriceRsd.toString(),
     });
   };
 
@@ -133,7 +133,7 @@ export function AdminChargesPanel({
     setError("");
 
     const items = rows.map((row) => {
-      const eur = Number(row.amountEur);
+      const rsd = Number(row.amountRsd);
       const qty = Math.max(1, Math.floor(Number(row.quantity) || 1));
       return {
         productId: row.productId ?? undefined,
@@ -142,7 +142,7 @@ export function AdminChargesPanel({
             ? "service_addition"
             : "custom",
         label: row.label.trim(),
-        amountCents: Math.round(eur * 100),
+        amountCents: Math.round(rsd * 100),
         quantity: qty,
       };
     });
@@ -234,7 +234,7 @@ export function AdminChargesPanel({
                   )}
                 </div>
                 <p className="font-semibold text-foreground">
-                  {formatEur(charge.totalCents / 100)}
+                  {formatRsd(charge.totalCents / 100)}
                 </p>
               </div>
               <ul className="mt-2 space-y-0.5 text-[0.72rem] text-foreground/80">
@@ -245,7 +245,7 @@ export function AdminChargesPanel({
                       {item.quantity > 1 ? ` × ${item.quantity}` : ""}
                     </span>
                     <span className="font-medium">
-                      {formatEur((item.amountCents * item.quantity) / 100)}
+                      {formatRsd((item.amountCents * item.quantity) / 100)}
                     </span>
                   </li>
                 ))}
@@ -311,7 +311,7 @@ export function AdminChargesPanel({
                       <option value="">— Custom —</option>
                       {CATALOG_OPTIONS.map((opt) => (
                         <option key={opt.productId} value={opt.productId}>
-                          {opt.categoryLabel} — {opt.label} (od €{opt.basePriceEur})
+                          {opt.categoryLabel} — {opt.label} (od {formatRsd(opt.basePriceRsd)})
                         </option>
                       ))}
                     </select>
@@ -329,14 +329,14 @@ export function AdminChargesPanel({
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label className="text-[0.68rem]">Cena (€)</Label>
+                      <Label className="text-[0.68rem]">Cena (RSD)</Label>
                       <Input
                         type="number"
-                        step="0.01"
+                        step="1"
                         min="0"
-                        value={row.amountEur}
+                        value={row.amountRsd}
                         onChange={(e) =>
-                          updateRow(row.rid, { amountEur: e.target.value })
+                          updateRow(row.rid, { amountRsd: e.target.value })
                         }
                         className="mt-1"
                       />
@@ -378,7 +378,7 @@ export function AdminChargesPanel({
           <div className="flex items-center justify-between rounded-xl bg-muted/40 px-3 py-2">
             <span className="text-xs text-muted-foreground">Ukupno za naplatu</span>
             <span className="text-base font-bold text-foreground">
-              {formatEur(totalCents / 100)}
+              {formatRsd(totalCents / 100)}
             </span>
           </div>
 

@@ -48,7 +48,7 @@ export type ProformaData = {
     email?: string | null;
   };
   items: ProformaLineItem[];
-  currency: "RSD" | "EUR";
+  currency: "RSD";
   paymentReference: string; // poziv na broj — usually the order number
 };
 
@@ -210,15 +210,10 @@ const styles = StyleSheet.create({
   },
 });
 
-function formatMoney(cents: number, currency: "RSD" | "EUR"): string {
+function formatMoney(cents: number, _currency: "RSD"): string {
+  void _currency;
   const value = cents / 100;
-  if (currency === "RSD") {
-    return `${value.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`;
-  }
-  return `€${value.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
+  return `${value.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`;
 }
 
 function formatDate(date: Date, locale: "sr-Latn-RS" | "en-GB"): string {
@@ -314,10 +309,9 @@ export async function renderProformaPdf(data: ProformaData): Promise<Buffer> {
 }
 
 function ProformaDocument({ data }: { data: ProformaData }) {
-  const layoutKey =
-    data.currency === "EUR" ? "company_foreign" : data.buyerType;
+  const layoutKey = data.buyerType;
   const t = STRINGS[layoutKey];
-  const locale = data.currency === "EUR" ? "en-GB" : "sr-Latn-RS";
+  const locale = "sr-Latn-RS";
 
   const subtotalCents = data.items.reduce(
     (sum, it) => sum + it.quantity * it.unitPriceNetCents,
@@ -380,11 +374,11 @@ function ProformaDocument({ data }: { data: ProformaData }) {
                 {data.recipient.mb ? ` · MB ${data.recipient.mb}` : ""}
               </Text>
             )}
-            {data.recipient.taxId && data.currency === "EUR" && (
-              <Text style={styles.partyMono}>VAT ID {data.recipient.taxId}</Text>
+            {data.recipient.taxId && data.buyerType === "company_foreign" && (
+              <Text style={styles.partyMono}>Tax ID {data.recipient.taxId}</Text>
             )}
             {data.recipient.countryCode &&
-              data.currency === "EUR" && (
+              data.buyerType === "company_foreign" && (
                 <Text style={styles.partyText}>
                   Country: {data.recipient.countryCode}
                 </Text>
@@ -460,25 +454,18 @@ function ProformaDocument({ data }: { data: ProformaData }) {
               <Text style={styles.bankValue}>{IMPRINT.bank.name}</Text>
             </View>
           )}
-          {IMPRINT.bank.accountNumber &&
-            data.currency !== "EUR" && (
-              <View style={styles.bankRow}>
-                <Text style={styles.bankLabel}>{t.bankAccount}</Text>
-                <Text style={styles.bankValue}>
-                  {IMPRINT.bank.accountNumber}
-                </Text>
-              </View>
-            )}
+          {IMPRINT.bank.accountNumber && (
+            <View style={styles.bankRow}>
+              <Text style={styles.bankLabel}>{t.bankAccount}</Text>
+              <Text style={styles.bankValue}>
+                {IMPRINT.bank.accountNumber}
+              </Text>
+            </View>
+          )}
           {IMPRINT.bank.iban && (
             <View style={styles.bankRow}>
               <Text style={styles.bankLabel}>{t.bankIban}</Text>
               <Text style={styles.bankValue}>{IMPRINT.bank.iban}</Text>
-            </View>
-          )}
-          {IMPRINT.bank.swift && data.currency === "EUR" && (
-            <View style={styles.bankRow}>
-              <Text style={styles.bankLabel}>{t.bankSwift}</Text>
-              <Text style={styles.bankValue}>{IMPRINT.bank.swift}</Text>
             </View>
           )}
           <View style={styles.bankRow}>

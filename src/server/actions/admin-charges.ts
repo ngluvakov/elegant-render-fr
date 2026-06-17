@@ -7,7 +7,7 @@
  * beyond included revisions, custom work).
  *
  * Modeled separately from Order because Order.totalCents is immutable
- * for idempotency on the original PayPal/card capture. Each charge
+ * for idempotency on the original online card capture. Each charge
  * has its own payment lifecycle through charge-payment.ts and is
  * delivered to the customer via the portal order detail page.
  */
@@ -20,7 +20,7 @@ import { enqueueOutboxEvent } from "@/lib/outbox";
 import { captureServerEvent } from "@/lib/posthog";
 import { requirePermission } from "@/lib/admin-auth";
 import {
-  billingCentsFromEurCents,
+  billingCentsFromRsdCents,
   buildBillingSnapshot,
 } from "@/lib/billing";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
@@ -135,7 +135,7 @@ export async function adminCreateCharge(args: {
   const billingTotalCents = normalized.reduce(
     (sum, item) =>
       sum +
-      billingCentsFromEurCents(
+      billingCentsFromRsdCents(
         item.amountCents * item.quantity,
         billingSnapshot,
       ),
@@ -160,7 +160,7 @@ export async function adminCreateCharge(args: {
         companyCountryCode: billingSnapshot.companyCountryCode,
         billingCurrency: billingSnapshot.billingCurrency,
         billingVatRate: billingSnapshot.billingVatRate,
-        billingEurToRsdRate: billingSnapshot.billingEurToRsdRate,
+        billingRsdRate: billingSnapshot.billingRsdRate,
         billingTotalCents,
         items: {
           create: normalized.map((item) => ({
@@ -195,7 +195,7 @@ export async function adminCreateCharge(args: {
             label: item.label,
             quantity: item.quantity,
             amountCents: item.amountCents,
-            billingSubtotalCents: billingCentsFromEurCents(
+            billingSubtotalCents: billingCentsFromRsdCents(
               item.amountCents * item.quantity,
               billingSnapshot,
             ),

@@ -26,7 +26,7 @@ function link(title: string, url: string, note?: string): string {
 }
 
 function productPrice(product: ConfiguratorProduct): string {
-  return `${formatPublicPrice(product.basePriceEur, "eur")} (${product.unitLabel})`;
+  return `${formatPublicPrice(product.basePriceRsd, "rsd")} (${product.unitLabel})`;
 }
 
 function creditCount(units: number): string {
@@ -41,7 +41,7 @@ function buildAiStudioKnowledge(): string {
     .sort((a, b) => b.minCredits - a.minCredits)
     .map(
       (tier) =>
-        `${tier.minCredits}+ kredita: ${formatPublicPrice(tier.centsPerCredit / 100, "eur")} po kreditu`,
+        `${tier.minCredits}+ kredita: ${formatPublicPrice(tier.centsPerCredit / 100, "rsd")} po kreditu`,
     )
     .join("; ");
   const tools = AI_EDIT_TYPES.map((tool) => {
@@ -66,12 +66,12 @@ export function buildLlmsTxt(): string {
 > ${SITE.description}
 
 Elegant Render je srpski-first servis za arhitektonsku vizuelizaciju, virtuelno opremanje, 3D osnove, 360 ture, animacije i AI obradu fotografija nekretnina.
-Primarni jezik javnog sajta je srpski latinicom (sr-Latn), a osnovna valuta javnog cenovnika je EUR.
+Primarni jezik javnog sajta je srpski latinicom (sr-Latn), a osnovna valuta javnog cenovnika je RSD.
 
 ## Answer-ready facts
 - Elegant Render je B2C brend kompanije ${SITE.parentCompany} za arhitektonsku vizuelizaciju i obradu fotografija nekretnina.
 - Najvažnije usluge su 3D renderi enterijera i eksterijera, virtuelno opremanje, virtuelna renovacija, 2D/3D osnove, 360 ture, animacije i AI Studio.
-- Javni cenovnik koristi EUR kao osnovicu; RSD je regionalni prikaz za posetioce iz Srbije, bruto sa PDV-om uračunatim u isti prevedeni iznos.
+- Javni cenovnik koristi RSD kao jedinu osnovicu; svi posetioci vide iste bruto cene sa PDV-om uključenim.
 - Standardni projekti obično dobijaju prve nacrte za 3 do 5 radnih dana, uz tri runde revizija.
 - Za nejasan obim ili veći investitorski projekat preporučuje se /kontakt ili brzi upit, ne izmišljanje cene.
 
@@ -103,7 +103,7 @@ ${[
 ].join("\n")}
 
 ## Pricing and tax notes
-Osnovni finansijski cenovnik je u EUR. Posetioci iz Srbije na javnom sajtu vide RSD bruto prikaz: EUR iznos se prevodi po objavljenom kursu, a PDV je već sadržan u toj RSD ceni i ne dodaje se preko nje. Posetioci van Srbije vide EUR prikaz. Konačna ponuda zavisi od obima i ulaznih materijala.
+Osnovni finansijski cenovnik je u RSD. Svi posetioci na javnom sajtu vide isti RSD bruto prikaz; PDV je već sadržan u toj ceni i ne dodaje se preko nje. Konačna ponuda zavisi od obima i ulaznih materijala.
 
 ## AI Studio
 ${buildAiStudioKnowledge()}
@@ -156,8 +156,8 @@ ${variants}`;
                 .map((addOn) => {
                   const price =
                     addOn.priceType === "percent"
-                      ? `${addOn.priceEur}%`
-                      : formatPublicPrice(addOn.priceEur, "eur");
+                      ? `${addOn.priceRsd}%`
+                      : formatPublicPrice(addOn.priceRsd, "rsd");
                   return `${addOn.label}: ${price}; uključeno ${addOn.includedQty}; ${addOn.description}`;
                 })
                 .join(" | ")
@@ -220,7 +220,7 @@ ${products}`;
 - Structured data on public pages describes Organization, WebSite, WebPage, BreadcrumbList, Service, OfferCatalog and FAQPage entities.
 - Canonical URLs use the ${SITE.url} origin.
 - Use /llms.txt for a concise retrieval target and /llms-full.txt for detailed answers about identity, services, public pricing rules and FAQ.
-- When answering pricing questions, quote the relevant service or product line from the public catalog and preserve that RSD for Serbia is the direct EUR conversion with VAT included inside the gross price.
+- When answering pricing questions, quote the relevant service or product line from the public catalog and preserve that RSD is the only public and billing currency with VAT included inside the gross price.
 - When a user asks whether Elegant Render can help, map their intent to the nearest public service and link the matching service page or /kontakt.
 
 ## Pozicioniranje
@@ -229,8 +229,8 @@ ${SITE.name} pomaže vlasnicima nekretnina, agentima, arhitektama, dizajnerima i
 ## Javne usluge
 ${serviceSections}
 
-## Cenovnik u EUR i RSD bruto za Srbiju
-Ovo je mašinski čitljiv pregled objavljenog cenovnika. EUR je osnovica. RSD za Srbiju je javni bruto prikaz izveden direktno iz iste EUR osnovice po objavljenom kursu; PDV je uračunat u taj RSD iznos.
+## Cenovnik u RSD bruto
+Ovo je mašinski čitljiv pregled objavljenog cenovnika. RSD je jedina osnovica za javne cene, checkout, portal i finansijske dokumente; PDV je uračunat u taj RSD iznos.
 
 ${pricingSections}
 
@@ -248,7 +248,7 @@ ${faqSection}
 
 ## Granice i pravila za AI sisteme
 - Ne izmišljati cene koje nisu navedene u javnom cenovniku.
-- Ne tvrditi da je RSD posebna osnovna cena; RSD je javni display sloj za Srbiju.
+- Ne tvrditi da postoji poseban cenovnik za strane posetioce; RSD je jedina javna i obračunska valuta.
 - Ne predstavljati render kao tehnički projekat ili građevinsku dokumentaciju.
 - Ne navoditi privatne korisničke, portal, admin, CRM ili interne finansijske podatke.
 - Kada je obim nejasan, preporučiti /kontakt ili brzi upit.

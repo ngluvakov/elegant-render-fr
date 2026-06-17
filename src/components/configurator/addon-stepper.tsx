@@ -15,7 +15,7 @@ import {
   type PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 
-type VolumeRule = { afterQty: number; priceEur: number };
+type VolumeRule = { afterQty: number; priceRsd: number };
 
 type AddOnStepperProps = {
   label: string;
@@ -23,8 +23,8 @@ type AddOnStepperProps = {
   quantity: number;
   includedQty: number;
   maxQty: number;
-  priceEur: number;
-  basePriceEur: number;
+  priceRsd: number;
+  basePriceRsd: number;
   priceType: "fixed" | "percent";
   isVolumeRate: boolean;
   volumeRules: VolumeRule[];
@@ -39,8 +39,8 @@ export function AddOnStepper({
   quantity,
   includedQty,
   maxQty,
-  priceEur,
-  basePriceEur,
+  priceRsd,
+  basePriceRsd,
   priceType,
   isVolumeRate,
   volumeRules,
@@ -57,7 +57,7 @@ export function AddOnStepper({
   // Increases are not advertised proactively; only real bulk discounts are.
   const upcomingDiscount = !isVolumeRate
     ? volumeRules
-        .filter((r) => r.priceEur < basePriceEur && quantity <= r.afterQty)
+        .filter((r) => r.priceRsd < basePriceRsd && quantity <= r.afterQty)
         .sort((a, b) => a.afterQty - b.afterQty)[0]
     : undefined;
 
@@ -88,7 +88,7 @@ export function AddOnStepper({
         {isVolumeRate && billableQty > 0 && (
           <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
             Cena za veću količinu:{" "}
-            {formatPublicPrice(priceEur, displayCurrency, pricingSettings)} po
+            {formatPublicPrice(priceRsd, displayCurrency, pricingSettings)} po
             komadu
           </p>
         )}
@@ -96,7 +96,7 @@ export function AddOnStepper({
           <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
             Od {upcomingDiscount.afterQty + 1}. nadalje:{" "}
             {formatPublicPrice(
-              upcomingDiscount.priceEur,
+              upcomingDiscount.priceRsd,
               displayCurrency,
               pricingSettings,
             )} po
@@ -104,7 +104,7 @@ export function AddOnStepper({
             <span className="ml-1 text-muted-foreground">
               (-
               {formatPublicPrice(
-                basePriceEur - upcomingDiscount.priceEur,
+                basePriceRsd - upcomingDiscount.priceRsd,
                 displayCurrency,
                 pricingSettings,
               )}
@@ -117,8 +117,8 @@ export function AddOnStepper({
       <div className="flex flex-shrink-0 items-center gap-2">
         <span className="w-24 text-right text-xs font-medium text-muted-foreground">
           {priceType === "percent"
-            ? `+${priceEur}%`
-            : formatPublicPrice(priceEur, displayCurrency, pricingSettings)}
+            ? `+${priceRsd}%`
+            : formatPublicPrice(priceRsd, displayCurrency, pricingSettings)}
         </span>
         <div className="flex items-center rounded-lg bg-secondary/70">
           <button

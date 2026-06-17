@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatRsd } from "@/lib/catalog/calculate";
 import {
   formatCreditsFromUnits,
   formatCents,
@@ -61,7 +61,7 @@ export default async function AdminUserDetailPage({
           orderNumber: true,
           projectName: true,
           status: true,
-          totalEur: true,
+          totalRsd: true,
           createdAt: true,
         },
       },
@@ -369,7 +369,7 @@ export default async function AdminUserDetailPage({
                     </Badge>
                     {canViewFinance && (
                       <span className="text-xs font-semibold text-foreground">
-                        {formatEur(order.totalEur)}
+                        {formatRsd(order.totalRsd)}
                       </span>
                     )}
                   </div>

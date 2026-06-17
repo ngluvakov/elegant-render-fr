@@ -9,7 +9,7 @@
  * elsewhere on the page takes over and this one disappears.
  */
 import { Building2, Calendar, FileDown, Landmark } from "lucide-react";
-import { formatEur } from "@/lib/catalog/calculate";
+import { formatRsd } from "@/lib/catalog/calculate";
 import {
   formatBillingMoney,
   type BillingCurrency,
@@ -21,7 +21,7 @@ type Props = {
   orderNumber: string;
   proformaNumber: string;
   proformaIssuedAt: Date;
-  totalEur: number;
+  totalRsd: number;
   totalCents: number | null;
   billingCurrency?: BillingCurrency | null;
   billingTotalCents?: number | null;
@@ -40,7 +40,7 @@ export function ProformaCard({
   orderNumber,
   proformaNumber,
   proformaIssuedAt,
-  totalEur,
+  totalRsd,
   totalCents,
   billingCurrency,
   billingTotalCents,
@@ -51,7 +51,7 @@ export function ProformaCard({
   const amountFormatted =
     billingCurrency && billingTotalCents != null
       ? formatBillingMoney(billingTotalCents, billingCurrency)
-      : formatEur((totalCents ?? totalEur * 100) / 100);
+      : formatRsd((totalCents ?? totalRsd * 100) / 100);
 
   return (
     <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6">

@@ -9,7 +9,7 @@ import {
   CheckCircle2,
   ChevronDown,
   Copy,
-  Euro,
+  CircleDollarSign,
   Eye,
   FileJson,
   Layers3,
@@ -37,7 +37,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import {
-  formatEur,
+  formatRsd,
   priceItems,
   type QuoteItem,
 } from "@/lib/catalog/calculate";
@@ -212,7 +212,7 @@ export function PricingWorkbench({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <Euro className="h-6 w-6 text-accent" />
+            <CircleDollarSign className="h-6 w-6 text-accent" />
             <h1 className="font-heading text-3xl text-foreground">
               Cenovnik i finansijska pravila
             </h1>
@@ -404,9 +404,9 @@ function PreviewCard({
         <CardDescription className="text-[0.72rem] font-semibold uppercase tracking-[0.18em]">
           {label}
         </CardDescription>
-        <CardTitle className="text-2xl tabular-nums">{formatEur(total)}</CardTitle>
+        <CardTitle className="text-2xl tabular-nums">{formatRsd(total)}</CardTitle>
         <CardDescription>
-          {savings > 0 ? `Ušteda u testu: ${formatEur(savings)}` : "Bez popusta u testu"}
+          {savings > 0 ? `Ušteda u testu: ${formatRsd(savings)}` : "Bez popusta u testu"}
         </CardDescription>
       </CardHeader>
     </Card>
@@ -514,7 +514,7 @@ function ProductWorkbenchCard({
         productId: product.id,
         label: product.label,
         unitLabel: product.unitLabel,
-        basePriceEur: product.basePriceEur,
+        basePriceRsd: product.basePriceRsd,
         includes: product.includes,
         inquiryOnly: product.inquiryOnly ?? false,
       },
@@ -553,21 +553,21 @@ function ProductWorkbenchCard({
                 }
               />
               <NumberInput
-                label={product.durationConfig ? "Fallback baza EUR" : "Bazna cena EUR"}
-                value={product.basePriceEur}
+                label={product.durationConfig ? "Fallback baza RSD" : "Bazna cena RSD"}
+                value={product.basePriceRsd}
                 min={0}
-                onChange={(basePriceEur) =>
+                onChange={(basePriceRsd) =>
                   onProductChange(product.id, (current) => ({
                     ...current,
-                    basePriceEur,
+                    basePriceRsd,
                   }))
                 }
               />
             </div>
           </div>
           <MiniProductPreview
-            total={preview?.totalEur ?? 0}
-            original={preview?.originalTotalEur ?? 0}
+            total={preview?.totalRsd ?? 0}
+            original={preview?.originalTotalRsd ?? 0}
             label="Mini obračun"
           />
         </div>
@@ -675,7 +675,7 @@ function ProductWorkbenchCard({
                         addOnId: addOn.id,
                         label: addOn.label,
                         description: addOn.description,
-                        priceEur: addOn.priceEur,
+                        priceRsd: addOn.priceRsd,
                         includedQty: addOn.includedQty,
                         maxQty: Number.isFinite(addOn.maxQty) ? addOn.maxQty : null,
                         volumeRules: addOn.volumeRules,
@@ -724,13 +724,13 @@ function DurationWorkbench({
   if (!product.durationConfig) return null;
   const config = product.durationConfig;
   const discountPct = durationDiscountPct(config, previewSeconds);
-  const subtotal = config.perSecondEur * previewSeconds;
+  const subtotal = config.perSecondRsd * previewSeconds;
   const total = Math.round(subtotal * (1 - discountPct / 100));
 
   const saveDuration = (sourceMode: string | null = null) => {
-    const perSecondEur = sourceMode
-      ? product.sourceModeRules?.[sourceMode]?.perSecondEur ?? config.perSecondEur
-      : config.perSecondEur;
+    const perSecondRsd = sourceMode
+      ? product.sourceModeRules?.[sourceMode]?.perSecondRsd ?? config.perSecondRsd
+      : config.perSecondRsd;
     return onSavePatch(
       `duration:${product.id}:${sourceMode ?? "base"}`,
       {
@@ -740,7 +740,7 @@ function DurationWorkbench({
         minSeconds: config.minSeconds,
         defaultSeconds: config.defaultSeconds,
         maxSeconds: Number.isFinite(config.maxSeconds) ? config.maxSeconds : null,
-        perSecondEur,
+        perSecondRsd,
         discountTiers: config.discountTiers,
       },
       `Trajanje za ${product.label} je sačuvano u draft.`,
@@ -803,15 +803,15 @@ function DurationWorkbench({
               }
             />
             <NumberInput
-              label="EUR/sek"
-              value={config.perSecondEur}
+              label="RSD/sek"
+              value={config.perSecondRsd}
               min={0}
-              onChange={(perSecondEur) =>
+              onChange={(perSecondRsd) =>
                 onProductChange(product.id, (current) => ({
                   ...current,
                   durationConfig: {
                     ...current.durationConfig!,
-                    perSecondEur,
+                    perSecondRsd,
                   },
                 }))
               }
@@ -858,9 +858,9 @@ function DurationWorkbench({
             Live obračun
           </p>
           <div className="mt-3 space-y-2 text-sm">
-            <PriceRow label={`${previewSeconds}s × ${formatEur(config.perSecondEur)}`} value={formatEur(subtotal)} />
+            <PriceRow label={`${previewSeconds}s × ${formatRsd(config.perSecondRsd)}`} value={formatRsd(subtotal)} />
             <PriceRow label={`Popust na trajanje`} value={discountPct > 0 ? `−${discountPct}%` : "0%"} />
-            <PriceRow label="Ukupno" value={formatEur(total)} strong />
+            <PriceRow label="Ukupno" value={formatRsd(total)} strong />
           </div>
           <Button
             type="button"
@@ -885,17 +885,17 @@ function DurationWorkbench({
             >
               <p className="text-xs font-semibold text-foreground">{sourceMode}</p>
               <NumberInput
-                label="EUR/sek za mod"
-                value={rule.perSecondEur ?? config.perSecondEur}
+                label="RSD/sek za mod"
+                value={rule.perSecondRsd ?? config.perSecondRsd}
                 min={0}
-                onChange={(perSecondEur) =>
+                onChange={(perSecondRsd) =>
                   onProductChange(product.id, (current) => ({
                     ...current,
                     sourceModeRules: {
                       ...current.sourceModeRules,
                       [sourceMode]: {
                         ...(current.sourceModeRules?.[sourceMode] ?? {}),
-                        perSecondEur,
+                        perSecondRsd,
                       },
                     },
                   }))
@@ -941,8 +941,8 @@ function AddOnWorkbench({
   const unitPrice = unitPriceForQuantity(addOn, previewQty);
   const previewTotal =
     addOn.priceType === "percent"
-      ? `+${addOn.priceEur}%`
-      : formatEur(Math.round(unitPrice * billableQty));
+      ? `+${addOn.priceRsd}%`
+      : formatRsd(Math.round(unitPrice * billableQty));
   const max = Number.isFinite(addOn.maxQty) ? addOn.maxQty : 30;
 
   return (
@@ -963,10 +963,10 @@ function AddOnWorkbench({
           </div>
           <div className="grid gap-3 md:grid-cols-4">
             <NumberInput
-              label={addOn.priceType === "percent" ? "Procenat" : "Cena EUR"}
-              value={addOn.priceEur}
+              label={addOn.priceType === "percent" ? "Procenat" : "Cena RSD"}
+              value={addOn.priceRsd}
               min={0}
-              onChange={(priceEur) => onChange({ ...addOn, priceEur })}
+              onChange={(priceRsd) => onChange({ ...addOn, priceRsd })}
             />
             <NumberInput
               label="Uključeno"
@@ -1026,7 +1026,7 @@ function AddOnWorkbench({
             <PriceRow label="Naplativo" value={`${billableQty}`} />
             <PriceRow
               label="Efektivna jedinična cena"
-              value={addOn.priceType === "percent" ? `${addOn.priceEur}%` : formatEur(unitPrice)}
+              value={addOn.priceType === "percent" ? `${addOn.priceRsd}%` : formatRsd(unitPrice)}
             />
           </div>
           <Button
@@ -1084,7 +1084,7 @@ function VolumeRulesEditor({
                 afterQty:
                   (addOn.volumeRules[addOn.volumeRules.length - 1]?.afterQty ??
                     addOn.includedQty) + 1,
-                priceEur: addOn.priceEur,
+                priceRsd: addOn.priceRsd,
               },
             ])
           }
@@ -1115,10 +1115,10 @@ function VolumeRulesEditor({
               }
             />
             <NumberInput
-              label="Cena EUR"
-              value={rule.priceEur}
+              label="Cena RSD"
+              value={rule.priceRsd}
               min={0}
-              onChange={(priceEur) => updateRule(index, { priceEur })}
+              onChange={(priceRsd) => updateRule(index, { priceRsd })}
             />
             <Button
               type="button"
@@ -1212,7 +1212,7 @@ function DiscountRuleCard({
   onChange: (rule: ConsumeRule) => void;
   onSave: () => void;
 }) {
-  const discounted = Math.round(product.basePriceEur * (1 - rule.discountPct / 100));
+  const discounted = Math.round(product.basePriceRsd * (1 - rule.discountPct / 100));
   return (
     <div className="rounded-xl border border-border/45 bg-card/60 p-4">
       <div className="flex items-start justify-between gap-3">
@@ -1252,8 +1252,8 @@ function DiscountRuleCard({
         />
       </div>
       <div className="mt-3 rounded-lg bg-background/50 px-3 py-2 text-xs">
-        <PriceRow label="Primer baza" value={formatEur(product.basePriceEur)} />
-        <PriceRow label="Posle popusta" value={formatEur(discounted)} strong />
+        <PriceRow label="Primer baza" value={formatRsd(product.basePriceRsd)} />
+        <PriceRow label="Posle popusta" value={formatRsd(discounted)} strong />
       </div>
       <Button
         type="button"
@@ -1316,11 +1316,11 @@ function SettingsWorkbench({
 
       <div className="grid gap-4 lg:grid-cols-3">
         <MetricEditor
-          label="EUR/RSD kurs"
-          value={settings.eurToRsdRate}
+          label="RSD kurs"
+          value={settings.rsdRate}
           suffix="RSD"
-          onChange={(eurToRsdRate) =>
-            onSettingsChange((current) => ({ ...current, eurToRsdRate }))
+          onChange={(rsdRate) =>
+            onSettingsChange((current) => ({ ...current, rsdRate }))
           }
         />
         <MetricEditor
@@ -1506,8 +1506,8 @@ function AiTiersEditor({
                 />
               </div>
               <div className="mt-3 rounded-lg bg-card/70 px-3 py-2 text-xs">
-                <PriceRow label="Primer ukupno" value={formatEur(example.totalCents / 100)} />
-                <PriceRow label="Cena/kredit" value={formatEur(example.centsPerCredit / 100)} />
+                <PriceRow label="Primer ukupno" value={formatRsd(example.totalCents / 100)} />
+                <PriceRow label="Cena/kredit" value={formatRsd(example.centsPerCredit / 100)} />
               </div>
             </div>
           );
@@ -1538,22 +1538,22 @@ function SpecialPricingEditor({
         </CardHeader>
         <CardContent className="grid gap-3">
           <SpecialNumber
-            label="Prvi sprat EUR"
-            value={special.interior.firstFloorEur}
-            onChange={(firstFloorEur) =>
+            label="Prvi sprat RSD"
+            value={special.interior.firstFloorRsd}
+            onChange={(firstFloorRsd) =>
               setSpecial((current) => ({
                 ...current,
-                interior: { ...current.interior, firstFloorEur },
+                interior: { ...current.interior, firstFloorRsd },
               }))
             }
           />
           <SpecialNumber
-            label="Dodatni sprat EUR"
-            value={special.interior.extraFloorEur}
-            onChange={(extraFloorEur) =>
+            label="Dodatni sprat RSD"
+            value={special.interior.extraFloorRsd}
+            onChange={(extraFloorRsd) =>
               setSpecial((current) => ({
                 ...current,
-                interior: { ...current.interior, extraFloorEur },
+                interior: { ...current.interior, extraFloorRsd },
               }))
             }
           />
@@ -1586,22 +1586,22 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Dodatna prostorija EUR"
-            value={special.interior.extraRoomEur}
-            onChange={(extraRoomEur) =>
+            label="Dodatna prostorija RSD"
+            value={special.interior.extraRoomRsd}
+            onChange={(extraRoomRsd) =>
               setSpecial((current) => ({
                 ...current,
-                interior: { ...current.interior, extraRoomEur },
+                interior: { ...current.interior, extraRoomRsd },
               }))
             }
           />
           <SpecialNumber
-            label="Dodatni kadar EUR"
-            value={special.interior.extraCameraEur}
-            onChange={(extraCameraEur) =>
+            label="Dodatni kadar RSD"
+            value={special.interior.extraCameraRsd}
+            onChange={(extraCameraRsd) =>
               setSpecial((current) => ({
                 ...current,
-                interior: { ...current.interior, extraCameraEur },
+                interior: { ...current.interior, extraCameraRsd },
               }))
             }
           />
@@ -1615,22 +1615,22 @@ function SpecialPricingEditor({
         </CardHeader>
         <CardContent className="grid gap-3">
           <SpecialNumber
-            label="Prvi sprat EUR"
-            value={special.tour360.firstFloorEur}
-            onChange={(firstFloorEur) =>
+            label="Prvi sprat RSD"
+            value={special.tour360.firstFloorRsd}
+            onChange={(firstFloorRsd) =>
               setSpecial((current) => ({
                 ...current,
-                tour360: { ...current.tour360, firstFloorEur },
+                tour360: { ...current.tour360, firstFloorRsd },
               }))
             }
           />
           <SpecialNumber
-            label="Dodatni sprat EUR"
-            value={special.tour360.extraFloorEur}
-            onChange={(extraFloorEur) =>
+            label="Dodatni sprat RSD"
+            value={special.tour360.extraFloorRsd}
+            onChange={(extraFloorRsd) =>
               setSpecial((current) => ({
                 ...current,
-                tour360: { ...current.tour360, extraFloorEur },
+                tour360: { ...current.tour360, extraFloorRsd },
               }))
             }
           />
@@ -1663,22 +1663,22 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Dodatni hotspot EUR"
-            value={special.tour360.extraHotspotEur}
-            onChange={(extraHotspotEur) =>
+            label="Dodatni hotspot RSD"
+            value={special.tour360.extraHotspotRsd}
+            onChange={(extraHotspotRsd) =>
               setSpecial((current) => ({
                 ...current,
-                tour360: { ...current.tour360, extraHotspotEur },
+                tour360: { ...current.tour360, extraHotspotRsd },
               }))
             }
           />
           <SpecialNumber
-            label="Dodatni kadar EUR"
-            value={special.tour360.extraCameraEur}
-            onChange={(extraCameraEur) =>
+            label="Dodatni kadar RSD"
+            value={special.tour360.extraCameraRsd}
+            onChange={(extraCameraRsd) =>
               setSpecial((current) => ({
                 ...current,
-                tour360: { ...current.tour360, extraCameraEur },
+                tour360: { ...current.tour360, extraCameraRsd },
               }))
             }
           />
@@ -1692,15 +1692,15 @@ function SpecialPricingEditor({
         </CardHeader>
         <CardContent className="grid gap-3">
           <SpecialNumber
-            label="Base assembly EUR"
-            value={special.tourAssembly.baseEur}
-            onChange={(baseEur) =>
+            label="Base assembly RSD"
+            value={special.tourAssembly.baseRsd}
+            onChange={(baseRsd) =>
               setSpecial((current) => ({
                 ...current,
-                tourAssembly: { ...current.tourAssembly, baseEur },
+                tourAssembly: { ...current.tourAssembly, baseRsd },
                 tour360: {
                   ...current.tour360,
-                  assembly: { ...current.tour360.assembly, baseEur },
+                  assembly: { ...current.tour360.assembly, baseRsd },
                 },
               }))
             }
@@ -1727,29 +1727,29 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Floorplan nav EUR"
-            value={special.tourAssembly.floorPlanNavEur}
-            onChange={(floorPlanNavEur) =>
+            label="Floorplan nav RSD"
+            value={special.tourAssembly.floorPlanNavRsd}
+            onChange={(floorPlanNavRsd) =>
               setSpecial((current) => ({
                 ...current,
-                tourAssembly: { ...current.tourAssembly, floorPlanNavEur },
+                tourAssembly: { ...current.tourAssembly, floorPlanNavRsd },
                 tour360: {
                   ...current.tour360,
-                  assembly: { ...current.tour360.assembly, floorPlanNavEur },
+                  assembly: { ...current.tour360.assembly, floorPlanNavRsd },
                 },
               }))
             }
           />
           <SpecialNumber
-            label="White-label EUR"
-            value={special.tourAssembly.whiteLabelEur}
-            onChange={(whiteLabelEur) =>
+            label="White-label RSD"
+            value={special.tourAssembly.whiteLabelRsd}
+            onChange={(whiteLabelRsd) =>
               setSpecial((current) => ({
                 ...current,
-                tourAssembly: { ...current.tourAssembly, whiteLabelEur },
+                tourAssembly: { ...current.tourAssembly, whiteLabelRsd },
                 tour360: {
                   ...current.tour360,
-                  assembly: { ...current.tour360.assembly, whiteLabelEur },
+                  assembly: { ...current.tour360.assembly, whiteLabelRsd },
                 },
               }))
             }
@@ -2061,11 +2061,11 @@ function MiniProductPreview({
       <div className="mt-2 flex items-end justify-between gap-2 xl:block">
         {hasDiscount && (
           <p className="text-sm text-muted-foreground line-through tabular-nums">
-            {formatEur(original)}
+            {formatRsd(original)}
           </p>
         )}
         <p className="text-2xl font-bold text-foreground tabular-nums">
-          {formatEur(total)}
+          {formatRsd(total)}
         </p>
       </div>
     </div>
@@ -2168,9 +2168,9 @@ function makePreviewItem(
 }
 
 function unitPriceForQuantity(addOn: ConfiguratorAddOn, quantity: number) {
-  let unitPrice = addOn.priceEur;
+  let unitPrice = addOn.priceRsd;
   for (const rule of addOn.volumeRules) {
-    if (quantity > rule.afterQty) unitPrice = rule.priceEur;
+    if (quantity > rule.afterQty) unitPrice = rule.priceRsd;
   }
   return unitPrice;
 }

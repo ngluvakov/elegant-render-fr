@@ -41,8 +41,8 @@ const MAX_CAMERAS_PER_ROOM = 10;
 export type EditorDiscount = {
   pct: number;
   reason: string;
-  originalTotalEur: number;
-  totalEur: number;
+  originalTotalRsd: number;
+  totalRsd: number;
 };
 
 type Props = {
@@ -158,7 +158,7 @@ export function InteriorQuoteEditor({
       </div>
 
       <ItemTotal
-        preDiscountEur={calc.totalEur}
+        preDiscountRsd={calc.totalRsd}
         discount={discount}
         displayCurrency={displayCurrency}
         pricingSettings={pricingSettings}
@@ -310,7 +310,7 @@ function FloorBreakdown({
   ];
   if (calc.extraRoomsCost > 0) {
     rows.push({
-      label: `+${calc.extraRooms} dodatn${calc.extraRooms === 1 ? "a prostorija" : "ih prostorija"} · ${formatPublicPrice(pricing?.extraRoomEur ?? 28, displayCurrency, pricingSettings)}/kom`,
+      label: `+${calc.extraRooms} dodatn${calc.extraRooms === 1 ? "a prostorija" : "ih prostorija"} · ${formatPublicPrice(pricing?.extraRoomRsd ?? 28, displayCurrency, pricingSettings)}/kom`,
       value: formatPublicPrice(
         calc.extraRoomsCost,
         displayCurrency,
@@ -320,7 +320,7 @@ function FloorBreakdown({
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
-      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(pricing?.extraCameraEur ?? 10, displayCurrency, pricingSettings)}/kom`,
+      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(pricing?.extraCameraRsd ?? 10, displayCurrency, pricingSettings)}/kom`,
       value: formatPublicPrice(
         calc.extraCamerasCost,
         displayCurrency,
@@ -365,19 +365,19 @@ function FloorBreakdown({
  * individual floors, so it lives here at the bottom only.
  */
 export function ItemTotal({
-  preDiscountEur,
+  preDiscountRsd,
   discount,
   displayCurrency,
   pricingSettings,
 }: {
-  preDiscountEur: number;
+  preDiscountRsd: number;
   discount?: EditorDiscount | null;
   displayCurrency: DisplayCurrency;
   pricingSettings?: PublicPricingFormatSettings;
 }) {
   const hasDiscount =
-    !!discount && discount.pct > 0 && discount.totalEur < preDiscountEur;
-  const savings = hasDiscount ? preDiscountEur - discount.totalEur : 0;
+    !!discount && discount.pct > 0 && discount.totalRsd < preDiscountRsd;
+  const savings = hasDiscount ? preDiscountRsd - discount.totalRsd : 0;
 
   if (!hasDiscount) {
     return (
@@ -386,7 +386,7 @@ export function ItemTotal({
           Ukupno
         </span>
         <span className="text-base font-bold text-foreground tabular-nums">
-          {formatPublicPrice(preDiscountEur, displayCurrency, pricingSettings)}
+          {formatPublicPrice(preDiscountRsd, displayCurrency, pricingSettings)}
         </span>
       </div>
     );
@@ -397,7 +397,7 @@ export function ItemTotal({
       <div className="flex items-baseline justify-between gap-2 text-muted-foreground">
         <span>Subtotal</span>
         <span className="tabular-nums">
-          {formatPublicPrice(preDiscountEur, displayCurrency, pricingSettings)}
+          {formatPublicPrice(preDiscountRsd, displayCurrency, pricingSettings)}
         </span>
       </div>
       <div className="flex items-baseline justify-between gap-2 text-[color:var(--color-sage-deep)]">
@@ -417,7 +417,7 @@ export function ItemTotal({
         </span>
         <span className="text-base font-bold text-foreground tabular-nums">
           {formatPublicPrice(
-            discount!.totalEur,
+            discount!.totalRsd,
             displayCurrency,
             pricingSettings,
           )}

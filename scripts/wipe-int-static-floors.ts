@@ -6,8 +6,8 @@
  *      had no floorId — easier to re-upload under the new per-floor flow).
  *   2. Clear clientNote.
  *   3. Reset configJson to a single empty floor ({ floors: [newFloor(0)] }).
- *   4. Reset item.totalEur to €170 (single floor, no extras).
- *   5. Recompute the parent order totalEur.
+ *   4. Reset item.totalRsd to the current RSD single-floor price (single floor, no extras).
+ *   5. Recompute the parent order totalRsd.
  *
  * Idempotent-ish: re-running will wipe again. Only run before the first
  * deploy of the new UI so existing clients don't lose active work.
@@ -19,7 +19,7 @@ import type { Prisma } from "../src/generated/prisma/client";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import {
-  INT_STATIC_FIRST_FLOOR_EUR,
+  INT_STATIC_FIRST_FLOOR_RSD,
   newFloor,
 } from "../src/lib/catalog/interior-config";
 
@@ -48,12 +48,12 @@ async function main() {
       data: {
         clientNote: null,
         configJson: initialFloors as unknown as Prisma.InputJsonValue,
-        totalEur: INT_STATIC_FIRST_FLOOR_EUR,
+        totalRsd: INT_STATIC_FIRST_FLOOR_RSD,
       },
     });
 
     console.log(
-      `  ${item.id}: reset configJson, totalEur=€${INT_STATIC_FIRST_FLOOR_EUR}, removed ${deletedFiles.count} file(s)`,
+      `  ${item.id}: reset configJson, totalRsd=${INT_STATIC_FIRST_FLOOR_RSD} RSD, removed ${deletedFiles.count} file(s)`,
     );
     touchedOrders.add(item.orderId);
   }
@@ -62,14 +62,14 @@ async function main() {
   for (const orderId of touchedOrders) {
     const items = await prisma.orderItem.findMany({
       where: { orderId },
-      select: { totalEur: true },
+      select: { totalRsd: true },
     });
-    const totalEur = items.reduce((sum, i) => sum + i.totalEur, 0);
+    const totalRsd = items.reduce((sum, i) => sum + i.totalRsd, 0);
     await prisma.order.update({
       where: { id: orderId },
-      data: { totalEur },
+      data: { totalRsd },
     });
-    console.log(`  Order ${orderId}: recalculated totalEur=€${totalEur}`);
+    console.log(`  Order ${orderId}: recalculated totalRsd=${totalRsd} RSD`);
   }
 
   console.log(`Done. ${items.length} items migrated, ${touchedOrders.size} orders updated.`);

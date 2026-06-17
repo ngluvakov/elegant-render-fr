@@ -11,7 +11,7 @@ import {
 } from "@/lib/billing";
 import {
   invoiceCurrencyForBuyer,
-  invoiceGrossCentsFromEurCents,
+  invoiceGrossCentsFromRsdCents,
 } from "@/lib/invoice-data";
 import { buildInvoiceList, type InvoiceDoc } from "@/lib/invoice-list";
 import { FinanceInvoicesCell } from "@/components/portal/finance-invoices-cell";
@@ -39,7 +39,7 @@ type ProjectRow = {
   invoices: InvoiceDoc[];
 };
 
-type CurrencyTotals = Record<BillingCurrency, number>;
+type CurrencyTotals = { RSD: number };
 
 export default async function FinancePage() {
   const session = await auth();
@@ -60,9 +60,9 @@ export default async function FinancePage() {
       companyCountryCode: true,
       billingCurrency: true,
       billingVatRate: true,
-      billingEurToRsdRate: true,
+      billingRsdRate: true,
       billingTotalCents: true,
-      totalEur: true,
+      totalRsd: true,
       totalCents: true,
       createdAt: true,
       updatedAt: true,
@@ -88,7 +88,7 @@ export default async function FinancePage() {
           companyCountryCode: true,
           billingCurrency: true,
           billingVatRate: true,
-          billingEurToRsdRate: true,
+          billingRsdRate: true,
           billingTotalCents: true,
           status: true,
           createdAt: true,
@@ -108,11 +108,11 @@ export default async function FinancePage() {
   });
 
   const rows: ProjectRow[] = orders.map((order) => {
-    const baseProviderCents = order.totalCents ?? order.totalEur * 100;
+    const baseProviderCents = order.totalCents ?? order.totalRsd * 100;
     const orderCurrency = invoiceCurrencyForBuyer(order);
     const baseBillingCents =
       order.billingTotalCents ??
-      invoiceGrossCentsFromEurCents(baseProviderCents, order);
+      invoiceGrossCentsFromRsdCents(baseProviderCents, order);
     const orderPaid = order.paymentStatus === "completed";
     const total = emptyTotals();
     const paid = emptyTotals();
@@ -129,13 +129,13 @@ export default async function FinancePage() {
           charge.companyCountryCode ?? order.companyCountryCode,
         billingCurrency: charge.billingCurrency ?? order.billingCurrency,
         billingVatRate: charge.billingVatRate ?? order.billingVatRate,
-        billingEurToRsdRate:
-          charge.billingEurToRsdRate ?? order.billingEurToRsdRate,
+        billingRsdRate:
+          charge.billingRsdRate ?? order.billingRsdRate,
       };
       const chargeCurrency = invoiceCurrencyForBuyer(chargeBuyer);
       const chargeBillingCents =
         charge.billingTotalCents ??
-        invoiceGrossCentsFromEurCents(charge.totalCents, chargeBuyer);
+        invoiceGrossCentsFromRsdCents(charge.totalCents, chargeBuyer);
       addCurrencyTotal(total, chargeCurrency, chargeBillingCents);
       if (charge.status === "paid") {
         addCurrencyTotal(paid, chargeCurrency, chargeBillingCents);
@@ -432,15 +432,15 @@ function maxDate(dates: Array<Date | null>): Date {
 }
 
 function emptyTotals(): CurrencyTotals {
-  return { RSD: 0, EUR: 0 };
+  return { RSD: 0 };
 }
 
 function addCurrencyTotal(
   totals: CurrencyTotals,
-  currency: BillingCurrency,
+  _currency: BillingCurrency,
   cents: number,
 ): void {
-  totals[currency] += cents;
+  totals.RSD += cents;
 }
 
 function mergeCurrencyTotals(
@@ -448,17 +448,15 @@ function mergeCurrencyTotals(
   next: CurrencyTotals,
 ): CurrencyTotals {
   base.RSD += next.RSD;
-  base.EUR += next.EUR;
   return base;
 }
 
 function totalsValue(totals: CurrencyTotals): number {
-  return totals.RSD + totals.EUR;
+  return totals.RSD;
 }
 
 function formatCurrencyTotals(totals: CurrencyTotals): string {
   const parts: string[] = [];
   if (totals.RSD > 0) parts.push(formatBillingMoney(totals.RSD, "RSD"));
-  if (totals.EUR > 0) parts.push(formatBillingMoney(totals.EUR, "EUR"));
   return parts.length > 0 ? parts.join(" / ") : "0";
 }

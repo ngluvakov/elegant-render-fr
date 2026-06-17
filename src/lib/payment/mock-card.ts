@@ -10,9 +10,9 @@
 // Mock card payment provider (simulates Banca Intesa for development)
 
 export async function processMockCardPayment(
-  amountEur: number,
+  amountRsd: number,
 ): Promise<{ success: boolean; paymentId: string }> {
-  return processMockCardPaymentCents(Math.round(amountEur * 100));
+  return processMockCardPaymentCents(Math.round(amountRsd * 100));
 }
 
 export async function processMockCardPaymentCents(

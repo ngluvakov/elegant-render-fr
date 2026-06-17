@@ -212,19 +212,10 @@ export function StepReview() {
 
         {/* Totals: all buyers see the same RSD gross amount with PDV included. */}
         <div className="mt-8 border-t border-border/40 pt-4">
-          {displayCurrency === "rsd" ? (
-            <RsdTotalsBreakdown
-              totalRsd={calculation.total}
-              settings={pricingSettings}
-            />
-          ) : (
-            <div className="flex items-center justify-between">
-              <p className="text-lg font-semibold text-foreground">Ukupno</p>
-              <p className="text-2xl font-bold text-foreground">
-                {fmt(calculation.total)}
-              </p>
-            </div>
-          )}
+          <RsdTotalsBreakdown
+            totalRsd={calculation.total}
+            settings={pricingSettings}
+          />
         </div>
       </div>
 

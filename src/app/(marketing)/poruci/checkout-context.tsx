@@ -15,10 +15,7 @@ import {
 } from "@/lib/catalog/calculate";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import type { BuyerType } from "@/lib/buyer-validation";
-import {
-  getDisplayCurrencyForCountry,
-  type DisplayCurrency,
-} from "@/lib/catalog/display-currency";
+import type { DisplayCurrency } from "@/lib/catalog/display-currency";
 
 export type BuyerInfoState = {
   buyerType: BuyerType;
@@ -117,13 +114,12 @@ export function CheckoutProvider({
     [initialItems, pricingCatalog],
   );
 
-  const effectiveDisplayCurrency = useMemo(() => {
-    const country =
-      buyerInfo.buyerCountryCode ||
-      (buyerInfo.buyerType === "company_rs"
-        ? "RS"
-        : buyerInfo.companyCountryCode);
-    return country ? getDisplayCurrencyForCountry(country) : displayCurrency;
+  const effectiveDisplayCurrency = useMemo<DisplayCurrency>(() => {
+    void buyerInfo.buyerCountryCode;
+    void buyerInfo.buyerType;
+    void buyerInfo.companyCountryCode;
+    void displayCurrency;
+    return "rsd";
   }, [
     buyerInfo.buyerCountryCode,
     buyerInfo.buyerType,

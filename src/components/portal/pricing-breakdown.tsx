@@ -17,7 +17,7 @@
 import type { LineItemBreakdown } from "@/lib/catalog/calculate";
 import { useOrderCurrency } from "@/components/portal/order-currency-context";
 
-type Extra = { label: string; eur: number };
+type Extra = { label: string; rsd: number };
 type ExplicitRow = { label: string; value: number; sub?: string };
 
 type Props = {
@@ -38,7 +38,7 @@ export function PricingBreakdown({
   title = "Sastav cene",
 }: Props) {
   const { formatPrice } = useOrderCurrency();
-  const extrasTotal = extras.reduce((s, e) => s + e.eur, 0);
+  const extrasTotal = extras.reduce((s, e) => s + e.rsd, 0);
 
   let lineRows: ExplicitRow[];
   let total: number;
@@ -72,7 +72,7 @@ export function PricingBreakdown({
           <Row key={`r-${i}`} label={r.label} value={r.value} sub={r.sub} />
         ))}
         {extras.map((e, i) => (
-          <Row key={`x-${i}`} label={e.label} value={e.eur} />
+          <Row key={`x-${i}`} label={e.label} value={e.rsd} />
         ))}
       </div>
       <div className="flex items-center justify-between gap-2 border-t border-border/30 pt-1.5 text-foreground">

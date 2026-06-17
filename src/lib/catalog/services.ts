@@ -1944,7 +1944,7 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-prikazi-dvorista-before.webp",
     detailAfterAsset: "/artwork/problem-prikazi-dvorista-after.webp",
     philosophy:
-      "Cena pejzažnog rendera (25.784 RSD) pokriva modelovanje terena, vegetaciju u zrelom stanju i prvi prikaz. Svaki sledeći ugao iste lokacije je 5.274 RSD — 80% jeftiniji, jer je teren već izgrađen. Virtuelna renovacija (7.735 RSD) radi drugačije: nema 3D modela — postavljamo nove materijale i biljke direktno na Vašu fotografiju. Brže, povoljnije, ali vezano za ugao koji ste snimili. Doplate za renovaciju: drugi ugao 6.915 RSD, 4. i svaki sledeći 6.212 RSD, drugo dvorište 6.563 RSD. Sve cene bez PDV-a.",
+      "Cena pejzažnog rendera (25.784 RSD) pokriva modelovanje terena, vegetaciju u zrelom stanju i prvi prikaz. Svaki sledeći ugao iste lokacije je 5.274 RSD — 80% jeftiniji, jer je teren već izgrađen. Virtuelna renovacija (7.735 RSD) radi drugačije: nema 3D modela — postavljamo nove materijale i biljke direktno na Vašu fotografiju. Brže, povoljnije, ali vezano za ugao koji ste snimili. Doplate za renovaciju: drugi ugao 6.915 RSD, 4. i svaki sledeći 6.212 RSD, drugo dvorište 6.563 RSD. Sve cene su u RSD sa PDV-om uračunatim.",
     priceContext:
       "25.784 RSD — kompletan teren + vegetacija + prvi prikaz. Sledeći ugao: 5.274 RSD (80% jeftiniji).",
     forSegments: [

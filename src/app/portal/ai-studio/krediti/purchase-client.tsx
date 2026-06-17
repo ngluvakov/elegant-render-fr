@@ -97,7 +97,7 @@ function PortalCreditSummary() {
           </div>
           <div className="flex items-center justify-between border-t border-border/50 pt-4">
             <span className="text-sm text-muted-foreground">
-              {displayCurrency === "rsd" ? "Ukupno (PDV uračunat)" : "Ukupno (bez PDV-a)"}
+              Ukupno (PDV uračunat)
             </span>
             <span className="text-2xl font-bold text-foreground">
               {formatPublicPriceFromCents(

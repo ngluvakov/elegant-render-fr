@@ -194,10 +194,6 @@ export function StepPayment() {
               <p className="text-base font-semibold text-foreground">
                 Platna kartica
               </p>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                Visa, Mastercard, Maestro, DinaCard, American Express ·
-                zaštićeno 3D Secure tehnologijom
-              </p>
             </div>
           </button>
 

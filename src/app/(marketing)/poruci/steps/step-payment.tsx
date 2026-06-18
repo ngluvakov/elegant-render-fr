@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Check, Pencil } from "lucide-react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -199,43 +198,6 @@ export function StepPayment() {
                 Visa, Mastercard, Maestro, DinaCard, American Express ·
                 zaštićeno 3D Secure tehnologijom
               </p>
-            </div>
-            <div className="mt-auto flex h-14 items-center justify-around gap-2 rounded-lg bg-background px-3 ring-1 ring-border/30">
-              <Image
-                src="/branding/payments/visa.png"
-                alt="Visa"
-                width={48}
-                height={28}
-                className="h-7 w-auto object-contain"
-              />
-              <Image
-                src="/branding/payments/mastercard.svg"
-                alt="Mastercard"
-                width={36}
-                height={28}
-                className="h-7 w-auto object-contain"
-              />
-              <Image
-                src="/branding/payments/maestro.svg"
-                alt="Maestro"
-                width={36}
-                height={28}
-                className="h-7 w-auto object-contain"
-              />
-              <Image
-                src="/branding/payments/dinacard.png"
-                alt="DinaCard"
-                width={36}
-                height={28}
-                className="h-7 w-auto object-contain"
-              />
-              <Image
-                src="/branding/payments/amex.png"
-                alt="American Express"
-                width={28}
-                height={28}
-                className="h-7 w-auto object-contain"
-              />
             </div>
           </button>
 

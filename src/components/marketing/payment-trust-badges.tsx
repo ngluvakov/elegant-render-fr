@@ -1,16 +1,27 @@
 "use client";
 
 /**
- * PaymentTrustBadges — BI EPM §2.2 three-group badge bar.
+ * PaymentTrustBadges — Banca Intesa EPM v3.5 §2.2 badge bar.
  *
- * Group 1 (acceptance): Visa, Mastercard, Maestro, DinaCard, American Express.
- * Group 2 (security):   Mastercard ID Check, Visa Secure, DinaCard Secure,
- *                        American Express SafeKey — linked to official
- *                        programme pages per EPM §2.2.
- * Group 3 (issuer):     Banca Intesa AD Beograd.
+ * Layout (single centered row, wraps on narrow screens):
  *
- * Assets live in /public/branding/payments/. On image load error the
- * alt text is rendered as plain text; no decorative chip fallback.
+ *   [ Group A — acceptance ]   ⟵b⟶   [ Banca Intesa ]   ⟵b⟶   [ Group B — programmes ]
+ *
+ * Group A (acceptance): Visa, Mastercard, Maestro, DinaCard, American Express.
+ * Centre separator:     Banca Intesa AD Beograd — the issuer logo sits between
+ *                        the two groups (per §2.2 reference art "primer korektnog
+ *                        brendiranja vodoravno").
+ * Group B (programmes): Visa Secure, Mastercard ID Check, DinaCard Secure,
+ *                        American Express SafeKey — linked to official programme
+ *                        pages per EPM §2.2.
+ *
+ * Spacing follows the §2.2 clear-space rule b >= 4a: within-group gap a = gap-2,
+ * between-group gap b = gap-8 (default) / gap-6 (sm). Groups are separated by
+ * clear space + the centre logo, not by rules. All marks sit on a plain ivory
+ * ground (bg-background), as the guideline mandates.
+ *
+ * Assets live in /public/branding/payments/ (high-quality bank set). On image
+ * load error the alt text is rendered as plain text; no decorative fallback.
  *
  * Size variants:
  *   default — py-3 px-6, logo h-5, between-group gap-8.
@@ -35,29 +46,31 @@ type Logo = {
   ariaLabel?: string;
 };
 
+// width/height encode each asset's intrinsic aspect ratio (height normalised to
+// 20); LogoImg rescales to the rendered height.
 const ACCEPTANCE: Logo[] = [
   {
     src: "/branding/payments/visa.png",
     alt: "Visa",
-    width: 60,
+    width: 42,
     height: 20,
   },
   {
-    src: "/branding/payments/mastercard.svg",
+    src: "/branding/payments/mastercard.png",
     alt: "Mastercard",
-    width: 32,
+    width: 24,
     height: 20,
   },
   {
-    src: "/branding/payments/maestro.svg",
+    src: "/branding/payments/maestro.png",
     alt: "Maestro",
-    width: 32,
+    width: 24,
     height: 20,
   },
   {
     src: "/branding/payments/dinacard.png",
     alt: "DinaCard",
-    width: 20,
+    width: 43,
     height: 20,
   },
   {
@@ -68,27 +81,36 @@ const ACCEPTANCE: Logo[] = [
   },
 ];
 
-const SECURITY: Logo[] = [
-  {
-    src: "/branding/payments/mastercard-id-check.svg",
-    alt: "Mastercard ID Check",
-    width: 56,
-    height: 20,
-    href: "https://www.mastercard.rs/sr-rs/korisnici/pronadite-karticu.html",
-    ariaLabel: "Mastercard ID Check — 3D Secure autentifikacija",
-  },
+const BANCA_INTESA: Logo = {
+  src: "/branding/payments/banca-intesa.png",
+  alt: "Banca Intesa",
+  width: 100,
+  height: 20,
+  href: "https://www.bancaintesa.rs/",
+  ariaLabel: "Banca Intesa AD Beograd — payment gateway",
+};
+
+const PROGRAMS: Logo[] = [
   {
     src: "/branding/payments/visa-secure.png",
     alt: "Visa Secure",
-    width: 56,
+    width: 20,
     height: 20,
     href: "https://rs.visa.com/pay-with-visa/security-and-assistance/protected-everywhere.html",
     ariaLabel: "Visa Secure — 3D Secure autentifikacija",
   },
   {
+    src: "/branding/payments/mastercard-id-check.png",
+    alt: "Mastercard ID Check",
+    width: 70,
+    height: 20,
+    href: "https://www.mastercard.rs/sr-rs/korisnici/pronadite-karticu.html",
+    ariaLabel: "Mastercard ID Check — 3D Secure autentifikacija",
+  },
+  {
     src: "/branding/payments/dinacard-secure.png",
     alt: "DinaCard Secure",
-    width: 56,
+    width: 30,
     height: 20,
     href: "https://www.dinacard.nbs.rs/",
     ariaLabel: "DinaCard Secure — 3D Secure autentifikacija",
@@ -96,21 +118,10 @@ const SECURITY: Logo[] = [
   {
     src: "/branding/payments/amex-safekey.png",
     alt: "American Express SafeKey",
-    width: 20,
+    width: 81,
     height: 20,
     href: "https://www.americanexpress.com/en-us/benefits/safekey/",
     ariaLabel: "American Express SafeKey — 3D Secure autentifikacija",
-  },
-];
-
-const ISSUER: Logo[] = [
-  {
-    src: "/branding/payments/banca-intesa.png",
-    alt: "Banca Intesa",
-    width: 80,
-    height: 20,
-    href: "https://www.bancaintesa.rs/",
-    ariaLabel: "Banca Intesa AD Beograd — payment gateway",
   },
 ];
 
@@ -154,10 +165,6 @@ function LogoItem({ logo, height }: { logo: Logo; height: number }) {
   return <LogoImg logo={logo} height={height} />;
 }
 
-function Divider() {
-  return <span className="w-px h-5 bg-border/30 flex-shrink-0" aria-hidden="true" />;
-}
-
 export function PaymentTrustBadges({
   className = "",
   size = "default",
@@ -170,30 +177,22 @@ export function PaymentTrustBadges({
 
   return (
     <div
-      className={`bg-background rounded-xl ring-1 ring-border/40 ${padY} ${padX} flex flex-row flex-wrap items-center ${betweenGap} ${className}`}
+      className={`bg-background rounded-xl ring-1 ring-border/40 ${padY} ${padX} flex flex-row flex-wrap items-center justify-center ${betweenGap} ${className}`}
       aria-label="Prihvaćeni načini plaćanja i sigurnosni standardi"
     >
-      {/* Group 1: Acceptance */}
+      {/* Group A: Acceptance marks */}
       <div className="flex items-center gap-2">
         {ACCEPTANCE.map((logo) => (
           <LogoItem key={logo.alt} logo={logo} height={logoH} />
         ))}
       </div>
 
-      <Divider />
+      {/* Centre separator: issuer */}
+      <LogoItem logo={BANCA_INTESA} height={logoH} />
 
-      {/* Group 2: Security programmes */}
+      {/* Group B: 3D Secure programmes */}
       <div className="flex items-center gap-2">
-        {SECURITY.map((logo) => (
-          <LogoItem key={logo.alt} logo={logo} height={logoH} />
-        ))}
-      </div>
-
-      <Divider />
-
-      {/* Group 3: Issuer */}
-      <div className="flex items-center gap-2">
-        {ISSUER.map((logo) => (
+        {PROGRAMS.map((logo) => (
           <LogoItem key={logo.alt} logo={logo} height={logoH} />
         ))}
       </div>

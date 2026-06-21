@@ -343,15 +343,6 @@ export function StepPayment() {
           </div>
         )}
 
-        {NESTPAY_TEST_MODE && method !== "card_mock" && (
-          <button
-            type="button"
-            onClick={() => setMethod("card_mock")}
-            className="mt-4 text-xs text-muted-foreground underline-offset-2 hover:underline"
-          >
-            Koristi mock karticu (dev)
-          </button>
-        )}
       </div>
 
       <Button variant="outline" onClick={() => setStep(2)}>

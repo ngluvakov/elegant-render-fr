@@ -31,25 +31,12 @@ export default async function NestpayFailurePage({ searchParams }: PageProps) {
     where: { paymentId: oid, paymentProvider: "nestpay" },
     select: {
       id: true,
-      nestpayResponseRaw: true,
     },
   });
   if (!order) notFound();
 
   const receipt = await getNestpayReceiptData(order.id);
   if (!receipt) notFound();
-
-  const rawResponse =
-    order.nestpayResponseRaw &&
-    typeof order.nestpayResponseRaw === "object"
-      ? (order.nestpayResponseRaw as Record<string, unknown>)
-      : null;
-  const errMsg =
-    rawResponse?.ErrMsg
-      ? String(rawResponse.ErrMsg)
-      : rawResponse?.mdErrorMsg
-        ? String(rawResponse.mdErrorMsg)
-        : null;
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 px-4 py-12">
@@ -61,15 +48,10 @@ export default async function NestpayFailurePage({ searchParams }: PageProps) {
           Plaćanje neuspešno — račun Vaše platne kartice nije zadužen.
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Vaša porudžbina je sačuvana i možete pokušati ponovo. Najčešći
-          razlozi su pogrešno unet 3D Secure kod, blokada od strane banke
-          izdavaoca kartice, ili nedovoljna sredstva.
+          Vaša porudžbina je sačuvana i možete pokušati ponovo. Najčešći uzrok
+          je pogrešno unet broj kartice, datum isteka ili sigurnosni kod. U
+          slučaju uzastopnih grešaka, pozovite Vašu banku.
         </p>
-        {errMsg && (
-          <p className="mt-3 rounded-lg border border-destructive/20 bg-background/40 px-3 py-2 text-xs text-muted-foreground">
-            <strong>Poruka banke:</strong> {errMsg}
-          </p>
-        )}
       </div>
 
       <NestpayReceipt data={receipt} variant="failure" />

@@ -1004,9 +1004,9 @@ export async function sendPaymentFailureEmail(args: {
           Plaćanje neuspešno — račun Vaše platne kartice nije zadužen.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Vaša porudžbina je sačuvana i možete pokušati ponovo iz portala —
-          najčešći razlozi su pogrešan PIN/3DS kod, blokada od strane banke
-          izdavaoca, ili nedovoljna sredstva.
+          Vaša porudžbina je sačuvana i možete pokušati ponovo iz portala.
+          Najčešći uzrok je pogrešno unet broj kartice, datum isteka ili
+          sigurnosni kod. U slučaju uzastopnih grešaka, pozovite Vašu banku.
         </p>
 
         <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o porudžbini</h3>

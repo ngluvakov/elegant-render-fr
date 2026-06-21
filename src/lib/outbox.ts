@@ -31,6 +31,7 @@
  * triggering downstream workflows), they should add their own
  * idempotency check inside the handler.
  */
+import { after } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { Prisma } from "@/generated/prisma/client";
 import type { OutboxEventType } from "@/generated/prisma/client";
@@ -76,6 +77,9 @@ export async function enqueueOutboxEvent(args: EnqueueArgs): Promise<void> {
         idempotencyKey: args.idempotencyKey,
       },
     });
+    // Drain the queue right after this response is sent, so the email
+    // goes out in ~1-2s instead of waiting for the next cron tick.
+    kickOutboxSoon();
   } catch (err) {
     // Unique constraint violation = already enqueued. Idempotent skip.
     if (
@@ -85,6 +89,28 @@ export async function enqueueOutboxEvent(args: EnqueueArgs): Promise<void> {
       return;
     }
     throw err;
+  }
+}
+
+/**
+ * Best-effort: drain the outbox immediately after the current response is
+ * sent, so transactional emails are delivered in ~1-2s rather than on the
+ * next cron tick. Scheduled via `after()` so it never delays the response,
+ * and it runs after the enclosing transaction commits — safe even when the
+ * row was enqueued with the optional `tx`. The every-minute cron remains the
+ * backstop for retries and any enqueue made outside a request scope.
+ */
+function kickOutboxSoon(): void {
+  try {
+    after(async () => {
+      try {
+        await processOutboxBatch();
+      } catch {
+        // best-effort; the cron will retry on its next tick
+      }
+    });
+  } catch {
+    // not in a request scope (script / non-request enqueue) — cron covers it
   }
 }
 

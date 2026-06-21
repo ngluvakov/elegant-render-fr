@@ -34,7 +34,7 @@ export function ChargePaymentCard({
   billingCurrency,
   billingTotalCents,
 }: Props) {
-  const [method, setMethod] = useState<"nestpay" | "card_mock">("nestpay");
+  const [method] = useState<"nestpay" | "card_mock">("nestpay");
   const [pending, setPending] = useState(false);
   const [cardPending, setCardPending] = useState(false);
   const [error, setError] = useState("");
@@ -158,20 +158,6 @@ export function ChargePaymentCard({
             {cardPending ? "Obrada…" : `Plati ${amountLabel} (mock)`}
           </Button>
         </div>
-      )}
-
-      {NESTPAY_TEST_MODE && (
-        <button
-          type="button"
-          onClick={() =>
-            setMethod(method === "nestpay" ? "card_mock" : "nestpay")
-          }
-          className="mt-3 text-[0.68rem] text-muted-foreground underline-offset-2 hover:underline"
-        >
-          {method === "nestpay"
-            ? "Koristi mock karticu (dev)"
-            : "Nazad na NestPay"}
-        </button>
       )}
     </div>
   );

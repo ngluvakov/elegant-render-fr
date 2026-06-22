@@ -20,6 +20,20 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-06-22 - NestPay prelazak na produkciju (Banca Intesa pilot, SMS)
+
+- **Oblast promene:** payments | order lifecycle | conversion | architecture | docs
+- **Šta se promenilo:** Banca Intesa / Nexi je potvrdila uspešan završetak test faze (EPM usaglašeno sa Uputstvom za rad EPM) i izdala produkcione pristupne parametre (Merchant ID `13IN004509`, tip prodajnog mesta „3D Pay Hosting"). Platforma se prebacuje sa NestPay test gateway-a (`testsecurepay.eway2pay.com`) na produkcioni (`bib.eway2pay.com`) radi pilot transakcije pre zvaničnog go-live-a. Izabran je **SMS (Auth)** tip transakcije — trenutno zaduženje, single-message sale (već default u kodu).
+- **Zašto:** Poslednja faza onboarding-a; banka traži pilot test (jedna realna kartična transakcija) pre nego što prodajno mesto zvanično pređe na produkciju.
+- **Uticaj na conversion:** Realna kartična naplata na produkciji umesto test moda; SMS znači da je narudžbina `paid` odmah po uspešnoj transakciji, bez ručnog capture koraka.
+- **Uticaj na design:** Nema. `live` mod automatski sakriva legacy mock-karticu i hard-disable-uje hash-debug endpoint.
+- **Uticaj na code:** Nema runtime promene — integracija je u potpunosti env-driven (`src/lib/nestpay/config.ts`). Prelazak je promena env varijabli (Vercel Production) + konfiguracija produkcionog Merchant Center-a (Store Key, API role, okUrl/failUrl) + odgovor banci. Produkcioni kredencijali se NE čuvaju u repo-u (push na `main` = produkcioni deploy; tajne u git istoriji ostaju trajno).
+- **Uticaj na docs:** Ovaj decision log; razrešen „Open items pre go-live" blok iz 2026-05-29 entry-ja.
+- **Povezani fajlovi:** `src/lib/nestpay/config.ts`, `src/lib/nestpay/url.ts`, `src/app/api/nestpay/return/route.ts`, `src/app/api/cron/nestpay-reconcile/route.ts`, `scripts/nestpay-storekey-probe.ts`, `.env.example`
+- **Reference:** Banca Intesa onboarding mail (produkcioni parametri; pilot test posle 14h) + „Nexi – NestPay connectivity scenario for 3D Pay Hosting merchants v3.0" PDF (produkcioni URL-ovi: HPP `https://bib.eway2pay.com/fim/est3Dgate`, API `https://bib.eway2pay.com/fim/api`, MC `https://bib.eway2pay.com/bib/report/user.login`).
+- **Env varijable za produkciju (Vercel Production scope; vrednosti se NE upisuju u repo):** `NEXT_PUBLIC_NESTPAY_MODE=live`, `NESTPAY_CLIENT_ID=13IN004509`, `NESTPAY_BASE_URL=https://bib.eway2pay.com/fim/est3Dgate`, `NESTPAY_QUERY_URL=https://bib.eway2pay.com/fim/api`, `NESTPAY_STORE_KEY` (iz prod MC → Administration → Store Key), `NESTPAY_QUERY_USERNAME` + `NESTPAY_QUERY_PASSWORD` (API role kreirana u prod MC; koristi ih reconcile cron), `NESTPAY_TRAN_TYPE=Auth`, `AUTH_URL=https://elegantrender.rs`, pravi `NEXT_PUBLIC_TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY`.
+- **Napomena (zamka):** Login parametri za Merchant Center (iz onboarding mejla — čuvaju se u password manager-u, NIKAD u repo) služe SAMO za prijavu na MC — nisu Store Key ni API kredencijali. Ako u `NESTPAY_STORE_KEY` ostane test ključ, hash ne valja i banka odbija svako plaćanje. Početna lozinka se menja pri prvoj prijavi (banka to forsira).
+
 ## 2026-06-17 - RSD-only cene i uklanjanje PayPal-a
 
 - **Oblast promene:** pricing | payments | order lifecycle | conversion | CRM sync | docs | architecture
@@ -175,7 +189,7 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Uticaj na docs:** Ovaj decision log; `.env.example` proširen (NESTPAY_*, TURNSTILE_*).
 - **Povezani fajlovi:** vidi listu iznad + `prisma/schema.prisma`, `prisma/migrations/20260529000000_add_nestpay_provider/migration.sql`, `vercel.json`, `src/lib/content/site.ts` (NAV_LEGAL proširenje), `src/components/portal/pending-payment-card.tsx`, `src/app/(marketing)/poruci/steps/step-payment.tsx`, `src/app/(marketing)/poruci/nestpay-redirect-form.tsx`, `src/app/(marketing)/poruci/uspeh/page.tsx`, `src/app/(marketing)/poruci/neuspeh/page.tsx`.
 - **Reference:** User request: "Treba da na sajt implementiramo placanje karticama" + "Za strane kupce hocu da se vidi i Eur i konverzija u RSD". Plan: `~/.claude/plans/imam-jedno-takmicenje-izmedju-dreamy-reef.md`.
-- **Open items pre go-live:**
+- **Open items pre go-live (RAZREŠENO 2026-06-22 — vidi „NestPay prelazak na produkciju" entry na vrhu):**
   - U Vercel Production env unesi prave kredencijale: `NESTPAY_CLIENT_ID`, `NESTPAY_STORE_KEY`, `NESTPAY_QUERY_USERNAME`, `NESTPAY_QUERY_PASSWORD`, `NESTPAY_BASE_URL=https://bib.eway2pay.com/fim/est3Dgate`, `NESTPAY_QUERY_URL=https://bib.eway2pay.com/fim/api`, `NEXT_PUBLIC_NESTPAY_MODE=live`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`.
   - Smesti zvanične SVG logoe u `public/branding/payments/` (visa.svg, visa-secure.svg, mastercard.svg, mastercard-id-check.svg, banca-intesa.svg).
   - Konfiguriši okUrl + failUrl u Merchant Center-u na `https://elegantrender.rs/api/nestpay/return`.

@@ -1,4 +1,4 @@
-import sharp from "sharp";
+import sharp, { type OutputInfo } from "sharp";
 import type { AiImageProvider } from "./catalog";
 
 export type Dimensions = {
@@ -724,7 +724,7 @@ async function detectReferenceContentCrop(
 
 function estimateCornerBackground(
   data: Buffer,
-  info: sharp.OutputInfo,
+  info: OutputInfo,
 ): [number, number, number] | null {
   const sampleSize = Math.max(
     4,

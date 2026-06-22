@@ -15,9 +15,15 @@ type PublicBaseEnv = {
 export function getNestpayPublicBaseUrl(
   env: PublicBaseEnv = process.env,
 ): string {
-  if (env.AUTH_URL) return env.AUTH_URL;
+  // Strip any trailing slash so callers can append "/api/nestpay/return"
+  // without producing a double slash. okUrl/failUrl are part of the ver2
+  // request hash, so a stray slash from a copy-pasted AUTH_URL (the bank's
+  // onboarding mail lists the store URL as "https://elegantrender.rs/")
+  // would otherwise break the hash/return round-trip.
+  const normalize = (url: string) => url.replace(/\/+$/, "");
+  if (env.AUTH_URL) return normalize(env.AUTH_URL);
   if (env.VERCEL_ENV === "preview" && env.VERCEL_URL) {
-    return `https://${env.VERCEL_URL}`;
+    return normalize(`https://${env.VERCEL_URL}`);
   }
   return "http://localhost:3000";
 }

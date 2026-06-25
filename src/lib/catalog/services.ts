@@ -118,6 +118,12 @@ export type Service = {
   detailAsset?: string;
   detailBeforeAsset?: string;
   detailAfterAsset?: string;
+  /** Optional content-specific alt text for the detail-page before/after
+   *  reveal halves. When set, these override the generic
+   *  buildServiceImageAlt(..., "before"/"after") strings so the alt can
+   *  describe the actual scene for stronger image SEO. */
+  detailBeforeAlt?: string;
+  detailAfterAlt?: string;
   detailEmbedSrc?: string;
   /** Listing-page card image (4:3, 1200×900). Used by services-showcase
    *  on /usluge — distinct from home (3:2 thumbnail) and detail (16:9
@@ -1941,8 +1947,12 @@ export const SERVICES: Service[] = [
     beforeAsset: "/artwork/expert-prikazi-dvorista-before.webp",
     afterAsset: "/artwork/expert-prikazi-dvorista-after.webp",
     detailAsset: "/artwork/detail-prikazi-dvorista.webp",
-    detailBeforeAsset: "/artwork/problem-prikazi-dvorista-before.webp",
-    detailAfterAsset: "/artwork/problem-prikazi-dvorista-after.webp",
+    detailBeforeAsset: "/artwork/problem-uredjenje-pejzaza-before.webp",
+    detailAfterAsset: "/artwork/problem-uredjenje-pejzaza-after.webp",
+    detailBeforeAlt:
+      "Moderna porodična kuća sa neuređenom, golom parcelom pre uređenja pejzaža",
+    detailAfterAlt:
+      "Moderna porodična kuća sa uređenim dvorištem — negovan travnjak, sadnice i popločana staza posle uređenja pejzaža",
     philosophy:
       "Cena pejzažnog rendera (25.784 RSD) pokriva modelovanje terena, vegetaciju u zrelom stanju i prvi prikaz. Svaki sledeći ugao iste lokacije je 5.274 RSD — 80% jeftiniji, jer je teren već izgrađen. Virtuelna renovacija (7.735 RSD) radi drugačije: nema 3D modela — postavljamo nove materijale i biljke direktno na Vašu fotografiju. Brže, povoljnije, ali vezano za ugao koji ste snimili. Doplate za renovaciju: drugi ugao 6.915 RSD, 4. i svaki sledeći 6.212 RSD, drugo dvorište 6.563 RSD. Sve cene su u RSD sa PDV-om uračunatim.",
     priceContext:

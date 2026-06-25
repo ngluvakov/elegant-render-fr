@@ -575,9 +575,9 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
       <BeforeAfterReveal
         beforeSrc={service.detailBeforeAsset}
         afterSrc={service.detailAfterAsset}
-        alt={buildServiceImageAlt(service, "after")}
-        beforeAlt={buildServiceImageAlt(service, "before")}
-        afterAlt={buildServiceImageAlt(service, "after")}
+        alt={service.detailAfterAlt ?? buildServiceImageAlt(service, "after")}
+        beforeAlt={service.detailBeforeAlt ?? buildServiceImageAlt(service, "before")}
+        afterAlt={service.detailAfterAlt ?? buildServiceImageAlt(service, "after")}
         sizes="(max-width: 768px) 100vw, 480px"
         autoDemoIntervalMs={SERVICE_BEFORE_AFTER_DEMO_INTERVAL_MS}
         className="aspect-[4/3] w-full rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]"
@@ -824,9 +824,9 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
         <BeforeAfterReveal
           beforeSrc={service.detailBeforeAsset}
           afterSrc={service.detailAfterAsset}
-          alt={buildServiceImageAlt(service, "after")}
-          beforeAlt={buildServiceImageAlt(service, "before")}
-          afterAlt={buildServiceImageAlt(service, "after")}
+          alt={service.detailAfterAlt ?? buildServiceImageAlt(service, "after")}
+          beforeAlt={service.detailBeforeAlt ?? buildServiceImageAlt(service, "before")}
+          afterAlt={service.detailAfterAlt ?? buildServiceImageAlt(service, "after")}
           sizes="(max-width: 768px) 100vw, 896px"
           autoDemoIntervalMs={SERVICE_BEFORE_AFTER_DEMO_INTERVAL_MS}
           className="mt-10 aspect-[16/9] w-full rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]"

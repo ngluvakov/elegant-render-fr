@@ -32,8 +32,8 @@ Image set za **Uređenje pejzaža** (€220 — pejzažni arhitekti za prezentac
 
 ## Asset 2 — Problem visual (BEFORE half)
 
-- **Filename:** `problem-prikazi-dvorista-before.webp`
-- **Dimensions:** 960×720 (4:3)
+- **Filename:** `problem-uredjenje-pejzaza-before.webp`
+- **Dimensions:** 1280×960 (4:3)
 - **Wiring:** `detailBeforeAsset` → leva strana `BeforeAfterReveal`
 - **Subject:** gola parcela ili dvorište bez uređenja — zemlja, šut, korov, neoblikovan prostor
 - **Tone:** ravno svetlo, "snimano juče pre nego što su radnici stigli"
@@ -43,8 +43,8 @@ Image set za **Uređenje pejzaža** (€220 — pejzažni arhitekti za prezentac
 
 ## Asset 3 — Problem visual (AFTER half)
 
-- **Filename:** `problem-prikazi-dvorista-after.webp`
-- **Dimensions:** 960×720 (4:3)
+- **Filename:** `problem-uredjenje-pejzaza-after.webp`
+- **Dimensions:** 1280×960 (4:3)
 - **Wiring:** `detailAfterAsset` → desna strana slider-a
 - **Subject:** ista parcela uređena — popločana staza, travnjak, sadnice u zrelom stanju, akcent elementi
 - **Critical:** **camera lock obavezna** sa Asset 2
@@ -90,8 +90,8 @@ Image set za **Uređenje pejzaža** (€220 — pejzažni arhitekti za prezentac
 ## Delivery checklist
 
 - [ ] `detail-prikazi-dvorista.webp` (1920×1080)
-- [ ] `problem-prikazi-dvorista-before.webp` (960×720)
-- [ ] `problem-prikazi-dvorista-after.webp` (960×720)
+- [x] `problem-uredjenje-pejzaza-before.webp` (1280×960)
+- [x] `problem-uredjenje-pejzaza-after.webp` (1280×960)
 - [ ] `portfolio-prikazi-dvorista-01.webp` (1920×1080)
 - [ ] `portfolio-prikazi-dvorista-02.webp` (1920×1080)
 - [ ] `portfolio-prikazi-dvorista-03.webp` (1920×1080)

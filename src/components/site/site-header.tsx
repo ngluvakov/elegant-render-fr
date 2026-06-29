@@ -84,24 +84,16 @@ export function SiteHeader() {
             target="_blank"
             rel="noreferrer"
             aria-label="Powered by White Rook"
-            className="hidden items-center gap-1.5 rounded-full border border-border/80 bg-card/80 px-2.5 py-1.5 shadow-[0_12px_30px_rgba(28,26,25,0.06)] transition hover:border-[color:var(--color-clay)] hover:bg-background sm:inline-flex"
+            className="hidden items-center transition-opacity hover:opacity-80 sm:inline-flex"
           >
-            <span className="inline-flex h-5 w-5 items-center justify-center overflow-hidden rounded-[0.45rem] bg-black ring-1 ring-black/10 sm:h-6 sm:w-6">
-              <Image
-                src="/branding/white-rook-symbol.png"
-                alt="White Rook logo"
-                width={24}
-                height={24}
-                className="h-full w-full object-cover"
-                priority
-              />
-            </span>
-            <span className="hidden text-[0.54rem] uppercase tracking-[0.22em] text-muted-foreground md:inline">
-              Powered by
-            </span>
-            <span className="truncate text-[0.72rem] font-medium text-foreground sm:text-[0.76rem]">
-              White Rook
-            </span>
+            <Image
+              src="/branding/powered-by-whiterook.webp"
+              alt="Powered by White Rook"
+              width={480}
+              height={188}
+              priority
+              className="h-11 w-auto"
+            />
           </a>
         </div>
 

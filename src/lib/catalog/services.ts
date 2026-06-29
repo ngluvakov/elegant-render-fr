@@ -1038,6 +1038,10 @@ export const SERVICES: Service[] = [
     detailAsset: "/artwork/detail-virtuelno-opremanje.webp",
     detailBeforeAsset: "/artwork/problem-virtuelno-opremanje-before.webp",
     detailAfterAsset: "/artwork/problem-virtuelno-opremanje-after.webp",
+    detailBeforeAlt:
+      "Prazan dnevni boravak pre virtuelnog opremanja — gola soba sa parketom i velikim prozorima",
+    detailAfterAlt:
+      "Isti dnevni boravak posle virtuelnog opremanja — sofa, fotelja, stočić, tepih i umetnička slika",
     philosophy:
       "Prva slika pokriva izbor nameštaja, stila i osvetljenja. Kad je stil definisan, svaki dodatni ugao iste sobe je 33% jeftiniji, druga soba 17% jeftinija, a od 10+ slika cena pada na 1.524 RSD/sliku. Tako celokupna nekretnina dobija kompletan oglasni paket za delić cene fizičkog opremanja.",
     priceContext:

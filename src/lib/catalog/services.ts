@@ -1191,8 +1191,12 @@ export const SERVICES: Service[] = [
     beforeAsset: "/artwork/expert-virtuelna-renovacija-before.webp",
     afterAsset: "/artwork/expert-virtuelna-renovacija-after.webp",
     detailAsset: "/artwork/detail-virtuelna-renovacija.webp",
-    detailBeforeAsset: "/artwork/problem-virtuelna-renovacija-before.webp",
-    detailAfterAsset: "/artwork/problem-virtuelna-renovacija-after.webp",
+    detailBeforeAsset: "/artwork/problem-virtuelna-renovacija-kuhinja-before.webp",
+    detailAfterAsset: "/artwork/problem-virtuelna-renovacija-kuhinja-after.webp",
+    detailBeforeAlt:
+      "Zastarela kuhinja sa starim drvenim ormarićima i pločicama pre virtuelne renovacije",
+    detailAfterAlt:
+      "Ista kuhinja posle virtuelne renovacije — moderni svetli ormarići, mermerni zid, beli pult i nova tehnika",
     philosophy:
       "Prva slika pokriva kompletan dizajn renovacije i izbor materijala. Kad je vizuelni pravac postavljen, svaki dodatni ugao iste prostorije je 10% jeftiniji, a od 4. ugla 20% jeftiniji. Druga soba iste nekretnine: 15% popust. Tako kompletna nekretnina ulazi u realan budžet pre nego što krenu zidari.",
     priceContext:

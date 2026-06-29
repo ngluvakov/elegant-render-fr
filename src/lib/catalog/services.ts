@@ -2560,8 +2560,12 @@ export const SERVICES: Service[] = [
     beforeAsset: "/artwork/expert-uklanjanje-elemenata-before.webp",
     afterAsset: "/artwork/expert-uklanjanje-elemenata-after.webp",
     detailAsset: "/artwork/detail-uklanjanje-elemenata.webp",
-    detailBeforeAsset: "/artwork/problem-uklanjanje-elemenata-before.webp",
-    detailAfterAsset: "/artwork/problem-uklanjanje-elemenata-after.webp",
+    detailBeforeAsset: "/artwork/problem-uklanjanje-predmeta-soba-before.webp",
+    detailAfterAsset: "/artwork/problem-uklanjanje-predmeta-soba-after.webp",
+    detailBeforeAlt:
+      "Soba sa lusterom, stolicama i predmetima pre digitalnog uklanjanja predmeta",
+    detailAfterAlt:
+      "Ista soba posle uklanjanja predmeta — ispražnjen prostor bez nameštaja i dekoracije",
     outsourced: true,
     philosophy:
       "Jednostavno uklanjanje (sitnice, lične stvari): 1.406 RSD. Kompleksno (veliki objekat sa rekonstrukcijom pozadine): 2.930 RSD. Pakovanje 10+ slika: 1.172 RSD jednostavno / 2.344 RSD kompleksno po slici.",

@@ -2424,8 +2424,12 @@ export const SERVICES: Service[] = [
     beforeAsset: "/artwork/expert-dan-u-noc-before.webp",
     afterAsset: "/artwork/expert-dan-u-noc-after.webp",
     detailAsset: "/artwork/detail-dan-u-noc.webp",
-    detailBeforeAsset: "/artwork/problem-dan-u-noc-before.webp",
-    detailAfterAsset: "/artwork/problem-dan-u-noc-after.webp",
+    detailBeforeAsset: "/artwork/problem-dan-u-noc-fasada-before.webp",
+    detailAfterAsset: "/artwork/problem-dan-u-noc-fasada-after.webp",
+    detailBeforeAlt:
+      "Moderna kuća sa fasadom snimljena u suton pre prelaza u noćni prikaz",
+    detailAfterAlt:
+      "Ista moderna kuća u noćnom prikazu — osvetljena fasada, topli enterijer i okolno osvetljenje pod zvezdanim nebom",
     outsourced: true,
     philosophy:
       "Brza post-produkcija sa jasnom cenom po slici. Pakovanje 10+ slika: 938 RSD/slika (20% popust). Hitna isporuka u roku od 24h: +50%.",

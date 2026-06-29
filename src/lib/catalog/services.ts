@@ -1650,20 +1650,20 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-3d-osnove-tip-1.webp",
-        alt: "3D osnova jednosobnog stana — otvoren dnevni boravak sa kuhinjom, spavaća soba i kupatilo iz ptičje perspektive",
+        src: "/artwork/portfolio-3d-osnove-jednosoban-stan.webp",
+        alt: "3D osnova jednosobnog stana — dnevni boravak, trpezarija, kuhinja, spavaća soba i kupatilo iz ptičje perspektive",
       },
       {
-        src: "/artwork/portfolio-3d-osnove-tip-2.webp",
-        alt: "3D osnova dvosobnog stana — dve spavaće sobe, centralni dnevni boravak i dva kupatila",
+        src: "/artwork/portfolio-3d-osnove-jednosoban-otvoreni-koncept.webp",
+        alt: "3D osnova jednosobnog stana otvorenog koncepta — povezan dnevni boravak, kuhinja i trpezarija sa spavaćom sobom i kupatilom",
       },
       {
-        src: "/artwork/portfolio-3d-osnove-tip-3.webp",
-        alt: "3D osnova dvosobnog stana sa balkonom — kompaktan raspored sa kuhinjom, trpezarijom i dve spavaće sobe",
+        src: "/artwork/portfolio-3d-osnove-dupleks-dva-nivoa.webp",
+        alt: "3D osnova dupleksa na dva nivoa — prizemlje sa dnevnim boravkom i kuhinjom i gornji nivo sa spavaćom sobom",
       },
       {
-        src: "/artwork/portfolio-3d-osnove-tip-3-bez-balkona.webp",
-        alt: "3D osnova dvosobnog stana bez balkona — raspored sa dnevnim boravkom, kuhinjom i dve spavaće sobe",
+        src: "/artwork/portfolio-3d-osnove-kuca-sa-garazom.webp",
+        alt: "3D osnova porodične kuće sa garažom — tri spavaće sobe, dnevni boravak, trpezarija, kuhinja i garaža za dva automobila",
       },
     ],
     faqs: [

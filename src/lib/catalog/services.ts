@@ -1036,8 +1036,8 @@ export const SERVICES: Service[] = [
     beforeAsset: "/artwork/expert-virtuelno-opremanje-before.webp",
     afterAsset: "/artwork/expert-virtuelno-opremanje-after.webp",
     detailAsset: "/artwork/detail-virtuelno-opremanje.webp",
-    detailBeforeAsset: "/artwork/problem-virtuelno-opremanje-before.webp",
-    detailAfterAsset: "/artwork/problem-virtuelno-opremanje-after.webp",
+    detailBeforeAsset: "/artwork/problem-virtuelno-opremanje-dnevni-boravak-before.webp",
+    detailAfterAsset: "/artwork/problem-virtuelno-opremanje-dnevni-boravak-after.webp",
     detailBeforeAlt:
       "Prazan dnevni boravak pre virtuelnog opremanja — gola soba sa parketom i velikim prozorima",
     detailAfterAlt:

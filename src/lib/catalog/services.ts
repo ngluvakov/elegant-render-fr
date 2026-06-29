@@ -1590,11 +1590,15 @@ export const SERVICES: Service[] = [
       "Pravi izbor za listing fotografiju i prospekt — kupac na prvi pogled razume šta dobija.",
     materials:
       "Pošaljite tehničke crteže (PDF/DWG), skice sa merama ili postojeću PDF osnovu. Prvi nacrt 1–3 radna dana.",
-    asset: "/artwork/listing-floorplan-3d.webp",
-    listingAsset: "/artwork/listing-floorplan-3d.webp",
-    detailAsset: "/artwork/detail-osnove.webp",
-    detailBeforeAsset: "/artwork/problem-osnove-before.webp",
-    detailAfterAsset: "/artwork/problem-osnove-after.webp",
+    asset: "/artwork/listing-3d-osnove.webp",
+    listingAsset: "/artwork/listing-3d-osnove.webp",
+    detailAsset: "/artwork/detail-3d-osnove.webp",
+    detailBeforeAsset: "/artwork/problem-3d-osnove-before.webp",
+    detailAfterAsset: "/artwork/problem-3d-osnove-after.webp",
+    detailBeforeAlt:
+      "2D tehnički tlocrt stana pre 3D obrade — linije, oznake i raspored prostorija",
+    detailAfterAlt:
+      "3D prostorni tlocrt istog stana posle obrade — nameštaj, materijali i boje iz ptičje perspektive",
     philosophy:
       "3D prostorni prikaz je marketinški format — kupac vidi raspored sa nameštajem i bojom, bez čitanja oznaka. Cena 3.399 RSD pokriva jedan nivo. Identičan sprat (dupliranje sa promenom oznaka) košta samo 1.172 RSD — 66% jeftinije. Tako dupleks i zgrada sa više tipova stanova ulaze u realan listing budžet — bez ponovnog modelovanja po nivou.",
     priceContext:
@@ -1646,20 +1650,20 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-osnove-01.webp",
-        alt: "3D osnova — porodična kuća sa rasporedom prostorija i nameštajem",
+        src: "/artwork/portfolio-3d-osnove-tip-1.webp",
+        alt: "3D osnova jednosobnog stana — otvoren dnevni boravak sa kuhinjom, spavaća soba i kupatilo iz ptičje perspektive",
       },
       {
-        src: "/artwork/portfolio-osnove-02.webp",
-        alt: "3D osnova — stan u zgradi sa kompaktnim rasporedom",
+        src: "/artwork/portfolio-3d-osnove-tip-2.webp",
+        alt: "3D osnova dvosobnog stana — dve spavaće sobe, centralni dnevni boravak i dva kupatila",
       },
       {
-        src: "/artwork/portfolio-osnove-04.webp",
-        alt: "3D osnova — dupleks sa rasporedom oba sprata",
+        src: "/artwork/portfolio-3d-osnove-tip-3.webp",
+        alt: "3D osnova dvosobnog stana sa balkonom — kompaktan raspored sa kuhinjom, trpezarijom i dve spavaće sobe",
       },
       {
-        src: "/artwork/listing-floorplan-3d.webp",
-        alt: "3D osnova stana — prostorni prikaz za listing i prospekt",
+        src: "/artwork/portfolio-3d-osnove-tip-3-bez-balkona.webp",
+        alt: "3D osnova dvosobnog stana bez balkona — raspored sa dnevnim boravkom, kuhinjom i dve spavaće sobe",
       },
     ],
     faqs: [

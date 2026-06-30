@@ -740,7 +740,7 @@ export const SERVICES: Service[] = [
     asset: "/artwork/listing-exterior-360.webp",
     detailAsset: "/artwork/detail-360-eksterijer.webp",
     detailEmbedSrc:
-      "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
+      "https://kuula.co/share/collection/7Tm7X?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     philosophy:
       "Najveći trošak je izgradnja 3D modela. Cena 39.262 RSD pokriva pun model i prvu interaktivnu 360 panoramu. Svaka sledeća tačka iz iste strane modela: 5.626 RSD (80% jeftinije). Tačka koja zahteva neviđenu stranu: 7.032 RSD jednokratno. Za 5+ tačaka popust pada na 6.212 RSD po tački — kompletan obilazak objekta ulazi u realan investitorski budžet.",
     priceContext:

@@ -756,7 +756,7 @@ export const SERVICES: Service[] = [
     ],
     problemHeading: "Nacrti ne otvaraju vrata. Šetnja kroz objekat — otvara.",
     problemAsset: "/artwork/expert-360-eksterijer-problem.webp",
-    problemPanoramaSrc: "/artwork/360-eksterijer-panorama-hq.jpg",
+    problemPanoramaSrc: "/artwork/360-eksterijer-panorama-vr.jpg",
     problemBody:
       "Investitor pokazuje fasadu, kupac klimne glavom i odlazi da razmisli. Statična slika ne daje osećaj prostora iz svih uglova, ne pokazuje materijale u svetlu, ne dozvoljava kupcu da sam istraži. Odluka se odlaže.",
     problemResolution:

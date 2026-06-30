@@ -69,7 +69,7 @@ export function Panorama360({ src, title }: Props) {
           autoRotate: -2,
           autoRotateInactivityDelay: 3000,
           showZoomCtrl: true,
-          showFullscreenCtrl: true,
+          showFullscreenCtrl: false,
           mouseZoom: true,
           draggable: true,
           compass: false,

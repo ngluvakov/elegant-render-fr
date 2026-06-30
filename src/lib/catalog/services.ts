@@ -876,8 +876,12 @@ export const SERVICES: Service[] = [
     asset: "/artwork/listing-streetscape.webp",
     listingAsset: "/artwork/listing-streetscape.webp",
     detailAsset: "/artwork/detail-streetscape.webp",
-    detailBeforeAsset: "/artwork/problem-streetscape-before.webp",
-    detailAfterAsset: "/artwork/problem-streetscape-after.webp",
+    detailBeforeAsset: "/artwork/problem-streetscape-ulica-before.webp",
+    detailAfterAsset: "/artwork/problem-streetscape-ulica-after.webp",
+    detailBeforeAlt:
+      "2D situacioni plan niza objekata uz ulicu — raspored kuća, parkinga, zelenila i sadržaja",
+    detailAfterAlt:
+      "3D prikaz ulice — niz modernih objekata sa drvoredom, parkingom i uličnim kontekstom",
     philosophy:
       "Cena od 49.224 RSD pokriva izgradnju punog 3D modela objekta i modelovanog okruženja, sa dva ugla uključena. Pošto je model već izgrađen, svaki sledeći ugao košta 5.626 RSD — 80% jeftinije. Neviđena ili zadnja strana objekta dodaje se jednom (+25%, 12.306 RSD). Nema naknadnih iznenađenja — sve je javno u cenovniku.",
     priceContext:

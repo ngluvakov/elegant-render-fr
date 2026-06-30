@@ -17,6 +17,7 @@ import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { JsonLd } from "@/components/seo/json-ld";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
+import { Panorama360 } from "@/components/marketing/panorama-360";
 import {
   CATEGORY_LABELS,
   SERVICES,
@@ -544,6 +545,19 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
 
 function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
   const { service } = ctx;
+  if (service.problemPanoramaSrc) {
+    return (
+      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+        <Panorama360
+          src={service.problemPanoramaSrc}
+          title={buildServiceImageAlt(service, "problem")}
+        />
+        <span className="pointer-events-none absolute right-3 top-3 z-10 rounded-full bg-foreground/55 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-background/95">
+          360°
+        </span>
+      </figure>
+    );
+  }
   if (service.problemEmbedSrc) {
     return (
       <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">

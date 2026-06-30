@@ -20,6 +20,18 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-06-30 - Interaktivni 360° viewer u problem-sekciji (Pannellum)
+
+- **Oblast promene:** architecture | design | conversion
+- **Šta se promenilo:** Dodato opciono polje `problemPanoramaSrc` na `Service`. Kada je postavljeno, problem-sekcija detaljne stranice renderuje interaktivni equirectangular **360° viewer** (vučenje mišem, zoom, auto-rotacija, fullscreen) umesto statične slike. Prioritet u `ProblemVisual`: panorama → `problemEmbedSrc` (Kuula iframe) → `problemAsset` → before/after reveal → portfolio. Prvi korisnik: `360-eksterijer`.
+- **Zašto:** Klijent treba da sam „uđe" u eksterijer 360 panoramu direktno iz slike (bez Kuula upload-a) na 360-eksterijer stranici.
+- **Uticaj na conversion:** Interaktivni 360 umesto statične slike u problem-sekciji — jači „probaj uživo" utisak.
+- **Uticaj na design:** Nov `360°` badge u uglu; isti 4:3 okvir kao ostali problem-vizuali.
+- **Uticaj na code:** Nova klijentska komponenta `Panorama360` koristi **self-hostovan Pannellum 2.5.6** (`public/vendor/pannellum/`) — bez npm zavisnosti i bez runtime CDN-a; biblioteka se učitava lenjo, samo na stranicama koje je koriste (nema uticaja na bundle ostalih strana).
+- **Uticaj na docs:** Ovaj decision log.
+- **Povezani fajlovi:** `src/components/marketing/panorama-360.tsx`, `src/app/(marketing)/usluge/[slug]/page.tsx`, `src/lib/catalog/services.ts`, `public/vendor/pannellum/pannellum.js`, `public/vendor/pannellum/pannellum.css`, `public/artwork/360-eksterijer-panorama.jpg`
+- **Reference:** Chat zahtev — zamena statične problem slike (dve kuće) novom 360 panoramom sa drag interakcijom.
+
 ## 2026-06-22 - NestPay prelazak na produkciju (Banca Intesa pilot, SMS)
 
 - **Oblast promene:** payments | order lifecycle | conversion | architecture | docs

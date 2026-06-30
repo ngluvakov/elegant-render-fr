@@ -184,6 +184,10 @@ export type Service = {
   /** When set, the problem section renders an iframe (e.g. Kuula 360 tour)
    *  instead of the before/after slider. Takes precedence over problemAsset. */
   problemEmbedSrc?: string;
+  /** When set, the problem section renders an interactive equirectangular
+   *  360° viewer (Pannellum) of this image — drag to look around. Takes
+   *  precedence over problemEmbedSrc and problemAsset. */
+  problemPanoramaSrc?: string;
 
   /** Three reason-to-buy cards rendered as a 3-up grid. */
   benefits?: ServiceBenefit[];
@@ -752,6 +756,7 @@ export const SERVICES: Service[] = [
     ],
     problemHeading: "Nacrti ne otvaraju vrata. Šetnja kroz objekat — otvara.",
     problemAsset: "/artwork/expert-360-eksterijer-problem.webp",
+    problemPanoramaSrc: "/artwork/360-eksterijer-panorama.jpg",
     problemBody:
       "Investitor pokazuje fasadu, kupac klimne glavom i odlazi da razmisli. Statična slika ne daje osećaj prostora iz svih uglova, ne pokazuje materijale u svetlu, ne dozvoljava kupcu da sam istraži. Odluka se odlaže.",
     problemResolution:

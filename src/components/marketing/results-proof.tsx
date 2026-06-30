@@ -32,11 +32,12 @@ const PROOF_ITEMS = [
     timing: "brz upgrade fotografije",
     body: "Fotografija praznog prostora dobija nameštaj, stil i atmosferu bez fizičkog opremanja nekretnine.",
     href: "/cene?group=opremanje-renovacija&add=vs-static&from=home-proof#configurator",
-    before: "/artwork/expert-virtuelno-opremanje-before.webp",
-    after: "/artwork/expert-virtuelno-opremanje-after.webp",
-    beforeAlt: "Virtuelno opremanje - prazna soba pre digitalnog staginga",
+    before: "/artwork/expert-virtuelno-opremanje-naslovna-before.webp",
+    after: "/artwork/expert-virtuelno-opremanje-naslovna-after.webp",
+    beforeAlt:
+      "Virtuelno opremanje - prazan dnevni boravak pre digitalnog staginga",
     afterAlt:
-      "Virtuelno opremanje - opremljena soba spremna za oglas nekretnine",
+      "Virtuelno opremanje - opremljen dnevni boravak spreman za oglas nekretnine",
   },
   {
     title: "Eksterijer sa jasnim budžetom za dodatne uglove",

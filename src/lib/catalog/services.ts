@@ -1032,9 +1032,9 @@ export const SERVICES: Service[] = [
       "Praktičan način da prazna nekretnina deluje useljivo i poveća broj poziva sa oglasa.",
     materials:
       "Pošaljite nam fotografije praznih prostorija visoke rezolucije i željeni stil nameštaja.",
-    asset: "/artwork/expert-virtuelno-opremanje-after.webp",
-    beforeAsset: "/artwork/expert-virtuelno-opremanje-before.webp",
-    afterAsset: "/artwork/expert-virtuelno-opremanje-after.webp",
+    asset: "/artwork/expert-virtuelno-opremanje-naslovna-after.webp",
+    beforeAsset: "/artwork/expert-virtuelno-opremanje-naslovna-before.webp",
+    afterAsset: "/artwork/expert-virtuelno-opremanje-naslovna-after.webp",
     detailAsset: "/artwork/detail-virtuelno-opremanje.webp",
     detailBeforeAsset: "/artwork/problem-virtuelno-opremanje-dnevni-boravak-before.webp",
     detailAfterAsset: "/artwork/problem-virtuelno-opremanje-dnevni-boravak-after.webp",

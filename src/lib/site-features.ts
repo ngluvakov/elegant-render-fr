@@ -1,3 +1,3 @@
 export const SITE_FEATURES: { portfolio: boolean } = {
-  portfolio: false,
+  portfolio: true,
 };

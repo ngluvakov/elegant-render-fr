@@ -2130,8 +2130,12 @@ export const SERVICES: Service[] = [
     beforeAsset: "/artwork/expert-fotomontaza-before.webp",
     afterAsset: "/artwork/expert-fotomontaza-after.webp",
     detailAsset: "/artwork/detail-fotomontaza.webp",
-    detailBeforeAsset: "/artwork/problem-fotomontaza-before.webp",
-    detailAfterAsset: "/artwork/problem-fotomontaza-after.webp",
+    detailBeforeAsset: "/artwork/problem-fotomontaza-ulica-before.webp",
+    detailAfterAsset: "/artwork/problem-fotomontaza-ulica-after.webp",
+    detailBeforeAlt:
+      "Prazna parcela u ulici između postojećih zgrada — stvarna fotografija lokacije pre montaže objekta",
+    detailAfterAlt:
+      "Isti ulični kadar sa uklopljenim 3D renderom novog objekta — render u stvarnoj fotografiji lokacije",
     philosophy:
       "Cena se sastoji od dva dela. Render eksterijera (29.300 RSD) pokriva izgradnju kompletnog 3D modela Vašeg objekta i prvi finalni render. To je isti model, isti posao — bez obzira da li iza njega stoji sintetičko okruženje ili fotografija lokacije. Fotomontaža (+5.860 RSD) je opcija koja menja samo pozadinu: umesto modelovanog okruženja, 3D model se uklapa u stvarnu fotografiju — usklađujemo perspektivu, svetlo i senke sa momentom snimanja. Taj doplatak je opravdan jer analiza fotografije i usklađivanje perspektive zahtevaju poseban rad koji standardni render nema. Render eksterijera je dostupan i samostalno za 29.300 RSD — kada Vam sintetičko okruženje odgovara. Ako trebate više uglova: sledeći ugao iz iste fotografije je 6.446 RSD (82% jeftinije), druga fotografija iste lokacije 9.962 RSD, neviđena strana objekta +25% jednom po modelu.",
     priceContext:

@@ -2293,8 +2293,12 @@ export const SERVICES: Service[] = [
       "Pošaljite nam CAD crteže cele parcele, pozicije objekata i plan uređenja.",
     asset: "/artwork/expert-3d-situacioni.webp",
     detailAsset: "/artwork/detail-3d-situacioni.webp",
-    detailBeforeAsset: "/artwork/problem-3d-situacioni-before.webp",
+    detailBeforeAsset: "/artwork/problem-3d-situacioni-plan-before.webp",
     detailAfterAsset: "/artwork/problem-3d-situacioni-after.webp",
+    detailBeforeAlt:
+      "2D situacioni plan stambenog kompleksa — raspored objekata, parkinga, zelenila i sadržaja",
+    detailAfterAlt:
+      "3D situacioni prikaz stambenog kompleksa iz vazduha — objekti, parking i uređenje parcele",
     philosophy:
       "Cena pokriva izradu kompletnog terena, postavljanje objekata, puteva i pejzaža. Pošto je scena izgrađena, svaki sledeći ugao košta 7.618 RSD (81% jeftinije), sezonska varijanta (zima/leto) 9.962 RSD, a prikaz po fazama izgradnje 11.134 RSD. Tako investitor ima vizuelni materijal za sve faze kampanje — fazu pre prodaje, fazu otvaranja prvog objekta itd. — iz jednog modela.",
     priceContext:

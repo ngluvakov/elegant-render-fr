@@ -573,6 +573,23 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
 
 function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
   const { service } = ctx;
+  if (service.problemVideoSrc) {
+    return (
+      <figure className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+        <video
+          src={service.problemVideoSrc}
+          poster={service.problemVideoPoster}
+          autoPlay
+          loop
+          muted
+          playsInline
+          controls
+          preload="metadata"
+          className="h-full w-full object-cover"
+        />
+      </figure>
+    );
+  }
   if (service.problemPanoramaSrc) {
     return (
       <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">

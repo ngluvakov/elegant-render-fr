@@ -194,6 +194,11 @@ export type Service = {
    *  360° viewer (Pannellum) of this image — drag to look around. Takes
    *  precedence over problemEmbedSrc and problemAsset. */
   problemPanoramaSrc?: string;
+  /** When set, the problem section renders a looping <video> (animation) to
+   *  the right of the problem heading — highest-priority problem visual. */
+  problemVideoSrc?: string;
+  /** Optional poster frame for problemVideoSrc. */
+  problemVideoPoster?: string;
 
   /** Three reason-to-buy cards rendered as a 3-up grid. */
   benefits?: ServiceBenefit[];
@@ -1861,8 +1866,8 @@ export const SERVICES: Service[] = [
     materials:
       "Pošaljite osnove, fasade i, ako postoji, već izrađen 3D model. Definišite željenu putanju kamere i ključne momente.",
     asset: PORTFOLIO_ASSET,
-    detailVideoSrc: "/artwork/arhitektonska-animacija-demo.mp4",
-    detailVideoPoster: "/artwork/arhitektonska-animacija-demo-poster.webp",
+    problemVideoSrc: "/artwork/arhitektonska-animacija-demo.mp4",
+    problemVideoPoster: "/artwork/arhitektonska-animacija-demo-poster.webp",
     philosophy:
       "Najveći trošak je izgradnja 3D modela. Animacija od nule: 1.758 RSD/sek. Iz postojećeg modela: 1.172 RSD/sek (33% jeftinije). Aktivan projekat (model još uvek u radu): 938 RSD/sek (47% jeftinije). Duže animacije dobijaju automatski popust: preko 60 sek −20%, preko 2 minuta −25%.",
     priceContext:

@@ -23,7 +23,7 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 ## 2026-06-30 - Video demo na detaljnoj stranici (arhitektonska animacija)
 
 - **Oblast promene:** conversion | architecture | docs
-- **Šta se promenilo:** Mid-page „Demo" sekcija na `/usluge/[slug]` sada podržava i **looping video** (autoplay, muted, loop, controls) pored postojećeg Kuula 360 iframe-a. Dodata su opciona polja `detailVideoSrc` + `detailVideoPoster` na `Service`; kada je `detailVideoSrc` postavljen, sekcija renderuje `<video>` sa animaciji prilagođenim copy-jem, a hero CTA vodi na „#demo" sa labelom „Pogledajte animaciju". Prvi korisnik: `arhitektonska-animacija`.
+- **Šta se promenilo:** Detaljne stranice usluga sada podržavaju **looping video** (autoplay, muted, loop, controls, poster) na dva mesta, po ugledu na postojeću `problemEmbedSrc`/`detailEmbedSrc` dualnost: (1) `problemVideoSrc` — video u **problem-sekciji**, desno od „Problem" naslova (najviši prioritet u `ProblemVisual`, 16:9 okvir), i (2) `detailVideoSrc` — video u mid-page „Demo" sekciji (pored Kuula 360 iframe-a). `arhitektonska-animacija` prikazuje animaciju u **problem-sekciji** (`problemVideoSrc`).
 - **Zašto:** Stranica animacije treba da prikaže samu animaciju (kao što 360 stranice prikazuju 360 turu).
 - **Uticaj na conversion:** Posetilac vidi 30-sek animaciju u pokretu na stranici usluge — jači „film trailer" utisak umesto samo teksta.
 - **Uticaj na code:** Izvorni 4K/80 Mbps/297 MB master (`Unit 13.mp4`) transkodovan ffmpeg-om u 1080p H.264 (~12 MB, `+faststart`) → `public/artwork/arhitektonska-animacija-demo.mp4` + WebP poster. Sekcija u `page.tsx` generalizovana (iframe ili video).

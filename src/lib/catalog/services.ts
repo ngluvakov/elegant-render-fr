@@ -1496,7 +1496,7 @@ export const SERVICES: Service[] = [
       "Pošaljite tehničke crteže (PDF/DWG), skice sa merama ili postojeću PDF osnovu. Prvi nacrt 1–3 radna dana.",
     asset: "/artwork/listing-floorplan-2d.webp",
     listingAsset: "/artwork/listing-floorplan-2d.webp",
-    detailAsset: "/artwork/listing-floorplan-2d.webp",
+    detailAsset: "/artwork/detail-2d-osnove.webp",
     philosophy:
       "2D plan je format koji prati dokumentaciju, oglas i ugovor. Cena pokriva jedan nivo u čistom vektorskom prikazu sa oznakama i dimenzijama. Identičan sprat (dupliranje sa promenom oznaka) košta samo 703 RSD — 70% jeftinije. Tako zgrada sa više tipova stanova dobija celokupnu listing seriju za delić cene CAD studija. Isporuka kroz White Rook partnersku mrežu obezbeđuje konzistentan kvalitet i kratak rok.",
     priceContext:

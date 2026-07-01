@@ -20,6 +20,17 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-06-30 - Video demo na detaljnoj stranici (arhitektonska animacija)
+
+- **Oblast promene:** conversion | architecture | docs
+- **Šta se promenilo:** Mid-page „Demo" sekcija na `/usluge/[slug]` sada podržava i **looping video** (autoplay, muted, loop, controls) pored postojećeg Kuula 360 iframe-a. Dodata su opciona polja `detailVideoSrc` + `detailVideoPoster` na `Service`; kada je `detailVideoSrc` postavljen, sekcija renderuje `<video>` sa animaciji prilagođenim copy-jem, a hero CTA vodi na „#demo" sa labelom „Pogledajte animaciju". Prvi korisnik: `arhitektonska-animacija`.
+- **Zašto:** Stranica animacije treba da prikaže samu animaciju (kao što 360 stranice prikazuju 360 turu).
+- **Uticaj na conversion:** Posetilac vidi 30-sek animaciju u pokretu na stranici usluge — jači „film trailer" utisak umesto samo teksta.
+- **Uticaj na code:** Izvorni 4K/80 Mbps/297 MB master (`Unit 13.mp4`) transkodovan ffmpeg-om u 1080p H.264 (~12 MB, `+faststart`) → `public/artwork/arhitektonska-animacija-demo.mp4` + WebP poster. Sekcija u `page.tsx` generalizovana (iframe ili video).
+- **Uticaj na docs:** Ovaj decision log.
+- **Povezani fajlovi:** `src/app/(marketing)/usluge/[slug]/page.tsx`, `src/lib/catalog/services.ts`, `public/artwork/arhitektonska-animacija-demo.mp4`, `public/artwork/arhitektonska-animacija-demo-poster.webp`
+- **Reference:** Chat zahtev — „dodati prikaz animacije kao što je i na ostalim stranicama."
+
 ## 2026-06-30 - /usluge cene: ispravka zaostalih EUR vrednosti u prikazu
 
 - **Oblast promene:** pricing | conversion | docs

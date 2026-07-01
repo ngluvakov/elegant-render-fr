@@ -125,6 +125,12 @@ export type Service = {
   detailBeforeAlt?: string;
   detailAfterAlt?: string;
   detailEmbedSrc?: string;
+  /** When set, the mid-page "Demo" section renders a looping <video> of the
+   *  animation instead of the 360 iframe. Takes precedence over
+   *  detailEmbedSrc in that section. */
+  detailVideoSrc?: string;
+  /** Optional poster frame for detailVideoSrc. */
+  detailVideoPoster?: string;
   /** Listing-page card image (4:3, 1200×900). Used by services-showcase
    *  on /usluge — distinct from home (3:2 thumbnail) and detail (16:9
    *  hero) so each surface has its own visual identity. */
@@ -1855,6 +1861,8 @@ export const SERVICES: Service[] = [
     materials:
       "Pošaljite osnove, fasade i, ako postoji, već izrađen 3D model. Definišite željenu putanju kamere i ključne momente.",
     asset: PORTFOLIO_ASSET,
+    detailVideoSrc: "/artwork/arhitektonska-animacija-demo.mp4",
+    detailVideoPoster: "/artwork/arhitektonska-animacija-demo-poster.webp",
     philosophy:
       "Najveći trošak je izgradnja 3D modela. Animacija od nule: 1.758 RSD/sek. Iz postojećeg modela: 1.172 RSD/sek (33% jeftinije). Aktivan projekat (model još uvek u radu): 938 RSD/sek (47% jeftinije). Duže animacije dobijaju automatski popust: preko 60 sek −20%, preko 2 minuta −25%.",
     priceContext:

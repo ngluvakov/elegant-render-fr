@@ -143,14 +143,24 @@ export function SiteHeader() {
                     </NavigationMenuLink>
                   </div>
 
-                  <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+                  {/*
+                    Multi-column (not grid): grid rows align to the tallest
+                    block, so a short category next to a tall one (Enterijer
+                    beside Eksterijer) left a big gap before the next row.
+                    `columns-2` + `break-inside-avoid` packs the category
+                    blocks tightly down each column instead.
+                  */}
+                  <div className="gap-x-6 sm:columns-2">
                     {CATEGORY_ORDER.map((category) => {
                       const services = getServicesByCategory(category).filter(
                         (s) => !s.hideFromMenu,
                       );
                       if (services.length === 0) return null;
                       return (
-                        <div key={category} className="space-y-1">
+                        <div
+                          key={category}
+                          className="mb-5 space-y-1 break-inside-avoid last:mb-0"
+                        >
                           <p className="px-2 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                             {CATEGORY_LABELS[category]}
                           </p>

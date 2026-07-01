@@ -76,9 +76,9 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-[min(96vw,1720px)] items-center justify-between gap-6 px-6">
-        {/* Brand block nudged toward the left corner (offsets the container's px-6). */}
-        <div className="-ml-6 flex items-center gap-3">
+      {/* Full-bleed bar with 20px side padding so the brand sits 20px from the edge. */}
+      <div className="flex h-16 w-full items-center justify-between gap-6 px-5">
+        <div className="flex items-center gap-3">
           {/* Oversized logo: the header keeps its original 64px height; the logo
               is top-aligned and intentionally overflows below the bar. */}
           <div className="flex h-16 items-start">

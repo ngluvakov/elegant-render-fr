@@ -1497,11 +1497,12 @@ export const SERVICES: Service[] = [
     asset: "/artwork/listing-floorplan-2d.webp",
     listingAsset: "/artwork/listing-floorplan-2d.webp",
     detailAsset: "/artwork/detail-2d-osnove.webp",
-    detailBeforeAsset: "/artwork/problem-2d-osnove-before.webp",
-    detailAfterAsset: "/artwork/problem-2d-osnove-after.webp",
-    detailBeforeAlt: "Kolorisan 2D tlocrt sa rasporedom nameštaja",
+    detailBeforeAsset: "/artwork/problem-2d-osnove-stan-before.webp",
+    detailAfterAsset: "/artwork/problem-2d-osnove-stan-after.webp",
+    detailBeforeAlt:
+      "Kolorisan 2D tlocrt jednosobnog stana sa nameštajem — dnevna soba, spavaća, kuhinja i kupatilo",
     detailAfterAlt:
-      "Pregledan 2D tlocrt sa nazivima prostorija i dimenzijama u metrima — dnevna soba, spavaća, kuhinja i kupatilo",
+      "Pregledan crno-beli 2D tlocrt istog stana sa nazivima prostorija i dimenzijama u metrima",
     philosophy:
       "2D plan je format koji prati dokumentaciju, oglas i ugovor. Cena pokriva jedan nivo u čistom vektorskom prikazu sa oznakama i dimenzijama. Identičan sprat (dupliranje sa promenom oznaka) košta samo 703 RSD — 70% jeftinije. Tako zgrada sa više tipova stanova dobija celokupnu listing seriju za delić cene CAD studija. Isporuka kroz White Rook partnersku mrežu obezbeđuje konzistentan kvalitet i kratak rok.",
     priceContext:

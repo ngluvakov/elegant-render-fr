@@ -188,16 +188,23 @@ export function BeforeAfterShowcase({
           {fallback}
         </div>
       )}
+      {/*
+        Reversed slider order (site-wide, per request): the "after"/result
+        renders as the base layer and the "before"/original as the --reveal
+        overlay, so the before/after wipe runs the opposite way on every
+        slider. Alt text travels with its own image; the "Pre / posle" badge
+        is side-agnostic so nothing is mislabeled.
+      */}
       <Image
-        src={beforeSrc}
-        alt={beforeAlt}
+        src={afterSrc}
+        alt={afterAlt}
         fill
         sizes={sizes}
         className="object-cover"
       />
       <Image
-        src={afterSrc}
-        alt={afterAlt}
+        src={beforeSrc}
+        alt={beforeAlt}
         fill
         sizes={sizes}
         className="before-after-after-layer object-cover"

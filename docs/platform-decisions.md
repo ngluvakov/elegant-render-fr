@@ -20,6 +20,17 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-06-30 - /usluge cene: ispravka zaostalih EUR vrednosti u prikazu
+
+- **Oblast promene:** pricing | conversion | docs
+- **Šta se promenilo:** Na `/usluge` (services-showcase) polje `priceRsd` po usluzi je prikazivalo zaostale **EUR bazne** vrednosti (npr. „od 170 RSD" umesto „od 19.924 RSD") — nisu bile migrirane pri prelasku na RSD. Svih 16 vrednosti usaglašeno sa zvaničnim RSD cenama iz kataloga (`services.ts` `priceContext`), tj. `round(EUR × 117.2)`.
+- **Zašto:** Prikazane cene su bile drastično niže od zvaničnih (170 RSD za render enterijera), što zbunjuje kupce i ruši poverenje.
+- **Uticaj na conversion:** `/usluge` kartice sada prikazuju tačne „od X RSD" cene, usklađene sa detaljnim stranicama i konfiguratorom.
+- **Uticaj na code:** Isključivo data-izmena u `services-showcase.tsx` (16 `priceRsd` vrednosti). Bez logičkih promena; `formatPublicPrice` samo formatira RSD, ne konvertuje. Napomena: `priceRsd` je i dalje ručno duplirana vrednost odvojena od kataloga — dugoročno bi je trebalo izvoditi iz kataloga da ne bi ponovo „odlutala".
+- **Uticaj na docs:** Ovaj decision log.
+- **Povezani fajlovi:** `src/components/marketing/services-showcase.tsx`
+- **Reference:** Chat zahtev — „cene tako niske, od 170 rsd… usaglasi sve cene sa zvaničnima."
+
 ## 2026-06-30 - Interaktivni 360° viewer u problem-sekciji (Pannellum)
 
 - **Oblast promene:** architecture | design | conversion

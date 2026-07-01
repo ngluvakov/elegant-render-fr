@@ -152,7 +152,10 @@ export function QuickOrderHero() {
   const featuredAiTool = AI_EDIT_TYPES[0];
 
   return (
-    <section id="naruci" className="relative py-10 md:py-16 lg:py-20">
+    <section
+      id="naruci"
+      className="relative pt-20 pb-10 md:pt-28 md:pb-16 lg:pb-20"
+    >
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-4 sm:px-6 lg:px-8">
         {/* Grid with explicit xl placement so mobile source order (managed via
             `order-*`) differs from desktop layout. Mobile flow:

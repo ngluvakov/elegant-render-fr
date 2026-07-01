@@ -31,7 +31,7 @@ const sizeClasses = {
   sm: "h-11 w-auto",
   md: "h-14 w-auto",
   lg: "h-20 w-auto",
-  xl: "h-[9.45rem] w-auto", // 151px — oversized header logo (overflows the bar)
+  xl: "h-[8.505rem] w-auto", // 136px — oversized header logo (overflows the bar); 10% smaller than the previous 151px
 } as const;
 
 const surfaceClasses = {

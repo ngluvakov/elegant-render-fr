@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 type BrandLogoProps = {
   className?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   surface?: "light" | "dark";
   /** When true, renders as a plain span wrapper without the home link. */
   asChild?: boolean;
@@ -31,6 +31,7 @@ const sizeClasses = {
   sm: "h-11 w-auto",
   md: "h-14 w-auto",
   lg: "h-20 w-auto",
+  xl: "h-[9.45rem] w-auto", // 151px — oversized header logo (overflows the bar)
 } as const;
 
 const surfaceClasses = {

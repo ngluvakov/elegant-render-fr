@@ -178,7 +178,7 @@ export function SiteHeader() {
                                   "mt-4 border-t border-border/50 pt-4",
                               )}
                             >
-                              <p className="px-2 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                              <p className="px-2 text-[0.72rem] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                                 {CATEGORY_LABELS[category]}
                               </p>
                               {services.map((service) => (

@@ -1875,6 +1875,7 @@ export const SERVICES: Service[] = [
     materials:
       "Pošaljite osnove, fasade i, ako postoji, već izrađen 3D model. Definišite željenu putanju kamere i ključne momente.",
     asset: PORTFOLIO_ASSET,
+    detailAsset: "/artwork/detail-exterior-aerial.webp",
     problemVideoSrc: "/artwork/arhitektonska-animacija-demo.mp4",
     problemVideoPoster: "/artwork/arhitektonska-animacija-demo-poster.webp",
     philosophy:

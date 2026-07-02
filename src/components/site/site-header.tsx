@@ -51,6 +51,7 @@ const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Portfolio", pattern: "/portfolio" }]
     : []),
+  { href: "/blog", label: "Blog", pattern: "/blog" },
   { href: "/o-nama", label: "O nama", pattern: "/o-nama" },
   { href: "/kontakt", label: "Kontakt", pattern: "/kontakt" },
 ];

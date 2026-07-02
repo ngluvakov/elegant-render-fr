@@ -50,6 +50,7 @@ const KOMPANIJA_LINKS: NavItem[] = [
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Portfolio" }]
     : []),
+  { href: "/blog", label: "Blog" },
   { href: "/cesto-postavljana-pitanja", label: "Često postavljana pitanja" },
 ];
 

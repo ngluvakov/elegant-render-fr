@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SERVICES } from "@/lib/catalog/services";
+import { getAllBlogPosts } from "@/lib/content/blog";
 import { absoluteUrl, buildLanguageAlternates } from "@/lib/seo";
 
 type SitemapEntry = {
@@ -72,6 +73,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ]),
     },
     { path: "/kontakt", changeFrequency: "monthly", priority: 0.85 },
+    {
+      path: "/blog",
+      changeFrequency: "weekly",
+      priority: 0.7,
+      images: uniqueImages(
+        getAllBlogPosts()
+          .slice(0, 4)
+          .map((post) => post.coverImage),
+      ),
+    },
     { path: "/o-nama", changeFrequency: "monthly", priority: 0.65 },
     {
       path: "/cesto-postavljana-pitanja",
@@ -120,6 +131,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
         service.beforeAsset,
         service.afterAsset,
       ]),
+    })),
+    ...getAllBlogPosts().map((post) => ({
+      url: absoluteUrl(`/blog/${post.slug}`),
+      lastModified: new Date(post.updated ?? post.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+      alternates: {
+        languages: buildLanguageAlternates(`/blog/${post.slug}`),
+      },
+      images: uniqueImages([post.coverImage]),
     })),
   ];
 }

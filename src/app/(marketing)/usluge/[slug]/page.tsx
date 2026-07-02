@@ -235,7 +235,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
       {/* Problem / agitation. */}
       {service.problemHeading && (
         <section className="bg-background py-16 md:py-24">
-          <div className="mx-auto grid max-w-5xl gap-12 px-6 md:grid-cols-2 md:items-center lg:px-10">
+          <div className="mx-auto grid max-w-6xl gap-10 px-6 md:grid-cols-[1fr_1.3fr] md:items-center lg:px-10">
             <div>
               <SectionKicker>Problem</SectionKicker>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
@@ -623,7 +623,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
           src={service.problemAsset}
           alt={buildServiceImageAlt(service, "problem")}
           fill
-          sizes="(max-width: 768px) 100vw, 480px"
+          sizes="(max-width: 768px) 100vw, 640px"
           className="object-cover"
         />
       </figure>
@@ -637,7 +637,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
         alt={service.detailAfterAlt ?? buildServiceImageAlt(service, "after")}
         beforeAlt={service.detailBeforeAlt ?? buildServiceImageAlt(service, "before")}
         afterAlt={service.detailAfterAlt ?? buildServiceImageAlt(service, "after")}
-        sizes="(max-width: 768px) 100vw, 480px"
+        sizes="(max-width: 768px) 100vw, 640px"
         autoDemoIntervalMs={SERVICE_BEFORE_AFTER_DEMO_INTERVAL_MS}
         className="aspect-[4/3] w-full rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]"
       >
@@ -655,7 +655,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
           src={first.src}
           alt={first.alt}
           fill
-          sizes="(max-width: 768px) 100vw, 480px"
+          sizes="(max-width: 768px) 100vw, 640px"
           className="object-cover"
         />
       </figure>
@@ -668,7 +668,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
           src={service.detailAsset}
           alt={buildServiceImageAlt(service, "detail")}
           fill
-          sizes="(max-width: 768px) 100vw, 480px"
+          sizes="(max-width: 768px) 100vw, 640px"
           className="object-cover"
         />
       </figure>

@@ -56,6 +56,17 @@ const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
   { href: "/kontakt", label: "Kontakt", pattern: "/kontakt" },
 ];
 
+// Desktop "Usluge" mega-menu: split the visible service categories into two
+// stacked columns. Each column flows independently (no cross-column grid
+// gaps), so categories can be cleanly divided by a horizontal rule.
+const MENU_CATEGORIES = CATEGORY_ORDER.filter((category) =>
+  getServicesByCategory(category).some((service) => !service.hideFromMenu),
+);
+const MENU_COLUMNS = [
+  MENU_CATEGORIES.slice(0, Math.ceil(MENU_CATEGORIES.length / 2)),
+  MENU_CATEGORIES.slice(Math.ceil(MENU_CATEGORIES.length / 2)),
+];
+
 export function SiteHeader() {
   const pathname = usePathname();
   const { data: session } = useSession();
@@ -145,53 +156,60 @@ export function SiteHeader() {
                   </div>
 
                   {/*
-                    Multi-column (not grid): grid rows align to the tallest
-                    block, so a short category next to a tall one (Enterijer
-                    beside Eksterijer) left a big gap before the next row.
-                    `columns-2` + `break-inside-avoid` packs the category
-                    blocks tightly down each column instead.
+                    Two stacked columns (not an auto grid/multicol): each
+                    column flows its categories independently, so there are no
+                    cross-column row gaps, and a horizontal rule cleanly
+                    separates categories within a column (skipped on the first
+                    of each column so no stray line floats at the top).
                   */}
-                  <div className="gap-x-6 sm:columns-2">
-                    {CATEGORY_ORDER.map((category) => {
-                      const services = getServicesByCategory(category).filter(
-                        (s) => !s.hideFromMenu,
-                      );
-                      if (services.length === 0) return null;
-                      return (
-                        <div
-                          key={category}
-                          className="mb-5 space-y-1 break-inside-avoid last:mb-0"
-                        >
-                          <p className="px-2 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                            {CATEGORY_LABELS[category]}
-                          </p>
-                          {services.map((service) => (
-                            <NavigationMenuLink
-                              key={service.slug}
-                              render={
-                                <Link
-                                  href={`/usluge/${service.slug}`}
-                                  onClick={() => setNavMenuValue(null)}
-                                />
-                              }
-                              className="!flex items-center justify-between gap-3 px-2 py-1.5"
+                  <div className="grid gap-x-6 sm:grid-cols-2">
+                    {MENU_COLUMNS.map((column, columnIndex) => (
+                      <div key={columnIndex}>
+                        {column.map((category, indexInColumn) => {
+                          const services = getServicesByCategory(
+                            category,
+                          ).filter((s) => !s.hideFromMenu);
+                          return (
+                            <div
+                              key={category}
+                              className={cn(
+                                "space-y-1",
+                                indexInColumn > 0 &&
+                                  "mt-4 border-t border-border/50 pt-4",
+                              )}
                             >
-                              <span className="text-sm text-foreground">
-                                {service.name}
-                              </span>
-                              <span className="text-[0.72rem] font-medium text-muted-foreground">
-                                od{" "}
-                                {formatPublicPriceText(
-                                  service.variants[0].priceLabel,
-                                  displayCurrency,
-                                  pricingSettings,
-                                )}
-                              </span>
-                            </NavigationMenuLink>
-                          ))}
-                        </div>
-                      );
-                    })}
+                              <p className="px-2 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                                {CATEGORY_LABELS[category]}
+                              </p>
+                              {services.map((service) => (
+                                <NavigationMenuLink
+                                  key={service.slug}
+                                  render={
+                                    <Link
+                                      href={`/usluge/${service.slug}`}
+                                      onClick={() => setNavMenuValue(null)}
+                                    />
+                                  }
+                                  className="!flex items-center justify-between gap-3 px-2 py-1.5"
+                                >
+                                  <span className="text-sm text-foreground">
+                                    {service.name}
+                                  </span>
+                                  <span className="text-[0.72rem] font-medium text-muted-foreground">
+                                    od{" "}
+                                    {formatPublicPriceText(
+                                      service.variants[0].priceLabel,
+                                      displayCurrency,
+                                      pricingSettings,
+                                    )}
+                                  </span>
+                                </NavigationMenuLink>
+                              ))}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
                   </div>
                 </div>
               </NavigationMenuContent>

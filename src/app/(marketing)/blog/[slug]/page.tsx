@@ -8,6 +8,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { BlogCard } from "@/components/marketing/blog/blog-card";
 import { BlogPostBody } from "@/components/marketing/blog/blog-post-body";
 import {
+  blogPostKeywords,
   buildBlogPostingJsonLd,
   estimateReadingMinutes,
   formatBlogDate,
@@ -38,7 +39,7 @@ export async function generateMetadata({
     path: `/blog/${slug}`,
     image: post.coverImage,
     imageAlt: post.coverAlt,
-    keywords: post.tags,
+    keywords: blogPostKeywords(post),
   });
 
   return {

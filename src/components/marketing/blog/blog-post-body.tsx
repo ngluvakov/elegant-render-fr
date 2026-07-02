@@ -9,6 +9,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ArrowRight } from "lucide-react";
+import { ButtonLink } from "@/components/ui/button-link";
 import type { BlogBlock } from "@/lib/content/blog";
 import { cn } from "@/lib/utils";
 
@@ -158,6 +160,56 @@ export function BlogPostBody({ blocks }: { blocks: BlogBlock[] }) {
                   </figcaption>
                 )}
               </figure>
+            );
+
+          case "table":
+            return (
+              <div
+                key={i}
+                className="my-8 overflow-x-auto rounded-2xl border border-border/70"
+              >
+                <table className="w-full border-collapse text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-border bg-secondary/60">
+                      {block.headers.map((header, hi) => (
+                        <th
+                          key={hi}
+                          className="px-4 py-3 font-semibold text-foreground"
+                        >
+                          {renderInline(header)}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {block.rows.map((row, ri) => (
+                      <tr
+                        key={ri}
+                        className="border-b border-border/40 last:border-0"
+                      >
+                        {row.map((cell, ci) => (
+                          <td
+                            key={ci}
+                            className="px-4 py-3 align-top text-foreground/80"
+                          >
+                            {renderInline(cell)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            );
+
+          case "cta":
+            return (
+              <div key={i} className="mt-10">
+                <ButtonLink href={block.href} variant="accent">
+                  {block.label}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </ButtonLink>
+              </div>
             );
 
           default:

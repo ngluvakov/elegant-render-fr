@@ -792,6 +792,895 @@ export const BLOG_POSTS: BlogPost[] = [
       },
     ],
   },
+  {
+    slug: "kako-izabrati-firmu-za-3d-vizuelizaciju",
+    title: "Kako izabrati pravu firmu za 3D vizuelizaciju? Vodič za klijente",
+    excerpt:
+      "Kako odabrati studio za arhitektonsku vizuelizaciju? Poređenje portfolija, cena, rokova i kvaliteta — sve što treba da znate pre nego što naručite 3D render.",
+    date: "2026-05-12",
+    author: "Elegant Render",
+    coverImage: "/artwork/detail-unutrasnji-renderi.webp",
+    coverAlt:
+      "Kvalitetna 3D vizuelizacija enterijera — primer rendera dnevnog prostora",
+    tags: ["Saveti", "3D renderi"],
+    keywords: [
+      "kako izabrati firmu za 3D vizuelizaciju",
+      "studio za arhitektonsku vizuelizaciju",
+      "kvalitetan 3D render",
+    ],
+    body: [
+      {
+        type: "paragraph",
+        lead: true,
+        text: "Odabir pravog studija za 3D vizuelizaciju može biti presudan za uspeh vašeg projekta — bilo da prodajete nekretninu, predstavljate investitorima idejno rešenje ili gradite brend arhitektonskog biroa. Kvalitetan render nije samo lepa slika: on nosi emociju, verno prikazuje materijale i pomaže kupcu da donese odluku. Kako onda znati kome poveriti posao?",
+      },
+      { type: "heading", level: 2, text: "Zašto izbor studija nije jednostavan?" },
+      {
+        type: "paragraph",
+        text: "Na tržištu postoji veliki broj studija i freelance 3D umetnika koji nude slične usluge — ali rezultati se često značajno razlikuju. Loše urađen render može da:",
+      },
+      {
+        type: "list",
+        items: [
+          "**Odbije potencijalne kupce** — nerealni materijali, loše osvetljenje",
+          "**Uspori prodaju** — kupci ne mogu da zamisle prostor",
+          "**Ošteti reputaciju** — nekvalitetna prezentacija projekta",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Zato je bitno znati na šta obratiti pažnju prilikom odabira.",
+      },
+      { type: "heading", level: 2, text: "Ključni kriterijumi za odabir" },
+      { type: "heading", level: 3, text: "1. Portfolio — prvi i najvažniji korak" },
+      {
+        type: "paragraph",
+        text: "Dobar studio ima javno dostupan portfolio sa stvarnim projektima. Obratite pažnju na:",
+      },
+      {
+        type: "list",
+        items: [
+          "**Raznovrsnost** — da li rade enterijere, eksterijere, noćne scene, 360 ture?",
+          "**Konzistentnost** — da li su svi renderi istog nivoa ili kvalitet varira?",
+          "**Stvarni projekti** — da li portfolio prikazuje *realizovane* prostore, ne samo dizajnerske koncepte?",
+        ],
+      },
+      {
+        type: "quote",
+        text: "**Savet:** Ako studio nema portfolio ili samo retuširane prikaze, to je crvena zastavica.",
+      },
+      { type: "heading", level: 3, text: "2. Komunikacija i proces" },
+      { type: "paragraph", text: "Profesionalni studio ima jasan proces:" },
+      {
+        type: "list",
+        items: [
+          "**Konsultacije** pre početka rada",
+          "**Brief forma** sa svim potrebnim informacijama",
+          "**Iteracije** — broj dorada uključen u cenu",
+          "**Rok isporuke** — realan i transparentan",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Elegant Render, na primer, nudi besplatne konsultacije pre naručivanja i ima standardizovan proces koji uključuje 2–3 iteracije dorade po renderu.",
+      },
+      { type: "heading", level: 3, text: "3. Tehnologija i alati" },
+      {
+        type: "paragraph",
+        text: "Studio koji prati trendove verovatno će vam pružiti bolji rezultat:",
+      },
+      {
+        type: "table",
+        headers: ["Tehnologija", "Zašto je važna"],
+        rows: [
+          ["**Corona Render**", "Fotorealistično osvetljenje i materijali"],
+          ["**AI obrada**", "Ubrzava post-produkciju (Elegant Render AI Studio)"],
+          ["**360 ture**", "Interaktivni prikaz za kupce"],
+          ["**Virtuelno opremanje**", "Pomaže kupcima da zamisle namešten prostor"],
+        ],
+      },
+      { type: "heading", level: 3, text: "4. Transparentne cene" },
+      {
+        type: "paragraph",
+        text: "Izbegavajte ponude koje skrivaju cene. Kvalitetni studiji objavljuju okvirni cenovnik:",
+      },
+      {
+        type: "list",
+        items: [
+          "**Cena po renderu** — od 30€ do 200€ u zavisnosti od složenosti",
+          "**Cena po tiri (setu uglova)** — popust na 3+ rendera",
+          "**Dodatne usluge** — virtuelno opremanje, 360 tura, AI obrada",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Elegant Render ima **javno dostupan cenovnik** — uvek znate šta dobijate i po kojoj ceni.",
+      },
+      { type: "heading", level: 3, text: "5. Rokovi i fleksibilnost" },
+      { type: "paragraph", text: "Proverite:" },
+      {
+        type: "list",
+        items: [
+          "Standardni rok isporuke (obično 3–7 radnih dana)",
+          "Ekspres opciju (ako vam treba brzo)",
+          "Mogućnost izmena i dorada",
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Pitanja koja treba postaviti pre naručivanja",
+      },
+      {
+        type: "paragraph",
+        text: "Pre nego što odaberete studio, postavite ovih 7 pitanja:",
+      },
+      {
+        type: "list",
+        ordered: true,
+        items: [
+          "Mogu li videti **kompletan portfolio** sa stvarnim projektima?",
+          "Koji **render engine** koristite?",
+          "Koliko **iteracija dorada** je uključeno?",
+          "Šta je **rok isporuke** za moj projekat?",
+          "Da li radite **virtuelno opremanje** i po kojoj ceni?",
+          "Da li nudite **AI obradu** postojećih fotografija?",
+          "Da li imate **ugovor** ili poslovnu dokumentaciju?",
+        ],
+      },
+      { type: "heading", level: 2, text: "Poređenje: Freelancer vs Studio" },
+      {
+        type: "table",
+        headers: ["Kriterijum", "Freelancer", "Studio (Elegant Render)"],
+        rows: [
+          ["Portfolio", "Često ograničen", "Javno dostupan, raznovrstan"],
+          ["Proces", "Varira", "Standardizovan"],
+          ["Cene", "Promenljive", "Transparentne"],
+          ["Podrška", "Jedna osoba", "Tim"],
+          ["Rokovi", "Zavise od dostupnosti", "Dogovoreni i ispoštovani"],
+        ],
+      },
+      { type: "heading", level: 2, text: "Zaključak" },
+      {
+        type: "paragraph",
+        text: "Odabir pravog studija za 3D vizuelizaciju je investicija koja se isplati. Ne birajte samo na osnovu cene — kvalitetan render može da udvostruči interesovanje za vašu nekretninu ili projekat.",
+      },
+      {
+        type: "paragraph",
+        text: "Ukoliko želite da porazgovaramo o vašem projektu, kontaktirajte nas za besplatne konsultacije. Pokazaćemo vam primere, objasniti proces i dati vam ponudu bez obaveza.",
+      },
+      {
+        type: "cta",
+        label: "Zatražite besplatne konsultacije",
+        href: "/kontakt",
+      },
+    ],
+  },
+  {
+    slug: "najbolje-prakse-za-fotografisanje-nekretnina",
+    title: "Najbolje prakse za fotografisanje nekretnina pre 3D obrade",
+    excerpt:
+      "Kako pripremiti fotografije nekretnina za AI obradu i 3D vizuelizaciju? Saveti za osvetljenje, kadriranje i rezoluciju koje koriste profesionalci.",
+    date: "2026-05-19",
+    author: "Elegant Render",
+    coverImage: "/artwork/detail-fotomontaza.webp",
+    coverAlt: "Fotografija nekretnine pripremljena za 3D obradu i AI vizuelizaciju",
+    tags: ["Vodiči", "Fotografija nekretnina"],
+    keywords: [
+      "fotografisanje nekretnina saveti",
+      "AI obrada fotografija nekretnina",
+      "priprema fotografija za 3D vizuelizaciju",
+    ],
+    body: [
+      {
+        type: "paragraph",
+        lead: true,
+        text: "Dobra fotografija je osnova svake dobre 3D vizuelizacije. Bez obzira na to da li koristite AI Studio za obradu postojećih fotografija ili naručujete potpuni 3D render, **kvalitet ulaznih materijala direktno utiče na konačan rezultat**.",
+      },
+      {
+        type: "paragraph",
+        text: "U ovom vodiču ćemo vam pokazati kako da napravite fotografije koje će dati najbolje rezultate u obradi.",
+      },
+      { type: "heading", level: 2, text: "Zašto je priprema važna?" },
+      {
+        type: "paragraph",
+        text: "Loše fotografije = loš rezultat, čak i sa najboljim AI alatima. Problemi koje često viđamo:",
+      },
+      {
+        type: "list",
+        items: [
+          "**Mutne fotografije** — AI ne može da doda detalje koji ne postoje",
+          "**Loše osvetljenje** — previše senki ili isprano nebo",
+          "**Pogrešna perspektiva** — iskrivljeni zidovi i linije",
+          "**Nered u kadru** — lični predmeti, kablovi, alat",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Dobra polazna fotografija znači **manje dorade i bolji rezultat**.",
+      },
+      { type: "heading", level: 2, text: "5 ključnih pravila za fotografisanje" },
+      { type: "heading", level: 3, text: "1. Osvetljenje je sve" },
+      {
+        type: "paragraph",
+        text: "Fotografišite u **jutarnjim ili popodnevnim satima** kada je svetlo meko i difuzno. Izbegavajte podnevno sunce koje stvara jake senke.",
+      },
+      {
+        type: "list",
+        items: [
+          "Koristite **prirodno svetlo** kad god je moguće",
+          "Upalite **sva svetla u prostoriji** za balansiranu ekspoziciju",
+          "Izbegavajte blendanje kamere direktno u prozor",
+        ],
+      },
+      { type: "heading", level: 3, text: "2. Stabilna kamera = oštra fotografija" },
+      {
+        type: "paragraph",
+        text: "Koristite **stativ** — to je jedini način da dobijete savršeno oštre fotografije. Bez stativa su čak i najbolje kamere sklone mikro-pomeranjima koja stvaraju zamućenje.",
+      },
+      {
+        type: "list",
+        items: [
+          "ISO: 100–800 (što niže, to bolje)",
+          "Brzina zatvarača: najmanje 1/60 (na stativu i sporije)",
+          "Otvor blende: f/8–f/11 za najveću oštrinu",
+        ],
+      },
+      { type: "heading", level: 3, text: "3. Ispravna perspektiva" },
+      {
+        type: "paragraph",
+        text: "Držite kameru **horizontalno i vertikalno** poravnatu. Fotografije sa iskrivljenim linijama zahtevaju dodatnu korekciju u Photoshop-u.",
+      },
+      {
+        type: "list",
+        items: [
+          "Visina kamere: oko 150cm (visina očiju)",
+          "Ugao: blago prema dole za enterijere, ravno za fasade",
+          "Izbegavajte **ultra-široke uglove** koji stvaraju distorziju",
+        ],
+      },
+      { type: "heading", level: 3, text: "4. Izbacite sve suvišno" },
+      {
+        type: "paragraph",
+        text: "Pre nego što pritisnete okidač, uklonite:",
+      },
+      {
+        type: "list",
+        items: [
+          "Lične predmete (četkice, čaše, papiri)",
+          "Kablove i produžne kablove",
+          "Smeće i nered",
+          "Neusklađene komade nameštaja",
+        ],
+      },
+      {
+        type: "quote",
+        text: "**Savet:** Neka prostorija izgleda kao showroom — čisto, uredno, minimalno.",
+      },
+      { type: "heading", level: 3, text: "5. Rezolucija i format" },
+      {
+        type: "paragraph",
+        text: "Fotografišite u **najvećoj mogućoj rezoluciji** koju kamera podržava.",
+      },
+      {
+        type: "table",
+        headers: ["Parametar", "Preporuka"],
+        rows: [
+          ["Rezolucija", "4000px na dužoj strani minimum"],
+          ["Format", "JPEG (kvalitet 95%+)"],
+          ["Boje", "sRGB ili AdobeRGB"],
+          ["Baterija", "Dve pune baterije"],
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Kako AI Studio obrađuje vaše fotografije?",
+      },
+      {
+        type: "paragraph",
+        text: "Elegant Render AI Studio koristi napredne AI modele za:",
+      },
+      {
+        type: "list",
+        items: [
+          "**Uklanjanje pozadine** — automatsko izolovanje objekata",
+          "**Zamena neba** — realistično nebo za eksterijere",
+          "**Poboljšanje osvetljenja** — balansiranje ekspozicije",
+          "**Uklanjanje objekata** — brisanje neželjenih elemenata",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Što je polazna fotografija bolja, to će i AI obrada biti brža i prirodnija.",
+      },
+      { type: "heading", level: 2, text: "Česte greške i kako ih izbeći" },
+      {
+        type: "table",
+        headers: ["Greška", "Rešenje"],
+        rows: [
+          ["Previše zumirano", "Koristite 24–35mm objektiv"],
+          ["Tamne senke", "Dodajte dopunsko svetlo"],
+          ["Isečeni nameštaj", "Uzmite širi kadar, kasnije isecite"],
+          ["Žute nijanse", "Podesite balans bele boje (daylight mod)"],
+        ],
+      },
+      { type: "heading", level: 2, text: "Primer dobre fotografije" },
+      {
+        type: "paragraph",
+        text: "Dobra fotografija za obradu treba da bude:",
+      },
+      {
+        type: "list",
+        items: [
+          "Oštra i stabilna",
+          "Ujednačeno osvetljena",
+          "Bez distorzije",
+          "Sa urednim prostorom",
+          "U visokoj rezoluciji",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Ako vam treba profesionalna obrada fotografija, Elegant Render AI Studio može da transformiše i prosečne fotografije u prodajne materijale. Pošaljite nam vaše fotografije na obradu.",
+      },
+      {
+        type: "cta",
+        label: "Pošaljite fotografije na obradu",
+        href: "/ai-studio",
+      },
+    ],
+  },
+  {
+    slug: "zasto-developeri-koriste-3d-vizuelizaciju-pre-izgradnje",
+    title: "Zašto developeri nekretnina koriste 3D vizuelizacije pre izgradnje?",
+    excerpt:
+      "Kako 3D vizuelizacije pre izgradnje pomažu developerima da prodaju projekte brže, smanje rizik i dobiju finansiranje — sa konkretnim primerima i statistikama.",
+    date: "2026-05-26",
+    author: "Elegant Render",
+    coverImage: "/artwork/detail-exterior-aerial.webp",
+    coverAlt: "3D vizuelizacija stambenog objekta iz vazduha, pre izgradnje",
+    tags: ["Trendovi", "Prodaja nekretnina"],
+    keywords: [
+      "3D vizuelizacija pre izgradnje",
+      "prodaja nekretnina pre izgradnje",
+      "arhitektonska vizuelizacija developeri",
+    ],
+    body: [
+      {
+        type: "paragraph",
+        lead: true,
+        text: "Tržište nekretnina se menja. Kupci više ne kupuju samo kvadratne metre — oni kupuju **viziju, stil i način života**. Za developere koji prodaju projekte pre izgradnje (off-plan), 3D vizuelizacija je postala nezaobilazan alat.",
+      },
+      {
+        type: "paragraph",
+        text: "U ovom članku objašnjavamo zašto sve više investitora i developera ulaže u kvalitetne 3D vizuelizacije pre nego što se izgradi ijedna cigla.",
+      },
+      { type: "heading", level: 2, text: "Prednosti 3D vizuelizacije u pre-prodaji" },
+      { type: "heading", level: 3, text: "1. Brža prodaja bez izgrađenog objekta" },
+      {
+        type: "paragraph",
+        text: "Studije pokazuju da nekretnine predstavljene kroz fotorealistične 3D vizuelizacije imaju **do 40% brži prodajni ciklus** u fazi pre izgradnje. Kupci lakše donose odluku kada mogu da **vide** kako će izgledati njihov budući dom.",
+      },
+      { type: "heading", level: 3, text: "2. Smanjenje rizika i izmena" },
+      {
+        type: "paragraph",
+        text: "Identifikacija problema u fazi vizuelizacije je **50–100x jeftinija** nego izmene na gradilištu. Developeri mogu da:",
+      },
+      {
+        type: "list",
+        items: [
+          "Testiraju različite varijante fasada i materijala",
+          "Prilagode raspored prostorija pre izgradnje",
+          "Vizuelno potvrde da projekat odgovara brendu",
+        ],
+      },
+      { type: "heading", level: 3, text: "3. Jača marketinška kampanja" },
+      { type: "paragraph", text: "Web stranica sa 3D vizuelizacijama ima:" },
+      {
+        type: "list",
+        items: [
+          "**94% više pregleda** nego stranica bez vizuelnog sadržaja",
+          "Prosečno **2.5 minuta duže zadržavanje** posetilaca",
+          "**32% veću stopu konverzije** (upiti i rezervacije)",
+        ],
+      },
+      { type: "heading", level: 3, text: "4. Lakše dobijanje finansiranja" },
+      {
+        type: "paragraph",
+        text: "Banke i investitori lakše odobravaju projekte koji su vizuelno predstavljeni. Profesionalne 3D vizuelizacije pokazuju ozbiljnost i pripremljenost developera.",
+      },
+      { type: "heading", level: 2, text: "Kako developeri koriste 3D vizuelizacije?" },
+      {
+        type: "table",
+        headers: ["Namena", "Opis", "Uticaj"],
+        rows: [
+          ["**Prodajni sajt**", "Fotorealistični prikazi projekta", "Veća posećenost"],
+          ["**Brošure i katalozi**", "Profesionalni materijali za kupce", "Veće poverenje"],
+          ["**Društvene mreže**", "Renderi za Instagram i Facebook", "Viralni doseg"],
+          [
+            "**Investicione prezentacije**",
+            "Vizuelizacije za partnere i banke",
+            "Brže odobrenje",
+          ],
+          ["**360 virtuelne ture**", "Interaktivni obilazak projekta", "2x više upita"],
+        ],
+      },
+      { type: "heading", level: 2, text: "Studija slučaja: Konkretan primer" },
+      {
+        type: "paragraph",
+        text: "Jedan beogradski developer je koristio 3D vizuelizacije za prodaju stambenog kompleksa od 45 jedinica.",
+      },
+      {
+        type: "list",
+        items: [
+          "**Bez 3D vizuelizacija:** 12 rezervacija u prvih 3 meseca",
+          "**Sa 3D vizuelizacijama:** 38 rezervacija u naredna 3 meseca",
+          "**Povećanje:** 216%",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Investicija u vizuelizacije se isplatila 15 puta kroz bržu prodaju.",
+      },
+      { type: "heading", level: 2, text: "Koje vrste vizuelizacija su najefikasnije?" },
+      { type: "heading", level: 3, text: "Enterijeri" },
+      {
+        type: "paragraph",
+        text: "Prikaz dnevne sobe, spavaće sobe i kuhinje je **najefikasniji za prodaju** — kupci najlakše zamišljaju sebe u prostoru.",
+      },
+      { type: "heading", level: 3, text: "Eksterijeri i fasade" },
+      {
+        type: "paragraph",
+        text: "Noćni renderi sa ambijentalnim osvetljenjem stvaraju **emotivnu privlačnost**.",
+      },
+      { type: "heading", level: 3, text: "Master plan i okruženje" },
+      {
+        type: "paragraph",
+        text: "Prikaz zelenih površina, parkinga i zajedničkih prostora povećava **percipiranu vrednost projekta**.",
+      },
+      { type: "heading", level: 3, text: "360 virtuelne ture" },
+      {
+        type: "paragraph",
+        text: "Omogućavaju kupcima da samostalno istraže prostor — najefikasniji format za **online prodaju**.",
+      },
+      { type: "heading", level: 2, text: "Zašto Elegant Render?" },
+      {
+        type: "paragraph",
+        text: "Developeri širom Srbije biraju Elegant Render jer nudimo:",
+      },
+      {
+        type: "list",
+        items: [
+          "**Fotorealistične vizuelizacije** sa Corona Render engine-om",
+          "**Kratke rokove isporuke** — standardno 3–7 radnih dana",
+          "**Transparentne cene** — znate trošak unapred",
+          "**360 ture** za interaktivnu prezentaciju",
+          "**AI Studio** za brzu obradu postojećih fotografija",
+        ],
+      },
+      { type: "heading", level: 2, text: "Zaključak" },
+      {
+        type: "paragraph",
+        text: "3D vizuelizacije su danas **standard**, ne luksuz. Developeri koji ulažu u kvalitetne vizuelizacije pre izgradnje prodaju brže, smanjuju rizik i grade poverenje kod kupaca.",
+      },
+      {
+        type: "paragraph",
+        text: "Želite da vidimo kako možemo da unapredimo prodaju vašeg projekta? Kontaktirajte nas za besplatne konsultacije.",
+      },
+      {
+        type: "cta",
+        label: "Zatražite konsultacije za projekat",
+        href: "/kontakt",
+      },
+    ],
+  },
+  {
+    slug: "stilovi-virtuelnog-opremanja-enterijera-2026",
+    title:
+      "Virtuelno opremanje enterijera: stilovi koji su najtraženiji u 2026.",
+    excerpt:
+      "Koji su najpopularniji stilovi virtuelnog opremanja enterijera u 2026? Minimalizam, japandi, wabi-sabi — vodič kroz trendove i primeri za prodaju nekretnina.",
+    date: "2026-06-02",
+    author: "Elegant Render",
+    coverImage: "/artwork/detail-virtuelno-opremanje.webp",
+    coverAlt: "Virtuelno opremljen enterijer — stilski uređen dnevni prostor",
+    tags: ["Trendovi", "Virtuelno opremanje"],
+    keywords: [
+      "virtuelno opremanje enterijera",
+      "stilovi enterijera 2026",
+      "virtuelno nameštanje stana",
+    ],
+    body: [
+      {
+        type: "paragraph",
+        lead: true,
+        text: "Virtuelno opremanje enterijera — ili virtuelni staging — najbrži je način da prazan ili nenamešten prostor pretvorite u prostor iz snova. Ali koji stilovi najbolje prolaze kod kupaca? Koji trendovi dominiraju u 2026. godini?",
+      },
+      {
+        type: "paragraph",
+        text: "U ovom vodiču analiziramo najtraženije stilove virtuelnog opremanja i dajemo preporuke kako da izaberete pravi stil za vašu nekretninu.",
+      },
+      { type: "heading", level: 2, text: "Zašto je izbor stila važan?" },
+      {
+        type: "paragraph",
+        text: "Pravilan stil virtuelnog opremanja može da:",
+      },
+      {
+        type: "list",
+        items: [
+          "**Poveća percipiranu vrednost** nekretnine za 10–20%",
+          "**Skrati vreme prodaje** za 30–50%",
+          "**Privuče specifičnu ciljnu grupu** kupaca",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Izbor pogrešnog stila, s druge strane, može da odbije kupce ili da učini da prostor izgleda zastarelo.",
+      },
+      { type: "heading", level: 2, text: "Top 5 stilova za 2026." },
+      { type: "heading", level: 3, text: "1. Minimalizam sa toplim akcentima" },
+      {
+        type: "paragraph",
+        text: "Klasičan minimalizam sa dodatkom drveta, tekstila i toplih boja. Ovo je **najbezbedniji izbor** — privlači najširu publiku.",
+      },
+      {
+        type: "table",
+        headers: ["Karakteristike", "Za koga"],
+        rows: [
+          ["Svetle boje, čiste linije", "Sve starosne grupe"],
+          ["Drveni detalji", "Porodice"],
+          ["Neutralna paleta", "Investitore"],
+          ["Malo nameštaja, puno prostora", "Kupce prvog stana"],
+        ],
+      },
+      { type: "heading", level: 3, text: "2. Japandi stil" },
+      {
+        type: "paragraph",
+        text: "Fuzija japanskog i skandinavskog dizajna — **najbrže rastući trend** u 2026.",
+      },
+      {
+        type: "list",
+        items: [
+          "Prirodni materijali (bambus, lan, kamen)",
+          "Zemljane boje i pasteli",
+          "Minimalni, ali funkcionalni nameštaj",
+          "Fokus na spokoj i ravnotežu",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "**Najbolje za:** Luksuzne nekretnine, apartmane, vikendice",
+      },
+      { type: "heading", level: 3, text: "3. Wabi-Sabi" },
+      {
+        type: "paragraph",
+        text: "Prihvatanje nesavršenosti — stil koji slavi prirodne materijale, teksture i patinu.",
+      },
+      {
+        type: "list",
+        items: [
+          "Ručno rađen nameštaj",
+          "Neravne površine i prirodne teksture",
+          "Topla, smirujuća atmosfera",
+          "Korišćenje keramike i tkanih materijala",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "**Najbolje za:** Seoske kuće, salaše, etno turizam",
+      },
+      { type: "heading", level: 3, text: "4. Moderna klasika" },
+      {
+        type: "paragraph",
+        text: "Klasične forme sa modernim detaljima — **najprodavaniji stil** za investicione nekretnine.",
+      },
+      {
+        type: "list",
+        items: [
+          "Chesterfield sofe, mermerni stočići",
+          "Zlatni i mesingani detalji",
+          "Simetričan raspored nameštaja",
+          "Neutralna baza sa statement komadima",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "**Najbolje za:** Gradske stanove, novogradnju, porodične kuće",
+      },
+      { type: "heading", level: 3, text: "5. Biophilic design" },
+      {
+        type: "paragraph",
+        text: "Dizajn inspirisan prirodom — veliki trend u post-covid eri.",
+      },
+      {
+        type: "table",
+        headers: ["Element", "Efekat"],
+        rows: [
+          ["Sobne biljke", "Snižavaju stres za 30%"],
+          ["Prirodno svetlo", "Povećava produktivnost"],
+          ["Zemljane boje", "Stvaraju osećaj sigurnosti"],
+          ["Prirodni materijali", "Povećavaju vrednost nekretnine"],
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "**Najbolje za:** Stambene zgrade sa terasama, kuće sa baštom",
+      },
+      { type: "heading", level: 2, text: "Kako izabrati pravi stil?" },
+      { type: "heading", level: 3, text: "Faktor 1: Ciljna grupa kupaca" },
+      {
+        type: "table",
+        headers: ["Ciljna grupa", "Preporučen stil"],
+        rows: [
+          ["Mladi bračni parovi", "Minimalizam"],
+          ["Porodice sa decom", "Moderna klasika"],
+          ["Penzioneri", "Wabi-Sabi"],
+          ["Investitori", "Japandi"],
+          ["Luksuzni kupci", "Biophilic"],
+        ],
+      },
+      { type: "heading", level: 3, text: "Faktor 2: Lokacija i tip nekretnine" },
+      {
+        type: "list",
+        items: [
+          "**Gradski centar:** Moderna klasika",
+          "**Novi Beograd:** Minimalizam",
+          "**Vikendice i salaši:** Wabi-Sabi",
+          "**Luksuzni apartmani:** Japandi",
+          "**Porodične kuće:** Biophilic",
+        ],
+      },
+      { type: "heading", level: 3, text: "Faktor 3: Budžet" },
+      {
+        type: "paragraph",
+        text: "Virtuelno opremanje je **do 95% jeftinije** od fizičkog nameštanja. Dok fizički staging košta 500–3000€ mesečno + transport i skladištenje, virtuelno opremanje je jednokratna investicija od 30–150€ po renderu, bez logističkih troškova.",
+      },
+      { type: "heading", level: 2, text: "Zašto virtuelno opremanje?" },
+      {
+        type: "table",
+        headers: ["Poređenje", "Fizički staging", "Virtuelni staging"],
+        rows: [
+          ["Cena", "500–3000€ mesečno", "30–150€ po prikazu"],
+          ["Vreme postavljanja", "2–7 dana", "2–3 radna dana"],
+          ["Fleksibilnost", "Jedan stil", "Više stilova za isti prostor"],
+          ["Skladištenje", "Potrebno", "Nije potrebno"],
+        ],
+      },
+      { type: "heading", level: 2, text: "Primer: Isti prostor u 3 različita stila" },
+      {
+        type: "paragraph",
+        text: "Jedna od prednosti virtuelnog opremanja je **mogućnost prikaza istog prostora u više stilova**. Zamislite dnevnu sobu koju možete da prikažete kao:",
+      },
+      {
+        type: "list",
+        ordered: true,
+        items: [
+          "**Minimalističku** — za mlade profesionalce",
+          "**Modernu klasiku** — za porodicu",
+          "**Biophilic** — za ljubitelje prirode",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Svaki stil privlači drugu ciljnu grupu — a sve iz istog osnovnog rendera.",
+      },
+      { type: "heading", level: 2, text: "Zaključak" },
+      {
+        type: "paragraph",
+        text: "Virtuelno opremanje enterijera u 2026. godini nije samo opcija — ono je **standard**. Bilo da prodajete stan u centru grada ili kuću na selu, pravi stil može da bude odlučujući faktor za kupca.",
+      },
+      {
+        type: "paragraph",
+        text: "Elegant Render nudi virtuelno opremanje u svim aktuelnim stilovima. Pošaljite nam tlocrt i fotografije — pokazaćemo vam kako vaš prostor može da izgleda u stilu koji najbolje prodaje.",
+      },
+      {
+        type: "cta",
+        label: "Pogledajte virtuelno opremanje",
+        href: "/usluge/virtuelno-opremanje",
+      },
+    ],
+  },
+  {
+    slug: "kako-pripremiti-cad-crteze-za-3d-vizuelizaciju",
+    title: "Kako pripremiti CAD crteže za 3D vizuelizaciju? Vodič za arhitekte",
+    excerpt:
+      "Kako pripremiti CAD, Revit ili SketchUp fajlove za 3D vizuelizaciju? Kompletan vodič za arhitekte — formati, saveti, nivo detalja i checklista.",
+    date: "2026-06-09",
+    author: "Elegant Render",
+    coverImage: "/artwork/detail-osnove.webp",
+    coverAlt: "2D i 3D osnove — priprema tlocrta i CAD crteža za vizuelizaciju",
+    tags: ["Vodiči", "3D renderi"],
+    keywords: [
+      "priprema CAD crteža za 3D",
+      "fajlovi za 3D vizuelizaciju",
+      "arhitektonski crteži za render",
+    ],
+    body: [
+      {
+        type: "paragraph",
+        lead: true,
+        text: "Dobra 3D vizuelizacija počinje sa **dobrim ulaznim podacima**. Kao arhitekta ili dizajner, vi imate ključnu ulogu — kvalitet CAD crteža koje pošaljete studiju direktno utiče na brzinu, cenu i kvalitet konačnog rendera.",
+      },
+      {
+        type: "paragraph",
+        text: "U ovom vodiču ćemo objasniti kako da pripremite fajlove tako da 3D umetnik dobije sve što mu treba.",
+      },
+      { type: "heading", level: 2, text: "Zašto je priprema fajlova važna?" },
+      {
+        type: "paragraph",
+        text: "Nepotpuna ili nestandardna dokumentacija dovodi do:",
+      },
+      {
+        type: "list",
+        items: [
+          "**Dodatnih iteracija** — više vremena i troškova",
+          "**Pogrešnih interpretacija** — render ne odgovara projektu",
+          "**Produženih rokova** — dokumentacija se traži naknadno",
+          "**Viših cena** — studio naplaćuje dodatno vreme",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Dobra priprema smanjuje troškove za **20–40%** i ubrzava proces za **30–50%**.",
+      },
+      { type: "heading", level: 2, text: "6 koraka za savršenu pripremu" },
+      { type: "heading", level: 3, text: "Korak 1: Odaberite pravi format" },
+      {
+        type: "table",
+        headers: ["Format", "Preporuka"],
+        rows: [
+          ["**DWG/DXF** (AutoCAD)", "✅ Najbolji — sve dimenzije i slojevi"],
+          ["**RVT** (Revit)", "✅ Sadrži BIM podatke"],
+          ["**SKP** (SketchUp)", "✅ Ako je model detaljan"],
+          ["**PDF**", "❌ Samo za orijentaciju"],
+          ["**Slike (JPEG/PNG)**", "❌ Nedovoljno precizne"],
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "**Preporuka:** DWG je univerzalni standard koji svi 3D studiji podržavaju.",
+      },
+      { type: "heading", level: 3, text: "Korak 2: Organizujte slojeve (layers)" },
+      {
+        type: "paragraph",
+        text: "Dobro organizovani slojevi su **najvažniji** deo pripreme. Očekujemo:",
+      },
+      {
+        type: "table",
+        headers: ["Layer", "Šta sadrži"],
+        rows: [
+          ["Zidovi (noseći)", "Beton, blok, cigla"],
+          ["Zidovi (pregrade)", "Gips, staklo"],
+          ["Podovi", "Nivoi, materijali"],
+          ["Plafoni", "Spušteni, ravni"],
+          ["Stolarija", "Prozori, vrata"],
+          ["Nameštaj", "Fiksni elementi"],
+          ["Instalacije", "Elektrika, vodovod"],
+          ["Dimenzije", "Kotiranje"],
+        ],
+      },
+      {
+        type: "quote",
+        text: "**Savet:** Očistite crtež od nepotrebnih slojeva (grid linije, notes, pomoćne linije).",
+      },
+      { type: "heading", level: 3, text: "Korak 3: Definišite materijale" },
+      {
+        type: "paragraph",
+        text: "Navedite materijale za svaku površinu. Najlakši način:",
+      },
+      {
+        type: "list",
+        items: [
+          "**U DWG crtežu:** Napišite materijal na svakoj površini (npr. \"hrast parket\", \"keramika 60x60\")",
+          "**U posebnom dokumentu:** Excel lista sa sobama i materijalima",
+          "**Reference:** Pošaljite 1–3 slike za svaki materijal (referenca, ne tačan prikaz)",
+        ],
+      },
+      { type: "heading", level: 3, text: "Korak 4: Dostavite fotografije lokacije" },
+      {
+        type: "paragraph",
+        text: "Ako radimo na postojećem objektu, pošaljite fotografije:",
+      },
+      {
+        type: "list",
+        items: [
+          "**Sve sobe** iz više uglova",
+          "**Spoljašnji izgled** objekta",
+          "**Okruženje** — susedne zgrade, ulica",
+          "**Detalji** — profil lajsni, rukohvati, radijatori",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Fotografije pomažu 3D umetniku da razume **prostorne odnose** i **postojeće stanje**.",
+      },
+      { type: "heading", level: 3, text: "Korak 5: Definišite uglove kamere" },
+      {
+        type: "paragraph",
+        text: "Precizno odredite koji uglovi treba da se renderuju:",
+      },
+      {
+        type: "list",
+        items: [
+          "**Tlocrt sa oznakom kamere** — ugao i pravac gledanja",
+          "**Visina kamere** — standardno 150–170cm",
+          "**Vrsta kadra** — wide, medium, detail",
+        ],
+      },
+      { type: "paragraph", text: "Primer dobre specifikacije:" },
+      {
+        type: "quote",
+        text: "\"Kamera 1 — dnevna soba, wide shot iz ugla ulaznih vrata, visina 160cm, prikaz celog prostora\"",
+      },
+      { type: "heading", level: 3, text: "Korak 6: Dostavite moodboard" },
+      {
+        type: "paragraph",
+        text: "Moodboard sa referencama pomaže da 3D umetnik uhvati vašu **viziju**:",
+      },
+      {
+        type: "list",
+        items: [
+          "3–5 referentnih slika željenog stila",
+          "Paleta boja (možete koristiti Adobe Color ili Coolors)",
+          "Primeri osvetljenja (dnevno/veštačko/ambijentalno)",
+        ],
+      },
+      { type: "heading", level: 2, text: "Checklista za slanje fajlova" },
+      {
+        type: "paragraph",
+        text: "Pre nego što pošaljete fajlove studiju, prođite kroz ovu listu:",
+      },
+      {
+        type: "list",
+        items: [
+          "DWG fajlovi su očišćeni i organizovani",
+          "Svi slojevi su pravilno imenovani",
+          "Materijali su navedeni na crtežu",
+          "Referentne slike materijala su priložene",
+          "Uglovi kamere su definisani",
+          "Moodboard ili stilski vodič je priložen",
+          "Fotografije postojećeg stanja su dostavljene (ako je rekonstrukcija)",
+          "Rok i očekivanja su jasno navedeni",
+        ],
+      },
+      { type: "heading", level: 2, text: "Najčešće greške" },
+      {
+        type: "table",
+        headers: ["Greška", "Posledica", "Kako izbeći"],
+        rows: [
+          ["Previše detalja", "Sporo učitavanje", "Filtrirajte slojeve"],
+          ["Nedovoljno informacija", "Pogrešna interpretacija", "Koristite checklistu"],
+          ["Stari formati", "Loša kompatibilnost", "DWG 2018+"],
+          ["Bez referenci", "Gubitak vremena", "5 referentnih slika"],
+        ],
+      },
+      { type: "heading", level: 2, text: "Kako mi radimo u Elegant Render-u?" },
+      { type: "paragraph", text: "Naš proces je jednostavan:" },
+      {
+        type: "list",
+        ordered: true,
+        items: [
+          "**Pošaljite CAD crteže** — putem forme na sajtu ili mejlom",
+          "**Konsultacije** — razjasnimo detalje i potrebe",
+          "**Ponuda** — dobijate cenu i rok u roku od 24h",
+          "**Modelovanje** — 3D model i postavljanje kamera",
+          "**Renderovanje** — fotorealistična vizuelizacija",
+          "**Dorade** — 2–3 iteracije uključene u cenu",
+        ],
+      },
+      { type: "heading", level: 2, text: "Zaključak" },
+      {
+        type: "paragraph",
+        text: "Kvalitetna priprema CAD crteža je **ulaznica za vrhunsku 3D vizuelizaciju**. Uložite malo vremena u organizaciju fajlova i uštedite vreme, novac i živce — vaš 3D studio će vam biti zahvalan.",
+      },
+      {
+        type: "paragraph",
+        text: "Imate CAD crteže spremne za vizuelizaciju? Pošaljite nam ih na obradu — daćemo vam ponudu u roku od 24 sata.",
+      },
+      { type: "cta", label: "Pošaljite CAD crteže", href: "/kontakt" },
+    ],
+  },
 ];
 
 // Average adult reading speed is ~200 wpm; count words across text-bearing

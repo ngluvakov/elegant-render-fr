@@ -1488,8 +1488,9 @@ export const BLOG_POSTS: BlogPost[] = [
       "Kako pripremiti CAD, Revit ili SketchUp fajlove za 3D vizuelizaciju? Kompletan vodič za arhitekte — formati, saveti, nivo detalja i checklista.",
     date: "2026-06-09",
     author: "Elegant Render",
-    coverImage: "/artwork/detail-osnove.webp",
-    coverAlt: "2D i 3D osnove — priprema tlocrta i CAD crteža za vizuelizaciju",
+    coverImage: "/artwork/detail-spoljasnji-renderi.webp",
+    coverAlt:
+      "Fotorealističan 3D render eksterijera moderne vile sa bazenom u zlatnom svetlu",
     tags: ["Vodiči", "3D renderi"],
     keywords: [
       "priprema CAD crteža za 3D",

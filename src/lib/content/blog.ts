@@ -292,9 +292,9 @@ export const BLOG_POSTS: BlogPost[] = [
       "Sve što treba da znate pre nego što naručite 3D render — kako pripremiti brief, koje informacije su potrebne i koliko traje izrada.",
     date: "2026-04-21",
     author: "Elegant Render",
-    coverImage: "/artwork/detail-osnove.webp",
+    coverImage: "/artwork/blog-3d-vizuelizacija-duplex.webp",
     coverAlt:
-      "Proces naručivanja 3D vizuelizacije — od briefa do gotovog rendera",
+      "3D osnova dupleks stana — fotorealističan tlocrt sa nameštajem i rasporedom prostorija, pogled odozgo",
     tags: ["Vodič", "3D renderi"],
     keywords: [
       "ponuda za 3D vizuelizaciju",

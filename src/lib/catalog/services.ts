@@ -1776,6 +1776,8 @@ export const SERVICES: Service[] = [
       "Arhitekte (klijentska prezentacija sa više soba)",
     ],
     featured: true,
+    problemEmbedSrc:
+      "https://kuula.co/share/collection/714Xg?logo=0&info=0&fs=1&vr=1&sd=1&initload=0&thumbs=1",
     problemHeading: "Lepe panorame, slabo povezane — kupac se gubi.",
     problemBody:
       "Imate 5 360 panorama enterijera i 3 eksterijera, ali ih šaljete kao posebne linkove. Kupac otvori jednu, vidi sobu, mora da klikne nazad na email, otvori sledeću. Gubi pažnju pre nego što obiđe pola stana.",

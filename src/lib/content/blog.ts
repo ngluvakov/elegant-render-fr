@@ -46,7 +46,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "Koliko košta 3D rendering enterijera? Cenovnik i vodič za 2026.",
     excerpt:
       "Cena 3D renderovanja enterijera zavisi od složenosti prostora, broja uglova i roka. Kompletan vodič sa cenama i savetima.",
-    date: "2026-07-14",
+    date: "2026-04-07",
     author: "Elegant Render",
     coverImage: "/artwork/detail-interior-static.webp",
     coverAlt:
@@ -169,7 +169,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "Virtuelna renovacija vs stvarna renovacija: šta je isplativije?",
     excerpt:
       "Poređenje virtuelne i stvarne renovacije — cena, vreme, ishod. Kada je virtuelna renovacija bolji izbor od izvođenja radova.",
-    date: "2026-07-21",
+    date: "2026-04-14",
     author: "Elegant Render",
     coverImage: "/artwork/detail-virtuelna-renovacija.webp",
     coverAlt: "Poređenje pre i posle virtuelne renovacije dnevne sobe",
@@ -290,7 +290,7 @@ export const BLOG_POSTS: BlogPost[] = [
     title: "Kako dobiti ponudu za 3D vizuelizaciju? Brzi vodič kroz proces",
     excerpt:
       "Sve što treba da znate pre nego što naručite 3D render — kako pripremiti brief, koje informacije su potrebne i koliko traje izrada.",
-    date: "2026-07-28",
+    date: "2026-04-21",
     author: "Elegant Render",
     coverImage: "/artwork/detail-osnove.webp",
     coverAlt:
@@ -460,7 +460,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "AI Studio — kako veštačka inteligencija obrađuje fotografije nekretnina",
     excerpt:
       "AI obrada fotografija nekretnina je najbrži način da unapredite oglas. Sve o AI Studio alatima, cenama i efektu na prodaju.",
-    date: "2026-08-04",
+    date: "2026-04-28",
     author: "Elegant Render",
     coverImage: "/artwork/ai-tool-virtual_staging-after.webp",
     coverAlt:
@@ -626,7 +626,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "360 ture u prodaji nekretnina: zašto kupci vole interaktivni prikaz",
     excerpt:
       "360 ture i virtuelne šetnje povećavaju angažovanje kupaca za preko 40%. Kako funkcionišu, koliko koštaju i kada ih koristiti.",
-    date: "2026-08-11",
+    date: "2026-05-05",
     author: "Elegant Render",
     coverImage: "/artwork/detail-interior-360.webp",
     coverAlt: "360 virtuelna tura enterijera — interaktivni prikaz prostora",

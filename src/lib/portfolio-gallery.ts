@@ -97,15 +97,20 @@ const NEW_EKSTERIJER: PortfolioTile[] = EKSTERIJER.map(({ n, alt }) => ({
 }));
 
 /** 3D floor plans — original "3D osnove" set (osnova-01..04.webp). */
-const OSNOVA_ALT = [
-  "3D osnova iz ptičje perspektive, Elegant Render",
-  "3D osnova stana, Elegant Render",
-  "3D osnova A-frame kuće, Elegant Render",
-  "3D osnova dupleksa, Elegant Render",
+const OSNOVA: { file: string; alt: string }[] = [
+  { file: "osnova-01", alt: "3D osnova iz ptičje perspektive, Elegant Render" },
+  { file: "osnova-02", alt: "3D osnova stana, Elegant Render" },
+  { file: "osnova-03", alt: "3D osnova A-frame kuće, Elegant Render" },
+  // osnova-04 replaced by the "Levi stan" duplex 3D floor plan (fresh,
+  // cache-safe filename so the CDN serves the new bytes).
+  {
+    file: "osnova-dupleks-levi-stan",
+    alt: "3D osnova dupleks stana — levi stan, Elegant Render",
+  },
 ];
-const NEW_OSNOVA: PortfolioTile[] = OSNOVA_ALT.map((alt, i) => ({
+const NEW_OSNOVA: PortfolioTile[] = OSNOVA.map(({ file, alt }) => ({
   kind: "image",
-  src: `${P}/osnova-${nn(i)}.webp`,
+  src: `${P}/${file}.webp`,
   alt,
   label: "3D osnove",
 }));

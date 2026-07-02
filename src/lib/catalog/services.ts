@@ -1762,6 +1762,7 @@ export const SERVICES: Service[] = [
     materials:
       "Pošaljite 360 panorame koje već imate (od nas ili drugog izvora) i raspored za navigaciju između tačaka. Hosting podešavamo za 1–2 radna dana.",
     asset: PORTFOLIO_ASSET,
+    detailAsset: "/artwork/detail-interior-360.webp",
     embedSrc:
       "https://kuula.co/share/collection/7k7GQ?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     detailEmbedSrc:

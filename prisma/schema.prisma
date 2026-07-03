@@ -248,6 +248,14 @@ model Order {
   //   companyCountryCode — ISO-3166-1 alpha-2; null for individual.
   buyerType           BuyerType        @default(individual)
   buyerCountryCode    String?
+  // buyerAddress/buyerCity/buyerPhone/buyerPostalCode: dodate u bazu
+  // 2026-06-11 iz neuvezane sesije (drift pomiren 2026-07-03). Kod ih
+  // trenutno ne koristi — zadržane da šema, istorija migracija i baza
+  // budu identične; kandidat za buduće buyer-contact polje u checkout-u.
+  buyerAddress        String?
+  buyerCity           String?
+  buyerPhone          String?
+  buyerPostalCode     String?
   companyName         String?
   companyTaxId        String?
   companyMb           String?
@@ -400,7 +408,9 @@ model OrderFile {
   // current pipeline since infected uploads never reach the DB).
   scanStatus     String?
   scannedAt      DateTime?
-  scanThreats    String[]
+  // @default([]) je OBAVEZAN: bez njega migrate dev generiše DROP
+  // DEFAULT koji obara sve upload-e (incidenti 2026-06-11 i 2026-07-03).
+  scanThreats    String[]  @default([])
 
   order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderItem OrderItem? @relation(fields: [orderItemId], references: [id])
@@ -776,7 +786,8 @@ model ProjectInquiryFile {
   // infected file fails the whole inquiry submission.
   scanStatus  String?
   scannedAt   DateTime?
-  scanThreats String[]
+  // @default([]) je OBAVEZAN — vidi napomenu na OrderFile.scanThreats.
+  scanThreats String[]  @default([])
 
   inquiry ProjectInquiry @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
 

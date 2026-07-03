@@ -1,0 +1,5 @@
+# Prisma checksum-uje tačne bajtove migracionih fajlova (sha256) i
+# poredi ih sa _prisma_migrations. CRLF konverzija na checkout-u bi
+# napravila lažni "migration was modified" za SVE migracije na Windows
+# mašinama — zato prisilno LF, nezavisno od core.autocrlf.
+prisma/migrations/**/*.sql text eol=lf

@@ -20,6 +20,17 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-07-03 - DB drift pomiren; migrate dev ponovo radi; scanThreats incident ponovljen i trajno saniran
+
+- **Oblast promene:** architecture | order lifecycle
+- **Šta se promenilo:** (1) Rekreirane nedostajuće migracije `20260611200825_add_buyer_contact_fields` (4 kolone: buyerAddress/buyerCity/buyerPhone/buyerPostalCode — sve prazne, usvojene i u schema.prisma kao nekorišćene) i `20260611214747_restore_scan_threats_default`; checksumi u `_prisma_migrations` ažurirani na nove fajlove (stari: `fb18e8de…`, `7725749d…`). (2) `20260529000000_add_nestpay_provider/migration.sql` normalizovan na LF — diff uz `--ignore-cr-at-eol` je PRAZAN, čisto line-endings; checksumi za nju (stari `e8d362b4…`) i za `20260617120000_rsd_only_no_paypal` (stari `52f70381…`; ima i legitiman rolled-back duplikat red iz neuspelog prvog pokušaja) ažurirani na LF bajtove. (3) Dodat `.gitattributes` (`prisma/migrations/**/*.sql text eol=lf`) — Prisma checksum-uje bajtove, CRLF checkout bi lažno "modifikovao" sve migracije. (4) Nova migracija `20260703130000_align_ai_generations_updated_at_default` (no-op na bazi).
+- **INCIDENT (ponovljen 2026-06-11 scenario, ~3 min):** `schema.prisma` na main-u NIKAD nije imao `@default([])` na `scanThreats` (ta izmena je ostala u neuvezanoj sesiji — memorija je pogrešno tvrdila suprotno). `migrate dev --create-only` je zato generisao DROP DEFAULT migraciju, a sledeći `migrate dev` poziv ju je auto-primenio → upload-i pokvareni ~3 minuta (order_files ima 0 redova, nijedan upload nije stradao). Sanirano: `20260703200000_restore_scan_threats_defaults` + **trajno** `@default([])` na oba `scanThreats` polja u šemi. Migracije `20260703195657_drift_check` i `…195734_drift_check2` ostaju u repou (primenjene su; brisanje foldera bi ponovo napravilo "missing local migration").
+- **Pouka:** posle `--create-only` UVEK pročitati generisani SQL pre bilo koje sledeće migrate komande — migrate dev auto-primenjuje pending migracije.
+- **Uticaj na conversion/design:** Nema.
+- **Uticaj na code:** `npm run db:migrate` ponovo radi (finalni drift check: prazna migracija, bez ponude reseta); platni kod netaknut.
+- **Povezani fajlovi:** `prisma/schema.prisma`, `prisma/migrations/20260611*`, `prisma/migrations/20260703*`, `.gitattributes`
+- **Reference:** Claude Code sesija 2026-07-03; korisnikova potvrda da su plaćanja live i odobrena od banke — platna zona trajno zamrznuta bez izričitog odobrenja.
+
 ## 2026-07-03 - Bezbednosno-performansni pregled platforme (Faza 1 + 2)
 
 - **Oblast promene:** auth | payments (okolina, ne tok) | architecture | order lifecycle

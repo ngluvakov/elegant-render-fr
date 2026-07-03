@@ -96,13 +96,9 @@ export function SiteHeader() {
           <div className="flex h-16 items-start">
             <BrandLogo size="xl" />
           </div>
-          <a
-            href="https://www.thewhiterook.com"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="Powered by White Rook"
-            className="hidden items-center transition-opacity hover:opacity-80 sm:inline-flex"
-          >
+          {/* Powered-by badge — link disabled for now (renders as a plain,
+              non-interactive image). Re-wrap in an <a href> to re-enable. */}
+          <span className="hidden items-center sm:inline-flex">
             <Image
               src="/branding/powered-by-whiterook.webp"
               alt="Powered by White Rook"
@@ -111,7 +107,7 @@ export function SiteHeader() {
               priority
               className="h-11 w-auto"
             />
-          </a>
+          </span>
         </div>
 
         {/* Desktop nav */}

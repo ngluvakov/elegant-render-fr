@@ -6,6 +6,8 @@
  */
 
 import OpenAI from "openai";
+import * as Sentry from "@sentry/nextjs";
+import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { buildSystemPrompt } from "@/lib/chat/system-prompt";
 import type { AssistantGuideContext } from "@/lib/chat/guide-context";
@@ -50,9 +52,62 @@ function normalizeMessages(messages: unknown): IncomingChatMessage[] | null {
   return normalized.length > 0 ? normalized : null;
 }
 
+// Ranije golo `as` kastovanje — sadržaj ide u system prompt, pa oblik i
+// dužine moraju biti ograničeni. Nepoznata polja se odbacuju (strip).
+const guideContextSchema = z.object({
+  page: z.enum([
+    "ai_studio",
+    "order_detail",
+    "pricing",
+    "service",
+    "portfolio",
+    "general",
+  ]),
+  stage: z
+    .enum([
+      "before_upload",
+      "after_upload",
+      "ready_to_generate",
+      "has_result",
+      "no_credits",
+      "credit_purchase",
+      "missing_order_data",
+      "order_ready",
+      "pricing_review",
+      "service_detail",
+      "portfolio_reference",
+      "contact",
+    ])
+    .optional(),
+  editType: z
+    .enum([
+      "item_removal",
+      "day_to_dusk",
+      "sky_replacement",
+      "wall_color_change",
+      "virtual_staging",
+      "object_insertion",
+      "virtual_renovation",
+      "room_redesign",
+    ])
+    .optional(),
+  productIds: z.array(z.string().max(100)).max(50).optional(),
+  unconfiguredCount: z.number().int().min(0).max(1000).optional(),
+  hasFiles: z.boolean().optional(),
+  hasPrompt: z.boolean().optional(),
+  balanceUnits: z.number().int().min(0).optional(),
+  missingItems: z.array(z.string().max(300)).max(50).optional(),
+  readinessWarnings: z.array(z.string().max(300)).max(50).optional(),
+  canGenerate: z.boolean().optional(),
+  cartItemCount: z.number().int().min(0).max(1000).optional(),
+  cartTotalRsd: z.number().min(0).optional(),
+  cartOriginalTotalRsd: z.number().min(0).optional(),
+  cartHasDiscount: z.boolean().optional(),
+});
+
 function normalizeGuideContext(value: unknown): AssistantGuideContext | null {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  return value as AssistantGuideContext;
+  const parsed = guideContextSchema.safeParse(value);
+  return parsed.success ? parsed.data : null;
 }
 
 async function captureChatFeedback(args: {
@@ -94,8 +149,20 @@ export async function POST(request: Request) {
     });
   }
 
-  const { messages, pagePath, sessionId, guideContext } = await request.json();
-  const normalizedMessages = normalizeMessages(messages);
+  let payload: Record<string, unknown>;
+  try {
+    const raw: unknown = await request.json();
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      return new Response("Missing messages", { status: 400 });
+    }
+    payload = raw as Record<string, unknown>;
+  } catch {
+    return new Response("Missing messages", { status: 400 });
+  }
+  const { messages, pagePath, sessionId, guideContext } = payload;
+  // Poslednjih 40 poruka je dovoljno konteksta; bez limita bi zlonameran
+  // klijent mogao da naduva token potrošnju po zahtevu.
+  const normalizedMessages = normalizeMessages(messages)?.slice(-40) ?? null;
   const pagePathText = cleanText(pagePath, 240);
   const assistantGuideContext = normalizeGuideContext(guideContext);
 
@@ -110,7 +177,9 @@ export async function POST(request: Request) {
       sessionId,
     });
   } catch (error) {
-    console.error("[Chat] Feedback capture failed", error);
+    Sentry.captureException(error, {
+      tags: { area: "chat", flow: "feedback-capture" },
+    });
   }
 
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

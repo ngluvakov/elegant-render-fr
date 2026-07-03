@@ -1,4 +1,5 @@
 import { after, NextResponse } from "next/server";
+import { z } from "zod";
 import {
   listAiStudioGenerations,
   processAiStudioGenerationJob,
@@ -7,6 +8,45 @@ import {
   type AiGenerationStatusValue,
 } from "@/server/actions/ai-studio";
 import type { AiEditType } from "@/lib/ai-studio/catalog";
+
+// Šema prati AiStudioGenerateInput — telo je ranije bilo golo `as` kastovano.
+const generateInputSchema = z.object({
+  editType: z.enum([
+    "item_removal",
+    "day_to_dusk",
+    "sky_replacement",
+    "wall_color_change",
+    "virtual_staging",
+    "object_insertion",
+    "virtual_renovation",
+    "room_redesign",
+  ]),
+  inputStoragePath: z.string().min(1).max(1024),
+  inputMimeType: z.string().min(1).max(255),
+  inputFileName: z.string().max(512).nullish(),
+  referenceImages: z
+    .array(
+      z.object({
+        storagePath: z.string().min(1).max(1024),
+        mimeType: z.string().min(1).max(255),
+        fileName: z.string().max(512).nullish(),
+      }),
+    )
+    .max(10)
+    .nullish(),
+  referenceStoragePath: z.string().max(1024).nullish(),
+  referenceMimeType: z.string().max(255).nullish(),
+  referenceFileName: z.string().max(512).nullish(),
+  maskStoragePath: z.string().max(1024).nullish(),
+  maskInverted: z.boolean().optional(),
+  objectMode: z.enum(["insert", "replace"]).nullish(),
+  prompt: z.string().max(4000),
+  styleId: z.string().max(200).nullish(),
+  selectedOption: z.string().max(500).nullish(),
+  colorHex: z.string().max(20).nullish(),
+  parentGenerationId: z.string().max(100).nullish(),
+  referenceGuidanceAcknowledged: z.boolean().nullish(),
+}) satisfies z.ZodType<AiStudioGenerateInput>;
 
 const VALID_STATUSES = new Set<AiGenerationStatusValue>([
   "queued",
@@ -43,8 +83,17 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const input = (await request.json()) as AiStudioGenerateInput;
-  const result = await startAiStudioGeneration(input);
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Neispravan zahtev." }, { status: 400 });
+  }
+  const parsed = generateInputSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Neispravan zahtev." }, { status: 400 });
+  }
+  const result = await startAiStudioGeneration(parsed.data);
 
   if (result.generationId && !result.error) {
     after(() => processAiStudioGenerationJob(result.generationId!));

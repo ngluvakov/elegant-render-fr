@@ -9,28 +9,12 @@
 import * as Sentry from "@sentry/nextjs";
 import type { OrderStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
+import { canTransition } from "@/lib/order/status-transitions";
 import { syncDealStatus } from "@/server/bitrix/sync-status";
 
-// `delivered → in_progress` is an admin-only override for the "free
-// revision" flow: customer asks for a change after delivery, admin
-// approves it at no charge, and the order reopens for work. Only
-// reachable via the admin path; the customer flow has no UI for it.
-const VALID_TRANSITIONS: Record<string, string[]> = {
-  draft: ["awaiting_payment", "cancelled"],
-  awaiting_payment: ["paid", "cancelled"],
-  paid: ["in_progress", "closed", "cancelled", "refunded"],
-  in_progress: ["in_review", "cancelled"],
-  in_review: ["revision_requested", "delivered"],
-  revision_requested: ["in_progress"],
-  delivered: ["closed", "in_progress"],
-  closed: [],
-  cancelled: [],
-  refunded: [],
-};
-
-export function canTransition(from: OrderStatus, to: OrderStatus): boolean {
-  return VALID_TRANSITIONS[from]?.includes(to) ?? false;
-}
+// Tabela prelaza živi u status-transitions.ts (čist modul, testabilan
+// bez DB) — ovde ostaje samo DB-vezani transitionOrder.
+export { canTransition } from "@/lib/order/status-transitions";
 
 export async function transitionOrder(
   orderId: string,

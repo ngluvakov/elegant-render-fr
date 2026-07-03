@@ -50,9 +50,9 @@ function loadPannellum(): Promise<void> {
   return loadPromise;
 }
 
-type Props = { src: string; title?: string };
+type Props = { src: string; title?: string; showZoomCtrl?: boolean };
 
-export function Panorama360({ src, title }: Props) {
+export function Panorama360({ src, title, showZoomCtrl = true }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<{ destroy: () => void } | null>(null);
 
@@ -68,7 +68,7 @@ export function Panorama360({ src, title }: Props) {
           autoLoad: true,
           autoRotate: -2,
           autoRotateInactivityDelay: 3000,
-          showZoomCtrl: true,
+          showZoomCtrl,
           showFullscreenCtrl: false,
           mouseZoom: true,
           draggable: true,
@@ -93,7 +93,7 @@ export function Panorama360({ src, title }: Props) {
         viewerRef.current = null;
       }
     };
-  }, [src]);
+  }, [src, showZoomCtrl]);
 
   return (
     <div

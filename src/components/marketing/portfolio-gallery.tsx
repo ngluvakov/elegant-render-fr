@@ -1,20 +1,28 @@
 /**
- * PortfolioGallery — the /portfolio grid of 100 tiles with a click-to-open
- * lightbox. Static renders enlarge; 360 panoramas open the interactive
- * (drag-to-look) Pannellum viewer; videos open an autoplaying player.
+ * PortfolioGallery — the /portfolio grid of tiles with a click-to-open
+ * lightbox. Static renders enlarge; videos open an autoplaying player;
+ * 360 panoramas are drag-to-look right in the grid.
  *
- * Thumbnails stay lightweight (one <Image> each); heavy viewers mount only
- * while the lightbox is open, so the page load isn't affected by 16 panoramas
- * and 8 videos.
+ * Thumbnails stay lightweight (one <Image> each). To keep WebGL contexts low,
+ * a panorama tile only mounts its live viewer while hovered (desktop) and
+ * tears it down on leave; touch devices tap to open the fullscreen viewer.
  */
 "use client";
 
-import { useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import Image from "next/image";
 import { Dialog } from "@base-ui/react/dialog";
-import { Play, X } from "lucide-react";
+import { Maximize2, Play, X } from "lucide-react";
 import { Panorama360 } from "@/components/marketing/panorama-360";
+import { cn } from "@/lib/utils";
 import type { PortfolioTile } from "@/lib/portfolio-gallery";
+
+type PanoramaPortfolioTile = Extract<PortfolioTile, { kind: "panorama" }>;
 
 const GRID_SIZES = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw";
 
@@ -42,13 +50,6 @@ function Tile({
         className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
       />
 
-      {/* 360 badge */}
-      {tile.kind === "panorama" && (
-        <span className="absolute left-3 top-3 rounded-full bg-foreground/75 px-2.5 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-background/95 backdrop-blur-sm">
-          360°
-        </span>
-      )}
-
       {/* Video play button */}
       {tile.kind === "video" && (
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
@@ -63,6 +64,110 @@ function Tile({
         {tile.label}
       </span>
     </button>
+  );
+}
+
+/**
+ * A 360 tile that becomes a live, drag-to-look viewer on hover. The heavy
+ * Pannellum viewer mounts only while hovered and is destroyed on leave, so at
+ * most a couple of WebGL contexts are ever alive at once. On touch devices
+ * (no hover) the tile opens the fullscreen viewer on tap.
+ */
+function PanoramaTile({
+  tile,
+  priority,
+  onOpen,
+}: {
+  tile: PanoramaPortfolioTile;
+  priority: boolean;
+  onOpen: () => void;
+}) {
+  const [active, setActive] = useState(false);
+  const leaveTimer = useRef<number | null>(null);
+
+  const clearLeaveTimer = () => {
+    if (leaveTimer.current !== null) {
+      window.clearTimeout(leaveTimer.current);
+      leaveTimer.current = null;
+    }
+  };
+
+  // Ignore hover from coarse pointers (touch) — those tap to open fullscreen.
+  const activate = (e: ReactPointerEvent) => {
+    if (e.pointerType === "touch") return;
+    clearLeaveTimer();
+    setActive(true);
+  };
+  const scheduleDeactivate = () => {
+    clearLeaveTimer();
+    leaveTimer.current = window.setTimeout(() => setActive(false), 140);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (leaveTimer.current !== null) window.clearTimeout(leaveTimer.current);
+    };
+  }, []);
+
+  return (
+    <div
+      onPointerEnter={activate}
+      onPointerLeave={scheduleDeactivate}
+      className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-border/60 bg-secondary"
+    >
+      {/* Thumbnail — stays behind the viewer so there's no black flash while
+          the panorama loads. */}
+      <Image
+        src={tile.src}
+        alt={tile.alt}
+        fill
+        sizes={GRID_SIZES}
+        priority={priority}
+        className={cn(
+          "object-cover transition-transform duration-500",
+          !active && "group-hover:scale-[1.04]",
+        )}
+      />
+
+      {/* Live drag-to-look viewer — only while hovered. */}
+      {active && (
+        <div className="absolute inset-0 cursor-grab active:cursor-grabbing">
+          <Panorama360 src={tile.full} title={tile.alt} showZoomCtrl={false} />
+        </div>
+      )}
+
+      {/* 360 badge */}
+      <span className="pointer-events-none absolute left-3 top-3 z-10 rounded-full bg-foreground/75 px-2.5 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-background/95 backdrop-blur-sm">
+        360°
+      </span>
+
+      {/* Fullscreen — sits above the viewer so it works while dragging. */}
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-label={`Otvori preko celog ekrana: ${tile.alt}`}
+        className="absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-background/85 text-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <Maximize2 className="h-4 w-4" />
+      </button>
+
+      {/* Tap/click-to-open surface — present only when the live viewer isn't
+          up (touch devices, and desktop before hover). Removing it on hover
+          lets the viewer receive the drag. */}
+      {!active && (
+        <button
+          type="button"
+          onClick={onOpen}
+          aria-label={`Otvori 360 prikaz: ${tile.alt}`}
+          className="absolute inset-0 z-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+        />
+      )}
+
+      {/* Caption / drag hint on hover */}
+      <span className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-2.5 pt-10 text-[0.72rem] font-medium uppercase tracking-[0.16em] text-background/95 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        {active ? "Prevucite za pogled" : tile.label}
+      </span>
+    </div>
   );
 }
 
@@ -107,14 +212,23 @@ export function PortfolioGallery({ tiles }: { tiles: PortfolioTile[] }) {
   return (
     <>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {tiles.map((tile, i) => (
-          <Tile
-            key={tile.src}
-            tile={tile}
-            priority={i < 6}
-            onOpen={() => setActive(tile)}
-          />
-        ))}
+        {tiles.map((tile, i) =>
+          tile.kind === "panorama" ? (
+            <PanoramaTile
+              key={tile.src}
+              tile={tile}
+              priority={i < 6}
+              onOpen={() => setActive(tile)}
+            />
+          ) : (
+            <Tile
+              key={tile.src}
+              tile={tile}
+              priority={i < 6}
+              onOpen={() => setActive(tile)}
+            />
+          ),
+        )}
       </div>
 
       <Dialog.Root

@@ -256,21 +256,43 @@ export default async function ProjectInquiriesPage({
                       Fajlovi ({inquiry.files.length})
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {inquiry.files.map((file) => (
-                        <a
-                          key={file.id}
-                          href={`/api/admin/inquiries/download?fileId=${file.id}`}
-                          className="inline-flex items-center gap-1.5 rounded-md border border-border/40 bg-background/70 px-2.5 py-1.5 text-xs text-foreground transition-colors hover:border-accent/40 hover:text-accent"
-                        >
-                          <FileText className="h-3.5 w-3.5" />
-                          <span className="max-w-[14rem] truncate">
-                            {file.fileName}
-                          </span>
-                          <span className="text-muted-foreground">
-                            {formatInquiryFileSize(file.fileSize)}
-                          </span>
-                        </a>
-                      ))}
+                      {inquiry.files.map((file) => {
+                        const unscanned = file.scanStatus !== "clean";
+                        return (
+                          <a
+                            key={file.id}
+                            href={`/api/admin/inquiries/download?fileId=${file.id}`}
+                            title={
+                              unscanned
+                                ? "Ovaj fajl NIJE antivirus-skeniran (skener je bio nedostupan pri slanju). Preuzmite ga oprezno."
+                                : undefined
+                            }
+                            className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs transition-colors ${
+                              unscanned
+                                ? "border-destructive/40 bg-destructive/5 text-destructive hover:border-destructive/60"
+                                : "border-border/40 bg-background/70 text-foreground hover:border-accent/40 hover:text-accent"
+                            }`}
+                          >
+                            {unscanned ? (
+                              <AlertTriangle className="h-3.5 w-3.5" />
+                            ) : (
+                              <FileText className="h-3.5 w-3.5" />
+                            )}
+                            <span className="max-w-[14rem] truncate">
+                              {file.fileName}
+                            </span>
+                            <span
+                              className={
+                                unscanned ? "text-destructive/80" : "text-muted-foreground"
+                              }
+                            >
+                              {unscanned
+                                ? "nije skeniran"
+                                : formatInquiryFileSize(file.fileSize)}
+                            </span>
+                          </a>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

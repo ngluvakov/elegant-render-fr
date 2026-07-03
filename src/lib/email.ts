@@ -431,13 +431,30 @@ export async function sendProjectInquiryAdminEmail(args: {
   message: string;
   sourceLabel?: string;
   fileCount: number;
+  // Broj fajlova koji NIJE skeniran (skener bio nedostupan). > 0 znači
+  // da fajlove treba proveriti ručno pre otvaranja.
+  unscannedFileCount?: number;
 }) {
+  const unscanned = args.unscannedFileCount ?? 0;
   await send({
     to: ADMIN_NOTIFY_EMAIL,
-    subject: `Novi upit za procenu — ${args.contactName}`,
+    subject:
+      unscanned > 0
+        ? `⚠ Novi upit (fajlovi neskenirani) — ${args.contactName}`
+        : `Novi upit za procenu — ${args.contactName}`,
     html: `
       <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto;">
         <h2 style="color: #1C1A19;">Novi upit za procenu</h2>
+        ${
+          unscanned > 0
+            ? `<div style="background: #fdecea; border: 1px solid #e5b3ab; border-radius: 8px; padding: 12px 16px; margin: 16px 0; color: #8a2c1c; line-height: 1.6;">
+          <strong>⚠ ${unscanned} fajl(ova) nije skenirano</strong> jer antivirus servis
+          nije bio dostupan. Fajlovi su zadržani u karantinu — proverite ih ručno
+          (ili preuzmite u sigurnom okruženju) pre otvaranja. Upit je ipak sačuvan
+          da se lead ne bi izgubio.
+        </div>`
+            : ""
+        }
         <p style="color: #6e665d; line-height: 1.6;">
           ${escapeHtml(args.contactName)} je poslao/la kratak brief i očekuje
           predlog usluga sa cenom.

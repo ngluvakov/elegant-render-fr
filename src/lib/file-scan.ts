@@ -215,7 +215,7 @@ export async function deleteStorageObject(input: {
  * log doesn't enforce it being a real FK.
  */
 export type EnforceCleanScanResult =
-  | { ok: true }
+  | { ok: true; scanStatus: "clean" | "pending" }
   | { ok: false; userError: string; reason: "infected" | "scan_error"; threats: string[] };
 
 export async function enforceCleanScan(input: {
@@ -226,8 +226,17 @@ export async function enforceCleanScan(input: {
   entityType: string;
   entityId: string;
   bucket?: string;
+  // Šta raditi kad skener NIJE DOSTUPAN (za razliku od zaraženog fajla).
+  //  - "reject" (podrazumevano): obriši fajl i vrati grešku. Zadržava
+  //    postojeće ponašanje checkout/order upload-a — fail-closed.
+  //  - "quarantine": ZADRŽI fajl, označi ga kao "pending" i pusti pozivaoca
+  //    da nastavi. Koristi ga tok upita da lead ne bi tiho nestao kad je
+  //    Cloudmersive privremeno nedostupan (incident 2026-06-24).
+  // Zaražen fajl se UVEK odbija, bez obzira na ovu opciju.
+  onScanUnavailable?: "reject" | "quarantine";
 }): Promise<EnforceCleanScanResult> {
   const bucket = input.bucket ?? UPLOADS_BUCKET;
+  const onScanUnavailable = input.onScanUnavailable ?? "reject";
   try {
     const result = await scanStorageObject({ bucket, path: input.storagePath });
     if (result.clean) {
@@ -242,7 +251,7 @@ export async function enforceCleanScan(input: {
           mimeType: input.mimeType,
         },
       });
-      return { ok: true };
+      return { ok: true, scanStatus: "clean" };
     }
 
     await deleteStorageObject({ bucket, path: input.storagePath });
@@ -266,9 +275,17 @@ export async function enforceCleanScan(input: {
     };
   } catch (err) {
     if (err instanceof FileScanUnavailableError) {
-      await deleteStorageObject({ bucket, path: input.storagePath });
+      const quarantine = onScanUnavailable === "quarantine";
+      // Karantin zadržava fajl; "reject" ga briše (staro ponašanje).
+      if (!quarantine) {
+        await deleteStorageObject({ bucket, path: input.storagePath });
+      }
       Sentry.captureException(err, {
-        tags: { area: "file-scan", flow: "enforce-clean-scan" },
+        tags: {
+          area: "file-scan",
+          flow: "enforce-clean-scan",
+          outcome: quarantine ? "quarantined" : "rejected",
+        },
         extra: {
           entityType: input.entityType,
           entityId: input.entityId,
@@ -282,8 +299,12 @@ export async function enforceCleanScan(input: {
         metadata: {
           storagePath: input.storagePath,
           errorReason: err.message,
+          quarantined: quarantine,
         },
       });
+      if (quarantine) {
+        return { ok: true, scanStatus: "pending" };
+      }
       return {
         ok: false,
         reason: "scan_error",

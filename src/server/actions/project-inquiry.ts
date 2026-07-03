@@ -174,12 +174,15 @@ export async function submitProjectInquiry(
   const files = validateFiles(input.files, draftId);
   if ("error" in files) return files;
 
-  // ISO 27001 A.8.7. Sync AV scan all attached files in parallel
-  // before creating any DB rows. If ANY file is infected or scanning
-  // is unavailable, refuse the whole inquiry — better than ending up
-  // with a half-submitted record. enforceCleanScan handles
-  // delete-from-storage + audit logging for the bad file; the others
-  // get cleaned up here in the rejection branch.
+  // ISO 27001 A.8.7. Sync AV scan all attached files in parallel before
+  // creating any DB rows. Zaražen fajl UVEK odbija ceo upit. Ali kad je
+  // skener NEDOSTUPAN, umesto da tiho izgubimo lead (incident 2026-06-24:
+  // kupac slao fotografije prostora, Cloudmersive pao, upit nestao bez
+  // traga), fajlove stavljamo u KARANTIN (scanStatus "pending", zadržani
+  // u storage-u) i puštamo upit da se sačuva — kontakt kupca je vredniji
+  // od trenutne provere. Admin dobija upozorenje i proverava ručno.
+  const fileScanStatus: Array<"clean" | "pending"> = files.map(() => "clean");
+  let quarantinedCount = 0;
   if (files.length > 0) {
     const scanResults = await Promise.all(
       files.map((f) =>
@@ -190,26 +193,31 @@ export async function submitProjectInquiry(
           mimeType: f.mimeType,
           entityType: "ProjectInquiryDraft",
           entityId: draftId,
+          onScanUnavailable: "quarantine",
         }),
       ),
     );
-    const failed = scanResults.find((r) => !r.ok);
-    if (failed && !failed.ok) {
+    // Uz "quarantine" jedini preostali ok:false je zaražen fajl.
+    const infected = scanResults.find((r) => !r.ok);
+    if (infected && !infected.ok) {
       // Best-effort cleanup of any other files in the same inquiry —
       // they were uploaded together and only make sense as a set.
       await Promise.allSettled(
-        scanResults.map((result, idx) => {
-          if (result.ok) {
-            return deleteStorageObject({
-              bucket: UPLOADS_BUCKET,
-              path: files[idx].storagePath,
-            });
-          }
-          return Promise.resolve();
-        }),
+        scanResults.map((result, idx) =>
+          result.ok
+            ? deleteStorageObject({
+                bucket: UPLOADS_BUCKET,
+                path: files[idx].storagePath,
+              })
+            : Promise.resolve(),
+        ),
       );
-      return { error: failed.userError };
+      return { error: infected.userError };
     }
+    scanResults.forEach((result, idx) => {
+      if (result.ok) fileScanStatus[idx] = result.scanStatus;
+    });
+    quarantinedCount = fileScanStatus.filter((s) => s === "pending").length;
   }
 
   const session = await auth();
@@ -232,13 +240,15 @@ export async function submitProjectInquiry(
       userId: session?.user?.id ?? null,
       ...(quoteSnapshot ? { quoteSnapshotJson: quoteSnapshot } : {}),
       files: {
-        create: files.map((file) => ({
+        create: files.map((file, idx) => ({
           fileName: file.fileName,
           fileSize: file.fileSize,
           mimeType: file.mimeType,
           storagePath: file.storagePath,
-          scanStatus: "clean",
-          scannedAt,
+          scanStatus: fileScanStatus[idx],
+          // Skenirani u ovom trenutku samo ako je čist; pending čeka ručnu
+          // proveru pa nema vreme skena.
+          scannedAt: fileScanStatus[idx] === "clean" ? scannedAt : null,
         })),
       },
     },
@@ -261,6 +271,20 @@ export async function submitProjectInquiry(
     });
   });
 
+  // Vidljiv alarm kad je lead ušao sa neskeniranim fajlovima — ranije bi
+  // ceo upit tiho nestao. Ide u Sentry (message, ne exception) da se ne
+  // izgubi u šumu i da se vidi učestalost skenerskih ispada.
+  if (quarantinedCount > 0) {
+    Sentry.captureMessage(
+      `Upit ${inquiry.id} sačuvan sa ${quarantinedCount} neskeniranih fajlova (skener nedostupan) — potrebna ručna provera.`,
+      {
+        level: "warning",
+        tags: { area: "project-inquiry", flow: "scan-quarantine" },
+        extra: { inquiryId: inquiry.id, quarantinedCount },
+      },
+    );
+  }
+
   await Promise.allSettled([
     sendProjectInquiryAdminEmail({
       inquiryId: inquiry.id,
@@ -275,6 +299,7 @@ export async function submitProjectInquiry(
       message,
       sourceLabel: inquiry.sourceLabel ?? undefined,
       fileCount: inquiry._count.files,
+      unscannedFileCount: quarantinedCount,
     }),
     sendProjectInquiryCustomerEmail({
       to: email,

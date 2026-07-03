@@ -1554,12 +1554,20 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-osnove-03.webp",
-        alt: "2D osnova — čist tehnički plan sa oznakama i dimenzijama",
+        src: "/artwork/portfolio-2d-osnove-stan-01.webp",
+        alt: "Kolorisan 2D tlocrt prizemlja — dnevni boravak, trpezarija i kuhinja, Elegant Render",
       },
       {
-        src: "/artwork/listing-floorplan-2d.webp",
-        alt: "2D osnova stana — kolorisan vektorski prikaz za oglas",
+        src: "/artwork/portfolio-2d-osnove-stan-02.webp",
+        alt: "Kolorisan 2D tlocrt sprata sa garažom — spavaća soba, kupatilo i garaža, Elegant Render",
+      },
+      {
+        src: "/artwork/portfolio-2d-osnove-stan-03.webp",
+        alt: "Kolorisan 2D tlocrt nivoa sa duplom garažom — spavaća soba, kupatilo i dva parking mesta, Elegant Render",
+      },
+      {
+        src: "/artwork/portfolio-2d-osnove-stan-04.webp",
+        alt: "Kolorisan 2D tlocrt stana — spavaća soba, kupatilo, kuhinja i dnevni boravak, Elegant Render",
       },
     ],
     faqs: [

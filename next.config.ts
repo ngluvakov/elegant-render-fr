@@ -17,6 +17,33 @@ const nextConfig: NextConfig = {
       "./node_modules/@fontsource/noto-sans/files/noto-sans-latin-ext-700-normal.woff",
     ],
   },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          // Bezbedan baseline bez CSP-a. Puni Content-Security-Policy ide
+          // tek kroz Report-Only fazu POSLE NestPay retesta banke — CSP
+          // može da blokira Turnstile/GTM/Sentry i ne sme se uvoditi dok
+          // sertifikacija traje. Ne dodavati "payment" u Permissions-Policy.
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000",
+          },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+        ],
+      },
+    ];
+  },
   async redirects() {
     return [
       // Legacy mixed service split into vr-tura + arhitektonska-animacija.

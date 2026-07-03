@@ -42,9 +42,14 @@ export async function ensureCheckoutUser(
     return { userId: existing.id };
   }
 
-  // Create guest user (no password)
-  const user = await prisma.user.create({
-    data: { name, email: normalizedEmail },
+  // Create guest user (no password). Upsert umesto create: dvostruki
+  // submit bi na create udario u unique(email) i vratio 500 umesto da
+  // ponovo iskoristi istog gosta (Prisma ovde koristi atomski
+  // INSERT ... ON CONFLICT).
+  const user = await prisma.user.upsert({
+    where: { email: normalizedEmail },
+    update: {},
+    create: { name, email: normalizedEmail },
   });
 
   // Send password setup email

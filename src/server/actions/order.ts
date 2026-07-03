@@ -21,7 +21,7 @@ import {
   getServerActionIdentifier,
   rateLimitMessage,
 } from "@/lib/rate-limit";
-import { repriceOrder } from "@/server/actions/item-config";
+import { repriceOrder } from "@/server/order/reprice";
 import { syncNewDeal } from "@/server/bitrix/sync-deal";
 import { enforceCleanScan } from "@/lib/file-scan";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
@@ -89,6 +89,13 @@ export async function createOrder(
   buyerInfo?: BuyerInfoInput,
 ): Promise<OrderResult> {
   if (!userId) return { error: "Korisnik nije identifikovan." };
+  // Guest checkout prolazi bez sesije (userId dolazi iz ensureCheckoutUser),
+  // ali kada sesija postoji, klijentski userId mora biti baš taj korisnik —
+  // inače bi ulogovan korisnik mogao da otvara nacrte pod tuđim nalogom.
+  const session = await auth();
+  if (session?.user?.id && session.user.id !== userId) {
+    return { error: "Korisnik nije identifikovan." };
+  }
   if (!quoteItems.length) return { error: "Ponuda je prazna." };
   if (!withdrawalWaivedAt) {
     // EU CRD čl. 16(m) / Zakon o zaštiti potrošača čl. 28: digital

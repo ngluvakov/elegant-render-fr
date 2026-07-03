@@ -51,7 +51,7 @@ import {
   expireAiCreditsIfNeeded,
   refundAiCreditUnits,
   spendAiCreditUnits,
-} from "@/server/actions/ai-credits";
+} from "@/server/credits/ledger";
 
 const AI_GENERATION_LOCK_MS = 10 * 60 * 1000;
 const AI_GENERATION_MAX_ATTEMPTS = 2;

@@ -17,11 +17,11 @@ Sentry.init({
   environment:
     process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "development",
 
-  // Attach local variable values to every stack frame in captured
-  // exceptions. Helps us see the productId / orderId / userId at the
-  // moment a server action threw without having to repro locally.
-  includeLocalVariables: true,
-
+  // includeLocalVariables je namerno ISKLJUČEN (default false): sa njim
+  // svaki captured exception nosi lokalne varijable svih frejmova — na
+  // platnim putanjama to uključuje NestPay `fields` mapu i podatke kupca
+  // (GDPR). Kontekst za debug dodavati ciljano kroz Sentry tags/extra,
+  // kao što payment putanje već rade.
   enableLogs: true,
   sendDefaultPii: true,
 });

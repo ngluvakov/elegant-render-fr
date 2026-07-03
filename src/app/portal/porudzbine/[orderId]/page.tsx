@@ -42,67 +42,71 @@ export default async function OrderDetailPage({
   const session = await auth();
   if (!session?.user?.id) return notFound();
 
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
-    include: {
-      items: {
+  // Sva četiri upita zavise samo od orderId/session — paralelno umesto
+  // sekvencijalno (ranije 4 serijska round-tripa po otvaranju detalja).
+  const [order, pricingCatalog, userBilling, referencableOrders] =
+    await Promise.all([
+      prisma.order.findUnique({
+        where: { id: orderId },
         include: {
-          files: {
-            select: {
-              id: true,
-              fileName: true,
-              fileSize: true,
-              kind: true,
-              floorId: true,
+          items: {
+            include: {
+              files: {
+                select: {
+                  id: true,
+                  fileName: true,
+                  fileSize: true,
+                  kind: true,
+                  floorId: true,
+                },
+              },
             },
           },
+          files: true,
+          statusEvents: { orderBy: { createdAt: "asc" } },
+          comments: {
+            orderBy: { createdAt: "asc" },
+            include: { author: { select: { name: true, email: true } } },
+          },
+          charges: {
+            orderBy: { createdAt: "desc" },
+            include: { items: true },
+          },
         },
-      },
-      files: true,
-      statusEvents: { orderBy: { createdAt: "asc" } },
-      comments: {
-        orderBy: { createdAt: "asc" },
-        include: { author: { select: { name: true, email: true } } },
-      },
-      charges: {
+      }),
+      getPublishedPricingCatalog(),
+      // Display currency: prefer the snapshot stamped on the order (set by
+      // createOrder / createEmptyDraft); fall back to the user's profile
+      // billingCountryCode for legacy orders that pre-date the snapshot.
+      prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { billingCountryCode: true },
+      }),
+      // Rule 3 picker — list user's paid-or-later orders as referencable.
+      prisma.order.findMany({
+        where: {
+          userId: session.user.id,
+          id: { not: orderId },
+          status: {
+            in: ["paid", "in_progress", "in_review", "revision_requested", "delivered", "closed"],
+          },
+        },
         orderBy: { createdAt: "desc" },
-        include: { items: true },
-      },
-    },
-  });
+        take: 20,
+        select: {
+          id: true,
+          orderNumber: true,
+          projectName: true,
+          status: true,
+        },
+      }),
+    ]);
 
   if (!order || order.userId !== session.user.id) return notFound();
-  const pricingCatalog = await getPublishedPricingCatalog();
 
-  // Display currency: prefer the snapshot stamped on the order (set by
-  // createOrder / createEmptyDraft); fall back to the user's profile
-  // billingCountryCode for legacy orders that pre-date the snapshot.
-  const userBilling = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { billingCountryCode: true },
-  });
   const displayCurrency = order.billingCurrency
     ? displayCurrencyForBillingCurrency(order.billingCurrency)
     : getDisplayCurrencyForCountry(userBilling?.billingCountryCode);
-
-  // Rule 3 picker — list user's paid-or-later orders as referencable.
-  const referencableOrders = await prisma.order.findMany({
-    where: {
-      userId: session.user.id,
-      id: { not: orderId },
-      status: {
-        in: ["paid", "in_progress", "in_review", "revision_requested", "delivered", "closed"],
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 20,
-    select: {
-      id: true,
-      orderNumber: true,
-      projectName: true,
-      status: true,
-    },
-  });
 
   const firstItem = order.items[0];
   const serviceItems = order.items.filter((item) => item.kind === "service");

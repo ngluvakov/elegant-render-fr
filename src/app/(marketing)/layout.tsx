@@ -1,8 +1,7 @@
-import { auth } from "@/lib/auth";
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SessionProvider } from "@/components/auth/session-provider";
-import { PostHogIdentifyBridge } from "@/components/posthog-identify-bridge";
+import { PostHogSessionBridge } from "@/components/posthog-session-bridge";
 import { ChatWidget } from "@/components/chat/chat-widget";
 import { QuickInquiryProvider } from "@/components/inquiry/quick-inquiry-provider";
 import { PublicCurrencyProvider } from "@/components/site/public-currency-provider";
@@ -14,25 +13,17 @@ export default async function MarketingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Server-resolve session so authenticated users browsing marketing
-  // pages (e.g. logged-in customer revisiting /cene) are identified
-  // in PostHog from the first pageview, not just after they cross
-  // into /portal.
-  const [session, displayCurrency, pricingCatalog] = await Promise.all([
-    auth(),
+  // Session se namerno NE čita ovde (auth() bi ceo marketing tree
+  // opt-ovao u per-request rendering zbog kolačića) — PostHog
+  // identifikacija ide klijentski kroz PostHogSessionBridge.
+  const [displayCurrency, pricingCatalog] = await Promise.all([
     getPublicDisplayCurrency(),
     getPublishedPricingCatalog(),
   ]);
 
   return (
     <SessionProvider>
-      <PostHogIdentifyBridge
-        userId={session?.user?.id ?? null}
-        traits={{
-          email: session?.user?.email ?? undefined,
-          name: session?.user?.name ?? undefined,
-        }}
-      />
+      <PostHogSessionBridge />
       <PublicCurrencyProvider
         displayCurrency={displayCurrency}
         pricingSettings={pricingCatalog.settings}

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
@@ -16,32 +17,36 @@ export type AdminContext = {
   permissions: AdminPermission[];
 };
 
-export async function getAdminContext(): Promise<AdminContext | null> {
-  const session = await auth();
-  if (!session?.user?.id) return null;
+// cache(): admin layout + requirePermission + stranica zovu ovo u istom
+// renderu — bez keša to su 3× auth() + 3 user upita po admin navigaciji.
+export const getAdminContext = cache(
+  async (): Promise<AdminContext | null> => {
+    const session = await auth();
+    if (!session?.user?.id) return null;
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: {
-      id: true,
-      email: true,
-      isAdmin: true,
-      adminPermissions: true,
-    },
-  });
-  if (!user) return null;
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: {
+        id: true,
+        email: true,
+        isAdmin: true,
+        adminPermissions: true,
+      },
+    });
+    if (!user) return null;
 
-  const permissions = normalizeAdminPermissions(user.adminPermissions, {
-    isAdmin: user.isAdmin,
-  });
-  if (permissions.length === 0) return null;
+    const permissions = normalizeAdminPermissions(user.adminPermissions, {
+      isAdmin: user.isAdmin,
+    });
+    if (permissions.length === 0) return null;
 
-  return {
-    id: user.id,
-    email: user.email,
-    permissions,
-  };
-}
+    return {
+      id: user.id,
+      email: user.email,
+      permissions,
+    };
+  },
+);
 
 export async function requireAnyAdminPermission(
   permissions: readonly AdminPermission[] = ADMIN_PERMISSIONS,

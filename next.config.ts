@@ -2,6 +2,10 @@ import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // Per-ikonica tree-shaking umesto celog lucide-react barrel-a.
+    optimizePackageImports: ["lucide-react"],
+  },
   images: {
     remotePatterns: [
       {

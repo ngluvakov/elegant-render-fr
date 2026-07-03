@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -32,7 +33,11 @@ export default async function PortalLayout({
   const adminPermissions = normalizeAdminPermissions(user?.adminPermissions, {
     isAdmin: user?.isAdmin,
   });
-  await recordUserActivity(session.user.id, { portalVisits: 1 });
+  // after(): upis aktivnosti ne sme da blokira render — izvršava se kad
+  // odgovor završi streaming (serverless-bezbedno, za razliku od golog
+  // fire-and-forget promisa koji bi Vercel mogao da ubije).
+  const visitorId = session.user.id;
+  after(() => recordUserActivity(visitorId, { portalVisits: 1 }).catch(() => {}));
 
   return (
     <PortalLayoutShell

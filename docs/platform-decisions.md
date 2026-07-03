@@ -20,6 +20,19 @@ Ne mora se ažurirati za male copy, styling ili refactor izmene koje ne menjaju 
 - **Reference:** PR, commit, issue ili chat context ako postoji.
 ```
 
+## 2026-07-03 - Bezbednosno-performansni pregled platforme (Faza 1 + 2)
+
+- **Oblast promene:** auth | payments (okolina, ne tok) | architecture | order lifecycle
+- **Šta se promenilo:** (1) Interni mutatori izvučeni iz `"use server"` fajlova u obične module — `spendAiCreditUnits`/`refundAiCreditUnits`/`expireAiCreditsIfNeeded` u `src/server/credits/ledger.ts`, `repriceOrder` u `src/server/order/reprice.ts` — jer Next.js svaki export `"use server"` fajla registruje kao javno pozivljiv endpoint bez auth provere. (2) `createOrder` odbija `userId` različit od sesije kad sesija postoji. (3) `updateItemConfig` dobio status gate (draft/awaiting_payment/paid) + revalidate. (4) Security headeri (HSTS, nosniff, X-Frame-Options, Referrer-Policy, Permissions-Policy) — **bez CSP-a** dok traje NestPay sertifikacija. (5) Cron/webhook tajne fail-closed + timing-safe (`src/lib/cron-auth.ts`); Bitrix webhook typo `ONCRMDEAUPDATE`→`ONCRMDEALUPDATE` + Sentry na greške. (6) Sentry `includeLocalVariables` isključen (lokali su nosili NestPay `fields` i PII). (7) Hot-path indeksi: `orders(userId, paymentId+paymentProvider, paymentStatus, status)`, `order_items(orderId)`, `order_files(orderId, orderItemId)`, `accounts(userId)`, `quotes(userId)`. (8) `getAdminContext` u React `cache()`; `recordUserActivity` kroz `after()`; order detail upiti u `Promise.all`. (9) `auth()` izbačen iz marketing layouta — PostHog identifikacija ide klijentski (`PostHogSessionBridge`).
+- **Zašto:** Generalni audit platforme; najveći nalaz je bila mogućnost da bilo ko pozove interne kredit/reprice funkcije kao server akcije bez plaćanja.
+- **VAŽNO — svesno ODLOŽENO do posle NestPay retesta banke:** `finishSuccessfulPayment`/`finishFailedPayment` (payment.ts), `applyPurchasedAiCreditsForOrder` i `issueInvoice` su i dalje exportovani iz `"use server"` fajlova bez auth provere — popravka zahteva izmene platnih fajlova koji su zamrznuti. Zatvoriti ODMAH posle retesta. Isto važi za puni CSP (prvo Report-Only) i fail-closed guard na `nestpay-reconcile` cronu.
+- **DB drift nalaz:** migracije `20260611200825_add_buyer_contact_fields` i `20260611214747_restore_scan_threats_default` su primenjene na deljenu Supabase bazu sa grane koja nikad nije merge-ovana u main (kolone `buyerCity/buyerPhone/buyerPostalCode` postoje u bazi, ne u šemi). `prisma migrate dev` je zbog toga blokiran (traži reset!) — indeks-migracija `20260703090000` je pisana ručno u Prisma formatu i primenjena kroz `migrate deploy`. Dugoročno: ili merge-ovati buyer-contact granu ili počistiti `_prisma_migrations` + kolone; i gate-ovati `migrate deploy` samo na production buildove.
+- **Uticaj na conversion:** Nema direktno; brži portal (indeksi, paralelni upiti).
+- **Uticaj na design:** Nema.
+- **Uticaj na docs:** Ovaj decision log.
+- **Povezani fajlovi:** `src/server/credits/ledger.ts`, `src/server/order/reprice.ts`, `src/server/actions/{ai-credits,item-config,order,checkout}.ts`, `src/lib/{cron-auth,admin-auth}.ts`, `next.config.ts`, `sentry.server.config.ts`, `prisma/migrations/20260703090000_add_missing_hot_path_indexes/`, `src/app/(marketing)/layout.tsx`, `src/components/posthog-session-bridge.tsx`
+- **Reference:** Claude Code audit sesija 2026-07-02/03 (tri paralelna pregleda: backend, frontend/UX, infra).
+
 ## 2026-06-30 - Video demo na detaljnoj stranici (arhitektonska animacija)
 
 - **Oblast promene:** conversion | architecture | docs

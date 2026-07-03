@@ -139,6 +139,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
   @@map("accounts")
 }
 
@@ -333,6 +334,14 @@ model Order {
   sourceInquiry     ProjectInquiry?    @relation("InquiryConversion", fields: [sourceInquiryId], references: [id], onDelete: SetNull)
 
   @@index([sourceInquiryId])
+  // Hot-path indeksi: portal lista ("moje porudžbine") ide po userId,
+  // NestPay return/reconcile traže po paymentId+paymentProvider, a
+  // reconcile sweep-ovi filtriraju po paymentStatus / status. Postgres
+  // ne indeksira FK kolone automatski.
+  @@index([userId])
+  @@index([paymentId, paymentProvider])
+  @@index([paymentStatus])
+  @@index([status])
   @@map("orders")
 }
 
@@ -362,6 +371,7 @@ model OrderItem {
   order Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
   files OrderFile[]
 
+  @@index([orderId])
   @@map("order_items")
 }
 
@@ -395,6 +405,8 @@ model OrderFile {
   order     Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderItem OrderItem? @relation(fields: [orderItemId], references: [id])
 
+  @@index([orderId])
+  @@index([orderItemId])
   @@map("order_files")
 }
 
@@ -546,6 +558,7 @@ model Quote {
   openedAt  DateTime?
 
   @@index([expiresAt])
+  @@index([userId])
   @@map("quotes")
 }
 

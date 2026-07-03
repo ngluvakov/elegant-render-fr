@@ -83,6 +83,11 @@ export type ServiceFaq = {
 export type PortfolioImage = {
   src: string;
   alt: string;
+  /** When set, the portfolio tile becomes a before/after slider: the tile
+   *  reveals `beforeSrc` (e.g. the plain/technical plan) over `src` (the
+   *  finished, colored one). */
+  beforeSrc?: string;
+  beforeAlt?: string;
 };
 
 export type Service = {
@@ -1556,18 +1561,26 @@ export const SERVICES: Service[] = [
       {
         src: "/artwork/portfolio-2d-osnove-stan-01.webp",
         alt: "Kolorisan 2D tlocrt prizemlja — dnevni boravak, trpezarija i kuhinja, Elegant Render",
+        beforeSrc: "/artwork/portfolio-2d-osnove-stan-01-pre.webp",
+        beforeAlt: "Crno-beli tehnički 2D tlocrt prizemlja pre kolorizacije, Elegant Render",
       },
       {
         src: "/artwork/portfolio-2d-osnove-stan-02.webp",
         alt: "Kolorisan 2D tlocrt sprata sa garažom — spavaća soba, kupatilo i garaža, Elegant Render",
+        beforeSrc: "/artwork/portfolio-2d-osnove-stan-02-pre.webp",
+        beforeAlt: "Crno-beli tehnički 2D tlocrt sprata sa garažom pre kolorizacije, Elegant Render",
       },
       {
         src: "/artwork/portfolio-2d-osnove-stan-03.webp",
         alt: "Kolorisan 2D tlocrt nivoa sa duplom garažom — spavaća soba, kupatilo i dva parking mesta, Elegant Render",
+        beforeSrc: "/artwork/portfolio-2d-osnove-stan-03-pre.webp",
+        beforeAlt: "Crno-beli tehnički 2D tlocrt nivoa sa duplom garažom pre kolorizacije, Elegant Render",
       },
       {
         src: "/artwork/portfolio-2d-osnove-stan-04.webp",
         alt: "Kolorisan 2D tlocrt stana — spavaća soba, kupatilo, kuhinja i dnevni boravak, Elegant Render",
+        beforeSrc: "/artwork/portfolio-2d-osnove-stan-04-pre.webp",
+        beforeAlt: "Crno-beli tehnički 2D tlocrt stana pre kolorizacije, Elegant Render",
       },
     ],
     faqs: [

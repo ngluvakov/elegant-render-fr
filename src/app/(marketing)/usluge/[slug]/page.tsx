@@ -476,20 +476,37 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
               </h2>
             </div>
             <div className="mt-12 grid gap-6 sm:grid-cols-2">
-              {service.portfolioImages.map((img) => (
-                <figure
-                  key={img.src}
-                  className="group relative aspect-[16/9] overflow-hidden rounded-2xl border border-border/70 bg-secondary"
-                >
-                  <Image
-                    src={img.src}
+              {service.portfolioImages.map((img) =>
+                img.beforeSrc ? (
+                  <BeforeAfterReveal
+                    key={img.src}
+                    beforeSrc={img.beforeSrc}
+                    afterSrc={img.src}
                     alt={img.alt}
-                    fill
+                    beforeAlt={img.beforeAlt ?? img.alt}
+                    afterAlt={img.alt}
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                  />
-                </figure>
-              ))}
+                    className="aspect-[16/9] w-full rounded-2xl border border-border/70 bg-secondary"
+                  >
+                    <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-background/95">
+                      Pre / posle
+                    </span>
+                  </BeforeAfterReveal>
+                ) : (
+                  <figure
+                    key={img.src}
+                    className="group relative aspect-[16/9] overflow-hidden rounded-2xl border border-border/70 bg-secondary"
+                  >
+                    <Image
+                      src={img.src}
+                      alt={img.alt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  </figure>
+                ),
+              )}
             </div>
           </div>
         </section>

@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useCheckout } from "../checkout-context";
 import { confirmFileUpload } from "@/server/actions/order";
+import { putFileWithProgress } from "@/lib/upload-progress";
 
 const MAX_TOTAL_BYTES = 100 * 1024 * 1024; // 100MB total
 
@@ -58,19 +59,12 @@ export function StepUpload() {
 
         const { signedUrl, storagePath } = await urlRes.json();
 
-        // Upload directly to Supabase Storage
-        const uploadRes = await fetch(signedUrl, {
-          method: "PUT",
-          headers: {
-            "Content-Type": file.type,
-            "x-upsert": "true",
-          },
-          body: file,
+        // Upload directly to Supabase Storage, sa pravim progresom.
+        await putFileWithProgress(signedUrl, file, (pct) => {
+          setUploading((prev) =>
+            prev.map((u) => (u.file === file ? { ...u, progress: pct } : u)),
+          );
         });
-
-        if (!uploadRes.ok) {
-          throw new Error("Upload nije uspeo");
-        }
 
         // Confirm in DB if we have an orderId. Server-side AV scan
         // runs inside confirmFileUpload — if it flags the file, the
@@ -135,13 +129,23 @@ export function StepUpload() {
           formati: JPG, PNG, WebP, TIFF, PDF.
         </p>
 
-        {/* Drop zone */}
+        {/* Drop zone — role/tabIndex/onKeyDown da bude dostupna i sa
+            tastature (input je vizuelno sakriven). */}
         <div
+          role="button"
+          tabIndex={0}
+          aria-label="Otpremite fajlove — prevucite ih ovde ili pritisnite Enter da izaberete"
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
           onClick={() => inputRef.current?.click()}
-          className={`mt-6 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 transition-colors ${
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              inputRef.current?.click();
+            }
+          }}
+          className={`mt-6 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
             dragOver
               ? "border-accent bg-accent/5"
               : "border-border/60 bg-background/40 hover:border-accent/50"
@@ -183,7 +187,24 @@ export function StepUpload() {
                   {u.error ? (
                     <p className="text-xs text-destructive">{u.error}</p>
                   ) : (
-                    <p className="text-xs text-accent">Otpremanje…</p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <div
+                        role="progressbar"
+                        aria-valuenow={u.progress}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-label={`Otpremanje: ${u.file.name}`}
+                        className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted"
+                      >
+                        <div
+                          className="h-full rounded-full bg-accent transition-[width] duration-200"
+                          style={{ width: `${u.progress}%` }}
+                        />
+                      </div>
+                      <span className="min-w-14 text-right text-xs tabular-nums text-accent">
+                        {u.progress < 100 ? `${u.progress}%` : "Provera…"}
+                      </span>
+                    </div>
                   )}
                 </div>
                 <span className="text-xs text-muted-foreground">

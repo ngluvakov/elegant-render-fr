@@ -1,37 +1,49 @@
 /**
  * env.ts — provera prisustva env varova pri boot-u (instrumentation.ts).
  *
- * Namerno NE baca grešku u produkciji: pogrešna lista obaveznih varova
- * bi srušila deploy. Umesto toga: u developmentu THROW (fail-fast dok
- * je jeftino), u produkciji glasan log koji Sentry pokupi. Runtime
- * mesta i dalje drže svoje guard-ove (cron-auth fail-closed itd.).
+ * Dva nivoa:
+ *  - CORE: bez njih ništa ne radi ni lokalno → u developmentu THROW
+ *    (fail-fast dok je jeftino), u produkciji glasan log.
+ *  - INTEGRATIONS: očekivani u produkciji, ali lokalni dev legitimno
+ *    radi bez njih (mock kartica umesto NestPay-a, in-memory rate
+ *    limit umesto Upstash-a, Turnstile isključen) → uvek samo log,
+ *    u developmentu utišan.
+ *
+ * Namerno ne baca u produkciji: pogrešna lista bi srušila deploy.
+ * Runtime mesta drže svoje guard-ove (cron-auth fail-closed itd.).
  */
-import { z } from "zod";
+const CORE_ENV = ["DATABASE_URL", "AUTH_SECRET"] as const;
 
-const requiredServerEnv = z.object({
-  DATABASE_URL: z.string().min(1),
-  AUTH_SECRET: z.string().min(1),
-  CRON_SECRET: z.string().min(1),
-  RESEND_API_KEY: z.string().min(1),
-  NESTPAY_CLIENT_ID: z.string().min(1),
-  NESTPAY_STORE_KEY: z.string().min(1),
-  OPENAI_API_KEY: z.string().min(1),
-  BITRIX24_WEBHOOK_URL: z.string().min(1),
-  TURNSTILE_SECRET_KEY: z.string().min(1),
-  UPSTASH_REDIS_REST_URL: z.string().min(1),
-  UPSTASH_REDIS_REST_TOKEN: z.string().min(1),
-});
+const INTEGRATION_ENV = [
+  "CRON_SECRET",
+  "RESEND_API_KEY",
+  "NESTPAY_CLIENT_ID",
+  "NESTPAY_STORE_KEY",
+  "OPENAI_API_KEY",
+  "BITRIX24_WEBHOOK_URL",
+  "TURNSTILE_SECRET_KEY",
+  "UPSTASH_REDIS_REST_URL",
+  "UPSTASH_REDIS_REST_TOKEN",
+] as const;
+
+function missingOf(names: readonly string[]): string[] {
+  return names.filter((name) => !process.env[name]?.trim());
+}
 
 export function checkServerEnv() {
-  const parsed = requiredServerEnv.safeParse(process.env);
-  if (parsed.success) return;
+  const isDev = process.env.NODE_ENV === "development";
 
-  const missing = parsed.error.issues.map((issue) => issue.path.join("."));
-  const message = `[env] Nedostaju env varovi: ${missing.join(", ")}`;
-
-  if (process.env.NODE_ENV === "development") {
-    throw new Error(message);
+  const missingCore = missingOf(CORE_ENV);
+  if (missingCore.length > 0) {
+    const message = `[env] Nedostaju CORE env varovi: ${missingCore.join(", ")}`;
+    if (isDev) throw new Error(message);
+    console.error(message);
   }
-  // Produkcija/preview: vidljivo, ali bez rušenja boot-a.
-  console.error(message);
+
+  const missingIntegrations = missingOf(INTEGRATION_ENV);
+  if (missingIntegrations.length > 0 && !isDev) {
+    console.error(
+      `[env] Nedostaju integration env varovi (očekivani u produkciji): ${missingIntegrations.join(", ")}`,
+    );
+  }
 }

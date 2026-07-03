@@ -331,7 +331,7 @@ export function StepReview() {
           type="checkbox"
           checked={waiveWithdrawal}
           onChange={(e) => setWaiveWithdrawal(e.target.checked)}
-          className="h-3.5 w-3.5 flex-shrink-0 cursor-pointer accent-accent"
+          className="h-5 w-5 flex-shrink-0 cursor-pointer accent-accent"
         />
         <span className="text-xs leading-relaxed text-muted-foreground">
           Pristajem da izrada počne odmah po potvrdi porudžbine. Razumem da

@@ -23,22 +23,59 @@ export type ChatMessage = {
   content: string;
 };
 
-function renderLinks(text: string) {
-  const parts = text.split(/(\[[^\]]+\]\([^)]+\))/g);
+// Lagani markdown za poruke asistenta: linkovi, **bold** i "- " liste.
+// Model ih redovno emituje, a ranije su se prikazivali kao sirov tekst
+// (samo su linkovi bili renderovani).
+function renderInline(text: string, keyPrefix: string) {
+  const parts = text.split(/(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*)/g);
   return parts.map((part, i) => {
-    const match = part.match(/\[([^\]]+)\]\(([^)]+)\)/);
-    if (match) {
+    const link = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (link) {
       return (
         <a
-          key={i}
-          href={match[2]}
+          key={`${keyPrefix}-${i}`}
+          href={link[2]}
           className="font-medium text-accent underline underline-offset-2 hover:text-accent/80"
         >
-          {match[1]}
+          {link[1]}
         </a>
       );
     }
-    return <span key={i}>{part}</span>;
+    const bold = part.match(/^\*\*([^*]+)\*\*$/);
+    if (bold) {
+      return (
+        <strong
+          key={`${keyPrefix}-${i}`}
+          className="font-semibold text-foreground"
+        >
+          {bold[1]}
+        </strong>
+      );
+    }
+    return <span key={`${keyPrefix}-${i}`}>{part}</span>;
+  });
+}
+
+function renderLinks(text: string) {
+  const lines = text.split("\n");
+  return lines.map((line, i) => {
+    const listItem = line.match(/^\s*[-•]\s+(.*)$/);
+    if (listItem) {
+      return (
+        <span key={i} className="flex gap-2">
+          <span aria-hidden className="text-accent">
+            •
+          </span>
+          <span className="flex-1">{renderInline(listItem[1], `l${i}`)}</span>
+        </span>
+      );
+    }
+    return (
+      <span key={i}>
+        {renderInline(line, `l${i}`)}
+        {i < lines.length - 1 ? <br /> : null}
+      </span>
+    );
   });
 }
 

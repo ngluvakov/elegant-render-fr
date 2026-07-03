@@ -10,8 +10,9 @@ import { useCallback, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FileUp, Upload } from "lucide-react";
 import { confirmFileUpload } from "@/server/actions/order";
+import { putFileWithProgress } from "@/lib/upload-progress";
 
-type UploadingFile = { file: File; error?: string };
+type UploadingFile = { file: File; progress: number; error?: string };
 
 export function RevisionUploadCard({ orderId }: { orderId: string }) {
   const [uploading, setUploading] = useState<UploadingFile[]>([]);
@@ -21,7 +22,7 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
 
   const uploadFile = useCallback(
     async (file: File) => {
-      setUploading((prev) => [...prev, { file }]);
+      setUploading((prev) => [...prev, { file, progress: 0 }]);
 
       try {
         const urlRes = await fetch("/api/checkout/upload-url", {
@@ -42,13 +43,11 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
 
         const { signedUrl, storagePath } = await urlRes.json();
 
-        const uploadRes = await fetch(signedUrl, {
-          method: "PUT",
-          headers: { "Content-Type": file.type, "x-upsert": "true" },
-          body: file,
+        await putFileWithProgress(signedUrl, file, (pct) => {
+          setUploading((prev) =>
+            prev.map((u) => (u.file === file ? { ...u, progress: pct } : u)),
+          );
         });
-
-        if (!uploadRes.ok) throw new Error("Upload nije uspeo");
 
         const result = await confirmFileUpload(
           orderId,
@@ -87,11 +86,20 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
       </p>
 
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="Otpremite fajlove — prevucite ih ovde ili pritisnite Enter da izaberete"
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={(e) => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files); }}
         onClick={() => inputRef.current?.click()}
-        className={`mt-4 flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed px-4 py-6 transition-colors ${
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            inputRef.current?.click();
+          }
+        }}
+        className={`mt-4 flex cursor-pointer flex-col items-center rounded-xl border-2 border-dashed px-4 py-6 transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50 ${
           dragOver ? "border-accent bg-accent/5" : "border-border/40 hover:border-accent/40"
         }`}
       >
@@ -123,7 +131,24 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
               {u.error ? (
                 <span className="text-[0.72rem] text-destructive">{u.error}</span>
               ) : (
-                <span className="text-[0.72rem] text-accent">Otpremanje…</span>
+                <span className="flex items-center gap-2">
+                  <span
+                    role="progressbar"
+                    aria-valuenow={u.progress}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`Otpremanje: ${u.file.name}`}
+                    className="block h-1 w-16 overflow-hidden rounded-full bg-muted"
+                  >
+                    <span
+                      className="block h-full rounded-full bg-accent transition-[width] duration-200"
+                      style={{ width: `${u.progress}%` }}
+                    />
+                  </span>
+                  <span className="min-w-10 text-right text-[0.72rem] tabular-nums text-accent">
+                    {u.progress < 100 ? `${u.progress}%` : "Provera…"}
+                  </span>
+                </span>
               )}
             </div>
           ))}

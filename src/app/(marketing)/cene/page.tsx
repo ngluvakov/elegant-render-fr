@@ -9,6 +9,7 @@ import { QuoteProvider } from "@/components/configurator/quote-context";
 import { QuoteSummary } from "@/components/configurator/quote-summary";
 import { StandaloneAiCredits } from "@/components/configurator/standalone-ai-credits";
 import { ServiceMatrix } from "@/components/configurator/service-matrix";
+import { Skeleton } from "@/components/ui/skeleton";
 import { PreFooterCta } from "@/components/site/pre-footer-cta";
 import {
   buildBreadcrumbJsonLd,
@@ -88,7 +89,24 @@ export default async function CenePage() {
             with hover-preview pricing and an info drawer. The black "Vaša
             ponuda" QuoteSummary card lives in the matrix as a sticky 3rd
             column on xl+, so the cart is visible while browsing. */}
-        <Suspense fallback={null}>
+        <Suspense
+          fallback={
+            <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-16">
+              <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
+                <div className="hidden space-y-3 lg:block">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <Skeleton key={i} className="h-10 w-full" />
+                  ))}
+                </div>
+                <div className="space-y-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Skeleton key={i} className="h-16 w-full" />
+                  ))}
+                </div>
+              </div>
+            </div>
+          }
+        >
           <ServiceMatrix cartSlot={<QuoteSummary />} />
         </Suspense>
 
@@ -96,7 +114,14 @@ export default async function CenePage() {
             QuoteSummary is suppressed here (already shown above). */}
         <section id="korpa" className="scroll-mt-24 pb-20 pt-16">
           <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
-            <Suspense fallback={null}>
+            <Suspense
+              fallback={
+                <div className="space-y-4">
+                  <Skeleton className="h-8 w-56" />
+                  <Skeleton className="h-40 w-full" />
+                </div>
+              }
+            >
               <ConfiguratorBody hideQuoteSummary />
             </Suspense>
           </div>

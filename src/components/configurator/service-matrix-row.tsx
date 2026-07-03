@@ -95,7 +95,7 @@ export function ServiceMatrixRow({
       data-in-cart={isInCart ? "" : undefined}
       data-active={active ? "" : undefined}
       className={cn(
-        "group relative flex items-center gap-3 rounded-lg border bg-card px-3 py-2 transition-all duration-200",
+        "group relative flex items-center gap-3 rounded-lg border bg-card px-3 py-2 transition-colors duration-200",
         "border-border/50 hover:border-[color:var(--color-sage)]/50 hover:bg-secondary/30",
         recommended &&
           "border-[color:var(--color-sage)]/45 bg-[color:var(--color-sage)]/8",
@@ -128,35 +128,46 @@ export function ServiceMatrixRow({
 
       <div className="flex flex-col items-end justify-center text-right shrink-0 min-w-[88px] sm:min-w-[120px]">
         {discount ? (
-          <>
-            <div className="flex items-baseline gap-1 sm:gap-1.5">
-              <span className="text-[0.65rem] sm:text-xs line-through text-muted-foreground/55">
-                {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
-              </span>
-              <span className="text-sm sm:text-base font-semibold text-foreground">
-                {formatPublicPrice(discountedPerUnit!, displayCurrency, pricingSettings)}
-              </span>
-            </div>
-            <span
-              className={cn(
-                "mt-0.5 inline-flex items-center rounded px-1.5 py-0 text-[0.6rem] font-bold uppercase tracking-wide",
-                isPreviewDiscount
-                  ? "bg-[color:var(--color-sage)]/25 text-[color:var(--color-sage-deep)] ring-1 ring-dashed ring-[color:var(--color-sage-deep)]/40"
-                  : "bg-[color:var(--color-sage-deep)] text-white",
-              )}
-              title={discount.reason}
-            >
-              &minus;{discount.pct}%{" "}
-              {isPreviewDiscount && (
-                <span className="ml-1 hidden sm:inline font-normal normal-case tracking-normal">preview</span>
-              )}
+          <div className="flex items-baseline gap-1 sm:gap-1.5">
+            <span className="text-[0.65rem] sm:text-xs line-through text-muted-foreground/55">
+              {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
             </span>
-          </>
+            <span className="text-sm sm:text-base font-semibold text-foreground">
+              {formatPublicPrice(discountedPerUnit!, displayCurrency, pricingSettings)}
+            </span>
+          </div>
         ) : (
           <span className="text-sm sm:text-base font-semibold text-foreground">
             od {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
           </span>
         )}
+        {/* The discount badge line is ALWAYS in flow (invisible when there is
+            no discount) so a hover-preview discount never changes the row's
+            height. Without it the table reflows on hover, shifting rows under
+            the cursor, and the hover flickers up/down uncontrollably. */}
+        <span
+          aria-hidden={discount === null}
+          className={cn(
+            "mt-0.5 inline-flex items-center rounded px-1.5 py-0 text-[0.6rem] font-bold uppercase tracking-wide",
+            discount === null
+              ? "invisible"
+              : isPreviewDiscount
+                ? "bg-[color:var(--color-sage)]/25 text-[color:var(--color-sage-deep)] ring-1 ring-dashed ring-[color:var(--color-sage-deep)]/40"
+                : "bg-[color:var(--color-sage-deep)] text-white",
+          )}
+          title={discount?.reason}
+        >
+          {discount ? (
+            <>
+              &minus;{discount.pct}%{" "}
+              {isPreviewDiscount && (
+                <span className="ml-1 hidden sm:inline font-normal normal-case tracking-normal">preview</span>
+              )}
+            </>
+          ) : (
+            " "
+          )}
+        </span>
       </div>
 
       <div className="flex items-center gap-1 sm:gap-1.5 self-center">

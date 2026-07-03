@@ -246,7 +246,7 @@ export function SiteHeader() {
             variant="accent"
             inquiry={{ source: "site-header", sourceLabel: "Header CTA" }}
           >
-            Pošaljite brief
+            Pošaljite upit
           </QuickInquiryLink>
         </div>
 
@@ -353,7 +353,7 @@ export function SiteHeader() {
                   sourceLabel: "Mobile header CTA",
                 }}
               >
-                Pošaljite brief
+                Pošaljite upit
               </QuickInquiryLink>
             </div>
           </SheetContent>

@@ -196,7 +196,7 @@ export function QuickOrderHero() {
                   sourceLabel: "Homepage hero brief",
                 }}
               >
-                Pošaljite brief
+                Pošaljite upit
               </QuickInquiryLink>
             </div>
           </div>

@@ -31,7 +31,7 @@ const sizeClasses = {
   sm: "h-11 w-auto",
   md: "h-14 w-auto",
   lg: "h-20 w-auto",
-  xl: "h-[8.505rem] w-auto", // 136px — oversized header logo (overflows the bar); 10% smaller than the previous 151px
+  xl: "h-[4.5rem] w-auto", // 72px — header logo, contained within the 80px bar (vertically centered, no longer overflows). Only used by SiteHeader.
 } as const;
 
 const surfaceClasses = {

@@ -89,11 +89,11 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur">
       {/* Full-bleed bar with 20px side padding so the brand sits 20px from the edge. */}
-      <div className="flex h-16 w-full items-center justify-between gap-6 px-5">
+      <div className="flex h-20 w-full items-center justify-between gap-6 px-5">
         <div className="flex items-center gap-3">
-          {/* Oversized logo: the header keeps its original 64px height; the logo
-              is top-aligned and intentionally overflows below the bar. */}
-          <div className="flex h-16 items-start">
+          {/* Logo sits inside the 80px bar, vertically centered: 72px logo with
+              ~4px breathing room top/bottom. No longer overflows the header. */}
+          <div className="flex h-20 items-center">
             <BrandLogo size="xl" />
           </div>
           {/* Powered-by badge — link disabled for now (renders as a plain,

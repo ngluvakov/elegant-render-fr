@@ -137,8 +137,8 @@ export async function finishSuccessfulChargePayment(
     });
   }
 
-  revalidatePath(`/portal/porudzbine/${charge.orderId}`);
-  revalidatePath("/portal/finansije");
+  revalidatePath(`/portal/orders/${charge.orderId}`);
+  revalidatePath("/portal/finance");
 
   return { success: true };
 }

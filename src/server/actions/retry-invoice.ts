@@ -65,8 +65,8 @@ export async function retryIssueInvoice(
 
     const result = await issueInvoice(orderId);
 
-    revalidatePath(`/portal/admin/porudzbine/${orderId}`);
-    revalidatePath(`/portal/porudzbine/${orderId}`);
+    revalidatePath(`/portal/admin/orders/${orderId}`);
+    revalidatePath(`/portal/orders/${orderId}`);
 
     return result;
   } catch (err) {

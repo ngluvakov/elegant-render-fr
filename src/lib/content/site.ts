@@ -46,7 +46,7 @@ export const SITE = {
 } as const;
 
 /**
- * Pravni identitet pravnog lica — koristi se na /pravno/impressum, u
+ * Pravni identitet pravnog lica — koristi se na /legal/imprint, u
  * footer-u i u JSON-LD Organization schema-u. Vrednosti dolaze iz APR
  * registra (https://pretraga.apr.gov.rs). Telefon i ime zakonskog
  * zastupnika su opcioni — Zakon o elektronskoj trgovini čl. 7 zahteva
@@ -185,28 +185,30 @@ export type NavItem = { href: string; label: string };
 
 export const NAV_MAIN: NavItem[] = [
   { href: "/ai-studio", label: "AI Studio" },
-  { href: "/usluge", label: "Usluge" },
-  { href: "/cene", label: "Cene" },
+  { href: "/services", label: "Usluge" },
+  { href: "/pricing", label: "Cene" },
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Portfolio" }]
     : []),
-  { href: "/o-nama", label: "O nama" },
-  { href: "/cesto-postavljana-pitanja", label: "Pitanja" },
-  { href: "/kontakt", label: "Kontakt" },
+  { href: "/about", label: "O nama" },
+  { href: "/faq", label: "Pitanja" },
+  { href: "/contact", label: "Kontakt" },
 ];
 
 const STRUCTURED_DATA_DESCRIPTION =
   "Profesionalna arhitektonska vizuelizacija — 3D renderi enterijera i eksterijera, virtuelno opremanje i renovacija prostora.";
 
 export const NAV_LEGAL: NavItem[] = [
-  { href: "/pravno/impressum", label: "Impressum" },
-  { href: "/pravno/privatnost", label: "Politika privatnosti" },
-  { href: "/pravno/uslovi", label: "Uslovi korišćenja" },
-  { href: "/pravno/kolacici", label: "Politika kolačića" },
-  { href: "/pravno/reklamacije", label: "Politika reklamacija" },
-  { href: "/pravno/povracaj-sredstava", label: "Povraćaj sredstava" },
-  { href: "/pravno/dostava", label: "Dostava" },
-  { href: "/pravno/sertifikati", label: "Sertifikati i standardi" },
+  { href: "/legal/imprint", label: "Impressum" },
+  // Privacy/refunds live as anchors on the consolidated terms page until
+  // Track D splits them into standalone /legal/privacy and /legal/refunds.
+  { href: "/legal/terms#privatnost", label: "Politika privatnosti" },
+  { href: "/legal/terms#uslovi", label: "Uslovi korišćenja" },
+  { href: "/legal/cookies", label: "Politika kolačića" },
+  { href: "/legal/complaints", label: "Politika reklamacija" },
+  { href: "/legal/terms#povracaj", label: "Povraćaj sredstava" },
+  { href: "/legal/delivery", label: "Dostava" },
+  { href: "/legal/certificates", label: "Sertifikati i standardi" },
 ];
 
 // 4 konkretna primera uštede iz model-first cene. Strukturno isto kao i
@@ -240,7 +242,7 @@ export const ORDERING_STEPS = [
   },
 ] as const;
 
-/** Alias kept for legacy imports in /kontakt and other places. */
+/** Alias kept for legacy imports in /contact and other places. */
 export const HOW_IT_WORKS = ORDERING_STEPS;
 
 export const FAQ_ITEMS = [

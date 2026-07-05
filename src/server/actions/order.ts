@@ -117,7 +117,7 @@ export async function createOrder(
   if (buyerError) return { error: buyerError };
 
   // Rate-limit before any DB writes. createOrder is reachable from
-  // /poruci by anyone (guest or logged-in), so a tampered client could
+  // /checkout by anyone (guest or logged-in), so a tampered client could
   // spam Order rows. Identifier prefers user:<id> when authenticated.
   const identifier = await getServerActionIdentifier();
   const limit = await checkRateLimit("checkout", identifier);
@@ -126,7 +126,7 @@ export async function createOrder(
   }
 
   // Defensive: inquiry-only products (VR) must never enter the order /
-  // payment flow. They route to /usluge/vr/konsultacija from /cene; if
+  // payment flow. They route to /services/vr/consultation from /pricing; if
   // one slips through (tampered cart, stale URL), refuse the order.
   const pricingCatalog = await getPublishedPricingCatalog();
   for (const qi of quoteItems) {
@@ -144,7 +144,7 @@ export async function createOrder(
   // Server-side price verification. priceItems is the orchestrator that
   // routes int-static / int-360 items through their per-floor helpers
   // (calcInteriorTotal / calcTour360Total) so the order total matches
-  // what the customer saw on /cene exactly.
+  // what the customer saw on /pricing exactly.
   const calculation = priceItems(quoteItems, [], pricingCatalog);
 
   if (calculation.total <= 0) {
@@ -202,7 +202,7 @@ export async function createOrder(
           );
           // Carry the per-floor config straight onto OrderItem.configJson
           // so repriceOrder + the portal editor see the same shape the
-          // customer just configured on /cene. Without this, /cene-
+          // customer just configured on /pricing. Without this, /pricing-
           // originated int-static / int-360 orders booted with empty
           // configJson and the portal would seed defaults that didn't
           // match the customer's plan.
@@ -332,7 +332,7 @@ export async function createEmptyDraft(): Promise<OrderResult> {
     },
   });
 
-  revalidatePath("/portal/porudzbine");
+  revalidatePath("/portal/orders");
   revalidatePath("/portal");
   await recordUserActivity(session.user.id, { ordersCreated: 1 });
 
@@ -356,7 +356,7 @@ export async function deleteDraftOrder(
     return { error: "Samo nacrti i otkazane porudžbine se mogu obrisati." };
 
   await prisma.order.delete({ where: { id: orderId } });
-  revalidatePath("/portal/porudzbine");
+  revalidatePath("/portal/orders");
   revalidatePath("/portal");
   return { success: true };
 }
@@ -403,7 +403,7 @@ export async function setOrderReference(
 
   // Discounts for the current order may change — re-run the engine.
   await repriceOrder(orderId);
-  revalidatePath(`/portal/porudzbine/${orderId}`);
+  revalidatePath(`/portal/orders/${orderId}`);
   return { success: true };
 }
 
@@ -428,7 +428,7 @@ export async function updateProjectName(
     where: { id: orderId },
     data: { projectName: trimmed.length > 0 ? trimmed : null },
   });
-  revalidatePath(`/portal/porudzbine/${orderId}`);
+  revalidatePath(`/portal/orders/${orderId}`);
   return { success: true };
 }
 

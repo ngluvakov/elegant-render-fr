@@ -263,7 +263,7 @@ export function ServiceDetailDrawer({
           <div className="flex flex-col gap-2 border-t border-border/40 pt-5">
             {product.inquiryOnly ? (
               <Link
-                href={`/kontakt?service=${product.id}`}
+                href={`/contact?service=${product.id}`}
                 className="inline-flex w-full items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
               >
                 Pošalji upit

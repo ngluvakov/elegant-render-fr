@@ -2,7 +2,7 @@
  * RevisionUploadCard — Drag-and-drop file upload for client revision materials.
  * Uploads to Supabase via signed URL and confirms via server action.
  *
- * Used on: /portal/porudzbine/[orderId] (order detail page).
+ * Used on: /portal/orders/[orderId] (order detail page).
  */
 "use client";
 

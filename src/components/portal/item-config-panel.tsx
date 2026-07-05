@@ -3,7 +3,7 @@
  * Simple: description + file upload. Advanced: detailed config, references, technical docs.
  * For int-static product it also shows the InteriorConfigSection (rooms + cameras).
  *
- * Used on: /portal/porudzbine/[orderId] (order detail, draft orders).
+ * Used on: /portal/orders/[orderId] (order detail, draft orders).
  */
 "use client";
 

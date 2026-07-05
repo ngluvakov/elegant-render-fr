@@ -31,27 +31,27 @@ import {
 /**
  * Curated anchor services — 5 strategic picks (2 core renders +
  * transformation + premium animation + investor signal) plus a hub
- * link to /usluge. The hub page lists every service; this footer
+ * link to /services. The hub page lists every service; this footer
  * column signals breadth and primary offerings.
  */
 const FOOTER_SERVICES: NavItem[] = [
-  { href: "/usluge/unutrasnji-renderi", label: "Unutrašnji renderi" },
-  { href: "/usluge/spoljasnji-renderi", label: "Spoljašnji renderi" },
-  { href: "/usluge/virtuelno-opremanje", label: "Virtuelno opremanje" },
-  { href: "/usluge/vr-tura", label: "VR tura" },
-  { href: "/usluge/arhitektonska-animacija", label: "Arhitektonska animacija" },
-  { href: "/usluge/situacioni-planovi", label: "3D situacioni planovi" },
+  { href: "/services/unutrasnji-renderi", label: "Unutrašnji renderi" },
+  { href: "/services/spoljasnji-renderi", label: "Spoljašnji renderi" },
+  { href: "/services/virtuelno-opremanje", label: "Virtuelno opremanje" },
+  { href: "/services/vr-tura", label: "VR tura" },
+  { href: "/services/arhitektonska-animacija", label: "Arhitektonska animacija" },
+  { href: "/services/situacioni-planovi", label: "3D situacioni planovi" },
 ];
 
 const KOMPANIJA_LINKS: NavItem[] = [
-  { href: "/o-nama", label: "O nama" },
-  { href: "/cene", label: "Cene" },
+  { href: "/about", label: "O nama" },
+  { href: "/pricing", label: "Cene" },
   { href: "/ai-studio", label: "AI Studio" },
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Portfolio" }]
     : []),
   { href: "/blog", label: "Blog" },
-  { href: "/cesto-postavljana-pitanja", label: "Često postavljana pitanja" },
+  { href: "/faq", label: "Često postavljana pitanja" },
 ];
 
 const linkBase =
@@ -113,7 +113,7 @@ export function SiteFooter() {
               ))}
               <li className="pt-1">
                 <Link
-                  href="/usluge"
+                  href="/services"
                   className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-clay-light)] transition hover:text-white"
                 >
                   Sve usluge <span aria-hidden>→</span>
@@ -212,7 +212,7 @@ export function SiteFooter() {
             {/* Badge has silver bevel + TÜV blue — wrap in a tight white
                 card so it reads cleanly on the dark coal surface. */}
             <Link
-              href="/pravno/sertifikati"
+              href="/legal/certificates"
               aria-label={`${CERTIFIER.name} sertifikat — sertifikati i standardi`}
               className="inline-flex shrink-0 rounded-md bg-white p-1.5 transition hover:opacity-90"
             >
@@ -231,7 +231,7 @@ export function SiteFooter() {
               </span>
             ))}
             <Link
-              href="/pravno/sertifikati"
+              href="/legal/certificates"
               className="ml-auto text-white/65 transition hover:text-[var(--color-clay-light)]"
             >
               O sertifikatima →
@@ -255,7 +255,7 @@ export function SiteFooter() {
 
         {/* Imprint — Zakon o elektronskoj trgovini čl. 7 requires the
             registered name, registry numbers and address on every page;
-            /pravno/impressum surfaces the full legal identity. */}
+            /legal/imprint surfaces the full legal identity. */}
         <div className="border-b border-white/10 py-5 text-xs leading-relaxed text-white/55">
           <p>
             <strong className="text-white/75">{IMPRINT.shortName}</strong>

@@ -2,7 +2,7 @@
  * vr-inquiry.ts — Server actions for VR consultation requests.
  *
  * VR products (vr-existing, vr-standalone) bypass the cart/payment
- * flow. Customers fill a public intake form on /usluge/vr/konsultacija
+ * flow. Customers fill a public intake form on /services/vr/consultation
  * which posts here; we sanitize, persist as VrInquiry, and notify the
  * team via email so they can schedule a meeting.
  */
@@ -148,7 +148,7 @@ export async function updateVrInquiryStatus(
       reviewedAt: status === "pending" ? null : new Date(),
     },
   });
-  revalidatePath("/portal/admin/vr-upiti");
+  revalidatePath("/portal/admin/vr-inquiries");
   return { ok: true };
 }
 
@@ -312,7 +312,7 @@ export async function convertVrInquiryToOrder(args: {
     idempotencyKey: `vr_project_ready:${order.id}`,
   });
 
-  revalidatePath("/portal/admin/vr-upiti");
+  revalidatePath("/portal/admin/vr-inquiries");
   await recordUserActivity(userId, { ordersCreated: 1 });
   return { ok: true, orderId: order.id, orderNumber: order.orderNumber };
 }

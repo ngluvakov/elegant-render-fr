@@ -30,7 +30,7 @@ export function CreditCheckoutButton({
       className={className}
       onClick={() => {
         stashCreditQuote(credits);
-        router.push("/poruci");
+        router.push("/checkout");
       }}
     >
       <Coins className="h-4 w-4" />

@@ -182,7 +182,7 @@ export function ServiceMatrixRow({
 
         {isInquiry ? (
           <Link
-            href={`/kontakt?service=${product.id}`}
+            href={`/contact?service=${product.id}`}
             aria-label="Pošalji upit"
             className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
           >

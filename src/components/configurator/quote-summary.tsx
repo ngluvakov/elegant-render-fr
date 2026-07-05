@@ -2,7 +2,7 @@
  * QuoteSummary — Sticky dark sidebar showing line items, estimated total,
  * and the "Naruci" (order) CTA that saves the quote to sessionStorage.
  *
- * Used on: PricingConfigurator (sidebar column, /cene page).
+ * Used on: PricingConfigurator (sidebar column, /pricing page).
  */
 "use client";
 
@@ -69,7 +69,7 @@ export function QuoteSummary() {
       cart_size: calculation.items.length,
       total_rsd: calculation.total,
     });
-    router.push("/poruci");
+    router.push("/checkout");
   };
 
   const handleInquiryFromQuote = () => {
@@ -112,7 +112,7 @@ export function QuoteSummary() {
       setShareState({ kind: "error", message: result.error });
       return;
     }
-    const url = `${window.location.origin}/cene?q=${result.token}`;
+    const url = `${window.location.origin}/pricing?q=${result.token}`;
     setShareState({ kind: "saved", url, copied: false });
     track("quote_saved", {
       cart_size: calculation.items.length,

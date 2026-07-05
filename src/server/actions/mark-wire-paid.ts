@@ -99,8 +99,8 @@ export async function markWireTransferPaid(
       },
     });
 
-    revalidatePath(`/portal/admin/porudzbine/${orderId}`);
-    revalidatePath(`/portal/porudzbine/${orderId}`);
+    revalidatePath(`/portal/admin/orders/${orderId}`);
+    revalidatePath(`/portal/orders/${orderId}`);
 
     return { ok: true };
   } catch (err) {

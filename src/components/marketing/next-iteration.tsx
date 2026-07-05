@@ -31,7 +31,7 @@ export function NextIteration() {
               porudžbina nastavlja iz iste quote korpe bez vraćanja unazad.
             </p>
             <div className="mt-7">
-              <ButtonLink href="/cene#configurator" variant="accent" size="lg">
+              <ButtonLink href="/pricing#configurator" variant="accent" size="lg">
                 Izračunajte cenu
               </ButtonLink>
             </div>

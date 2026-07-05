@@ -229,7 +229,7 @@
 
   /*
     .sidebar-attention-pulse — domino-wave highlight rotating through the
-    /cene matrix category sidebar until the visitor makes their first
+    /pricing matrix category sidebar until the visitor makes their first
     selection. Each <li> sets its own animation-delay so the wave ripples
     top-to-bottom. Cycle is 7s with a brief 8% highlight window then a
     long quiet tail so the page does not feel busy. Reduced motion off.

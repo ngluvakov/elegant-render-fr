@@ -1,7 +1,7 @@
 /**
  * GoogleSignInButton — Renders a Google OAuth sign-in button via NextAuth.
  *
- * Used on: /prijava (sign-in) and /registracija (sign-up) pages.
+ * Used on: /login (sign-in) and /register (sign-up) pages.
  */
 "use client";
 

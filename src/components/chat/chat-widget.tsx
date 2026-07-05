@@ -245,7 +245,7 @@ export function ChatWidget() {
             updated[updated.length - 1] = {
               role: "assistant",
               content:
-                "Izvinite, došlo je do greške. Pokušajte ponovo ili nas kontaktirajte na [Kontakt](/kontakt) stranici.",
+                "Izvinite, došlo je do greške. Pokušajte ponovo ili nas kontaktirajte na [Kontakt](/contact) stranici.",
             };
             return updated;
           });

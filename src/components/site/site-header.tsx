@@ -47,13 +47,13 @@ import { cn } from "@/lib/utils";
 
 const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
   { href: "/ai-studio", label: "AI Studio", pattern: "/ai-studio" },
-  { href: "/cene", label: "Cene", pattern: "/cene" },
+  { href: "/pricing", label: "Cene", pattern: "/pricing" },
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Portfolio", pattern: "/portfolio" }]
     : []),
   { href: "/blog", label: "Blog", pattern: "/blog" },
-  { href: "/o-nama", label: "O nama", pattern: "/o-nama" },
-  { href: "/kontakt", label: "Kontakt", pattern: "/kontakt" },
+  { href: "/about", label: "O nama", pattern: "/about" },
+  { href: "/contact", label: "Kontakt", pattern: "/contact" },
 ];
 
 // Desktop "Usluge" mega-menu: split the visible service categories into two
@@ -84,7 +84,7 @@ export function SiteHeader() {
   const isActive = (pattern: string) =>
     pathname === pattern || pathname.startsWith(`${pattern}/`);
 
-  const servicesActive = pathname === "/usluge" || pathname.startsWith("/usluge/");
+  const servicesActive = pathname === "/services" || pathname.startsWith("/services/");
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur">
@@ -140,7 +140,7 @@ export function SiteHeader() {
                     <NavigationMenuLink
                       render={
                         <Link
-                          href="/usluge"
+                          href="/services"
                           onClick={() => setNavMenuValue(null)}
                           className="text-xs font-medium text-accent hover:underline"
                         />
@@ -182,7 +182,7 @@ export function SiteHeader() {
                                   key={service.slug}
                                   render={
                                     <Link
-                                      href={`/usluge/${service.slug}`}
+                                      href={`/services/${service.slug}`}
                                       onClick={() => setNavMenuValue(null)}
                                     />
                                   }
@@ -234,7 +234,7 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-2 md:flex">
           <ButtonLink
-            href={isLoggedIn ? "/portal" : "/prijava"}
+            href={isLoggedIn ? "/portal" : "/login"}
             size="sm"
             variant="outline"
           >
@@ -290,7 +290,7 @@ export function SiteHeader() {
               <Collapsible open={mobileServicesOpen}>
                 <div className="ml-2 border-l border-border/60 pl-3">
                   <Link
-                    href="/usluge"
+                    href="/services"
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center justify-between rounded-md px-2 py-2 text-sm font-medium text-accent hover:bg-muted"
                   >
@@ -300,7 +300,7 @@ export function SiteHeader() {
                   {SERVICES.map((service) => (
                     <Link
                       key={service.slug}
-                      href={`/usluge/${service.slug}`}
+                      href={`/services/${service.slug}`}
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center justify-between gap-3 rounded-md px-2 py-2 text-sm text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
                     >
@@ -335,7 +335,7 @@ export function SiteHeader() {
 
             <div className="mt-auto space-y-2">
               <ButtonLink
-                href={isLoggedIn ? "/portal" : "/prijava"}
+                href={isLoggedIn ? "/portal" : "/login"}
                 onClick={() => setMobileOpen(false)}
                 variant="outline"
                 className="w-full"

@@ -10,7 +10,7 @@
  * model / aktivan projekat). All three feed the same `anim` catalog
  * product; the picked mode is passed to addProduct as `sourceMode`.
  *
- * Used on: PricingConfigurator (main column, /cene page).
+ * Used on: PricingConfigurator (main column, /pricing page).
  */
 "use client";
 
@@ -63,7 +63,7 @@ export function ServiceAdder() {
   const categories = pricingCatalog?.categories ?? CONFIGURATOR_CATEGORIES;
 
   // Sync state when navigation changes the ?group= param (e.g. user clicks a
-  // preview card while already on /cene). State is otherwise local — clicking
+  // preview card while already on /pricing). State is otherwise local — clicking
   // a tab here does not push to the URL, so the user's flow isn't dotted with
   // history entries.
   useEffect(() => {
@@ -255,7 +255,7 @@ function ProductCard({
           </p>
           {product.inquiryOnly ? (
             <Link
-              href={`/usluge/vr/konsultacija?p=${product.id}`}
+              href={`/services/vr/consultation?p=${product.id}`}
               className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-4 py-2 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-white"
             >
               <Headphones className="h-3 w-3" /> Zatraži konsultaciju

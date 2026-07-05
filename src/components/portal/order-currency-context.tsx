@@ -2,7 +2,7 @@
  * OrderCurrencyContext — Per-order display currency for the portal.
  *
  * The portal stores RSD amounts in the DB (integer cents on OrderItem)
- * and renders every order in RSD to match /cene and /poruci.
+ * and renders every order in RSD to match /pricing and /checkout.
  * pricingSettings carries Serbia VAT rate used when displaying and splitting
  * RSD gross amounts.
  *

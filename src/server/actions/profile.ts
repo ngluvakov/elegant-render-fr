@@ -12,7 +12,7 @@
  * preserving the accounting-required rows. Until processed the user
  * sees a "deletion pending" banner and can cancel.
  *
- * Used by: portal/profil/profile-form, portal/profil/privacy-actions
+ * Used by: portal/profile/profile-form, portal/profile/privacy-actions
  */
 "use server";
 
@@ -111,8 +111,8 @@ export async function updateProfileAction(
     },
   });
 
-  revalidatePath("/portal/profil");
-  revalidatePath("/poruci");
+  revalidatePath("/portal/profile");
+  revalidatePath("/checkout");
 
   return { success: true };
 }
@@ -150,7 +150,7 @@ export async function requestAccountDeletion(): Promise<DeletionState> {
   });
 
   // Admin notification path: the audit log entry below is reviewable
-  // at /portal/admin/revizije by filtering on action=account.deletion_request.
+  // at /portal/admin/revisions by filtering on action=account.deletion_request.
   // A dedicated email-to-DPO channel can be wired later by adding
   // account_deletion_requested_email to OutboxEventType.
   await recordAuditLog({
@@ -160,7 +160,7 @@ export async function requestAccountDeletion(): Promise<DeletionState> {
     metadata: { userEmail: user.email, userName: user.name ?? null },
   });
 
-  revalidatePath("/portal/profil");
+  revalidatePath("/portal/profile");
   return { success: true };
 }
 
@@ -188,6 +188,6 @@ export async function cancelAccountDeletion(): Promise<DeletionState> {
     metadata: { userEmail: user.email },
   });
 
-  revalidatePath("/portal/profil");
+  revalidatePath("/portal/profile");
   return { success: true };
 }

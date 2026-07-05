@@ -2,7 +2,7 @@
  * OrdersFilterBar — Search input + status dropdown filter for the orders list.
  * Updates URL search params to filter orders.
  *
- * Used on: /portal/porudzbine (orders listing page).
+ * Used on: /portal/orders (orders listing page).
  */
 "use client";
 
@@ -24,7 +24,7 @@ export function OrdersFilterBar() {
     } else {
       params.delete(key);
     }
-    router.replace(`/portal/porudzbine?${params.toString()}`);
+    router.replace(`/portal/orders?${params.toString()}`);
   };
 
   return (

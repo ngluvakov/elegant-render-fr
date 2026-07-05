@@ -209,8 +209,8 @@ export async function adminCreateCharge(args: {
     return created;
   });
 
-  revalidatePath(`/portal/admin/porudzbine/${order.id}`);
-  revalidatePath(`/portal/porudzbine/${order.id}`);
+  revalidatePath(`/portal/admin/orders/${order.id}`);
+  revalidatePath(`/portal/orders/${order.id}`);
 
   await captureServerEvent({
     distinctId: `user:${order.userId}`,
@@ -247,7 +247,7 @@ export async function adminCancelCharge(args: {
     data: { status: "cancelled", cancelledAt: new Date() },
   });
 
-  revalidatePath(`/portal/admin/porudzbine/${charge.orderId}`);
-  revalidatePath(`/portal/porudzbine/${charge.orderId}`);
+  revalidatePath(`/portal/admin/orders/${charge.orderId}`);
+  revalidatePath(`/portal/orders/${charge.orderId}`);
   return { success: true };
 }

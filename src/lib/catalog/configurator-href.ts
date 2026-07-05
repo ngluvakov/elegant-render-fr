@@ -1,11 +1,11 @@
 /**
- * configurator-href.ts — builds /cene deep-links that open the configurator with
+ * configurator-href.ts — builds /pricing deep-links that open the configurator with
  * a matching quote item already added (the `add` product) inside the right
  * category `group`. Shared by the home-page QuickOrderHero and the service-detail
  * pricing cards so the mapping lives in exactly one place.
  */
 
-/** Service category → configurator group (left sidebar filter on /cene). */
+/** Service category → configurator group (left sidebar filter on /pricing). */
 export const SERVICE_CATEGORY_TO_GROUP: Record<string, string> = {
   eksterijer: "renderi-eksterijera",
   enterijer: "enterijer",
@@ -38,7 +38,7 @@ export const VARIANT_TO_CONFIGURATOR: Record<string, ConfiguratorTarget> = {
 };
 
 /**
- * Build a `/cene` URL that opens the configurator with the matching product
+ * Build a `/pricing` URL that opens the configurator with the matching product
  * prefilled. Unknown variant ids gracefully fall back to just opening the group.
  */
 export function buildConfiguratorHref(
@@ -57,5 +57,5 @@ export function buildConfiguratorHref(
     params.set("sourceMode", target.sourceMode);
   }
   params.set("from", from);
-  return `/cene?${params.toString()}#configurator`;
+  return `/pricing?${params.toString()}#configurator`;
 }

@@ -29,7 +29,7 @@ export async function MarketingServicesShowcase() {
             </p>
           </div>
           <Link
-            href="/cene"
+            href="/pricing"
             className="self-start text-xs font-semibold uppercase tracking-[0.16em] text-accent hover:underline md:self-end"
           >
             Otvori cenovnik

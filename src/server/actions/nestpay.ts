@@ -9,7 +9,7 @@
  * The bank clears in RSD (currency=941). Orders and additional charges
  * use the snapshotted RSD billingTotalCents.
  *
- * Used by: src/app/(marketing)/poruci/steps/step-payment.tsx
+ * Used by: src/app/(marketing)/checkout/steps/step-payment.tsx
  */
 "use server";
 

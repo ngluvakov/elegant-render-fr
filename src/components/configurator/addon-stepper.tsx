@@ -2,7 +2,7 @@
  * AddOnStepper — Reusable +/- quantity control for product add-ons.
  * Shows included vs. extra quantities, volume pricing, and per-unit cost.
  *
- * Used on: QuoteItemCard (within PricingConfigurator, /cene page).
+ * Used on: QuoteItemCard (within PricingConfigurator, /pricing page).
  */
 "use client";
 

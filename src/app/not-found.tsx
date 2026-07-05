@@ -45,7 +45,7 @@ export default function NotFound() {
             Na početnu
           </ButtonLink>
           <ButtonLink
-            href="/usluge"
+            href="/services"
             size="lg"
             variant="outline"
             className="w-full gap-2 sm:w-auto"

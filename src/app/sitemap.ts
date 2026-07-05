@@ -38,7 +38,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ]),
     },
     {
-      path: "/usluge",
+      path: "/services",
       changeFrequency: "weekly",
       priority: 0.95,
       images: uniqueImages([
@@ -49,14 +49,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       ]),
     },
     {
-      path: "/cene",
+      path: "/pricing",
       changeFrequency: "daily",
       priority: 0.95,
       images: uniqueImages([
-        "/artwork/cene-card-enterijer.webp",
-        "/artwork/cene-card-eksterijer.webp",
-        "/artwork/cene-card-planovi.webp",
-        "/artwork/cene-card-opremanje-renovacija.webp",
+        "/artwork/pricing-card-enterijer.webp",
+        "/artwork/pricing-card-eksterijer.webp",
+        "/artwork/pricing-card-planovi.webp",
+        "/artwork/pricing-card-opremanje-renovacija.webp",
       ]),
     },
     {
@@ -72,7 +72,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         "/artwork/ai-tool-object_insertion-after.webp",
       ]),
     },
-    { path: "/kontakt", changeFrequency: "monthly", priority: 0.85 },
+    { path: "/contact", changeFrequency: "monthly", priority: 0.85 },
     {
       path: "/blog",
       changeFrequency: "weekly",
@@ -83,22 +83,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
           .map((post) => post.coverImage),
       ),
     },
-    { path: "/o-nama", changeFrequency: "monthly", priority: 0.65 },
+    { path: "/about", changeFrequency: "monthly", priority: 0.65 },
     {
-      path: "/cesto-postavljana-pitanja",
+      path: "/faq",
       changeFrequency: "monthly",
       priority: 0.75,
     },
     {
-      path: "/usluge/vr/konsultacija",
+      path: "/services/vr/consultation",
       changeFrequency: "monthly",
       priority: 0.65,
     },
-    { path: "/pravno/impressum", changeFrequency: "yearly", priority: 0.45 },
-    { path: "/pravno/sertifikati", changeFrequency: "yearly", priority: 0.55 },
-    { path: "/pravno/privatnost", changeFrequency: "yearly", priority: 0.35 },
-    { path: "/pravno/uslovi", changeFrequency: "yearly", priority: 0.35 },
-    { path: "/pravno/kolacici", changeFrequency: "yearly", priority: 0.35 },
+    { path: "/legal/imprint", changeFrequency: "yearly", priority: 0.45 },
+    { path: "/legal/certificates", changeFrequency: "yearly", priority: 0.55 },
+    { path: "/legal/privatnost", changeFrequency: "yearly", priority: 0.35 },
+    { path: "/legal/uslovi", changeFrequency: "yearly", priority: 0.35 },
+    { path: "/legal/cookies", changeFrequency: "yearly", priority: 0.35 },
     { path: "/llms.txt", changeFrequency: "weekly", priority: 0.4 },
     { path: "/llms-full.txt", changeFrequency: "daily", priority: 0.4 },
   ];
@@ -115,12 +115,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       images: route.images,
     })),
     ...SERVICES.map((service) => ({
-      url: absoluteUrl(`/usluge/${service.slug}`),
+      url: absoluteUrl(`/services/${service.slug}`),
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: service.featured ? 0.9 : 0.75,
       alternates: {
-        languages: buildLanguageAlternates(`/usluge/${service.slug}`),
+        languages: buildLanguageAlternates(`/services/${service.slug}`),
       },
       images: uniqueImages([
         service.listingAsset,

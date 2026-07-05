@@ -34,11 +34,11 @@ import {
 
 const CLIENT_NAV = [
   { href: "/portal", label: "Pregled", icon: LayoutDashboard, exact: true },
-  { href: "/portal/porudzbine", label: "Porudžbine", icon: ShoppingBag, exact: false },
-  { href: "/portal/finansije", label: "Finansije", icon: ReceiptText, exact: false },
+  { href: "/portal/orders", label: "Porudžbine", icon: ShoppingBag, exact: false },
+  { href: "/portal/finance", label: "Finansije", icon: ReceiptText, exact: false },
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
-  { href: "/portal/ai-kreacije", label: "AI kreacije", icon: Images, exact: false },
-  { href: "/portal/profil", label: "Profil", icon: User, exact: true },
+  { href: "/portal/ai-creations", label: "AI kreacije", icon: Images, exact: false },
+  { href: "/portal/profile", label: "Profil", icon: User, exact: true },
 ];
 
 const ADMIN_NAV: Array<{
@@ -50,7 +50,7 @@ const ADMIN_NAV: Array<{
 }> = [
   { href: "/portal/admin", label: "Admin", icon: Shield, exact: true },
   {
-    href: "/portal/admin/analitika",
+    href: "/portal/admin/analytics",
     label: "Analitika",
     icon: BarChart3,
     exact: false,
@@ -58,20 +58,20 @@ const ADMIN_NAV: Array<{
   },
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
   {
-    href: "/portal/ai-kreacije",
+    href: "/portal/ai-creations",
     label: "AI kreacije",
     icon: Images,
     exact: false,
   },
   {
-    href: "/portal/admin/upiti",
+    href: "/portal/admin/inquiries",
     label: "Upiti",
     icon: Inbox,
     exact: false,
     permission: "INQUIRIES_MANAGE",
   },
   {
-    href: "/portal/admin/vr-upiti",
+    href: "/portal/admin/vr-inquiries",
     label: "VR upiti",
     icon: Headphones,
     exact: false,
@@ -92,28 +92,28 @@ const ADMIN_NAV: Array<{
     permission: "ANALYTICS_VIEW",
   },
   {
-    href: "/portal/admin/korisnici",
+    href: "/portal/admin/users",
     label: "Korisnici",
     icon: User,
     exact: false,
     permission: "USERS_VIEW",
   },
   {
-    href: "/portal/admin/finansije/cenovnik",
+    href: "/portal/admin/finance/pricebook",
     label: "Cenovnik",
     icon: ReceiptText,
     exact: false,
     permission: "FINANCE_MANAGE",
   },
   {
-    href: "/portal/admin/finansije/izvoz",
+    href: "/portal/admin/finance/export",
     label: "Izvoz računa",
     icon: ReceiptText,
     exact: false,
     permission: "FINANCE_VIEW",
   },
   {
-    href: "/portal/admin/revizije",
+    href: "/portal/admin/revisions",
     label: "Revizije",
     icon: Shield,
     exact: false,
@@ -126,7 +126,7 @@ const ADMIN_NAV: Array<{
     exact: false,
     permission: "SYSTEM_MANAGE",
   },
-  { href: "/portal/profil", label: "Profil", icon: User, exact: true },
+  { href: "/portal/profile", label: "Profil", icon: User, exact: true },
 ];
 
 type PortalSidebarProps = {

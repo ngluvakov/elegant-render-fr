@@ -3,7 +3,7 @@
  *
  * Exposes:
  *   - saveQuote(items)   → creates a Quote row, returns { token }.
- *     Token is the cuid id; share URL is /cene?q=<token>.
+ *     Token is the cuid id; share URL is /pricing?q=<token>.
  *   - loadQuote(token)   → returns { items } if token valid + not expired.
  *     Stamps openedAt for analytics.
  *

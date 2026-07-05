@@ -26,10 +26,10 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
-          // Bezbedan baseline bez CSP-a. Puni Content-Security-Policy ide
-          // tek kroz Report-Only fazu POSLE NestPay retesta banke — CSP
-          // može da blokira Turnstile/GTM/Sentry i ne sme se uvoditi dok
-          // sertifikacija traje. Ne dodavati "payment" u Permissions-Policy.
+          // Safe baseline without CSP. A full Content-Security-Policy
+          // should be introduced via a Report-Only phase after launch —
+          // it can break the PayPal JS SDK, GTM and Sentry if rolled out
+          // blind, so wire it deliberately, not here.
           {
             key: "Strict-Transport-Security",
             value: "max-age=63072000",
@@ -48,75 +48,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  async redirects() {
-    return [
-      // Legacy mixed service split into vr-tura + arhitektonska-animacija.
-      // Old slug 301s to vr-tura (primary product of the legacy bundle).
-      {
-        source: "/usluge/360-ture-i-animacije",
-        destination: "/usluge/vr-tura",
-        permanent: true,
-      },
-      // Slug rename pass (2026-06-04): canonical slugs now follow service
-      // name. Old URLs (Google Ads, SEO index, bookmarks) 301 to new ones.
-      {
-        source: "/usluge/prikazi-dvorista",
-        destination: "/usluge/uredjenje-pejzaza",
-        permanent: true,
-      },
-      {
-        source: "/usluge/osnove",
-        destination: "/usluge/2d-i-3d-osnove",
-        permanent: true,
-      },
-      {
-        source: "/usluge/3d-situacioni",
-        destination: "/usluge/situacioni-planovi",
-        permanent: true,
-      },
-      {
-        source: "/usluge/dan-u-noc",
-        destination: "/usluge/dnevni-u-nocni-prikaz",
-        permanent: true,
-      },
-      {
-        source: "/usluge/uklanjanje-elemenata",
-        destination: "/usluge/uklanjanje-predmeta",
-        permanent: true,
-      },
-      // Rename pass (2026-06-09): aerial → street-level streetscape, and
-      // photomontage → "render u stvarnoj fotografiji". Clearer names; old
-      // URLs (Ads, SEO, bookmarks) 301 to the new canonical slugs.
-      {
-        source: "/usluge/prikazi-iz-vazduha",
-        destination: "/usluge/3d-prikaz-ulice",
-        permanent: true,
-      },
-      {
-        source: "/usluge/fotomontaza",
-        destination: "/usluge/render-u-stvarnoj-fotografiji",
-        permanent: true,
-      },
-      // Legal page consolidation (Banca Intesa checkout compliance, 2026-05-29).
-      // Three documents merged into one — old URLs 307 to anchors on the new page.
-      // 307 (not 308) so the slug can evolve without hard CDN caching.
-      {
-        source: "/pravno/uslovi",
-        destination: "/pravno/uslovi-koriscenja#uslovi",
-        permanent: false,
-      },
-      {
-        source: "/pravno/privatnost",
-        destination: "/pravno/uslovi-koriscenja#privatnost",
-        permanent: false,
-      },
-      {
-        source: "/pravno/povracaj-sredstava",
-        destination: "/pravno/uslovi-koriscenja#povracaj",
-        permanent: false,
-      },
-    ];
-  },
+  // No redirects: elegantrender.com is a fresh domain with no legacy
+  // URLs to preserve. The Serbian site's slug-history 301s stay on
+  // elegantrender.rs and have no meaning here.
 };
 
 export default withSentryConfig(nextConfig, {

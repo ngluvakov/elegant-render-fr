@@ -70,8 +70,8 @@ export async function saveUserAdminAccess(formData: FormData) {
   });
 
   revalidatePath("/portal/admin");
-  revalidatePath("/portal/admin/korisnici");
-  revalidatePath(`/portal/admin/korisnici/${userId}`);
+  revalidatePath("/portal/admin/users");
+  revalidatePath(`/portal/admin/users/${userId}`);
 }
 
 function normalizePreset(value: string): Exclude<AdminPreset, "custom"> | "custom" {

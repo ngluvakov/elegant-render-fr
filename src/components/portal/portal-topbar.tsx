@@ -11,11 +11,11 @@ import { Menu } from "lucide-react";
 
 const SECTION_NAMES: Record<string, string> = {
   "/portal": "Pregled",
-  "/portal/admin/analitika": "Analitika",
+  "/portal/admin/analytics": "Analitika",
   "/portal/admin": "Admin",
-  "/portal/porudzbine": "Porudžbine",
+  "/portal/orders": "Porudžbine",
   "/portal/ai-studio": "AI Studio",
-  "/portal/profil": "Profil",
+  "/portal/profile": "Profil",
 };
 
 type PortalTopbarProps = {
@@ -39,7 +39,7 @@ export function PortalTopbar({
   }
 
   // Order detail breadcrumb
-  const isOrderDetail = pathname.match(/\/portal\/porudzbine\/(.+)/);
+  const isOrderDetail = pathname.match(/\/portal\/orders\/(.+)/);
 
   return (
     <div className="flex h-14 items-center gap-4 border-b border-border/40 bg-background/80 px-4 backdrop-blur lg:px-6">

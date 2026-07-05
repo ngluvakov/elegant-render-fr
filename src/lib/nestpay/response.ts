@@ -65,7 +65,7 @@ export function parseNestpayReturn(
 // - mdStatus is 1, 2, 3 or 4 (full or attempted 3DS auth completed)
 //
 // Anything else — explicit decline, error, missing fields — is treated
-// as failed and routed to /poruci/neuspeh.
+// as failed and routed to /checkout/failure.
 const APPROVED_MD_STATUS = new Set(["1", "2", "3", "4"]);
 
 export function isApprovedResponse(payload: NestpayReturnPayload): boolean {

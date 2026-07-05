@@ -445,7 +445,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
 // ─── Nestpay email data builder ─────────────────────────
 //
 // Data shape + Prisma query lives in src/lib/nestpay/receipt-data.ts so the
-// uspeh/neuspeh pages can reuse it. This wrapper adds the email-only fields:
+// uspeh/failure pages can reuse it. This wrapper adds the email-only fields:
 // recipient address and a portal retry URL.
 
 function getAuthUrl(): string {
@@ -466,7 +466,7 @@ async function loadNestpayEmailData(orderId: string) {
     totals: data.totals,
     conversion: data.conversion,
     transaction: data.transaction,
-    retryUrl: `${getAuthUrl()}/portal/porudzbine/${orderId}`,
+    retryUrl: `${getAuthUrl()}/portal/orders/${orderId}`,
   };
 }
 

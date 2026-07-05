@@ -2,7 +2,7 @@
  * ServicesShowcase — Services page with filterable cards, scenario guide,
  * process steps, and FAQ.
  *
- * Used on: /usluge (services page).
+ * Used on: /services (services page).
  */
 "use client";
 
@@ -555,7 +555,7 @@ export function ServicesShowcase() {
                           whole surface opens the service detail page. The inquiry
                           CTA below sits on z-10 to escape this overlay. */}
                       <Link
-                        href={`/usluge/${service.slug}`}
+                        href={`/services/${service.slug}`}
                         className="outline-none after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:after:ring-2 focus-visible:after:ring-accent/60"
                       >
                         {service.name}
@@ -739,7 +739,7 @@ export function ServicesShowcase() {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </QuickInquiryLink>
               <ButtonLink
-                href="/cene"
+                href="/pricing"
                 variant="outline"
                 size="lg"
                 className="rounded-full border-background/20 text-background hover:bg-background/10"

@@ -101,7 +101,7 @@ export async function verifyOrderVat(
       },
     });
 
-    revalidatePath(`/portal/admin/porudzbine/${orderId}`);
+    revalidatePath(`/portal/admin/orders/${orderId}`);
 
     return { ok: true, result };
   } catch (err) {

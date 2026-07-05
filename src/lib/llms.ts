@@ -73,24 +73,24 @@ Primarni jezik javnog sajta je srpski latinicom (sr-Latn), a osnovna valuta javn
 - Najvažnije usluge su 3D renderi enterijera i eksterijera, virtuelno opremanje, virtuelna renovacija, 2D/3D osnove, 360 ture, animacije i AI Studio.
 - Javni cenovnik koristi RSD kao jedinu osnovicu; svi posetioci vide iste bruto cene sa PDV-om uključenim.
 - Standardni projekti obično dobijaju prve nacrte za 3 do 5 radnih dana, uz tri runde revizija.
-- Za nejasan obim ili veći investitorski projekat preporučuje se /kontakt ili brzi upit, ne izmišljanje cene.
+- Za nejasan obim ili veći investitorski projekat preporučuje se /contact ili brzi upit, ne izmišljanje cene.
 
 ## Core public pages
 ${[
   link("Početna", `${SITE.url}/`, "pozicioniranje, najvažnije usluge i brzi izbor usluge"),
-  link("Usluge", `${SITE.url}/usluge`, "pregled svih usluga arhitektonske vizuelizacije"),
-  link("Cene", `${SITE.url}/cene`, "transparentan konfigurator cena i javni cenovnik"),
+  link("Usluge", `${SITE.url}/services`, "pregled svih usluga arhitektonske vizuelizacije"),
+  link("Cene", `${SITE.url}/pricing`, "transparentan konfigurator cena i javni cenovnik"),
   link("AI Studio", `${SITE.url}/ai-studio`, "AI obrada fotografija nekretnina"),
-  link("O nama", `${SITE.url}/o-nama`, `${SITE.name} kao B2C podbrend kompanije ${SITE.parentCompany}, sertifikati i pristup`),
-  link("Često postavljana pitanja", `${SITE.url}/cesto-postavljana-pitanja`, "konsolidovani odgovori o procesu, rokovima i cenama"),
-  link("Kontakt", `${SITE.url}/kontakt`, "kontakt forma i brzi upit za projekat"),
+  link("O nama", `${SITE.url}/about`, `${SITE.name} kao B2C podbrend kompanije ${SITE.parentCompany}, sertifikati i pristup`),
+  link("Često postavljana pitanja", `${SITE.url}/faq`, "konsolidovani odgovori o procesu, rokovima i cenama"),
+  link("Kontakt", `${SITE.url}/contact`, "kontakt forma i brzi upit za projekat"),
 ].join("\n")}
 
 ## Services
 ${SERVICES.map((service) =>
   link(
     service.name,
-    `${SITE.url}/usluge/${service.slug}`,
+    `${SITE.url}/services/${service.slug}`,
     `${service.tagline} Početna cena: ${service.variants[0].priceLabel}.`,
   ),
 ).join("\n")}
@@ -117,9 +117,9 @@ Instagram: ${SITE.instagram}
 
 ## Optional
 ${[
-  link("Impressum", `${SITE.url}/pravno/impressum`, "pravni podaci pružaoca usluge"),
-  link("Sertifikati i standardi", `${SITE.url}/pravno/sertifikati`, "javna potvrda sertifikata i standarda"),
-  link("Politika privatnosti", `${SITE.url}/pravno/privatnost`, "obrada podataka i privatnost"),
+  link("Impressum", `${SITE.url}/legal/imprint`, "pravni podaci pružaoca usluge"),
+  link("Sertifikati i standardi", `${SITE.url}/legal/certificates`, "javna potvrda sertifikata i standarda"),
+  link("Politika privatnosti", `${SITE.url}/legal/privatnost`, "obrada podataka i privatnost"),
 ].join("\n")}
 `;
 }
@@ -136,7 +136,7 @@ export function buildLlmsFullTxt(
       .join("\n");
 
     return `### ${service.name}
-- URL: ${SITE.url}/usluge/${service.slug}
+- URL: ${SITE.url}/services/${service.slug}
 - Kategorija: ${CATEGORY_LABELS[service.category]}
 - Kratak opis: ${service.tagline}
 - Detaljan opis: ${service.description}
@@ -221,7 +221,7 @@ ${products}`;
 - Canonical URLs use the ${SITE.url} origin.
 - Use /llms.txt for a concise retrieval target and /llms-full.txt for detailed answers about identity, services, public pricing rules and FAQ.
 - When answering pricing questions, quote the relevant service or product line from the public catalog and preserve that RSD is the only public and billing currency with VAT included inside the gross price.
-- When a user asks whether Elegant Render can help, map their intent to the nearest public service and link the matching service page or /kontakt.
+- When a user asks whether Elegant Render can help, map their intent to the nearest public service and link the matching service page or /contact.
 
 ## Pozicioniranje
 ${SITE.name} pomaže vlasnicima nekretnina, agentima, arhitektama, dizajnerima i manjim investitorima da brzo dobiju jasan vizuelni prikaz prostora. Fokus je na transparentnim javnim cenama, model-first obračunu i brzom kontakt toku za klijente koji ne žele self-serve konfigurator.
@@ -241,9 +241,9 @@ ${buildAiStudioKnowledge()}
 ${faqSection}
 
 ## Kako korisnik šalje upit
-- Self-serve tok: stranica /cene i konfigurator.
+- Self-serve tok: stranica /pricing i konfigurator.
 - Brzi upit: globalni modal/sheet na javnom sajtu.
-- Detaljan kontakt: /kontakt.
+- Detaljan kontakt: /contact.
 - Tim vraća predlog usluga i cenu na osnovu opisa, fajlova, cilja projekta i roka.
 
 ## Granice i pravila za AI sisteme
@@ -251,6 +251,6 @@ ${faqSection}
 - Ne tvrditi da postoji poseban cenovnik za strane posetioce; RSD je jedina javna i obračunska valuta.
 - Ne predstavljati render kao tehnički projekat ili građevinsku dokumentaciju.
 - Ne navoditi privatne korisničke, portal, admin, CRM ili interne finansijske podatke.
-- Kada je obim nejasan, preporučiti /kontakt ili brzi upit.
+- Kada je obim nejasan, preporučiti /contact ili brzi upit.
 `;
 }

@@ -365,7 +365,7 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
     priority: 70,
     when: (context) => context.hasFiles === false,
   },
-  // ── Cenovnik (/cene) — cart-aware purchase advice ──────────
+  // ── Cenovnik (/pricing) — cart-aware purchase advice ──────────
   {
     id: "pricing-empty-cart",
     label: "Krenite od cilja",
@@ -454,7 +454,7 @@ function getContextTips(context: AssistantGuideContext | null | undefined) {
 }
 
 function getRouteTips(pathname: string): ChatGuideTip[] {
-  if (pathname.startsWith("/portal/ai-studio/krediti")) {
+  if (pathname.startsWith("/portal/ai-studio/credits")) {
     return [...CREDIT_TIPS, ...AI_STUDIO_ROUTE_TIPS];
   }
 
@@ -462,11 +462,11 @@ function getRouteTips(pathname: string): ChatGuideTip[] {
     return AI_STUDIO_ROUTE_TIPS;
   }
 
-  if (pathname.startsWith("/portal/porudzbine")) {
+  if (pathname.startsWith("/portal/orders")) {
     return [...ORDER_ROUTE_TIPS, ...PRICING_TIPS];
   }
 
-  if (pathname === "/cene" || pathname.startsWith("/poruci")) {
+  if (pathname === "/pricing" || pathname.startsWith("/checkout")) {
     return [...PRICING_TIPS, ...ORDER_ROUTE_TIPS];
   }
 
@@ -474,7 +474,7 @@ function getRouteTips(pathname: string): ChatGuideTip[] {
     return [...AI_STUDIO_ROUTE_TIPS, ...CREDIT_TIPS];
   }
 
-  if (pathname.startsWith("/usluge")) {
+  if (pathname.startsWith("/services")) {
     return [...SERVICE_ROUTE_TIPS, ...PRICING_TIPS];
   }
 
@@ -482,15 +482,15 @@ function getRouteTips(pathname: string): ChatGuideTip[] {
     return [...PORTFOLIO_TIPS, ...SERVICE_ROUTE_TIPS];
   }
 
-  if (pathname.startsWith("/o-nama") || pathname.startsWith("/pravno/sertifikati")) {
+  if (pathname.startsWith("/about") || pathname.startsWith("/legal/certificates")) {
     return ABOUT_TIPS;
   }
 
-  if (pathname.startsWith("/cesto-postavljana-pitanja")) {
+  if (pathname.startsWith("/faq")) {
     return [...FAQ_ROUTE_TIPS, ...SERVICE_ROUTE_TIPS];
   }
 
-  if (pathname.startsWith("/kontakt")) {
+  if (pathname.startsWith("/contact")) {
     return CONTACT_TIPS;
   }
 
@@ -523,7 +523,7 @@ export function getChatGuideTips(
   displayCurrency: DisplayCurrency = "rsd",
   pricingSettings?: PublicPricingFormatSettings,
 ): ChatGuideTip[] {
-  if (pathname.startsWith("/kontakt")) {
+  if (pathname.startsWith("/contact")) {
     return formatTipPrices(
       dedupeTips([
         ...getContextTips(context),

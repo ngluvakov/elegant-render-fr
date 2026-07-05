@@ -1,12 +1,12 @@
 /**
- * ServiceTablica — Full-width product card for the /cene browse grid.
+ * ServiceTablica — Full-width product card for the /pricing browse grid.
  *
  * 3-zone layout: hero image / content / price-strip band.
  * Mobile: collapsed by default behind "Detalji ›" toggle.
  * Desktop: always expanded.
  *
  * Branched CTA logic:
- *   - inquiryOnly → "Pošalji upit" link → /kontakt?service={id}
+ *   - inquiryOnly → "Pošalji upit" link → /contact?service={id}
  *   - int-static | int-360 → "Konfiguriši sprat" → addProduct (opens InteriorQuoteEditor)
  *   - else → "Dodaj u korpu" → addProduct
  *
@@ -34,7 +34,7 @@ import type { QuoteItem } from "@/lib/catalog/calculate";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 
 // Serbian pluralization for unit labels used in "U paketu od X Y" annotation.
-// Only needed for the small set of units that appear on /cene. Extend if needed.
+// Only needed for the small set of units that appear on /pricing. Extend if needed.
 function pluralizeUnit(unitLabel: string, qty: number): string {
   const map: Record<string, [string, string, string]> = {
     "render":    ["render",   "rendera",  "rendera"],
@@ -59,7 +59,7 @@ type Props = {
   pricingCatalog?: ResolvedPricingCatalog;
   /**
    * When true, the card renders as a marketing showcase on the homepage:
-   * primary CTA links to /cene?cat=<category>#usluge instead of adding to
+   * primary CTA links to /pricing?cat=<category>#usluge instead of adding to
    * cart. Used by MarketingServicesShowcase since cart state does not
    * persist between routes.
    */
@@ -126,7 +126,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
   const primaryCta = isInquiry ? (
     <div>
       <Link
-        href={`/kontakt?service=${product.id}`}
+        href={`/contact?service=${product.id}`}
         className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2.5 text-sm font-semibold transition-colors"
       >
         Pošalji upit
@@ -137,7 +137,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
     </div>
   ) : marketingMode ? (
     <Link
-      href={`/cene?cat=${category.id}#usluge`}
+      href={`/pricing?cat=${category.id}#usluge`}
       onClick={() =>
         track("service_tablica_click_dodaj", {
           product_id: product.id,

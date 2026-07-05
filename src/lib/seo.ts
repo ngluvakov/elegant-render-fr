@@ -333,7 +333,7 @@ export function buildFaqJsonLd(
 }
 
 export function buildServiceJsonLd(service: Service) {
-  const serviceUrl = absoluteUrl(`/usluge/${service.slug}`);
+  const serviceUrl = absoluteUrl(`/services/${service.slug}`);
   const image =
     service.detailAsset ??
     service.detailAfterAsset ??
@@ -419,12 +419,12 @@ export function buildServicesItemListJsonLd(services: Service[] = SERVICES) {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Elegant Render usluge",
-    url: absoluteUrl("/usluge"),
+    url: absoluteUrl("/services"),
     itemListElement: services.map((service, index) => ({
       "@type": "ListItem",
       position: index + 1,
       name: service.name,
-      url: absoluteUrl(`/usluge/${service.slug}`),
+      url: absoluteUrl(`/services/${service.slug}`),
       description: service.description,
     })),
   };
@@ -436,11 +436,11 @@ export function buildOfferCatalogJsonLd(
   return {
     "@context": "https://schema.org",
     "@type": "OfferCatalog",
-    "@id": `${absoluteUrl("/cene")}#offer-catalog`,
+    "@id": `${absoluteUrl("/pricing")}#offer-catalog`,
     name: "Elegant Render cenovnik",
     description:
       "Osnovne cene arhitektonske vizuelizacije su u RSD, bruto sa PDV-om uračunatim.",
-    url: absoluteUrl("/cene"),
+    url: absoluteUrl("/pricing"),
     provider: {
       "@id": SEO.organizationId,
     },
@@ -454,7 +454,7 @@ export function buildOfferCatalogJsonLd(
         description: product.includes.join(", "),
         price: product.basePriceRsd,
         priceCurrency: "RSD",
-        url: absoluteUrl("/cene"),
+        url: absoluteUrl("/pricing"),
         availability: product.inquiryOnly
           ? "https://schema.org/PreOrder"
           : "https://schema.org/InStock",

@@ -1,7 +1,7 @@
 /**
  * Daily cron — removes expired Quote rows and runs AI Studio maintenance.
  *
- * The Quote model (saved-and-shared cart snapshots from /cene) has a
+ * The Quote model (saved-and-shared cart snapshots from /pricing) has a
  * 30-day TTL via `expiresAt`. The schema has @@index([expiresAt]) so
  * this delete stays cheap as the table grows.
  *

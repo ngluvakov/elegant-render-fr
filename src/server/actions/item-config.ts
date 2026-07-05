@@ -7,7 +7,7 @@
  * updateInteriorFloors (per-floor rooms+cameras+description+advanced for
  * int-static), and deleteOrderFile (remove an uploaded file).
  *
- * Used by: portal/porudzbine/[orderId] item configuration UI
+ * Used by: portal/orders/[orderId] item configuration UI
  */
 "use server";
 
@@ -161,7 +161,7 @@ export async function updateItemConfig(
     data: updateData,
   });
 
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }
 
@@ -206,7 +206,7 @@ export async function confirmItemFileUpload(
     },
   });
 
-  revalidatePath(`/portal/porudzbine/${orderId}`);
+  revalidatePath(`/portal/orders/${orderId}`);
   return { success: true };
 }
 
@@ -227,7 +227,7 @@ export async function deleteOrderFile(
     return { error: "Fajlovi se mogu brisati samo u nacrtu." };
 
   await prisma.orderFile.delete({ where: { id: fileId } });
-  revalidatePath(`/portal/porudzbine/${file.order.id}`);
+  revalidatePath(`/portal/orders/${file.order.id}`);
   return { success: true };
 }
 
@@ -252,7 +252,7 @@ export async function deleteOrderItem(
   await prisma.orderItem.delete({ where: { id: itemId } });
   await repriceOrder(orderId);
 
-  revalidatePath(`/portal/porudzbine/${orderId}`);
+  revalidatePath(`/portal/orders/${orderId}`);
   return { success: true };
 }
 
@@ -368,7 +368,7 @@ export async function addOrderItem(
   });
 
   await repriceOrder(orderId);
-  revalidatePath(`/portal/porudzbine/${orderId}`);
+  revalidatePath(`/portal/orders/${orderId}`);
   return { success: true, newItemId: created.id };
 }
 
@@ -503,7 +503,7 @@ export async function updateTour360Config(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }
 
@@ -558,7 +558,7 @@ export async function updateLandscapeConfig(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }
 
@@ -602,7 +602,7 @@ export async function updateFloorplanConfig(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }
 
@@ -646,7 +646,7 @@ export async function updateFloorplan2dConfig(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }
 
@@ -690,7 +690,7 @@ export async function updateSiteplanConfig(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }
 
@@ -735,7 +735,7 @@ export async function updateStagingConfig(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }
 
@@ -833,7 +833,7 @@ export async function swapStagingType(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true, newItemId: newItem.id };
 }
 
@@ -877,7 +877,7 @@ export async function updateRenovationConfig(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }
 
@@ -921,7 +921,7 @@ export async function updateDtdConfig(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }
 
@@ -966,7 +966,7 @@ export async function updateItemRemovalConfig(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }
 
@@ -1015,7 +1015,7 @@ export async function updateAnimationConfig(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }
 
@@ -1061,7 +1061,7 @@ export async function updateExtStaticConfig(
     },
   });
   await repriceOrder(auth.item.order.id);
-  revalidatePath(`/portal/porudzbine/${auth.item.order.id}`);
+  revalidatePath(`/portal/orders/${auth.item.order.id}`);
   return { success: true };
 }
 
@@ -1088,7 +1088,7 @@ export async function updateExt360Config(
     },
   });
   await repriceOrder(auth.item.order.id);
-  revalidatePath(`/portal/porudzbine/${auth.item.order.id}`);
+  revalidatePath(`/portal/orders/${auth.item.order.id}`);
   return { success: true };
 }
 
@@ -1115,7 +1115,7 @@ export async function updateExtAerialConfig(
     },
   });
   await repriceOrder(auth.item.order.id);
-  revalidatePath(`/portal/porudzbine/${auth.item.order.id}`);
+  revalidatePath(`/portal/orders/${auth.item.order.id}`);
   return { success: true };
 }
 
@@ -1150,6 +1150,6 @@ export async function updateInteriorFloors(
   });
 
   await repriceOrder(item.order.id);
-  revalidatePath(`/portal/porudzbine/${item.order.id}`);
+  revalidatePath(`/portal/orders/${item.order.id}`);
   return { success: true };
 }

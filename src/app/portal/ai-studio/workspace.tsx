@@ -2586,7 +2586,7 @@ function HistoryPanel({
           Klikni na obradu za detalje. Fajlovi su dostupni 30 dana.
         </p>
         <Link
-          href="/portal/ai-kreacije"
+          href="/portal/ai-creations"
           className="mt-2 inline-flex text-xs font-semibold text-accent hover:underline"
         >
           Prikaži sve AI kreacije
@@ -2812,7 +2812,7 @@ function BalanceCard({
           : "Krediti nisu aktivni"}
       </p>
       <Link
-        href="/portal/ai-studio/krediti"
+        href="/portal/ai-studio/credits"
         className={cn(
           "mt-2 inline-flex text-xs font-semibold hover:underline",
           lowBalance

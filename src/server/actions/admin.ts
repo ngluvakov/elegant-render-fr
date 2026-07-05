@@ -6,7 +6,7 @@
  * helper used by sibling admin action files. All write paths are gated
  * behind requireAdmin() and most sync to Bitrix24.
  *
- * Used by: admin/porudzbine/[orderId], admin/korisnici, admin charges.
+ * Used by: admin/orders/[orderId], admin/users, admin charges.
  */
 "use server";
 
@@ -199,8 +199,8 @@ export async function adminGrantAiCredits(args: {
     return { balanceAfterUnits: user.aiCreditBalanceUnits };
   });
 
-  revalidatePath("/portal/admin/korisnici");
-  revalidatePath(`/portal/admin/korisnici/${args.userId}`);
+  revalidatePath("/portal/admin/users");
+  revalidatePath(`/portal/admin/users/${args.userId}`);
 
   await captureServerEvent({
     distinctId: `user:${args.userId}`,
@@ -295,8 +295,8 @@ export async function adminGrantFreeRevision(args: {
     });
   }
 
-  revalidatePath(`/portal/admin/porudzbine/${order.id}`);
-  revalidatePath(`/portal/porudzbine/${order.id}`);
+  revalidatePath(`/portal/admin/orders/${order.id}`);
+  revalidatePath(`/portal/orders/${order.id}`);
 
   await captureServerEvent({
     distinctId: `user:${order.userId}`,

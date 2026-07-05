@@ -123,20 +123,20 @@ export default async function AdminPage({
           </p>
         </div>
         <nav className="flex items-center gap-2 text-xs">
-          {canViewUsers && <AdminNavLink href="/portal/admin/korisnici">Korisnici</AdminNavLink>}
+          {canViewUsers && <AdminNavLink href="/portal/admin/users">Korisnici</AdminNavLink>}
           {canManageInquiries && (
-            <AdminNavLink href="/portal/admin/upiti" count={pendingInquiriesCount}>
+            <AdminNavLink href="/portal/admin/inquiries" count={pendingInquiriesCount}>
               Upiti
             </AdminNavLink>
           )}
-          {canManageInquiries && <AdminNavLink href="/portal/admin/vr-upiti">VR upiti</AdminNavLink>}
+          {canManageInquiries && <AdminNavLink href="/portal/admin/vr-inquiries">VR upiti</AdminNavLink>}
           {adminHas(admin, "USAGE_VIEW") && (
             <AdminNavLink href="/portal/admin/ai-studio">AI Studio</AdminNavLink>
           )}
-          {canViewAnalytics && <AdminNavLink href="/portal/admin/analitika">Analitika</AdminNavLink>}
-          {canManagePricing && <AdminNavLink href="/portal/admin/finansije/cenovnik">Finansije</AdminNavLink>}
-          {canViewFinance && <AdminNavLink href="/portal/admin/finansije/izvoz">Izvoz računa</AdminNavLink>}
-          {canViewAudit && <AdminNavLink href="/portal/admin/revizije">Revizije</AdminNavLink>}
+          {canViewAnalytics && <AdminNavLink href="/portal/admin/analytics">Analitika</AdminNavLink>}
+          {canManagePricing && <AdminNavLink href="/portal/admin/finance/pricebook">Finansije</AdminNavLink>}
+          {canViewFinance && <AdminNavLink href="/portal/admin/finance/export">Izvoz računa</AdminNavLink>}
+          {canViewAudit && <AdminNavLink href="/portal/admin/revisions">Revizije</AdminNavLink>}
           {canManageSystem && (
             <AdminNavLink
               href="/portal/admin/outbox"
@@ -249,7 +249,7 @@ export default async function AdminPage({
           return (
             <Link
               key={order.id}
-              href={`/portal/admin/porudzbine/${order.id}`}
+              href={`/portal/admin/orders/${order.id}`}
               className="block rounded-xl border border-border/30 bg-card/80 px-4 py-3 transition-all hover:border-border hover:shadow-[0_4px_16px_rgba(28,26,25,0.04)] lg:grid lg:grid-cols-[1.5fr_1.5fr_1fr_0.8fr_auto_auto_auto] lg:items-center lg:gap-3"
             >
               {/* Client */}

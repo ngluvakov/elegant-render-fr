@@ -327,7 +327,7 @@ export async function deleteAiStudioGeneration(
   await removeUnusedAiStudioFiles(candidatePaths);
 
   revalidatePath("/portal/ai-studio");
-  revalidatePath("/portal/ai-kreacije");
+  revalidatePath("/portal/ai-creations");
   await recordUserActivity(userId, { aiGenerationsStarted: 1 });
   revalidatePath("/portal/admin/ai-studio");
 
@@ -630,7 +630,7 @@ export async function startAiStudioGeneration(
   }
 
   revalidatePath("/portal/ai-studio");
-  revalidatePath("/portal/ai-kreacije");
+  revalidatePath("/portal/ai-creations");
 
   return {
     generationId: generation.id,
@@ -880,7 +880,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
   }
 
   revalidatePath("/portal/ai-studio");
-  revalidatePath("/portal/ai-kreacije");
+  revalidatePath("/portal/ai-creations");
 }
 
 async function logAiOutputProcessingFailure({
@@ -1034,7 +1034,7 @@ async function failAiGeneration(generation: AiGeneration, message: string) {
   }
 
   revalidatePath("/portal/ai-studio");
-  revalidatePath("/portal/ai-kreacije");
+  revalidatePath("/portal/ai-creations");
 }
 
 async function resolveGenerationReferenceImages(

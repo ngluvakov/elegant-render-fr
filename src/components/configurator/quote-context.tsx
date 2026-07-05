@@ -103,7 +103,7 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
       }
       // int-static and int-360 are priced via per-floor configJson on the
       // server (calcInteriorTotal / calcTour360Total) rather than catalog
-      // add-ons. Initialize the matching client-side config so /cene's
+      // add-ons. Initialize the matching client-side config so /pricing's
       // priceItems() routes pricing through the same canonical helpers
       // and the math matches what the portal will use post-checkout.
       const interiorConfig: InteriorFloor[] | undefined =

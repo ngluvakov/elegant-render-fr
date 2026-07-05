@@ -3,7 +3,7 @@
  * entry (auto-animate 0→50% on first intersection) + hover (desktop).
  * On mobile / coarse pointers, it shares the demo-then-scroll reveal used
  * by the lighter before/after cards. Different UX intent from
- * `BeforeAfterReveal`: this is the showcase variant used on the /usluge
+ * `BeforeAfterReveal`: this is the showcase variant used on the /services
  * listing where the goal is "watch us transform this" rather than the
  * interactive mouse-tracked reveal used on the detail page and home picker.
  *
@@ -20,7 +20,7 @@
  *    then drive `--reveal` from scroll position (20→100%).
  *  - `prefers-reduced-motion: reduce`: skip everything, hold at 50%.
  *
- * Used by: services-showcase (the /usluge listing page).
+ * Used by: services-showcase (the /services listing page).
  */
 "use client";
 

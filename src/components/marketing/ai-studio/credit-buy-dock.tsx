@@ -47,7 +47,7 @@ type CreditBuyDockProps = {
 /**
  * Sticky right-rail credit picker rendered next to Hero + ToolPicker.
  * Lets the customer type a precise credit count or use a slider to
- * discover the next discount tier, then jumps straight into `/poruci`
+ * discover the next discount tier, then jumps straight into `/checkout`
  * with the quote pre-loaded into sessionStorage. The wizard accepts
  * guests (creates a passwordless user from email at step 0) and
  * auto-skips the file-upload step for non-service items.
@@ -92,7 +92,7 @@ export function CreditBuyDockMobile({
   const handleBuy = () => {
     stashCreditQuote(credits);
     setOpen(false);
-    router.push("/poruci");
+    router.push("/checkout");
   };
 
   return (
@@ -155,7 +155,7 @@ function CreditPickerCard({
 
   const handleBuy = () => {
     stashCreditQuote(credits);
-    router.push("/poruci");
+    router.push("/checkout");
   };
 
   return (

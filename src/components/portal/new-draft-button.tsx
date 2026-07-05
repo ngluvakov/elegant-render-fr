@@ -1,7 +1,7 @@
 /**
  * NewDraftButton — Create an empty draft order and jump into its detail page.
- * Used on /portal/porudzbine so the client can start configuring directly in
- * the portal instead of being bounced to /cene.
+ * Used on /portal/orders so the client can start configuring directly in
+ * the portal instead of being bounced to /pricing.
  */
 "use client";
 
@@ -21,7 +21,7 @@ export function NewDraftButton() {
         alert(res.error ?? "Greška pri kreiranju nacrta.");
         return;
       }
-      router.push(`/portal/porudzbine/${res.orderId}`);
+      router.push(`/portal/orders/${res.orderId}`);
     });
   };
 

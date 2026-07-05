@@ -64,7 +64,7 @@ export function ServiceMatrixSidebar({ activeCat }: { activeCat: string }) {
         params.set(MATRIX_CAT_PARAM, id);
       }
       const qs = params.toString();
-      router.replace(`/cene${qs ? `?${qs}` : ""}#usluge`, { scroll: false });
+      router.replace(`/pricing${qs ? `?${qs}` : ""}#usluge`, { scroll: false });
       track("service_matrix_cat_click", { cat: id });
     },
     [router, sp, hasInteracted],

@@ -19,9 +19,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   pages: {
-    signIn: "/prijava",
+    signIn: "/login",
     newUser: "/portal",
-    error: "/prijava",
+    error: "/login",
   },
   providers: [
     Google({
@@ -131,7 +131,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // linkAccount: today's "Google sub attached to test.admin instead
   // of ngluvakov" incident left no DB trace until we noticed by
   // accident; with this in place a similar regression would surface
-  // in /portal/admin/revizije immediately.
+  // in /portal/admin/revisions immediately.
   events: {
     signIn: async ({ user, account, isNewUser }) => {
       if (!user.id) return;

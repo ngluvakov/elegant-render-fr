@@ -1,7 +1,7 @@
 /**
  * PendingPaymentCard — NestPay card payment card for unpaid orders.
  *
- * Used on: /portal/porudzbine/[orderId] (order detail page, when unpaid).
+ * Used on: /portal/orders/[orderId] (order detail page, when unpaid).
  */
 "use client";
 
@@ -15,7 +15,7 @@ import {
 } from "@/lib/billing";
 import { track } from "@/lib/posthog-events";
 import { initiateNestpayPayment } from "@/server/actions/nestpay";
-import { NestpayRedirectForm } from "@/app/(marketing)/poruci/nestpay-redirect-form";
+import { NestpayRedirectForm } from "@/app/(marketing)/checkout/nestpay-redirect-form";
 
 type PendingPaymentCardProps = {
   orderId: string;

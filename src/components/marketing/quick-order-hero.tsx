@@ -1,6 +1,6 @@
 /**
  * QuickOrderHero — Home page hero with a focused expert-service quick estimate.
- * The selected service/variant is carried into /cene so the configurator can
+ * The selected service/variant is carried into /pricing so the configurator can
  * open with the matching quote item already added.
  *
  * Used on: / (home page).
@@ -148,7 +148,7 @@ export function QuickOrderHero() {
     selectedVariant.id,
     selectedService.category,
   );
-  const expertDetailsHref = `/usluge/${selectedService.slug}`;
+  const expertDetailsHref = `/services/${selectedService.slug}`;
   const featuredAiTool = AI_EDIT_TYPES[0];
 
   return (

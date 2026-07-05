@@ -2,7 +2,7 @@
  * ServicesGrid — Categorized grid of service cards with pricing and links.
  * Supports a `preview` mode that limits to the first 2 categories.
  *
- * Used on: /usluge (services listing page).
+ * Used on: /services (services listing page).
  * @prop preview — show only a compact subset of categories
  */
 import Link from "next/link";
@@ -74,7 +74,7 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
                     return (
                       <Link
                         key={service.slug}
-                        href={`/usluge/${service.slug}`}
+                        href={`/services/${service.slug}`}
                         className="group flex flex-col gap-3 rounded-2xl border border-border/70 bg-card/80 p-6 transition-colors hover:border-accent/60"
                       >
                         <div className="flex items-start justify-between gap-3">

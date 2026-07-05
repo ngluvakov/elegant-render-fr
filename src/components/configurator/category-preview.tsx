@@ -1,5 +1,5 @@
 /**
- * CategoryPreview — Five starting-price cards rendered above the configurator on /cene.
+ * CategoryPreview — Five starting-price cards rendered above the configurator on /pricing.
  * Each card represents a customer-facing service group, shows its starting
  * price (derived live from the catalog), and links into the configurator with
  * the matching tab pre-selected.
@@ -9,7 +9,7 @@
  * All cards fall back to a lucide icon + gradient when the asset hasn't
  * loaded yet.
  *
- * Used on: /cene page (between philosophy strip and PricingConfigurator).
+ * Used on: /pricing page (between philosophy strip and PricingConfigurator).
  */
 "use client";
 
@@ -112,7 +112,7 @@ export function CategoryPreview({
         return (
           <PreviewCard
             key={group.id}
-            href={`/cene?group=${group.id}#configurator`}
+            href={`/pricing?group=${group.id}#configurator`}
             label={group.label}
             shortLabel={group.shortLabel}
             blurb={group.blurb}

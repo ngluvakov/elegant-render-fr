@@ -2,7 +2,7 @@
  * proxy.ts — Next.js 16 proxy (middleware replacement) for route protection.
  *
  * Exports proxy() and matcher config. Redirects unauthenticated users
- * hitting /portal/* to /prijava with a callbackUrl parameter.
+ * hitting /portal/* to /login with a callbackUrl parameter.
  * Checks for the Auth.js session-token cookie (regular and __Secure- variant).
  *
  * Used by: Next.js 16 proxy configuration (next.config)
@@ -27,7 +27,7 @@ export function proxy(request: NextRequest) {
       request.cookies.get("__Secure-authjs.session-token")?.value;
 
     if (!token) {
-      const signInUrl = new URL("/prijava", request.url);
+      const signInUrl = new URL("/login", request.url);
       signInUrl.searchParams.set(
         "callbackUrl",
         `${pathname}${request.nextUrl.search}`,

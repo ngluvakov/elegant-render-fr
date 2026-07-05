@@ -1,5 +1,5 @@
 /**
- * customer-groups.ts — Public-facing groupings for the /cene preview cards
+ * customer-groups.ts — Public-facing groupings for the /pricing preview cards
  * and the configurator's category picker. Internal section labels
  * ("1.1 — Rendering", "1.2 — Planovi") read like a SAP catalog; customers
  * shop by job-to-be-done. This module collapses the 10+ catalog categories
@@ -42,7 +42,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "Eksterijer",
     blurb: "Fasade, kuće, zgrade, dvorišta i okruženje",
     catIds: ["exterior", "landscape"],
-    imageSrc: "/artwork/cene-card-eksterijer.webp",
+    imageSrc: "/artwork/pricing-card-eksterijer.webp",
   },
   {
     id: "enterijer",
@@ -50,7 +50,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "Enterijer",
     blurb: "Opremljene sobe i stanovi po spratu",
     catIds: ["interior"],
-    imageSrc: "/artwork/cene-card-enterijer.webp",
+    imageSrc: "/artwork/pricing-card-enterijer.webp",
   },
   {
     id: "planovi",
@@ -58,7 +58,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "Planovi",
     blurb: "2D osnove, 3D planovi i situacioni prikazi",
     catIds: ["floorplans-2d", "floorplans-3d", "siteplans"],
-    imageSrc: "/artwork/cene-card-planovi.webp",
+    imageSrc: "/artwork/pricing-card-planovi.webp",
   },
   {
     id: "animacija",
@@ -66,8 +66,8 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "Animacija",
     blurb: "3D animacije i 360° ture",
     catIds: ["animation"],
-    imageSrc: "/artwork/cene-card-animacija.webp",
-    videoSrc: "/artwork/cene-card-animacija.mp4",
+    imageSrc: "/artwork/pricing-card-animacija.webp",
+    videoSrc: "/artwork/pricing-card-animacija.mp4",
   },
   {
     id: "opremanje-renovacija",
@@ -75,7 +75,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "Opremanje",
     blurb: "Staging, renovacija, dan u noć, uklanjanje elemenata",
     catIds: ["staging", "renovation", "day-to-dusk", "item-removal"],
-    imageSrc: "/artwork/cene-card-opremanje-renovacija.webp",
+    imageSrc: "/artwork/pricing-card-opremanje-renovacija.webp",
   },
   {
     id: "vr-iskustvo",
@@ -83,7 +83,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "VR",
     blurb: "Imerzivni VR walkthrough — konsultacija pre izrade",
     catIds: ["vr-experiences"],
-    imageSrc: "/artwork/cene-card-animacija.webp",
+    imageSrc: "/artwork/pricing-card-animacija.webp",
   },
 ];
 

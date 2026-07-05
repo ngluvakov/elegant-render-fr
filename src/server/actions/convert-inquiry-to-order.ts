@@ -187,7 +187,7 @@ export async function convertInquiryToOrder(
       },
     });
 
-    revalidatePath("/portal/admin/upiti");
+    revalidatePath("/portal/admin/inquiries");
     revalidatePath("/portal/admin");
     await recordUserActivity(userId, { ordersCreated: 1 });
 

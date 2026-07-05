@@ -55,7 +55,7 @@ export async function syncProjectInquiryLead(
   }
 
   const { firstName, lastName } = splitName(inquiry.contactName);
-  const adminUrl = `${getBaseUrl()}/portal/admin/upiti`;
+  const adminUrl = `${getBaseUrl()}/portal/admin/inquiries`;
   const quoteSnapshot = formatQuoteSnapshot(inquiry.quoteSnapshotJson);
   const fileLines =
     inquiry.files.length > 0

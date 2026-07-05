@@ -3,7 +3,7 @@
  * inline project-name editor (for drafts), status badge, total amount, and
  * creation/update dates.
  *
- * Used on: /portal/porudzbine/[orderId] (order detail page).
+ * Used on: /portal/orders/[orderId] (order detail page).
  */
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -61,7 +61,7 @@ export function OrderDetailHero({
   return (
     <div>
       <Link
-        href="/portal/porudzbine"
+        href="/portal/orders"
         className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-3.5 w-3.5" />

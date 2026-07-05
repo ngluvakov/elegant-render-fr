@@ -50,7 +50,7 @@ export async function syncNewDeal(orderId: string) {
       CONTACT_ID: contactId,
       OPPORTUNITY: order.premiumTotalRsd ?? order.totalRsd,
       CURRENCY_ID: "RSD",
-      COMMENTS: `Portal: ${process.env.AUTH_URL}/portal/admin/porudzbine/${order.id}\n\nStavke:\n${itemsDescription}${order.customerNote ? `\n\nNapomena: ${order.customerNote}` : ""}`,
+      COMMENTS: `Portal: ${process.env.AUTH_URL}/portal/admin/orders/${order.id}\n\nStavke:\n${itemsDescription}${order.customerNote ? `\n\nNapomena: ${order.customerNote}` : ""}`,
     },
   }, { entityType: "deal", entityId: orderId, direction: "outbound" });
 

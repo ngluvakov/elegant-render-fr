@@ -1,5 +1,5 @@
 /**
- * InteriorQuoteEditor — Per-room configurator for int-static items on /cene.
+ * InteriorQuoteEditor — Per-room configurator for int-static items on /pricing.
  * Mirrors the data shape of the portal's interior-config-section
  * (InteriorFloor[]) so math runs through the same calcInteriorTotal helper
  * and pricing matches by construction.
@@ -14,7 +14,7 @@
  * portal-only — they don't change the price and the portal has the right
  * context for them post-checkout.
  *
- * Used on: QuoteItemCard for int-static items (/cene page).
+ * Used on: QuoteItemCard for int-static items (/pricing page).
  */
 "use client";
 

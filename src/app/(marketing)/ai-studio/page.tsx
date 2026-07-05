@@ -254,7 +254,7 @@ const scenarios = [
     text:
       "Testirajte podove, zidove, materijale i atmosferu pre nego što donesete skupe odluke.",
     bestFor: "Investitori, dizajneri, vlasnici koji renoviraju",
-    image: "/artwork/cene-card-opremanje-renovacija.webp",
+    image: "/artwork/pricing-card-opremanje-renovacija.webp",
   },
 ];
 
@@ -503,7 +503,7 @@ function HeroContent({
 
 /**
  * Primary entry into the buying flow. Mirrors the `CategoryPreview` pattern
- * from /cene: each card shows the tool's starting public price and links straight
+ * from /pricing: each card shows the tool's starting public price and links straight
  * into the portal with the tool pre-selected so the customer can start
  * working in one click.
  */
@@ -864,7 +864,7 @@ function ComparisonCard({
       </ul>
       {link && (
         <Link
-          href="/usluge"
+          href="/services"
           className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent hover:underline"
         >
           Pogledajte usluge renderinga

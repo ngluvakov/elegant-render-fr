@@ -137,7 +137,7 @@ export type Service = {
   /** Optional poster frame for detailVideoSrc. */
   detailVideoPoster?: string;
   /** Listing-page card image (4:3, 1200×900). Used by services-showcase
-   *  on /usluge — distinct from home (3:2 thumbnail) and detail (16:9
+   *  on /services — distinct from home (3:2 thumbnail) and detail (16:9
    *  hero) so each surface has its own visual identity. */
   listingAsset?: string;
   /** Plain-language line that shows next to "od X RSD" everywhere a price
@@ -173,7 +173,7 @@ export type Service = {
   /** Delivered via White Rook partner network rather than in-house. */
   outsourced?: boolean;
   /** Hide from primary navigation dropdown menu. The service is still in
-   *  the catalog, still has a /usluge/<slug> page, and still appears in
+   *  the catalog, still has a /services/<slug> page, and still appears in
    *  the sitemap — but the header dropdown skips it. Used for multi-variant
    *  master pages (e.g. unutrasnji-renderi) where dedicated split services
    *  exist and the master would duplicate them in the dropdown. */

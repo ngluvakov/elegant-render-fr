@@ -143,7 +143,7 @@ function adminInquiryUrl(inquiryId: string): string {
     process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : process.env.AUTH_URL ?? "http://localhost:3000";
-  return `${base}/portal/admin/upiti?highlight=${encodeURIComponent(inquiryId)}`;
+  return `${base}/portal/admin/inquiries?highlight=${encodeURIComponent(inquiryId)}`;
 }
 
 export async function submitProjectInquiry(
@@ -307,7 +307,7 @@ export async function submitProjectInquiry(
     }),
   ]);
 
-  revalidatePath("/portal/admin/upiti");
+  revalidatePath("/portal/admin/inquiries");
   return { ok: true, inquiryId: inquiry.id };
 }
 
@@ -336,7 +336,7 @@ export async function updateProjectInquiryStatus(
     },
   });
 
-  revalidatePath("/portal/admin/upiti");
+  revalidatePath("/portal/admin/inquiries");
   return { ok: true };
 }
 
@@ -348,10 +348,10 @@ export async function retryProjectInquiryBitrixSync(
 
   try {
     const bitrixLeadId = await syncProjectInquiryLead(inquiryId);
-    revalidatePath("/portal/admin/upiti");
+    revalidatePath("/portal/admin/inquiries");
     return { ok: true, bitrixLeadId };
   } catch (err) {
-    revalidatePath("/portal/admin/upiti");
+    revalidatePath("/portal/admin/inquiries");
     return {
       error:
         err instanceof Error

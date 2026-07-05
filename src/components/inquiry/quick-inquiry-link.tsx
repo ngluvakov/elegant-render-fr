@@ -23,7 +23,7 @@ export function QuickInquiryLink({
   className,
   variant,
   size,
-  href = "/kontakt",
+  href = "/contact",
   inquiry,
   onClick,
   onOpen,

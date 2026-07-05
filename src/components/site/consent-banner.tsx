@@ -134,7 +134,7 @@ export function ConsentBanner() {
             marketinško merenje i snimanje sesija uključujemo samo uz vašu
             saglasnost, da bismo popravili iskustvo.{" "}
             <Link
-              href="/pravno/kolacici"
+              href="/legal/cookies"
               className="text-foreground underline-offset-4 hover:underline"
             >
               Više o kolačićima

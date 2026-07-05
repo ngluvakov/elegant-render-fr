@@ -1,6 +1,6 @@
 /**
- * NestpayReceipt — shared server-component receipt for /poruci/uspeh
- * and /poruci/neuspeh.
+ * NestpayReceipt — shared server-component receipt for /checkout/success
+ * and /checkout/failure.
  *
  * Renders either 5 sections (success) or 4 sections (failure, no
  * Stavke porudžbine) from a typed NestpayReceiptData prop built by

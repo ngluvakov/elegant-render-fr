@@ -4,7 +4,7 @@
  * Loads + formats the customer-facing data for a NestPay-paid order:
  * line items with RSD billing labels, VAT breakdown, customer block, and the seven EPM 2.7
  * transaction parameters. Consumed by:
- *   - /poruci/uspeh and /poruci/neuspeh server components (HTML page).
+ *   - /checkout/success and /checkout/failure server components (HTML page).
  *   - outbox handlers payment_success_email / payment_failure_email
  *     (transactional email — adapter in outbox.ts wraps this with
  *     recipient address + retry URL).

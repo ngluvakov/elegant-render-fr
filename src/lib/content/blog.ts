@@ -160,7 +160,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: "cta",
         label: "Izračunajte cenu za vaš projekat",
-        href: "/cene",
+        href: "/pricing",
       },
     ],
   },
@@ -281,7 +281,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: "cta",
         label: "Izračunajte cenu virtuelne renovacije",
-        href: "/cene?group=opremanje-renovacija",
+        href: "/pricing?group=opremanje-renovacija",
       },
     ],
   },
@@ -348,7 +348,7 @@ export const BLOG_POSTS: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Sve naše cene su **transparentne i unapred poznate** — možete ih videti i direktno na [stranici sa cenama](/cene).",
+        text: "Sve naše cene su **transparentne i unapred poznate** — možete ih videti i direktno na [stranici sa cenama](/pricing).",
       },
       { type: "heading", level: 2, text: "Korak 3: Priprema briefa" },
       {
@@ -432,7 +432,7 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "heading", level: 2, text: "Česta pitanja" },
       {
         type: "paragraph",
-        text: "**Koliko košta 3D render?** Cena zavisi od složenosti. Enterijerski renderi kreću od **19.924 RSD** za paket od 10 soba. Pogledajte [kompletan cenovnik](/cene).",
+        text: "**Koliko košta 3D render?** Cena zavisi od složenosti. Enterijerski renderi kreću od **19.924 RSD** za paket od 10 soba. Pogledajte [kompletan cenovnik](/pricing).",
       },
       {
         type: "paragraph",
@@ -451,7 +451,7 @@ export const BLOG_POSTS: BlogPost[] = [
         type: "paragraph",
         text: "Proces je jednostavan, a mi smo tu da vam pomognemo na svakom koraku — od ideje do gotovog fotorealističnog rendera.",
       },
-      { type: "cta", label: "Pošaljite brief", href: "/kontakt" },
+      { type: "cta", label: "Pošaljite brief", href: "/contact" },
     ],
   },
   {
@@ -788,7 +788,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: "cta",
         label: "Izračunajte cenu 360 ture",
-        href: "/cene?group=360-ture",
+        href: "/pricing?group=360-ture",
       },
     ],
   },
@@ -952,7 +952,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: "cta",
         label: "Zatražite besplatne konsultacije",
-        href: "/kontakt",
+        href: "/contact",
       },
     ],
   },
@@ -1271,7 +1271,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: "cta",
         label: "Zatražite konsultacije za projekat",
-        href: "/kontakt",
+        href: "/contact",
       },
     ],
   },
@@ -1477,7 +1477,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: "cta",
         label: "Pogledajte virtuelno opremanje",
-        href: "/usluge/virtuelno-opremanje",
+        href: "/services/virtuelno-opremanje",
       },
     ],
   },
@@ -1679,7 +1679,7 @@ export const BLOG_POSTS: BlogPost[] = [
         type: "paragraph",
         text: "Imate CAD crteže spremne za vizuelizaciju? Pošaljite nam ih na obradu — daćemo vam ponudu u roku od 24 sata.",
       },
-      { type: "cta", label: "Pošaljite CAD crteže", href: "/kontakt" },
+      { type: "cta", label: "Pošaljite CAD crteže", href: "/contact" },
     ],
   },
 ];

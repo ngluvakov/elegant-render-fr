@@ -7,13 +7,13 @@ const PRIVATE_PATHS = [
   "/api",
   "/monitoring",
   "/portal",
-  "/poruci",
-  "/prijava",
-  "/registracija",
-  "/zaboravljena-lozinka",
-  "/nova-lozinka",
-  "/verifikacija",
-  "/portal-pristup",
+  "/checkout",
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+  "/portal-access",
 ];
 
 const PUBLIC_ALLOW = [

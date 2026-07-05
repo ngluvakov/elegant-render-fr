@@ -209,7 +209,7 @@ export async function deleteStorageObject(input: {
  * instead of repeating the try/catch + delete + audit dance.
  *
  * Caller-provided `entityType` / `entityId` flow into the audit log
- * so reviewers in /portal/admin/revizije can pivot from a scan event
+ * so reviewers in /portal/admin/revisions can pivot from a scan event
  * back to the order or inquiry it belonged to. The `entityId` can be
  * a synthetic value (e.g. "draft" for pre-order uploads) — the audit
  * log doesn't enforce it being a real FK.

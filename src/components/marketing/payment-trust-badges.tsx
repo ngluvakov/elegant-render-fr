@@ -104,7 +104,7 @@ const PROGRAMS: Logo[] = [
     alt: "Mastercard ID Check",
     width: 70,
     height: 20,
-    href: "https://www.mastercard.rs/sr-rs/korisnici/pronadite-karticu.html",
+    href: "https://www.mastercard.rs/sr-rs/users/pronadite-karticu.html",
     ariaLabel: "Mastercard ID Check — 3D Secure autentifikacija",
   },
   {

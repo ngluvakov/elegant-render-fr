@@ -1,7 +1,7 @@
 /**
  * FinalCta — Dark bottom CTA banner prompting visitors to submit a project.
  *
- * Used on: /usluge, /o-nama, /portfolio pages.
+ * Used on: /services, /about, /portfolio pages.
  */
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
@@ -27,7 +27,7 @@ export function FinalCta() {
               Pošaljite projekat
             </QuickInquiryLink>
             <ButtonLink
-              href="/cene"
+              href="/pricing"
               size="xl"
               variant="outline"
               className="border-background/30 bg-transparent text-background hover:bg-background/10 hover:text-background"

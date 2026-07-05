@@ -1,6 +1,6 @@
 /**
  * upsell-helpers.ts — Display-only helpers for computing upsell discount
- * badges on the /cene tablice and the related-services postcard.
+ * badges on the /pricing tablice and the related-services postcard.
  *
  * Builds correctly-shaped synthetic QuoteItems so resolveDiscount() can be
  * called from a browse context (no real cart commit) without crashing on

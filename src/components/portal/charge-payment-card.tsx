@@ -16,7 +16,7 @@ import {
 } from "@/lib/billing";
 import { mockCardChargePaymentAction } from "@/server/actions/charge-payment";
 import { initiateNestpayChargePayment } from "@/server/actions/nestpay";
-import { NestpayRedirectForm } from "@/app/(marketing)/poruci/nestpay-redirect-form";
+import { NestpayRedirectForm } from "@/app/(marketing)/checkout/nestpay-redirect-form";
 
 type Props = {
   chargeId: string;

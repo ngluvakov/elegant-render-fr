@@ -7,9 +7,9 @@
  * authority on outcome.
  *
  * On approval: persist the forensic snapshot, transition the order to
- * paid, fire finishSuccessfulPayment (invoice + email), 303 → /poruci/uspeh.
+ * paid, fire finishSuccessfulPayment (invoice + email), 303 → /checkout/success.
  * On failure / unverified: persist the snapshot, mark paymentStatus
- * failed, enqueue the bank-mandated failure email, 303 → /poruci/neuspeh.
+ * failed, enqueue the bank-mandated failure email, 303 → /checkout/failure.
  *
  * Hash mismatch is treated as a potential tamper attempt: HTTP 400,
  * Sentry alert, no DB writes, generic redirect with no oid leaked.
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         tags: { area: "payment", flow: "nestpay-return", stage: "lookup" },
         extra: { oid: payload.oid },
       });
-      return redirect303(`${baseUrl}/poruci/neuspeh?oid=${encodeURIComponent(payload.oid)}`);
+      return redirect303(`${baseUrl}/checkout/failure?oid=${encodeURIComponent(payload.oid)}`);
     }
 
     await prisma.orderCharge.update({
@@ -168,7 +168,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         });
       }
       return redirect303(
-        `${baseUrl}/portal/porudzbine/${charge.orderId}?chargePayment=success`,
+        `${baseUrl}/portal/orders/${charge.orderId}?chargePayment=success`,
       );
     }
 
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       });
     }
     return redirect303(
-      `${baseUrl}/portal/porudzbine/${charge.orderId}?chargePayment=failed`,
+      `${baseUrl}/portal/orders/${charge.orderId}?chargePayment=failed`,
     );
   }
 
@@ -233,7 +233,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    return redirect303(`${baseUrl}/poruci/uspeh?oid=${encodeURIComponent(payload.oid)}`);
+    return redirect303(`${baseUrl}/checkout/success?oid=${encodeURIComponent(payload.oid)}`);
   }
 
   // Decline / error path.
@@ -251,5 +251,5 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     });
   }
 
-  return redirect303(`${baseUrl}/poruci/neuspeh?oid=${encodeURIComponent(payload.oid)}`);
+  return redirect303(`${baseUrl}/checkout/failure?oid=${encodeURIComponent(payload.oid)}`);
 }

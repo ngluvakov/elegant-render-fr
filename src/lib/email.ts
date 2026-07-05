@@ -83,7 +83,7 @@ export async function sendVerificationEmail(
   to: string,
   token: string,
 ) {
-  const url = `${getAuthUrl()}/verifikacija?token=${token}`;
+  const url = `${getAuthUrl()}/verify-email?token=${token}`;
 
   await send({
     to,
@@ -111,7 +111,7 @@ export async function sendPasswordResetEmail(
   to: string,
   token: string,
 ) {
-  const url = `${getAuthUrl()}/nova-lozinka?token=${token}`;
+  const url = `${getAuthUrl()}/reset-password?token=${token}`;
 
   await send({
     to,
@@ -143,8 +143,8 @@ export async function sendPortalAccessEmail(
   orderNumber: string,
   orderId: string,
 ) {
-  const url = `${getAuthUrl()}/portal-pristup?token=${token}&next=${encodeURIComponent(
-    `/portal/porudzbine/${orderId}`,
+  const url = `${getAuthUrl()}/portal-access?token=${token}&next=${encodeURIComponent(
+    `/portal/orders/${orderId}`,
   )}`;
 
   await send({
@@ -356,7 +356,7 @@ export async function sendAiCreditsExpiryReminderEmail(args: {
   expiresAt: Date;
   daysLeft: 30 | 7;
 }) {
-  const portalUrl = `${getAuthUrl()}/portal/ai-studio/krediti`;
+  const portalUrl = `${getAuthUrl()}/portal/ai-studio/credits`;
   const dateLabel = args.expiresAt.toLocaleDateString("sr-RS");
 
   await send({
@@ -564,7 +564,7 @@ export async function sendFreeRevisionGrantedEmail(args: {
   orderId: string;
   note: string;
 }) {
-  const portalUrl = `${getAuthUrl()}/portal/porudzbine/${args.orderId}`;
+  const portalUrl = `${getAuthUrl()}/portal/orders/${args.orderId}`;
 
   await send({
     to: args.to,
@@ -605,7 +605,7 @@ export async function sendAdditionalChargeRequestedEmail(args: {
     billingSubtotalCents?: number | null;
   }>;
 }) {
-  const portalUrl = `${getAuthUrl()}/portal/porudzbine/${args.orderId}`;
+  const portalUrl = `${getAuthUrl()}/portal/orders/${args.orderId}`;
   const totalRsd = args.totalCents / 100;
   const totalLabel =
     args.billingCurrency && args.billingTotalCents != null
@@ -671,7 +671,7 @@ export async function sendAdditionalChargePaidEmail(args: {
   billingCurrency?: "RSD" | null;
   billingTotalCents?: number | null;
 }) {
-  const portalUrl = `${getAuthUrl()}/portal/porudzbine/${args.orderId}`;
+  const portalUrl = `${getAuthUrl()}/portal/orders/${args.orderId}`;
   const totalRsd = args.totalCents / 100;
   const totalLabel =
     args.billingCurrency && args.billingTotalCents != null
@@ -712,7 +712,7 @@ export async function sendVrInquiryAdminEmail(args: {
   message?: string;
   config: VrConfig;
 }) {
-  const adminUrl = `${getAuthUrl()}/portal/admin/vr-upiti`;
+  const adminUrl = `${getAuthUrl()}/portal/admin/vr-inquiries`;
   await send({
     to: ADMIN_NOTIFY_EMAIL,
     subject: `Novi VR upit — ${args.contactName} (${args.productLabel})`,
@@ -764,8 +764,8 @@ export async function sendVrProjectReadyEmail(args: {
   orderId: string;
   token: string;
 }) {
-  const url = `${getAuthUrl()}/portal-pristup?token=${args.token}&next=${encodeURIComponent(
-    `/portal/porudzbine/${args.orderId}`,
+  const url = `${getAuthUrl()}/portal-access?token=${args.token}&next=${encodeURIComponent(
+    `/portal/orders/${args.orderId}`,
   )}`;
   await send({
     to: args.to,

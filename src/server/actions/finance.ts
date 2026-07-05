@@ -267,7 +267,7 @@ export async function publishPricingBook() {
 export async function clonePublishedPricingToDraft() {
   const admin = await requireFinanceAdmin();
   await clonePublishedPricingToDraftBook(admin.id);
-  revalidatePath("/portal/admin/finansije/cenovnik");
+  revalidatePath("/portal/admin/finance/pricebook");
 }
 
 export async function previewPricingQuote(items: QuoteItem[]) {
@@ -277,10 +277,10 @@ export async function previewPricingQuote(items: QuoteItem[]) {
 }
 
 function revalidateFinancePaths() {
-  revalidatePath("/portal/admin/finansije/cenovnik");
-  revalidatePath("/cene");
-  revalidatePath("/poruci");
-  revalidatePath("/portal/nova-porudzbina");
+  revalidatePath("/portal/admin/finance/pricebook");
+  revalidatePath("/pricing");
+  revalidatePath("/checkout");
+  revalidatePath("/portal/new-order");
 }
 
 function updateProduct(

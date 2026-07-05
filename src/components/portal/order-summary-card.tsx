@@ -2,7 +2,7 @@
  * OrderSummaryCard — Right-panel summary showing line items with prices,
  * attached source files, and the customer note.
  *
- * Used on: /portal/porudzbine/[orderId] (order detail page).
+ * Used on: /portal/orders/[orderId] (order detail page).
  */
 import {
   formatPublicDiscountedPrice,

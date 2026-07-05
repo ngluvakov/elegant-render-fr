@@ -4,14 +4,14 @@
  * Listens for chat proposals (er-chat-proposal event + sessionStorage) to auto-add products.
  *
  * Two exports:
- *  - `ConfiguratorBody` — the inner UI without a provider; used when /cene
+ *  - `ConfiguratorBody` — the inner UI without a provider; used when /pricing
  *    needs to wrap several siblings (standalone AI credits section,
  *    configurator) in a single shared QuoteProvider so credits added in
  *    either place flow through the same cart.
  *  - `PricingConfigurator` — body + provider. Standalone usage; kept for
  *    callers that mount a self-contained configurator.
  *
- * Used on: /cene (pricing page).
+ * Used on: /pricing (pricing page).
  */
 "use client";
 
@@ -56,7 +56,7 @@ export function ConfiguratorBody({
       cart_size: calculation.items.length,
       total_rsd: calculation.total,
     });
-    router.push("/poruci");
+    router.push("/checkout");
   };
   const sharedToken = searchParams.get("q");
   const prefillProductId = searchParams.get("add");
@@ -80,14 +80,14 @@ export function ConfiguratorBody({
       }
       // Strip the ?q= from the URL so a refresh doesn't re-hydrate
       // (and a copy-paste doesn't expose the token in the address bar).
-      router.replace("/cene", { scroll: false });
+      router.replace("/pricing", { scroll: false });
     })();
     return () => {
       cancelled = true;
     };
   }, [sharedToken, loadItems, router]);
 
-  // Homepage and service-card CTAs can deep-link into /cene with a product
+  // Homepage and service-card CTAs can deep-link into /pricing with a product
   // selected. Add it once, then clean the URL so refreshes do not duplicate it.
   useEffect(() => {
     if (!prefillProductId || prefilledRef.current) return;
@@ -104,7 +104,7 @@ export function ConfiguratorBody({
         ...(prefillSourceMode ? { source_mode: prefillSourceMode } : {}),
       });
     }
-    router.replace("/cene#configurator", { scroll: false });
+    router.replace("/pricing#configurator", { scroll: false });
   }, [
     prefillProductId,
     prefillSourceMode,
@@ -113,7 +113,7 @@ export function ConfiguratorBody({
     router,
   ]);
 
-  // Listen for chat proposal events (when user is already on /cene)
+  // Listen for chat proposal events (when user is already on /pricing)
   // and check sessionStorage on mount (when navigated from another page)
   useEffect(() => {
     const applyProposal = () => {
@@ -146,7 +146,7 @@ export function ConfiguratorBody({
     // Check on mount (navigated from another page with proposal)
     applyProposal();
 
-    // Listen for live events (user clicks "Dodaj" while already on /cene)
+    // Listen for live events (user clicks "Dodaj" while already on /pricing)
     window.addEventListener("er-chat-proposal", applyProposal);
     return () => window.removeEventListener("er-chat-proposal", applyProposal);
   }, [addProduct, pricingCatalog]);
@@ -252,7 +252,7 @@ export function ConfiguratorBody({
           )}
         </div>
 
-        {/* Sidebar — hidden on /cene where QuoteSummary lives inside ServiceMatrix */}
+        {/* Sidebar — hidden on /pricing where QuoteSummary lives inside ServiceMatrix */}
         {!hideQuoteSummary && (
           <aside
             id="quote-summary"

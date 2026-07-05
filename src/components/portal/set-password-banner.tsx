@@ -25,7 +25,7 @@ export function SetPasswordBanner() {
         </div>
       </div>
       <Link
-        href="/portal/profil#password"
+        href="/portal/profile#password"
         className="inline-flex shrink-0 items-center justify-center rounded-lg border border-accent/40 bg-background px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent/10"
       >
         Postavi lozinku

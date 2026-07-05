@@ -204,7 +204,7 @@ export async function resetPasswordAction(
     },
   });
 
-  redirect("/prijava");
+  redirect("/login");
 }
 
 // ─── Portal Access (post-checkout magic link) ──────────
@@ -262,7 +262,7 @@ export async function magicLinkSignInAction(
   const next = (formData.get("next") as string) || "/portal";
 
   if (!token) {
-    redirect("/prijava?error=link_invalid");
+    redirect("/login?error=link_invalid");
   }
 
   try {
@@ -271,7 +271,7 @@ export async function magicLinkSignInAction(
       redirect: false,
     });
   } catch {
-    redirect("/prijava?error=link_expired");
+    redirect("/login?error=link_expired");
   }
 
   redirect(next);

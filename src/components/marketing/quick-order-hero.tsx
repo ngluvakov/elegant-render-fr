@@ -202,7 +202,7 @@ export function QuickOrderHero() {
           </div>
 
           {/* "Minimalni ulaz za start" — full column width, image > text on desktop */}
-          <div className="order-2 grain-soft relative overflow-hidden rounded-3xl border border-border bg-card/80 p-6 shadow-[0_24px_60px_rgba(28,26,25,0.07)] sm:p-8 lg:p-10 xl:col-start-1 xl:row-start-2">
+          <div className="order-2 relative overflow-hidden rounded-3xl border border-border bg-card/80 p-6 shadow-[0_24px_60px_rgba(28,26,25,0.07)] sm:p-8 lg:p-10 xl:col-start-1 xl:row-start-2">
               <div
                 aria-hidden
                 className="absolute inset-0 bg-[linear-gradient(135deg,rgba(184,131,99,0.1),transparent_55%,rgba(143,154,138,0.1))]"

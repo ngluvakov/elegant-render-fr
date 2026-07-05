@@ -102,7 +102,9 @@ export function ServiceMatrixRow({
         active &&
           "border-l-[3px] border-l-accent border-r-border/50 border-y-border/50 bg-accent/[0.04]",
         isInCart && "border-[color:var(--color-sage-deep)]/45 bg-[color:var(--color-sage)]/10",
-        hasActiveDiscount && "orbit-glow",
+        // orbit-glow retired with the international theme; discounted rows
+        // get a static 1px green border + mono badge in the Track C restyle.
+        hasActiveDiscount && "border-[color:var(--color-green)]",
       )}
     >
       <div className="min-w-0 flex-1 flex flex-col justify-center">

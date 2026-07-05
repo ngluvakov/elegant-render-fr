@@ -1,3 +1,20 @@
+/*
+  globals-international.css — Elegant Render INTERNATIONAL theme
+  ================================================================
+  Drop-in replacement for src/app/globals.css on international deployments
+  (Western Europe / English-speaking markets).
+
+  What changes: design tokens only. Components, pages, backend, Bitrix sync,
+  pricing engine and content structure are untouched.
+
+  Also required in src/app/layout.tsx (next/font):
+    - Replace Cormorant Garamond ( --font-heading ) with Inter Tight
+    - Replace Manrope           ( --font-sans )    with Inter Tight
+    - Add JetBrains Mono as     --font-mono (eyebrows, prices, specs)
+
+  Reference: "Elegant Render International — Brand Guidelines" v1.0, §09.
+*/
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -5,31 +22,50 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
-  Elegant Render design system
-  Philosophy: topli editorial modernizam — warm neutral palette, serif-led hierarchy,
-  tactile surfaces, subtle depth. Light mode only (no dark theme per brand book).
+  Elegant Render International design system
+  Philosophy: White Rook restraint — white canvas, near-black text, grey
+  structure, one green accent. Imagery carries the warmth; UI stays back.
+  Light mode only.
 */
 
 @theme inline {
-  /* Brand palette (docs/brand-book.md §11.2) */
-  --color-coal: #1c1a19;
-  --color-ivory: #f6f1ea;
-  --color-sand: #dccfc2;
-  --color-sand-soft: #efe4d8;
-  --color-clay: #b88363;
-  --color-clay-deep: #9f6a4b;
-  --color-clay-light: #ddb195;
-  --color-sage: #8f9a8a;
-  --color-sage-deep: #6d7968;
-  --color-ember: #c89a3c;
-  --color-ember-deep: #a37f2d;
-  --color-border-warm: #b9b0a7;
-  --color-border-soft: #d8cec4;
-  --color-warm-white: #fffcf8;
+  /* Brand palette (Brand Guidelines §03) */
+  --color-ink: #111111;            /* was --color-coal #1c1a19 */
+  --color-canvas: #ffffff;         /* was --color-ivory #f6f1ea */
+  --color-section: #fafafa;        /* was --color-sand #dccfc2 */
+  --color-dark: #0a0a0a;           /* footer, hero protection, dark panels */
+  --color-green: #00d98a;          /* was --color-clay #b88363 */
+  --color-green-hover: #00c77e;    /* primary CTA hover (darken one step) */
+  --color-green-pressed: #00b372;  /* primary CTA press */
+  --color-green-ink: #06120c;      /* text ON green — never white */
+  --color-border-subtle: #e8e8e8;  /* was --color-border-soft #d8cec4 */
+  --color-border-default: #d4d4d4; /* was --color-border-warm #b9b0a7 */
+
+  /* Retired: sand-soft, clay-deep, clay-light, sage, sage-deep, ember,
+     ember-deep, warm-white. Grep for usages and map to the tokens above:
+     sage → neutral greys; ember → keep amber only for warning states. */
+
+  /* TEMPORARY compat aliases (TODO Track C): ~330 component usages of the
+     retired warm palette still exist. These aliases keep every surface
+     render-sane under the international theme until the component-level
+     grep sweep replaces them. Delete this block when the sweep is done. */
+  --color-sage: #d4d4d4;
+  --color-sage-deep: #737373;
+  --color-clay: #00d98a;
+  --color-clay-deep: #00b372;
+  --color-clay-light: #00d98a;
+  --color-sand: #fafafa;
+  --color-sand-soft: #fafafa;
+  --color-coal: #0a0a0a;
+  --color-ivory: #ffffff;
+  --color-warm-white: #ffffff;
+  --color-ember: #b45309;
+  --color-ember-deep: #92400e;
 
   /* Fonts — wired through next/font CSS variables */
-  --font-sans: var(--font-sans);
-  --font-heading: var(--font-heading);
+  --font-sans: var(--font-sans);       /* Inter Tight */
+  --font-heading: var(--font-sans);    /* Inter Tight — same family as --font-sans, loaded once via next/font */
+  --font-mono: var(--font-mono);       /* JetBrains Mono — NEW */
 
   /* shadcn semantic tokens (resolve to :root vars below) */
   --color-background: var(--background);
@@ -75,40 +111,46 @@
 
 :root {
   color-scheme: light;
-  --radius: 1rem;
 
-  /* shadcn semantic vars mapped to Elegant Render brand */
-  --background: #f6f1ea;              /* ivory */
-  --foreground: #1c1a19;              /* coal */
-  --card: #fffcf8;                    /* warm white (slightly brighter than ivory) */
-  --card-foreground: #1c1a19;
-  --popover: #fffcf8;
-  --popover-foreground: #1c1a19;
-  --primary: #1c1a19;                 /* coal — primary CTAs */
-  --primary-foreground: #f6f1ea;
-  --secondary: #efe4d8;               /* sand-soft — secondary surfaces */
-  --secondary-foreground: #1c1a19;
-  --muted: #ece3d6;                   /* slightly tinted ivory */
-  --muted-foreground: #6e655d;        /* warm muted text */
-  --accent: #b88363;                  /* clay — warm accent / main CTA */
-  --accent-foreground: #ffffff;
+  /*
+    Radius: 4px is the system default (buttons, inputs, cards).
+    The Serbian theme used 1rem; existing rounded-2xl/3xl utilities will
+    resolve much flatter through the multipliers above — intended.
+  */
+  --radius: 0.25rem;
+
+  /* shadcn semantic vars mapped to the international brand */
+  --background: #ffffff;              /* was #f6f1ea ivory */
+  --foreground: #111111;              /* was #1c1a19 coal */
+  --card: #ffffff;                    /* was #fffcf8 warm white */
+  --card-foreground: #111111;
+  --popover: #ffffff;
+  --popover-foreground: #111111;
+  --primary: #111111;                 /* near-black — primary buttons stay dark */
+  --primary-foreground: #ffffff;
+  --secondary: #fafafa;               /* was #efe4d8 sand-soft */
+  --secondary-foreground: #111111;
+  --muted: #fafafa;                   /* was #ece3d6 */
+  --muted-foreground: #525252;        /* was #6e655d warm grey */
+  --accent: #00d98a;                  /* was #b88363 clay — THE brand green */
+  --accent-foreground: #06120c;       /* was #ffffff — dark text on green, always */
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #d8cec4;                  /* soft warm border */
-  --input: #d8cec4;
-  --ring: #b88363;                    /* clay focus ring */
-  --chart-1: #b88363;
-  --chart-2: #8f9a8a;
-  --chart-3: #1c1a19;
-  --chart-4: #dccfc2;
-  --chart-5: #b9b0a7;
-  --sidebar: #f6f1ea;
-  --sidebar-foreground: #1c1a19;
-  --sidebar-primary: #1c1a19;
-  --sidebar-primary-foreground: #f6f1ea;
-  --sidebar-accent: #efe4d8;
-  --sidebar-accent-foreground: #1c1a19;
-  --sidebar-border: #d8cec4;
-  --sidebar-ring: #b88363;
+  --border: #e8e8e8;                  /* was #d8cec4 */
+  --input: #d4d4d4;                   /* was #d8cec4 */
+  --ring: #00d98a;                    /* focus ring: 3px @ 25% opacity green */
+  --chart-1: #00d98a;                 /* single-accent charts: green + greys only */
+  --chart-2: #111111;
+  --chart-3: #525252;
+  --chart-4: #d4d4d4;
+  --chart-5: #e8e8e8;
+  --sidebar: #0a0a0a;                 /* portal sidebar goes dark (White Rook pattern) */
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #00d98a;
+  --sidebar-primary-foreground: #06120c;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #262626;
+  --sidebar-ring: #00d98a;
 }
 
 @utility scrollbar-none {
@@ -130,14 +172,14 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-    font-feature-settings: "ss01", "ss02";
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
-    background-image:
-      radial-gradient(circle at top left, rgba(184, 131, 99, 0.08), transparent 28%),
-      radial-gradient(circle at bottom right, rgba(143, 154, 138, 0.08), transparent 24%),
-      linear-gradient(180deg, #faf6f0 0%, #f6f1ea 100%);
-    background-attachment: fixed;
+    /*
+      REMOVED (Serbian theme): warm radial-gradient washes + fixed
+      attachment. International canvas is flat white — no gradients
+      in UI chrome, ever.
+    */
+    background: #ffffff;
     min-height: 100dvh;
   }
 
@@ -147,8 +189,9 @@
   h4,
   h5,
   h6 {
-    font-family: var(--font-heading), ui-serif, Georgia, serif;
-    letter-spacing: -0.01em;
+    font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.02em; /* -0.025em at display sizes ≥ 40px */
   }
 
   img {
@@ -172,13 +215,12 @@
 
 @layer utilities {
   /*
-    .scrollbar-warm — slim, warm-toned custom scrollbar for internal
-    scroll containers (services list in quick order panel, etc.).
-    Uses brand border color by default; thumb darkens to clay on hover.
+    .scrollbar-warm → kept under the same class name so component code
+    doesn't change, but re-toned to neutral grey / green hover.
   */
   .scrollbar-warm {
     scrollbar-width: thin;
-    scrollbar-color: var(--color-border-warm) transparent;
+    scrollbar-color: var(--color-border-default) transparent;
   }
 
   .scrollbar-warm::-webkit-scrollbar {
@@ -191,7 +233,7 @@
   }
 
   .scrollbar-warm::-webkit-scrollbar-thumb {
-    background-color: var(--color-border-warm);
+    background-color: var(--color-border-default);
     border-radius: 999px;
   }
 
@@ -200,129 +242,54 @@
   }
 
   /*
-    .flash-new — brief clay-colored ring pulse used to draw the eye to a
-    just-added quote item card. Triggered by the configurator's auto-scroll
-    effect after a single-item add. Box-shadow expands and fades so the
-    accent doesn't shift layout. Reduced-motion users opt out entirely.
+    .flash-new — KEPT (the one attention cue in the system), recolored
+    from clay to green and retimed to the standard curve.
+    Motion system: cubic-bezier(0.2, 0, 0, 1); 120 / 200 / 360 ms.
   */
   @keyframes er-flash-new {
     0% {
-      box-shadow: 0 0 0 0 rgba(184, 131, 99, 0);
+      box-shadow: 0 0 0 0 rgba(0, 217, 138, 0);
     }
     20% {
-      box-shadow: 0 0 0 6px rgba(184, 131, 99, 0.45);
+      box-shadow: 0 0 0 4px rgba(0, 217, 138, 0.35);
     }
     100% {
-      box-shadow: 0 0 0 12px rgba(184, 131, 99, 0);
+      box-shadow: 0 0 0 10px rgba(0, 217, 138, 0);
     }
   }
 
   .flash-new {
-    animation: er-flash-new 800ms ease-out;
+    animation: er-flash-new 800ms cubic-bezier(0.2, 0, 0, 1);
   }
+
+  /*
+    REMOVED (Serbian theme) — do not port to international builds:
+
+    .sidebar-attention-pulse  Looping domino-wave highlight. Replace with a
+                              2px near-black underline on the active category.
+
+    .orbit-glow (+ @property  Rotating red "comet" ring on discounted rows.
+    --er-orbit-angle)         Replace with a static 1px green border plus a
+                              JetBrains Mono "−33%" tag.
+
+    .grain-soft               Paper-grain overlay. Surfaces are flat.
+
+    No looping or idle animations of any kind. Motion confirms an action
+    or reveals content; it never decorates.
+  */
 
   @media (prefers-reduced-motion: reduce) {
     .flash-new {
       animation: none;
     }
   }
-
-  /*
-    .sidebar-attention-pulse — domino-wave highlight rotating through the
-    /pricing matrix category sidebar until the visitor makes their first
-    selection. Each <li> sets its own animation-delay so the wave ripples
-    top-to-bottom. Cycle is 7s with a brief 8% highlight window then a
-    long quiet tail so the page does not feel busy. Reduced motion off.
-  */
-  @keyframes sidebar-attention-pulse {
-    0%, 88%, 100% {
-      border-left-color: transparent;
-      box-shadow: 0 0 0 0 transparent;
-    }
-    4%, 8% {
-      border-left-color: var(--color-accent);
-      box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-accent) 30%, transparent);
-    }
-    14% {
-      border-left-color: transparent;
-      box-shadow: 0 0 0 0 transparent;
-    }
-  }
-
-  .sidebar-attention-pulse {
-    animation: sidebar-attention-pulse 7s ease-in-out infinite;
-  }
-
-  /*
-    .orbit-glow — a thin reddish ring with a brighter "comet" that orbits
-    the element's border, used to draw the eye to rows that became cheaper
-    because of an item already in the cart. Uses a conic-gradient mask so
-    the glow lives on the border only, never tints the row content. The
-    @property declaration makes --er-orbit-angle animatable (CSS Houdini).
-    Reduced-motion falls back to a static reddish ring.
-  */
-  @property --er-orbit-angle {
-    syntax: "<angle>";
-    initial-value: 0deg;
-    inherits: false;
-  }
-
-  @keyframes orbit-glow {
-    to {
-      --er-orbit-angle: 360deg;
-    }
-  }
-
-  .orbit-glow {
-    position: relative;
-  }
-  .orbit-glow::before {
-    content: "";
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    padding: 2px;
-    background: conic-gradient(
-      from var(--er-orbit-angle),
-      transparent 0deg,
-      transparent 260deg,
-      oklch(0.62 0.18 25 / 0.85) 320deg,
-      oklch(0.7 0.22 28 / 1) 340deg,
-      oklch(0.62 0.18 25 / 0.85) 350deg,
-      transparent 360deg
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: orbit-glow 3.5s linear infinite;
-    pointer-events: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .orbit-glow::before {
-      animation: none;
-      background: oklch(0.65 0.2 25 / 0.55);
-    }
-    .sidebar-attention-pulse {
-      animation: none;
-    }
-  }
 }
 
-@keyframes ai-result-scan {
-  0% {
-    transform: translateX(-120%);
-  }
-  50% {
-    transform: translateX(120%);
-  }
-  100% {
-    transform: translateX(120%);
-  }
-}
-
+/*
+  .ai-history-flight — KEPT (functional: shows where the result went),
+  retimed from 840ms spring-like to 360ms standard curve, green border,
+  straight path, no scale change.
+*/
 .ai-history-flight {
   position: fixed;
   left: 0;
@@ -337,24 +304,24 @@
   color: var(--color-foreground);
   padding: 8px 12px;
   font-size: 0.75rem;
-  font-weight: 700;
-  box-shadow: 0 18px 44px -18px rgba(159, 106, 75, 0.55);
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(10, 10, 10, 0.12);
   pointer-events: none;
-  transform: translate(var(--ai-flight-x0), var(--ai-flight-y0)) scale(1);
-  animation: ai-history-flight 840ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transform: translate(var(--ai-flight-x0), var(--ai-flight-y0));
+  animation: ai-history-flight 360ms cubic-bezier(0.2, 0, 0, 1) forwards;
 }
 
 @keyframes ai-history-flight {
   0% {
     opacity: 0;
-    transform: translate(var(--ai-flight-x0), var(--ai-flight-y0)) scale(0.86);
+    transform: translate(var(--ai-flight-x0), var(--ai-flight-y0));
   }
   16% {
     opacity: 1;
   }
   100% {
     opacity: 0.22;
-    transform: translate(var(--ai-flight-x1), var(--ai-flight-y1)) scale(0.72);
+    transform: translate(var(--ai-flight-x1), var(--ai-flight-y1));
   }
 }
 
@@ -366,19 +333,8 @@
 }
 
 /*
-  --reveal — registered custom property for the AI Studio tool picker's
-  diagonal before/after mask. Registering via @property lets the CSS engine
-  animate the value: when JS resets --reveal on mouseleave, the mask
-  transitions back smoothly. Without registration, --reveal would snap
-  because mask-image isn't animatable as a raw function.
-
-  inherits: true so the parent .before-after-media div drives a single
-  --reveal value that flows down to both the after-image mask and the
-  divider hairline — they're guaranteed to stay in sync.
-
-  Browser support: Chrome 85+, Safari 16.4+, Firefox 128+. Older browsers
-  ignore the registration and snap rather than animate — graceful
-  degradation, the static states still render correctly.
+  --reveal — KEPT as-is. Functional (before/after diagonal mask in the
+  AI Studio tool picker); interaction-driven, not decorative.
 */
 @property --reveal {
   syntax: "<number>";
@@ -388,41 +344,31 @@
 
 @layer components {
   /*
-    .section-kicker — small uppercase label with a warm gradient line before it.
-    Used as eyebrow copy above section headings. Works inside centered or
-    left-aligned parents (inline-flex respects parent text-align).
+    .section-kicker — kept under the same class name; re-set in
+    JetBrains Mono per the international eyebrow spec (12px, +0.08em,
+    uppercase). The warm gradient line becomes a solid green tick.
   */
   .section-kicker {
     display: inline-flex;
     align-items: center;
     gap: 0.625rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.22em;
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--color-muted-foreground);
   }
 
   .section-kicker::before {
     content: "";
-    width: 2.5rem;
-    height: 1px;
-    background: linear-gradient(
-      to right,
-      var(--color-accent),
-      transparent
-    );
-    opacity: 0.9;
+    width: 1.25rem;
+    height: 2px;
+    background: var(--color-accent);
   }
 
   /*
-    .before-after-media / .before-after-after-layer / .before-after-divider —
-    diagonal before/after reveal used by the AI Studio tool picker. The
-    parent `.before-after-media` owns --reveal (0-100); the after-image
-    layer is masked with a 135deg gradient anchored at calc(var(--reveal)
-    * 1%) so everything below the diagonal becomes transparent. The
-    divider draws a thin hairline at the same gradient stop so the
-    customer can see the interactive seam.
+    .before-after-media family — KEPT as-is (functional, interaction-driven).
   */
   .before-after-media {
     transition: --reveal 180ms ease-out;
@@ -445,7 +391,7 @@
     background-image: linear-gradient(
       135deg,
       transparent calc((var(--reveal) - 0.4) * 1%),
-      rgba(255, 252, 248, 0.7) calc(var(--reveal) * 1%),
+      rgba(255, 255, 255, 0.7) calc(var(--reveal) * 1%),
       transparent calc((var(--reveal) + 0.4) * 1%)
     );
     mix-blend-mode: screen;
@@ -457,39 +403,5 @@
     }
   }
 
-  /*
-    .grain-soft — subtle grain overlay for tactile "editorial paper" feel.
-    Apply to a relatively-positioned parent. Decorative only, pointer-events: none.
-  */
-  .grain-soft {
-    position: relative;
-  }
-
-  .grain-soft::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.045;
-    background-image:
-      radial-gradient(
-        circle at 20% 20%,
-        rgba(28, 26, 25, 0.4) 0.4px,
-        transparent 0.6px
-      ),
-      radial-gradient(
-        circle at 70% 40%,
-        rgba(28, 26, 25, 0.28) 0.4px,
-        transparent 0.6px
-      ),
-      radial-gradient(
-        circle at 40% 80%,
-        rgba(28, 26, 25, 0.2) 0.5px,
-        transparent 0.7px
-      );
-    background-size:
-      24px 24px,
-      30px 30px,
-      36px 36px;
-  }
+  /* .grain-soft intentionally not ported — see REMOVED list above. */
 }

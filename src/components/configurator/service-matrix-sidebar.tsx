@@ -100,7 +100,6 @@ export function ServiceMatrixSidebar({ activeCat }: { activeCat: string }) {
                         ? "border-accent bg-accent/10 text-foreground font-medium"
                         : "border-transparent text-muted-foreground hover:bg-secondary/40 hover:text-foreground",
                       isAll && !isActive && "font-medium text-foreground/80",
-                      shouldPulse && "sidebar-attention-pulse",
                     )}
                   >
                     <span className="truncate">{item.label}</span>
@@ -146,7 +145,6 @@ export function ServiceMatrixSidebar({ activeCat }: { activeCat: string }) {
                     isActive
                       ? "bg-accent text-accent-foreground"
                       : "bg-secondary/60 text-foreground hover:bg-secondary",
-                    shouldPulse && "sidebar-attention-pulse",
                   )}
                 >
                   <span>{item.label}</span>

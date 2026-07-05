@@ -53,10 +53,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "daily",
       priority: 0.95,
       images: uniqueImages([
-        "/artwork/pricing-card-enterijer.webp",
-        "/artwork/pricing-card-eksterijer.webp",
-        "/artwork/pricing-card-planovi.webp",
-        "/artwork/pricing-card-opremanje-renovacija.webp",
+        "/artwork/pricing-card-interior.webp",
+        "/artwork/pricing-card-exterior.webp",
+        "/artwork/pricing-card-plans.webp",
+        "/artwork/pricing-card-staging-renovation.webp",
       ]),
     },
     {

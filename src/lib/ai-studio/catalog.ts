@@ -82,7 +82,7 @@ export const AI_STYLE_OPTIONS: AiStyleOption[] = [
   { id: "mid-century", label: "Mid-century", image: "/styles/mid-century.webp" },
   { id: "farmhouse", label: "Farmhouse", image: "/styles/farmhouse.webp" },
   { id: "industrial-urban", label: "Industrial urban", image: "/styles/industrial-urban.webp" },
-  { id: "primorski", label: "Primorski", image: "/styles/primorski.webp" },
+  { id: "coastal", label: "Primorski", image: "/styles/coastal.webp" },
 ];
 
 export const AI_EDIT_TYPES: AiEditTypeDefinition[] = [

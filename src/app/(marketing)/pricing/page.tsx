@@ -26,7 +26,7 @@ export const metadata: Metadata = createPublicMetadata({
   description:
     "Transparentan cenovnik usluga arhitektonske vizuelizacije. Prva isporuka iz modela nosi pun iznos, svaki sledeći prikaz iz istog modela je znatno povoljniji.",
   path: "/pricing",
-  image: "/artwork/pricing-card-enterijer.webp",
+  image: "/artwork/pricing-card-interior.webp",
   imageAlt:
     "Cenovnik arhitektonske vizuelizacije - primer enterijera i usluga renderovanja",
   keywords: [

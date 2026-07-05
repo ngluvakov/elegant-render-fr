@@ -52,31 +52,31 @@ export const ROOM_STYLES = [
     image: "/styles/mid-century.webp",
   },
   {
-    id: "primorski",
+    id: "coastal",
     label: "Primorski stil",
     description:
       "Mediteran — bela, peščana i plava, lagane tkanine, maksimalna svetlost.",
-    image: "/styles/primorski.webp",
+    image: "/styles/coastal.webp",
   },
 ] as const;
 export type RoomStyleId = (typeof ROOM_STYLES)[number]["id"];
 export const ROOM_STYLE_IDS = ROOM_STYLES.map((s) => s.id) as RoomStyleId[];
 
 export const TIMES_OF_DAY = [
-  { id: "jutro", label: "Jutro" },
-  { id: "podne", label: "Podne" },
-  { id: "popodne", label: "Popodne" },
-  { id: "vece", label: "Veče" },
-  { id: "noc", label: "Noć" },
+  { id: "morning", label: "Jutro" },
+  { id: "midday", label: "Podne" },
+  { id: "afternoon", label: "Popodne" },
+  { id: "evening", label: "Veče" },
+  { id: "night", label: "Noć" },
 ] as const;
 export type TimeOfDayId = (typeof TIMES_OF_DAY)[number]["id"];
 export const TIME_OF_DAY_IDS = TIMES_OF_DAY.map((t) => t.id) as TimeOfDayId[];
 
 export const SEASONS = [
-  { id: "prolece", label: "Proleće" },
-  { id: "leto", label: "Leto" },
-  { id: "jesen", label: "Jesen" },
-  { id: "zima", label: "Zima" },
+  { id: "spring", label: "Proleće" },
+  { id: "summer", label: "Leto" },
+  { id: "autumn", label: "Jesen" },
+  { id: "winter", label: "Zima" },
 ] as const;
 export type SeasonId = (typeof SEASONS)[number]["id"];
 export const SEASON_IDS = SEASONS.map((s) => s.id) as SeasonId[];

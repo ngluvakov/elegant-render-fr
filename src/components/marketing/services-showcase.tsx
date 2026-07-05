@@ -230,7 +230,7 @@ const SERVICES: Service[] = [
     includes: ["Kompletan raspored", "Oznake prostorija", "Opcija nameštene verzije"],
     icon: "plans",
     badge: "Jasan raspored",
-    imageSrc: "/artwork/listing-3d-osnove.webp",
+    imageSrc: "/artwork/listing-3d-floor-plans.webp",
     imagePosition: "50% 50%",
   },
   {

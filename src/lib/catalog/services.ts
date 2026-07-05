@@ -270,8 +270,8 @@ export const SERVICES: Service[] = [
       "Za stanove u izgradnji, kuće pred renoviranje i investitorske jedinice — jedna investicija pokriva ceo sprat, ne pojedinačnu sobu.",
     materials:
       "Pošaljite nam osnovu (2D ili PDF), reference stila i spisak prostorija. Što jasniji ulaz, brže šaljemo prve nacrte — standardno 3–5 radnih dana.",
-    asset: "/artwork/expert-unutrasnji-renderi.webp",
-    detailAsset: "/artwork/detail-unutrasnji-renderi.webp",
+    asset: "/artwork/expert-interior-renders.webp",
+    detailAsset: "/artwork/detail-interior-renders.webp",
     philosophy:
       "Najveći deo posla je izrada 3D modela — gradimo ga jednom i naplaćujemo jednom. Nakon toga svaki novi ugao, promena nameštaja ili doba dana kreće od 1.172 RSD, ne od pune cene rendera. Tako planirate marketing budžet u sezoni pre-prodaje bez neprijatnih iznenađenja.",
     priceContext:
@@ -332,7 +332,7 @@ export const SERVICES: Service[] = [
       "Pravi izbor za prospekt off-plan jedinica, klijentske prezentacije izbora materijala i marketing pred otvaranje prodaje.",
     materials:
       "Pošaljite osnovu (2D ili PDF), reference stila i spisak prostorija. Prvi nacrt 3–5 radnih dana.",
-    asset: "/artwork/expert-unutrasnji-renderi.webp",
+    asset: "/artwork/expert-interior-renders.webp",
     listingAsset: "/artwork/listing-interior-static.webp",
     detailAsset: "/artwork/detail-interior-static.webp",
     problemAsset: "/artwork/problem-interior-static-after.webp",
@@ -601,8 +601,8 @@ export const SERVICES: Service[] = [
       "Najpogodnije za investitore koji rade pre-prodaju, arhitekte koji predstavljaju projekat klijentu i kuće u izgradnji koje treba reklamirati.",
     materials:
       "Pošaljite nam arhitektonske crteže (osnove, preseke, fasade) i specifikaciju materijala. Što precizniji ulaz, brže nacrti — standardno 3–5 radnih dana.",
-    asset: "/artwork/expert-spoljasnji-renderi.webp",
-    detailAsset: "/artwork/detail-spoljasnji-renderi.webp",
+    asset: "/artwork/expert-exterior-renders.webp",
+    detailAsset: "/artwork/detail-exterior-renders.webp",
     philosophy:
       "Najveći trošak je izrada 3D modela zgrade — gradimo ga jednom, a svaki sledeći ugao iz iste strane modela je 5.626 RSD (80% jeftiniji). Doplata postoji samo ako kadar zahteva geometriju neviđene strane objekta. Tako pakovanje od 4-5 rendera ulazi u realan investicioni budžet, a ne traži novu porudžbinu po svakom kadru.",
     priceContext:
@@ -667,7 +667,7 @@ export const SERVICES: Service[] = [
         alt: "Spoljašnji render — fasada u dnevnom svetlu",
       },
       {
-        src: "/artwork/expert-spoljasnji-renderi.webp",
+        src: "/artwork/expert-exterior-renders.webp",
         alt: "Spoljašnji render — primer iz portfolija",
       },
     ],
@@ -758,7 +758,7 @@ export const SERVICES: Service[] = [
     materials:
       "Pošaljite arhitektonske nacrte (PDF/DWG), reference stila i raspored željenih tačaka gledanja. Prvi nacrt 3–5 radnih dana.",
     asset: "/artwork/listing-exterior-360.webp",
-    detailAsset: "/artwork/detail-360-eksterijer.webp",
+    detailAsset: "/artwork/detail-exterior-360.webp",
     detailEmbedSrc:
       "https://kuula.co/share/collection/7Tm7X?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     philosophy:
@@ -771,8 +771,8 @@ export const SERVICES: Service[] = [
       "Arhitekte (klijentske prezentacije)",
     ],
     problemHeading: "Nacrti ne otvaraju vrata. Šetnja kroz objekat — otvara.",
-    problemAsset: "/artwork/expert-360-eksterijer-problem.webp",
-    problemPanoramaSrc: "/artwork/360-eksterijer-panorama-vr.jpg",
+    problemAsset: "/artwork/expert-exterior-360-problem.webp",
+    problemPanoramaSrc: "/artwork/exterior-360-panorama-vr.jpg",
     problemBody:
       "Investitor pokazuje fasadu, kupac klimne glavom i odlazi da razmisli. Statična slika ne daje osećaj prostora iz svih uglova, ne pokazuje materijale u svetlu, ne dozvoljava kupcu da sam istraži. Odluka se odlaže.",
     problemResolution:
@@ -814,19 +814,19 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-360-eksterijer-01.webp",
+        src: "/artwork/portfolio-exterior-360-01.webp",
         alt: "Frame iz 360 panorame stambene zgrade — ulična perspektiva",
       },
       {
-        src: "/artwork/portfolio-360-eksterijer-02.webp",
+        src: "/artwork/portfolio-exterior-360-02.webp",
         alt: "Frame iz 360 panorame porodične kuće — dnevna scena",
       },
       {
-        src: "/artwork/portfolio-360-eksterijer-03.webp",
+        src: "/artwork/portfolio-exterior-360-03.webp",
         alt: "Frame iz 360 panorame poslovnog objekta — ulazna fasada",
       },
       {
-        src: "/artwork/portfolio-360-eksterijer-04.webp",
+        src: "/artwork/portfolio-exterior-360-04.webp",
         alt: "Frame iz 360 panorame stambenog kompleksa — okolni objekti i pristupna zona",
       },
     ],
@@ -892,8 +892,8 @@ export const SERVICES: Service[] = [
     asset: "/artwork/listing-streetscape.webp",
     listingAsset: "/artwork/listing-streetscape.webp",
     detailAsset: "/artwork/detail-streetscape.webp",
-    detailBeforeAsset: "/artwork/problem-streetscape-ulica-before.webp",
-    detailAfterAsset: "/artwork/problem-streetscape-ulica-after.webp",
+    detailBeforeAsset: "/artwork/problem-streetscape-street-before.webp",
+    detailAfterAsset: "/artwork/problem-streetscape-street-after.webp",
     detailBeforeAlt:
       "2D situacioni plan niza objekata uz ulicu — raspored kuća, parkinga, zelenila i sadržaja",
     detailAfterAlt:
@@ -1057,12 +1057,12 @@ export const SERVICES: Service[] = [
       "Praktičan način da prazna nekretnina deluje useljivo i poveća broj poziva sa oglasa.",
     materials:
       "Pošaljite nam fotografije praznih prostorija visoke rezolucije i željeni stil nameštaja.",
-    asset: "/artwork/expert-virtuelno-opremanje-naslovna-after.webp",
-    beforeAsset: "/artwork/expert-virtuelno-opremanje-naslovna-before.webp",
-    afterAsset: "/artwork/expert-virtuelno-opremanje-naslovna-after.webp",
-    detailAsset: "/artwork/detail-virtuelno-opremanje.webp",
-    detailBeforeAsset: "/artwork/problem-virtuelno-opremanje-dnevni-boravak-before.webp",
-    detailAfterAsset: "/artwork/problem-virtuelno-opremanje-dnevni-boravak-after.webp",
+    asset: "/artwork/expert-virtual-staging-hero-after.webp",
+    beforeAsset: "/artwork/expert-virtual-staging-hero-before.webp",
+    afterAsset: "/artwork/expert-virtual-staging-hero-after.webp",
+    detailAsset: "/artwork/detail-virtual-staging.webp",
+    detailBeforeAsset: "/artwork/problem-virtual-staging-living-room-before.webp",
+    detailAfterAsset: "/artwork/problem-virtual-staging-living-room-after.webp",
     detailBeforeAlt:
       "Prazan dnevni boravak pre virtuelnog opremanja — gola soba sa parketom i velikim prozorima",
     detailAfterAlt:
@@ -1145,19 +1145,19 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-virtuelno-opremanje-01.webp",
+        src: "/artwork/portfolio-virtual-staging-01.webp",
         alt: "Virtuelno opremanje — moderna dnevna soba sa minimalističkim nameštajem",
       },
       {
-        src: "/artwork/portfolio-virtuelno-opremanje-02.webp",
+        src: "/artwork/portfolio-virtual-staging-02.webp",
         alt: "Virtuelno opremanje — spavaća soba sa toplim materijalima",
       },
       {
-        src: "/artwork/portfolio-virtuelno-opremanje-03.webp",
+        src: "/artwork/portfolio-virtual-staging-03.webp",
         alt: "Virtuelno opremanje — kuhinja sa trpezarijom i prirodnim svetlom",
       },
       {
-        src: "/artwork/portfolio-virtuelno-opremanje-04.webp",
+        src: "/artwork/portfolio-virtual-staging-04.webp",
         alt: "Virtuelno opremanje — kućna kancelarija sa policama i prirodnim svetlom",
       },
     ],
@@ -1212,12 +1212,12 @@ export const SERVICES: Service[] = [
       "Za vlasnike koji planiraju renovaciju, agente koji prodaju nekretnine pred adaptaciju i arhitekte enterijera koji predstavljaju klijentu konkretne opcije.",
     materials:
       "Pošaljite nam fotografije postojećeg stanja i reference za nove materijale (podove, zidove, nameštaj).",
-    asset: "/artwork/expert-virtuelna-renovacija-after.webp",
-    beforeAsset: "/artwork/expert-virtuelna-renovacija-before.webp",
-    afterAsset: "/artwork/expert-virtuelna-renovacija-after.webp",
-    detailAsset: "/artwork/detail-virtuelna-renovacija.webp",
-    detailBeforeAsset: "/artwork/problem-virtuelna-renovacija-kuhinja-before.webp",
-    detailAfterAsset: "/artwork/problem-virtuelna-renovacija-kuhinja-after.webp",
+    asset: "/artwork/expert-virtual-renovation-after.webp",
+    beforeAsset: "/artwork/expert-virtual-renovation-before.webp",
+    afterAsset: "/artwork/expert-virtual-renovation-after.webp",
+    detailAsset: "/artwork/detail-virtual-renovation.webp",
+    detailBeforeAsset: "/artwork/problem-virtual-renovation-kitchen-before.webp",
+    detailAfterAsset: "/artwork/problem-virtual-renovation-kitchen-after.webp",
     detailBeforeAlt:
       "Zastarela kuhinja sa starim drvenim ormarićima i pločicama pre virtuelne renovacije",
     detailAfterAlt:
@@ -1300,19 +1300,19 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-virtuelna-renovacija-01.webp",
+        src: "/artwork/portfolio-virtual-renovation-01.webp",
         alt: "Virtuelna renovacija — moderna kuhinja sa ostrvom i kamenom radnom pločom",
       },
       {
-        src: "/artwork/portfolio-virtuelna-renovacija-02.webp",
+        src: "/artwork/portfolio-virtual-renovation-02.webp",
         alt: "Virtuelna renovacija — kupatilo sa staklenom tuš-kabinom i kamenim materijalima",
       },
       {
-        src: "/artwork/portfolio-virtuelna-renovacija-03.webp",
+        src: "/artwork/portfolio-virtual-renovation-03.webp",
         alt: "Virtuelna renovacija — dnevna soba sa novim podovima i toplim materijalima",
       },
       {
-        src: "/artwork/portfolio-virtuelna-renovacija-04.webp",
+        src: "/artwork/portfolio-virtual-renovation-04.webp",
         alt: "Virtuelna renovacija — radni prostor sa policama i prirodnim svetlom",
       },
     ],
@@ -1351,10 +1351,10 @@ export const SERVICES: Service[] = [
       "Prikladno za agencije nekretnina koje žele da oglas izgleda profesionalno i investitore koji predstavljaju tipove stanova u zgradi.",
     materials:
       "Pošaljite nam tehničke crteže, skice sa merama ili postojeće PDF osnove.",
-    asset: "/artwork/expert-osnove.webp",
-    detailAsset: "/artwork/detail-osnove.webp",
-    detailBeforeAsset: "/artwork/problem-osnove-before.webp",
-    detailAfterAsset: "/artwork/problem-osnove-after.webp",
+    asset: "/artwork/expert-floor-plans.webp",
+    detailAsset: "/artwork/detail-floor-plans.webp",
+    detailBeforeAsset: "/artwork/problem-floor-plans-before.webp",
+    detailAfterAsset: "/artwork/problem-floor-plans-after.webp",
     philosophy:
       "Cena pokriva izradu osnove za jedan nivo. Svaki sledeći nivo iste zgrade je 50–66% jeftiniji jer je stilski predložak već postavljen. Identičan sprat (dupliranje sa promenom oznaka) košta samo trećinu osnovne cene. Tako celokupna zgrada dobija pregledne osnove za delić cene CAD studija.",
     priceContext:
@@ -1429,19 +1429,19 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-osnove-01.webp",
+        src: "/artwork/portfolio-floor-plans-01.webp",
         alt: "3D osnova — porodična kuća sa rasporedom prostorija i nameštajem",
       },
       {
-        src: "/artwork/portfolio-osnove-02.webp",
+        src: "/artwork/portfolio-floor-plans-02.webp",
         alt: "3D osnova — stan u zgradi sa kompaktnim rasporedom",
       },
       {
-        src: "/artwork/portfolio-osnove-03.webp",
+        src: "/artwork/portfolio-floor-plans-03.webp",
         alt: "2D osnova — čist tehnički plan sa oznakama i dimenzijama",
       },
       {
-        src: "/artwork/portfolio-osnove-04.webp",
+        src: "/artwork/portfolio-floor-plans-04.webp",
         alt: "3D osnova — dupleks sa rasporedom oba sprata",
       },
     ],
@@ -1501,9 +1501,9 @@ export const SERVICES: Service[] = [
       "Pošaljite tehničke crteže (PDF/DWG), skice sa merama ili postojeću PDF osnovu. Prvi nacrt 1–3 radna dana.",
     asset: "/artwork/listing-floorplan-2d.webp",
     listingAsset: "/artwork/listing-floorplan-2d.webp",
-    detailAsset: "/artwork/detail-2d-osnove-2c.webp",
-    detailBeforeAsset: "/artwork/problem-2d-osnove-crno-belo.webp",
-    detailAfterAsset: "/artwork/problem-2d-osnove-kolor.webp",
+    detailAsset: "/artwork/detail-2d-floor-plans-2c.webp",
+    detailBeforeAsset: "/artwork/problem-2d-floor-plans-black-white.webp",
+    detailAfterAsset: "/artwork/problem-2d-floor-plans-color.webp",
     detailBeforeAlt:
       "Pregledan crno-beli 2D tlocrt jednosobnog stana sa nazivima prostorija i dimenzijama u metrima",
     detailAfterAlt:
@@ -1559,27 +1559,27 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-2d-osnove-stan-01-r2.webp",
+        src: "/artwork/portfolio-2d-floor-plans-apartment-01-r2.webp",
         alt: "Kolorisan 2D tlocrt prizemlja — dnevni boravak, trpezarija i kuhinja, Elegant Render",
-        beforeSrc: "/artwork/portfolio-2d-osnove-stan-01-pre-r2.webp",
+        beforeSrc: "/artwork/portfolio-2d-floor-plans-apartment-01-before-r2.webp",
         beforeAlt: "Crno-beli tehnički 2D tlocrt prizemlja pre kolorizacije, Elegant Render",
       },
       {
-        src: "/artwork/portfolio-2d-osnove-stan-02-r2.webp",
+        src: "/artwork/portfolio-2d-floor-plans-apartment-02-r2.webp",
         alt: "Kolorisan 2D tlocrt sprata sa garažom — spavaća soba, kupatilo i garaža, Elegant Render",
-        beforeSrc: "/artwork/portfolio-2d-osnove-stan-02-pre-r2.webp",
+        beforeSrc: "/artwork/portfolio-2d-floor-plans-apartment-02-before-r2.webp",
         beforeAlt: "Crno-beli tehnički 2D tlocrt sprata sa garažom pre kolorizacije, Elegant Render",
       },
       {
-        src: "/artwork/portfolio-2d-osnove-stan-03-r2.webp",
+        src: "/artwork/portfolio-2d-floor-plans-apartment-03-r2.webp",
         alt: "Kolorisan 2D tlocrt nivoa sa duplom garažom — spavaća soba, kupatilo i dva parking mesta, Elegant Render",
-        beforeSrc: "/artwork/portfolio-2d-osnove-stan-03-pre-r2.webp",
+        beforeSrc: "/artwork/portfolio-2d-floor-plans-apartment-03-before-r2.webp",
         beforeAlt: "Crno-beli tehnički 2D tlocrt nivoa sa duplom garažom pre kolorizacije, Elegant Render",
       },
       {
-        src: "/artwork/portfolio-2d-osnove-stan-04-r2.webp",
+        src: "/artwork/portfolio-2d-floor-plans-apartment-04-r2.webp",
         alt: "Kolorisan 2D tlocrt stana — spavaća soba, kupatilo, kuhinja i dnevni boravak, Elegant Render",
-        beforeSrc: "/artwork/portfolio-2d-osnove-stan-04-pre-r2.webp",
+        beforeSrc: "/artwork/portfolio-2d-floor-plans-apartment-04-before-r2.webp",
         beforeAlt: "Crno-beli tehnički 2D tlocrt stana pre kolorizacije, Elegant Render",
       },
     ],
@@ -1645,11 +1645,11 @@ export const SERVICES: Service[] = [
       "Pravi izbor za listing fotografiju i prospekt — kupac na prvi pogled razume šta dobija.",
     materials:
       "Pošaljite tehničke crteže (PDF/DWG), skice sa merama ili postojeću PDF osnovu. Prvi nacrt 1–3 radna dana.",
-    asset: "/artwork/listing-3d-osnove.webp",
-    listingAsset: "/artwork/listing-3d-osnove.webp",
-    detailAsset: "/artwork/detail-3d-osnove.webp",
-    detailBeforeAsset: "/artwork/problem-3d-osnove-before.webp",
-    detailAfterAsset: "/artwork/problem-3d-osnove-after.webp",
+    asset: "/artwork/listing-3d-floor-plans.webp",
+    listingAsset: "/artwork/listing-3d-floor-plans.webp",
+    detailAsset: "/artwork/detail-3d-floor-plans.webp",
+    detailBeforeAsset: "/artwork/problem-3d-floor-plans-before.webp",
+    detailAfterAsset: "/artwork/problem-3d-floor-plans-after.webp",
     detailBeforeAlt:
       "2D tehnički tlocrt stana pre 3D obrade — linije, oznake i raspored prostorija",
     detailAfterAlt:
@@ -1705,19 +1705,19 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-3d-osnove-jednosoban-stan.webp",
+        src: "/artwork/portfolio-3d-floor-plans-one-bedroom-apartment.webp",
         alt: "3D osnova jednosobnog stana — dnevni boravak, trpezarija, kuhinja, spavaća soba i kupatilo iz ptičje perspektive",
       },
       {
-        src: "/artwork/portfolio-3d-osnove-jednosoban-otvoreni-koncept.webp",
+        src: "/artwork/portfolio-3d-floor-plans-one-bedroom-open-concept.webp",
         alt: "3D osnova jednosobnog stana otvorenog koncepta — povezan dnevni boravak, kuhinja i trpezarija sa spavaćom sobom i kupatilom",
       },
       {
-        src: "/artwork/portfolio-3d-osnove-dupleks-dva-nivoa.webp",
+        src: "/artwork/portfolio-3d-floor-plans-duplex-two-levels.webp",
         alt: "3D osnova dupleksa na dva nivoa — prizemlje sa dnevnim boravkom i kuhinjom i gornji nivo sa spavaćom sobom",
       },
       {
-        src: "/artwork/portfolio-3d-osnove-kuca-sa-garazom.webp",
+        src: "/artwork/portfolio-3d-floor-plans-house-with-garage.webp",
         alt: "3D osnova porodične kuće sa garažom — tri spavaće sobe, dnevni boravak, trpezarija, kuhinja i garaža za dva automobila",
       },
     ],
@@ -1897,8 +1897,8 @@ export const SERVICES: Service[] = [
       "Pošaljite osnove, fasade i, ako postoji, već izrađen 3D model. Definišite željenu putanju kamere i ključne momente.",
     asset: PORTFOLIO_ASSET,
     detailAsset: "/artwork/detail-exterior-aerial.webp",
-    problemVideoSrc: "/artwork/arhitektonska-animacija-demo.mp4",
-    problemVideoPoster: "/artwork/arhitektonska-animacija-demo-poster.webp",
+    problemVideoSrc: "/artwork/architectural-animation-demo.mp4",
+    problemVideoPoster: "/artwork/architectural-animation-demo-poster.webp",
     philosophy:
       "Najveći trošak je izgradnja 3D modela. Animacija od nule: 1.758 RSD/sek. Iz postojećeg modela: 1.172 RSD/sek (33% jeftinije). Aktivan projekat (model još uvek u radu): 938 RSD/sek (47% jeftinije). Duže animacije dobijaju automatski popust: preko 60 sek −20%, preko 2 minuta −25%.",
     priceContext:
@@ -2008,12 +2008,12 @@ export const SERVICES: Service[] = [
       "Prikladno za pejzažne arhitekte koji predstavljaju projekat klijentu i investitore za zajedničke prostore u kompleksima.",
     materials:
       "Pošaljite nam situacioni plan, visinske kote i specifikaciju biljaka i materijala.",
-    asset: "/artwork/expert-prikazi-dvorista-after.webp",
-    beforeAsset: "/artwork/expert-prikazi-dvorista-before.webp",
-    afterAsset: "/artwork/expert-prikazi-dvorista-after.webp",
-    detailAsset: "/artwork/detail-prikazi-dvorista.webp",
-    detailBeforeAsset: "/artwork/problem-uredjenje-pejzaza-before.webp",
-    detailAfterAsset: "/artwork/problem-uredjenje-pejzaza-after.webp",
+    asset: "/artwork/expert-landscape-design-after.webp",
+    beforeAsset: "/artwork/expert-landscape-design-before.webp",
+    afterAsset: "/artwork/expert-landscape-design-after.webp",
+    detailAsset: "/artwork/detail-landscape-design.webp",
+    detailBeforeAsset: "/artwork/problem-landscape-design-before.webp",
+    detailAfterAsset: "/artwork/problem-landscape-design-after.webp",
     detailBeforeAlt:
       "Moderna porodična kuća sa neuređenom, golom parcelom pre uređenja pejzaža",
     detailAfterAlt:
@@ -2099,19 +2099,19 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-prikazi-dvorista-01.webp",
+        src: "/artwork/portfolio-landscape-design-01.webp",
         alt: "Uređenje pejzaža — privatno dvorište porodične kuće sa terasom i travnjakom",
       },
       {
-        src: "/artwork/portfolio-prikazi-dvorista-02.webp",
+        src: "/artwork/portfolio-landscape-design-02.webp",
         alt: "Uređenje pejzaža — zajednički prostor stambenog kompleksa sa pešačkim stazama",
       },
       {
-        src: "/artwork/portfolio-prikazi-dvorista-03.webp",
+        src: "/artwork/portfolio-landscape-design-03.webp",
         alt: "Uređenje pejzaža — dvorište vile sa bazenom i terasom",
       },
       {
-        src: "/artwork/portfolio-prikazi-dvorista-04.webp",
+        src: "/artwork/portfolio-landscape-design-04.webp",
         alt: "Uređenje pejzaža — javni prostor sa popločanom stazom i zrelim sadnicama",
       },
     ],
@@ -2174,12 +2174,12 @@ export const SERVICES: Service[] = [
       "Za projekte u kojima realističnost i autentičnost lokacije presudno menjaju doživljaj projekta — dozvole, javne rasprave, investitorske prezentacije.",
     materials:
       "Pošaljite nam fotografiju lokacije visoke rezolucije i 3D model ili arhitektonske crteže objekta.",
-    asset: "/artwork/expert-fotomontaza-after.webp",
-    beforeAsset: "/artwork/expert-fotomontaza-before.webp",
-    afterAsset: "/artwork/expert-fotomontaza-after.webp",
-    detailAsset: "/artwork/detail-fotomontaza.webp",
-    detailBeforeAsset: "/artwork/problem-fotomontaza-ulica-before.webp",
-    detailAfterAsset: "/artwork/problem-fotomontaza-ulica-after.webp",
+    asset: "/artwork/expert-photomontage-after.webp",
+    beforeAsset: "/artwork/expert-photomontage-before.webp",
+    afterAsset: "/artwork/expert-photomontage-after.webp",
+    detailAsset: "/artwork/detail-photomontage.webp",
+    detailBeforeAsset: "/artwork/problem-photomontage-street-before.webp",
+    detailAfterAsset: "/artwork/problem-photomontage-street-after.webp",
     detailBeforeAlt:
       "Prazna parcela u ulici između postojećih zgrada — stvarna fotografija lokacije pre montaže objekta",
     detailAfterAlt:
@@ -2265,19 +2265,19 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-fotomontaza-01.webp",
+        src: "/artwork/portfolio-photomontage-01.webp",
         alt: "Fotomontaža — porodična kuća uklopljena u stvarnu uličnu fotografiju",
       },
       {
-        src: "/artwork/portfolio-fotomontaza-02.webp",
+        src: "/artwork/portfolio-photomontage-02.webp",
         alt: "Fotomontaža — stambena zgrada u urbanom kontekstu",
       },
       {
-        src: "/artwork/portfolio-fotomontaza-03.webp",
+        src: "/artwork/portfolio-photomontage-03.webp",
         alt: "Fotomontaža — poslovni objekat uklopljen u fotografiju lokacije",
       },
       {
-        src: "/artwork/portfolio-fotomontaza-04.webp",
+        src: "/artwork/portfolio-photomontage-04.webp",
         alt: "Fotomontaža — vila uklopljena u prirodno okruženje",
       },
     ],
@@ -2348,10 +2348,10 @@ export const SERVICES: Service[] = [
       "Za masterplane, stambene komplekse, poslovne zone i razvojne projekte gde se prodaje lokacija, a ne samo objekat.",
     materials:
       "Pošaljite nam CAD crteže cele parcele, pozicije objekata i plan uređenja.",
-    asset: "/artwork/expert-3d-situacioni.webp",
-    detailAsset: "/artwork/detail-3d-situacioni.webp",
-    detailBeforeAsset: "/artwork/problem-3d-situacioni-plan-before.webp",
-    detailAfterAsset: "/artwork/problem-3d-situacioni-after.webp",
+    asset: "/artwork/expert-3d-site-plan.webp",
+    detailAsset: "/artwork/detail-3d-site-plan.webp",
+    detailBeforeAsset: "/artwork/problem-3d-site-plan-plan-before.webp",
+    detailAfterAsset: "/artwork/problem-3d-site-plan-after.webp",
     detailBeforeAlt:
       "2D situacioni plan stambenog kompleksa — raspored objekata, parkinga, zelenila i sadržaja",
     detailAfterAlt:
@@ -2433,19 +2433,19 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-3d-situacioni-01.webp",
+        src: "/artwork/portfolio-3d-site-plan-01.webp",
         alt: "3D situacioni plan — stambeni kompleks sa 3 zgrade, zajedničkim prostorom i parking zonama",
       },
       {
-        src: "/artwork/portfolio-3d-situacioni-02.webp",
+        src: "/artwork/portfolio-3d-site-plan-02.webp",
         alt: "3D situacioni plan — mixed-use razvoj sa stambenim i poslovnim objektima",
       },
       {
-        src: "/artwork/portfolio-3d-situacioni-03.webp",
+        src: "/artwork/portfolio-3d-site-plan-03.webp",
         alt: "3D situacioni plan — parcele sa porodičnim kućama i individualnim dvorištima",
       },
       {
-        src: "/artwork/portfolio-3d-situacioni-04.webp",
+        src: "/artwork/portfolio-3d-site-plan-04.webp",
         alt: "3D situacioni plan — prva faza izgradnje vidljiva, kasnije faze nagovešten kontekst",
       },
     ],
@@ -2481,12 +2481,12 @@ export const SERVICES: Service[] = [
     highlight:
       "Za agente nekretnina i investitore kada ista scena treba i u dnevnoj i u večernjoj verziji za marketing kampanju.",
     materials: "Pošaljite nam dnevne fotografije eksterijera visoke rezolucije.",
-    asset: "/artwork/expert-dan-u-noc-after.webp",
-    beforeAsset: "/artwork/expert-dan-u-noc-before.webp",
-    afterAsset: "/artwork/expert-dan-u-noc-after.webp",
-    detailAsset: "/artwork/detail-dan-u-noc.webp",
-    detailBeforeAsset: "/artwork/problem-dan-u-noc-fasada-before.webp",
-    detailAfterAsset: "/artwork/problem-dan-u-noc-fasada-after.webp",
+    asset: "/artwork/expert-day-to-dusk-after.webp",
+    beforeAsset: "/artwork/expert-day-to-dusk-before.webp",
+    afterAsset: "/artwork/expert-day-to-dusk-after.webp",
+    detailAsset: "/artwork/detail-day-to-dusk.webp",
+    detailBeforeAsset: "/artwork/problem-day-to-dusk-facade-before.webp",
+    detailAfterAsset: "/artwork/problem-day-to-dusk-facade-after.webp",
     detailBeforeAlt:
       "Moderna kuća sa fasadom snimljena u suton pre prelaza u noćni prikaz",
     detailAfterAlt:
@@ -2568,19 +2568,19 @@ export const SERVICES: Service[] = [
     ],
     portfolioImages: [
       {
-        src: "/artwork/portfolio-dan-u-noc-01.webp",
+        src: "/artwork/portfolio-day-to-dusk-01.webp",
         alt: "Dnevni u noćni — porodična kuća sa osvetljenim prozorima i fasadnim svetlom",
       },
       {
-        src: "/artwork/portfolio-dan-u-noc-02.webp",
+        src: "/artwork/portfolio-day-to-dusk-02.webp",
         alt: "Dnevni u noćni — stambena zgrada sa osvetljenim terasama u večernjem režimu",
       },
       {
-        src: "/artwork/portfolio-dan-u-noc-03.webp",
+        src: "/artwork/portfolio-day-to-dusk-03.webp",
         alt: "Dnevni u noćni — vila sa osvetljenim bazenom i terasom",
       },
       {
-        src: "/artwork/portfolio-dan-u-noc-04.webp",
+        src: "/artwork/portfolio-day-to-dusk-04.webp",
         alt: "Dnevni u noćni — poslovni objekat sa fasadnim osvetljenjem i osvetljenim ulazom",
       },
     ],
@@ -2621,8 +2621,8 @@ export const SERVICES: Service[] = [
     beforeAsset: "/artwork/expert-uklanjanje-elemenata-before.webp",
     afterAsset: "/artwork/expert-uklanjanje-elemenata-after.webp",
     detailAsset: "/artwork/detail-uklanjanje-elemenata.webp",
-    detailBeforeAsset: "/artwork/problem-uklanjanje-predmeta-soba-before.webp",
-    detailAfterAsset: "/artwork/problem-uklanjanje-predmeta-soba-after.webp",
+    detailBeforeAsset: "/artwork/problem-item-removal-room-before.webp",
+    detailAfterAsset: "/artwork/problem-item-removal-room-after.webp",
     detailBeforeAlt:
       "Soba sa lusterom, stolicama i predmetima pre digitalnog uklanjanja predmeta",
     detailAfterAlt:

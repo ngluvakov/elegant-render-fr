@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TurnstileWidget } from "@/components/ui/turnstile-widget";
-import { PaymentTrustBadges } from "@/components/marketing/payment-trust-badges";
 import {
   formatPublicPrice,
   type PublicPricingFormatSettings,
@@ -294,7 +293,6 @@ export function StepPayment() {
               Bezbedno plaćanje — bićete preusmereni na zaštićenu stranicu
               Banca Intesa za unos podataka kartice.
             </p>
-            <PaymentTrustBadges className="justify-center" size="sm" />
           </div>
         )}
 

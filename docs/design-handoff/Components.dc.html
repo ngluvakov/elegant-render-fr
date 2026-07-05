@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Elegant Render International — Components</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; padding: 0; background: #ffffff; }
+    body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    summary::-webkit-details-marker { display: none; }
+    @keyframes er-flash-new { 0% { box-shadow: 0 0 0 0 rgba(0,217,138,0); } 20% { box-shadow: 0 0 0 4px rgba(0,217,138,0.35); } 100% { box-shadow: 0 0 0 10px rgba(0,217,138,0); } }
+    @keyframes er-skeleton { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+  </style>
+  <template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#fafafa"></rect><rect x="30" y="42" width="40" height="16" rx="3" fill="#00D98A"></rect></svg></template>
+</helmet>
+<div data-screen-label="Component library — Elegant Render International" style="--accent: {{ accent }}; font-family: 'Inter Tight', sans-serif; color: #111111; background: #ffffff; min-width: 1100px;">
+
+  <!-- ── HEADER ── -->
+  <header style="background: #0a0a0a; padding: 64px 72px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 48px;">
+      <img src="assets/er-logo-white.png" alt="Elegant Render" style="height: 88px; width: auto;">
+      <img src="assets/wr-logo-horizontal-white.png" alt="White Rook" style="height: 22px; width: auto; opacity: 0.6;">
+    </div>
+    <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent, #00D98A);">Component library · International</p>
+    <h1 style="margin: 0 0 12px; font-size: 52px; font-weight: 500; line-height: 1.05; letter-spacing: -0.025em; color: #ffffff;">Every element of elegantrender.rs, redefined.</h1>
+    <p style="margin: 0; font-size: 17px; color: rgba(255,255,255,0.6); max-width: 640px; line-height: 1.5;">Each component below exists in the Serbian platform's codebase and is respecified here in the White Rook system. Everything is live — hover, click, and drag.</p>
+  </header>
+
+  <!-- ── 01 FOUNDATIONS ── -->
+  <section data-screen-label="01 Foundations" style="max-width: 1120px; margin: 0 auto; padding: 80px 48px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 1px solid #e8e8e8; padding-bottom: 16px; margin-bottom: 36px;">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--accent, #00D98A);">01</span>
+      <h2 style="margin: 0; font-size: 30px; font-weight: 500; letter-spacing: -0.02em;">Foundations</h2>
+      <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #525252;">replaces: --radius: 1rem · warm shadows · clay ring</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+      <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 24px;">
+        <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Radii</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px;"><div style="width: 40px; height: 28px; border: 1px solid #d4d4d4; border-radius: 0;"></div><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">0 — images, tables</span></div>
+          <div style="display: flex; align-items: center; gap: 12px;"><div style="width: 40px; height: 28px; border: 1px solid #d4d4d4; border-radius: 4px;"></div><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">4px — everything</span></div>
+          <div style="display: flex; align-items: center; gap: 12px;"><div style="width: 40px; height: 28px; border: 1px solid #d4d4d4; border-radius: 999px;"></div><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">pill — chips only</span></div>
+        </div>
+      </div>
+      <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 24px;">
+        <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Borders</p>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="border-top: 1px solid #e8e8e8; padding-top: 6px;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">#e8e8e8 — rest</span></div>
+          <div style="border-top: 1px solid #d4d4d4; padding-top: 6px;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">#d4d4d4 — hover, inputs</span></div>
+          <div style="border-top: 2px solid #111111; padding-top: 6px;"><span style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">2px #111 — selected tab</span></div>
+        </div>
+      </div>
+      <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 24px;">
+        <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Shadows</p>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; font-size: 12px;">rest — none</div>
+          <div style="background: #ffffff; border: 1px solid #d4d4d4; border-radius: 4px; padding: 8px 12px; box-shadow: 0 1px 3px rgba(17,17,17,0.06); font-family: 'JetBrains Mono', monospace; font-size: 12px;">hover — hairline</div>
+          <div style="background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px 12px; box-shadow: 0 8px 24px rgba(17,17,17,0.12); font-family: 'JetBrains Mono', monospace; font-size: 12px;">modal — lg</div>
+        </div>
+      </div>
+      <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 24px;">
+        <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Focus &amp; motion</p>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="border: 1px solid #d4d4d4; border-radius: 4px; padding: 8px 12px; box-shadow: 0 0 0 3px rgba(0,217,138,0.25); font-family: 'JetBrains Mono', monospace; font-size: 12px;">focus — 3px green 25%</div>
+          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.8;">cubic-bezier(0.2,0,0,1)<br>120 / 200 / 360 ms</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 02 BUTTONS ── -->
+  <section data-screen-label="02 Buttons" style="max-width: 1120px; margin: 0 auto; padding: 0 48px 80px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 1px solid #e8e8e8; padding-bottom: 16px; margin-bottom: 36px;">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--accent, #00D98A);">02</span>
+      <h2 style="margin: 0; font-size: 30px; font-weight: 500; letter-spacing: -0.02em;">Buttons</h2>
+      <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #525252;">replaces: ui/button.tsx — 7 variants, rounded-lg, clay shadow</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 28px;">
+        <p style="margin: 0 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Variants — hover &amp; press are live</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <button style="height: 44px; padding: 0 20px; border: none; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 500; color: #06120c; background: var(--accent, #00D98A); cursor: pointer; transition: filter 200ms cubic-bezier(0.2,0,0,1);" style-hover="filter: brightness(0.92);" style-active="filter: brightness(0.85);">Primary</button>
+          <button style="height: 44px; padding: 0 20px; border: 1px solid #111111; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 500; color: #111111; background: #ffffff; cursor: pointer; transition: background 200ms cubic-bezier(0.2,0,0,1);" style-hover="background: #fafafa;">Secondary</button>
+          <button style="height: 44px; padding: 0 20px; border: 1px solid transparent; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 500; color: #111111; background: transparent; cursor: pointer; transition: background 200ms cubic-bezier(0.2,0,0,1);" style-hover="background: #fafafa;">Ghost</button>
+          <button style="height: 44px; padding: 0 20px; border: none; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 500; color: #b91c1c; background: rgba(185,28,28,0.08); cursor: pointer; transition: background 200ms cubic-bezier(0.2,0,0,1);" style-hover="background: rgba(185,28,28,0.14);">Destructive</button>
+          <button style="height: 44px; padding: 0; border: none; font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 500; color: #111111; background: none; cursor: pointer;" style-hover="text-decoration: underline;">Link →</button>
+          <button disabled="{{ true }}" style="height: 44px; padding: 0 20px; border: none; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 500; color: #06120c; background: var(--accent, #00D98A); opacity: 0.5; cursor: not-allowed;">Disabled</button>
+        </div>
+        <p style="margin: 20px 0 0; font-size: 13px; line-height: 1.6; color: #525252;">Primary keeps green + near-black text. The clay glow shadow (<span style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">0_14px_34px…</span>) is removed — no shadows on buttons. Press = darken, no translate-y.</p>
+      </div>
+      <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 28px;">
+        <p style="margin: 0 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Sizes — one radius, all heights</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+          <button style="height: 28px; padding: 0 10px; border: none; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 12px; font-weight: 500; color: #06120c; background: var(--accent, #00D98A); cursor: pointer;">xs 28</button>
+          <button style="height: 36px; padding: 0 16px; border: none; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 14px; font-weight: 500; color: #06120c; background: var(--accent, #00D98A); cursor: pointer;">sm 36</button>
+          <button style="height: 44px; padding: 0 20px; border: none; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 500; color: #06120c; background: var(--accent, #00D98A); cursor: pointer;">default 44</button>
+          <button style="height: 52px; padding: 0 28px; border: none; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 16px; font-weight: 500; color: #06120c; background: var(--accent, #00D98A); cursor: pointer;">lg 52</button>
+          <button aria-label="Icon button" style="height: 44px; width: 44px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #111111; border-radius: 4px; background: #ffffff; cursor: pointer; font-size: 18px; line-height: 1;" style-hover="background: #fafafa;">→</button>
+        </div>
+        <p style="margin: 20px 0 0; font-size: 13px; line-height: 1.6; color: #525252;">Old xs/sm mixed radii (<span style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">min(var(--radius-md),10px)</span>) collapse to a single 4px. Heights: 28 / 36 / 44 / 52. Icon buttons are square.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 03 CHIPS & BADGES ── -->
+  <section data-screen-label="03 Chips and badges" style="max-width: 1120px; margin: 0 auto; padding: 0 48px 80px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 1px solid #e8e8e8; padding-bottom: 16px; margin-bottom: 36px;">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--accent, #00D98A);">03</span>
+      <h2 style="margin: 0; font-size: 30px; font-weight: 500; letter-spacing: -0.02em;">Chips &amp; badges</h2>
+      <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #525252;">replaces: service-chooser-chips · cart-chip · ui/badge · addon tags</span>
+    </div>
+    <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 28px; margin-bottom: 16px;">
+      <p style="margin: 0 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Filter chip bar (/pricing) — click to switch; cart chip appears when items &gt; 0</p>
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+        <sc-for list="{{ chips }}" as="chip" hint-placeholder-count="7">
+          <button onClick="{{ chip.select }}" style="height: 36px; padding: 0 16px; border: 1px solid {{ chip.border }}; border-radius: 999px; font-family: 'Inter Tight', sans-serif; font-size: 14px; font-weight: 500; color: {{ chip.color }}; background: {{ chip.bg }}; cursor: pointer; transition: background 200ms cubic-bezier(0.2,0,0,1), border-color 200ms cubic-bezier(0.2,0,0,1);">{{ chip.label }}</button>
+        </sc-for>
+        <div style="width: 1px; align-self: stretch; background: #e8e8e8; margin: 4px 8px;"></div>
+        <button style="height: 36px; padding: 0 16px; border: none; border-radius: 999px; font-family: 'Inter Tight', sans-serif; font-size: 14px; font-weight: 500; color: #ffffff; background: #111111; cursor: pointer;">Cart (2) →</button>
+      </div>
+      <p style="margin: 20px 0 0; font-size: 13px; line-height: 1.6; color: #525252;">Active = near-black fill, white text. Rest = white with 1px border (the old <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">bg-secondary/60</span> sand fill is retired). Pill radius is legal here — chips are the exception.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 28px;">
+        <p style="margin: 0 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Order status (portal)</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+          <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border: 1px solid #d4d4d4; border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #525252;">Draft</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border: 1px solid #d4d4d4; border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #111111;"><span style="width: 6px; height: 6px; border-radius: 999px; background: #eab308;"></span>Awaiting materials</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border: 1px solid #d4d4d4; border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #111111;"><span style="width: 6px; height: 6px; border-radius: 999px; background: var(--accent, #00D98A);"></span>In production</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border: 1px solid #111111; border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #ffffff; background: #111111;">Delivered</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: 999px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #b91c1c; background: rgba(185,28,28,0.08);">Cancelled</span>
+        </div>
+        <p style="margin: 20px 0 0; font-size: 13px; line-height: 1.6; color: #525252;">Mono, uppercase, outlined. A 6px dot carries the state color — never a full colored fill except terminal states.</p>
+      </div>
+      <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 28px;">
+        <p style="margin: 0 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Pricing tags (configurator)</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+          <span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #111111; background: #fafafa; border: 1px solid #e8e8e8;">Included</span>
+          <span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #06120c; background: var(--accent, #00D98A);">+2 extra</span>
+          <span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em; color: #111111; border: 1px solid var(--accent, #00D98A);">−33%</span>
+          <span style="display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #ffffff; background: #111111;">New</span>
+        </div>
+        <p style="margin: 20px 0 0; font-size: 13px; line-height: 1.6; color: #525252;">Replaces the sage/clay tint tags. Discount tags get the static green border — this is what replaces the orbit-glow comet ring.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 04 FORMS ── -->
+  <section data-screen-label="04 Forms" style="max-width: 1120px; margin: 0 auto; padding: 0 48px 80px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 1px solid #e8e8e8; padding-bottom: 16px; margin-bottom: 36px;">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--accent, #00D98A);">04</span>
+      <h2 style="margin: 0; font-size: 30px; font-weight: 500; letter-spacing: -0.02em;">Forms &amp; controls</h2>
+      <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #525252;">replaces: ui/input · textarea · switch · help-tip · addon-stepper · orders-filter-bar</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 28px; display: flex; flex-direction: column; gap: 20px;">
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Inputs — focus is live (click in)</p>
+        <div>
+          <label for="c-name" style="display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Project name
+            <span title="The name appears on your quote, invoices and project documentation." style="display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: 1px solid #d4d4d4; border-radius: 999px; font-size: 10px; color: #525252; cursor: help;" style-hover="border-color: #111111; color: #111111;">?</span>
+          </label>
+          <input id="c-name" type="text" placeholder="e.g. Penthouse — Rotterdam" style="width: 100%; box-sizing: border-box; height: 44px; padding: 0 14px; border: 1px solid #d4d4d4; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; color: #111111; background: #ffffff; outline: none; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-focus="border-color: var(--accent, #00D98A); box-shadow: 0 0 0 3px rgba(0,217,138,0.25);">
+        </div>
+        <div>
+          <label for="c-search" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Search orders</label>
+          <div style="position: relative;">
+            <span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #525252;">⌕</span>
+            <input id="c-search" type="text" placeholder="Search by order number…" style="width: 100%; box-sizing: border-box; height: 44px; padding: 0 14px 0 36px; border: 1px solid #d4d4d4; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; color: #111111; background: #ffffff; outline: none; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-focus="border-color: var(--accent, #00D98A); box-shadow: 0 0 0 3px rgba(0,217,138,0.25);">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label for="c-status" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Status</label>
+            <select id="c-status" style="width: 100%; box-sizing: border-box; height: 44px; padding: 0 10px; border: 1px solid #d4d4d4; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; color: #111111; background: #ffffff; outline: none;" style-focus="border-color: var(--accent, #00D98A); box-shadow: 0 0 0 3px rgba(0,217,138,0.25);">
+              <option>All statuses</option>
+              <option>In production</option>
+              <option>Delivered</option>
+            </select>
+          </div>
+          <div>
+            <label for="c-err" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Email — error state</label>
+            <input id="c-err" type="text" value="not-an-email" style="width: 100%; box-sizing: border-box; height: 44px; padding: 0 14px; border: 1px solid #b91c1c; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; color: #111111; background: #ffffff; outline: none; box-shadow: 0 0 0 3px rgba(185,28,28,0.12);">
+          </div>
+        </div>
+        <div>
+          <label for="c-notes" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500;">Notes for the artist</label>
+          <textarea id="c-notes" rows="3" placeholder="Warm evening light, oak floor, linen sofa…" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1px solid #d4d4d4; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; line-height: 1.5; color: #111111; background: #ffffff; outline: none; resize: vertical; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-focus="border-color: var(--accent, #00D98A); box-shadow: 0 0 0 3px rgba(0,217,138,0.25);"></textarea>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 28px;">
+          <p style="margin: 0 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Switch — click it</p>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+            <div>
+              <p style="margin: 0 0 2px; font-size: 15px; font-weight: 500;">White-label delivery</p>
+              <p style="margin: 0; font-size: 13px; color: #525252;">Final files carry no Elegant Render watermark.</p>
+            </div>
+            <button onClick="{{ toggleSwitch }}" role="switch" aria-checked="{{ switchOn }}" style="position: relative; width: 44px; height: 24px; border: none; border-radius: 999px; background: {{ switchBg }}; cursor: pointer; transition: background 200ms cubic-bezier(0.2,0,0,1); padding: 0; flex-shrink: 0;">
+              <span style="position: absolute; top: 2px; left: {{ switchKnobLeft }}; width: 20px; height: 20px; border-radius: 999px; background: #ffffff; box-shadow: 0 1px 3px rgba(17,17,17,0.2); transition: left 200ms cubic-bezier(0.2,0,0,1);"></span>
+            </button>
+          </div>
+        </div>
+        <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 28px;">
+          <p style="margin: 0 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Quantity stepper — try it (1 included)</p>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid {{ stepperBorder }}; border-radius: 4px; padding: 14px 16px; transition: border-color 200ms cubic-bezier(0.2,0,0,1);">
+            <div style="min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <p style="margin: 0; font-size: 15px; font-weight: 500;">Camera angle</p>
+                <sc-if value="{{ qtyIncluded }}" hint-placeholder-val="{{ true }}">
+                  <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase; color: #111111; background: #fafafa; border: 1px solid #e8e8e8;">Included</span>
+                </sc-if>
+                <sc-if value="{{ qtyExtra }}" hint-placeholder-val="{{ false }}">
+                  <span style="display: inline-flex; align-items: center; height: 20px; padding: 0 7px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.04em; color: #06120c; background: var(--accent, #00D98A);">{{ qtyExtraLabel }}</span>
+                </sc-if>
+              </div>
+              <p style="margin: 4px 0 0; font-size: 13px; color: #525252; font-variant-numeric: tabular-nums;">Each additional angle: €47 — 81% below base</p>
+            </div>
+            <div style="display: flex; align-items: center; border: 1px solid #d4d4d4; border-radius: 4px; flex-shrink: 0;">
+              <button onClick="{{ qtyDec }}" aria-label="Decrease" style="width: 36px; height: 36px; border: none; background: none; font-size: 16px; color: #111111; cursor: pointer; border-radius: 3px 0 0 3px;" style-hover="background: #fafafa;">−</button>
+              <span style="width: 36px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; border-left: 1px solid #e8e8e8; border-right: 1px solid #e8e8e8; line-height: 36px;">{{ qty }}</span>
+              <button onClick="{{ qtyInc }}" aria-label="Increase" style="width: 36px; height: 36px; border: none; background: none; font-size: 16px; color: #111111; cursor: pointer; border-radius: 0 3px 3px 0;" style-hover="background: #fafafa;">+</button>
+            </div>
+          </div>
+          <p style="margin: 16px 0 0; font-size: 13px; line-height: 1.6; color: #525252;">Billable rows get a 1px green border — replacing the old <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px;">bg-accent/5</span> clay wash.</p>
+        </div>
+        <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 28px;">
+          <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Skeleton — loading</p>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="height: 16px; width: 60%; border-radius: 4px; background: #ececec; animation: er-skeleton 1.6s cubic-bezier(0.2,0,0,1) infinite;"></div>
+            <div style="height: 16px; width: 90%; border-radius: 4px; background: #ececec; animation: er-skeleton 1.6s cubic-bezier(0.2,0,0,1) infinite;"></div>
+            <div style="height: 16px; width: 75%; border-radius: 4px; background: #ececec; animation: er-skeleton 1.6s cubic-bezier(0.2,0,0,1) infinite;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 05 BEFORE / AFTER ── -->
+  <section data-screen-label="05 Before after reveal" style="max-width: 1120px; margin: 0 auto; padding: 0 48px 80px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 1px solid #e8e8e8; padding-bottom: 16px; margin-bottom: 36px;">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--accent, #00D98A);">05</span>
+      <h2 style="margin: 0; font-size: 30px; font-weight: 500; letter-spacing: -0.02em;">Before / after reveal</h2>
+      <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #525252;">replaces: before-after-reveal.tsx + demo-animation.ts — kept, retimed</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; align-items: start;">
+      <div ref="{{ baRef }}" onMouseMove="{{ baMove }}" onMouseLeave="{{ baLeave }}" style="--reveal: 50; position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #0a0a0a; cursor: crosshair;">
+        <img src="public/artwork/ai-tool-virtual_staging-after.webp" alt="After: staged room" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;" draggable="false">
+        <img src="public/artwork/ai-tool-virtual_staging-before.webp" alt="Before: empty room" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; -webkit-mask-image: linear-gradient(135deg, black calc(var(--reveal) * 1%), transparent calc(var(--reveal) * 1%)); mask-image: linear-gradient(135deg, black calc(var(--reveal) * 1%), transparent calc(var(--reveal) * 1%));" draggable="false">
+        <div style="position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; background-image: linear-gradient(135deg, transparent calc((var(--reveal) - 0.4) * 1%), rgba(255,255,255,0.7) calc(var(--reveal) * 1%), transparent calc((var(--reveal) + 0.4) * 1%));"></div>
+        <span style="position: absolute; left: 20px; top: 18px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #ffffff; background: rgba(10,10,10,0.55); padding: 5px 9px; pointer-events: none;">Before</span>
+        <span style="position: absolute; right: 20px; bottom: 18px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #ffffff; background: rgba(10,10,10,0.55); padding: 5px 9px; pointer-events: none;">After</span>
+      </div>
+      <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 28px; display: flex; flex-direction: column; gap: 16px;">
+        <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Behavior spec</p>
+        <ul style="margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: #111111;">
+          <li><strong>On viewport entry:</strong> one demo swipe — 50 → 100 (700ms) → 0 (900ms) → 50 (500ms), ease-in-out. Runs once.</li>
+          <li><strong>After the demo:</strong> the 135° diagonal tracks the cursor (exact projection, no lag). Mouse leave eases back to 50.</li>
+          <li><strong>Touch devices:</strong> demo plays on entry, then scroll-driven reveal.</li>
+          <li><strong>Reduced motion:</strong> static 50/50 split, no demo.</li>
+          <li>Divider is a 0.8%-wide white blend line — recolored from the old warm glow.</li>
+        </ul>
+        <button onClick="{{ baReplay }}" style="height: 40px; padding: 0 16px; border: 1px solid #111111; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 14px; font-weight: 500; color: #111111; background: #ffffff; cursor: pointer; align-self: flex-start;" style-hover="background: #fafafa;">Replay demo swipe</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 06 CARDS ── -->
+  <section data-screen-label="06 Cards" style="max-width: 1120px; margin: 0 auto; padding: 0 48px 80px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 1px solid #e8e8e8; padding-bottom: 16px; margin-bottom: 36px;">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--accent, #00D98A);">06</span>
+      <h2 style="margin: 0; font-size: 30px; font-weight: 500; letter-spacing: -0.02em;">Cards</h2>
+      <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #525252;">replaces: ui/card (rounded-xl, ring) · quote-summary · empty-state</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: start;">
+      <a href="#top" style="display: block; text-decoration: none; color: inherit; background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; overflow: hidden; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-hover="border-color: #d4d4d4; box-shadow: 0 1px 3px rgba(17,17,17,0.06);">
+        <div style="aspect-ratio: 3 / 2; overflow: hidden; background: #0a0a0a;">
+          <img src="public/artwork/cene-card-enterijer.webp" alt="Interior render" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>
+        <div style="padding: 24px;">
+          <p style="margin: 0 0 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Service card</p>
+          <h3 style="margin: 0 0 6px; font-size: 17px; font-weight: 500;">Interior renders</h3>
+          <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-variant-numeric: tabular-nums;">From €169</p>
+        </div>
+      </a>
+      <div style="background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; padding: 24px;">
+        <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Quote summary</p>
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 14px; font-variant-numeric: tabular-nums;">
+          <div style="display: flex; justify-content: space-between; gap: 12px;"><span>Exterior render + model</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px;">€249</span></div>
+          <div style="display: flex; justify-content: space-between; gap: 12px;"><span>2 extra angles</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px;">€94</span></div>
+          <div style="display: flex; justify-content: space-between; gap: 12px; color: #525252;"><span>Model reuse discount <span style="display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 10px; border: 1px solid var(--accent, #00D98A); color: #111111;">−33%</span></span><span style="font-family: 'JetBrains Mono', monospace; font-size: 13px;">−€82</span></div>
+          <div style="border-top: 1px solid #e8e8e8; padding-top: 10px; display: flex; justify-content: space-between; gap: 12px; font-weight: 500;"><span>Total</span><span style="font-family: 'JetBrains Mono', monospace; font-size: 15px;">€261</span></div>
+        </div>
+        <button style="margin-top: 16px; width: 100%; height: 44px; border: none; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 15px; font-weight: 500; color: #06120c; background: var(--accent, #00D98A); cursor: pointer; transition: filter 200ms cubic-bezier(0.2,0,0,1);" style-hover="filter: brightness(0.92);">Continue to order</button>
+      </div>
+      <div style="background: #ffffff; border: 1px dashed #d4d4d4; border-radius: 4px; padding: 40px 24px; text-align: center;">
+        <div style="width: 44px; height: 44px; margin: 0 auto 14px; border: 1px solid #e8e8e8; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #525252;">∅</div>
+        <p style="margin: 0 0 4px; font-size: 15px; font-weight: 500;">No orders yet</p>
+        <p style="margin: 0 0 16px; font-size: 13px; color: #525252;">Your projects will appear here once you place a first order.</p>
+        <button style="height: 36px; padding: 0 16px; border: none; border-radius: 4px; font-family: 'Inter Tight', sans-serif; font-size: 14px; font-weight: 500; color: #06120c; background: var(--accent, #00D98A); cursor: pointer;">Start a project</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 07 DISCLOSURE & NAV ── -->
+  <section data-screen-label="07 Disclosure and navigation" style="max-width: 1120px; margin: 0 auto; padding: 0 48px 128px;">
+    <div style="display: flex; align-items: baseline; gap: 16px; border-bottom: 1px solid #e8e8e8; padding-bottom: 16px; margin-bottom: 36px;">
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 500; color: var(--accent, #00D98A);">07</span>
+      <h2 style="margin: 0; font-size: 30px; font-weight: 500; letter-spacing: -0.02em;">Disclosure &amp; navigation</h2>
+      <span style="margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #525252;">replaces: ui/accordion · section-kicker · portal-sidebar · tabs</span>
+    </div>
+    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; align-items: start;">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="border: 1px solid #e8e8e8; border-radius: 4px; padding: 28px;">
+          <p style="margin: 0 0 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Section kicker</p>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <span style="width: 20px; height: 2px; background: var(--accent, #00D98A);"></span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Architectural visualization</span>
+          </div>
+          <p style="margin: 0 0 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Accordion — click rows</p>
+          <details style="border-bottom: 1px solid #e8e8e8;">
+            <summary style="list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 0; font-size: 15px; font-weight: 500;">What does the base price include?<span style="font-family: 'JetBrains Mono', monospace; color: #525252; font-weight: 400;">+</span></summary>
+            <p style="margin: 0; padding: 0 0 16px; font-size: 14px; line-height: 1.6; color: #525252;">The full 3D model of your property, one rendered view in 4K, and three revision rounds.</p>
+          </details>
+          <details style="border-bottom: 1px solid #e8e8e8;">
+            <summary style="list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 14px 0; font-size: 15px; font-weight: 500;">How fast is a revision cycle?<span style="font-family: 'JetBrains Mono', monospace; color: #525252; font-weight: 400;">+</span></summary>
+            <p style="margin: 0; padding: 0 0 16px; font-size: 14px; line-height: 1.6; color: #525252;">48 hours for standard projects, communicated through your project portal.</p>
+          </details>
+          <p style="margin: 24px 0 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Tabs — click to switch</p>
+          <div style="display: flex; gap: 24px; border-bottom: 1px solid #e8e8e8;">
+            <sc-for list="{{ tabs }}" as="tab" hint-placeholder-count="3">
+              <button onClick="{{ tab.select }}" style="padding: 10px 2px 12px; border: none; background: none; font-family: 'Inter Tight', sans-serif; font-size: 14px; font-weight: 500; color: {{ tab.color }}; cursor: pointer; border-bottom: 2px solid {{ tab.underline }}; margin-bottom: -1px; transition: color 200ms cubic-bezier(0.2,0,0,1);">{{ tab.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="background: #0a0a0a; border-radius: 4px; padding: 24px; display: flex; flex-direction: column; gap: 4px;">
+        <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4);">Portal sidebar — dark surface</p>
+        <a href="#top" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 4px; font-size: 14px; font-weight: 500; color: #ffffff; background: #1a1a1a; text-decoration: none; border-left: 2px solid var(--accent, #00D98A);">Dashboard</a>
+        <a href="#top" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 4px; font-size: 14px; color: rgba(255,255,255,0.65); text-decoration: none; border-left: 2px solid transparent; transition: background 200ms cubic-bezier(0.2,0,0,1), color 200ms cubic-bezier(0.2,0,0,1);" style-hover="background: #1a1a1a; color: #ffffff;">Orders</a>
+        <a href="#top" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 4px; font-size: 14px; color: rgba(255,255,255,0.65); text-decoration: none; border-left: 2px solid transparent; transition: background 200ms cubic-bezier(0.2,0,0,1), color 200ms cubic-bezier(0.2,0,0,1);" style-hover="background: #1a1a1a; color: #ffffff;">Deliverables</a>
+        <a href="#top" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 4px; font-size: 14px; color: rgba(255,255,255,0.65); text-decoration: none; border-left: 2px solid transparent; transition: background 200ms cubic-bezier(0.2,0,0,1), color 200ms cubic-bezier(0.2,0,0,1);" style-hover="background: #1a1a1a; color: #ffffff;">Invoices</a>
+        <a href="#top" style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 4px; font-size: 14px; color: rgba(255,255,255,0.65); text-decoration: none; border-left: 2px solid transparent; transition: background 200ms cubic-bezier(0.2,0,0,1), color 200ms cubic-bezier(0.2,0,0,1);" style-hover="background: #1a1a1a; color: #ffffff;">Messages</a>
+        <p style="margin: 20px 0 0; font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.4);">Active item: 2px green left rule + #1a1a1a fill. The looping sidebar-attention-pulse is retired.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer style="border-top: 1px solid #e8e8e8;">
+    <div style="max-width: 1120px; margin: 0 auto; padding: 28px 48px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+      <img src="assets/wr-logo-horizontal-black.png" alt="White Rook" style="height: 18px; width: auto;">
+      <span style="font-size: 13px; color: #525252;">Component library — Elegant Render International — v1.0</span>
+      <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #525252;">July 2026</span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: {&quot;width&quot;: 1280},
+  &quot;accent&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#00D98A&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#00D98A&quot;, &quot;#00B377&quot;], &quot;section&quot;: &quot;Brand&quot;}
+}">
+class Component extends DCLogic {
+  state = { switchOn: true, qty: 1, activeChip: "Exterior", activeTab: "Overview" };
+
+  componentDidMount() {
+    this.baEl = null;
+    this.baAnimating = false;
+    this.baCancel = null;
+    // Demo swipe on viewport entry, once.
+    this.baObserver = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (entry && entry.isIntersecting && !this.baPlayed) {
+        this.baPlayed = true;
+        this.playDemo();
+      }
+    }, { threshold: 0.35 });
+    if (this.baEl) this.baObserver.observe(this.baEl);
+  }
+
+  componentWillUnmount() {
+    if (this.baObserver) this.baObserver.disconnect();
+    if (this.baCancel) this.baCancel();
+  }
+
+  setReveal(v) {
+    if (this.baEl) this.baEl.style.setProperty("--reveal", String(Math.max(0, Math.min(100, v))));
+  }
+
+  playDemo() {
+    if (this.baAnimating) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { this.setReveal(50); return; }
+    this.baAnimating = true;
+    const segments = [
+      { from: 50, to: 100, duration: 700 },
+      { from: 100, to: 0, duration: 900 },
+      { from: 0, to: 50, duration: 500 }
+    ];
+    const ease = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    let segIdx = 0;
+    let segStart = performance.now();
+    let cancelled = false;
+    let frameId = null;
+    const step = (now) => {
+      if (cancelled) return;
+      const seg = segments[segIdx];
+      const t = Math.min(1, (now - segStart) / seg.duration);
+      this.setReveal(seg.from + (seg.to - seg.from) * ease(t));
+      if (t < 1) { frameId = requestAnimationFrame(step); return; }
+      segIdx++;
+      if (segIdx < segments.length) { segStart = now; frameId = requestAnimationFrame(step); return; }
+      this.baAnimating = false;
+      this.baCancel = null;
+    };
+    frameId = requestAnimationFrame(step);
+    this.baCancel = () => { cancelled = true; if (frameId !== null) cancelAnimationFrame(frameId); this.baAnimating = false; };
+  }
+
+  renderVals() {
+    const accent = this.props.accent ?? "#00D98A";
+    const qty = this.state.qty;
+    const included = 1;
+    const extra = Math.max(0, qty - included);
+    const chipDefs = ["All", "Exterior", "Interior", "Plans", "360 & animation", "Staging", "VR"];
+    const tabDefs = ["Overview", "Deliverables", "Invoices"];
+    return {
+      accent: accent,
+      // before/after
+      baRef: (el) => {
+        this.baEl = el;
+        if (el && this.baObserver) this.baObserver.observe(el);
+      },
+      baMove: (e) => {
+        if (this.baAnimating || !this.baEl) return;
+        const rect = this.baEl.getBoundingClientRect();
+        const px = e.clientX - rect.left, py = e.clientY - rect.top;
+        const W = rect.width, H = rect.height;
+        if (!W || !H) return;
+        this.setReveal(((px * W + py * H) / (W * W + H * H)) * 100);
+      },
+      baLeave: () => { if (!this.baAnimating) this.setReveal(50); },
+      baReplay: () => this.playDemo(),
+      // switch
+      switchOn: this.state.switchOn,
+      switchBg: this.state.switchOn ? accent : "#d4d4d4",
+      switchKnobLeft: this.state.switchOn ? "22px" : "2px",
+      toggleSwitch: () => this.setState(s => ({ switchOn: !s.switchOn })),
+      // stepper
+      qty: qty,
+      qtyIncluded: qty >= 1 && qty <= included,
+      qtyExtra: extra > 0,
+      qtyExtraLabel: "+" + extra + " extra",
+      stepperBorder: extra > 0 ? accent : "#e8e8e8",
+      qtyDec: () => this.setState(s => ({ qty: Math.max(0, s.qty - 1) })),
+      qtyInc: () => this.setState(s => ({ qty: Math.min(12, s.qty + 1) })),
+      // chips
+      chips: chipDefs.map((label) => ({
+        label: label,
+        bg: label === this.state.activeChip ? "#111111" : "#ffffff",
+        color: label === this.state.activeChip ? "#ffffff" : "#111111",
+        border: label === this.state.activeChip ? "#111111" : "#d4d4d4",
+        select: () => this.setState({ activeChip: label })
+      })),
+      // tabs
+      tabs: tabDefs.map((label) => ({
+        label: label,
+        color: label === this.state.activeTab ? "#111111" : "#525252",
+        underline: label === this.state.activeTab ? "#111111" : "transparent",
+        select: () => this.setState({ activeTab: label })
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

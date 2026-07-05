@@ -254,7 +254,7 @@ const scenarios = [
     text:
       "Testirajte podove, zidove, materijale i atmosferu pre nego što donesete skupe odluke.",
     bestFor: "Investitori, dizajneri, vlasnici koji renoviraju",
-    image: "/artwork/pricing-card-opremanje-renovacija.webp",
+    image: "/artwork/pricing-card-staging-renovation.webp",
   },
 ];
 

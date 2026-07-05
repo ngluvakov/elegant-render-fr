@@ -171,7 +171,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Poređenje virtuelne i stvarne renovacije — cena, vreme, ishod. Kada je virtuelna renovacija bolji izbor od izvođenja radova.",
     date: "2026-04-14",
     author: "Elegant Render",
-    coverImage: "/artwork/detail-virtuelna-renovacija.webp",
+    coverImage: "/artwork/detail-virtual-renovation.webp",
     coverAlt: "Poređenje pre i posle virtuelne renovacije dnevne sobe",
     tags: ["Renovacija", "Prodaja nekretnina"],
     keywords: [
@@ -292,7 +292,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Sve što treba da znate pre nego što naručite 3D render — kako pripremiti brief, koje informacije su potrebne i koliko traje izrada.",
     date: "2026-04-21",
     author: "Elegant Render",
-    coverImage: "/artwork/blog-3d-vizuelizacija-duplex.webp",
+    coverImage: "/artwork/blog-3d-visualization-duplex.webp",
     coverAlt:
       "3D osnova dupleks stana — fotorealističan tlocrt sa nameštajem i rasporedom prostorija, pogled odozgo",
     tags: ["Vodič", "3D renderi"],
@@ -799,7 +799,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Kako odabrati studio za arhitektonsku vizuelizaciju? Poređenje portfolija, cena, rokova i kvaliteta — sve što treba da znate pre nego što naručite 3D render.",
     date: "2026-05-12",
     author: "Elegant Render",
-    coverImage: "/artwork/detail-unutrasnji-renderi.webp",
+    coverImage: "/artwork/detail-interior-renders.webp",
     coverAlt:
       "Kvalitetna 3D vizuelizacija enterijera — primer rendera dnevnog prostora",
     tags: ["Saveti", "3D renderi"],
@@ -963,7 +963,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Kako pripremiti fotografije nekretnina za AI obradu i 3D vizuelizaciju? Saveti za osvetljenje, kadriranje i rezoluciju koje koriste profesionalci.",
     date: "2026-05-19",
     author: "Elegant Render",
-    coverImage: "/artwork/detail-fotomontaza.webp",
+    coverImage: "/artwork/detail-photomontage.webp",
     coverAlt: "Fotografija nekretnine pripremljena za 3D obradu i AI vizuelizaciju",
     tags: ["Vodiči", "Fotografija nekretnina"],
     keywords: [
@@ -1283,7 +1283,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Koji su najpopularniji stilovi virtuelnog opremanja enterijera u 2026? Minimalizam, japandi, wabi-sabi — vodič kroz trendove i primeri za prodaju nekretnina.",
     date: "2026-06-02",
     author: "Elegant Render",
-    coverImage: "/artwork/detail-virtuelno-opremanje.webp",
+    coverImage: "/artwork/detail-virtual-staging.webp",
     coverAlt: "Virtuelno opremljen enterijer — stilski uređen dnevni prostor",
     tags: ["Trendovi", "Virtuelno opremanje"],
     keywords: [
@@ -1488,7 +1488,7 @@ export const BLOG_POSTS: BlogPost[] = [
       "Kako pripremiti CAD, Revit ili SketchUp fajlove za 3D vizuelizaciju? Kompletan vodič za arhitekte — formati, saveti, nivo detalja i checklista.",
     date: "2026-06-09",
     author: "Elegant Render",
-    coverImage: "/artwork/detail-spoljasnji-renderi.webp",
+    coverImage: "/artwork/detail-exterior-renders.webp",
     coverAlt:
       "Fotorealističan 3D render eksterijera moderne vile sa bazenom u zlatnom svetlu",
     tags: ["Vodiči", "3D renderi"],

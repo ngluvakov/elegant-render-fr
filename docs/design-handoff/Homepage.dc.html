@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Elegant Render — Architectural visualization with clear prices</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <meta name="ext-resource-dependency" content="public/artwork/cene-card-enterijer.webp">
+  <meta name="ext-resource-dependency" content="public/artwork/cene-card-eksterijer.webp">
+  <meta name="ext-resource-dependency" content="public/artwork/cene-card-planovi.webp">
+  <meta name="ext-resource-dependency" content="public/artwork/detail-360-eksterijer.webp">
+  <style>
+    html, body { margin: 0; padding: 0; background: #ffffff; }
+    body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    summary::-webkit-details-marker { display: none; }
+  </style>
+</helmet>
+<div data-screen-label="Homepage — Elegant Render International" style="--accent: {{ accent }}; font-family: 'Inter Tight', sans-serif; color: #111111; background: #ffffff; min-width: 1100px;">
+
+  <!-- ── HEADER ── -->
+  <header style="position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid #e8e8e8;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 0 48px; height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 32px;">
+      <a href="#top" style="display: flex; align-items: center; gap: 14px; text-decoration: none; color: #111111;">
+        <img src="assets/er-logo-black.png" alt="Elegant Render" style="height: 48px; width: auto; display: block;">
+        <span style="font-size: 15px; font-weight: 500; letter-spacing: -0.01em;">Elegant Render</span>
+      </a>
+      <nav style="display: flex; align-items: center; gap: 28px;">
+        <a href="#services" style="font-size: 14px; color: #525252; text-decoration: none;" style-hover="text-decoration: underline; color: #111111;">Services</a>
+        <a href="#pricing-model" style="font-size: 14px; color: #525252; text-decoration: none;" style-hover="text-decoration: underline; color: #111111;">Pricing</a>
+        <a href="#work" style="font-size: 14px; color: #525252; text-decoration: none;" style-hover="text-decoration: underline; color: #111111;">Our work</a>
+        <a href="#faq" style="font-size: 14px; color: #525252; text-decoration: none;" style-hover="text-decoration: underline; color: #111111;">FAQ</a>
+        <a href="#contact" style="font-size: 14px; color: #525252; text-decoration: none;" style-hover="text-decoration: underline; color: #111111;">Contact</a>
+      </nav>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <a href="#portal" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border: 1px solid #111111; border-radius: 4px; font-size: 14px; font-weight: 500; color: #111111; text-decoration: none; background: #ffffff; transition: background 200ms cubic-bezier(0.2,0,0,1);" style-hover="background: #fafafa;">Sign in</a>
+        <a href="#contact" style="display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 4px; font-size: 14px; font-weight: 500; color: #06120c; text-decoration: none; background: var(--accent, #00D98A); transition: filter 200ms cubic-bezier(0.2,0,0,1);" style-hover="filter: brightness(0.92);">Start a project</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── HERO ── -->
+  <section id="top" style="position: relative; height: 680px; background: #0a0a0a; overflow: hidden;">
+    <img src="public/artwork/detail-interior-static.webp" alt="Interior render" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.92;">
+    <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,10,0.72) 0%, rgba(10,10,10,0.25) 45%, rgba(10,10,10,0) 70%);"></div>
+    <div style="position: relative; max-width: 1280px; margin: 0 auto; padding: 0 48px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 72px;">
+      <p style="margin: 0 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent, #00D98A);">Architectural visualization · delivered across Europe</p>
+      <h1 style="margin: 0 0 20px; font-size: 68px; font-weight: 500; line-height: 1.05; letter-spacing: -0.025em; color: #ffffff; max-width: 820px; text-wrap: pretty;">See your space before you decide.</h1>
+      <p style="margin: 0 0 36px; font-size: 19px; line-height: 1.5; color: rgba(255,255,255,0.78); max-width: 620px;">Hand-crafted renders, virtual staging and visual makeovers for homes and properties — with prices you can see up front. A beautiful image, a clear price, an easier decision.</p>
+      <div style="display: flex; gap: 12px;">
+        <a href="#pricing-model" style="display: inline-flex; align-items: center; height: 52px; padding: 0 28px; border-radius: 4px; font-size: 16px; font-weight: 500; color: #06120c; text-decoration: none; background: var(--accent, #00D98A); transition: filter 200ms cubic-bezier(0.2,0,0,1);" style-hover="filter: brightness(0.92);">See prices</a>
+        <a href="#work" style="display: inline-flex; align-items: center; height: 52px; padding: 0 28px; border-radius: 4px; font-size: 16px; font-weight: 500; color: #ffffff; text-decoration: none; border: 1px solid rgba(255,255,255,0.55); transition: border-color 200ms cubic-bezier(0.2,0,0,1);" style-hover="border-color: #ffffff;">View our work</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SPEC STRIP ── -->
+  <sc-if value="{{ showSpecStrip }}" hint-placeholder-val="{{ true }}">
+    <div style="border-bottom: 1px solid #e8e8e8; background: #ffffff;">
+      <div style="max-width: 1280px; margin: 0 auto; padding: 20px 48px; display: flex; justify-content: space-between; gap: 24px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #525252; font-variant-numeric: tabular-nums;">
+        <span>First drafts in 3–5 working days</span>
+        <span>3 revision rounds included</span>
+        <span>Interiors from €169</span>
+        <span>TÜV Rheinland certified</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ── INTENT COLUMNS ── -->
+  <section style="background: #ffffff;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 96px 48px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px;">
+      <a href="#services" style="text-decoration: none; color: inherit; border-top: 1px solid #d4d4d4; padding-top: 24px; display: block;">
+        <h2 style="margin: 0 0 12px; font-size: 22px; font-weight: 500; letter-spacing: -0.01em; color: #111111;">Architectural visualization</h2>
+        <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.55; color: #525252;">Realistic interior and exterior renders. The base price covers building the 3D model — every additional angle or room costs significantly less.</p>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #111111;">See pricing →</span>
+      </a>
+      <a href="#work" style="text-decoration: none; color: inherit; border-top: 1px solid #d4d4d4; padding-top: 24px; display: block;">
+        <h2 style="margin: 0 0 12px; font-size: 22px; font-weight: 500; letter-spacing: -0.01em; color: #111111;">Virtual staging &amp; renovation</h2>
+        <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.55; color: #525252;">Transform empty or dated spaces from photographs. The first image covers the design; each further image of the same room saves you up to 33%.</p>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #111111;">See pricing →</span>
+      </a>
+      <a href="#services" style="text-decoration: none; color: inherit; border-top: 1px solid #d4d4d4; padding-top: 24px; display: block;">
+        <h2 style="margin: 0 0 12px; font-size: 22px; font-weight: 500; letter-spacing: -0.01em; color: #111111;">Interactive plans &amp; tours</h2>
+        <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.55; color: #525252;">From clear 2D/3D floor plans to immersive 360° tours. Order several outputs from the same model and the discounts apply to the whole project.</p>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #111111;">See pricing →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── BEFORE / AFTER ── -->
+  <section id="work" style="background: #fafafa; border-top: 1px solid #e8e8e8; border-bottom: 1px solid #e8e8e8;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 96px 48px;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; margin-bottom: 48px;">
+        <div style="max-width: 640px;">
+          <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Virtual staging</p>
+          <h2 style="margin: 0; font-size: 44px; font-weight: 500; line-height: 1.1; letter-spacing: -0.02em; color: #111111; text-wrap: pretty;">The same room, ready to sell.</h2>
+        </div>
+        <p style="margin: 0; max-width: 420px; font-size: 15px; line-height: 1.55; color: #525252;">Move your cursor across the image to compare. Every piece of furniture and light is placed by hand — no generic automated output.</p>
+      </div>
+      <div ref="{{ baRef }}" onMouseMove="{{ baMove }}" onMouseLeave="{{ baLeave }}" style="--reveal: 50; position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; user-select: none; background: #0a0a0a; cursor: crosshair;">
+        <img src="public/artwork/ai-tool-virtual_staging-after.webp" alt="After: staged room" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;" draggable="false">
+        <img src="public/artwork/ai-tool-virtual_staging-before.webp" alt="Before: empty room" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; -webkit-mask-image: linear-gradient(135deg, black calc(var(--reveal) * 1%), transparent calc(var(--reveal) * 1%)); mask-image: linear-gradient(135deg, black calc(var(--reveal) * 1%), transparent calc(var(--reveal) * 1%));" draggable="false">
+        <div style="position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; background-image: linear-gradient(135deg, transparent calc((var(--reveal) - 0.4) * 1%), rgba(255,255,255,0.7) calc(var(--reveal) * 1%), transparent calc((var(--reveal) + 0.4) * 1%));"></div>
+        <span style="position: absolute; left: 24px; top: 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #ffffff; background: rgba(10,10,10,0.55); padding: 6px 10px; pointer-events: none;">BEFORE</span>
+        <span style="position: absolute; right: 24px; bottom: 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #ffffff; background: rgba(10,10,10,0.55); padding: 6px 10px; pointer-events: none;">AFTER</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MODEL-FIRST PRICING ── -->
+  <section id="pricing-model" style="background: #ffffff;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 128px 48px; display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 24px;">
+      <article style="background: #0a0a0a; border-radius: 4px; padding: 48px; display: flex; flex-direction: column; justify-content: center;">
+        <p style="margin: 0 0 20px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent, #00D98A);">More renders, lower price per render</p>
+        <h2 style="margin: 0 0 20px; font-size: 40px; font-weight: 500; line-height: 1.1; letter-spacing: -0.02em; color: #ffffff; text-wrap: pretty;">We build the model once. Everything after it costs less.</h2>
+        <p style="margin: 0; font-size: 15px; line-height: 1.6; color: rgba(255,255,255,0.65);">Once we build the 3D model of your property, it becomes your digital asset. Every further output from that model — extra angles, animation, site plans — is priced at a fraction of the first one. You always see how the price is formed before you order.</p>
+      </article>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <article style="background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; padding: 32px; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-hover="border-color: #d4d4d4; box-shadow: 0 1px 3px rgba(17,17,17,0.06);">
+          <p style="margin: 0 0 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #525252;">01</p>
+          <h3 style="margin: 0 0 10px; font-size: 18px; font-weight: 500; color: #111111;">A new camera angle</h3>
+          <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #525252; font-variant-numeric: tabular-nums;">Exteriors start at €249 including the full 3D model. Each additional angle of the same building costs 81% less.</p>
+        </article>
+        <article style="background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; padding: 32px; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-hover="border-color: #d4d4d4; box-shadow: 0 1px 3px rgba(17,17,17,0.06);">
+          <p style="margin: 0 0 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #525252;">02</p>
+          <h3 style="margin: 0 0 10px; font-size: 18px; font-weight: 500; color: #111111;">More floors</h3>
+          <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #525252; font-variant-numeric: tabular-nums;">The first interior floor covers up to 10 rooms. Every further floor in the same building gets an automatic 30% discount.</p>
+        </article>
+        <article style="background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; padding: 32px; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-hover="border-color: #d4d4d4; box-shadow: 0 1px 3px rgba(17,17,17,0.06);">
+          <p style="margin: 0 0 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #525252;">03</p>
+          <h3 style="margin: 0 0 10px; font-size: 18px; font-weight: 500; color: #111111;">Animation</h3>
+          <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #525252; font-variant-numeric: tabular-nums;">If we already built the model on a previous project, the per-second animation price drops by 33%.</p>
+        </article>
+        <article style="background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; padding: 32px; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-hover="border-color: #d4d4d4; box-shadow: 0 1px 3px rgba(17,17,17,0.06);">
+          <p style="margin: 0 0 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #525252;">04</p>
+          <h3 style="margin: 0 0 10px; font-size: 18px; font-weight: 500; color: #111111;">Residential buildings</h3>
+          <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #525252; font-variant-numeric: tabular-nums;">For developers: the first apartment type is full price, and every further type gets a progressive discount of up to 44%.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SERVICES ── -->
+  <section id="services" style="background: #fafafa; border-top: 1px solid #e8e8e8;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 96px 48px;">
+      <div style="margin-bottom: 48px; max-width: 720px;">
+        <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Services</p>
+        <h2 style="margin: 0; font-size: 44px; font-weight: 500; line-height: 1.1; letter-spacing: -0.02em; color: #111111; text-wrap: pretty;">Everything comes straight from the official price list.</h2>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+        <a href="#contact" style="display: block; text-decoration: none; color: inherit; background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; overflow: hidden; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-hover="border-color: #d4d4d4; box-shadow: 0 1px 3px rgba(17,17,17,0.06);">
+          <div style="aspect-ratio: 3 / 2; overflow: hidden; background: #0a0a0a;">
+            <img src="public/artwork/cene-card-enterijer.webp" alt="Interior renders" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="padding: 24px;">
+            <h3 style="margin: 0 0 6px; font-size: 17px; font-weight: 500; color: #111111;">Interior renders</h3>
+            <p style="margin: 0 0 14px; font-size: 14px; line-height: 1.5; color: #525252;">Fully furnished, warm, realistic rooms — spaces you could live in.</p>
+            <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #111111; font-variant-numeric: tabular-nums;">From €169</p>
+          </div>
+        </a>
+        <a href="#contact" style="display: block; text-decoration: none; color: inherit; background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; overflow: hidden; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-hover="border-color: #d4d4d4; box-shadow: 0 1px 3px rgba(17,17,17,0.06);">
+          <div style="aspect-ratio: 3 / 2; overflow: hidden; background: #0a0a0a;">
+            <img src="public/artwork/cene-card-eksterijer.webp" alt="Exterior renders" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="padding: 24px;">
+            <h3 style="margin: 0 0 6px; font-size: 17px; font-weight: 500; color: #111111;">Exterior renders</h3>
+            <p style="margin: 0 0 14px; font-size: 14px; line-height: 1.5; color: #525252;">Houses, buildings and complexes, with the full 3D model included.</p>
+            <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #111111; font-variant-numeric: tabular-nums;">From €249</p>
+          </div>
+        </a>
+        <a href="#contact" style="display: block; text-decoration: none; color: inherit; background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; overflow: hidden; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-hover="border-color: #d4d4d4; box-shadow: 0 1px 3px rgba(17,17,17,0.06);">
+          <div style="aspect-ratio: 3 / 2; overflow: hidden; background: #0a0a0a;">
+            <img src="public/artwork/cene-card-planovi.webp" alt="Floor plans and site plans" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="padding: 24px;">
+            <h3 style="margin: 0 0 6px; font-size: 17px; font-weight: 500; color: #111111;">Floor plans &amp; site plans</h3>
+            <p style="margin: 0 0 14px; font-size: 14px; line-height: 1.5; color: #525252;">Clear 2D and 3D layouts that make a listing easy to understand.</p>
+            <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #111111; font-variant-numeric: tabular-nums;">2D &amp; 3D options</p>
+          </div>
+        </a>
+        <a href="#contact" style="display: block; text-decoration: none; color: inherit; background: #ffffff; border: 1px solid #e8e8e8; border-radius: 4px; overflow: hidden; transition: border-color 200ms cubic-bezier(0.2,0,0,1), box-shadow 200ms cubic-bezier(0.2,0,0,1);" style-hover="border-color: #d4d4d4; box-shadow: 0 1px 3px rgba(17,17,17,0.06);">
+          <div style="aspect-ratio: 3 / 2; overflow: hidden; background: #0a0a0a;">
+            <img src="public/artwork/detail-360-eksterijer.webp" alt="360 virtual tours" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="padding: 24px;">
+            <h3 style="margin: 0 0 6px; font-size: 17px; font-weight: 500; color: #111111;">360° virtual tours</h3>
+            <p style="margin: 0 0 14px; font-size: 14px; line-height: 1.5; color: #525252;">Interactive, VR-ready walkthroughs of a full floor.</p>
+            <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #111111; font-variant-numeric: tabular-nums;">From €294</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROCESS ── -->
+  <section style="background: #ffffff;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 128px 48px;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; margin-bottom: 48px;">
+        <div style="max-width: 680px;">
+          <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">A clear ordering process</p>
+          <h2 style="margin: 0; font-size: 44px; font-weight: 500; line-height: 1.1; letter-spacing: -0.02em; color: #111111; text-wrap: pretty;">From estimate to final files — no guessing what happens next.</h2>
+        </div>
+        <p style="margin: 0; max-width: 400px; font-size: 15px; line-height: 1.55; color: #525252;">The calculator makes the decision easy. What follows stays short: materials, first drafts, revisions and delivery through your portal.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+        <sc-for list="{{ steps }}" as="step" hint-placeholder-count="4">
+          <article style="border-top: 2px solid #111111; padding-top: 20px;">
+            <p style="margin: 0 0 10px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; color: #525252;">{{ step.num }}</p>
+            <h3 style="margin: 0 0 10px; font-size: 18px; font-weight: 500; color: #111111;">{{ step.title }}</h3>
+            <p style="margin: 0; font-size: 14px; line-height: 1.55; color: #525252;">{{ step.text }}</p>
+          </article>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ISO / TRUST STRIP ── -->
+  <sc-if value="{{ showIsoStrip }}" hint-placeholder-val="{{ true }}">
+    <section style="background: #ffffff; border-top: 1px solid #e8e8e8;">
+      <div style="max-width: 1280px; margin: 0 auto; padding: 40px 48px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+        <p style="margin: 0; font-size: 14px; color: #525252;">Certified by TÜV Rheinland — audited annually, not self-declared.</p>
+        <div style="display: flex; gap: 10px;">
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #111111; border: 1px solid #d4d4d4; border-radius: 999px; padding: 6px 14px;">ISO 9001:2015</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #111111; border: 1px solid #d4d4d4; border-radius: 999px; padding: 6px 14px;">ISO/IEC 27001:2022</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: #111111; border: 1px solid #d4d4d4; border-radius: 999px; padding: 6px 14px;">ISO 50001:2018</span>
+        </div>
+      </div>
+    </section>
+  </sc-if>
+
+  <!-- ── FAQ ── -->
+  <section id="faq" style="background: #fafafa; border-top: 1px solid #e8e8e8;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 96px 48px; display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 64px;">
+      <div>
+        <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Frequent questions</p>
+        <h2 style="margin: 0 0 16px; font-size: 40px; font-weight: 500; line-height: 1.1; letter-spacing: -0.02em; color: #111111; text-wrap: pretty;">Before you ask</h2>
+        <p style="margin: 0; font-size: 15px; line-height: 1.55; color: #525252;">Anything else on your mind? Write to us — we reply within one working day.</p>
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <sc-for list="{{ faqs }}" as="faq" hint-placeholder-count="5">
+          <details style="border-bottom: 1px solid #e8e8e8; padding: 4px 0;">
+            <summary style="list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 0; font-size: 17px; font-weight: 500; color: #111111;">{{ faq.q }}<span style="font-family: 'JetBrains Mono', monospace; color: #525252; font-weight: 400;">+</span></summary>
+            <p style="margin: 0; padding: 0 0 20px; font-size: 15px; line-height: 1.6; color: #525252; max-width: 640px;">{{ faq.a }}</p>
+          </details>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CLOSING CTA ── -->
+  <section id="contact" style="background: #ffffff;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 128px 48px; text-align: center;">
+      <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #525252;">Ready when you are</p>
+      <h2 style="margin: 0 auto 20px; font-size: 52px; font-weight: 500; line-height: 1.08; letter-spacing: -0.025em; color: #111111; max-width: 760px; text-wrap: pretty;">Send us your space. We'll send back a price — not a sales call.</h2>
+      <p style="margin: 0 auto 36px; font-size: 16px; line-height: 1.55; color: #525252; max-width: 560px;">Floor plans, photos, or just a sketch and a goal. You'll get a precise quote and a timeline before any work starts.</p>
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <a href="#top" style="display: inline-flex; align-items: center; height: 52px; padding: 0 28px; border-radius: 4px; font-size: 16px; font-weight: 500; color: #06120c; text-decoration: none; background: var(--accent, #00D98A); transition: filter 200ms cubic-bezier(0.2,0,0,1);" style-hover="filter: brightness(0.92);">Send your space</a>
+        <a href="#pricing-model" style="display: inline-flex; align-items: center; height: 52px; padding: 0 28px; border-radius: 4px; font-size: 16px; font-weight: 500; color: #111111; text-decoration: none; border: 1px solid #111111; transition: background 200ms cubic-bezier(0.2,0,0,1);" style-hover="background: #fafafa;">See prices first</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer style="background: #0a0a0a; color: #ffffff;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 80px 48px 0;">
+      <div style="display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 64px;">
+        <div>
+          <img src="assets/er-logo-white.png" alt="Elegant Render" style="height: 96px; width: auto; display: block; margin-bottom: 20px;">
+          <p style="margin: 0; font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.55); max-width: 300px;">Hand-crafted architectural visualization with transparent pricing, for homes and properties across Europe.</p>
+        </div>
+        <div>
+          <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4);">Services</p>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="#services" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">Interior renders</a>
+            <a href="#services" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">Exterior renders</a>
+            <a href="#services" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">Virtual staging</a>
+            <a href="#services" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">360° tours &amp; plans</a>
+          </div>
+        </div>
+        <div>
+          <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4);">Company</p>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="#top" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">About us</a>
+            <a href="#work" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">Our work</a>
+            <a href="#faq" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">FAQ</a>
+            <a href="#contact" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">Contact</a>
+          </div>
+        </div>
+        <div>
+          <p style="margin: 0 0 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4);">Legal</p>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="#top" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">Imprint</a>
+            <a href="#top" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">Privacy policy</a>
+            <a href="#top" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">Terms of service</a>
+            <a href="#top" style="font-size: 14px; color: rgba(255,255,255,0.75); text-decoration: none;" style-hover="text-decoration: underline;">Certificates &amp; standards</a>
+          </div>
+        </div>
+      </div>
+      <div style="border-top: 1px solid rgba(255,255,255,0.12); padding: 28px 0 36px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <img src="assets/wr-logo-horizontal-white.png" alt="White Rook" style="height: 26px; width: auto; display: block; opacity: 0.9;">
+          <span style="font-size: 13px; color: rgba(255,255,255,0.5);">Elegant Render is part of White Rook DOO — 3D visualization &amp; digital assets.</span>
+        </div>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.35); font-variant-numeric: tabular-nums;">© 2026 White Rook DOO</span>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#00D98A"></rect><text x="50" y="62" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#06120C">ER</text></svg></template></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: {&quot;width&quot;: 1440},
+  &quot;accent&quot;: {&quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#00D98A&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#00D98A&quot;, &quot;#00B377&quot;], &quot;section&quot;: &quot;Brand&quot;},
+  &quot;showSpecStrip&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sections&quot;},
+  &quot;showIsoStrip&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sections&quot;}
+}">
+class Component extends DCLogic {
+  componentDidMount() {
+    this.baAnimating = false;
+    this.baCancel = null;
+    this.baObserver = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (entry && entry.isIntersecting && !this.baPlayed) {
+        this.baPlayed = true;
+        this.playDemo();
+      }
+    }, { threshold: 0.35 });
+    if (this.baEl) this.baObserver.observe(this.baEl);
+  }
+
+  componentWillUnmount() {
+    if (this.baObserver) this.baObserver.disconnect();
+    if (this.baCancel) this.baCancel();
+  }
+
+  setReveal(v) {
+    if (this.baEl) this.baEl.style.setProperty("--reveal", String(Math.max(0, Math.min(100, v))));
+  }
+
+  playDemo() {
+    if (this.baAnimating) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { this.setReveal(50); return; }
+    this.baAnimating = true;
+    const segments = [
+      { from: 50, to: 100, duration: 700 },
+      { from: 100, to: 0, duration: 900 },
+      { from: 0, to: 50, duration: 500 }
+    ];
+    const ease = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    let segIdx = 0;
+    let segStart = performance.now();
+    let cancelled = false;
+    let frameId = null;
+    const step = (now) => {
+      if (cancelled) return;
+      const seg = segments[segIdx];
+      const t = Math.min(1, (now - segStart) / seg.duration);
+      this.setReveal(seg.from + (seg.to - seg.from) * ease(t));
+      if (t < 1) { frameId = requestAnimationFrame(step); return; }
+      segIdx++;
+      if (segIdx < segments.length) { segStart = now; frameId = requestAnimationFrame(step); return; }
+      this.baAnimating = false;
+      this.baCancel = null;
+    };
+    frameId = requestAnimationFrame(step);
+    this.baCancel = () => { cancelled = true; if (frameId !== null) cancelAnimationFrame(frameId); this.baAnimating = false; };
+  }
+
+  renderVals() {
+    return {
+      accent: this.props.accent ?? "#00D98A",
+      showSpecStrip: this.props.showSpecStrip ?? true,
+      showIsoStrip: this.props.showIsoStrip ?? true,
+      baRef: (el) => {
+        this.baEl = el;
+        if (el && this.baObserver) this.baObserver.observe(el);
+      },
+      baMove: (e) => {
+        if (this.baAnimating || !this.baEl) return;
+        const rect = this.baEl.getBoundingClientRect();
+        const px = e.clientX - rect.left, py = e.clientY - rect.top;
+        const W = rect.width, H = rect.height;
+        if (!W || !H) return;
+        this.setReveal(((px * W + py * H) / (W * W + H * H)) * 100);
+      },
+      baLeave: () => { if (!this.baAnimating) this.setReveal(50); },
+      steps: [
+        { num: "01", title: "Get your estimate", text: "Pick a service and see the starting price immediately — and exactly what it includes." },
+        { num: "02", title: "Send your materials", text: "The form asks only for what we need to start: floor plans, photos, style references and a short goal." },
+        { num: "03", title: "Receive first drafts", text: "For standard projects, first drafts arrive in 3–5 working days, with clear communication through the portal." },
+        { num: "04", title: "Finalize through revisions", text: "Three revision rounds are included. Then you download the final files and project documentation." }
+      ],
+      faqs: [
+        { q: "How long does one render take?", a: "For standard projects — say, a single-room interior — first drafts arrive within 3 to 5 working days. For larger projects you get an exact timeline with the quote, before any work starts." },
+        { q: "Does the price include revisions?", a: "Yes. While the industry standard is 1–2 rounds, we include 3 revision rounds in the base price. We want you fully happy with the result." },
+        { q: "What materials should I send you?", a: "Floor plans (2D or PDF), photos of the current state, and style or mood references are the most useful. The order form lets you upload everything at once." },
+        { q: "Do you issue invoices and work under contract?", a: "Yes. Elegant Render is part of White Rook DOO and operates under EU-compatible invoicing. Every project comes with proper documentation." },
+        { q: "What if my project is bigger than usual?", a: "For residential buildings and large development projects we apply progressive discounts — for example on repeated apartment types. Send us an inquiry and you'll get a precise calculation." }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

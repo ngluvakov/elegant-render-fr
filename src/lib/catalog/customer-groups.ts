@@ -42,7 +42,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "Eksterijer",
     blurb: "Fasade, kuće, zgrade, dvorišta i okruženje",
     catIds: ["exterior", "landscape"],
-    imageSrc: "/artwork/pricing-card-eksterijer.webp",
+    imageSrc: "/artwork/pricing-card-exterior.webp",
   },
   {
     id: "enterijer",
@@ -50,7 +50,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "Enterijer",
     blurb: "Opremljene sobe i stanovi po spratu",
     catIds: ["interior"],
-    imageSrc: "/artwork/pricing-card-enterijer.webp",
+    imageSrc: "/artwork/pricing-card-interior.webp",
   },
   {
     id: "planovi",
@@ -58,7 +58,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "Planovi",
     blurb: "2D osnove, 3D planovi i situacioni prikazi",
     catIds: ["floorplans-2d", "floorplans-3d", "siteplans"],
-    imageSrc: "/artwork/pricing-card-planovi.webp",
+    imageSrc: "/artwork/pricing-card-plans.webp",
   },
   {
     id: "animacija",
@@ -66,8 +66,8 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "Animacija",
     blurb: "3D animacije i 360° ture",
     catIds: ["animation"],
-    imageSrc: "/artwork/pricing-card-animacija.webp",
-    videoSrc: "/artwork/pricing-card-animacija.mp4",
+    imageSrc: "/artwork/architectural-animation-demo-poster.webp",
+    videoSrc: "/artwork/pricing-card-animation.mp4",
   },
   {
     id: "opremanje-renovacija",
@@ -75,7 +75,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "Opremanje",
     blurb: "Staging, renovacija, dan u noć, uklanjanje elemenata",
     catIds: ["staging", "renovation", "day-to-dusk", "item-removal"],
-    imageSrc: "/artwork/pricing-card-opremanje-renovacija.webp",
+    imageSrc: "/artwork/pricing-card-staging-renovation.webp",
   },
   {
     id: "vr-iskustvo",
@@ -83,7 +83,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     shortLabel: "VR",
     blurb: "Imerzivni VR walkthrough — konsultacija pre izrade",
     catIds: ["vr-experiences"],
-    imageSrc: "/artwork/pricing-card-animacija.webp",
+    imageSrc: "/artwork/architectural-animation-demo-poster.webp",
   },
 ];
 

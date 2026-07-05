@@ -38,10 +38,10 @@ const KEPT: PortfolioTile[] = [
   ...keptGroup("Render u fotografiji lokacije", "portfolio-fotomontaza"),
   ...keptGroup("Dnevni u noćni prikaz", "portfolio-dan-u-noc"),
   ...keptGroup("3D situacioni plan", "portfolio-3d-situacioni"),
-  { kind: "image", src: `${A}/portfolio-3d-osnove-jednosoban-stan.webp`, alt: "3D osnova jednosobnog stana, Elegant Render", label: "3D osnove" },
-  { kind: "image", src: `${A}/portfolio-3d-osnove-jednosoban-otvoreni-koncept.webp`, alt: "3D osnova jednosobnog stana otvorenog koncepta, Elegant Render", label: "3D osnove" },
-  { kind: "image", src: `${A}/portfolio-3d-osnove-dupleks-dva-nivoa.webp`, alt: "3D osnova dupleksa na dva nivoa, Elegant Render", label: "3D osnove" },
-  { kind: "image", src: `${A}/portfolio-3d-osnove-kuca-sa-garazom.webp`, alt: "3D osnova kuće sa garažom, Elegant Render", label: "3D osnove" },
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-apartment.webp`, alt: "3D osnova jednosobnog stana, Elegant Render", label: "3D osnove" },
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-open-concept.webp`, alt: "3D osnova jednosobnog stana otvorenog koncepta, Elegant Render", label: "3D osnove" },
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-duplex-two-levels.webp`, alt: "3D osnova dupleksa na dva nivoa, Elegant Render", label: "3D osnove" },
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-house-with-garage.webp`, alt: "3D osnova kuće sa garažom, Elegant Render", label: "3D osnove" },
 ];
 
 /** New interior renders (enterijer-01..19.webp). */

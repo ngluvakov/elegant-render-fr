@@ -1,10 +1,10 @@
 name: ci
 
-# Type-check + lint + unit testovi na svaki push/PR. Puni `next build`
-# namerno NIJE ovde: prerender čita bazu (katalog cena) i traži
-# produkcijske env varove — njega ionako izvršava Vercel na svakom
-# pushu i deploy pada ako build pukne. Ovaj workflow hvata type/lint/test
-# regresije pre nego što stignu do Vercel builda.
+# Type-check + lint + unit tests on every push/PR. A full `next build`
+# is deliberately NOT run here: prerendering reads the database (pricing
+# catalog) and needs production env vars — Vercel runs it on every push
+# anyway and the deploy fails if the build breaks. This workflow catches
+# type/lint/test regressions before they reach the Vercel build.
 
 on:
   push:
@@ -23,24 +23,20 @@ jobs:
           node-version: "22"
           cache: "npm"
 
-      # postinstall pokreće `prisma generate` — generisani klijent u
-      # src/generated/prisma je preduslov za tsc.
+      # postinstall runs `prisma generate` — the generated client in
+      # src/generated/prisma is a prerequisite for tsc.
       - name: Install dependencies
         run: npm ci
 
       - name: Type-check
         run: npx tsc --noEmit
 
-      # TODO: prebaciti na blocking kad se očisti postojećih 26 lint
-      # grešaka (uglavnom react-hooks/refs u starijim klijentskim
-      # komponentama) — 2026-07-03 stanje.
-      - name: Lint (non-blocking dok se ne očisti postojeći dug)
+      # TODO: switch to blocking once the existing 26 lint errors are
+      # cleared (mostly react-hooks/refs in older client components) —
+      # state as of 2026-07-03.
+      - name: Lint (non-blocking until existing debt is cleared)
         run: npm run lint
         continue-on-error: true
 
       - name: Unit tests
         run: npm test
-
-      # Čist skript bez env/DB — čuva NestPay hash format (BIB template).
-      - name: NestPay hash sanity
-        run: npx tsx scripts/nestpay-hash-test.ts

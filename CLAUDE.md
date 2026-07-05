@@ -1,15 +1,19 @@
 @AGENTS.md
 
-# Elegant Render Platform
+# Elegant Render International (elegantrender.com)
 
-B2C architectural visualization service (Elegant Render, sub-brand of White Rook DOO). Serbian site (`sr-Latn-RS`), RSD-only gross pricing with PDV included, all major-unit prices stored as **integers**.
+B2C architectural visualization service (Elegant Render, sub-brand of White Rook DOO, Serbia) for the international/English market. Forked from the Serbian platform (`elegantrender.rs`, repo `elegant-render-platform`) at commit `641d34c`. English routes and copy, **PayPal** payments (no card gateway), **EUR** canonical pricing displayed in the buyer's PayPal-supported currency, Bitrix24 CRM (same portal as .rs, separate EN pipeline).
+
+> Migration status lives in `docs/plan/00-master-plan.md` (master plan, Phase 0
+> dependency checklist, track split). Detailed designs: `docs/plan/design-*.md`.
+> The visual identity spec is `docs/design-handoff/` (White Rook design system).
 
 ## Stack deviations from defaults
 
 - **Prisma 7 client generated to `src/generated/prisma`** — import from `@/generated/prisma/client`, not `@prisma/client`. Uses `PrismaPg` adapter (Supabase).
 - **shadcn/ui built on base-ui, not radix.** `Button` etc. import from `@base-ui/react/*`.
 - **Next.js 16 renamed `middleware.ts` → `proxy.ts`.** Route protection lives there.
-- **Tailwind 4** with CSS variables for brand palette (`--color-sage`, `--color-sage-deep`, accent = clay/warm terracotta).
+- **Tailwind 4** with CSS variables. Palette: white canvas, `#111111` ink, `#fafafa` section grey, `#0a0a0a` dark surfaces, ONE green accent `#00D98A` (text on green `#06120C`, never white). Fonts: Inter Tight + JetBrains Mono (eyebrows/prices/specs). Radius 4px. See `docs/design-handoff/README.md`.
 - **Auth.js v5** (credentials + Google OAuth).
 
 ## Scripts and env
@@ -31,35 +35,21 @@ Use `DIRECT_URL` for scripts/migrations, `DATABASE_URL` (pooled) for runtime.
 
 Schema lives in `prisma/schema.prisma`. **Always change schema via `prisma migrate dev`, never `db push`.** The two workflows are mutually exclusive — `db push` skips the migration history and creates drift that `migrate deploy` can't reconcile.
 
-Workflow:
+The baseline `00000000000000_init` was regenerated offline for this fork (fresh empty Supabase DB); the 36 historical Serbian-era migrations were squashed into it. Production deploys run `prisma migrate deploy` inside `npm run build` on Vercel.
 
-```
-# Make schema changes
-vim prisma/schema.prisma
+## Pricing and currency
 
-# Create + apply a new migration locally (interactive — names the migration)
-npm run db:migrate
+- Canonical prices are **EUR** (source: `docs/pricing/pillar-1-extracted.md`, the original White Rook EUR price list; the design handoff carries final consumer price points).
+- Catalog: `src/lib/catalog/configurator.ts`. Calculation: `src/lib/catalog/calculate.ts` — always call `calculateQuote`, never duplicate the math.
+- Display/charge currency is chosen per visitor (geo via `x-vercel-ip-country`) from PayPal-supported currencies with **round-UP-then-minus-one marketable rounding** (€169, $189); seams: `src/lib/catalog/display-currency.ts` + `src/lib/billing.ts` (+ `src/lib/currency/` once Track A lands).
+- Machine-readable IDs (config IDs, slugs, categories, enum-ish strings) are English and FROZEN. Labels/descriptions are translated separately — never derive labels from IDs.
 
-# Verify against the DB
-npm run db:migrate:status
-```
+## Payments (PayPal)
 
-Production deploys run `prisma migrate deploy` automatically as part of `npm run build` (in Vercel build step). No manual action needed on push to main.
-
-If you find drift (someone ran `db push` by accident, or schema changed outside Prisma), reset by running `prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --script` to see the gap, then either roll the schema back or write a new migration to align.
-
-The baseline migration `00000000000000_init` was generated when the project transitioned from `db push` workflow — it represents the schema at that point and was registered as `--applied` on production without running its SQL (the DB was already in that state).
-
-## Domain vocabulary (Serbian)
-
-Routes and labels are Serbian — not typos:
-`porudžbine` orders · `nacrt` draft · `cene` pricing · `poruci` checkout · `predlog` proposal · `usluga` service · `prostorija/soba` room · `kadar` render/shot · `naručilac` customer · `napredno podešavanje` advanced settings.
-
-## Source of truth for pricing
-
-- Catalog: `src/lib/catalog/configurator.ts` (derived from `docs/pricing/pillar-1-extracted.md`).
-- Calculation: `src/lib/catalog/calculate.ts` — always call `calculateQuote`, never duplicate the math.
-- Per-product custom config (e.g. interior rooms): `src/lib/catalog/interior-config.ts`, stored in `OrderItem.configJson`.
+- PayPal Orders API v2 + JS SDK (no npm SDK dependency). Client: `src/lib/payment/paypal.ts`. Env: `PAYPAL_MODE`, `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `NEXT_PUBLIC_PAYPAL_CLIENT_ID`, `PAYPAL_WEBHOOK_ID`.
+- Provider-neutral seams every payment path MUST use: `finishSuccessfulPayment` / `finishFailedPayment` (`src/server/actions/payment.ts`) and `transitionOrder` (`src/lib/order/status-machine.ts` — also syncs Bitrix).
+- Three completion paths: capture-on-return (primary), signature-verified webhook `api/paypal/webhook`, reconcile cron `api/cron/paypal-reconcile`. Design: `docs/plan/design-payments.md`.
+- The pre-fork PayPal implementation is recoverable from git history at `b4d0740^` (`git show "b4d0740^:src/lib/payment/paypal.ts"`).
 
 ## Mutation pattern
 
@@ -67,28 +57,28 @@ Server actions in `src/server/actions/` (`"use server"`). After a write:
 1. `revalidatePath('/affected/route')` on the server action.
 2. `router.refresh()` in the client after the action resolves.
 
-Destructive UI uses inline confirm (see `DeleteOrderButton`, item trash icon) — no `window.confirm()`. Editable fields autosave with 600ms debounce (see `ProjectNameEditor`, `InteriorConfigSection`).
+Destructive UI uses inline confirm — no `window.confirm()`. Editable fields autosave with 600ms debounce.
 
 ## Order status gates
 
-Structural edits (add/remove items, rename project, edit rooms) only allowed when `status === 'draft'`. `awaiting_payment` and `paid` allow per-item notes/files. Post-delivery states lock everything.
+Structural edits (add/remove items, rename project, edit rooms) only allowed when `status === 'draft'`. `awaiting_payment` and `paid` allow per-item notes/files. Post-delivery states lock everything. FSM: `src/lib/order/status-transitions.ts`.
 
 ## Deploy
 
-`git push origin main` triggers Vercel production. Claude has permission to push to main directly (`Bash(git push:*)` is in `.claude/settings.local.json`). Treat every commit on main as a production deploy — type-check and SSR-sanity before pushing.
+`git push origin main` triggers Vercel production. Treat every commit on main as a production deploy — type-check and SSR-sanity before pushing.
 
 ## Chatbot
 
-OpenAI-backed chat emits service proposals as `:::predlog` blocks (see `src/components/chat/chat-messages.tsx`). Parsing + "add to configurator" flow is wired through `sessionStorage("er-chat-proposal")` and the `er-chat-proposal` custom event.
+OpenAI-backed chat emits service proposals as fenced blocks parsed in `src/components/chat/chat-messages.tsx` (block tag `:::predlog` until the Track B rename to `:::proposal` — prompt and parser must change in lockstep). "Add to configurator" flows through `sessionStorage("er-chat-proposal")` + the `er-chat-proposal` custom event.
 
 ## The Elegant Gentlemen (subagent team)
 
 Five on-demand subagents live in `.claude/agents/` and confer via files in `.claude/elegant-gentlemen/`. They are **off-duty by default** — never auto-delegate to them.
 
 | Slug | Gentleman | Remit |
-|---|---|---|
-| `eg-conversion-ashford` | Mr. Ashford | Conversion & funnel; Serbian CTA copy |
-| `eg-design-beaumont` | Mr. Beaumont | Design & brand (sage/clay, calm, minimal) |
+| --- | --- | --- |
+| `eg-conversion-ashford` | Mr. Ashford | Conversion & funnel; English CTA copy |
+| `eg-design-beaumont` | Mr. Beaumont | Design & brand (White Rook system: white/ink/green, restraint) |
 | `eg-stack-carrington` | Mr. Carrington | Stack & code quality (the rules above) |
 | `eg-architect-davenport` | Mr. Davenport | UI/UX architect — the only one who writes UI code |
 | `eg-deploy-whitfield` | Mr. Whitfield | Pre-deploy gate before `git push origin main` |

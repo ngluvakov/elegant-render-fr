@@ -65,7 +65,7 @@ async function main() {
       orderNumber: generateOrderNumber(),
       userId: client.id,
       projectName: "Test projekat",
-      totalRsd: calculation.total,
+      totalEur: calculation.total,
       items: {
         create: calculation.items.map((item) => ({
           productId: item.productId,
@@ -74,8 +74,8 @@ async function main() {
               ?.categoryId ?? "",
           productLabel: item.productLabel,
           categoryLabel: item.categoryLabel,
-          basePriceRsd: item.basePriceRsd,
-          totalRsd: item.totalRsd,
+          basePriceEur: item.basePriceEur,
+          totalEur: item.totalEur,
           addOnsJson: item.addOns,
         })),
       },
@@ -88,7 +88,7 @@ async function main() {
     },
   });
 
-  console.log("Draft order created:", order.orderNumber, `${order.totalRsd} RSD`);
+  console.log("Draft order created:", order.orderNumber, `€${order.totalEur}`);
   await prisma.$disconnect();
 }
 

@@ -30,14 +30,14 @@ export function AdminCommentComposer({ orderId }: { orderId: string }) {
       <Textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}
-        placeholder="Napišite poruku klijentu…"
+        placeholder="Write a message to the client..."
         rows={3}
         className="resize-none"
       />
       <div className="mt-3 flex justify-end">
         <Button type="submit" size="sm" disabled={pending || !body.trim()}>
           <Send className="mr-1.5 h-3 w-3" />
-          {pending ? "Slanje…" : "Pošalji kao tim"}
+          {pending ? "Sending..." : "Send as team"}
         </Button>
       </div>
     </form>

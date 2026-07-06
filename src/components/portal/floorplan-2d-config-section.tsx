@@ -1,6 +1,6 @@
 /**
  * Floorplan2dConfigSection — Per-item configurator for the fp2d-single
- * product (2D osnove prostora). Single-level; the levels stepper drives
+ * product (2D room plans). Single-level; the levels stepper drives
  * progressive add-on pricing (fp2d-double + fp2d-extra). Display style
  * (color/texture) and display type (empty/furnished) live in configJson;
  * "furnished" toggles fp2d-furnished. Branding section (logo + brand
@@ -60,8 +60,8 @@ import {
   updateFloorplan2dConfig,
 } from "@/server/actions/item-config";
 
-const FP2D_VARIANT_RSD = 469;
-const FP2D_DUPLICATE_RSD = 703;
+const FP2D_VARIANT_EUR = 4;
+const FP2D_DUPLICATE_EUR = 6;
 
 type ItemFile = {
   id: string;
@@ -104,7 +104,7 @@ export function Floorplan2dConfigSection({
   const router = useRouter();
   const { formatPrice, formatPriceText } = useOrderCurrency();
 
-  const totalRsd = useMemo(() => {
+  const totalEur = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -113,7 +113,7 @@ export function Floorplan2dConfigSection({
         addOnQuantities: addOnQuantitiesFor(config),
       },
     ]);
-    return calc.items[0]?.totalRsd ?? 0;
+    return calc.items[0]?.totalEur ?? 0;
   }, [itemId, config]);
 
   useEffect(() => {
@@ -164,7 +164,7 @@ export function Floorplan2dConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -207,7 +207,7 @@ export function Floorplan2dConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Ukloni fajl"
+                aria-label="Remove file"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -270,7 +270,7 @@ export function Floorplan2dConfigSection({
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
               {config.levels} nivo{config.levels === 1 ? "" : "a"} ·{" "}
-              {config.displayType === "furnished" ? "nameštena" : "prazna"} ·{" "}
+              {config.displayType === "furnished" ? "furnished" : "empty"} ·{" "}
               {FP2D_DISPLAY_STYLES.find((s) => s.id === config.displayStyle)
                 ?.label ?? config.displayStyle}
             </p>
@@ -280,11 +280,11 @@ export function Floorplan2dConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Sačuvano
+              Saved
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalRsd)}
+            {formatPrice(totalEur)}
           </p>
         </div>
       </div>
@@ -296,7 +296,7 @@ export function Floorplan2dConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Naziv osnove / sprata
+          Plan / floor name
         </Label>
         <input
           id={`name-${itemId}`}
@@ -314,14 +314,14 @@ export function Floorplan2dConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Layers className="h-3 w-3 text-accent/60" />
-            Broj nivoa (spratova)
+            Number of levels (floors)
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.levels <= 1}
               onClick={decLevels}
-              aria-label="Smanji broj nivoa"
+              aria-label="Decrease number of nivoa"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -333,13 +333,13 @@ export function Floorplan2dConfigSection({
               type="button"
               disabled={!editable || config.levels >= 30}
               onClick={incLevels}
-              aria-label="Povećaj broj nivoa"
+              aria-label="Increase number of nivoa"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              {formatPriceText("1 uključen, +1.406 RSD za 2., pa +1.172 RSD svaki sledeći")}
+              {formatPriceText("1 included, +€12 for the second, then +€10 each additional")}
             </span>
           </div>
         </div>
@@ -349,7 +349,7 @@ export function Floorplan2dConfigSection({
             htmlFor={`style-${itemId}`}
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
-            Stil prikaza (boje i teksture)
+            Display style (colors and textures)
           </Label>
           <select
             id={`style-${itemId}`}
@@ -374,7 +374,7 @@ export function Floorplan2dConfigSection({
           htmlFor={`disp-type-${itemId}`}
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
-          Tip prikaza (nameštaj)
+          Display type (furniture)
         </Label>
         <select
           id={`disp-type-${itemId}`}
@@ -393,7 +393,7 @@ export function Floorplan2dConfigSection({
         </select>
         {config.displayType === "furnished" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
-            + Overlay nameštaja: {formatPrice(6)}
+            + Overlay furniture: {formatPrice(6)}
           </p>
         )}
       </div>
@@ -402,14 +402,14 @@ export function Floorplan2dConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Opis i napomene
+          Description and notes
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Posebni zahtevi za raspored, namenu prostorija ili boje…"
+          placeholder="Special requirements for layout, room purpose, or colors..."
           rows={3}
           className="resize-none text-sm"
         />
@@ -417,10 +417,10 @@ export function Floorplan2dConfigSection({
 
       {/* Source files */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Nacrti i skice</Label>
+        <Label className="text-xs">Plans and sketches</Label>
         {renderUploadZone(
           sourceInputRef,
-          "PDF, DWG, CAD, ručne skice sa merama",
+          "PDF, DWG, CAD, hand sketches with dimensions",
           "image/*,application/pdf,.dwg,.dxf",
           "source",
         )}
@@ -436,7 +436,7 @@ export function Floorplan2dConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Otpremanje…</span>
+              <span className="text-accent">Uploading...</span>
             </div>
           ))}
         </div>
@@ -450,10 +450,10 @@ export function Floorplan2dConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Napredno podešavanje
+            Advanced settings
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · oznake, dimenzije, brendiranje
+            · labels, dimensions, branding
           </span>
         </div>
         <Switch
@@ -469,7 +469,7 @@ export function Floorplan2dConfigSection({
           {/* 2.1 Labels & technical */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Oznake i tehnički detalji
+              Labels and technical details
             </p>
             <div className="space-y-1.5">
               <label
@@ -477,7 +477,7 @@ export function Floorplan2dConfigSection({
                 className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-card/60 px-3 py-2"
               >
                 <span className="text-[0.78rem] text-foreground">
-                  Prikaži nazive prostorija
+                  Show room names
                 </span>
                 <Switch
                   id={`labels-${itemId}`}
@@ -491,7 +491,7 @@ export function Floorplan2dConfigSection({
                 className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-card/60 px-3 py-2"
               >
                 <span className="text-[0.78rem] text-foreground">
-                  Prikaži kvadraturu (m²) i dimenzije
+                  Show area (m²) and dimensions
                 </span>
                 <Switch
                   id={`dims-${itemId}`}
@@ -506,7 +506,7 @@ export function Floorplan2dConfigSection({
               >
                 <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                   <Compass className="h-3.5 w-3.5 text-accent" />
-                  Dodaj oznaku za orijentaciju (Sever)
+                  Add orientation marker (north)
                 </span>
                 <Switch
                   id={`compass-${itemId}`}
@@ -535,7 +535,7 @@ export function Floorplan2dConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— izaberite —</option>
+                <option value="">Select...</option>
                 {FP2D_LABEL_LANGUAGES.map((l) => (
                   <option key={l.id} value={l.id}>
                     {l.label}
@@ -548,7 +548,7 @@ export function Floorplan2dConfigSection({
           {/* 2.2 Branding & export */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Brendiranje i izvoz
+              Branding and export
             </p>
 
             <label
@@ -557,7 +557,7 @@ export function Floorplan2dConfigSection({
             >
               <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                 <Sparkles className="h-3.5 w-3.5 text-accent" />
-                Dodaj logo i kontakt podatke na osnovu
+                Add logo and contact details to the floor plan
               </span>
               <Switch
                 id={`branding-${itemId}`}
@@ -578,7 +578,7 @@ export function Floorplan2dConfigSection({
                   <Label className="text-[0.7rem]">Logo (PNG / SVG / JPG)</Label>
                   {renderUploadZone(
                     logoInputRef,
-                    "Otpremite logo kompanije",
+                    "Upload the company logo",
                     "image/*",
                     "logo",
                   )}
@@ -588,7 +588,7 @@ export function Floorplan2dConfigSection({
                 <div className="space-y-1">
                   <Label htmlFor={`brand-color-${itemId}`} className="text-[0.7rem]">
                     <Palette className="h-3 w-3 text-accent/60" />
-                    Primarna boja brenda (HEX)
+                    Primary brand color (HEX)
                   </Label>
                   <input
                     id={`brand-color-${itemId}`}
@@ -607,7 +607,7 @@ export function Floorplan2dConfigSection({
             </Collapsible>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Format isporuke</Label>
+              <Label className="text-[0.7rem]">Delivery format</Label>
               <div className="grid gap-1.5 sm:grid-cols-2">
                 {FP2D_DELIVERY_FORMAT_OPTIONS.map((o) => (
                   <label
@@ -630,7 +630,7 @@ export function Floorplan2dConfigSection({
                 ))}
               </div>
               <p className="mt-0.5 text-[0.62rem] text-muted-foreground">
-                Bar jedan format mora biti označen.
+                At least one format must be selected.
               </p>
             </div>
           </div>
@@ -644,8 +644,8 @@ export function Floorplan2dConfigSection({
             Dodatne varijante
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Naručite isti raspored sa drugim stilom ili identičnu osnovu sa
-            drugačijim nazivima prostorija.
+            Order the same layout with another style or an identical floor plan with
+            different room names.
           </p>
         </div>
 
@@ -658,17 +658,17 @@ export function Floorplan2dConfigSection({
             <Palette className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                Dodatna varijanta stila
+                Additional style variant
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Isti raspored u drugoj paleti boja ili stilu
+                Same layout in another colour palette or style
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {config.variantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(FP2D_VARIANT_RSD)}
+                +{formatPrice(FP2D_VARIANT_EUR)}
               </span>
             )}
             <Switch
@@ -688,7 +688,7 @@ export function Floorplan2dConfigSection({
         <Collapsible open={config.variantEnabled}>
           <div className="space-y-1 rounded-md border border-border/30 bg-background/40 p-3">
             <Label htmlFor={`vstyle-${itemId}`} className="text-[0.7rem]">
-              Stil za drugu varijantu
+              Style za drugu varijantu
             </Label>
             <select
               id={`vstyle-${itemId}`}
@@ -703,7 +703,7 @@ export function Floorplan2dConfigSection({
               disabled={!editable}
               className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
             >
-              <option value="">— izaberite —</option>
+              <option value="">Select...</option>
               {FP2D_DISPLAY_STYLES.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.label}
@@ -722,17 +722,17 @@ export function Floorplan2dConfigSection({
             <Copy className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                Duplikat osnove
+                Duplikat plans
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Identična osnova sa drugim nazivima prostorija
+                Identical plan with different room names
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {config.duplicateEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(FP2D_DUPLICATE_RSD)}
+                +{formatPrice(FP2D_DUPLICATE_EUR)}
               </span>
             )}
             <Switch

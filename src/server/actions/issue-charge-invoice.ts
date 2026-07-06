@@ -18,7 +18,7 @@ import { renderInvoicePdf, type InvoiceData } from "@/lib/invoice-pdf";
 import {
   buildInvoiceLineItem,
   buildInvoiceRecipient,
-  invoiceGrossCentsFromRsdCents,
+  invoiceGrossCentsFromEurCents,
   invoiceCurrencyForBuyer,
   invoiceVatRateForBuyer,
   isExportInvoice,
@@ -63,7 +63,6 @@ export async function issueChargeInvoice(
         charge.buyerType != null ? charge.companyName : order.companyName,
       companyTaxId:
         charge.buyerType != null ? charge.companyTaxId : order.companyTaxId,
-      companyMb: charge.buyerType != null ? charge.companyMb : order.companyMb,
       companyAddress:
         charge.buyerType != null
           ? charge.companyAddress
@@ -74,8 +73,6 @@ export async function issueChargeInvoice(
           : order.companyCountryCode,
       billingCurrency: charge.billingCurrency ?? order.billingCurrency,
       billingVatRate: charge.billingVatRate ?? order.billingVatRate,
-      billingRsdRate:
-        charge.billingRsdRate ?? order.billingRsdRate,
       user: order.user,
     };
     const buyerType = invoiceBuyer.buyerType;
@@ -88,7 +85,7 @@ export async function issueChargeInvoice(
       .map((it) =>
         buildInvoiceLineItem({
           description: it.label,
-          grossUnitCents: invoiceGrossCentsFromRsdCents(
+          grossUnitCents: invoiceGrossCentsFromEurCents(
             it.amountCents,
             invoiceBuyer,
           ),
@@ -145,7 +142,7 @@ export async function issueChargeInvoice(
           chargeId,
           to: order.user.email,
           invoiceNumber: allocation.formatted,
-          totalRsd: charge.totalCents / 100,
+          totalEur: charge.totalCents / 100,
           billingCurrency: currency,
           billingTotalCents: charge.billingTotalCents,
           pdfPath: storagePath,
@@ -163,7 +160,7 @@ export async function issueChargeInvoice(
         invoiceNumber: allocation.formatted,
         buyerType,
         currency,
-        totalRsd: charge.totalCents / 100,
+        totalEur: charge.totalCents / 100,
         billingTotalCents: charge.billingTotalCents,
         pdfPath: storagePath,
       },

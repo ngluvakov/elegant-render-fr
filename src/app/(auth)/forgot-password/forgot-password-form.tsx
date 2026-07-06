@@ -50,7 +50,7 @@ export function ForgotPasswordForm() {
         className="w-full"
         disabled={pending}
       >
-        {pending ? "Slanje…" : "Pošaljite link"}
+        {pending ? "Sending..." : "Send link"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
@@ -58,7 +58,7 @@ export function ForgotPasswordForm() {
           href="/login"
           className="font-medium text-foreground hover:text-accent"
         >
-          Nazad na prijavu
+          Back to login
         </Link>
       </p>
     </form>

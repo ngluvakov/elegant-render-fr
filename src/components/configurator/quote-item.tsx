@@ -68,13 +68,13 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
   // the breakdown the resolver produced.
   const editorDiscount =
     breakdown.discountPct > 0 &&
-    breakdown.originalTotalRsd > breakdown.totalRsd &&
+    breakdown.originalTotalEur > breakdown.totalEur &&
     breakdown.discountReason
       ? {
           pct: breakdown.discountPct,
           reason: breakdown.discountReason,
-          originalTotalRsd: breakdown.originalTotalRsd,
-          totalRsd: breakdown.totalRsd,
+          originalTotalEur: breakdown.originalTotalEur,
+          totalEur: breakdown.totalEur,
         }
       : null;
 
@@ -112,8 +112,8 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           <div className="flex items-center gap-3">
             {(() => {
               const { primary, struck, badge } = formatPublicDiscountedPrice(
-                breakdown.totalRsd,
-                breakdown.originalTotalRsd,
+                breakdown.totalEur,
+                breakdown.originalTotalEur,
                 breakdown.discountPct,
                 displayCurrency,
                 pricingSettings,
@@ -150,7 +150,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           <button
             type="button"
             onClick={() => removeProduct(breakdown.instanceId)}
-            aria-label="Ukloni"
+            aria-label="Remove"
             className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors hover:bg-destructive/20"
           >
             <X className="h-3.5 w-3.5" />
@@ -164,7 +164,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {hasIncludedAddOns && (
             <div className="border-t border-border/40 bg-[color:var(--color-sage)]/5 px-5 py-3">
               <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-[color:var(--color-sage-deep)]">
-                Već je uključeno
+                Already included
               </p>
               <div className="flex flex-wrap gap-2">
                 {breakdown.addOns
@@ -186,7 +186,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {product.durationConfig && item.durationSeconds !== undefined && (
             <div className="border-t border-border/40 px-5 py-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-foreground">Trajanje</p>
+                <p className="text-sm font-medium text-foreground">Duration</p>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -201,7 +201,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                     }
                     className="w-16 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm font-semibold text-foreground"
                   />
-                  <span className="text-sm text-muted-foreground">sekundi</span>
+                  <span className="text-sm text-muted-foreground">seconds</span>
                 </div>
               </div>
               <input
@@ -223,17 +223,17 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
                 {formatPublicPrice(
-                  product.durationConfig.perSecondRsd,
+                  product.durationConfig.perSecondEur,
                   displayCurrency,
                   pricingSettings,
                 )}
-                /sek ×{" "}
+                /sec ×{" "}
                 {item.durationSeconds}s
                 {breakdown.durationDiscount && breakdown.durationDiscount > 0 && (
                   <span className="font-semibold text-[color:var(--color-sage-deep)]">
                     {" "}
-                    — {Math.round(breakdown.durationDiscount * 100)}% popust na
-                    trajanje
+                    - {Math.round(breakdown.durationDiscount * 100)}% duration
+                    discount
                   </span>
                 )}
               </p>
@@ -244,7 +244,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {usesInteriorEditor && item.interiorConfig && (
             <div className="border-t border-border/40 px-5 py-4">
               <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Konfiguracija
+                Configuration
               </p>
               <InteriorQuoteEditor
                 floors={item.interiorConfig}
@@ -263,7 +263,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {usesTour360Editor && item.tour360Config && (
             <div className="border-t border-border/40 px-5 py-4">
               <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Konfiguracija
+                Configuration
               </p>
               <Tour360QuoteEditor
                 config={item.tour360Config}
@@ -282,7 +282,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {!usesSpecialEditor && product.addOns.length > 0 && (
             <div className="border-t border-border/40 px-5 py-4">
               <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Prilagodi
+                Customize
               </p>
               <div className="space-y-1">
                 {product.addOns.map((def) => {
@@ -301,8 +301,8 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                       quantity={item.addOnQuantities[def.id] ?? def.includedQty}
                       includedQty={def.includedQty}
                       maxQty={def.maxQty}
-                      priceRsd={aoBreakdown?.unitPriceRsd ?? def.priceRsd}
-                      basePriceRsd={def.priceRsd}
+                      priceEur={aoBreakdown?.unitPriceEur ?? def.priceEur}
+                      basePriceEur={def.priceEur}
                       priceType={def.priceType}
                       isVolumeRate={aoBreakdown?.isVolumeRate ?? false}
                       volumeRules={def.volumeRules}

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import { formatRsd } from "@/lib/catalog/calculate";
+import { formatEur } from "@/lib/catalog/calculate";
 import { statusLabel, statusAccent } from "@/components/portal/status-utils";
 import { AdminFilterBar } from "./admin-filter-bar";
 import { adminHas, requireAnyAdminPermission } from "@/lib/admin-auth";
@@ -17,7 +17,7 @@ import { adminHas, requireAnyAdminPermission } from "@/lib/admin-auth";
 export const metadata: Metadata = {
   title: "Admin — Upravljanje platformom",
   description:
-    "Operativni admin pregled porudžbina, korisnika, statusa i zadataka za upravljanje platformom.",
+    "Operational admin overview of orders, users, statuses, and platform management tasks.",
   robots: { index: false, follow: false },
 };
 
@@ -84,7 +84,7 @@ export default async function AdminPage({
       : Promise.resolve([]),
     canViewProjects
       ? prisma.order.findMany({
-          select: { status: true, totalRsd: true, paymentStatus: true },
+          select: { status: true, totalEur: true, paymentStatus: true },
         })
       : Promise.resolve([]),
     canViewUsers || canViewProjects
@@ -101,7 +101,7 @@ export default async function AdminPage({
   // Stats from all orders (not filtered)
   const totalRevenue = allOrders
     .filter((o) => o.paymentStatus === "completed")
-    .reduce((sum, o) => sum + o.totalRsd, 0);
+    .reduce((sum, o) => sum + o.totalEur, 0);
 
   const activeCount = allOrders.filter((o) =>
     ["paid", "in_progress", "in_review", "revision_requested"].includes(o.status),
@@ -119,24 +119,24 @@ export default async function AdminPage({
             Upravljanje platformom
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Sve porudžbine, klijenti i statistika na jednom mestu.
+            All orders, clients, and stats in one place.
           </p>
         </div>
         <nav className="flex items-center gap-2 text-xs">
-          {canViewUsers && <AdminNavLink href="/portal/admin/users">Korisnici</AdminNavLink>}
+          {canViewUsers && <AdminNavLink href="/portal/admin/users">Users</AdminNavLink>}
           {canManageInquiries && (
             <AdminNavLink href="/portal/admin/inquiries" count={pendingInquiriesCount}>
-              Upiti
+              Inquiries
             </AdminNavLink>
           )}
           {canManageInquiries && <AdminNavLink href="/portal/admin/vr-inquiries">VR upiti</AdminNavLink>}
           {adminHas(admin, "USAGE_VIEW") && (
             <AdminNavLink href="/portal/admin/ai-studio">AI Studio</AdminNavLink>
           )}
-          {canViewAnalytics && <AdminNavLink href="/portal/admin/analytics">Analitika</AdminNavLink>}
+          {canViewAnalytics && <AdminNavLink href="/portal/admin/analytics">Analytics</AdminNavLink>}
           {canManagePricing && <AdminNavLink href="/portal/admin/finance/pricebook">Finansije</AdminNavLink>}
-          {canViewFinance && <AdminNavLink href="/portal/admin/finance/export">Izvoz računa</AdminNavLink>}
-          {canViewAudit && <AdminNavLink href="/portal/admin/revisions">Revizije</AdminNavLink>}
+          {canViewFinance && <AdminNavLink href="/portal/admin/finance/export">Invoice export</AdminNavLink>}
+          {canViewAudit && <AdminNavLink href="/portal/admin/revisions">Audit log</AdminNavLink>}
           {canManageSystem && (
             <AdminNavLink
               href="/portal/admin/outbox"
@@ -159,7 +159,7 @@ export default async function AdminPage({
               </div>
               <div>
                 <p className="text-xl font-bold text-foreground">
-                  {formatRsd(totalRevenue)}
+                  {formatEur(totalRevenue)}
                 </p>
                 <p className="text-[0.72rem] text-muted-foreground">Ukupan prihod</p>
               </div>
@@ -173,7 +173,7 @@ export default async function AdminPage({
             </div>
             <div>
               <p className="text-xl font-bold text-foreground">{allOrders.length}</p>
-              <p className="text-[0.72rem] text-muted-foreground">Ukupno porudžbina</p>
+              <p className="text-[0.72rem] text-muted-foreground">Total orders</p>
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@ export default async function AdminPage({
             </div>
             <div>
               <p className="text-xl font-bold text-foreground">{completedCount}</p>
-              <p className="text-[0.72rem] text-muted-foreground">Završeni</p>
+              <p className="text-[0.72rem] text-muted-foreground">Completed</p>
             </div>
           </div>
         </div>
@@ -216,31 +216,31 @@ export default async function AdminPage({
 
       {/* Results count */}
       <p className="text-xs text-muted-foreground">
-        {orders.length} rezultat{orders.length === 1 ? "" : "a"}
-        {(status || q || usluga || placanje) && " za izabrane filtere"}
+        {orders.length} {orders.length === 1 ? "result" : "results"}
+        {(status || q || usluga || placanje) && " for selected filters"}
       </p>
 
       {/* Orders table */}
       <div className="space-y-1.5">
         <div className="hidden grid-cols-[1.5fr_1.5fr_1fr_0.8fr_auto_auto_auto] gap-3 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground lg:grid">
-          <span>Naručilac</span>
-          <span>Projekat / usluga</span>
-          <span>Datum</span>
+          <span>Buyer</span>
+          <span>Project / service</span>
+          <span>Date</span>
           <span>Status</span>
-          <span className="w-16 text-center">Poruke</span>
-          <span className="w-20 text-right">Iznos</span>
-          <span className="w-16">Akcija</span>
+          <span className="w-16 text-center">Messages</span>
+          <span className="w-20 text-right">Amount</span>
+          <span className="w-16">Action</span>
         </div>
 
         {!canViewProjects && (
           <div className="rounded-xl border border-border/30 bg-card/60 px-6 py-8 text-center text-sm text-muted-foreground">
-            Vaša rola nema pristup projektnim porudžbinama.
+            Your role does not have access to project orders.
           </div>
         )}
 
         {canViewProjects && orders.length === 0 && (
           <div className="rounded-xl border border-border/30 bg-card/60 px-6 py-8 text-center text-sm text-muted-foreground">
-            Nema porudžbina za izabrane filtere.
+            No orders match the selected filters.
           </div>
         )}
 
@@ -274,7 +274,7 @@ export default async function AdminPage({
 
               {/* Date */}
               <p className="mt-1 text-xs text-muted-foreground lg:mt-0">
-                {order.createdAt.toLocaleDateString("sr-Latn-RS", {
+                {order.createdAt.toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
@@ -301,12 +301,12 @@ export default async function AdminPage({
 
               {/* Amount */}
               <p className="mt-1 w-20 text-right text-sm font-semibold text-foreground lg:mt-0">
-                {canViewFinance ? formatRsd(order.totalRsd) : "—"}
+                {canViewFinance ? formatEur(order.totalEur) : "—"}
               </p>
 
               {/* Action */}
               <span className="hidden w-16 text-xs font-medium text-accent lg:block">
-                Otvori →
+                Open →
               </span>
             </Link>
           );

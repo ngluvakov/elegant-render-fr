@@ -39,7 +39,7 @@ export function AdminRetryInvoiceButton({ orderId }: Props) {
         disabled={pending}
         className="inline-flex items-center gap-1.5 rounded-md border border-foreground bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-foreground hover:text-background disabled:opacity-50"
       >
-        {pending ? "Pokušavam…" : "Pokušaj ponovo izdati fakturu"}
+        {pending ? "Trying..." : "Try issuing invoice again"}
       </button>
       {error && (
         <p className="text-[0.78rem] text-destructive">{error}</p>
@@ -50,9 +50,9 @@ export function AdminRetryInvoiceButton({ orderId }: Props) {
 
 function humanReason(reason: string): string {
   if (reason === "not_admin") return "Niste admin.";
-  if (reason === "order_not_found") return "Porudžbina nije pronađena.";
-  if (reason === "not_paid") return "Porudžbina nije plaćena.";
+  if (reason === "order_not_found") return "Order was not found.";
+  if (reason === "not_paid") return "Order is not paid.";
   if (reason === "no_billable_items")
-    return "Porudžbina nema naplatljive stavke.";
-  return `Greška: ${reason}`;
+    return "Order has no billable items.";
+  return `Error: ${reason}`;
 }

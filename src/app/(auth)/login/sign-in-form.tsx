@@ -24,7 +24,7 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
 
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-border" />
-        <span className="text-xs text-muted-foreground">ili sa email-om</span>
+        <span className="text-xs text-muted-foreground">or with email</span>
         <div className="h-px flex-1 bg-border" />
       </div>
 
@@ -54,13 +54,13 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
         <div className="flex items-center justify-between">
           <Label htmlFor="password">
             <Pencil className="h-3 w-3 text-accent/60" />
-            Lozinka
+            Password
           </Label>
           <Link
             href="/forgot-password"
             className="text-xs text-muted-foreground hover:text-accent"
           >
-            Zaboravili ste lozinku?
+            Forgot your password?
           </Link>
         </div>
         <Input
@@ -74,13 +74,13 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
       </div>
 
       <Button type="submit" variant="accent" size="lg" className="w-full" disabled={pending}>
-        {pending ? "Prijava…" : "Prijavite se"}
+        {pending ? "Logging in..." : "Log in"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        Nemate nalog?{" "}
+        Do not have an account?{" "}
         <Link href={registrationHref} className="font-medium text-foreground hover:text-accent">
-          Registrujte se
+          Register
         </Link>
       </p>
     </form>

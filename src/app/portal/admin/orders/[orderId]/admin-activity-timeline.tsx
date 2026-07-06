@@ -2,7 +2,7 @@
  * AdminActivityTimeline — server component that renders a unified
  * chronological feed of OrderStatusEvent + order-scoped AuditLog
  * rows. Replaces the implicit timeline that admins were previously
- * piecing together from the status changer dropdown, the faktura
+ * piecing together from the status changer dropdown, the invoice
  * panel, and the comments thread.
  */
 import {
@@ -16,7 +16,7 @@ import {
   type TimelineEntry,
 } from "@/lib/order/activity-timeline";
 
-const dateFormatter = new Intl.DateTimeFormat("sr-Latn-RS", {
+const dateFormatter = new Intl.DateTimeFormat("en-GB", {
   day: "2-digit",
   month: "2-digit",
   year: "numeric",
@@ -49,7 +49,7 @@ export async function AdminActivityTimeline({
       <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
         <h3 className="text-sm font-semibold text-foreground">Hronologija</h3>
         <p className="mt-2 text-xs text-muted-foreground">
-          Još nema zabeleženih događaja na ovoj porudžbini.
+          There are no recorded events for this order yet.
         </p>
       </div>
     );

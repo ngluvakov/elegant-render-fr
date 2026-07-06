@@ -63,7 +63,7 @@ export async function issueProforma(orderId: string): Promise<IssueProformaResul
     // order has no billable items. The full builder runs again below
     // with the real number.
     const billable = order.items.filter(
-      (it) => (it.totalCents ?? Math.round(it.totalRsd * 100)) > 0,
+      (it) => (it.totalCents ?? Math.round(it.totalEur * 100)) > 0,
     );
     if (billable.length === 0) {
       return { ok: false, reason: "no_billable_items" };
@@ -120,7 +120,7 @@ export async function issueProforma(orderId: string): Promise<IssueProformaResul
           orderId,
           to: order.user.email,
           proformaNumber: allocation.formatted,
-          totalRsd: order.totalRsd,
+          totalEur: order.totalEur,
           billingCurrency: currency,
           billingTotalCents: order.billingTotalCents,
           pdfPath: storagePath,
@@ -138,7 +138,7 @@ export async function issueProforma(orderId: string): Promise<IssueProformaResul
         proformaNumber: allocation.formatted,
         buyerType,
         currency,
-        totalRsd: order.totalRsd,
+        totalEur: order.totalEur,
         pdfPath: storagePath,
       },
     });

@@ -102,21 +102,21 @@ Primer: klijent ima stan od 6 soba koji hoće da opremi za prodaju:
 :::predlog
 primary: vs-static:6
 related: fp2d-single:1,reno-image:1
-note: prva slika 2.110 RSD, dodatna 1.758 RSD. Stil se definiše prvim renderom.
+note: prva slika €18, dodatna €15. Stil se definiše prvim renderom.
 :::
 
 Primer: klijent gradi kuću i treba mu render fasade:
 :::predlog
 primary: ext-static:1
 related: ext-aerial:1,land-static:1,anim/scratch:1
-note: uključuje 3D model i 1 kadar. Dodatni kadrovi 5.626 RSD.
+note: uključuje 3D model i 1 kadar. Dodatni kadrovi €48.
 :::
 
 Primer: klijent gradi novostambeni objekat, hoće animaciju i nema model:
 :::predlog
 primary: anim/scratch:1
 related: ext-static:1,ext-aerial:1
-note: minimum 15 sekundi, 1.758 RSD/sek (26.370 RSD). Dužina se podešava u konfiguratoru.
+note: minimum 15 sekundi, €15/sek (€225). Dužina se podešava u konfiguratoru.
 :::
 
 Primer: klijent već ima naš render projekat u izradi i hoće animaciju iz istog modela:
@@ -141,7 +141,7 @@ VAŽNO — LINKOVANJE:
 - Ne šalji klijenta na /contact kada jasno može i želi da koristi konfigurator
 
 NAPOMENE:
-- Sve cene su u RSD, bruto sa PDV-om uključenim
+- Sve cene su u EUR bez PDV-a
 - 3 kruga revizija uključena u svaku uslugu
 - Količinski popusti za veće projekte
 - Ako klijent pita kako da smanji cenu, prvo proveri da li postoje ponovna upotreba modela, aktivan projekat, broj soba/kamera unutar uključenog paketa ili količinski popust
@@ -149,17 +149,17 @@ NAPOMENE:
 - Kada je klijent na cenovniku i ima stavke u korpi (vidiš ih u "trenutnom UI kontekstu"), daj konkretan savet za kupovinu na osnovu te korpe: povoljnije kombinacije, dodatni prikaz iz istog modela, model-first popust ili šta nedostaje za kompletan paket
 - Elegant Render je deo White Rook DOO`;
 
-function formatRsdAmount(amount: number): string {
+function formatEuroAmount(amount: number): string {
   if (!Number.isFinite(amount)) return "po dogovoru";
-  return `${Math.round(amount).toLocaleString("sr-Latn-RS", {
-    maximumFractionDigits: 0,
-  })} RSD`;
+  return Number.isInteger(amount)
+    ? `€${amount.toFixed(0)}`
+    : `€${amount.toFixed(2).replace(/0+$/, "").replace(/\.$/, "")}`;
 }
 
 function formatPercentOrPrice(addOn: ConfiguratorAddOn): string {
   return addOn.priceType === "percent"
-    ? `${addOn.priceRsd}%`
-    : formatRsdAmount(addOn.priceRsd);
+    ? `${addOn.priceEur}%`
+    : formatEuroAmount(addOn.priceEur);
 }
 
 function formatAddOns(addOns: ConfiguratorAddOn[]): string {
@@ -187,13 +187,13 @@ function formatSourceModes(product: ConfiguratorProduct): string | null {
   return modes
     .map(([mode, override]) => {
       const price =
-        override.perSecondRsd ??
-        override.basePriceRsd ??
-        product.durationConfig?.perSecondRsd ??
-        product.basePriceRsd;
+        override.perSecondEur ??
+        override.basePriceEur ??
+        product.durationConfig?.perSecondEur ??
+        product.basePriceEur;
       const label = override.label ?? product.label;
       const unitLabel = override.unitLabel ?? product.unitLabel;
-      return `${product.id}/${mode}: ${label}, od ${formatRsdAmount(price)} (${unitLabel})`;
+      return `${product.id}/${mode}: ${label}, od ${formatEuroAmount(price)} (${unitLabel})`;
     })
     .join("; ");
 }
@@ -206,7 +206,7 @@ function formatDuration(product: ConfiguratorProduct): string | null {
       return `${tier.minSec}${max}: -${tier.discountPct}%`;
     })
     .join(", ");
-  return `trajanje: min ${product.durationConfig.minSeconds}s, standard ${product.durationConfig.defaultSeconds}s, ${formatRsdAmount(product.durationConfig.perSecondRsd)}/sek; popusti: ${tiers}`;
+  return `trajanje: min ${product.durationConfig.minSeconds}s, standard ${product.durationConfig.defaultSeconds}s, ${formatEuroAmount(product.durationConfig.perSecondEur)}/sek; popusti: ${tiers}`;
 }
 
 function formatProduct(product: ConfiguratorProduct): string {
@@ -219,7 +219,7 @@ function formatProduct(product: ConfiguratorProduct): string {
 
   return [
     `- ${product.id} -> ${product.label} (${flags})`,
-    `  Cena: od ${formatRsdAmount(product.basePriceRsd)}; obračun: ${product.unitLabel}`,
+    `  Cena: od ${formatEuroAmount(product.basePriceEur)}; obračun: ${product.unitLabel}`,
     `  Uključeno: ${product.includes.join("; ")}`,
     `  Doplate: ${formatAddOns(product.addOns)}`,
     sourceModes ? `  Source modes: ${sourceModes}` : null,
@@ -300,7 +300,7 @@ function formatAiStudio(settings?: SystemPromptPricingSettings): string {
   const creditTiers = tiers
     .map(
       (tier) =>
-        `${tier.minCredits}+ kredita: ${formatRsdAmount(tier.centsPerCredit / 100)} po kreditu`,
+        `${tier.minCredits}+ kredita: ${formatEuroAmount(tier.centsPerCredit / 100)} po kreditu`,
     )
     .join("; ");
 
@@ -449,16 +449,16 @@ function formatCurrentContext(
       guideContext.cartItemCount > 0
     ) {
       const parts = [`${guideContext.cartItemCount} stavki`];
-      if (typeof guideContext.cartTotalRsd === "number") {
-        parts.push(`procenjeno ${formatRsdAmount(guideContext.cartTotalRsd)}`);
+      if (typeof guideContext.cartTotalEur === "number") {
+        parts.push(`procenjeno ${formatEuroAmount(guideContext.cartTotalEur)}`);
       }
       if (
         guideContext.cartHasDiscount &&
-        typeof guideContext.cartOriginalTotalRsd === "number"
+        typeof guideContext.cartOriginalTotalEur === "number"
       ) {
         parts.push(
-          `popust aktivan (bez popusta ${formatRsdAmount(
-            guideContext.cartOriginalTotalRsd,
+          `popust aktivan (bez popusta ${formatEuroAmount(
+            guideContext.cartOriginalTotalEur,
           )})`,
         );
       }
@@ -491,7 +491,7 @@ function formatCurrentContext(
 }
 
 export function buildSystemPrompt({
-  displayCurrency = "rsd",
+  displayCurrency = "EUR",
   pricingSettings,
   categories = CONFIGURATOR_CATEGORIES,
   pagePath,
@@ -499,7 +499,7 @@ export function buildSystemPrompt({
 }: BuildSystemPromptOptions = {}): string {
   const prompt = [
     BASE_SYSTEM_INSTRUCTIONS.replace(
-      "- Sve cene su u RSD, bruto sa PDV-om uključenim",
+      "- Sve cene su u EUR bez PDV-a",
       `- ${publicPriceNote(displayCurrency)}`,
     ),
     formatCurrentContext(pagePath, guideContext, categories),

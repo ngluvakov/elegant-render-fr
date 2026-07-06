@@ -17,8 +17,8 @@
       "schedule": "15 4 * * *"
     },
     {
-      "path": "/api/cron/nestpay-reconcile",
-      "schedule": "*/5 * * * *"
+      "path": "/api/cron/paypal-reconcile",
+      "schedule": "*/15 * * * *"
     }
   ]
 }

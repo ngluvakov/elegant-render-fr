@@ -5,12 +5,12 @@
  * input + result, the full settings used (edit type, mode, provider,
  * style, prompt, options, color, units, free attempt index), and
  * lets the customer download both files with names tied to the
- * original upload (kuhinja-slika.jpg → kuhinja-slika__staging__v01__20260428.jpg).
+ * original upload (kuhinja-image.jpg → kuhinja-image__staging__v01__20260428.jpg).
  *
  * Two action buttons:
- *  - "Koristi rezultat kao novu radnu sliku" — feeds the result back
+ *  - "Use result as a new working image" — feeds the result back
  *    into the workspace as the next input.
- *  - "Ponovi sa istim podešavanjima" — prefills controls and the
+ *  - "Repeat with the same settings" — prefills controls and the
  *    same input image for a fresh run, using parent linkage so the
  *    customer's free-retry pool applies.
  */
@@ -91,7 +91,7 @@ type Props = {
   generation: GenerationDetail | null;
   parentResultFileName?: string | null;
   // How many free retries are still available on this generation's paid
-  // root chain. >0 → "Ponovi" submits as a free retry (subject to
+  // root chain. >0 → "Repeat" submits as a free retry (subject to
   // editType match on the server). Computed in workspace from history.
   freeRetriesRemaining: number;
   onClose: () => void;
@@ -102,15 +102,15 @@ type Props = {
 };
 
 const STATUS_LABEL: Record<GenerationDetail["status"], string> = {
-  queued: "U redu za obradu",
-  processing: "Obrada u toku",
-  completed: "Završeno",
-  failed: "Neuspešno",
+  queued: "Queued",
+  processing: "Processing",
+  completed: "Completed",
+  failed: "Failed",
 };
 
 function formatDateTime(value: string | null): string {
   if (!value) return "—";
-  return new Date(value).toLocaleString("sr-Latn-RS", {
+  return new Date(value).toLocaleString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -217,7 +217,7 @@ export function GenerationDetailModal({
               {formatDateTime(generation.completedAt ?? generation.createdAt)}
             </p>
           </div>
-          <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Zatvori">
+          <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Close">
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -226,8 +226,8 @@ export function GenerationDetailModal({
           {generation.filesExpired && (
             <div className="flex items-start gap-2 rounded-xl border border-border/40 bg-muted/40 p-3 text-xs text-muted-foreground">
               <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              Fajlovi za ovu obradu su istekli (čuvaju se 30 dana). Tekstualni
-              zapis o podešavanjima je sačuvan.
+              Files for this generation have expired (they are kept for 30
+              days). The text record of the settings was saved.
             </div>
           )}
 
@@ -239,11 +239,11 @@ export function GenerationDetailModal({
             }
           >
             <ImagePane
-              title="Slika za obradu"
+              title="Image to edit"
               fileName={generation.inputFileName}
               url={generation.inputUrl}
               downloadUrl={canDownloadInput ? generation.inputDownloadUrl : null}
-              emptyHint="Originalni upload"
+              emptyHint="Original upload"
               fileExpired={generation.filesExpired}
             />
             {referenceImages.length > 0 && (
@@ -253,39 +253,39 @@ export function GenerationDetailModal({
               />
             )}
             <ImagePane
-              title="Rezultat"
+              title="Result"
               fileName={generation.resultFileName}
               url={generation.status === "completed" ? generation.resultUrl : null}
               downloadUrl={canDownloadResult ? generation.downloadUrl : null}
               emptyHint={
                 generation.status === "failed"
-                  ? generation.errorMessage ?? "Obrada nije uspela."
+                  ? generation.errorMessage ?? "The generation failed."
                   : generation.status === "queued"
-                    ? "U redu za obradu…"
+                    ? "Queued…"
                     : generation.status === "processing"
-                      ? "Obrada u toku…"
-                      : "Rezultat nije dostupan."
+                      ? "Processing…"
+                      : "The result is not available."
               }
               fileExpired={generation.filesExpired}
             />
           </div>
 
           <div className="rounded-2xl border border-border/40 bg-card/60 p-4">
-            <h3 className="text-sm font-semibold text-foreground">Podešavanja</h3>
+            <h3 className="text-sm font-semibold text-foreground">Settings</h3>
             <dl className="mt-3 grid gap-3 text-xs sm:grid-cols-2">
-              <SettingRow label="Tip obrade" value={editDef.label} />
+              <SettingRow label="Edit type" value={editDef.label} />
               <SettingRow
-                label="Naplata"
+                label="Billing"
                 value={
                   generation.unitsCharged === 0 ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.7rem] font-semibold text-[color:var(--color-sage-deep)]">
-                      Besplatan pokušaj #{generation.freeAttemptIndex ?? 1}
+                      Free attempt #{generation.freeAttemptIndex ?? 1}
                     </span>
                   ) : generation.freeAttemptIndex !== null ? (
                     <span className="text-foreground">
-                      Doplata {formatCreditsFromUnits(generation.unitsCharged)}{" "}
+                      Additional charge {formatCreditsFromUnits(generation.unitsCharged)}{" "}
                       <span className="text-muted-foreground">
-                        · besplatan #{generation.freeAttemptIndex}
+                        · free #{generation.freeAttemptIndex}
                       </span>
                     </span>
                   ) : (
@@ -296,28 +296,28 @@ export function GenerationDetailModal({
               <SettingRow label="Engine" value={`${providerLabel} · ${generation.model}`} />
               {generation.editType === "object_insertion" && (
                 <SettingRow
-                  label="Nameštaj/dekor"
+                  label="Furniture/decor"
                   value={
                     generation.objectMode === "replace"
-                      ? "Zamena postojećeg komada"
-                      : "Dodavanje komada"
+                      ? "Replace existing item"
+                      : "Add item"
                   }
                 />
               )}
               <SettingRow
-                label="Mod"
-                value={generation.hasMask ? "Advanced (sa maskom)" : "Simple"}
+                label="Mode"
+                value={generation.hasMask ? "Advanced (with mask)" : "Simple"}
               />
-              {styleLabel && <SettingRow label="Stil" value={styleLabel} />}
+              {styleLabel && <SettingRow label="Style" value={styleLabel} />}
               {optionLabel && (
                 <SettingRow
-                  label={editDef.optionsLabel ?? "Opcija"}
+                  label={editDef.optionsLabel ?? "Option"}
                   value={optionLabel}
                 />
               )}
               {generation.colorHex && (
                 <SettingRow
-                  label="Boja"
+                  label="Color"
                   value={
                     <span className="inline-flex items-center gap-1.5">
                       <span
@@ -331,7 +331,7 @@ export function GenerationDetailModal({
               )}
               {isDerivative && parentResultFileName && (
                 <SettingRow
-                  label="Bazirano na"
+                  label="Based on"
                   value={
                     <span className="font-mono text-[0.7rem] text-muted-foreground">
                       {parentResultFileName}
@@ -340,16 +340,16 @@ export function GenerationDetailModal({
                 />
               )}
               <SettingRow
-                label="Besplatno ponavljanje"
+                label="Free retry"
                 value={
                   generation.status !== "completed" ? (
                     <span className="text-muted-foreground">—</span>
                   ) : freeRetriesRemaining > 0 ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.7rem] font-semibold text-[color:var(--color-sage-deep)]">
-                      Dostupno ({freeRetriesRemaining}/{AI_FREE_REGENERATIONS}) · isti tip
+                      Available ({freeRetriesRemaining}/{AI_FREE_REGENERATIONS}) · same type
                     </span>
                   ) : (
-                    <span className="text-muted-foreground">Iskorišćeno</span>
+                    <span className="text-muted-foreground">Used</span>
                   )
                 }
               />
@@ -375,8 +375,8 @@ export function GenerationDetailModal({
             >
               <RefreshCw className="h-4 w-4" />
               {freeRetriesRemaining > 0
-                ? "Ponovi (besplatno, isti tip)"
-                : "Ponovi (naplaćuje se)"}
+                ? "Repeat (free, same type)"
+                : "Repeat (charged)"}
             </Button>
             <Button
               type="button"
@@ -385,7 +385,7 @@ export function GenerationDetailModal({
               disabled={!canUseResult}
             >
               <Wand2 className="h-4 w-4" />
-              Nastavi od rezultata (nova naplata)
+              Continue from result (new charge)
             </Button>
             <Button
               type="button"
@@ -398,7 +398,7 @@ export function GenerationDetailModal({
               ) : (
                 <Trash2 className="h-4 w-4" />
               )}
-              Obriši kreaciju
+              Delete creation
             </Button>
           </div>
         </div>
@@ -442,7 +442,7 @@ function ImagePane({
             className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-foreground px-3 text-[0.72rem] font-semibold text-background"
           >
             <Download className="h-3 w-3" />
-            Preuzmi
+            Download
           </a>
         )}
       </div>
@@ -483,10 +483,10 @@ function ReferenceImagesPane({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Nameštaj/dekor / uglovi
+            Furniture/decor / angles
           </p>
           <p className="mt-0.5 text-[0.68rem] text-foreground/70">
-            {references.length} {references.length === 1 ? "slika" : "slika"}
+            {references.length} image{references.length === 1 ? "" : "s"}
           </p>
         </div>
       </div>
@@ -501,7 +501,7 @@ function ReferenceImagesPane({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={reference.url}
-                alt={index === 0 ? "Primarna slika komada" : `Ugao komada ${index + 1}`}
+                alt={index === 0 ? "Primary item image" : `Item angle ${index + 1}`}
                 className="block aspect-square w-full object-contain"
                 draggable={false}
               />
@@ -517,11 +517,11 @@ function ReferenceImagesPane({
             <div className="flex items-center justify-between gap-2 px-2 py-1.5">
               <div className="min-w-0">
                 <p className="text-[0.62rem] font-semibold text-foreground">
-                  {index === 0 ? "Primarna" : `Ugao ${index + 1}`}
+                  {index === 0 ? "Primary" : `Angle ${index + 1}`}
                 </p>
                 {reference.isLegacyPreparedReference && (
                   <p className="mt-0.5 text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-amber-600">
-                    Stara pripremljena referenca
+                    Old prepared reference
                   </p>
                 )}
                 {reference.fileName && (
@@ -535,7 +535,7 @@ function ReferenceImagesPane({
                   href={reference.downloadUrl}
                   download
                   className="inline-flex h-7 shrink-0 items-center justify-center rounded-md bg-foreground px-2 text-background"
-                  aria-label={`Preuzmi sliku komada ${index + 1}`}
+                  aria-label={`Download item image ${index + 1}`}
                 >
                   <Download className="h-3 w-3" />
                 </a>

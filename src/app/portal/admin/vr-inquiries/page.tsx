@@ -15,19 +15,19 @@ import { VrInquiryConvertForm } from "./convert-form";
 import { adminHas, requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "VR upiti — Admin",
+  title: "VR inquiries — Admin",
   description:
-    "Admin pregled VR konsultacija, statusa zahteva i osnovnih podataka klijenta.",
+    "Admin overview of VR consultations, request statuses, and basic client details.",
   robots: { index: false, follow: false },
 };
 
 type SearchParams = Promise<{ status?: string }>;
 
 const STATUS_LABELS: Record<string, string> = {
-  pending: "Čeka pregled",
-  in_progress: "U razgovoru",
-  converted: "Konvertovano",
-  closed: "Zatvoreno",
+  pending: "Pending review",
+  in_progress: "In conversation",
+  converted: "Converted",
+  closed: "Closed",
 };
 
 const STATUS_VARIANTS: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -81,7 +81,7 @@ export default async function VrInquiriesPage({
   ) as Record<string, number>;
 
   // Resolve order numbers for already-converted inquiries so the link
-  // text in the convert-form can show "Otvori order ER-XXXX" instead
+  // text in the convert-form can show "Open order ER-XXXX" instead
   // of just an opaque id.
   const convertedIds = inquiries
     .map((i) => i.convertedOrderId)
@@ -100,8 +100,8 @@ export default async function VrInquiriesPage({
       <div>
         <h1 className="font-heading text-3xl text-foreground">VR upiti</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Konsultacioni intake za VR projekte. Klijent popuni formu na
-          /services/vr/consultation; tim pregleda i kreira ručno order po
+          Consultation intake for VR projects. The client fills out the form at
+          /services/vr/consultation; the team reviews it and manually creates an order at
           dogovoru.
         </p>
       </div>
@@ -122,7 +122,7 @@ export default async function VrInquiriesPage({
                     : "border-border bg-background/60 text-muted-foreground hover:border-accent/40 hover:text-foreground"
                 }`}
               >
-                {s ? STATUS_LABELS[s] : "Sve"}
+                {s ? STATUS_LABELS[s] : "All"}
                 <span className="rounded bg-foreground/10 px-1.5 py-0.5 text-[0.62rem] tabular-nums">
                   {count}
                 </span>
@@ -138,8 +138,8 @@ export default async function VrInquiriesPage({
           <Headphones className="mx-auto h-8 w-8 text-muted-foreground/40" />
           <p className="mt-3 text-sm text-muted-foreground">
             {status
-              ? `Nema upita sa statusom "${STATUS_LABELS[status] ?? status}".`
-              : "Još nema VR upita."}
+              ? `No inquiries sa statusom "${STATUS_LABELS[status] ?? status}".`
+              : "There are no VR inquiries yet."}
           </p>
         </div>
       ) : (
@@ -205,7 +205,7 @@ export default async function VrInquiriesPage({
                       Konfiguracija
                     </p>
                     <p className="text-foreground">
-                      <strong>Naziv:</strong> {cfg.projectName}
+                      <strong>Name:</strong> {cfg.projectName}
                     </p>
                     {cfg.locomotion && (
                       <p className="text-foreground">
@@ -221,11 +221,11 @@ export default async function VrInquiriesPage({
                       cfg.lightsInteraction ||
                       cfg.materialsInteraction) && (
                       <p className="text-foreground">
-                        <strong>Interakcije:</strong>{" "}
+                        <strong>Interactions:</strong>{" "}
                         {[
-                          cfg.doorInteraction && "vrata",
-                          cfg.lightsInteraction && "svetla",
-                          cfg.materialsInteraction && "materijali",
+                          cfg.doorInteraction && "doors",
+                          cfg.lightsInteraction && "lights",
+                          cfg.materialsInteraction && "materials",
                         ]
                           .filter(Boolean)
                           .join(", ")}
@@ -239,7 +239,7 @@ export default async function VrInquiriesPage({
                     {cfg.description && (
                       <div className="rounded-md bg-secondary/40 px-3 py-2">
                         <p className="mb-1 text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                          Opis projekta
+                          Project description
                         </p>
                         <p className="whitespace-pre-wrap text-xs text-foreground">
                           {cfg.description}
@@ -249,7 +249,7 @@ export default async function VrInquiriesPage({
                     {inq.message && (
                       <div className="rounded-md bg-secondary/40 px-3 py-2">
                         <p className="mb-1 text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                          Dodatna poruka
+                          Additional message
                         </p>
                         <p className="whitespace-pre-wrap text-xs text-foreground">
                           {inq.message}
@@ -265,9 +265,9 @@ export default async function VrInquiriesPage({
                     <VrInquiryConvertForm
                       inquiryId={inq.id}
                       defaultProjectName={cfg.projectName}
-                      defaultPriceRsd={
+                      defaultPriceEur={
                         getConfiguratorProduct(inq.productId)?.product
-                          .basePriceRsd ?? 0
+                          .basePriceEur ?? 0
                       }
                       convertedOrderId={inq.convertedOrderId}
                       convertedOrderNumber={

@@ -76,7 +76,7 @@ export function RelatedServicesPostcard({ productId }: Props) {
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        aria-label="Zatvori"
+        aria-label="Close"
         className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
       >
         <X className="h-4 w-4" />
@@ -85,11 +85,11 @@ export function RelatedServicesPostcard({ productId }: Props) {
       {/* Header — SectionKicker-style + optional discount pill */}
       <div className="mb-3 flex items-center gap-2 pr-6">
         <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[color:var(--color-sage-deep)]">
-          Uz ovaj paket
+          With this package
         </p>
         {hasAnyDiscount && (
           <span className="inline-flex items-center rounded bg-[color:var(--color-sage-deep)]/15 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-[color:var(--color-sage-deep)]">
-            Sa popustom
+            Discounted
           </span>
         )}
       </div>
@@ -98,7 +98,7 @@ export function RelatedServicesPostcard({ productId }: Props) {
       <div className="space-y-2.5">
         {relatedProducts.map(({ id, product, categoryId, discount }) => {
           const original =
-            product.displayPerUnitRsd ?? product.basePriceRsd;
+            product.displayPerUnitEur ?? product.basePriceEur;
           const discounted = discount
             ? Math.round(original * (1 - discount.pct / 100))
             : null;
@@ -153,7 +153,7 @@ export function RelatedServicesPostcard({ productId }: Props) {
                 onClick={() => addProduct(id, categoryId)}
                 className="ml-auto flex h-7 items-center rounded-md border border-foreground/20 bg-transparent px-2.5 text-xs font-medium text-foreground transition-colors hover:border-foreground/30 hover:bg-foreground/5"
               >
-                + Dodaj
+                + Add
               </button>
             </div>
           );

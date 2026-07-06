@@ -10,12 +10,12 @@ import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 
 const SECTION_NAMES: Record<string, string> = {
-  "/portal": "Pregled",
-  "/portal/admin/analytics": "Analitika",
+  "/portal": "Overview",
+  "/portal/admin/analytics": "Analytics",
   "/portal/admin": "Admin",
-  "/portal/orders": "Porudžbine",
+  "/portal/orders": "Orders",
   "/portal/ai-studio": "AI Studio",
-  "/portal/profile": "Profil",
+  "/portal/profile": "Profile",
 };
 
 type PortalTopbarProps = {
@@ -47,7 +47,7 @@ export function PortalTopbar({
         <button
           type="button"
           onClick={onMenuClick}
-          aria-label="Otvori meni"
+          aria-label="Open menu"
           className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden"
         >
           <Menu className="h-5 w-5" />
@@ -59,7 +59,7 @@ export function PortalTopbar({
         {isOrderDetail && (
           <>
             <span className="text-muted-foreground/40">/</span>
-            <span className="text-muted-foreground">Detalji</span>
+            <span className="text-muted-foreground">Details</span>
           </>
         )}
       </div>

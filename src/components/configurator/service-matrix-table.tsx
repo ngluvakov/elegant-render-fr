@@ -55,7 +55,7 @@ export function ServiceMatrixTable({
   const flipKey = `${activeCat}::${cartItems.map((i) => i.productId).join("|")}`;
   useFlipAnimation(containerRef, flipKey);
 
-  // ── "Sve usluge" mode: group by category, no recommended split ──
+  // ── "All services" mode: group by category, no recommended split ──
   if (activeCat === ALL_FILTER) {
     return (
       <div ref={containerRef} className="flex flex-col gap-5">
@@ -93,7 +93,7 @@ export function ServiceMatrixTable({
   if (!activeCategory) {
     return (
       <div className="py-20 text-center text-sm text-muted-foreground">
-        Kategorija nije pronađena.
+        Category not found.
       </div>
     );
   }
@@ -165,10 +165,10 @@ export function ServiceMatrixTable({
         <section>
           <header className="mb-2 flex items-baseline justify-between px-1">
             <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[color:var(--color-sage-deep)]">
-              Postaje povoljnije uz {activeCategory.label.toLowerCase()}
+              Better value with {activeCategory.label.toLowerCase()}
             </h3>
             <span className="text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground">
-              Hover &rarr; preview popusta
+              Hover &rarr; discount preview
             </span>
           </header>
           <ul className="flex flex-col gap-1.5">
@@ -192,10 +192,10 @@ export function ServiceMatrixTable({
         <section>
           <header className="mb-2 flex items-baseline justify-between px-1">
             <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              Ostale usluge
+              Other services
             </h3>
             <span className="text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground/70">
-              Iz drugih kategorija
+              From other categories
             </span>
           </header>
           <ul className="flex flex-col gap-1.5">

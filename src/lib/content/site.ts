@@ -387,8 +387,8 @@ export function buildOrganizationJsonLd() {
       },
     ],
     areaServed: ["RS", "EU", "Worldwide"],
-    currenciesAccepted: "RSD",
-    priceRange: "RSD",
+    currenciesAccepted: "EUR",
+    priceRange: "€€",
     serviceType: [
       "Arhitektonska vizuelizacija",
       "3D renderi",

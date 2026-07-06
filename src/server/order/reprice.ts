@@ -33,7 +33,11 @@ import {
 } from "@/lib/catalog/exterior-config";
 import { calcTourAssemblyCost } from "@/lib/catalog/tour-assembly";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
-import { billingCentsFromRsdCents } from "@/lib/billing";
+import {
+  billingCentsFromEurCents,
+  buildChargeSnapshotForCurrency,
+} from "@/lib/billing";
+import { isChargeCurrency } from "@/lib/currency/config";
 
 function hasTour360Config(cj: unknown): boolean {
   return (
@@ -73,7 +77,8 @@ export async function repriceOrder(orderId: string) {
       referencedOrderId: true,
       billingCurrency: true,
       billingVatRate: true,
-      billingRsdRate: true,
+      chargedCurrency: true,
+      paymentStatus: true,
     },
   });
   const items = await prisma.orderItem.findMany({
@@ -190,11 +195,11 @@ export async function repriceOrder(orderId: string) {
   let containsAiCredits = false;
 
   for (const i of items) {
-    const existingTotalCents = i.totalCents ?? i.totalRsd * 100;
+    const existingTotalCents = i.totalCents ?? i.totalEur * 100;
 
     // Inquiry-only items (e.g. converted VR projects) carry a manually
     // set price agreed during consultation — never recompute from the
-    // catalog, just keep the existing totalRsd.
+    // catalog, just keep the existing totalEur.
     const lookup = getConfiguratorProduct(i.productId, pricingCatalog.categories);
     if (i.kind === "ai_credits") {
       const bd = breakdownById.get(i.id);
@@ -202,14 +207,14 @@ export async function repriceOrder(orderId: string) {
         await prisma.orderItem.update({
           where: { id: i.id },
           data: {
-            basePriceRsd: Math.round(bd.basePriceRsd),
+            basePriceEur: Math.round(bd.basePriceEur),
             basePriceCents: bd.basePriceCents,
-            totalRsd: Math.round(bd.totalRsd),
+            totalEur: Math.round(bd.totalEur),
             totalCents: bd.totalCents,
             aiCreditQuantity: bd.aiCreditQuantity ?? i.aiCreditQuantity,
             aiCreditUnits: bd.aiCreditUnits ?? i.aiCreditUnits,
             addOnsJson: [],
-            originalTotalRsd: Math.round(bd.originalTotalRsd),
+            originalTotalEur: Math.round(bd.originalTotalEur),
             discountPct: 0,
             discountReason: null,
           },
@@ -237,7 +242,7 @@ export async function repriceOrder(orderId: string) {
       const preDiscount = calcInteriorTotal(
         floors,
         specialPricing.interior,
-      ).totalRsd;
+      ).totalEur;
       const target = quoteItems.find((q) => q.instanceId === i.id);
       const discount = target
         ? resolveDiscount(
@@ -246,22 +251,22 @@ export async function repriceOrder(orderId: string) {
             pricingCatalog,
           )
         : null;
-      const totalRsd = discount
+      const totalEur = discount
         ? Math.round(preDiscount * (1 - discount.pct / 100))
         : preDiscount;
       await prisma.orderItem.update({
         where: { id: i.id },
         data: {
-          totalRsd,
+          totalEur,
           basePriceCents: preDiscount * 100,
-          totalCents: totalRsd * 100,
-          originalTotalRsd: preDiscount,
+          totalCents: totalEur * 100,
+          originalTotalEur: preDiscount,
           discountPct: discount?.pct ?? 0,
           discountReason: discount?.reason ?? null,
         },
       });
-      orderTotalCents += totalRsd * 100;
-      premiumTotalCents += totalRsd * 100;
+      orderTotalCents += totalEur * 100;
+      premiumTotalCents += totalEur * 100;
       continue;
     }
 
@@ -273,7 +278,7 @@ export async function repriceOrder(orderId: string) {
         cfg.floors,
         cfg.tourAssembly,
         specialPricing.tour360,
-      ).totalRsd;
+      ).totalEur;
       const target = quoteItems.find((q) => q.instanceId === i.id);
       const discount = target
         ? resolveDiscount(
@@ -282,22 +287,22 @@ export async function repriceOrder(orderId: string) {
             pricingCatalog,
           )
         : null;
-      const totalRsd = discount
+      const totalEur = discount
         ? Math.round(preDiscount * (1 - discount.pct / 100))
         : preDiscount;
       await prisma.orderItem.update({
         where: { id: i.id },
         data: {
-          totalRsd,
+          totalEur,
           basePriceCents: preDiscount * 100,
-          totalCents: totalRsd * 100,
-          originalTotalRsd: preDiscount,
+          totalCents: totalEur * 100,
+          originalTotalEur: preDiscount,
           discountPct: discount?.pct ?? 0,
           discountReason: discount?.reason ?? null,
         },
       });
-      orderTotalCents += totalRsd * 100;
-      premiumTotalCents += totalRsd * 100;
+      orderTotalCents += totalEur * 100;
+      premiumTotalCents += totalEur * 100;
       continue;
     }
 
@@ -320,7 +325,7 @@ export async function repriceOrder(orderId: string) {
         [],
         pricingCatalog,
       ).items[0];
-      const renderingCost = renderingBreakdown?.totalRsd ?? i.totalRsd;
+      const renderingCost = renderingBreakdown?.totalEur ?? i.totalEur;
       const assemblyCost = calcTourAssemblyCost(
         cfg.tourAssembly ?? {
           webTourEnabled: false,
@@ -339,23 +344,23 @@ export async function repriceOrder(orderId: string) {
             pricingCatalog,
           )
         : null;
-      const totalRsd = discount
+      const totalEur = discount
         ? Math.round(preDiscount * (1 - discount.pct / 100))
         : preDiscount;
       await prisma.orderItem.update({
         where: { id: i.id },
         data: {
-          totalRsd,
+          totalEur,
           basePriceCents: preDiscount * 100,
-          totalCents: totalRsd * 100,
-          originalTotalRsd: preDiscount,
+          totalCents: totalEur * 100,
+          originalTotalEur: preDiscount,
           addOnsJson: renderingBreakdown?.addOns ?? [],
           discountPct: discount?.pct ?? 0,
           discountReason: discount?.reason ?? null,
         },
       });
-      orderTotalCents += totalRsd * 100;
-      premiumTotalCents += totalRsd * 100;
+      orderTotalCents += totalEur * 100;
+      premiumTotalCents += totalEur * 100;
       continue;
     }
 
@@ -369,14 +374,14 @@ export async function repriceOrder(orderId: string) {
     await prisma.orderItem.update({
       where: { id: i.id },
       data: {
-        basePriceRsd: bd.basePriceRsd,
+        basePriceEur: bd.basePriceEur,
         basePriceCents: bd.basePriceCents,
-        totalRsd: bd.totalRsd,
+        totalEur: bd.totalEur,
         totalCents: bd.totalCents,
         addOnsJson: bd.addOns,
         durationSeconds: bd.durationSeconds ?? null,
         durationDiscount: bd.durationDiscount ?? null,
-        originalTotalRsd: bd.originalTotalRsd,
+        originalTotalEur: bd.originalTotalEur,
         discountPct: bd.discountPct,
         discountReason: bd.discountReason,
       },
@@ -386,22 +391,38 @@ export async function repriceOrder(orderId: string) {
   }
 
   const billingTotalCents = order?.billingCurrency
-    ? billingCentsFromRsdCents(orderTotalCents, {
+    ? billingCentsFromEurCents(orderTotalCents, {
         billingCurrency: order.billingCurrency,
         billingVatRate:
           order.billingVatRate ?? pricingCatalog.settings.serbiaVatRate,
-        billingRsdRate:
-          order.billingRsdRate ?? pricingCatalog.settings.rsdRate,
       })
     : undefined;
+
+  // Refresh the charged-amount snapshot for unpaid orders so the PayPal
+  // charge always matches the current total. The currency itself stays
+  // locked (it was chosen from geo at creation); paid orders keep the
+  // amount they were actually charged.
+  const chargeSnapshot =
+    order &&
+    order.paymentStatus !== "completed" &&
+    isChargeCurrency(order.chargedCurrency)
+      ? buildChargeSnapshotForCurrency(orderTotalCents, order.chargedCurrency)
+      : null;
 
   await prisma.order.update({
     where: { id: orderId },
     data: {
-      totalRsd: Math.round(orderTotalCents / 100),
+      totalEur: Math.round(orderTotalCents / 100),
       totalCents: orderTotalCents,
-      premiumTotalRsd: Math.round(premiumTotalCents / 100),
+      premiumTotalEur: Math.round(premiumTotalCents / 100),
       ...(billingTotalCents !== undefined ? { billingTotalCents } : {}),
+      ...(chargeSnapshot
+        ? {
+            chargedAmountMinor: chargeSnapshot.chargedAmountMinor,
+            chargedFxRate: chargeSnapshot.chargedFxRate,
+            chargedFxAsOf: chargeSnapshot.chargedFxAsOf,
+          }
+        : {}),
       containsAiCredits,
     },
   });

@@ -3,15 +3,20 @@ import type {
   PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 import type { BuyerType } from "@/lib/buyer-validation";
+import {
+  chargeCurrencyForCountry,
+  isChargeCurrency,
+  type ChargeCurrency,
+} from "@/lib/currency/config";
+import { convertEurCentsToMinor } from "@/lib/currency/convert";
 
-export type BillingCurrency = "RSD";
+export type BillingCurrency = "EUR";
 
 export type BillingSnapshotInput = {
   buyerType: BuyerType;
   buyerCountryCode?: string | null;
   companyName?: string | null;
   companyTaxId?: string | null;
-  companyMb?: string | null;
   companyAddress?: string | null;
   companyCountryCode?: string | null;
 };
@@ -21,12 +26,10 @@ export type BillingSnapshot = {
   buyerCountryCode: string;
   companyName: string | null;
   companyTaxId: string | null;
-  companyMb: string | null;
   companyAddress: string | null;
   companyCountryCode: string | null;
   billingCurrency: BillingCurrency;
   billingVatRate: number;
-  billingRsdRate: number;
 };
 
 export const SERBIA_COUNTRY_CODE = "RS";
@@ -44,8 +47,7 @@ export function billingCountryForBuyer(
   input: BillingSnapshotInput,
   fallbackCountryCode?: string | null,
 ): string {
-  if (input.buyerType === "company_rs") return SERBIA_COUNTRY_CODE;
-  if (input.buyerType === "company_foreign") {
+  if (input.buyerType === "business") {
     return normalizeCountryCode(
       input.buyerCountryCode ?? input.companyCountryCode,
       fallbackCountryCode ?? undefined,
@@ -56,67 +58,72 @@ export function billingCountryForBuyer(
 
 export function buyerTypeForBilling(
   kind: "individual" | "company",
-  countryCode: string | null | undefined,
+  _countryCode: string | null | undefined,
 ): BuyerType {
-  if (kind === "individual") return "individual";
-  return normalizeCountryCode(countryCode) === SERBIA_COUNTRY_CODE
-    ? "company_rs"
-    : "company_foreign";
+  void _countryCode;
+  return kind === "individual" ? "individual" : "business";
 }
 
 export function billingCurrencyForCountry(
   _countryCode: string | null | undefined,
 ): BillingCurrency {
   void _countryCode;
-  return "RSD";
+  return "EUR";
 }
 
 export function displayCurrencyForBillingCountry(
-  _countryCode: string | null | undefined,
+  countryCode: string | null | undefined,
 ): DisplayCurrency {
-  void _countryCode;
-  return "rsd";
+  return chargeCurrencyForCountry(countryCode);
 }
 
+/** Invoices are always issued in EUR; when only the billing currency is
+ * known (no charge snapshot), EUR is the honest display currency. */
 export function displayCurrencyForBillingCurrency(
   _currency: BillingCurrency | null | undefined,
 ): DisplayCurrency {
   void _currency;
-  return "rsd";
+  return "EUR";
+}
+
+/** The order's charged-currency snapshot when present, else the geo /
+ * billing-country fallback. Portal order pages use this so a paid order
+ * always displays in the currency the buyer was actually charged. */
+export function displayCurrencyForOrderSnapshot(
+  chargedCurrency: string | null | undefined,
+  fallbackCountryCode?: string | null,
+): DisplayCurrency {
+  if (isChargeCurrency(chargedCurrency)) return chargedCurrency;
+  return chargeCurrencyForCountry(fallbackCountryCode);
 }
 
 export function isExportBillingCurrency(
   _currency: BillingCurrency | null | undefined,
 ): boolean {
   void _currency;
-  return false;
+  return true;
 }
 
 export function buildBillingSnapshot(
   input: BillingSnapshotInput,
-  settings: PublicPricingFormatSettings,
+  _settings: PublicPricingFormatSettings,
   fallbackCountryCode?: string | null,
 ): BillingSnapshot {
+  void _settings;
   const buyerCountryCode = billingCountryForBuyer(input, fallbackCountryCode);
-  const buyerType =
-    input.buyerType === "individual"
-      ? "individual"
-      : buyerTypeForBilling("company", buyerCountryCode);
+  const buyerType = input.buyerType === "individual" ? "individual" : "business";
 
-  const companyCountryCode =
-    buyerType === "company_foreign" ? buyerCountryCode : null;
+  const companyCountryCode = buyerType === "business" ? buyerCountryCode : null;
   const companyFields =
     buyerType === "individual"
       ? {
           companyName: null,
           companyTaxId: null,
-          companyMb: null,
           companyAddress: null,
         }
       : {
           companyName: input.companyName?.trim() || null,
           companyTaxId: input.companyTaxId?.trim().toUpperCase() || null,
-          companyMb: input.companyMb?.trim() || null,
           companyAddress: input.companyAddress?.trim() || null,
         };
 
@@ -125,25 +132,85 @@ export function buildBillingSnapshot(
     buyerCountryCode,
     ...companyFields,
     companyCountryCode,
-    billingCurrency: "RSD",
-    billingVatRate: settings.serbiaVatRate,
-    billingRsdRate: 1,
+    billingCurrency: "EUR",
+    // Every invoice is an export invoice in EUR with 0% Serbian VAT
+    // (export of services); see docs/plan/design-payments.md §5.
+    billingVatRate: 0,
   };
 }
 
-export function billingCentsFromRsdCents(
-  rsdCents: number,
+export function billingCentsFromEurCents(
+  eurCents: number,
   _snapshot?: unknown,
 ): number {
   void _snapshot;
-  return Math.round(rsdCents);
+  return Math.round(eurCents);
+}
+
+// ─── Charged-amount snapshot (presentment currency) ──────
+//
+// Locked once at order/charge creation: the buyer is charged exactly
+// this amount in this currency via PayPal, whatever the FX table says
+// later. The invoice stays EUR (billing snapshot above); this block is
+// the payment-side twin.
+
+export type ChargeSnapshot = {
+  chargedCurrency: ChargeCurrency;
+  /** Minor units; zero-decimal currencies (JPY/HUF/TWD) store whole units. */
+  chargedAmountMinor: number;
+  /** EUR→chargedCurrency rate used (1 for EUR). */
+  chargedFxRate: number;
+  chargedFxAsOf: Date;
+};
+
+/** Snapshot for an explicit currency — used when a charge inherits the
+ * parent order's chargedCurrency. */
+export function buildChargeSnapshotForCurrency(
+  totalEurCents: number,
+  currency: ChargeCurrency,
+): ChargeSnapshot {
+  // Zero totals (empty portal drafts) must not round up to a
+  // marketable price point — keep them at zero until repriced.
+  if (totalEurCents <= 0) {
+    const zero = convertEurCentsToMinor(0, "EUR");
+    return {
+      chargedCurrency: currency,
+      chargedAmountMinor: 0,
+      chargedFxRate: currency === "EUR" ? 1 : convertEurCentsToMinor(100, currency).fxRate,
+      chargedFxAsOf: new Date(zero.fxAsOf),
+    };
+  }
+  const converted = convertEurCentsToMinor(Math.round(totalEurCents), currency);
+  return {
+    chargedCurrency: currency,
+    chargedAmountMinor: converted.amountMinor,
+    chargedFxRate: converted.fxRate,
+    chargedFxAsOf: new Date(converted.fxAsOf),
+  };
+}
+
+/** Snapshot from the buyer's (server-derived) geo country. Never trust
+ * a client-passed currency — callers pass getPublicCountryCode(). */
+export function buildChargeSnapshot(
+  totalEurCents: number,
+  countryCode: string | null,
+): ChargeSnapshot {
+  return buildChargeSnapshotForCurrency(
+    totalEurCents,
+    chargeCurrencyForCountry(countryCode),
+  );
 }
 
 export function formatBillingMoney(
   cents: number,
-  _currency: BillingCurrency | null | undefined = "RSD",
+  _currency: BillingCurrency | null | undefined = "EUR",
 ): string {
   void _currency;
   const value = cents / 100;
-  return `${value.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`;
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 }

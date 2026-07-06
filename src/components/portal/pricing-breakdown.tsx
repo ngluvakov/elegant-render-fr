@@ -1,5 +1,5 @@
 /**
- * PricingBreakdown — Reusable "Sastav cene" panel that lists the base
+ * PricingBreakdown — Reusable "Price breakdown" panel that lists the base
  * price plus each billable add-on with its line total. Surfaces the
  * pricing inputs the customer has accumulated so they can see exactly
  * where the total comes from before they pay.
@@ -34,8 +34,8 @@ export function PricingBreakdown({
   rows,
   total: totalOverride,
   extras = [],
-  baseLabel = "Cena",
-  title = "Sastav cene",
+  baseLabel = "Price",
+  title = "Price breakdown",
 }: Props) {
   const { formatPrice } = useOrderCurrency();
   const extrasTotal = extras.reduce((s, e) => s + e.rsd, 0);
@@ -43,18 +43,18 @@ export function PricingBreakdown({
   let lineRows: ExplicitRow[];
   let total: number;
   if (breakdown) {
-    const billableAddOns = breakdown.addOns.filter((a) => a.totalRsd > 0);
+    const billableAddOns = breakdown.addOns.filter((a) => a.totalEur > 0);
     lineRows = [
-      { label: baseLabel, value: breakdown.basePriceRsd },
+      { label: baseLabel, value: breakdown.basePriceEur },
       ...billableAddOns.map((a) => ({
         label: a.billableQty > 1 ? `${a.label} × ${a.billableQty}` : a.label,
-        value: a.totalRsd,
+        value: a.totalEur,
         sub: a.isVolumeRate
-          ? `veća količina ${formatPrice(a.unitPriceRsd)}/kom`
+          ? `volume price ${formatPrice(a.unitPriceEur)}/item`
           : undefined,
       })),
     ];
-    total = breakdown.totalRsd + extrasTotal;
+    total = breakdown.totalEur + extrasTotal;
   } else if (rows && totalOverride !== undefined) {
     lineRows = rows;
     total = totalOverride + extrasTotal;
@@ -76,7 +76,7 @@ export function PricingBreakdown({
         ))}
       </div>
       <div className="flex items-center justify-between gap-2 border-t border-border/30 pt-1.5 text-foreground">
-        <span className="text-sm font-medium">Ukupno</span>
+        <span className="text-sm font-medium">Total</span>
         <span className="text-base font-bold tabular-nums">
           {formatPrice(total)}
         </span>

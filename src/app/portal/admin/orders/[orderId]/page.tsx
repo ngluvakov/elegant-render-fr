@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import { formatRsd } from "@/lib/catalog/calculate";
+import { formatEur } from "@/lib/catalog/calculate";
 import { statusLabel, statusAccent } from "@/components/portal/status-utils";
 import { StatusTracker } from "@/components/portal/status-tracker";
 import { AdminCommentComposer } from "./admin-comment-composer";
@@ -18,12 +18,15 @@ import { AdminDeliverableUpload } from "./admin-deliverable-upload";
 import { AdminGrantCreditsPanel } from "./admin-grant-credits-panel";
 import { AdminFreeRevisionPanel } from "./admin-free-revision-panel";
 import { AdminChargesPanel } from "./admin-charges-panel";
+import { AdminRefundButton } from "./admin-refund-button";
 import { adminHas, requirePermission } from "@/lib/admin-auth";
+import { isChargeCurrency } from "@/lib/currency/config";
+import { formatChargeAmount } from "@/lib/currency/convert";
 
 export const metadata: Metadata = {
-  title: "Admin — Detalji porudžbine",
+  title: "Admin - Order details",
   description:
-    "Admin detalji porudžbine, stavke, status, plaćanja i operativne akcije.",
+    "Admin order details, items, status, payments, and operational actions.",
   robots: { index: false, follow: false },
 };
 
@@ -99,10 +102,10 @@ export default async function AdminOrderDetailPage({
             {order.orderNumber}
           </p>
           <h1 className="mt-1 font-heading text-2xl text-foreground md:text-3xl">
-            {order.projectName ?? order.items[0]?.productLabel ?? "Porudžbina"}
+            {order.projectName ?? order.items[0]?.productLabel ?? "Order"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Klijent: <strong className="text-foreground">{order.user.name}</strong>{" "}
+            Client: <strong className="text-foreground">{order.user.name}</strong>{" "}
             ({order.user.email})
             {order.user.phone && ` · ${order.user.phone}`}
           </p>
@@ -113,7 +116,7 @@ export default async function AdminOrderDetailPage({
           </Badge>
           {canViewFinance && (
             <p className="text-2xl font-bold text-foreground">
-              {formatRsd(order.totalRsd)}
+              {formatEur(order.totalEur)}
             </p>
           )}
         </div>
@@ -178,7 +181,7 @@ export default async function AdminOrderDetailPage({
 
           {order.comments.length === 0 && (
             <p className="py-4 text-sm text-muted-foreground">
-              Nema poruka.
+              No messages.
             </p>
           )}
 
@@ -196,10 +199,10 @@ export default async function AdminOrderDetailPage({
                   <span className={`text-[0.72rem] font-semibold uppercase tracking-wider ${
                     comment.role === "team" ? "text-[color:var(--color-sage-deep)]" : "text-accent"
                   }`}>
-                    {comment.role === "team" ? "Tim" : comment.author?.name ?? "Klijent"}
+                    {comment.role === "team" ? "Team" : comment.author?.name ?? "Client"}
                   </span>
                   <span className="text-[0.62rem] text-muted-foreground/60">
-                    {comment.createdAt.toLocaleDateString("sr-Latn-RS", {
+                    {comment.createdAt.toLocaleDateString("en-GB", {
                       day: "numeric",
                       month: "short",
                       hour: "2-digit",
@@ -233,7 +236,7 @@ export default async function AdminOrderDetailPage({
           {deliverableFiles.length > 0 && (
             <div className="rounded-2xl border border-[color:var(--color-sage)]/20 bg-[color:var(--color-sage)]/5 p-5">
               <h3 className="text-sm font-semibold text-foreground">
-                Isporučeni fajlovi ({deliverableFiles.length})
+                Delivered files ({deliverableFiles.length})
               </h3>
               <div className="mt-3 space-y-2">
                 {deliverableFiles.map((f) => (
@@ -252,7 +255,7 @@ export default async function AdminOrderDetailPage({
           {sourceFiles.length > 0 && (
             <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
               <h3 className="text-sm font-semibold text-foreground">
-                Klijentovi fajlovi ({sourceFiles.length})
+                Client files ({sourceFiles.length})
               </h3>
               <div className="mt-3 space-y-2">
                 {sourceFiles.map((f) => (
@@ -270,7 +273,7 @@ export default async function AdminOrderDetailPage({
           {/* Items */}
           <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
             <h3 className="text-sm font-semibold text-foreground">
-              Stavke ({order.items.length})
+              Items ({order.items.length})
             </h3>
             <div className="mt-3 space-y-2">
               {order.items.map((item) => (
@@ -286,15 +289,15 @@ export default async function AdminOrderDetailPage({
                   </div>
                   {canViewFinance && (
                     <span className="ml-2 text-right font-semibold text-foreground">
-                      {item.originalTotalRsd != null &&
+                      {item.originalTotalEur != null &&
                         item.discountPct != null &&
                         item.discountPct > 0 &&
-                        item.originalTotalRsd > item.totalRsd && (
+                        item.originalTotalEur > item.totalEur && (
                           <span className="mr-1 text-[0.7rem] font-normal text-muted-foreground/60 line-through">
-                            {formatRsd(item.originalTotalRsd)}
+                            {formatEur(item.originalTotalEur)}
                           </span>
                         )}
-                      {formatRsd(item.totalRsd)}
+                      {formatEur(item.totalEur)}
                     </span>
                   )}
                 </div>
@@ -305,7 +308,7 @@ export default async function AdminOrderDetailPage({
           {/* Customer note */}
           {order.customerNote && (
             <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Napomena klijenta</h3>
+              <h3 className="text-sm font-semibold text-foreground">Client note</h3>
               <p className="mt-2 text-xs text-foreground/80">{order.customerNote}</p>
             </div>
           )}
@@ -330,7 +333,7 @@ export default async function AdminOrderDetailPage({
                   <dt className="w-20 text-muted-foreground">Stigao:</dt>
                   <dd className="text-foreground">
                     {new Date(order.sourceInquiry.createdAt).toLocaleString(
-                      "sr-Latn-RS",
+                      "en-GB",
                       {
                         day: "2-digit",
                         month: "2-digit",
@@ -343,9 +346,9 @@ export default async function AdminOrderDetailPage({
                 </div>
                 {order.sourceInquiry._count.files > 0 && (
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-20 text-muted-foreground">Fajlovi:</dt>
+                    <dt className="w-20 text-muted-foreground">Files:</dt>
                     <dd className="text-foreground">
-                      {order.sourceInquiry._count.files} priloženo na upitu
+                      {order.sourceInquiry._count.files} attached to inquiry
                     </dd>
                   </div>
                 )}
@@ -354,7 +357,7 @@ export default async function AdminOrderDetailPage({
                 href={`/portal/admin/inquiries?highlight=${order.sourceInquiry.id}`}
                 className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-secondary"
               >
-                Otvori upit
+                Open inquiry
               </Link>
             </div>
           )}
@@ -365,67 +368,55 @@ export default async function AdminOrderDetailPage({
               type label appears so the absence of company info is
               visually clear at a glance. */}
           <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
-            <h3 className="text-sm font-semibold text-foreground">Tip kupca</h3>
+            <h3 className="text-sm font-semibold text-foreground">Buyer type</h3>
             <p className="mt-2 text-xs uppercase tracking-wider text-muted-foreground">
-              {order.buyerType === "company_rs"
-                ? "Firma — Srbija"
-                : order.buyerType === "company_foreign"
-                  ? "Firma — inostranstvo"
-                  : "Fizičko lice"}
+              {order.buyerType === "business" ? "Business" : "Individual"}
             </p>
             {order.buyerType !== "individual" && (
               <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
                 {order.companyName && (
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Naziv:</dt>
+                    <dt className="w-24 text-muted-foreground">Name:</dt>
                     <dd className="font-medium text-foreground">{order.companyName}</dd>
                   </div>
                 )}
                 {order.companyAddress && (
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Adresa:</dt>
+                    <dt className="w-24 text-muted-foreground">Address:</dt>
                     <dd className="text-foreground">{order.companyAddress}</dd>
                   </div>
                 )}
                 {order.companyTaxId && (
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">
-                      {order.buyerType === "company_rs" ? "PIB:" : "VAT ID:"}
-                    </dt>
+                    <dt className="w-24 text-muted-foreground">VAT ID:</dt>
                     <dd className="font-mono text-foreground">{order.companyTaxId}</dd>
-                  </div>
-                )}
-                {order.companyMb && (
-                  <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">MB:</dt>
-                    <dd className="font-mono text-foreground">{order.companyMb}</dd>
                   </div>
                 )}
                 {order.companyCountryCode && (
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Država:</dt>
+                    <dt className="w-24 text-muted-foreground">Country:</dt>
                     <dd className="font-mono text-foreground">{order.companyCountryCode}</dd>
                   </div>
                 )}
               </dl>
             )}
 
-            {/* VIES VAT verification — only for company_foreign. Shows
+            {/* VIES VAT verification — only for business buyers. Shows
                 the verified badge if a successful check ran, and the
                 trigger button so admin can (re)check before issuing
-                an export invoice with 0% VAT (čl. 24 ZPDV). */}
-            {order.buyerType === "company_foreign" &&
+                an export invoice with 0% VAT. */}
+            {order.buyerType === "business" &&
               order.companyTaxId &&
               order.companyCountryCode && (
                 <div className="mt-4 border-t border-border/40 pt-4">
                   {order.vatVerifiedAt ? (
                     <div className="space-y-2">
                       <div className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10 px-3 py-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)]">
-                        ✓ VIES verifikovan{" "}
+                        ✓ VIES verified{" "}
                         <span className="font-normal text-muted-foreground">
                           ·{" "}
                           {new Date(order.vatVerifiedAt).toLocaleDateString(
-                            "sr-Latn-RS",
+                            "en-GB",
                             {
                               day: "2-digit",
                               month: "2-digit",
@@ -437,11 +428,11 @@ export default async function AdminOrderDetailPage({
                       {order.vatVerifiedName &&
                         order.vatVerifiedName !== order.companyName && (
                           <p className="text-[0.72rem] text-muted-foreground">
-                            VIES naziv:{" "}
+                            VIES name:{" "}
                             <span className="text-foreground">
                               {order.vatVerifiedName}
                             </span>{" "}
-                            (razlikuje se od unetog)
+                            (differs from the entered value)
                           </p>
                         )}
                       {canManageFinance && (
@@ -451,8 +442,8 @@ export default async function AdminOrderDetailPage({
                   ) : (
                     <div className="space-y-2">
                       <p className="text-[0.78rem] text-muted-foreground">
-                        VAT ID nije verifikovan kroz VIES. Pre izdavanja
-                        izvozne fakture preporučljivo je proveriti.
+                        VAT ID has not been verified through VIES. Before issuing
+                        an export invoice, verification is recommended.
                       </p>
                       {canManageFinance && (
                         <AdminVerifyVatButton orderId={order.id} />
@@ -463,27 +454,86 @@ export default async function AdminOrderDetailPage({
               )}
           </div>
 
-          {/* Predračun (proforma) — wire-transfer flow. Always visible
+          {/* Payment — provider snapshot + PayPal refund. The refund
+              button appears only for completed PayPal payments with a
+              capture id (that's what PayPal refunds). */}
+          <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+            <h3 className="text-sm font-semibold text-foreground">Payment</h3>
+            <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
+              <div className="flex flex-wrap gap-x-2">
+                <dt className="w-24 text-muted-foreground">Provider:</dt>
+                <dd className="text-foreground">
+                  {order.paymentProvider ?? "—"}
+                </dd>
+              </div>
+              <div className="flex flex-wrap gap-x-2">
+                <dt className="w-24 text-muted-foreground">Status:</dt>
+                <dd className="text-foreground">{order.paymentStatus}</dd>
+              </div>
+              {order.chargedAmountMinor != null &&
+                isChargeCurrency(order.chargedCurrency) && (
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="w-24 text-muted-foreground">Charged:</dt>
+                    <dd className="text-foreground">
+                      {formatChargeAmount(
+                        order.chargedAmountMinor,
+                        order.chargedCurrency,
+                      )}
+                      {order.chargedFxRate
+                        ? ` (rate ${Number(order.chargedFxRate)})`
+                        : ""}
+                    </dd>
+                  </div>
+                )}
+              {order.paypalCaptureId && (
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="w-24 text-muted-foreground">Capture:</dt>
+                  <dd className="font-mono text-foreground">
+                    {order.paypalCaptureId}
+                    {order.paypalCaptureStatus
+                      ? ` · ${order.paypalCaptureStatus}`
+                      : ""}
+                  </dd>
+                </div>
+              )}
+              {order.paypalPayerEmail && (
+                <div className="flex flex-wrap gap-x-2">
+                  <dt className="w-24 text-muted-foreground">Payer:</dt>
+                  <dd className="text-foreground">{order.paypalPayerEmail}</dd>
+                </div>
+              )}
+            </dl>
+            {canManageFinance &&
+              order.paymentProvider === "paypal" &&
+              order.paymentStatus === "completed" &&
+              order.paypalCaptureId && (
+                <div className="mt-4 border-t border-border/40 pt-4">
+                  <AdminRefundButton orderId={order.id} />
+                </div>
+              )}
+          </div>
+
+          {/* Proforma (proforma) — wire-transfer flow. Always visible
               so admin can issue/re-issue. The first issuance flips
               paymentMethod to wire_transfer; switching the order back
               to online_payment is a separate (currently manual) admin
               concern. */}
           <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
-            <h3 className="text-sm font-semibold text-foreground">Predračun</h3>
+            <h3 className="text-sm font-semibold text-foreground">Proforma</h3>
             {order.proformaNumber && order.proformaIssuedAt ? (
               <>
                 <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Broj:</dt>
+                    <dt className="w-24 text-muted-foreground">Number:</dt>
                     <dd className="font-mono text-foreground">
                       {order.proformaNumber}
                     </dd>
                   </div>
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Izdat:</dt>
+                    <dt className="w-24 text-muted-foreground">Issued:</dt>
                     <dd className="text-foreground">
                       {new Date(order.proformaIssuedAt).toLocaleString(
-                        "sr-Latn-RS",
+                        "en-GB",
                         {
                           day: "2-digit",
                           month: "2-digit",
@@ -495,11 +545,11 @@ export default async function AdminOrderDetailPage({
                     </dd>
                   </div>
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Način:</dt>
+                    <dt className="w-24 text-muted-foreground">Method:</dt>
                     <dd className="text-foreground">
                       {order.paymentMethod === "wire_transfer"
-                        ? "Plaćanje po fakturi (žiro-račun)"
-                        : "Online plaćanje"}
+                        ? "Invoice payment (bank transfer)"
+                        : "Online payment"}
                     </dd>
                   </div>
                 </dl>
@@ -510,7 +560,7 @@ export default async function AdminOrderDetailPage({
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-secondary"
                   >
-                    Preuzmi PDF
+                    Download PDF
                   </a>
                   {canManageFinance && (
                     <AdminProformaButton orderId={order.id} alreadyIssued />
@@ -525,8 +575,8 @@ export default async function AdminOrderDetailPage({
             ) : (
               <>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Predračun nije izdat. Pregledajte PDF da proverite
-                  podatke pre nego što ga pošaljete kupcu na e-poštu.
+                  Proforma has not been issued. Preview the PDF to check the
+                  details before sending it to the buyer by email.
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <a
@@ -535,7 +585,7 @@ export default async function AdminOrderDetailPage({
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-secondary"
                   >
-                    Pregled PDF-a
+                    PDF preview
                   </a>
                   {canManageFinance && (
                     <AdminProformaButton
@@ -555,12 +605,12 @@ export default async function AdminOrderDetailPage({
           {order.paymentStatus === "completed" && !order.invoiceNumber && (
             <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-5">
               <h3 className="text-sm font-semibold text-foreground">
-                Faktura — nije izdata
+                Invoice - not issued
               </h3>
               <p className="mt-2 text-xs text-muted-foreground">
-                Porudžbina je plaćena ali konačni račun nije generisan
-                (post-payment hook nije uspeo). Pokušajte ponovo —
-                idempotentno je, neće duplirati račun.
+                The order is paid, but the final invoice was not generated
+                because the post-payment hook failed. Try again; the operation
+                is idempotent and will not duplicate the invoice.
               </p>
               <div className="mt-3">
                 {canManageFinance && (
@@ -574,16 +624,16 @@ export default async function AdminOrderDetailPage({
               has run; for unpaid orders the section is hidden. */}
           {order.invoiceNumber && order.invoiceIssuedAt && (
             <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Faktura</h3>
+              <h3 className="text-sm font-semibold text-foreground">Invoice</h3>
               <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
                 <div className="flex flex-wrap gap-x-2">
-                  <dt className="w-24 text-muted-foreground">Broj:</dt>
+                  <dt className="w-24 text-muted-foreground">Number:</dt>
                   <dd className="font-mono text-foreground">{order.invoiceNumber}</dd>
                 </div>
                 <div className="flex flex-wrap gap-x-2">
-                  <dt className="w-24 text-muted-foreground">Izdata:</dt>
+                  <dt className="w-24 text-muted-foreground">Issued:</dt>
                   <dd className="text-foreground">
-                    {new Date(order.invoiceIssuedAt).toLocaleString("sr-Latn-RS", {
+                    {new Date(order.invoiceIssuedAt).toLocaleString("en-GB", {
                       day: "2-digit",
                       month: "2-digit",
                       year: "numeric",
@@ -599,7 +649,7 @@ export default async function AdminOrderDetailPage({
                 rel="noreferrer"
                 className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-[0.78rem] font-medium text-background transition hover:opacity-90"
               >
-                Preuzmi PDF
+                Download PDF
               </a>
             </div>
           )}

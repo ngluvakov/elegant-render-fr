@@ -53,7 +53,9 @@ import {
 } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { UPLOADS_BUCKET } from "@/lib/file-scan";
-import { getNestpayReceiptData } from "@/lib/nestpay/receipt-data";
+import { formatBillingMoney } from "@/lib/billing";
+import { isChargeCurrency } from "@/lib/currency/config";
+import { formatChargeAmount } from "@/lib/currency/convert";
 
 // ─── Producer ────────────────────────────────────────────
 
@@ -134,7 +136,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
     await sendOrderConfirmationEmail(
       order.user.email,
       order.orderNumber,
-      order.totalCents ? order.totalCents / 100 : order.totalRsd,
+      order.totalCents ? order.totalCents / 100 : order.totalEur,
       order.billingCurrency && order.billingTotalCents != null
         ? formatOutboxMoney(order.billingTotalCents, order.billingCurrency)
         : undefined,
@@ -158,7 +160,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       "contactName",
       "productLabel",
       "projectName",
-      "priceRsd",
+      "priceEur",
       "orderNumber",
       "orderId",
       "token",
@@ -173,7 +175,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       contactName: String(payload.contactName),
       productLabel: String(payload.productLabel),
       projectName: String(payload.projectName),
-      priceRsd: Number(payload.priceRsd),
+      priceEur: Number(payload.priceEur),
       orderNumber: String(payload.orderNumber),
       orderId: String(payload.orderId),
       token: String(payload.token),
@@ -239,7 +241,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       payload.billingTotalCents == null
         ? null
         : Number(payload.billingTotalCents);
-    const billingCurrency = payload.billingCurrency === "RSD" ? "RSD" : null;
+    const billingCurrency = payload.billingCurrency === "EUR" ? "EUR" : null;
     const reason = String(payload.reason ?? "");
     const rawLines = payload.lines;
     if (!to || !orderNumber || !orderId || !Number.isFinite(totalCents) || !Array.isArray(rawLines)) {
@@ -288,7 +290,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       payload.billingTotalCents == null
         ? null
         : Number(payload.billingTotalCents);
-    const billingCurrency = payload.billingCurrency === "RSD" ? "RSD" : null;
+    const billingCurrency = payload.billingCurrency === "EUR" ? "EUR" : null;
     if (!to || !orderNumber || !orderId || !Number.isFinite(totalCents)) {
       throw new Error("additional_charge_paid_email: missing required field(s)");
     }
@@ -307,14 +309,14 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
   invoice_issued_email: async (payload) => {
     const to = String(payload.to ?? "");
     const invoiceNumber = String(payload.invoiceNumber ?? "");
-    const totalRsd = Number(payload.totalRsd);
+    const totalEur = Number(payload.totalEur);
     const billingTotalCents =
       payload.billingTotalCents == null
         ? null
         : Number(payload.billingTotalCents);
-    const billingCurrency = payload.billingCurrency === "RSD" ? "RSD" : null;
+    const billingCurrency = payload.billingCurrency === "EUR" ? "EUR" : null;
     const pdfPath = String(payload.pdfPath ?? "");
-    if (!to || !invoiceNumber || !pdfPath || !Number.isFinite(totalRsd)) {
+    if (!to || !invoiceNumber || !pdfPath || !Number.isFinite(totalEur)) {
       throw new Error("invoice_issued_email: missing required field(s)");
     }
     // Pull the rendered PDF straight from Supabase storage. We
@@ -335,7 +337,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
     await sendInvoiceIssuedEmail({
       to,
       invoiceNumber,
-      totalRsd,
+      totalEur,
       amountLabel:
         billingCurrency && isFiniteNumber(billingTotalCents)
           ? formatOutboxMoney(billingTotalCents, billingCurrency)
@@ -347,19 +349,19 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
   proforma_issued_email: async (payload) => {
     const to = String(payload.to ?? "");
     const proformaNumber = String(payload.proformaNumber ?? "");
-    const totalRsd = Number(payload.totalRsd);
+    const totalEur = Number(payload.totalEur);
     const billingTotalCents =
       payload.billingTotalCents == null
         ? null
         : Number(payload.billingTotalCents);
-    const billingCurrency = payload.billingCurrency === "RSD" ? "RSD" : null;
+    const billingCurrency = payload.billingCurrency === "EUR" ? "EUR" : null;
     const pdfPath = String(payload.pdfPath ?? "");
     const dueDate = new Date(String(payload.dueDate ?? ""));
     if (
       !to ||
       !proformaNumber ||
       !pdfPath ||
-      !Number.isFinite(totalRsd) ||
+      !Number.isFinite(totalEur) ||
       Number.isNaN(dueDate.getTime())
     ) {
       throw new Error("proforma_issued_email: missing required field(s)");
@@ -378,7 +380,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
     await sendProformaIssuedEmail({
       to,
       proformaNumber,
-      totalRsd,
+      totalEur,
       amountLabel:
         billingCurrency && isFiniteNumber(billingTotalCents)
           ? formatOutboxMoney(billingTotalCents, billingCurrency)
@@ -403,7 +405,7 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
   payment_success_email: async (payload) => {
     const orderId = String(payload.orderId ?? "");
     if (!orderId) throw new Error("payment_success_email: missing orderId");
-    const data = await loadNestpayEmailData(orderId);
+    const data = await loadPaymentEmailData(orderId);
     if (!data) {
       throw new Error(
         `payment_success_email: order ${orderId} or user.email missing`,
@@ -412,41 +414,45 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
     await sendPaymentSuccessEmail({
       to: data.to,
       orderNumber: data.orderNumber,
-      customer: data.customer,
+      customerName: data.customerName,
       lineItems: data.lineItems,
-      totals: data.totals,
-      conversion: data.conversion,
-      transaction: data.transaction,
+      totalEurLabel: data.totalEurLabel,
+      chargedLabel: data.chargedLabel,
+      captureId: data.captureId,
     });
   },
 
   payment_failure_email: async (payload) => {
     const orderId = String(payload.orderId ?? "");
     if (!orderId) throw new Error("payment_failure_email: missing orderId");
-    const data = await loadNestpayEmailData(orderId);
+    const data = await loadPaymentEmailData(orderId);
     if (!data) {
       throw new Error(
         `payment_failure_email: order ${orderId} or user.email missing`,
       );
     }
+    const reason =
+      (payload.reason ? String(payload.reason) : null) ??
+      (payload.response ? String(payload.response) : null) ??
+      (payload.errMsg ? String(payload.errMsg) : null);
     await sendPaymentFailureEmail({
       to: data.to,
       orderNumber: data.orderNumber,
-      customer: data.customer,
+      customerName: data.customerName,
       lineItems: data.lineItems,
-      totals: data.totals,
-      conversion: data.conversion,
-      transaction: data.transaction,
+      totalEurLabel: data.totalEurLabel,
+      chargedLabel: data.chargedLabel,
+      reason,
       retryUrl: data.retryUrl,
     });
   },
 };
 
-// ─── Nestpay email data builder ─────────────────────────
+// ─── PayPal payment email data builder ───────────────────
 //
-// Data shape + Prisma query lives in src/lib/nestpay/receipt-data.ts so the
-// uspeh/failure pages can reuse it. This wrapper adds the email-only fields:
-// recipient address and a portal retry URL.
+// Loads order + items + user and pre-formats the amount labels for the
+// English PayPal receipt templates: EUR total (invoice currency) plus
+// the charged presentment amount when it differs.
 
 function getAuthUrl(): string {
   if (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL) {
@@ -455,17 +461,45 @@ function getAuthUrl(): string {
   return process.env.AUTH_URL ?? "http://localhost:3000";
 }
 
-async function loadNestpayEmailData(orderId: string) {
-  const data = await getNestpayReceiptData(orderId);
-  if (!data) return null;
+async function loadPaymentEmailData(orderId: string) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: {
+      orderNumber: true,
+      totalEur: true,
+      totalCents: true,
+      billingTotalCents: true,
+      chargedCurrency: true,
+      chargedAmountMinor: true,
+      paypalCaptureId: true,
+      user: { select: { name: true, email: true } },
+      items: {
+        select: { productLabel: true, totalEur: true, totalCents: true },
+      },
+    },
+  });
+  if (!order?.user.email) return null;
+
+  const totalEurCents =
+    order.billingTotalCents ?? order.totalCents ?? order.totalEur * 100;
+  const chargedLabel =
+    order.chargedAmountMinor != null &&
+    isChargeCurrency(order.chargedCurrency) &&
+    order.chargedCurrency !== "EUR"
+      ? `${formatChargeAmount(order.chargedAmountMinor, order.chargedCurrency)} (${order.chargedCurrency})`
+      : null;
+
   return {
-    to: data.customer.email,
-    orderNumber: data.orderNumber,
-    customer: data.customer,
-    lineItems: data.lineItems,
-    totals: data.totals,
-    conversion: data.conversion,
-    transaction: data.transaction,
+    to: order.user.email,
+    orderNumber: order.orderNumber,
+    customerName: order.user.name,
+    lineItems: order.items.map((item) => ({
+      label: item.productLabel,
+      totalLabel: formatBillingMoney(item.totalCents ?? item.totalEur * 100),
+    })),
+    totalEurLabel: formatBillingMoney(totalEurCents),
+    chargedLabel,
+    captureId: order.paypalCaptureId,
     retryUrl: `${getAuthUrl()}/portal/orders/${orderId}`,
   };
 }
@@ -486,11 +520,13 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
-function formatOutboxMoney(cents: number, _currency: "RSD" | null = "RSD"): string {
+function formatOutboxMoney(cents: number, _currency: "EUR" | null = "EUR"): string {
   void _currency;
-  return `${(cents / 100).toLocaleString("sr-Latn-RS", {
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
     maximumFractionDigits: 0,
-  })} RSD`;
+  }).format(cents / 100);
 }
 
 export type ProcessBatchResult = {

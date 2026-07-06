@@ -1,17 +1,12 @@
 /**
  * invoice-pdf.tsx — Server-side PDF rendering for issued invoices.
  *
- * Three layouts driven off Order.buyerType:
- *   - individual       → fiscal-style, PDV iskazan, sve na srpskom
- *   - company_rs       → faktura sa PIB-om primaoca, napomena o SEF-u
- *   - company_foreign  → invoice na engleskom, "VAT (reverse charge)",
- *                        čl. 24/25 ZPDV referenca
+ * Single English export-invoice layout (EUR) shared by both buyer
+ * types ({individual, business}); business recipients additionally
+ * show their tax ID and country.
  *
  * Rendered with @react-pdf/renderer's `renderToBuffer()` so the call
- * site can pipe straight to Supabase. The structure is one
- * <InvoiceDocument /> with branching at the section level — keeps all
- * three variants in one file so they share spacing, typography, and
- * the issuer block.
+ * site can pipe straight to Supabase.
  *
  * Used by: src/server/actions/issue-invoice.ts
  */
@@ -38,17 +33,16 @@ export type InvoiceData = {
   invoiceNumber: string;
   issueDate: Date;
   serviceDate: Date;
-  buyerType: "individual" | "company_rs" | "company_foreign";
+  buyerType: "individual" | "business";
   recipient: {
     name: string;
     address: string;
     taxId?: string | null;
-    mb?: string | null;
     countryCode?: string | null;
     email?: string | null;
   };
   items: InvoiceLineItem[];
-  currency: "RSD";
+  currency: "EUR";
   paymentMethod: string;
 };
 
@@ -195,10 +189,15 @@ const styles = StyleSheet.create({
   },
 });
 
-function formatMoney(cents: number, _currency: "RSD"): string {
+function formatMoney(cents: number, _currency: "EUR"): string {
   void _currency;
   const value = cents / 100;
-  return `${value.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`;
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 }
 
 function formatDate(date: Date, locale: "sr-Latn-RS" | "en-GB"): string {
@@ -209,55 +208,26 @@ function formatDate(date: Date, locale: "sr-Latn-RS" | "en-GB"): string {
   });
 }
 
+const ENGLISH_STRINGS = {
+  title: "INVOICE",
+  issuer: "Issuer",
+  recipient: "Recipient",
+  issueDate: "Issue date",
+  serviceDate: "Service date",
+  description: "Description",
+  qty: "Qty",
+  unitNet: "Unit net",
+  vat: "VAT",
+  lineTotal: "Net total",
+  subtotal: "Subtotal",
+  vatTotal: "VAT",
+  grand: "Total due",
+  paymentLabel: "Payment method",
+} as const;
+
 const STRINGS = {
-  individual: {
-    title: "RAČUN",
-    issuer: "Izdavalac",
-    recipient: "Kupac",
-    issueDate: "Datum izdavanja",
-    serviceDate: "Datum prometa",
-    description: "Opis",
-    qty: "Količina",
-    unitNet: "Jed. cena",
-    vat: "PDV",
-    lineTotal: "Osnovica",
-    subtotal: "Osnovica",
-    vatTotal: "PDV (20%)",
-    grand: "Ukupno za uplatu",
-    paymentLabel: "Način plaćanja",
-  },
-  company_rs: {
-    title: "RAČUN",
-    issuer: "Izdavalac",
-    recipient: "Primalac",
-    issueDate: "Datum izdavanja",
-    serviceDate: "Datum prometa",
-    description: "Opis",
-    qty: "Količina",
-    unitNet: "Jed. cena",
-    vat: "PDV",
-    lineTotal: "Osnovica",
-    subtotal: "Osnovica",
-    vatTotal: "PDV (20%)",
-    grand: "Ukupno za uplatu",
-    paymentLabel: "Način plaćanja",
-  },
-  company_foreign: {
-    title: "INVOICE",
-    issuer: "Issuer",
-    recipient: "Recipient",
-    issueDate: "Issue date",
-    serviceDate: "Service date",
-    description: "Description",
-    qty: "Qty",
-    unitNet: "Unit net",
-    vat: "VAT",
-    lineTotal: "Net total",
-    subtotal: "Subtotal",
-    vatTotal: "VAT",
-    grand: "Total due",
-    paymentLabel: "Payment method",
-  },
+  individual: ENGLISH_STRINGS,
+  business: ENGLISH_STRINGS,
 } as const;
 
 export async function renderInvoicePdf(data: InvoiceData): Promise<Buffer> {
@@ -270,7 +240,7 @@ export async function renderInvoicePdf(data: InvoiceData): Promise<Buffer> {
 function InvoiceDocument({ data }: { data: InvoiceData }) {
   const layoutKey = data.buyerType;
   const t = STRINGS[layoutKey];
-  const locale = "sr-Latn-RS";
+  const locale = "en-GB";
 
   const subtotalCents = data.items.reduce(
     (sum, it) => sum + it.quantity * it.unitPriceNetCents,
@@ -295,7 +265,7 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.h1}>{t.title}</Text>
-            <Text style={styles.number}>br. {data.invoiceNumber}</Text>
+            <Text style={styles.number}>No. {data.invoiceNumber}</Text>
           </View>
           <View style={styles.metaCol}>
             <View style={styles.metaPair}>
@@ -325,17 +295,11 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
             <Text style={styles.partyLabel}>{t.recipient}</Text>
             <Text style={styles.partyName}>{data.recipient.name}</Text>
             <Text style={styles.partyText}>{data.recipient.address}</Text>
-            {data.recipient.taxId && data.buyerType === "company_rs" && (
-              <Text style={styles.partyMono}>
-                PIB {data.recipient.taxId}
-                {data.recipient.mb ? ` · MB ${data.recipient.mb}` : ""}
-              </Text>
-            )}
-            {data.recipient.taxId && data.buyerType === "company_foreign" && (
+            {data.recipient.taxId && data.buyerType === "business" && (
               <Text style={styles.partyMono}>Tax ID {data.recipient.taxId}</Text>
             )}
             {data.recipient.countryCode &&
-              data.buyerType === "company_foreign" && (
+              data.buyerType === "business" && (
                 <Text style={styles.partyText}>
                   Country: {data.recipient.countryCode}
                 </Text>
@@ -427,17 +391,6 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
 }
 
 function buildNotes(data: InvoiceData): string[] {
-  if (data.buyerType === "individual") {
-    return [
-      "PDV obračunat po stopi 20% i uračunat u prikazane iznose.",
-      "Hvala na poverenju — prijem i potvrdu uplate dobićete posebnim mejlom.",
-    ];
-  }
-  if (data.buyerType === "company_rs") {
-    return [
-      "Faktura je takođe poslata kroz Sistem elektronskih faktura (SEF) na osnovu PIB-a primaoca.",
-      "PDV iskazan po stopi 20% — ulazni PDV se može odbiti u skladu sa Zakonom o PDV-u.",
-    ];
-  }
+  void data;
   return [];
 }

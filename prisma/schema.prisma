@@ -178,14 +178,14 @@ enum OrderStatus {
   refunded
 }
 
-/// Tip kupca za potrebe izdavanja računa.
-/// - `individual`     fizičko lice (B2C) — fiskalni račun preko ESIR-a
-/// - `company_rs`     privredno društvo u Srbiji — e-faktura kroz SEF
-/// - `company_foreign` strana firma — PDF faktura, oslobođenje od PDV-a
+/// Buyer identity for invoicing.
+/// - `individual`  B2C consumer — export invoice, EUR, 0% Serbian VAT.
+/// - `business`    company buyer — export invoice with the buyer's
+///                 company details; reverse-charge note when an EU VAT
+///                 ID is provided (VIES-verifiable via companyTaxId).
 enum BuyerType {
   individual
-  company_rs
-  company_foreign
+  business
 }
 
 enum PaymentStatus {
@@ -196,24 +196,26 @@ enum PaymentStatus {
 }
 
 enum PaymentProvider {
-  card_mock
+  paypal
   wire_transfer
-  nestpay
+  card_mock
 }
 
 /// How the customer is expected to pay this order.
-/// - `online_payment` (default): NestPay card checkout. Konačni račun
-///   issued automatically by finishSuccessfulPayment hook.
-/// - `wire_transfer`: admin-issued offer flow. Predračun (proforma) is
-///   sent to customer; once funds land, admin marks paid → triggers
-///   the same finishSuccessfulPayment → konačni račun pipeline.
+/// - `online_payment` (default): PayPal checkout. Final invoice issued
+///   automatically by the finishSuccessfulPayment hook.
+/// - `wire_transfer`: admin-issued offer flow. Proforma is sent to the
+///   customer; once funds land, admin marks paid → triggers the same
+///   finishSuccessfulPayment → invoice pipeline.
 enum PaymentMethod {
   online_payment
   wire_transfer
 }
 
+/// Canonical billing currency. Invoices are always issued in EUR; the
+/// buyer-facing charge currency lives in Order.chargedCurrency.
 enum BillingCurrency {
-  RSD
+  EUR
 }
 
 model Order {
@@ -226,9 +228,9 @@ model Order {
   paymentProvider     PaymentProvider?
   paymentId           String?
   bitrix24DealId      String?          @unique
-  totalRsd            Int
+  totalEur            Int
   totalCents          Int?
-  premiumTotalRsd     Int?
+  premiumTotalEur     Int?
   containsAiCredits   Boolean          @default(false)
   aiCreditsAppliedAt  DateTime?
   customerNote        String?          @db.Text
@@ -238,32 +240,24 @@ model Order {
   // elapses; null means the right is still active and the order
   // shouldn't have started production yet.
   withdrawalWaivedAt  DateTime?
-  // Buyer identity for invoicing. Defaults to `individual` so existing
-  // and untouched orders behave as before. company_* values are only
-  // populated when the customer explicitly chose "Firma" in checkout
-  // and provided the legally-required fields. Reading these:
-  //   companyTaxId  — PIB for company_rs, VAT ID / local tax ID for
-  //                   company_foreign (interpret via companyCountryCode).
-  //   companyMb     — matični broj, only meaningful for company_rs.
-  //   companyCountryCode — ISO-3166-1 alpha-2; null for individual.
+  // Buyer identity for invoicing. Defaults to `individual`. company_*
+  // values are only populated when the customer toggles "I'm buying as
+  // a business" in checkout. companyTaxId holds the VAT ID / local tax
+  // ID (interpret via companyCountryCode; VIES-verifiable for EU IDs).
   buyerType           BuyerType        @default(individual)
   buyerCountryCode    String?
-  // buyerAddress/buyerCity/buyerPhone/buyerPostalCode: dodate u bazu
-  // 2026-06-11 iz neuvezane sesije (drift pomiren 2026-07-03). Kod ih
-  // trenutno ne koristi — zadržane da šema, istorija migracija i baza
-  // budu identične; kandidat za buduće buyer-contact polje u checkout-u.
+  // Optional buyer contact fields — reserved for a future checkout
+  // contact block; currently unused by code.
   buyerAddress        String?
   buyerCity           String?
   buyerPhone          String?
   buyerPostalCode     String?
   companyName         String?
   companyTaxId        String?
-  companyMb           String?
   companyAddress      String?          @db.Text
   companyCountryCode  String?
   billingCurrency     BillingCurrency?
   billingVatRate      Float?
-  billingRsdRate      Float?
   billingTotalCents   Int?
   // VIES (VAT Information Exchange System) verification snapshot for
   // company_foreign orders. Populated when admin clicks "Proveri VAT
@@ -277,28 +271,31 @@ model Order {
   vatVerifiedAt       DateTime?
   vatVerifiedName     String?
   vatRequestId        String?
-  // Nestpay (Banca Intesa 3D Pay Hosting) transaction snapshot. Set
-  // when the bank's okUrl/failUrl POST returns to /api/nestpay/return
-  // with a hash-verified payload, or by the Order Status Query
-  // reconciler when the redirect is lost. nestpayChargedAmountCents +
-  // nestpayChargedCurrency + nestpayChargeRate snapshot the actual
-  // RSD amount charged on the card (Banca Intesa clears in RSD).
-  // nestpayResponseRaw
-  // keeps the full POST body for forensic audit; nestpayLastQueryAt
-  // throttles the reconciler.
-  nestpayTransId            String?
-  nestpayAuthCode           String?
-  nestpayProcReturnCode     String?
-  nestpayMdStatus           String?
-  nestpayHostRefNum         String?
-  nestpayExtraTrxDate       DateTime?
-  nestpayResponseRaw        Json?
-  nestpayResponseHash       String?
-  nestpayLastQueryAt        DateTime?
-  nestpayChargedAmountCents Int?
-  nestpayChargedCurrency    String?
-  nestpayChargeRate         Float?
-  nestpayInstallmentCount   Int?
+  // PayPal transaction snapshot. paymentId holds the PayPal order id
+  // (v2/checkout/orders); the fields below are set by the capture
+  // action, the signature-verified webhook, or the reconcile cron.
+  // paypalCaptureId is required for refunds. paypalCaptureStatus
+  // mirrors PayPal's capture status (COMPLETED | PENDING | DECLINED |
+  // REFUNDED) — PENDING covers eCheck captures that complete days
+  // later via webhook. paypalResponseRaw keeps the full capture/webhook
+  // payload for forensic audit; paypalLastQueryAt throttles the
+  // reconciler.
+  paypalCaptureId     String?
+  paypalCaptureStatus String?
+  paypalPayerEmail    String?
+  paypalPayerCountry  String?
+  paypalResponseRaw   Json?
+  paypalLastQueryAt   DateTime?
+  // Charged-amount snapshot (presentment currency). What the buyer
+  // actually paid: chargedCurrency is the PayPal-supported display
+  // currency chosen by geo at order creation; chargedAmountMinor is in
+  // minor units (zero-decimal currencies like JPY/HUF store whole
+  // units); chargedFxRate is the EUR→chargedCurrency rate used, with
+  // chargedFxAsOf recording the fx-snapshot date for the audit trail.
+  chargedCurrency     String?
+  chargedAmountMinor  Int?
+  chargedFxRate       Decimal?         @db.Decimal(12, 6)
+  chargedFxAsOf       DateTime?
   // Invoice issuance — populated once, immediately after the payment
   // provider confirms `paymentStatus = completed`. invoiceNumber is
   // allocated atomically per calendar year via InvoiceCounter and is
@@ -342,10 +339,13 @@ model Order {
   sourceInquiry     ProjectInquiry?    @relation("InquiryConversion", fields: [sourceInquiryId], references: [id], onDelete: SetNull)
 
   @@index([sourceInquiryId])
-  // Hot-path indeksi: portal lista ("moje porudžbine") ide po userId,
-  // NestPay return/reconcile traže po paymentId+paymentProvider, a
-  // reconcile sweep-ovi filtriraju po paymentStatus / status. Postgres
-  // ne indeksira FK kolone automatski.
+  // Hot-path indexes: the portal list ("my orders") queries by userId,
+  // PayPal capture/webhook/reconcile look up by paymentId+paymentProvider,
+  // and reconcile sweeps filter by paymentStatus / status. Postgres does
+  // not index FK columns automatically. A partial index
+  // orders_paypal_pending_idx (paymentStatus, updatedAt WHERE
+  // paymentProvider='paypal' AND paymentStatus='pending') lives as raw
+  // SQL in the init migration — Prisma can't express partial indexes.
   @@index([userId])
   @@index([paymentId, paymentProvider])
   @@index([paymentStatus])
@@ -361,9 +361,9 @@ model OrderItem {
   productLabel     String
   categoryLabel    String
   kind             OrderItemKind @default(service)
-  basePriceRsd     Int
+  basePriceEur     Int
   basePriceCents   Int?
-  totalRsd         Int
+  totalEur         Int
   totalCents       Int?
   aiCreditQuantity Int?
   aiCreditUnits    Int?
@@ -372,7 +372,7 @@ model OrderItem {
   durationDiscount Float?
   clientNote       String?       @db.Text
   configJson       Json?
-  originalTotalRsd Int?
+  originalTotalEur Int?
   discountPct      Int?
   discountReason   String?       @db.Text
 
@@ -476,30 +476,26 @@ model OrderCharge {
   buyerCountryCode    String?
   companyName         String?
   companyTaxId        String?
-  companyMb           String?
   companyAddress      String?           @db.Text
   companyCountryCode  String?
   billingCurrency     BillingCurrency?
   billingVatRate      Float?
-  billingRsdRate      Float?
   billingTotalCents   Int?
   status              OrderChargeStatus @default(pending)
   paymentProvider     PaymentProvider?
   paymentId           String?
   paymentStatus       PaymentStatus     @default(pending)
-  // Same Nestpay snapshot semantics as Order — see comment on Order.nestpayTransId.
-  nestpayTransId            String?
-  nestpayAuthCode           String?
-  nestpayProcReturnCode     String?
-  nestpayMdStatus           String?
-  nestpayHostRefNum         String?
-  nestpayExtraTrxDate       DateTime?
-  nestpayResponseRaw        Json?
-  nestpayResponseHash       String?
-  nestpayLastQueryAt        DateTime?
-  nestpayChargedAmountCents Int?
-  nestpayChargedCurrency    String?
-  nestpayChargeRate         Float?
+  // Same PayPal snapshot semantics as Order — see comment on Order.paypalCaptureId.
+  paypalCaptureId     String?
+  paypalCaptureStatus String?
+  paypalPayerEmail    String?
+  paypalPayerCountry  String?
+  paypalResponseRaw   Json?
+  paypalLastQueryAt   DateTime?
+  chargedCurrency     String?
+  chargedAmountMinor  Int?
+  chargedFxRate       Decimal?          @db.Decimal(12, 6)
+  chargedFxAsOf       DateTime?
   invoiceNumber       String?           @unique
   invoiceIssuedAt     DateTime?
   invoicePdfPath      String?
@@ -530,6 +526,26 @@ model OrderChargeItem {
 
   @@index([chargeId])
   @@map("order_charge_items")
+}
+
+// ─── Payment webhook dedupe ──────────────────────────────
+//
+// One row per received PayPal webhook event, keyed on PayPal's event
+// id. The webhook route inserts before processing; a unique violation
+// means the event was already handled (PayPal retries deliveries), so
+// the route acks with 200 without reprocessing. processedAt is set
+// after the business logic commits.
+
+model PaymentWebhookEvent {
+  id          String    @id
+  eventType   String
+  resourceId  String?
+  payload     Json
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+
+  @@index([eventType, receivedAt])
+  @@map("payment_webhook_events")
 }
 
 // ─── Bitrix24 sync log ───────────────────────────────────
@@ -797,11 +813,13 @@ model ProjectInquiryFile {
 
 // ─── Versioned pricing catalog ───────────────────────────
 //
-// RSD list amounts are the financial source of truth. Published books
-// feed public pricing, checkout, portal repricing, admin charges and AI
-// credit purchases. RSD gross prices include PDV and split VAT out of the
-// gross price. Draft books are editable by finance
-// admins only and do not affect live pricing until published.
+// EUR list amounts are the financial source of truth (integer major
+// units mirrored from docs/pricing/pillar-1-extracted.md). Published
+// books feed public pricing, checkout, portal repricing, admin charges
+// and AI credit purchases. Buyer-facing display/charge currencies are
+// derived from EUR at render/checkout time (src/lib/currency). Draft
+// books are editable by finance admins only and do not affect live
+// pricing until published.
 
 enum PricingBookStatus {
   draft
@@ -841,7 +859,7 @@ model PricingProduct {
   categoryId   String
   label        String
   unitLabel    String
-  basePriceRsd Float
+  basePriceEur Float
   includesJson Json
   inquiryOnly  Boolean  @default(false)
   sortOrder    Int      @default(0)
@@ -861,7 +879,7 @@ model PricingAddOn {
   addOnId         String
   label           String
   description     String
-  priceRsd        Float
+  priceEur        Float
   priceType       String
   includedQty     Int
   maxQty          Int?
@@ -904,7 +922,7 @@ model PricingDurationRule {
   minSeconds        Int
   defaultSeconds    Int
   maxSeconds        Int?
-  perSecondRsd      Float
+  perSecondEur      Float
   discountTiersJson Json
   updatedAt         DateTime @updatedAt
 

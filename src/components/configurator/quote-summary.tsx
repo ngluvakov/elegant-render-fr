@@ -1,6 +1,6 @@
 /**
  * QuoteSummary — Sticky dark sidebar showing line items, estimated total,
- * and the "Naruci" (order) CTA that saves the quote to sessionStorage.
+ * and the order CTA that saves the quote to sessionStorage.
  *
  * Used on: PricingConfigurator (sidebar column, /pricing page).
  */
@@ -67,7 +67,7 @@ export function QuoteSummary() {
     pushGoogleDataLayerEvent(beginCheckoutEvent);
     track("checkout_started", {
       cart_size: calculation.items.length,
-      total_rsd: calculation.total,
+      total_eur: calculation.total,
     });
     router.push("/checkout");
   };
@@ -75,22 +75,22 @@ export function QuoteSummary() {
   const handleInquiryFromQuote = () => {
     openInquiry({
       source: "quote-summary",
-      sourceLabel: "Preuzmite moju ponudu",
-      serviceType: "Već izabrane stavke iz konfiguratora",
+      sourceLabel: "Prepare my estimate",
+      serviceType: "Already selected configurator items",
       quoteSnapshot: {
-        totalRsd: calculation.total,
-        originalTotalRsd: calculation.originalTotal,
+        totalEur: calculation.total,
+        originalTotalEur: calculation.originalTotal,
         items: calculation.items.map((item) => ({
           productId: item.productId,
           productLabel: item.productLabel,
           categoryLabel: item.categoryLabel,
-          totalRsd: item.totalRsd,
+          totalEur: item.totalEur,
           addOns: item.addOns
             .filter((addOn) => addOn.billableQty > 0)
             .map((addOn) => ({
               label: addOn.label,
               qty: addOn.billableQty,
-              totalRsd: addOn.totalRsd,
+              totalEur: addOn.totalEur,
             })),
         })),
       },
@@ -116,7 +116,7 @@ export function QuoteSummary() {
     setShareState({ kind: "saved", url, copied: false });
     track("quote_saved", {
       cart_size: calculation.items.length,
-      total_rsd: calculation.total,
+      total_eur: calculation.total,
     });
   };
 
@@ -142,7 +142,7 @@ export function QuoteSummary() {
         <div className="flex items-center gap-2">
           <ShoppingCart className="h-4 w-4 text-background/60" />
           <h3 className="text-sm font-semibold text-background">
-            Vaša ponuda
+            Your estimate
           </h3>
           {hasItems && (
             <span className="rounded-full bg-accent px-2 py-0.5 text-[0.72rem] font-bold text-white">
@@ -157,7 +157,7 @@ export function QuoteSummary() {
             className="flex items-center gap-1 text-xs text-background/50 transition-colors hover:text-background/80"
           >
             <Trash2 className="h-3 w-3" />
-            Obriši
+            Clear
           </button>
         )}
       </div>
@@ -170,10 +170,10 @@ export function QuoteSummary() {
               <ShoppingCart className="h-5 w-5 text-background/30" />
             </div>
             <p className="text-sm text-background/50">
-              Još nema usluga u ponudi
+              No services in the estimate yet
             </p>
             <p className="mt-1 text-xs text-background/30">
-              Izaberite uslugu iz liste iznad
+              Choose a service from the list above
             </p>
           </div>
         )}
@@ -183,8 +183,8 @@ export function QuoteSummary() {
             (a) => a.billableQty > 0,
           ).length;
           const { primary, struck } = formatPublicDiscountedPrice(
-            item.totalRsd,
-            item.originalTotalRsd,
+            item.totalEur,
+            item.originalTotalEur,
             item.discountPct,
             displayCurrency,
             pricingSettings,
@@ -203,7 +203,7 @@ export function QuoteSummary() {
                   {billableAddOns > 0 && (
                     <span className="text-accent">
                       {" "}
-                      + {billableAddOns} {billableAddOns === 1 ? "dodatak" : "dodatnih opcija"}
+                      + {billableAddOns} {billableAddOns === 1 ? "add-on" : "add-ons"}
                     </span>
                   )}
                 </p>
@@ -219,7 +219,7 @@ export function QuoteSummary() {
               <button
                 type="button"
                 onClick={() => removeProduct(item.instanceId)}
-                aria-label="Ukloni stavku"
+                aria-label="Remove item"
                 className="ml-2 flex-shrink-0 rounded p-0.5 text-background/30 transition-colors hover:text-background/70"
               >
                 <X className="h-3.5 w-3.5" />
@@ -241,7 +241,7 @@ export function QuoteSummary() {
                   className="inline-flex items-center gap-1 text-background/50 transition-colors hover:text-background/80"
                   aria-expanded={explainerOpen}
                 >
-                  Ušteda
+                  Savings
                   <Info
                     className={cn(
                       "h-3 w-3 transition-colors",
@@ -261,40 +261,39 @@ export function QuoteSummary() {
               <Collapsible open={explainerOpen}>
                 <div className="mt-2 rounded-lg bg-background/5 p-3 text-[0.72rem] leading-relaxed text-background/60">
                   <p>
-                    Kada naručite više usluga zajedno, 3D model koji se
-                    pravi za jednu uslugu se može ponovo iskoristiti za
-                    druge — pa te dodatne usluge dobijaju automatski
-                    popust.
+                    When you order several services together, the 3D model
+                    created for one service can be reused for others, so those
+                    additional services get an automatic discount.
                   </p>
                   <ul className="mt-2 space-y-1">
                     <li>
-                      • Eksterijer + 360° eksterijer → 360° je{" "}
+                      • Exterior + 360° exterior → 360° is{" "}
                       <strong className="text-[color:var(--color-sage)]">
                         −40%
                       </strong>{" "}
-                      (eksterijer je već izgrađen u modelu)
+                      (the exterior is already built in the model)
                     </li>
                     <li>
-                      • Enterijer + 3D osnova sprata → osnova je{" "}
+                      • Interior + 3D floor plan → the floor plan is{" "}
                       <strong className="text-[color:var(--color-sage)]">
                         −70%
                       </strong>{" "}
-                      (prostor je već modelovan)
+                      (the space is already modelled)
                     </li>
                     <li>
-                      • Animacija + eksterijer → oba dobijaju popust jer
-                      svaki deli model sa drugim
+                      • Animation + exterior → both receive a discount because
+                      each shares a model with the other
                     </li>
                   </ul>
                   <p className="mt-2 text-background/40">
-                    Popusti se ne slažu — uvek važi najpovoljniji.
+                    Discounts do not stack - the best one always applies.
                   </p>
                 </div>
               </Collapsible>
             </div>
           )}
           <div className="mb-4 flex items-center justify-between gap-3">
-            <p className="text-sm text-background/60">Procenjena cena</p>
+            <p className="text-sm text-background/60">Estimated price</p>
             <div className="flex flex-col items-end">
               {calculation.originalTotal > calculation.total && (
                 <p className="text-sm font-normal text-background/40 line-through tabular-nums">
@@ -322,7 +321,7 @@ export function QuoteSummary() {
               "w-full justify-center rounded-xl",
             )}
           >
-            Naruči
+            Order
             <ArrowRight className="ml-1.5 h-4 w-4" />
           </button>
           <button
@@ -330,10 +329,10 @@ export function QuoteSummary() {
             onClick={handleInquiryFromQuote}
             className="mt-2 w-full rounded-xl border border-background/15 px-4 py-3 text-sm font-medium text-background/80 transition-colors hover:bg-background/10 hover:text-background"
           >
-            Neka tim pošalje predlog
+            Ask the team to send an estimate
           </button>
           <p className="mt-3 text-center text-[0.7rem] text-background/40">
-            Bez registracije — naručite u par koraka.
+            No registration - order in a few steps.
           </p>
 
           {/* Share quote — saves to DB and returns a tokenized link.
@@ -346,12 +345,12 @@ export function QuoteSummary() {
                 className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-[0.72rem] font-medium text-background/55 transition-colors hover:bg-background/5 hover:text-background/85"
               >
                 <Share2 className="h-3 w-3" />
-                Sačuvaj i podeli ponudu
+                Save and share estimate
               </button>
             )}
             {shareState.kind === "saving" && (
               <p className="text-center text-[0.72rem] text-background/40">
-                Čuvanje…
+                Saving...
               </p>
             )}
             {shareState.kind === "error" && (
@@ -362,7 +361,7 @@ export function QuoteSummary() {
             {shareState.kind === "saved" && (
               <div className="space-y-2">
                 <p className="text-[0.7rem] text-background/55">
-                  Link važi 30 dana. Otvaranjem se učitavaju iste stavke.
+                  The link is valid for 30 days. Opening it loads the same items.
                 </p>
                 <div className="flex items-center gap-1.5 rounded-lg bg-background/10 p-1.5">
                   <input
@@ -379,12 +378,12 @@ export function QuoteSummary() {
                     {shareState.copied ? (
                       <>
                         <Check className="h-3 w-3" />
-                        Kopirano
+                        Copied
                       </>
                     ) : (
                       <>
                         <Copy className="h-3 w-3" />
-                        Kopiraj
+                        Copy
                       </>
                     )}
                   </button>
@@ -394,8 +393,8 @@ export function QuoteSummary() {
           </div>
 
           <p className="mt-3 text-center text-[0.68rem] text-background/30">
-            Cene su procene. Konačna ponuda može varirati u zavisnosti od
-            specifičnosti projekta. {pricingTerms.shortNote}
+            Prices are estimates. The final estimate can vary depending on the
+            specifics of the project. {pricingTerms.shortNote}
           </p>
         </div>
       )}

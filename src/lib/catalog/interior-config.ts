@@ -3,9 +3,9 @@
  *
  * An int-static OrderItem can hold multiple floors. Each floor owns its own
  * rooms/cameras, description, files (via OrderFile.floorId), and advanced
- * fields. First floor base = 19.924 RSD, additional floors = 14.064 RSD (30% discount).
- * Each floor includes 10 staged rooms + 10 renders; extra room = 3.282 RSD,
- * extra camera = 1.172 RSD. Every room has at least 1 camera.
+ * fields. First floor base = €170, additional floors = €120 (30% discount).
+ * Each floor includes 10 staged rooms + 10 renders; extra room = €28,
+ * extra camera = €10. Every room has at least 1 camera.
  */
 
 export const ROOM_STYLES = [
@@ -118,29 +118,29 @@ export function effectiveStyleId(
     : floor.globalStyleId;
 }
 
-export const INT_STATIC_FIRST_FLOOR_RSD = 19924;
-export const INT_STATIC_EXTRA_FLOOR_RSD = 14064;
+export const INT_STATIC_FIRST_FLOOR_EUR = 170;
+export const INT_STATIC_EXTRA_FLOOR_EUR = 120;
 export const INT_STATIC_INCLUDED_ROOMS = 10;
 export const INT_STATIC_INCLUDED_CAMERAS = 10;
-export const INT_STATIC_EXTRA_ROOM_RSD = 3282;
-export const INT_STATIC_EXTRA_CAMERA_RSD = 1172;
+export const INT_STATIC_EXTRA_ROOM_EUR = 28;
+export const INT_STATIC_EXTRA_CAMERA_EUR = 10;
 
 export type InteriorPricing = {
-  firstFloorRsd: number;
-  extraFloorRsd: number;
+  firstFloorEur: number;
+  extraFloorEur: number;
   includedRooms: number;
   includedCameras: number;
-  extraRoomRsd: number;
-  extraCameraRsd: number;
+  extraRoomEur: number;
+  extraCameraEur: number;
 };
 
 export const DEFAULT_INTERIOR_PRICING: InteriorPricing = {
-  firstFloorRsd: INT_STATIC_FIRST_FLOOR_RSD,
-  extraFloorRsd: INT_STATIC_EXTRA_FLOOR_RSD,
+  firstFloorEur: INT_STATIC_FIRST_FLOOR_EUR,
+  extraFloorEur: INT_STATIC_EXTRA_FLOOR_EUR,
   includedRooms: INT_STATIC_INCLUDED_ROOMS,
   includedCameras: INT_STATIC_INCLUDED_CAMERAS,
-  extraRoomRsd: INT_STATIC_EXTRA_ROOM_RSD,
-  extraCameraRsd: INT_STATIC_EXTRA_CAMERA_RSD,
+  extraRoomEur: INT_STATIC_EXTRA_ROOM_EUR,
+  extraCameraEur: INT_STATIC_EXTRA_CAMERA_EUR,
 };
 
 export type InteriorFloorCalc = {
@@ -158,7 +158,7 @@ export type InteriorFloorCalc = {
 
 export type InteriorCalc = {
   floors: InteriorFloorCalc[];
-  totalRsd: number;
+  totalEur: number;
   floorCount: number;
 };
 
@@ -176,11 +176,11 @@ export function calcFloor(
   const extraRooms = Math.max(0, totalRooms - pricing.includedRooms);
   const extraCameras = Math.max(0, totalCameras - pricing.includedCameras);
 
-  const extraRoomsCost = extraRooms * pricing.extraRoomRsd;
-  const extraCamerasCost = extraCameras * pricing.extraCameraRsd;
+  const extraRoomsCost = extraRooms * pricing.extraRoomEur;
+  const extraCamerasCost = extraCameras * pricing.extraCameraEur;
   const baseCost = isFirstFloor
-    ? pricing.firstFloorRsd
-    : pricing.extraFloorRsd;
+    ? pricing.firstFloorEur
+    : pricing.extraFloorEur;
 
   return {
     totalRooms,
@@ -203,7 +203,7 @@ export function calcInteriorTotal(
   const floorCalcs = floors.map((f, idx) => calcFloor(f, idx === 0, pricing));
   return {
     floors: floorCalcs,
-    totalRsd: floorCalcs.reduce((s, f) => s + f.floorTotal, 0),
+    totalEur: floorCalcs.reduce((s, f) => s + f.floorTotal, 0),
     floorCount: floors.length,
   };
 }

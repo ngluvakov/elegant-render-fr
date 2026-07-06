@@ -40,8 +40,8 @@ export type AssistantGuideContext = {
   // Cenovnik (/pricing) cart awareness — set by PricingAssistantGuideContext so
   // the assistant (bubble tips + AI) can recognize what the user is building.
   cartItemCount?: number;
-  cartTotalRsd?: number;
-  cartOriginalTotalRsd?: number;
+  cartTotalEur?: number;
+  cartOriginalTotalEur?: number;
   cartHasDiscount?: boolean;
 };
 

@@ -33,12 +33,12 @@ import {
 } from "@/lib/admin-permissions";
 
 const CLIENT_NAV = [
-  { href: "/portal", label: "Pregled", icon: LayoutDashboard, exact: true },
-  { href: "/portal/orders", label: "Porudžbine", icon: ShoppingBag, exact: false },
-  { href: "/portal/finance", label: "Finansije", icon: ReceiptText, exact: false },
+  { href: "/portal", label: "Overview", icon: LayoutDashboard, exact: true },
+  { href: "/portal/orders", label: "Orders", icon: ShoppingBag, exact: false },
+  { href: "/portal/finance", label: "Finance", icon: ReceiptText, exact: false },
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
-  { href: "/portal/ai-creations", label: "AI kreacije", icon: Images, exact: false },
-  { href: "/portal/profile", label: "Profil", icon: User, exact: true },
+  { href: "/portal/ai-creations", label: "AI creations", icon: Images, exact: false },
+  { href: "/portal/profile", label: "Profile", icon: User, exact: true },
 ];
 
 const ADMIN_NAV: Array<{
@@ -51,7 +51,7 @@ const ADMIN_NAV: Array<{
   { href: "/portal/admin", label: "Admin", icon: Shield, exact: true },
   {
     href: "/portal/admin/analytics",
-    label: "Analitika",
+    label: "Analytics",
     icon: BarChart3,
     exact: false,
     permission: "ANALYTICS_VIEW",
@@ -59,62 +59,62 @@ const ADMIN_NAV: Array<{
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
   {
     href: "/portal/ai-creations",
-    label: "AI kreacije",
+    label: "AI creations",
     icon: Images,
     exact: false,
   },
   {
     href: "/portal/admin/inquiries",
-    label: "Upiti",
+    label: "Inquiries",
     icon: Inbox,
     exact: false,
     permission: "INQUIRIES_MANAGE",
   },
   {
     href: "/portal/admin/vr-inquiries",
-    label: "VR upiti",
+    label: "VR inquiries",
     icon: Headphones,
     exact: false,
     permission: "INQUIRIES_MANAGE",
   },
   {
     href: "/portal/admin/ai-studio",
-    label: "AI generacije",
+    label: "AI generations",
     icon: ImageIcon,
     exact: false,
     permission: "USAGE_VIEW",
   },
   {
     href: "/portal/admin/chat-feedback",
-    label: "AI zahtevi",
+    label: "AI requests",
     icon: MessageSquareWarning,
     exact: false,
     permission: "ANALYTICS_VIEW",
   },
   {
     href: "/portal/admin/users",
-    label: "Korisnici",
+    label: "Users",
     icon: User,
     exact: false,
     permission: "USERS_VIEW",
   },
   {
     href: "/portal/admin/finance/pricebook",
-    label: "Cenovnik",
+    label: "Pricebook",
     icon: ReceiptText,
     exact: false,
     permission: "FINANCE_MANAGE",
   },
   {
     href: "/portal/admin/finance/export",
-    label: "Izvoz računa",
+    label: "Invoice export",
     icon: ReceiptText,
     exact: false,
     permission: "FINANCE_VIEW",
   },
   {
     href: "/portal/admin/revisions",
-    label: "Revizije",
+    label: "Revisions",
     icon: Shield,
     exact: false,
     permission: "AUDIT_VIEW",
@@ -126,7 +126,7 @@ const ADMIN_NAV: Array<{
     exact: false,
     permission: "SYSTEM_MANAGE",
   },
-  { href: "/portal/profile", label: "Profil", icon: User, exact: true },
+  { href: "/portal/profile", label: "Profile", icon: User, exact: true },
 ];
 
 type PortalSidebarProps = {
@@ -189,13 +189,13 @@ export function PortalSidebar({
           className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs text-muted-foreground transition-colors hover:text-foreground"
         >
           <ExternalLink className="h-3.5 w-3.5" />
-          Nazad na sajt
+          Back to site
         </Link>
 
         {/* User info + sign out */}
         <div className="flex items-center gap-3 rounded-xl bg-sidebar-accent/40 px-3 py-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-bold text-white">
-            {userName?.charAt(0)?.toUpperCase() || "K"}
+            {userName?.charAt(0)?.toUpperCase() || "U"}
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs font-medium text-foreground">
@@ -208,7 +208,7 @@ export function PortalSidebar({
           <form action={signOutAction}>
             <button
               type="submit"
-              aria-label="Odjavite se"
+              aria-label="Log out"
               className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
             >
               <LogOut className="h-3.5 w-3.5" />

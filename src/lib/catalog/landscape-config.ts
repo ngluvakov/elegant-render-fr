@@ -2,7 +2,7 @@
  * landscape-config.ts — Per-item config shape + vocabularies for the
  * land-static product (Pejzažni render). Single-level config (no
  * floors). Drives the engine's add-on quantities for `land-cam` (extra
- * cameras over 1) and `land-aerial` (binary upsell, 44.536 RSD).
+ * cameras over 1) and `land-aerial` (binary upsell, €380).
  *
  * Reuses TIMES_OF_DAY + SEASONS from interior-config; defines
  * landscape-specific vocabularies (style, vegetation age, topography,

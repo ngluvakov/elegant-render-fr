@@ -30,8 +30,8 @@ export function MobileQuoteBar() {
       <div className="mx-auto flex w-full max-w-[min(96vw,1720px)] items-center justify-between gap-3 px-5 py-3">
         <div className="min-w-0 flex-1">
           <div className="text-[0.65rem] uppercase tracking-[0.18em] text-background/50">
-            Procenjena cena · {calculation.items.length}{" "}
-            {calculation.items.length === 1 ? "stavka" : "stavki"}
+            Estimated price · {calculation.items.length}{" "}
+            {calculation.items.length === 1 ? "item" : "items"}
           </div>
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <span className="text-lg font-semibold text-background tabular-nums">
@@ -61,7 +61,7 @@ export function MobileQuoteBar() {
           href="#quote-summary"
           className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-accent/90"
         >
-          Pogledaj ponudu
+          View estimate
           <ArrowDown className="h-3 w-3" />
         </a>
       </div>

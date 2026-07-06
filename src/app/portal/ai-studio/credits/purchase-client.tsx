@@ -34,15 +34,15 @@ export function AiCreditPurchaseClient({
               className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" />
-              Nazad na AI Studio
+              Back to AI Studio
             </Link>
             <h1 className="mt-3 font-heading text-3xl text-foreground md:text-4xl">
-              AI krediti
+              AI credits
             </h1>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Krediti se aktiviraju odmah nakon plaćanja i važe{" "}
-              {pricingCatalog.settings.aiCreditExpiresAfterMonths} meseci.
-              Svaka dopuna produžava rok važenja celog aktivnog balansa.
+              Credits activate immediately after payment and are valid for{" "}
+              {pricingCatalog.settings.aiCreditExpiresAfterMonths} months.
+              Each top-up extends the expiry date for the entire active balance.
             </p>
           </div>
         </div>
@@ -65,7 +65,7 @@ function PortalCreditSummary() {
 
   const handleOrder = () => {
     if (!hasCredits) return;
-    // Don't pre-stash the withdrawal waiver here — /checkout step-review
+    // Don't pre-stash the withdrawal waiver here — /checkout step-details
     // is the canonical place that surfaces it alongside the final total
     // in the buyer's currency. Pre-stashing would auto-submit and skip
     // that review.
@@ -77,7 +77,7 @@ function PortalCreditSummary() {
     <aside className="rounded-2xl border border-border/60 bg-card/80 p-5">
       <div className="flex items-center gap-2">
         <Coins className="h-4 w-4 text-accent" />
-        <h2 className="text-lg font-semibold text-foreground">Pregled kupovine</h2>
+        <h2 className="text-lg font-semibold text-foreground">Purchase summary</h2>
       </div>
 
       {creditItem ? (
@@ -87,7 +87,7 @@ function PortalCreditSummary() {
               {formatCreditsFromUnits(creditItem.aiCreditUnits ?? 0)}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              {creditItem.aiCreditQuantity} kredita ·{" "}
+              {creditItem.aiCreditQuantity} credits ·{" "}
               {formatPublicPriceFromCents(
                 creditItem.totalCents,
                 displayCurrency,
@@ -97,7 +97,7 @@ function PortalCreditSummary() {
           </div>
           <div className="flex items-center justify-between border-t border-border/50 pt-4">
             <span className="text-sm text-muted-foreground">
-              Ukupno (PDV uračunat)
+              Total (VAT included)
             </span>
             <span className="text-2xl font-bold text-foreground">
               {formatPublicPriceFromCents(
@@ -114,7 +114,7 @@ function PortalCreditSummary() {
             className="w-full"
             onClick={handleOrder}
           >
-            Nastavi na plaćanje
+            Continue to payment
             <ArrowRight className="h-4 w-4" />
           </Button>
           <button
@@ -122,16 +122,16 @@ function PortalCreditSummary() {
             onClick={clearAll}
             className="w-full text-center text-xs font-semibold text-muted-foreground hover:text-foreground"
           >
-            Obriši izbor
+            Clear selection
           </button>
         </div>
       ) : (
         <div className="mt-5 rounded-xl border border-dashed border-border/70 p-6 text-center">
           <p className="text-sm font-semibold text-foreground">
-            Izaberite količinu kredita
+            Choose credit quantity
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Posle klika na “Dodaj kredite”, porudžbina ide kroz isti payment flow.
+            After clicking “Add credits”, the order goes through the same payment flow.
           </p>
         </div>
       )}

@@ -5,14 +5,14 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { NO_INDEX_ROBOTS } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Verifikacija emaila",
-  description: "Potvrdite email adresu i aktivirajte Elegant Render nalog.",
+  title: "Email verification",
+  description: "Confirm your email address and activate your Elegant Render account.",
   robots: NO_INDEX_ROBOTS,
 };
 
 type SearchParams = Promise<{ token?: string }>;
 
-export default async function VerifikacijaPage({
+export default async function VerifyEmailPage({
   searchParams,
 }: {
   searchParams: SearchParams;
@@ -23,9 +23,9 @@ export default async function VerifikacijaPage({
     return (
       <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
         <div className="w-full max-w-md text-center">
-          <h1 className="text-3xl text-foreground">Nevažeći link</h1>
+          <h1 className="text-3xl text-foreground">Invalid link</h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Link za verifikaciju je nevažeći.
+            The verification link is invalid.
           </p>
         </div>
       </div>
@@ -39,19 +39,19 @@ export default async function VerifikacijaPage({
       <div className="w-full max-w-md text-center">
         {result.success ? (
           <>
-            <h1 className="text-3xl text-foreground">Email potvrđen</h1>
+            <h1 className="text-3xl text-foreground">Email confirmed</h1>
             <p className="mt-3 text-sm text-muted-foreground">
               {result.message}
             </p>
             <div className="mt-6">
               <ButtonLink href="/portal" variant="accent" size="lg">
-                Idite na portal
+                Go to portal
               </ButtonLink>
             </div>
           </>
         ) : (
           <>
-            <h1 className="text-3xl text-foreground">Greška</h1>
+            <h1 className="text-3xl text-foreground">Error</h1>
             <p className="mt-3 text-sm text-muted-foreground">
               {result.error}
             </p>
@@ -60,7 +60,7 @@ export default async function VerifikacijaPage({
                 href="/login"
                 className="font-medium text-foreground hover:text-accent"
               >
-                Nazad na prijavu
+                Back to login
               </Link>
             </p>
           </>

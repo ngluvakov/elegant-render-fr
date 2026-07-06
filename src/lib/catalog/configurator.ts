@@ -7,8 +7,9 @@
  * Used by: catalog/calculate, quote-item, service-adder, quote-context
  */
 
-// Source of truth: current RSD catalog derived from docs/pricing/pillar-1-extracted.md.
-// Public list amounts are stored in RSD gross amounts with PDV included.
+// Source of truth: docs/pricing/pillar-1-extracted.md
+// Public list amounts are stored in integer EUR (major units); *Cents
+// twins are EUR cents. Buyer-currency display converts these at render time.
 
 import type { ServiceIcon } from "./services";
 
@@ -37,14 +38,14 @@ export type ConsumeRule = {
 
 export type VolumeRule = {
   afterQty: number;
-  priceRsd: number;
+  priceEur: number;
 };
 
 export type ConfiguratorAddOn = {
   id: string;
   label: string;
   description: string;
-  priceRsd: number;
+  priceEur: number;
   priceType: "fixed" | "percent";
   includedQty: number;
   maxQty: number;
@@ -55,7 +56,7 @@ export type DurationConfig = {
   minSeconds: number;
   defaultSeconds: number;
   maxSeconds: number;
-  perSecondRsd: number;
+  perSecondEur: number;
   discountTiers: Array<{
     minSec: number;
     maxSec: number;
@@ -71,8 +72,8 @@ export type DurationConfig = {
 export type SourceModeOverride = {
   label?: string;
   unitLabel?: string;
-  basePriceRsd?: number;
-  perSecondRsd?: number;          // overrides durationConfig.perSecondRsd
+  basePriceEur?: number;
+  perSecondEur?: number;          // overrides durationConfig.perSecondEur
   creates?: ModelAsset[];
   consumes?: ConsumeRule[];
   addOnsAvailable?: string[];     // which addOn IDs are valid in this mode
@@ -82,7 +83,7 @@ export type SourceModeOverride = {
 export type ConfiguratorProduct = {
   id: string;
   label: string;
-  basePriceRsd: number;
+  basePriceEur: number;
   unitLabel: string;
   includes: string[];
   addOns: ConfiguratorAddOn[];
@@ -99,11 +100,11 @@ export type ConfiguratorProduct = {
   // require scope alignment before commitment).
   inquiryOnly?: boolean;
   // Presentation-only fields for the "per-render" entry card frame.
-  // Invisible to calculateQuote / priceItems — they read only basePriceRsd,
+  // Invisible to calculateQuote / priceItems — they read only basePriceEur,
   // addOns, and durationConfig. Author per-product when a meaningful
-  // unit price + package minimum exists (e.g. int-static: 1.992 RSD/render in a
+  // unit price + package minimum exists (e.g. int-static: €17/render in a
   // 10-render package). Omit when the product is a single-unit entry.
-  displayPerUnitRsd?: number;
+  displayPerUnitEur?: number;
   displayMinQty?: number;
   displayUnitLabel?: string;
   displayPackageNote?: string;
@@ -160,11 +161,11 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           },
         ],
         label: "Statički eksterijer",
-        basePriceRsd: 29300,
+        basePriceEur: 250,
         unitLabel: "kompletan model + prvi kadar",
-        displayPerUnitRsd: 14650,
+        displayPerUnitEur: 125,
         displayUnitLabel: "render",
-        displayPackageNote: "Paket uključuje 3D model i 2 kadra. Svaki sledeći kadar: 5.626 RSD.",
+        displayPackageNote: "Paket uključuje 3D model i 2 kadra. Svaki sledeći kadar: €48.",
         includes: ["Pun 3D model", "Scena i osvetljenje", "2 kadra uključena"],
         disclaimers: [
           "Dodatna geometrija (+25%) se obračunava jednom ako kadar zahteva neviđenu stranu modela",
@@ -174,7 +175,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "ext-static-cam",
             label: "Dodatni kadar",
             description: "Novi ugao, ista strana modela",
-            priceRsd: 5626,
+            priceEur: 48,
             priceType: "fixed",
             includedQty: 1,
             maxQty: Infinity,
@@ -184,7 +185,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "ext-static-extended",
             label: "Dodatna geometrija (+25%)",
             description: "Jednokratna doplata za geometriju sa neviđene strane (+25%)",
-            priceRsd: 7384,
+            priceEur: 63,
             priceType: "fixed",
             includedQty: 0,
             maxQty: 1,
@@ -194,7 +195,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "ext-static-photo",
             label: "Fotomontaža (uklapanje u fotografiju)",
             description: "3D model komponovan u fotografiju lokacije — analiza perspektive, uklapanje kamere i osvetljenja",
-            priceRsd: 5860,
+            priceEur: 50,
             priceType: "fixed",
             includedQty: 0,
             maxQty: 1,
@@ -210,36 +211,36 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
         label: "360 eksterijer",
-        basePriceRsd: 39262,
+        basePriceEur: 335,
         unitLabel: "kompletan model + VR izlaz",
-        displayPerUnitRsd: 19690,
+        displayPerUnitEur: 168,
         displayUnitLabel: "panoramu",
-        displayPackageNote: "Paket uključuje 3D model i 2 interaktivne tačke. Svaka sledeća: 5.626 RSD.",
+        displayPackageNote: "Paket uključuje 3D model i 2 interaktivne tačke. Svaka sledeća: €48.",
         includes: [
           "Pun 3D model",
           "VR-ready 360 izlaz",
           "2 interaktivne tačke uključene",
         ],
         disclaimers: [
-          "Doplata za neviđenu stranu modela (7.032 RSD) naplaćuje se jednom ako tačka zahteva pogled na stranu koja nije bila u modelu",
+          "Doplata za neviđenu stranu modela (€60) naplaćuje se jednom ako tačka zahteva pogled na stranu koja nije bila u modelu",
         ],
         addOns: [
           {
             id: "ext-360-hotspot",
             label: "Interaktivna tačka (hotspot)",
             description: "Nova tačka gledanja u 360 panorami",
-            priceRsd: 5626,
+            priceEur: 48,
             priceType: "fixed",
             includedQty: 1,
             maxQty: Infinity,
-            volumeRules: [{ afterQty: 4, priceRsd: 6212 }],
+            volumeRules: [{ afterQty: 4, priceEur: 53 }],
           },
           {
             id: "ext-360-extended",
             label: "Doplata za neviđenu stranu",
             description:
               "Jednokratna doplata kada tačka zahteva stranu modela koja ranije nije bila modelovana",
-            priceRsd: 7032,
+            priceEur: 60,
             priceType: "fixed",
             includedQty: 0,
             maxQty: 1,
@@ -249,7 +250,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "ext-360-photo",
             label: "Fotomontaža (360 panorama lokacije)",
             description: "Uklapanje 3D modela u 360° panoramsku fotografiju lokacije",
-            priceRsd: 5860,
+            priceEur: 50,
             priceType: "fixed",
             includedQty: 0,
             maxQty: 1,
@@ -266,11 +267,11 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
         label: "3D prikaz ulice i okruženja",
-        basePriceRsd: 49224,
+        basePriceEur: 420,
         unitLabel: "model + okruženje + prvi ugao",
-        displayPerUnitRsd: 24612,
+        displayPerUnitEur: 210,
         displayUnitLabel: "render",
-        displayPackageNote: "Paket uključuje 3D model, okruženje i 2 ugla (ulična ili vazdušna perspektiva). Svaki sledeći ugao: 5.626 RSD.",
+        displayPackageNote: "Paket uključuje 3D model, okruženje i 2 ugla (ulična ili vazdušna perspektiva). Svaki sledeći ugao: €48.",
         includes: [
           "Pun 3D model + okruženje",
           "Ulična ili vazdušna perspektiva",
@@ -284,7 +285,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "ext-aerial-cam",
             label: "Dodatni ugao",
             description: "Nova tačka gledanja (ulična ili vazdušna)",
-            priceRsd: 5626,
+            priceEur: 48,
             priceType: "fixed",
             includedQty: 1,
             maxQty: Infinity,
@@ -294,7 +295,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "ext-aerial-extended",
             label: "Doplata za zadnju stranu (+25%)",
             description: "Jednokratna doplata za prikaz zadnje strane (+25%)",
-            priceRsd: 12306,
+            priceEur: 105,
             priceType: "fixed",
             includedQty: 0,
             maxQty: 1,
@@ -323,9 +324,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
         label: "Klasični prikaz enterijera (po spratu)",
-        basePriceRsd: 19924,
+        basePriceEur: 170,
         unitLabel: "ceo sprat sa do 10 prostorija",
-        displayPerUnitRsd: 1992,
+        displayPerUnitEur: 17,
         displayMinQty: 10,
         displayUnitLabel: "render",
         displayPackageNote: "paket od 10 prostorija, jedan sprat",
@@ -339,7 +340,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "int-static-room",
             label: "Dodatna opremljena soba (11. i sledeća)",
             description: "Opremanje + render za dodatnu sobu",
-            priceRsd: 3282,
+            priceEur: 28,
             priceType: "fixed",
             includedQty: 10,
             maxQty: Infinity,
@@ -349,7 +350,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "int-static-cam",
             label: "Dodatni ugao kamere",
             description: "Novi ugao kamere u već opremljenoj sobi",
-            priceRsd: 1172,
+            priceEur: 10,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -359,7 +360,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "int-static-floor",
             label: "Dodatni sprat",
             description: "Isti paket, 30% jeftinije",
-            priceRsd: 14064,
+            priceEur: 120,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -375,9 +376,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
         label: "360 enterijer (po spratu)",
-        basePriceRsd: 34574,
+        basePriceEur: 295,
         unitLabel: "ceo sprat u 360 turi",
-        displayPerUnitRsd: 3516,
+        displayPerUnitEur: 30,
         displayMinQty: 10,
         displayUnitLabel: "panoramu",
         displayPackageNote: "paket od 10 panorama, jedan sprat",
@@ -391,7 +392,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "int-360-room",
             label: "Interaktivna soba (hotspot)",
             description: "Opremanje + 360 render za dodatnu sobu",
-            priceRsd: 5274,
+            priceEur: 45,
             priceType: "fixed",
             includedQty: 10,
             maxQty: Infinity,
@@ -401,7 +402,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "int-360-hotspot",
             label: "Dodatna tačka u postojećoj sobi",
             description: "Novi ugao gledanja u već opremljenoj sobi",
-            priceRsd: 3164,
+            priceEur: 27,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -411,7 +412,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "int-360-static",
             label: "Statičke kamere",
             description: "Statički uglovi u bilo kojoj sobi",
-            priceRsd: 1172,
+            priceEur: 10,
             priceType: "fixed",
             includedQty: 10,
             maxQty: Infinity,
@@ -421,7 +422,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "int-360-floor",
             label: "Dodatni sprat (360)",
             description: "Isti paket, 30% jeftinije",
-            priceRsd: 24026,
+            priceEur: 205,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -451,11 +452,11 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
         label: "Pejzažni render",
-        basePriceRsd: 25784,
+        basePriceEur: 220,
         unitLabel: "teren + vegetacija + prvi kadar",
-        displayPerUnitRsd: 12892,
+        displayPerUnitEur: 110,
         displayUnitLabel: "render",
-        displayPackageNote: "Paket uključuje teren, vegetaciju i 2 kadra. Svaki sledeći kadar: 5.274 RSD.",
+        displayPackageNote: "Paket uključuje teren, vegetaciju i 2 kadra. Svaki sledeći kadar: €45.",
         includes: [
           "Modelovanje terena",
           "Vegetacija i sadnja",
@@ -469,7 +470,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "land-cam",
             label: "Dodatni kadar",
             description: "Model postoji, novi ugao",
-            priceRsd: 5274,
+            priceEur: 45,
             priceType: "fixed",
             includedQty: 1,
             maxQty: Infinity,
@@ -479,7 +480,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "land-extended",
             label: "Dodatna geometrija (+25%)",
             description: "Neviđeni teren/sadnja potrebna (+25%, jednokratno)",
-            priceRsd: 6446,
+            priceEur: 55,
             priceType: "fixed",
             includedQty: 0,
             maxQty: 1,
@@ -489,7 +490,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "land-aerial",
             label: "Prikaz pejzaža iz vazduha",
             description: "Kompletan pogled na okruženje iz vazduha",
-            priceRsd: 44536,
+            priceEur: 380,
             priceType: "fixed",
             includedQty: 0,
             maxQty: 1,
@@ -517,9 +518,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "complete-model", discountPct: 70, reason: "Prostor je već modelovan u kompletnom modelu" },
         ],
         label: "3D osnova jednog nivoa",
-        basePriceRsd: 3399,
+        basePriceEur: 29,
         unitLabel: "jednonivoski 3D layout",
-        displayPerUnitRsd: 3399,
+        displayPerUnitEur: 29,
         displayUnitLabel: "nivo",
         includes: ["Kompletni raspored sprata", "Oznake prostorija", "Dimenzije"],
         addOns: [
@@ -527,7 +528,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "fp3d-second",
             label: "Drugi nivo (dupleks)",
             description: "Dvospratni layout ukupno",
-            priceRsd: 1992,
+            priceEur: 17,
             priceType: "fixed",
             includedQty: 0,
             maxQty: 1,
@@ -537,7 +538,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "fp3d-extra",
             label: "Svaki sledeći nivo",
             description: "Stil definisan, samo raspored",
-            priceRsd: 1758,
+            priceEur: 15,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -547,7 +548,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "fp3d-duplicate",
             label: "Duplikat sprata",
             description: "Identičan layout — kopija",
-            priceRsd: 1172,
+            priceEur: 10,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -557,7 +558,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "fp3d-furniture",
             label: "Overlay nameštaja",
             description: "Namešten plan sprata",
-            priceRsd: 938,
+            priceEur: 8,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -567,7 +568,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "fp3d-variant",
             label: "Varijanta dizajna",
             description: "Isti raspored, drugi nameštaj",
-            priceRsd: 703,
+            priceEur: 6,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -594,9 +595,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "interior-model", discountPct: 50, reason: "Raspored je već definisan u enterijerskom modelu" },
         ],
         label: "2D osnova jednog nivoa",
-        basePriceRsd: 2344,
+        basePriceEur: 20,
         unitLabel: "čist vektorski layout",
-        displayPerUnitRsd: 2344,
+        displayPerUnitEur: 20,
         displayUnitLabel: "nivo",
         includes: ["Čist vektorski layout", "Oznake prostorija", "Kodiranje bojom"],
         addOns: [
@@ -604,7 +605,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "fp2d-double",
             label: "Dupleks (dva nivoa)",
             description: "Struktura se prenosi",
-            priceRsd: 1406,
+            priceEur: 12,
             priceType: "fixed",
             includedQty: 0,
             maxQty: 1,
@@ -614,7 +615,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "fp2d-extra",
             label: "Svaki sledeći nivo",
             description: "Šablon definisan",
-            priceRsd: 1172,
+            priceEur: 10,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -624,7 +625,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "fp2d-duplicate",
             label: "Duplikat sprata",
             description: "Kopija sa promenom oznaka",
-            priceRsd: 703,
+            priceEur: 6,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -634,7 +635,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "fp2d-furnished",
             label: "Namešten plan",
             description: "Overlay nameštaja",
-            priceRsd: 703,
+            priceEur: 6,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -644,7 +645,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "fp2d-variant",
             label: "Varijanta boje/stila",
             description: "Promena palete",
-            priceRsd: 469,
+            priceEur: 4,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -675,11 +676,11 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "complete-model", discountPct: 35, reason: "Kompletan model već postoji" },
         ],
         label: "3D situacioni plan",
-        basePriceRsd: 41020,
+        basePriceEur: 350,
         unitLabel: "teren + objekti + pejzaž",
-        displayPerUnitRsd: 41020,
+        displayPerUnitEur: 350,
         displayUnitLabel: "situacioni plan",
-        displayPackageNote: "uključuje teren, objekte i pejzaž; dodatni uglovi 7.618 RSD",
+        displayPackageNote: "uključuje teren, objekte i pejzaž; dodatni uglovi €65",
         includes: [
           "Modelovanje terena",
           "Postavljanje objekata",
@@ -690,7 +691,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "sp-angle",
             label: "Dodatni ugao",
             description: "Model postoji, nova tačka gledanja",
-            priceRsd: 7618,
+            priceEur: 65,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -700,7 +701,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "sp-season",
             label: "Sezonska varijanta",
             description: "Vegetacija + osvetljenje",
-            priceRsd: 9962,
+            priceEur: 85,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -710,7 +711,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "sp-phase",
             label: "Fazna varijanta",
             description: "Prikaz po fazama gradnje — biraju se vidljivi delovi",
-            priceRsd: 11134,
+            priceEur: 95,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -745,12 +746,12 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "terrain-model", discountPct: 20, reason: "Teren postoji iz situacionog prikaza" },
         ],
         label: "Animacija (od nule)",
-        basePriceRsd: 1758,
-        unitLabel: "1.758 RSD/sek, minimum 15 sek (26.370 RSD)",
-        displayPerUnitRsd: 1758,
+        basePriceEur: 15,
+        unitLabel: "€15/sek, minimum 15 sek (€225)",
+        displayPerUnitEur: 15,
         displayMinQty: 15,
         displayUnitLabel: "sekundu",
-        displayPackageNote: "minimum 15 sekundi (26.370 RSD)",
+        displayPackageNote: "minimum 15 sekundi (€225)",
         includes: [
           "Pun 3D model",
           "Dizajn putanje animacije",
@@ -761,15 +762,15 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           minSeconds: 15,
           defaultSeconds: 15,
           maxSeconds: 300,
-          perSecondRsd: 1758,
+          perSecondEur: 15,
           discountTiers: ANIMATION_DURATION_TIERS,
         },
         addOns: [
           {
             id: "anim-path",
             label: "Dodatna putanja kamere",
-            description: "Nova trajektorija, isti model — 586 RSD/sek",
-            priceRsd: 586,
+            description: "Nova trajektorija, isti model — €5/sek",
+            priceEur: 5,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -779,7 +780,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "anim-daynight",
             label: "Dan/noć verzija",
             description: "Ponovna izrada osvetljenja + render",
-            priceRsd: 30,
+            priceEur: 30,
             priceType: "percent",
             includedQty: 0,
             maxQty: 1,
@@ -789,7 +790,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "anim-season",
             label: "Sezonska varijacija",
             description: "Promene okruženja/materijala",
-            priceRsd: 40,
+            priceEur: 40,
             priceType: "percent",
             includedQty: 0,
             maxQty: 1,
@@ -799,16 +800,16 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
         sourceModeRules: {
           scratch: {
             label: "Animacija (od nule)",
-            unitLabel: "1.758 RSD/sek, minimum 15 sek (26.370 RSD)",
+            unitLabel: "€15/sek, minimum 15 sek (€225)",
             // scratch mode uses defaults — no overrides needed,
             // but kept here so the resolver can detect the mode.
             addOnsAvailable: ["anim-path", "anim-daynight", "anim-season"],
           },
           existing: {
             label: "Animacija (postojeći model)",
-            unitLabel: "1.172 RSD/sek, minimum 15 sek (17.580 RSD) — 33% popusta",
-            basePriceRsd: 1172,
-            perSecondRsd: 1172,
+            unitLabel: "€10/sek, minimum 15 sek (€150) — 33% popusta",
+            basePriceEur: 10,
+            perSecondEur: 10,
             // existing mode does NOT create complete-model (it reuses one)
             creates: [],
             consumes: [
@@ -820,9 +821,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           },
           active: {
             label: "Animacija (aktivan projekat)",
-            unitLabel: "938 RSD/sek, minimum 15 sek (14.064 RSD) — 47% popusta",
-            basePriceRsd: 938,
-            perSecondRsd: 938,
+            unitLabel: "€8/sek, minimum 15 sek (€120) — 47% popusta",
+            basePriceEur: 8,
+            perSecondEur: 8,
             creates: [],
             consumes: [
               { requires: "complete-model", discountPct: 47, reason: "Kompletan model već postoji" },
@@ -857,8 +858,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
         label: "VR Walkthrough (postojeći model)",
-        basePriceRsd: 175800,
-        unitLabel: "Od 175.800 RSD — konsultacija pre izrade",
+        basePriceEur: 1500,
+        unitLabel: "Od €1500 — konsultacija pre izrade",
         includes: [
           "VR optimizacija",
           "Headset-ready izlaz",
@@ -870,7 +871,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "vr-existing-floor",
             label: "Dodatni sprat/područje",
             description: "Inkrementalno dodavanje postojećem VR",
-            priceRsd: 58600,
+            priceEur: 500,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -880,7 +881,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "vr-existing-interactive",
             label: "Interaktivni element",
             description: "Po funkcionalnosti (vrata, svetla, materijali)",
-            priceRsd: 23440,
+            priceEur: 200,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -898,8 +899,8 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
           { requires: "complete-model", discountPct: 50, reason: "Kompletan model već postoji" },
         ],
         label: "VR Walkthrough (samostalno)",
-        basePriceRsd: 351600,
-        unitLabel: "Od 351.600 RSD — konsultacija pre izrade",
+        basePriceEur: 3000,
+        unitLabel: "Od €3000 — konsultacija pre izrade",
         includes: [
           "Kompletan 3D model",
           "VR optimizacija",
@@ -912,7 +913,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "vr-standalone-floor",
             label: "Dodatni sprat/područje",
             description: "Inkrementalno dodavanje",
-            priceRsd: 58600,
+            priceEur: 500,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -922,7 +923,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "vr-standalone-interactive",
             label: "Interaktivni element",
             description: "Po funkcionalnosti (vrata, svetla, materijali)",
-            priceRsd: 23440,
+            priceEur: 200,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -946,9 +947,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
       {
         id: "vs-static",
         label: "Statički staging",
-        basePriceRsd: 2110,
+        basePriceEur: 18,
         unitLabel: "prva opremljena slika",
-        displayPerUnitRsd: 2110,
+        displayPerUnitEur: 18,
         displayUnitLabel: "sliku",
         includes: [
           "Analiza prostorije",
@@ -960,7 +961,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "vs-angle",
             label: "Dodatni ugao (ista soba)",
             description: "33% popusta — staging odluke donete",
-            priceRsd: 1406,
+            priceEur: 12,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -970,17 +971,17 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "vs-room",
             label: "Druga soba (isti objekat)",
             description: "17% popusta — stil definisan",
-            priceRsd: 1758,
+            priceEur: 15,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
-            volumeRules: [{ afterQty: 10, priceRsd: 1524 }],
+            volumeRules: [{ afterQty: 10, priceEur: 13 }],
           },
           {
             id: "vs-restyle",
             label: "Ponovno opremanje (drugi stil)",
             description: "Zamena nameštaja, kompozicija rešena",
-            priceRsd: 1406,
+            priceEur: 12,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -991,9 +992,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
       {
         id: "vs-360",
         label: "Interaktivno 360 opremanje",
-        basePriceRsd: 3985,
+        basePriceEur: 34,
         unitLabel: "prva opremljena 360 panorama",
-        displayPerUnitRsd: 3985,
+        displayPerUnitEur: 34,
         displayUnitLabel: "panoramu",
         includes: [
           "Kompletno 360 opremanje sobe",
@@ -1005,7 +1006,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "vs-360-hotspot",
             label: "Dodatna tačka u istoj sobi",
             description: "30% popust — opremanje već postoji",
-            priceRsd: 2813,
+            priceEur: 24,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -1015,17 +1016,17 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "vs-360-room",
             label: "Druga soba (isti objekat)",
             description: "18% popusta — stil definisan",
-            priceRsd: 3282,
+            priceEur: 28,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
-            volumeRules: [{ afterQty: 6, priceRsd: 2813 }],
+            volumeRules: [{ afterQty: 6, priceEur: 24 }],
           },
           {
             id: "vs-360-restyle",
             label: "Ponovno opremanje (drugi stil)",
             description: "Samo zamena stila",
-            priceRsd: 2578,
+            priceEur: 22,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -1049,9 +1050,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
       {
         id: "reno-image",
         label: "Virtuelna renovacija",
-        basePriceRsd: 7735,
+        basePriceEur: 66,
         unitLabel: "kompletna renovacija jednog pogleda",
-        displayPerUnitRsd: 7735,
+        displayPerUnitEur: 66,
         displayUnitLabel: "pogled",
         includes: [
           "Kompletan dizajn renovacije",
@@ -1063,21 +1064,21 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "reno-angle",
             label: "Dodatni ugao (ista soba)",
             description: "10% popusta — odluke donete, nova kamera",
-            priceRsd: 6915,
+            priceEur: 59,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
-            volumeRules: [{ afterQty: 3, priceRsd: 6212 }],
+            volumeRules: [{ afterQty: 3, priceEur: 53 }],
           },
           {
             id: "reno-room",
             label: "Druga soba (isti objekat)",
             description: "15% popusta — paleta definisana",
-            priceRsd: 6563,
+            priceEur: 56,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
-            volumeRules: [{ afterQty: 5, priceRsd: 5860 }],
+            volumeRules: [{ afterQty: 5, priceEur: 50 }],
           },
         ],
       },
@@ -1097,9 +1098,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
       {
         id: "dtd-image",
         label: "Dan u noć konverzija",
-        basePriceRsd: 1172,
+        basePriceEur: 10,
         unitLabel: "po slici",
-        displayPerUnitRsd: 1172,
+        displayPerUnitEur: 10,
         displayUnitLabel: "sliku",
         includes: ["Zamena neba", "Podešavanje osvetljenja", "Color grading"],
         addOns: [
@@ -1107,7 +1108,7 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "dtd-shadow",
             label: "Uklanjanje senki",
             description: "Složena korekcija senki",
-            priceRsd: 586,
+            priceEur: 5,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
@@ -1117,17 +1118,17 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "dtd-volume",
             label: "Dodatne slike (10+)",
             description: "Snižena cena za veću količinu",
-            priceRsd: 938,
+            priceEur: 8,
             priceType: "fixed",
             includedQty: 1,
             maxQty: Infinity,
-            volumeRules: [{ afterQty: 10, priceRsd: 938 }],
+            volumeRules: [{ afterQty: 10, priceEur: 8 }],
           },
           {
             id: "dtd-rush",
             label: "Hitna isporuka (24h)",
             description: "Prioritetna obrada",
-            priceRsd: 50,
+            priceEur: 50,
             priceType: "percent",
             includedQty: 0,
             maxQty: 1,
@@ -1152,9 +1153,9 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
       {
         id: "ir-simple",
         label: "Jednostavno uklanjanje",
-        basePriceRsd: 1406,
+        basePriceEur: 12,
         unitLabel: "po slici",
-        displayPerUnitRsd: 1406,
+        displayPerUnitEur: 12,
         displayUnitLabel: "sliku",
         includes: [
           "Identifikacija elemenata",
@@ -1166,20 +1167,20 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "ir-simple-additional",
             label: "Dodatna slika (jednostavno)",
             description: "33% popusta — stil definisan",
-            priceRsd: 938,
+            priceEur: 8,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
-            volumeRules: [{ afterQty: 10, priceRsd: 1172 }],
+            volumeRules: [{ afterQty: 10, priceEur: 10 }],
           },
         ],
       },
       {
         id: "ir-complex",
         label: "Složeno uklanjanje",
-        basePriceRsd: 2930,
+        basePriceEur: 25,
         unitLabel: "po slici",
-        displayPerUnitRsd: 2930,
+        displayPerUnitEur: 25,
         displayUnitLabel: "sliku",
         includes: [
           "Uklanjanje velikih elemenata",
@@ -1191,11 +1192,11 @@ export const CONFIGURATOR_CATEGORIES: ConfiguratorCategory[] = [
             id: "ir-complex-additional",
             label: "Dodatna slika (složeno)",
             description: "28% popusta — pristup definisan",
-            priceRsd: 2110,
+            priceEur: 18,
             priceType: "fixed",
             includedQty: 0,
             maxQty: Infinity,
-            volumeRules: [{ afterQty: 10, priceRsd: 2344 }],
+            volumeRules: [{ afterQty: 10, priceEur: 20 }],
           },
         ],
       },
@@ -1236,8 +1237,8 @@ export function getEffectiveProduct(
   const mergedDuration = product.durationConfig
     ? {
         ...product.durationConfig,
-        perSecondRsd:
-          override.perSecondRsd ?? product.durationConfig.perSecondRsd,
+        perSecondEur:
+          override.perSecondEur ?? product.durationConfig.perSecondEur,
       }
     : undefined;
 
@@ -1245,7 +1246,7 @@ export function getEffectiveProduct(
     ...product,
     label: override.label ?? product.label,
     unitLabel: override.unitLabel ?? product.unitLabel,
-    basePriceRsd: override.basePriceRsd ?? product.basePriceRsd,
+    basePriceEur: override.basePriceEur ?? product.basePriceEur,
     creates: override.creates ?? product.creates,
     consumes: override.consumes ?? product.consumes,
     disclaimers: override.disclaimers ?? product.disclaimers,

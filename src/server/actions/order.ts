@@ -4,7 +4,7 @@
  * Exports createOrder() (server-side quote verification + Prisma insert +
  * Bitrix24 deal sync) and confirmFileUpload() for source material uploads.
  *
- * Used by: poruci/steps/step-review, step-upload, revision-upload-card
+ * Used by: checkout/steps/step-details, order-file-upload, revision-upload-card
  */
 "use server";
 
@@ -33,8 +33,9 @@ import {
   type BuyerInfoInput,
 } from "@/lib/buyer-validation";
 import {
-  billingCentsFromRsdCents,
+  billingCentsFromEurCents,
   buildBillingSnapshot,
+  buildChargeSnapshot,
   type BillingSnapshotInput,
 } from "@/lib/billing";
 import { recordUserActivity } from "@/lib/user-activity";
@@ -54,7 +55,6 @@ async function getStoredBuyerInfo(userId: string): Promise<BuyerInfoInput> {
         billingCountryCode: true,
         billingCompanyName: true,
         billingCompanyTaxId: true,
-        billingCompanyMb: true,
         billingCompanyAddress: true,
       },
     }),
@@ -64,20 +64,16 @@ async function getStoredBuyerInfo(userId: string): Promise<BuyerInfoInput> {
   const buyerType = user?.billingBuyerType ?? "individual";
   const fallbackCountryCode = publicCountryCode ?? "RS";
   const buyerCountryCode =
-    buyerType === "company_rs"
-      ? "RS"
-      : user?.billingCountryCode ??
-        (buyerType === "individual" ? fallbackCountryCode : null);
+    user?.billingCountryCode ??
+    (buyerType === "individual" ? fallbackCountryCode : null);
 
   return {
     buyerType,
     buyerCountryCode,
     companyName: user?.billingCompanyName ?? null,
     companyTaxId: user?.billingCompanyTaxId ?? null,
-    companyMb: user?.billingCompanyMb ?? null,
     companyAddress: user?.billingCompanyAddress ?? null,
-    companyCountryCode:
-      buyerType === "company_foreign" ? buyerCountryCode : null,
+    companyCountryCode: buyerType === "business" ? buyerCountryCode : null,
   };
 }
 
@@ -154,12 +150,20 @@ export async function createOrder(
   const billingSnapshot = buildBillingSnapshot(
     buyer,
     pricingCatalog.settings,
-    buyer.buyerType === "company_rs" ? "RS" : undefined,
   );
   const billingTotalCents = calculation.items.reduce(
     (sum, item) =>
-      sum + billingCentsFromRsdCents(item.totalCents, billingSnapshot),
+      sum + billingCentsFromEurCents(item.totalCents, billingSnapshot),
     0,
+  );
+
+  // Charged-amount snapshot: what PayPal will actually charge, in the
+  // visitor's presentment currency. Currency comes from the server-side
+  // geo header (never from a client-passed value) so it matches what
+  // the public pages displayed for this visitor.
+  const chargeSnapshot = buildChargeSnapshot(
+    calculation.totalCents,
+    await getPublicCountryCode(),
   );
 
   const orderNumber = generateOrderNumber();
@@ -169,8 +173,8 @@ export async function createOrder(
   const premiumItems = calculation.items.filter(
     (item) => item.kind === "service",
   );
-  const premiumTotalRsd = premiumItems.reduce(
-    (sum, item) => sum + item.totalRsd,
+  const premiumTotalEur = premiumItems.reduce(
+    (sum, item) => sum + item.totalEur,
     0,
   );
 
@@ -178,9 +182,9 @@ export async function createOrder(
     data: {
       orderNumber,
       userId,
-      totalRsd: Math.round(calculation.total),
+      totalEur: Math.round(calculation.total),
       totalCents: calculation.totalCents,
-      premiumTotalRsd: Math.round(premiumTotalRsd),
+      premiumTotalEur: Math.round(premiumTotalEur),
       containsAiCredits,
       customerNote: customerNote || null,
       withdrawalWaivedAt,
@@ -188,13 +192,15 @@ export async function createOrder(
       buyerCountryCode: billingSnapshot.buyerCountryCode,
       companyName: billingSnapshot.companyName,
       companyTaxId: billingSnapshot.companyTaxId,
-      companyMb: billingSnapshot.companyMb,
       companyAddress: billingSnapshot.companyAddress,
       companyCountryCode: billingSnapshot.companyCountryCode,
       billingCurrency: billingSnapshot.billingCurrency,
       billingVatRate: billingSnapshot.billingVatRate,
-      billingRsdRate: billingSnapshot.billingRsdRate,
       billingTotalCents,
+      chargedCurrency: chargeSnapshot.chargedCurrency,
+      chargedAmountMinor: chargeSnapshot.chargedAmountMinor,
+      chargedFxRate: chargeSnapshot.chargedFxRate,
+      chargedFxAsOf: chargeSnapshot.chargedFxAsOf,
       items: {
         create: calculation.items.map((item) => {
           const sourceQI = quoteItems.find(
@@ -218,16 +224,16 @@ export async function createOrder(
             kind: item.kind,
             productLabel: item.productLabel,
             categoryLabel: item.categoryLabel,
-            basePriceRsd: Math.round(item.basePriceRsd),
+            basePriceEur: Math.round(item.basePriceEur),
             basePriceCents: item.basePriceCents,
-            totalRsd: Math.round(item.totalRsd),
+            totalEur: Math.round(item.totalEur),
             totalCents: item.totalCents,
             aiCreditQuantity: item.aiCreditQuantity ?? null,
             aiCreditUnits: item.aiCreditUnits ?? null,
             addOnsJson: item.addOns,
             durationSeconds: item.durationSeconds ?? null,
             durationDiscount: item.durationDiscount ?? null,
-            originalTotalRsd: Math.round(item.originalTotalRsd),
+            originalTotalEur: Math.round(item.originalTotalEur),
             discountPct: item.discountPct,
             discountReason: item.discountReason,
             ...(configJson !== undefined ? { configJson } : {}),
@@ -264,10 +270,11 @@ export async function createOrder(
     metadata: {
       buyerType: order.buyerType,
       hasCompanyTaxId: Boolean(order.companyTaxId),
-      hasCompanyMb: Boolean(order.companyMb),
       countryCode: order.buyerCountryCode ?? order.companyCountryCode ?? null,
       billingCurrency: order.billingCurrency,
       billingTotalCents: order.billingTotalCents,
+      chargedCurrency: order.chargedCurrency,
+      chargedAmountMinor: order.chargedAmountMinor,
     },
   });
   await recordUserActivity(userId, { ordersCreated: 1 });
@@ -279,8 +286,8 @@ export async function createEmptyDraft(): Promise<OrderResult> {
   const session = await auth();
   if (!session?.user?.id) return { error: "Niste prijavljeni." };
 
-  // Snapshot the user's billing identity onto the draft so totals display
-  // in RSD from the moment the draft is created — matching createOrder.
+  // Snapshot the user's billing identity onto the draft from the moment
+  // the draft is created — matching createOrder.
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
@@ -288,7 +295,6 @@ export async function createEmptyDraft(): Promise<OrderResult> {
       billingCountryCode: true,
       billingCompanyName: true,
       billingCompanyTaxId: true,
-      billingCompanyMb: true,
       billingCompanyAddress: true,
     },
   });
@@ -298,7 +304,6 @@ export async function createEmptyDraft(): Promise<OrderResult> {
     buyerCountryCode: user?.billingCountryCode ?? null,
     companyName: user?.billingCompanyName ?? null,
     companyTaxId: user?.billingCompanyTaxId ?? null,
-    companyMb: user?.billingCompanyMb ?? null,
     companyAddress: user?.billingCompanyAddress ?? null,
     companyCountryCode: user?.billingCountryCode ?? null,
   };
@@ -308,23 +313,29 @@ export async function createEmptyDraft(): Promise<OrderResult> {
     user?.billingCountryCode ?? "RS",
   );
 
+  // Empty drafts still lock their presentment currency from geo now;
+  // repriceOrder refreshes chargedAmountMinor as items are added.
+  const chargeSnapshot = buildChargeSnapshot(0, await getPublicCountryCode());
+
   const order = await prisma.order.create({
     data: {
       orderNumber: generateOrderNumber(),
       userId: session.user.id,
-      totalRsd: 0,
+      totalEur: 0,
       totalCents: 0,
       buyerType: billingSnapshot.buyerType,
       buyerCountryCode: billingSnapshot.buyerCountryCode,
       companyName: billingSnapshot.companyName,
       companyTaxId: billingSnapshot.companyTaxId,
-      companyMb: billingSnapshot.companyMb,
       companyAddress: billingSnapshot.companyAddress,
       companyCountryCode: billingSnapshot.companyCountryCode,
       billingCurrency: billingSnapshot.billingCurrency,
       billingVatRate: billingSnapshot.billingVatRate,
-      billingRsdRate: billingSnapshot.billingRsdRate,
       billingTotalCents: 0,
+      chargedCurrency: chargeSnapshot.chargedCurrency,
+      chargedAmountMinor: chargeSnapshot.chargedAmountMinor,
+      chargedFxRate: chargeSnapshot.chargedFxRate,
+      chargedFxAsOf: chargeSnapshot.chargedFxAsOf,
       items: { create: [] },
       statusEvents: {
         create: { toStatus: "draft", note: "Nacrt kreiran iz portala" },

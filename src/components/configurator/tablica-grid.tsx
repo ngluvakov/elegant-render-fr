@@ -85,7 +85,7 @@ export function TablicaGrid({ marketingMode = false }: { marketingMode?: boolean
   if (products.length === 0) {
     return (
       <div className="py-20 text-center text-muted-foreground text-sm">
-        Nema usluga u izabranoj kategoriji.
+        No services in the selected category.
       </div>
     );
   }

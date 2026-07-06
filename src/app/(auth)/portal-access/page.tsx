@@ -11,13 +11,13 @@ import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { AutoSubmitMagicLink } from "./auto-submit";
 
 export const metadata: Metadata = {
-  title: "Pristup portalu",
+  title: "Portal access",
   description:
-    "Siguran magic link ulaz u Elegant Render portal iz email poruke.",
+    "Secure magic-link access to the Elegant Render portal from an email message.",
   robots: NO_INDEX_ROBOTS,
 };
 
-export default async function PortalPristupPage({
+export default async function PortalAccessPage({
   searchParams,
 }: {
   searchParams: Promise<{ token?: string; next?: string }>;
@@ -29,15 +29,15 @@ export default async function PortalPristupPage({
   if (!token) {
     return (
       <div className="mx-auto max-w-md py-20 text-center">
-        <h1 className="text-2xl text-foreground">Link nije validan</h1>
+        <h1 className="text-2xl text-foreground">Link is not valid</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Otvorite najnoviji email ili zatražite novi link.
+          Open the newest email or request a new link.
         </p>
         <Link
           href="/login"
           className="mt-6 inline-block text-sm text-accent underline-offset-4 hover:underline"
         >
-          Idite na prijavu
+          Go to login
         </Link>
       </div>
     );
@@ -45,9 +45,9 @@ export default async function PortalPristupPage({
 
   return (
     <div className="mx-auto max-w-md py-20 text-center">
-      <h1 className="text-2xl text-foreground">Prijavljujemo vas…</h1>
+      <h1 className="text-2xl text-foreground">Signing you in...</h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        Trenutak — preusmeravamo vas na vašu porudžbinu.
+        One moment - we are redirecting you to your order.
       </p>
 
       <form action={magicLinkSignInAction} className="mt-8">
@@ -59,7 +59,7 @@ export default async function PortalPristupPage({
             type="submit"
             className="rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white"
           >
-            Pristupi portalu
+            Access portal
           </button>
         </noscript>
       </form>

@@ -1,94 +1,76 @@
 /**
- * ChargePaymentCard — customer-facing payment widget for one OrderCharge.
+ * ChargePaymentCard — customer-facing PayPal payment widget for one
+ * OrderCharge. Same unified <PayPalButtons> as checkout/portal orders,
+ * wired to the charge payment actions; the amount is the charge's
+ * charged-amount snapshot (inherits the parent order's currency).
  */
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, CreditCard, Pencil } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { formatRsd } from "@/lib/catalog/calculate";
+import { Check, Clock } from "lucide-react";
+import { formatBillingMoney } from "@/lib/billing";
+import { isChargeCurrency } from "@/lib/currency/config";
+import { formatChargeAmount } from "@/lib/currency/convert";
+import { PayPalButtons } from "@/components/payments/paypal-buttons";
 import {
-  formatBillingMoney,
-  type BillingCurrency,
-} from "@/lib/billing";
-import { mockCardChargePaymentAction } from "@/server/actions/charge-payment";
-import { initiateNestpayChargePayment } from "@/server/actions/nestpay";
-import { NestpayRedirectForm } from "@/app/(marketing)/checkout/nestpay-redirect-form";
+  capturePayPalChargeAction,
+  createPayPalChargeAction,
+} from "@/server/actions/charge-payment";
 
 type Props = {
   chargeId: string;
   totalCents: number;
-  billingCurrency: BillingCurrency | null;
-  billingTotalCents: number | null;
+  chargedCurrency?: string | null;
+  chargedAmountMinor?: number | null;
 };
-
-const NESTPAY_TEST_MODE =
-  process.env.NEXT_PUBLIC_NESTPAY_MODE === "test";
 
 export function ChargePaymentCard({
   chargeId,
   totalCents,
-  billingCurrency,
-  billingTotalCents,
+  chargedCurrency,
+  chargedAmountMinor,
 }: Props) {
-  const [method] = useState<"nestpay" | "card_mock">("nestpay");
-  const [pending, setPending] = useState(false);
-  const [cardPending, setCardPending] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [redirect, setRedirect] = useState<{
-    url: string;
-    fields: Record<string, string>;
-  } | null>(null);
   const router = useRouter();
-  const amountLabel =
-    billingCurrency && billingTotalCents != null
-      ? formatBillingMoney(billingTotalCents, billingCurrency)
-      : formatRsd(totalCents / 100);
+  const [error, setError] = useState("");
+  const [state, setState] = useState<"idle" | "completed" | "processing">(
+    "idle",
+  );
 
-  if (success) {
+  const hasSnapshot =
+    isChargeCurrency(chargedCurrency) &&
+    chargedAmountMinor != null &&
+    chargedAmountMinor > 0;
+  const currency = isChargeCurrency(chargedCurrency) ? chargedCurrency : "EUR";
+  const amountLabel = hasSnapshot
+    ? formatChargeAmount(chargedAmountMinor, currency)
+    : formatBillingMoney(totalCents);
+
+  if (state === "completed") {
     return (
       <div className="rounded-xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/5 p-4 text-center">
         <Check className="mx-auto h-6 w-6 text-[color:var(--color-sage-deep)]" />
-        <p className="mt-2 text-xs font-semibold text-foreground">Plaćanje uspešno</p>
+        <p className="mt-2 text-xs font-semibold text-foreground">
+          Payment received
+        </p>
       </div>
     );
   }
 
-  if (redirect) {
-    return <NestpayRedirectForm url={redirect.url} fields={redirect.fields} />;
+  if (state === "processing") {
+    return (
+      <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center">
+        <Clock className="mx-auto h-6 w-6 text-accent" />
+        <p className="mt-2 text-xs font-semibold text-foreground">
+          Payment processing
+        </p>
+        <p className="mt-1 text-[0.72rem] text-muted-foreground">
+          PayPal confirms eCheck payments within a few days — we&apos;ll
+          email you as soon as it clears.
+        </p>
+      </div>
+    );
   }
-
-  const handleNestpay = async () => {
-    setPending(true);
-    setError("");
-    const result = await initiateNestpayChargePayment({
-      chargeId,
-      turnstileToken: null,
-    });
-    if ("error" in result) {
-      setError(result.error);
-      setPending(false);
-      return;
-    }
-    setRedirect(result);
-  };
-
-  const handleMockCard = async () => {
-    setCardPending(true);
-    setError("");
-    const result = await mockCardChargePaymentAction(chargeId);
-    if (result.error) {
-      setError(result.error);
-      setCardPending(false);
-      return;
-    }
-    setSuccess(true);
-    setTimeout(() => router.refresh(), 1200);
-  };
 
   return (
     <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
@@ -98,67 +80,27 @@ export function ChargePaymentCard({
         </div>
       )}
 
-      <div className="flex items-center gap-2 rounded-lg border border-accent bg-accent/5 p-2.5 text-left text-xs">
-        <div className="flex h-7 w-7 items-center justify-center rounded-md bg-foreground/10">
-          <CreditCard className="h-4 w-4" />
-        </div>
-        <span className="font-medium text-foreground">Platna kartica</span>
-        <Check className="ml-auto h-3 w-3 text-accent" />
-      </div>
+      <p className="mb-3 text-xs text-muted-foreground">
+        Amount due:{" "}
+        <strong className="text-foreground">{amountLabel}</strong>
+      </p>
 
-      {method === "nestpay" && (
-        <div className="mt-3 space-y-2">
-          <Button
-            variant="accent"
-            size="lg"
-            className="w-full"
-            onClick={handleNestpay}
-            disabled={pending}
-          >
-            {pending ? "Preusmeravanje…" : `Plati ${amountLabel}`}
-          </Button>
-        </div>
-      )}
-
-      {NESTPAY_TEST_MODE && method === "card_mock" && (
-        <div className="mt-3 space-y-2">
-          <p className="rounded-lg bg-secondary/60 px-3 py-2 text-[0.68rem] text-muted-foreground">
-            Test režim — unesite bilo koje podatke.
-          </p>
-          <div className="space-y-1.5">
-            <Label className="text-xs">
-              <Pencil className="h-3 w-3 text-accent/60" />
-              Broj kartice
-            </Label>
-            <Input defaultValue="4111 1111 1111 1111" className="h-8 text-xs" />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs">
-                <Pencil className="h-3 w-3 text-accent/60" />
-                Ističe
-              </Label>
-              <Input defaultValue="12/28" className="h-8 text-xs" />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">
-                <Pencil className="h-3 w-3 text-accent/60" />
-                CVV
-              </Label>
-              <Input defaultValue="123" className="h-8 text-xs" />
-            </div>
-          </div>
-          <Button
-            variant="accent"
-            size="lg"
-            className="w-full"
-            onClick={handleMockCard}
-            disabled={cardPending}
-          >
-            {cardPending ? "Obrada…" : `Plati ${amountLabel} (mock)`}
-          </Button>
-        </div>
-      )}
+      <PayPalButtons
+        currency={currency}
+        createAction={() => createPayPalChargeAction(chargeId)}
+        captureAction={(paypalOrderId) =>
+          capturePayPalChargeAction(chargeId, paypalOrderId)
+        }
+        onSuccess={() => {
+          setState("completed");
+          setTimeout(() => router.refresh(), 1200);
+        }}
+        onProcessing={() => {
+          setState("processing");
+          setTimeout(() => router.refresh(), 2500);
+        }}
+        onError={setError}
+      />
     </div>
   );
 }

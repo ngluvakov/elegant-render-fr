@@ -88,7 +88,7 @@ export function AddServiceDialog({
             open ? "rotate-45" : "group-hover:rotate-90",
           )}
         />
-        {open ? "Zatvori" : "Dodaj uslugu u ovaj nacrt"}
+        {open ? "Close" : "Add a service to this draft"}
       </button>
 
       <Collapsible open={open} className="w-full">
@@ -140,7 +140,7 @@ export function AddServiceDialog({
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-semibold text-foreground">
-                        {formatPrice(prod.basePriceRsd)}
+                        {formatPrice(prod.basePriceEur)}
                       </span>
                       <button
                         type="button"
@@ -151,12 +151,12 @@ export function AddServiceDialog({
                         {adding === prod.id ? (
                           <>
                             <Check className="h-3 w-3 animate-pulse" />
-                            Dodajem…
+                            Adding...
                           </>
                         ) : (
                           <>
                             <Plus className="h-3 w-3" />
-                            Dodaj
+                            Add
                           </>
                         )}
                       </button>
@@ -168,7 +168,7 @@ export function AddServiceDialog({
 
           {!activeCat && (
             <p className="mt-4 text-center text-sm text-muted-foreground">
-              Izaberite kategoriju
+              Choose a category
             </p>
           )}
         </div>

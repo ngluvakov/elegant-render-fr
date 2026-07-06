@@ -66,15 +66,17 @@ async function send(args: {
   }
 }
 
-function formatEmailRsd(amount: number): string {
-  return `${Math.round(amount).toLocaleString("sr-Latn-RS", {
+function formatEmailEur(amount: number): string {
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
     maximumFractionDigits: 0,
-  })} RSD`;
+  }).format(Math.round(amount));
 }
 
-function formatEmailMoney(cents: number, _currency: "RSD" | null = "RSD"): string {
+function formatEmailMoney(cents: number, _currency: "EUR" | null = "EUR"): string {
   void _currency;
-  return formatEmailRsd(cents / 100);
+  return formatEmailEur(cents / 100);
 }
 
 // ─── Email templates ─────────────────────────────────────
@@ -175,11 +177,11 @@ export async function sendPortalAccessEmail(
 export async function sendOrderConfirmationEmail(
   to: string,
   orderNumber: string,
-  totalRsd: number,
+  totalEur: number,
   amountLabel?: string,
 ) {
   const portalUrl = `${getAuthUrl()}/portal`;
-  const totalLabel = amountLabel ?? formatEmailRsd(totalRsd);
+  const totalLabel = amountLabel ?? formatEmailEur(totalEur);
 
   await send({
     to,
@@ -218,13 +220,13 @@ export async function sendOrderConfirmationEmail(
 export async function sendInvoiceIssuedEmail(args: {
   to: string;
   invoiceNumber: string;
-  totalRsd: number;
+  totalEur: number;
   amountLabel?: string;
   pdfBuffer: Buffer;
 }) {
   const portalUrl = `${getAuthUrl()}/portal`;
   const filename = `racun-${args.invoiceNumber}.pdf`;
-  const amountLabel = args.amountLabel ?? formatEmailRsd(args.totalRsd);
+  const amountLabel = args.amountLabel ?? formatEmailEur(args.totalEur);
 
   await send({
     to: args.to,
@@ -263,7 +265,7 @@ export async function sendInvoiceIssuedEmail(args: {
 export async function sendProformaIssuedEmail(args: {
   to: string;
   proformaNumber: string;
-  totalRsd: number;
+  totalEur: number;
   amountLabel?: string;
   dueDate: Date;
   pdfBuffer: Buffer;
@@ -274,7 +276,7 @@ export async function sendProformaIssuedEmail(args: {
     month: "2-digit",
     year: "numeric",
   });
-  const amountLabel = args.amountLabel ?? formatEmailRsd(args.totalRsd);
+  const amountLabel = args.amountLabel ?? formatEmailEur(args.totalEur);
 
   await send({
     to: args.to,
@@ -595,7 +597,7 @@ export async function sendAdditionalChargeRequestedEmail(args: {
   orderNumber: string;
   orderId: string;
   totalCents: number;
-  billingCurrency?: "RSD" | null;
+  billingCurrency?: "EUR" | null;
   billingTotalCents?: number | null;
   reason: string;
   lines: Array<{
@@ -606,18 +608,18 @@ export async function sendAdditionalChargeRequestedEmail(args: {
   }>;
 }) {
   const portalUrl = `${getAuthUrl()}/portal/orders/${args.orderId}`;
-  const totalRsd = args.totalCents / 100;
+  const totalEur = args.totalCents / 100;
   const totalLabel =
     args.billingCurrency && args.billingTotalCents != null
       ? formatEmailMoney(args.billingTotalCents, args.billingCurrency)
-      : formatEmailRsd(totalRsd);
+      : formatEmailEur(totalEur);
   const linesHtml = args.lines
     .map((line) => {
       const subtotal = (line.amountCents * line.quantity) / 100;
       const subtotalLabel =
         args.billingCurrency && line.billingSubtotalCents != null
           ? formatEmailMoney(line.billingSubtotalCents, args.billingCurrency)
-          : formatEmailRsd(subtotal);
+          : formatEmailEur(subtotal);
       return `<li>
         ${escapeHtml(line.label)}
         ${line.quantity > 1 ? ` × ${line.quantity}` : ""}
@@ -668,15 +670,15 @@ export async function sendAdditionalChargePaidEmail(args: {
   orderNumber: string;
   orderId: string;
   totalCents: number;
-  billingCurrency?: "RSD" | null;
+  billingCurrency?: "EUR" | null;
   billingTotalCents?: number | null;
 }) {
   const portalUrl = `${getAuthUrl()}/portal/orders/${args.orderId}`;
-  const totalRsd = args.totalCents / 100;
+  const totalEur = args.totalCents / 100;
   const totalLabel =
     args.billingCurrency && args.billingTotalCents != null
       ? formatEmailMoney(args.billingTotalCents, args.billingCurrency)
-      : formatEmailRsd(totalRsd);
+      : formatEmailEur(totalEur);
 
   await send({
     to: args.to,
@@ -759,7 +761,7 @@ export async function sendVrProjectReadyEmail(args: {
   contactName: string;
   productLabel: string;
   projectName: string;
-  priceRsd: number;
+  priceEur: number;
   orderNumber: string;
   orderId: string;
   token: string;
@@ -785,7 +787,7 @@ export async function sendVrProjectReadyEmail(args: {
             <strong>Projekat:</strong> ${escapeHtml(args.projectName)}<br/>
             <strong>Usluga:</strong> ${escapeHtml(args.productLabel)}<br/>
             <strong>Broj porudžbine:</strong> ${escapeHtml(args.orderNumber)}<br/>
-            <strong>Iznos:</strong> ${formatEmailRsd(args.priceRsd)}
+            <strong>Iznos:</strong> ${formatEmailEur(args.priceEur)}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
@@ -806,96 +808,28 @@ export async function sendVrProjectReadyEmail(args: {
   });
 }
 
-// ─── Nestpay (Banca Intesa) — payment success / failure ──
+// ─── PayPal — payment success / failure receipts ─────────
 //
-// Per EPM standard 2.7 the merchant must email the customer the
-// payment outcome with five mandatory blocks: outcome statement,
-// customer info, order details (line items + PDV breakdown), merchant
-// info, and the bank's transaction parameters (oid, AuthCode, TransId,
-// Response, ProcReturnCode, mdStatus, EXTRA.TRXDATE, plus timestamp).
-// All customer-facing amounts are RSD gross amounts.
+// Simple English receipts: order number, line items, EUR total, the
+// charged amount/currency (when the buyer paid in a non-EUR
+// presentment currency) and the PayPal capture id. Amount labels are
+// pre-formatted strings supplied by the outbox loader.
 
-export type NestpayEmailLineItem = {
+export type PaymentEmailLineItem = {
   label: string;
-  quantity: number;
-  unitPriceLabel: string;
   totalLabel: string;
 };
 
-export type NestpayEmailTransaction = {
-  oid: string;
-  authCode: string;
-  transId: string;
-  response: string;
-  procReturnCode: string;
-  mdStatus: string;
-  trxDate: Date | null;
-};
-
-export type NestpayEmailCustomer = {
-  name: string | null;
-  email: string;
-  address: string | null;
-};
-
-export type NestpayEmailConversion = null;
-
-export type NestpayEmailTotals = {
-  totalLabel: string;
-  vatBreakdownLabel: string | null;
-  installmentCount?: number | null;
-};
-
-function renderTransactionBlock(tx: NestpayEmailTransaction): string {
-  const rows = [
-    ["Broj narudžbine (order ID)", tx.oid],
-    ["Autorizacioni kod (AuthCode)", tx.authCode || "—"],
-    ["Identifikator transakcije (TransId)", tx.transId || "—"],
-    ["Status transakcije (Response)", tx.response || "—"],
-    ["Kod statusa (ProcReturnCode)", tx.procReturnCode || "—"],
-    ["Statusni kod 3D transakcije (mdStatus)", tx.mdStatus || "—"],
-    [
-      "Datum transakcije (EXTRA.TRXDATE)",
-      tx.trxDate
-        ? tx.trxDate.toLocaleString("sr-Latn-RS", { hour12: false })
-        : "—",
-    ],
-  ];
-  return `
-    <table style="width:100%; font-size:13px; color:#1C1A19; border-collapse:collapse;">
-      ${rows
-        .map(
-          ([k, v]) => `
-            <tr>
-              <td style="padding:4px 8px 4px 0; color:#6e665d; vertical-align:top;">${escapeHtml(k)}</td>
-              <td style="padding:4px 0; font-family: monospace; word-break:break-all;">${escapeHtml(v)}</td>
-            </tr>`,
-        )
-        .join("")}
-    </table>
-  `;
-}
-
-function renderLineItemsTable(items: NestpayEmailLineItem[]): string {
+function renderPaymentLineItems(items: PaymentEmailLineItem[]): string {
   if (!items.length) return "";
   return `
     <table style="width:100%; font-size:13px; color:#1C1A19; border-collapse:collapse;">
-      <thead>
-        <tr style="border-bottom:1px solid #d8cec4;">
-          <th align="left" style="padding:6px 6px 6px 0; font-weight:600;">Stavka</th>
-          <th align="right" style="padding:6px; font-weight:600;">Količina</th>
-          <th align="right" style="padding:6px; font-weight:600;">Jed. cena</th>
-          <th align="right" style="padding:6px 0 6px 6px; font-weight:600;">Ukupno</th>
-        </tr>
-      </thead>
       <tbody>
         ${items
           .map(
             (line) => `
               <tr style="border-bottom:1px solid #f0e8de;">
                 <td style="padding:6px 6px 6px 0;">${escapeHtml(line.label)}</td>
-                <td align="right" style="padding:6px;">${line.quantity}</td>
-                <td align="right" style="padding:6px;">${escapeHtml(line.unitPriceLabel)}</td>
                 <td align="right" style="padding:6px 0 6px 6px;">${escapeHtml(line.totalLabel)}</td>
               </tr>`,
           )
@@ -905,47 +839,38 @@ function renderLineItemsTable(items: NestpayEmailLineItem[]): string {
   `;
 }
 
-function renderMerchantBlock(): string {
+function renderPaymentReceiptBlock(args: {
+  orderNumber: string;
+  lineItems: PaymentEmailLineItem[];
+  totalEurLabel: string;
+  chargedLabel: string | null;
+  captureId: string | null;
+}): string {
   return `
+    <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Order details</h3>
+    <p style="margin:0 0 8px; color:#1C1A19; font-size:13px;">
+      <strong>Order number:</strong> ${escapeHtml(args.orderNumber)}
+    </p>
+    ${renderPaymentLineItems(args.lineItems)}
+    <p style="margin:8px 0 0; color:#1C1A19; font-size:14px;">
+      <strong>Total: ${escapeHtml(args.totalEurLabel)}</strong>
+      ${
+        args.chargedLabel
+          ? `<br/><span style="color:#6e665d; font-size:13px;">Charged: ${escapeHtml(args.chargedLabel)} — your invoice is issued in EUR.</span>`
+          : ""
+      }
+      ${
+        args.captureId
+          ? `<br/><span style="color:#6e665d; font-size:13px;">PayPal transaction id: <span style="font-family:monospace;">${escapeHtml(args.captureId)}</span></span>`
+          : ""
+      }
+    </p>
+    <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Merchant</h3>
     <p style="margin:0; color:#1C1A19; line-height:1.6; font-size:13px;">
       <strong>${escapeHtml(IMPRINT.shortName)}</strong><br/>
       ${escapeHtml(IMPRINT.legalName)}<br/>
-      PIB ${escapeHtml(IMPRINT.taxId)} · MB ${escapeHtml(IMPRINT.registryNumber)}<br/>
       ${escapeHtml(formatAddress())}<br/>
       ${escapeHtml(IMPRINT.email)}
-    </p>
-  `;
-}
-
-function renderCustomerBlock(customer: NestpayEmailCustomer): string {
-  return `
-    <p style="margin:0; color:#1C1A19; line-height:1.6; font-size:13px;">
-      ${customer.name ? `<strong>${escapeHtml(customer.name)}</strong><br/>` : ""}
-      ${escapeHtml(customer.email)}<br/>
-      ${customer.address ? escapeHtml(customer.address) : ""}
-    </p>
-  `;
-}
-
-function renderConversionBlock(_conv: NestpayEmailConversion): string {
-  void _conv;
-  return "";
-}
-
-function renderTotalsBlock(totals: NestpayEmailTotals): string {
-  return `
-    <p style="margin:8px 0 0; color:#1C1A19; font-size:14px;">
-      ${
-        totals.vatBreakdownLabel
-          ? `<span style="color:#6e665d; font-size:13px;">${escapeHtml(totals.vatBreakdownLabel)}</span><br/>`
-          : ""
-      }
-      <strong>Ukupno za naplatu: ${escapeHtml(totals.totalLabel)}</strong>
-      ${
-        totals.installmentCount && totals.installmentCount > 1
-          ? `<br/><span style="color:#6e665d; font-size:13px;">Broj rata: ${totals.installmentCount}</span>`
-          : ""
-      }
     </p>
   `;
 }
@@ -953,49 +878,37 @@ function renderTotalsBlock(totals: NestpayEmailTotals): string {
 export async function sendPaymentSuccessEmail(args: {
   to: string;
   orderNumber: string;
-  customer: NestpayEmailCustomer;
-  lineItems: NestpayEmailLineItem[];
-  totals: NestpayEmailTotals;
-  conversion: NestpayEmailConversion;
-  transaction: NestpayEmailTransaction;
+  customerName: string | null;
+  lineItems: PaymentEmailLineItem[];
+  totalEurLabel: string;
+  /** e.g. "$199 (USD)" — null when the buyer was charged in EUR. */
+  chargedLabel: string | null;
+  captureId: string | null;
 }) {
   const portalUrl = `${getAuthUrl()}/portal`;
 
   await send({
     to: args.to,
-    subject: `Elegant Render: vaša porudžbina je primljena — ${args.orderNumber}`,
+    subject: `Payment received — order ${args.orderNumber}`,
     html: `
       <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Plaćanje uspešno</h2>
-        <p style="color: #1C1A19; line-height: 1.6; font-weight:600; margin:0 0 16px;">
-          Uspešno ste izvršili plaćanje — račun Vaše platne kartice je zadužen.
+        <h2 style="color: #1C1A19;">Payment received</h2>
+        <p style="color: #1C1A19; line-height: 1.6; margin:0 0 16px;">
+          ${args.customerName ? `Hi ${escapeHtml(args.customerName)}, ` : ""}your
+          PayPal payment has been received — thank you.
         </p>
 
-        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o porudžbini</h3>
-        <p style="margin:0 0 8px; color:#1C1A19; font-size:13px;">
-          <strong>Broj porudžbine:</strong> ${escapeHtml(args.orderNumber)}
-        </p>
-        ${renderLineItemsTable(args.lineItems)}
-        ${renderTotalsBlock(args.totals)}
-        ${renderConversionBlock(args.conversion)}
-
-        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o kupcu</h3>
-        ${renderCustomerBlock(args.customer)}
-
-        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o trgovcu</h3>
-        ${renderMerchantBlock()}
-
-        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o transakciji</h3>
-        ${renderTransactionBlock(args.transaction)}
+        ${renderPaymentReceiptBlock(args)}
 
         <p style="color: #6e665d; line-height: 1.6; margin-top:24px;">
-          Status porudžbine i dokumenta možete pratiti u portalu.
+          You can follow the order status and download your documents in
+          the portal.
         </p>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 8px 0;">
-          Otvorite portal
+          Open your portal
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -1004,50 +917,41 @@ export async function sendPaymentSuccessEmail(args: {
 export async function sendPaymentFailureEmail(args: {
   to: string;
   orderNumber: string;
-  customer: NestpayEmailCustomer;
-  lineItems: NestpayEmailLineItem[];
-  totals: NestpayEmailTotals;
-  conversion: NestpayEmailConversion;
-  transaction: NestpayEmailTransaction;
+  customerName: string | null;
+  lineItems: PaymentEmailLineItem[];
+  totalEurLabel: string;
+  chargedLabel: string | null;
+  reason: string | null;
   retryUrl: string;
 }) {
   await send({
     to: args.to,
-    subject: `Plaćanje neuspešno — porudžbina ${args.orderNumber}`,
+    subject: `Payment not completed — order ${args.orderNumber}`,
     html: `
       <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Plaćanje neuspešno</h2>
-        <p style="color: #1C1A19; line-height: 1.6; font-weight:600; margin:0 0 16px;">
-          Plaćanje neuspešno — račun Vaše platne kartice nije zadužen.
+        <h2 style="color: #1C1A19;">Payment not completed</h2>
+        <p style="color: #1C1A19; line-height: 1.6; margin:0 0 16px;">
+          ${args.customerName ? `Hi ${escapeHtml(args.customerName)}, ` : ""}your
+          PayPal payment did not go through — you have not been charged.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Vaša porudžbina je sačuvana i možete pokušati ponovo iz portala.
-          Najčešći uzrok je pogrešno unet broj kartice, datum isteka ili
-          sigurnosni kod. U slučaju uzastopnih grešaka, pozovite Vašu banku.
+          Your order is saved and you can try again from your portal. If
+          PayPal declined the payment repeatedly, check your PayPal account
+          or try a different funding source.
         </p>
+        ${
+          args.reason
+            ? `<p style="color:#6e665d; font-size:13px;">Provider status: <span style="font-family:monospace;">${escapeHtml(args.reason)}</span></p>`
+            : ""
+        }
 
-        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o porudžbini</h3>
-        <p style="margin:0 0 8px; color:#1C1A19; font-size:13px;">
-          <strong>Broj porudžbine:</strong> ${escapeHtml(args.orderNumber)}
-        </p>
-        ${renderLineItemsTable(args.lineItems)}
-        ${renderTotalsBlock(args.totals)}
-        ${renderConversionBlock(args.conversion)}
-
-        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o kupcu</h3>
-        ${renderCustomerBlock(args.customer)}
-
-        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o trgovcu</h3>
-        ${renderMerchantBlock()}
-
-        <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Podaci o transakciji</h3>
-        ${renderTransactionBlock(args.transaction)}
+        ${renderPaymentReceiptBlock({ ...args, captureId: null })}
 
         <a href="${args.retryUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Pokušajte ponovo
+          Try again
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });

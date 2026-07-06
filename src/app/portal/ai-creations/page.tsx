@@ -3,9 +3,9 @@ import { listAiStudioGenerations } from "@/server/actions/ai-studio";
 import { AiCreationsClient } from "./ai-creations-client";
 
 export const metadata: Metadata = {
-  title: "AI kreacije",
+  title: "AI creations",
   description:
-    "Galerija vaših AI Studio generacija sa rezultatima, statusima i opcijama za nastavak rada.",
+    "Gallery of your AI Studio generations with results, statuses, and options to continue work.",
   robots: { index: false, follow: false },
 };
 

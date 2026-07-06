@@ -1,5 +1,15 @@
 "use client";
 
+/**
+ * checkout-context.tsx — state for the 2-step checkout wizard
+ * (details → payment) plus the post-payment success screen.
+ *
+ * Upload state is gone: source files are uploaded after payment via
+ * the self-contained <OrderFileUpload> component. The display currency
+ * comes from the server (geo) and matches the charge snapshot that
+ * createOrder locks server-side.
+ */
+
 import {
   createContext,
   useCallback,
@@ -22,7 +32,6 @@ export type BuyerInfoState = {
   buyerCountryCode: string;
   companyName: string;
   companyTaxId: string;
-  companyMb: string;
   companyAddress: string;
   companyCountryCode: string;
 };
@@ -32,17 +41,11 @@ const EMPTY_BUYER_INFO: BuyerInfoState = {
   buyerCountryCode: "",
   companyName: "",
   companyTaxId: "",
-  companyMb: "",
   companyAddress: "",
   companyCountryCode: "",
 };
 
-export type UploadedFile = {
-  fileName: string;
-  fileSize: number;
-  mimeType: string;
-  storagePath: string;
-};
+export type PaymentState = "idle" | "processing" | "completed";
 
 export type CheckoutState = {
   step: number;
@@ -54,9 +57,7 @@ export type CheckoutState = {
   customerName: string;
   customerEmail: string;
   customerNote: string;
-  uploadedFiles: UploadedFile[];
-  paymentComplete: boolean;
-  installmentCount: number;
+  paymentState: PaymentState;
   buyerInfo: BuyerInfoState;
   displayCurrency: DisplayCurrency;
   pricingCatalog?: ResolvedPricingCatalog;
@@ -68,10 +69,8 @@ type CheckoutContextValue = CheckoutState & {
   setCustomerNote: (note: string) => void;
   setOrderId: (id: string) => void;
   setUserId: (id: string) => void;
-  addFile: (file: UploadedFile) => void;
-  removeFile: (storagePath: string) => void;
   setPaymentComplete: () => void;
-  setInstallmentCount: (count: number) => void;
+  setPaymentProcessing: () => void;
   setBuyerInfo: (next: BuyerInfoState) => void;
 };
 
@@ -96,16 +95,14 @@ export function CheckoutProvider({
   initialBuyerInfo?: BuyerInfoState;
   children: ReactNode;
 }) {
-  const [step, setStep] = useState(initialUserId ? 1 : 0);
+  const [step, setStep] = useState(0);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(initialUserId);
   const initiallySignedIn = Boolean(initialUserId);
   const [customerName, setCustomerName] = useState(initialName);
   const [customerEmail, setCustomerEmail] = useState(initialEmail);
   const [customerNote, setCustomerNote] = useState("");
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
-  const [paymentComplete, setPaymentCompleteState] = useState(false);
-  const [installmentCount, setInstallmentCount] = useState(1);
+  const [paymentState, setPaymentState] = useState<PaymentState>("idle");
   const [buyerInfo, setBuyerInfoState] =
     useState<BuyerInfoState>(initialBuyerInfo ?? EMPTY_BUYER_INFO);
 
@@ -114,30 +111,9 @@ export function CheckoutProvider({
     [initialItems, pricingCatalog],
   );
 
-  const effectiveDisplayCurrency = useMemo<DisplayCurrency>(() => {
-    void buyerInfo.buyerCountryCode;
-    void buyerInfo.buyerType;
-    void buyerInfo.companyCountryCode;
-    void displayCurrency;
-    return "rsd";
-  }, [
-    buyerInfo.buyerCountryCode,
-    buyerInfo.buyerType,
-    buyerInfo.companyCountryCode,
-    displayCurrency,
-  ]);
-
   const setCustomer = useCallback((name: string, email: string) => {
     setCustomerName(name);
     setCustomerEmail(email);
-  }, []);
-
-  const addFile = useCallback((file: UploadedFile) => {
-    setUploadedFiles((prev) => [...prev, file]);
-  }, []);
-
-  const removeFile = useCallback((storagePath: string) => {
-    setUploadedFiles((prev) => prev.filter((f) => f.storagePath !== storagePath));
   }, []);
 
   const setBuyerInfo = useCallback((next: BuyerInfoState) => {
@@ -155,29 +131,24 @@ export function CheckoutProvider({
       customerName,
       customerEmail,
       customerNote,
-      uploadedFiles,
-      paymentComplete,
-      installmentCount,
+      paymentState,
       buyerInfo,
-      displayCurrency: effectiveDisplayCurrency,
+      displayCurrency,
       pricingCatalog,
       setStep,
       setCustomer,
       setCustomerNote,
       setOrderId,
       setUserId,
-      addFile,
-      removeFile,
-      setPaymentComplete: () => setPaymentCompleteState(true),
-      setInstallmentCount,
+      setPaymentComplete: () => setPaymentState("completed"),
+      setPaymentProcessing: () => setPaymentState("processing"),
       setBuyerInfo,
     }),
     [
       step, initialItems, calculation, orderId, userId, initiallySignedIn,
       customerName, customerEmail, customerNote,
-      uploadedFiles, paymentComplete, installmentCount, buyerInfo,
-      effectiveDisplayCurrency, pricingCatalog,
-      setCustomer, addFile, removeFile, setBuyerInfo,
+      paymentState, buyerInfo, displayCurrency, pricingCatalog,
+      setCustomer, setBuyerInfo,
     ],
   );
 

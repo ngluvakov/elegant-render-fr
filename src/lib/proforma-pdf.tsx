@@ -1,8 +1,9 @@
 /**
- * proforma-pdf.tsx — Server-side PDF for predračun (proforma invoice).
+ * proforma-pdf.tsx — Server-side PDF for the proforma invoice.
  *
- * Three layouts driven off Order.buyerType, mirroring invoice-pdf.tsx
- * but with key legal differences:
+ * Single English export layout (EUR) shared by both buyer types
+ * ({individual, business}), mirroring invoice-pdf.tsx but with key
+ * legal differences:
  *   - Header reads PREDRAČUN / PROFORMA INVOICE
  *   - Explicit note that the document is NOT a tax invoice — it's a
  *     payment instruction. The legal faktura comes after the funds
@@ -38,17 +39,16 @@ export type ProformaData = {
   proformaNumber: string;
   issueDate: Date;
   dueDate: Date;
-  buyerType: "individual" | "company_rs" | "company_foreign";
+  buyerType: "individual" | "business";
   recipient: {
     name: string;
     address: string;
     taxId?: string | null;
-    mb?: string | null;
     countryCode?: string | null;
     email?: string | null;
   };
   items: ProformaLineItem[];
-  currency: "RSD";
+  currency: "EUR";
   paymentReference: string; // poziv na broj — usually the order number
 };
 
@@ -210,10 +210,15 @@ const styles = StyleSheet.create({
   },
 });
 
-function formatMoney(cents: number, _currency: "RSD"): string {
+function formatMoney(cents: number, _currency: "EUR"): string {
   void _currency;
   const value = cents / 100;
-  return `${value.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`;
+  return new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 }
 
 function formatDate(date: Date, locale: "sr-Latn-RS" | "en-GB"): string {
@@ -224,82 +229,35 @@ function formatDate(date: Date, locale: "sr-Latn-RS" | "en-GB"): string {
   });
 }
 
+const ENGLISH_STRINGS = {
+  title: "PROFORMA INVOICE",
+  issuer: "Issuer",
+  recipient: "Recipient",
+  issueDate: "Issue date",
+  dueDate: "Payment due",
+  description: "Description",
+  qty: "Qty",
+  unitNet: "Unit net",
+  vat: "VAT",
+  lineTotal: "Net total",
+  subtotal: "Subtotal",
+  vatTotal: "VAT",
+  grand: "Total due",
+  bankTitle: "Payment instructions",
+  bankAccount: "Account",
+  bankIban: "IBAN",
+  bankSwift: "SWIFT/BIC",
+  bankBankName: "Bank",
+  bankReference: "Reference",
+  legal:
+    "This is a proforma invoice — not a tax document. The final invoice will be issued upon receipt of payment. Reverse charge — VAT is not charged on this document (Place of supply outside the Republic of Serbia, čl. 24/25 ZPDV).",
+  draft:
+    "PROFORMA INVOICE — please remit payment as instructed below. The final invoice is issued upon receipt of funds.",
+} as const;
+
 const STRINGS = {
-  individual: {
-    title: "PREDRAČUN",
-    issuer: "Izdavalac",
-    recipient: "Kupac",
-    issueDate: "Datum izdavanja",
-    dueDate: "Rok plaćanja",
-    description: "Opis",
-    qty: "Količina",
-    unitNet: "Jed. cena",
-    vat: "PDV",
-    lineTotal: "Osnovica",
-    subtotal: "Osnovica",
-    vatTotal: "PDV (20%)",
-    grand: "Ukupno za uplatu",
-    bankTitle: "Instrukcije za uplatu",
-    bankAccount: "Račun",
-    bankIban: "IBAN",
-    bankSwift: "SWIFT/BIC",
-    bankBankName: "Banka",
-    bankReference: "Poziv na broj",
-    legal:
-      "Ovaj dokument je predračun (proforma) — nije poreski račun. Konačni račun (faktura) sa iskazanim PDV-om biće izdat odmah po prijemu uplate.",
-    draft:
-      "PREDRAČUN — molimo izvršite uplatu prema instrukcijama ispod. Po prijemu sredstava, izdaje se konačni račun.",
-  },
-  company_rs: {
-    title: "PREDRAČUN",
-    issuer: "Izdavalac",
-    recipient: "Primalac",
-    issueDate: "Datum izdavanja",
-    dueDate: "Rok plaćanja",
-    description: "Opis",
-    qty: "Količina",
-    unitNet: "Jed. cena",
-    vat: "PDV",
-    lineTotal: "Osnovica",
-    subtotal: "Osnovica",
-    vatTotal: "PDV (20%)",
-    grand: "Ukupno za uplatu",
-    bankTitle: "Instrukcije za uplatu",
-    bankAccount: "Račun",
-    bankIban: "IBAN",
-    bankSwift: "SWIFT/BIC",
-    bankBankName: "Banka",
-    bankReference: "Poziv na broj",
-    legal:
-      "Predračun nije poreski dokument. Konačni račun će biti izdat po prijemu uplate i poslat kroz Sistem elektronskih faktura (SEF) na osnovu PIB-a primaoca.",
-    draft:
-      "PREDRAČUN — molimo izvršite uplatu prema instrukcijama ispod. Po prijemu sredstava, izdaje se konačni račun.",
-  },
-  company_foreign: {
-    title: "PROFORMA INVOICE",
-    issuer: "Issuer",
-    recipient: "Recipient",
-    issueDate: "Issue date",
-    dueDate: "Payment due",
-    description: "Description",
-    qty: "Qty",
-    unitNet: "Unit net",
-    vat: "VAT",
-    lineTotal: "Net total",
-    subtotal: "Subtotal",
-    vatTotal: "VAT",
-    grand: "Total due",
-    bankTitle: "Payment instructions",
-    bankAccount: "Account",
-    bankIban: "IBAN",
-    bankSwift: "SWIFT/BIC",
-    bankBankName: "Bank",
-    bankReference: "Reference",
-    legal:
-      "This is a proforma invoice — not a tax document. The final invoice will be issued upon receipt of payment. Reverse charge — VAT is not charged on this document (Place of supply outside the Republic of Serbia, čl. 24/25 ZPDV).",
-    draft:
-      "PROFORMA INVOICE — please remit payment as instructed below. The final invoice is issued upon receipt of funds.",
-  },
+  individual: ENGLISH_STRINGS,
+  business: ENGLISH_STRINGS,
 } as const;
 
 export async function renderProformaPdf(data: ProformaData): Promise<Buffer> {
@@ -311,7 +269,7 @@ export async function renderProformaPdf(data: ProformaData): Promise<Buffer> {
 function ProformaDocument({ data }: { data: ProformaData }) {
   const layoutKey = data.buyerType;
   const t = STRINGS[layoutKey];
-  const locale = "sr-Latn-RS";
+  const locale = "en-GB";
 
   const subtotalCents = data.items.reduce(
     (sum, it) => sum + it.quantity * it.unitPriceNetCents,
@@ -334,7 +292,7 @@ function ProformaDocument({ data }: { data: ProformaData }) {
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.h1}>{t.title}</Text>
-            <Text style={styles.number}>br. {data.proformaNumber}</Text>
+            <Text style={styles.number}>No. {data.proformaNumber}</Text>
           </View>
           <View style={styles.metaCol}>
             <View style={styles.metaPair}>
@@ -368,17 +326,11 @@ function ProformaDocument({ data }: { data: ProformaData }) {
             <Text style={styles.partyLabel}>{t.recipient}</Text>
             <Text style={styles.partyName}>{data.recipient.name}</Text>
             <Text style={styles.partyText}>{data.recipient.address}</Text>
-            {data.recipient.taxId && data.buyerType === "company_rs" && (
-              <Text style={styles.partyMono}>
-                PIB {data.recipient.taxId}
-                {data.recipient.mb ? ` · MB ${data.recipient.mb}` : ""}
-              </Text>
-            )}
-            {data.recipient.taxId && data.buyerType === "company_foreign" && (
+            {data.recipient.taxId && data.buyerType === "business" && (
               <Text style={styles.partyMono}>Tax ID {data.recipient.taxId}</Text>
             )}
             {data.recipient.countryCode &&
-              data.buyerType === "company_foreign" && (
+              data.buyerType === "business" && (
                 <Text style={styles.partyText}>
                   Country: {data.recipient.countryCode}
                 </Text>

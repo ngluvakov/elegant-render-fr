@@ -1,21 +1,44 @@
 /**
- * charge-payment.ts — shared completion hooks and dev mock-card action
- * for OrderCharge.
+ * charge-payment.ts — PayPal payment actions, shared completion hooks
+ * and the dev-only mock card action for OrderCharge.
+ *
+ * Mirrors payment.ts but operates on OrderCharge rows: the same double
+ * idempotency guard (pre-flight PayPal-order-id reuse + race-safe
+ * `paymentStatus != completed` atomic winner), the same fail-closed
+ * charge-snapshot and captured-amount checks, and the same PENDING
+ * (eCheck) handling — the webhook / reconciler completes those later.
+ *
+ * Used by: portal charge-payment-card, api/paypal/webhook.
  */
 "use server";
 
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import {
+  capturePayPalOrder,
+  createPayPalOrderMinor,
+  getPayPalOrder,
+} from "@/lib/payment/paypal";
+import { isChargeCurrency } from "@/lib/currency/config";
 import { processMockCardPaymentCents } from "@/lib/payment/mock-card";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { captureServerEvent } from "@/lib/posthog";
+import {
+  checkRateLimit,
+  getServerActionIdentifier,
+  rateLimitMessage,
+} from "@/lib/rate-limit";
 import { issueChargeInvoice } from "@/server/actions/issue-charge-invoice";
 import type { BillingCurrency } from "@/lib/billing";
 
 export type ChargePaymentResult = {
   error?: string;
   success?: boolean;
+  /** "completed" — funds captured; "processing" — eCheck capture PENDING. */
+  status?: "completed" | "processing";
+  paypalOrderId?: string;
 };
 
 async function loadChargeForPayment(chargeId: string) {
@@ -27,6 +50,8 @@ async function loadChargeForPayment(chargeId: string) {
       totalCents: true,
       billingCurrency: true,
       billingTotalCents: true,
+      chargedCurrency: true,
+      chargedAmountMinor: true,
       status: true,
       paymentStatus: true,
       paymentProvider: true,
@@ -49,7 +74,7 @@ async function trackChargePaid(args: {
   totalCents: number;
   billingCurrency: BillingCurrency | null;
   billingTotalCents: number | null;
-  provider: "nestpay" | "card_mock";
+  provider: "paypal" | "card_mock";
 }) {
   await captureServerEvent({
     distinctId: `user:${args.userId}`,
@@ -92,10 +117,10 @@ async function enqueuePaidEmail(args: {
 
 export async function finishSuccessfulChargePayment(
   chargeId: string,
-  provider: "nestpay" | "card_mock",
+  provider: "paypal" | "card_mock",
 ): Promise<ChargePaymentResult> {
   const charge = await loadChargeForPayment(chargeId);
-  if (!charge) return { error: "Naplata nije pronađena." };
+  if (!charge) return { error: "Charge was not found." };
 
   const result = await prisma.orderCharge.updateMany({
     where: { id: chargeId, paymentStatus: { not: "completed" } },
@@ -140,7 +165,7 @@ export async function finishSuccessfulChargePayment(
   revalidatePath(`/portal/orders/${charge.orderId}`);
   revalidatePath("/portal/finance");
 
-  return { success: true };
+  return { success: true, status: "completed" };
 }
 
 export async function finishFailedChargePayment(chargeId: string) {
@@ -150,15 +175,194 @@ export async function finishFailedChargePayment(chargeId: string) {
   });
 }
 
+// ─── PayPal ──────────────────────────────────────────────
+
+export async function createPayPalChargeAction(
+  chargeId: string,
+): Promise<ChargePaymentResult> {
+  const charge = await loadChargeForPayment(chargeId);
+  if (!charge) return { error: "Charge was not found." };
+  if (charge.status === "cancelled") return { error: "This charge has been cancelled." };
+  if (charge.status === "paid" || charge.paymentStatus === "completed") {
+    return { error: "This charge has already been paid." };
+  }
+
+  const session = await auth();
+  if (session?.user?.id && session.user.id !== charge.order.userId) {
+    return { error: "You do not have access to this charge." };
+  }
+
+  const identifier = await getServerActionIdentifier();
+  const rate = await checkRateLimit("paypalCreate", identifier);
+  if (!rate.ok) {
+    return { error: rateLimitMessage(rate.retryAfterSeconds) };
+  }
+
+  // Fail-closed: charges carry their own charge snapshot (inherited
+  // from the parent order's currency at creation). No snapshot → no
+  // payment.
+  if (
+    charge.chargedAmountMinor == null ||
+    charge.chargedAmountMinor <= 0 ||
+    !isChargeCurrency(charge.chargedCurrency)
+  ) {
+    Sentry.captureMessage("[paypal] charge has no charge snapshot", {
+      level: "error",
+      extra: { chargeId, chargedCurrency: charge.chargedCurrency },
+    });
+    return { error: "Charge has no charge snapshot. Please contact us." };
+  }
+
+  try {
+    // Idempotency guard (a): reuse an attached, still-capturable
+    // PayPal order id instead of minting a second one.
+    if (charge.paymentProvider === "paypal" && charge.paymentId) {
+      try {
+        const existing = await getPayPalOrder(charge.paymentId);
+        if (existing.status === "CREATED" || existing.status === "APPROVED") {
+          return { paypalOrderId: charge.paymentId };
+        }
+      } catch (err) {
+        Sentry.captureException(err, {
+          tags: { area: "payment", flow: "paypal-charge-create-lookup" },
+          extra: { chargeId, paypalOrderId: charge.paymentId },
+        });
+      }
+    }
+
+    const attempt = charge.paymentId ?? "0";
+    const paypalOrderId = await createPayPalOrderMinor({
+      amountMinor: charge.chargedAmountMinor,
+      currency: charge.chargedCurrency,
+      referenceId: `${charge.order.orderNumber}-CHG-${charge.id.slice(-6).toUpperCase()}`,
+      customId: charge.id,
+      description: "Elegant Render — additional charge",
+      requestId: `charge:${charge.id}:${attempt}`,
+    });
+
+    const persisted = await prisma.orderCharge.updateMany({
+      where: { id: chargeId, paymentStatus: { not: "completed" } },
+      data: {
+        paymentProvider: "paypal",
+        paymentId: paypalOrderId,
+        paymentStatus: "pending",
+      },
+    });
+    if (persisted.count === 0) {
+      return { error: "This charge has already been paid." };
+    }
+
+    return { paypalOrderId };
+  } catch (err) {
+    Sentry.captureException(err, {
+      tags: { area: "payment", flow: "paypal-charge-create" },
+      extra: { chargeId },
+    });
+    return {
+      error: "Could not start the PayPal payment. Please try again.",
+    };
+  }
+}
+
+export async function capturePayPalChargeAction(
+  chargeId: string,
+  paypalOrderId: string,
+): Promise<ChargePaymentResult> {
+  const charge = await loadChargeForPayment(chargeId);
+  if (!charge) return { error: "Charge was not found." };
+
+  const session = await auth();
+  if (session?.user?.id && session.user.id !== charge.order.userId) {
+    return { error: "You do not have access to this charge." };
+  }
+
+  // Pre-flight idempotency: already captured (double click, retried
+  // POST after a lost response) — success without re-charging.
+  if (charge.paymentStatus === "completed" || charge.status === "paid") {
+    return { success: true, status: "completed" };
+  }
+
+  if (charge.paymentProvider !== "paypal" || charge.paymentId !== paypalOrderId) {
+    return { error: "Payment reference mismatch. Please refresh and try again." };
+  }
+
+  try {
+    const result = await capturePayPalOrder(paypalOrderId);
+
+    // Forensic snapshot regardless of outcome (never overwrite a
+    // parallel completer).
+    await prisma.orderCharge.updateMany({
+      where: { id: chargeId, paymentStatus: { not: "completed" } },
+      data: {
+        ...(result.captureId ? { paypalCaptureId: result.captureId } : {}),
+        ...(result.captureStatus
+          ? { paypalCaptureStatus: result.captureStatus }
+          : {}),
+        ...(result.payerEmail ? { paypalPayerEmail: result.payerEmail } : {}),
+        ...(result.payerCountryCode
+          ? { paypalPayerCountry: result.payerCountryCode }
+          : {}),
+        paypalResponseRaw: JSON.parse(JSON.stringify(result.raw ?? null)),
+        paypalLastQueryAt: new Date(),
+      },
+    });
+
+    // eCheck: funds not cleared yet — the webhook / reconciler
+    // completes the charge when PayPal confirms.
+    if (result.captureStatus === "PENDING") {
+      return { success: true, status: "processing" };
+    }
+
+    if (result.captureStatus !== "COMPLETED") {
+      return { error: "PayPal did not complete the payment. You have not been charged." };
+    }
+
+    // Amount check — fail-closed (see capturePayPalOrderAction).
+    if (
+      result.amountMinor !== charge.chargedAmountMinor ||
+      result.currencyCode !== charge.chargedCurrency
+    ) {
+      Sentry.captureMessage("[paypal] captured charge amount mismatch", {
+        level: "error",
+        extra: {
+          chargeId,
+          paypalOrderId,
+          capturedAmountMinor: result.amountMinor,
+          capturedCurrency: result.currencyCode,
+          chargedAmountMinor: charge.chargedAmountMinor,
+          chargedCurrency: charge.chargedCurrency,
+        },
+      });
+      return {
+        error: "Payment amount mismatch — our team has been notified.",
+      };
+    }
+
+    // finishSuccessfulChargePayment carries the atomic winner guard:
+    // only the first completer issues the invoice / emails / tracks.
+    return await finishSuccessfulChargePayment(chargeId, "paypal");
+  } catch (err) {
+    Sentry.captureException(err, {
+      tags: { area: "payment", flow: "paypal-charge-capture" },
+      extra: { chargeId, paypalOrderId },
+    });
+    return {
+      error: "The payment could not be confirmed. Please try again.",
+    };
+  }
+}
+
+// ─── Mock Card (dev only) ────────────────────────────────
+
 export async function mockCardChargePaymentAction(
   chargeId: string,
 ): Promise<ChargePaymentResult> {
   const charge = await loadChargeForPayment(chargeId);
-  if (!charge) return { error: "Naplata nije pronađena." };
-  if (charge.status === "cancelled") return { error: "Naplata je otkazana." };
+  if (!charge) return { error: "Charge was not found." };
+  if (charge.status === "cancelled") return { error: "This charge has been cancelled." };
 
   if (charge.paymentStatus === "completed" || charge.status === "paid") {
-    return { success: true };
+    return { success: true, status: "completed" };
   }
 
   try {
@@ -181,7 +385,7 @@ export async function mockCardChargePaymentAction(
       extra: { chargeId },
     });
     return {
-      error: `Greška: ${err instanceof Error ? err.message : "Nepoznata greška"}`,
+      error: `Error: ${err instanceof Error ? err.message : "Unknown error"}`,
     };
   }
 }

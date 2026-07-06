@@ -26,14 +26,14 @@ export function ServiceMatrixSidebar({ activeCat }: { activeCat: string }) {
     0,
   );
 
-  const allItem: Item = { id: ALL_FILTER, label: "Sve usluge", count: totalCount };
+  const allItem: Item = { id: ALL_FILTER, label: "All services", count: totalCount };
   const catItems: Item[] = categories.map((c) => ({
     id: c.id,
     label: c.label,
     count: c.products.length,
   }));
 
-  // Reorder: Sve always first, the active category (if any) bumps to position 2,
+  // Reorder: All always first, the active category (if any) bumps to position 2,
   // then the remaining categories follow in their catalog order.
   const orderedItems: Item[] =
     activeCat === ALL_FILTER

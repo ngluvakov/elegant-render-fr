@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
-import { formatRsd } from "@/lib/catalog/calculate";
+import { formatEur } from "@/lib/catalog/calculate";
 import {
   adminCancelCharge,
   adminCreateCharge,
@@ -39,7 +39,7 @@ type CatalogOption = {
   productId: string;
   label: string;
   categoryLabel: string;
-  basePriceRsd: number;
+  basePriceEur: number;
 };
 
 const CATALOG_OPTIONS: CatalogOption[] = CONFIGURATOR_CATEGORIES.flatMap((cat) =>
@@ -47,7 +47,7 @@ const CATALOG_OPTIONS: CatalogOption[] = CONFIGURATOR_CATEGORIES.flatMap((cat) =
     productId: p.id,
     label: p.label,
     categoryLabel: cat.label,
-    basePriceRsd: p.basePriceRsd,
+    basePriceEur: p.basePriceEur,
   })),
 );
 
@@ -56,7 +56,7 @@ type RowState = {
   source: "catalog" | "custom";
   productId: string | null;
   label: string;
-  amountRsd: string; // input as string for editability
+  amountEur: string; // input as string for editability
   quantity: string;
 };
 
@@ -66,15 +66,15 @@ function blankRow(): RowState {
     source: "custom",
     productId: null,
     label: "",
-    amountRsd: "",
+    amountEur: "",
     quantity: "1",
   };
 }
 
 function statusLabel(status: ChargeView["status"]): string {
-  if (status === "pending") return "Čeka uplatu";
-  if (status === "paid") return "Plaćeno";
-  return "Otkazano";
+  if (status === "pending") return "Awaiting payment";
+  if (status === "paid") return "Paid";
+  return "Cancelled";
 }
 
 function statusAccent(status: ChargeView["status"]): string {
@@ -100,7 +100,7 @@ export function AdminChargesPanel({
 
   const totalCents = useMemo(() => {
     return rows.reduce((sum, row) => {
-      const rsd = Number(row.amountRsd);
+      const rsd = Number(row.amountEur);
       const qty = Math.max(1, Math.floor(Number(row.quantity) || 0));
       if (!Number.isFinite(rsd) || rsd <= 0) return sum;
       return sum + Math.round(rsd * 100) * qty;
@@ -124,7 +124,7 @@ export function AdminChargesPanel({
       source: "catalog",
       productId: opt.productId,
       label: `${opt.categoryLabel} — ${opt.label}`,
-      amountRsd: opt.basePriceRsd.toString(),
+      amountEur: opt.basePriceEur.toString(),
     });
   };
 
@@ -133,7 +133,7 @@ export function AdminChargesPanel({
     setError("");
 
     const items = rows.map((row) => {
-      const rsd = Number(row.amountRsd);
+      const rsd = Number(row.amountEur);
       const qty = Math.max(1, Math.floor(Number(row.quantity) || 1));
       return {
         productId: row.productId ?? undefined,
@@ -149,11 +149,11 @@ export function AdminChargesPanel({
 
     for (const item of items) {
       if (!item.label) {
-        setError("Svaka stavka mora imati naziv.");
+        setError("Each item must have a name.");
         return;
       }
       if (!Number.isFinite(item.amountCents) || item.amountCents <= 0) {
-        setError(`Cena za "${item.label}" mora biti veća od nule.`);
+        setError(`Price for "${item.label}" must be greater than zero.`);
         return;
       }
     }
@@ -192,15 +192,15 @@ export function AdminChargesPanel({
         <div>
           <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
             <Receipt className="h-3.5 w-3.5 text-accent" />
-            Dodatne naplate
+            Additional charges
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Dodatne usluge, izmene ili custom posao van prvobitnog scope-a.
+            Additional services, changes, or custom work outside the original scope.
           </p>
         </div>
         {!open && (
           <Button size="sm" onClick={() => setOpen(true)}>
-            Zatraži dodatnu naplatu
+            Request additional charge
           </Button>
         )}
       </div>
@@ -219,7 +219,7 @@ export function AdminChargesPanel({
                       {statusLabel(charge.status)}
                     </Badge>
                     <span className="text-[0.68rem] text-muted-foreground">
-                      {charge.createdAt.toLocaleDateString("sr-Latn-RS")}
+                      {charge.createdAt.toLocaleDateString("en-GB")}
                     </span>
                     {charge.paymentProvider && (
                       <span className="text-[0.68rem] text-muted-foreground">
@@ -234,7 +234,7 @@ export function AdminChargesPanel({
                   )}
                 </div>
                 <p className="font-semibold text-foreground">
-                  {formatRsd(charge.totalCents / 100)}
+                  {formatEur(charge.totalCents / 100)}
                 </p>
               </div>
               <ul className="mt-2 space-y-0.5 text-[0.72rem] text-foreground/80">
@@ -245,7 +245,7 @@ export function AdminChargesPanel({
                       {item.quantity > 1 ? ` × ${item.quantity}` : ""}
                     </span>
                     <span className="font-medium">
-                      {formatRsd((item.amountCents * item.quantity) / 100)}
+                      {formatEur((item.amountCents * item.quantity) / 100)}
                     </span>
                   </li>
                 ))}
@@ -259,7 +259,7 @@ export function AdminChargesPanel({
                     onClick={() => handleCancel(charge.id)}
                     disabled={cancellingId === charge.id}
                   >
-                    {cancellingId === charge.id ? "Otkazivanje…" : "Otkaži"}
+                    {cancellingId === charge.id ? "Cancelling..." : "Cancel"}
                   </Button>
                 </div>
               )}
@@ -278,7 +278,7 @@ export function AdminChargesPanel({
               >
                 <div className="flex items-center justify-between">
                   <p className="text-[0.68rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Stavka {index + 1}
+                    Item {index + 1}
                   </p>
                   {rows.length > 1 && (
                     <Button
@@ -293,7 +293,7 @@ export function AdminChargesPanel({
                 </div>
                 <div className="mt-2 grid gap-2">
                   <div>
-                    <Label className="text-[0.68rem]">Iz kataloga (opciono)</Label>
+                    <Label className="text-[0.68rem]">From catalog (optional)</Label>
                     <select
                       value={row.productId ?? ""}
                       onChange={(e) => {
@@ -311,38 +311,38 @@ export function AdminChargesPanel({
                       <option value="">— Custom —</option>
                       {CATALOG_OPTIONS.map((opt) => (
                         <option key={opt.productId} value={opt.productId}>
-                          {opt.categoryLabel} — {opt.label} (od {formatRsd(opt.basePriceRsd)})
+                          {opt.categoryLabel} — {opt.label} (from {formatEur(opt.basePriceEur)})
                         </option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <Label className="text-[0.68rem]">Naziv stavke</Label>
+                    <Label className="text-[0.68rem]">Item name</Label>
                     <Input
                       value={row.label}
                       onChange={(e) =>
                         updateRow(row.rid, { label: e.target.value })
                       }
-                      placeholder="npr. Dodatna soba — kuhinja"
+                      placeholder="e.g. Additional room - kitchen"
                       className="mt-1"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label className="text-[0.68rem]">Cena (RSD)</Label>
+                      <Label className="text-[0.68rem]">Price (RSD)</Label>
                       <Input
                         type="number"
                         step="1"
                         min="0"
-                        value={row.amountRsd}
+                        value={row.amountEur}
                         onChange={(e) =>
-                          updateRow(row.rid, { amountRsd: e.target.value })
+                          updateRow(row.rid, { amountEur: e.target.value })
                         }
                         className="mt-1"
                       />
                     </div>
                     <div>
-                      <Label className="text-[0.68rem]">Količina</Label>
+                      <Label className="text-[0.68rem]">Quantity</Label>
                       <Input
                         type="number"
                         min="1"
@@ -361,24 +361,24 @@ export function AdminChargesPanel({
 
           <Button type="button" variant="outline" size="sm" onClick={addRow}>
             <Plus className="h-3 w-3" />
-            Dodaj još jednu stavku
+            Add another item
           </Button>
 
           <div>
-            <Label className="text-xs">Razlog (klijent vidi u emailu)</Label>
+            <Label className="text-xs">Reason (client sees this in the email)</Label>
             <Textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="npr. Dogovorene dodatne izmene posle prezentacije."
+              placeholder="e.g. Additional agreed changes after the presentation."
               rows={2}
               className="mt-1 resize-none"
             />
           </div>
 
           <div className="flex items-center justify-between rounded-xl bg-muted/40 px-3 py-2">
-            <span className="text-xs text-muted-foreground">Ukupno za naplatu</span>
+            <span className="text-xs text-muted-foreground">Total to charge</span>
             <span className="text-base font-bold text-foreground">
-              {formatRsd(totalCents / 100)}
+              {formatEur(totalCents / 100)}
             </span>
           </div>
 
@@ -386,7 +386,7 @@ export function AdminChargesPanel({
 
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={pending || totalCents <= 0}>
-              {pending ? "Slanje…" : "Pošalji klijentu na plaćanje"}
+              {pending ? "Sending..." : "Send to client for payment"}
             </Button>
             <Button
               type="button"
@@ -398,7 +398,7 @@ export function AdminChargesPanel({
               }}
               disabled={pending}
             >
-              Otkaži
+              Cancel
             </Button>
           </div>
         </form>

@@ -2,12 +2,12 @@
  * Admin invoice export — date-range preview + CSV download.
  *
  * The page itself is a server-rendered preview (top 20 rows + totals)
- * driven by `?from=...&to=...` search params. The "Preuzmi CSV" button
+ * driven by `?from=...&to=...` search params. The "Download CSV" button
  * is just a link to /api/admin/finance/invoice-export with the same
  * params — that's where the CSV stream lives.
  *
  * Defaults to the current month when no params are present, which is
- * the common monthly-PDV-prijava use case.
+ * the common monthly VAT return use case.
  */
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -15,9 +15,9 @@ import { prisma } from "@/lib/db";
 import { requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "Izvoz računa — Admin",
+  title: "Invoice export — Admin",
   description:
-    "Admin izvoz računa i finansijskih podataka za izabrani period.",
+    "Admin export of invoices and financial data for the selected period.",
   robots: { index: false, follow: false },
 };
 
@@ -67,7 +67,7 @@ export default async function InvoiceExportPage({
           invoiceNumber: true,
           invoiceIssuedAt: true,
           orderNumber: true,
-          totalRsd: true,
+          totalEur: true,
           buyerType: true,
           companyName: true,
           companyTaxId: true,
@@ -81,7 +81,7 @@ export default async function InvoiceExportPage({
   const totals = orders.reduce(
     (acc, o) => {
       acc.count += 1;
-      acc.gross += o.totalRsd;
+      acc.gross += o.totalEur;
       return acc;
     },
     { count: 0, gross: 0 },
@@ -94,18 +94,18 @@ export default async function InvoiceExportPage({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-3xl font-semibold text-foreground">
-            Izvoz računa
+            Invoice export
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Mesečni pregled izdatih faktura za knjigovođu. Po default-u
-            prikazuje tekući mesec; promenite opseg ispod i preuzmite CSV.
+            Monthly overview of issued invoices for accounting. By default,
+            it shows the current month; change the range below and download CSV.
           </p>
         </div>
         <Link
           href="/portal/admin/revisions?action=invoice.export"
           className="text-[0.78rem] text-muted-foreground underline-offset-4 hover:underline"
         >
-          Istorija izvoza →
+          Export history →
         </Link>
       </div>
 
@@ -117,7 +117,7 @@ export default async function InvoiceExportPage({
         className="mt-6 flex flex-wrap items-end gap-3 rounded-2xl border border-border/40 bg-card/80 p-5"
       >
         <label className="flex flex-col gap-1.5">
-          <span className="text-[0.78rem] font-medium text-foreground">Od</span>
+          <span className="text-[0.78rem] font-medium text-foreground">From</span>
           <input
             type="date"
             name="from"
@@ -126,7 +126,7 @@ export default async function InvoiceExportPage({
           />
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="text-[0.78rem] font-medium text-foreground">Do</span>
+          <span className="text-[0.78rem] font-medium text-foreground">To</span>
           <input
             type="date"
             name="to"
@@ -138,25 +138,25 @@ export default async function InvoiceExportPage({
           type="submit"
           className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary"
         >
-          Primeni filter
+          Apply filter
         </button>
         <a
           href={downloadHref}
           className="inline-flex items-center rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background transition hover:opacity-90"
         >
-          Preuzmi CSV
+          Download CSV
         </a>
       </form>
 
       {/* Stats */}
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        <Stat label="Broj računa" value={totals.count.toString()} />
+        <Stat label="Invoice count" value={totals.count.toString()} />
         <Stat
-          label="Ukupno bruto (RSD)"
-          value={formatRsd(totals.gross)}
+          label="Gross total (RSD)"
+          value={formatEur(totals.gross)}
         />
         <Stat
-          label="Opseg"
+          label="Range"
           value={`${formatHumanDate(fromDate)} – ${formatHumanDate(toDate)}`}
         />
       </div>
@@ -165,23 +165,24 @@ export default async function InvoiceExportPage({
       <div className="mt-6 -mx-2 overflow-x-auto sm:mx-0">
         {orders.length === 0 ? (
           <p className="rounded-xl border border-dashed border-border/60 bg-card/40 p-12 text-center text-sm text-muted-foreground">
-            Nema izdatih računa u izabranom opsegu. Računi pre uvođenja
-            automatskog izdavanja (pre Faze A.2) ne ulaze u izvoz.
+            No invoices were issued in the selected range. Invoices created
+            before automatic issuance was introduced (before Phase A.2) are not
+            included in the export.
           </p>
         ) : (
           <>
             <p className="mb-3 text-[0.78rem] text-muted-foreground">
-              Pregled top 20 redova. CSV za preuzimanje sadrži sve.
+              Preview of the top 20 rows. The downloaded CSV contains everything.
             </p>
             <table className="min-w-full text-sm">
               <thead className="text-left text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground">
                 <tr className="border-b border-border/60">
-                  <th className="px-2 py-3">Broj fakture</th>
-                  <th className="px-2 py-3">Datum</th>
-                  <th className="px-2 py-3">Porudžbina</th>
-                  <th className="px-2 py-3">Kupac</th>
+                  <th className="px-2 py-3">Invoice number</th>
+                  <th className="px-2 py-3">Date</th>
+                  <th className="px-2 py-3">Order</th>
+                  <th className="px-2 py-3">Buyer</th>
                   <th className="px-2 py-3">PIB / VAT</th>
-                  <th className="px-2 py-3 text-right">Bruto (RSD)</th>
+                  <th className="px-2 py-3 text-right">Gross (RSD)</th>
                   <th className="px-2 py-3">Status</th>
                 </tr>
               </thead>
@@ -214,7 +215,7 @@ export default async function InvoiceExportPage({
                         {order.companyTaxId ?? "—"}
                       </td>
                       <td className="px-2 py-3 text-right tabular-nums">
-                        {formatRsd(order.totalRsd)}
+                        {formatEur(order.totalEur)}
                       </td>
                       <td className="px-2 py-3 text-[0.78rem] text-muted-foreground">
                         {order.paymentStatus}
@@ -244,17 +245,17 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function formatRsd(amount: number): string {
-  return new Intl.NumberFormat("sr-Latn-RS", {
+function formatEur(amount: number): string {
+  return new Intl.NumberFormat("en-GB", {
     style: "currency",
-    currency: "RSD",
+    currency: "EUR",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
 }
 
 function formatHumanDate(d: Date): string {
-  return d.toLocaleDateString("sr-Latn-RS", {
+  return d.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

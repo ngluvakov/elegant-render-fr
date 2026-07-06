@@ -21,7 +21,7 @@ import { statusLabel } from "@/components/portal/status-utils";
 export const metadata: Metadata = {
   title: "Portal",
   description:
-    "Pregled aktivnih projekata, porudžbina, aktivnosti i isporuka u korisničkom portalu.",
+    "Overview of active projects, orders, activity, and deliverables in the customer portal.",
   robots: { index: false, follow: false },
 };
 
@@ -70,7 +70,7 @@ export default async function PortalPage() {
     id: e.id,
     orderNumber: e.order.orderNumber,
     orderId: e.order.id,
-    description: `Status promenjen → ${statusLabel(e.toStatus)}`,
+    description: `Status changed to ${statusLabel(e.toStatus)}`,
     createdAt: e.createdAt,
   }));
 
@@ -80,12 +80,12 @@ export default async function PortalPage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-3xl text-foreground md:text-4xl">
-            Dobrodošli, {user?.name?.split(" ")[0] || "korisniče"}
+            Welcome, {user?.name?.split(" ")[0] || "there"}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {activeCount > 0
-              ? `${activeCount} aktivn${activeCount === 1 ? "i" : "ih"} projek${activeCount === 1 ? "at" : "ata"}`
-              : "Nemate aktivnih projekata"}
+              ? `${activeCount} active project${activeCount === 1 ? "" : "s"}`
+              : "You have no active projects"}
           </p>
         </div>
         <Link
@@ -96,7 +96,7 @@ export default async function PortalPage() {
           )}
         >
           <Plus className="h-4 w-4" />
-          Nova porudžbina
+          New order
         </Link>
       </div>
 
@@ -104,23 +104,23 @@ export default async function PortalPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <SummaryStatCard
           icon={Briefcase}
-          label="Aktivni projekti"
+          label="Active projects"
           value={activeCount}
         />
         <SummaryStatCard
           icon={AlertCircle}
-          label="Treba pažnju"
+          label="Needs attention"
           value={needsAttentionCount}
           accent="clay"
         />
         <SummaryStatCard
           icon={MessageSquare}
-          label="Nove poruke"
+          label="New messages"
           value={0}
         />
         <SummaryStatCard
           icon={Download}
-          label="Spremno za preuzimanje"
+          label="Ready to download"
           value={deliveredCount}
           accent="sage"
         />
@@ -129,14 +129,14 @@ export default async function PortalPage() {
       {/* Active orders */}
       <section>
         <h2 className="mb-4 text-lg font-semibold text-foreground">
-          Aktivni projekti
+          Active projects
         </h2>
         {activeOrders.length === 0 ? (
           <EmptyState
             icon={ShoppingBag}
-            heading="Nemate aktivnih projekata"
-            description="Posetite cenovnik da napravite prvu porudžbinu."
-            action={{ label: "Pogledajte cene", href: "/pricing" }}
+            heading="You have no active projects"
+            description="Visit pricing to create your first order."
+            action={{ label: "View pricing", href: "/pricing" }}
           />
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
@@ -150,7 +150,7 @@ export default async function PortalPage() {
       {/* Recent activity */}
       <section>
         <h2 className="mb-4 text-lg font-semibold text-foreground">
-          Nedavna aktivnost
+          Recent activity
         </h2>
         <ActivityFeed events={activityEvents} />
       </section>

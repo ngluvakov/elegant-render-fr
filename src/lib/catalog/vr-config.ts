@@ -1,12 +1,12 @@
 /**
  * vr-config.ts — Per-item config + vocabularies for the two VR
- * products: `vr-existing` (postojeći model, 175.800 RSD) and `vr-standalone`
- * (samostalno, 351.600 RSD). One config shape covers both; productId picks
+ * products: `vr-existing` (postojeći model, €1500) and `vr-standalone`
+ * (samostalno, €3000). One config shape covers both; productId picks
  * the correct add-on suffix (vr-{suffix}-floor / -interactive).
  *
  * Both products share the same add-on schema:
- *   - vr-{suffix}-floor: 58.600 RSD per additional floor / area
- *   - vr-{suffix}-interactive: 23.440 RSD per interactive type
+ *   - vr-{suffix}-floor: €500 per additional floor / area
+ *   - vr-{suffix}-interactive: €200 per interactive type
  *
  * Section 2.2 toggles (door/lights/materials) are descriptive flags in
  * configJson and don't directly drive the interactive add-on count —
@@ -26,19 +26,19 @@ const VR_PRODUCT_LABELS = {
 } as const;
 
 const VR_BASE_PRICE = {
-  "vr-existing": 175800,
-  "vr-standalone": 351600,
+  "vr-existing": 1500,
+  "vr-standalone": 3000,
 } as const;
 
 export function vrProductLabel(productId: VrProductId): string {
   return VR_PRODUCT_LABELS[productId];
 }
-export function vrBasePriceRsd(productId: VrProductId): number {
+export function vrBasePriceEur(productId: VrProductId): number {
   return VR_BASE_PRICE[productId];
 }
 
-export const VR_FLOOR_RSD = 58600;
-export const VR_INTERACTIVE_RSD = 23440;
+export const VR_FLOOR_EUR = 500;
+export const VR_INTERACTIVE_EUR = 200;
 
 // ─── Vocabularies ──────────────────────────────────────────────────────
 

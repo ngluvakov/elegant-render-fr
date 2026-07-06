@@ -26,7 +26,7 @@ import { requirePermission } from "@/lib/admin-auth";
 import { recordAuditLog } from "@/lib/audit";
 import {
   invoiceCurrencyForBuyer,
-  invoiceGrossCentsFromRsdCents,
+  invoiceGrossCentsFromEurCents,
   invoiceVatRateForBuyer,
 } from "@/lib/invoice-data";
 
@@ -89,15 +89,14 @@ export async function GET(request: Request) {
     "Datum prometa",
     "Broj porudžbine",
     "Kupac",
-    "PIB / VAT ID",
-    "MB",
+    "VAT ID",
     "Država",
     "Tip kupca",
     "Valuta",
     "Neto (valuta)",
     "PDV (valuta)",
     "Bruto (valuta)",
-    "Bruto (RSD)",
+    "Bruto (EUR)",
     "Status plaćanja",
     "Payment provider",
     "Email",
@@ -110,14 +109,14 @@ export async function GET(request: Request) {
     const vatRate = invoiceVatRateForBuyer(order);
     const grossCents =
       order.billingTotalCents ??
-      invoiceGrossCentsFromRsdCents(
-        order.totalCents ?? order.totalRsd * 100,
+      invoiceGrossCentsFromEurCents(
+        order.totalCents ?? order.totalEur * 100,
         order,
       );
     const netCents =
       vatRate > 0 ? Math.round(grossCents / (1 + vatRate)) : grossCents;
     const vatCents = grossCents - netCents;
-    const grossRsd = currency === "RSD" ? grossCents / 100 : null;
+    const grossEur = currency === "EUR" ? grossCents / 100 : null;
 
     const buyerName =
       order.buyerType === "individual"
@@ -137,14 +136,13 @@ export async function GET(request: Request) {
       order.orderNumber,
       buyerName,
       order.companyTaxId ?? "",
-      order.companyMb ?? "",
       order.buyerCountryCode ?? order.companyCountryCode ?? "",
       buyerTypeLabel(order.buyerType),
       currency,
       formatMoneyNumber(netCents, currency),
       formatMoneyNumber(vatCents, currency),
       formatMoneyNumber(grossCents, currency),
-      grossRsd != null ? formatNumber(grossRsd, 0) : "",
+      grossEur != null ? formatNumber(grossEur, 0) : "",
       order.paymentStatus,
       order.paymentProvider ?? "",
       order.user.email ?? "",
@@ -186,7 +184,7 @@ function formatNumber(n: number, decimals: number): string {
   return n.toFixed(decimals);
 }
 
-function formatMoneyNumber(cents: number, _currency: "RSD"): string {
+function formatMoneyNumber(cents: number, _currency: "EUR"): string {
   void _currency;
   return formatNumber(cents / 100, 0);
 }
@@ -196,7 +194,6 @@ function formatIsoDate(d: Date): string {
 }
 
 function buyerTypeLabel(t: string): string {
-  if (t === "company_rs") return "Firma — Srbija";
-  if (t === "company_foreign") return "Firma — inostranstvo";
+  if (t === "business") return "Firma";
   return "Fizičko lice";
 }

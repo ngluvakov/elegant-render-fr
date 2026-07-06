@@ -25,7 +25,6 @@ type ProfileFormProps = {
     countryCode: string;
     companyName: string;
     companyTaxId: string;
-    companyMb: string;
     companyAddress: string;
   };
 };
@@ -64,14 +63,14 @@ export function ProfileForm({
       )}
       {state.success && (
         <div className="rounded-lg border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10 px-4 py-3 text-sm text-[color:var(--color-sage-deep)]">
-          Podaci su uspešno ažurirani.
+          Your details have been updated.
         </div>
       )}
 
       <div className="space-y-2">
         <Label htmlFor="name">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Ime i prezime
+          Full name
         </Label>
         <Input
           id="name"
@@ -91,14 +90,14 @@ export function ProfileForm({
           className="opacity-60"
         />
         <p className="text-xs text-muted-foreground">
-          Email adresa se ne može menjati.
+          The email address cannot be changed.
         </p>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="phone">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Telefon
+          Phone
         </Label>
         <Input
           id="phone"
@@ -112,7 +111,7 @@ export function ProfileForm({
       <div id="password" className="space-y-2 scroll-mt-24">
         <Label htmlFor="newPassword">
           <Pencil className="h-3 w-3 text-accent/60" />
-          {hasPassword ? "Nova lozinka (opciono)" : "Postavite lozinku"}
+          {hasPassword ? "New password (optional)" : "Set a password"}
         </Label>
         <Input
           id="newPassword"
@@ -121,13 +120,13 @@ export function ProfileForm({
           autoComplete="new-password"
           minLength={8}
           placeholder={
-            hasPassword ? "Ostavite prazno ako ne menjate" : "Najmanje 8 karaktera"
+            hasPassword ? "Leave blank if unchanged" : "At least 8 characters"
           }
         />
         {!hasPassword && (
           <p className="text-xs text-muted-foreground">
-            Nakon postavljanja, moći ćete da se prijavite direktno bez
-            čekanja na link iz email-a.
+            Once set, you will be able to sign in directly without waiting for
+            an email link.
           </p>
         )}
       </div>
@@ -135,11 +134,11 @@ export function ProfileForm({
       <section className="space-y-5 rounded-2xl border border-border/50 bg-card/60 p-5">
         <div>
           <h2 className="text-sm font-semibold text-foreground">
-            Podaci za račun
+            Billing details
           </h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            Koristi se kao podrazumevani podatak za buduće porudžbine i
-            doplate. Već izdati računi se ne menjaju.
+            Used as the default for future orders and additional charges.
+            Already issued invoices will not change.
           </p>
         </div>
 
@@ -164,10 +163,10 @@ export function ProfileForm({
             <UserRound className="mt-0.5 h-4 w-4 text-accent" />
             <span>
               <span className="block text-sm font-semibold text-foreground">
-                Fizičko lice
+                Individual
               </span>
               <span className="mt-1 block text-xs text-muted-foreground">
-                Račun glasi na ime naloga.
+                The invoice is issued to the account name.
               </span>
             </span>
           </button>
@@ -184,10 +183,10 @@ export function ProfileForm({
             <Building2 className="mt-0.5 h-4 w-4 text-accent" />
             <span>
               <span className="block text-sm font-semibold text-foreground">
-                Firma
+                Company
               </span>
               <span className="mt-1 block text-xs text-muted-foreground">
-                Čuvamo podatke za fakturu.
+                We save the details for invoices.
               </span>
             </span>
           </button>
@@ -196,7 +195,7 @@ export function ProfileForm({
         <div className="grid gap-4 md:grid-cols-2">
           <label className="flex flex-col gap-1.5">
             <span className="text-xs font-medium text-foreground">
-              Država za račun <span className="ml-1 text-destructive">*</span>
+              Billing country <span className="ml-1 text-destructive">*</span>
             </span>
             <select
               name="billingCountryCode"
@@ -205,7 +204,7 @@ export function ProfileForm({
               className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
               required
             >
-              <option value="RS">Srbija (RS)</option>
+              <option value="RS">Serbia (RS)</option>
               <option disabled>──────────</option>
               {COUNTRIES.map((country) =>
                 country.code === "" ? (
@@ -222,14 +221,14 @@ export function ProfileForm({
           </label>
           <div className="flex items-center gap-2 rounded-xl border border-border/40 bg-background/60 px-3 py-2 text-sm text-foreground">
             <Globe2 className="h-4 w-4 text-accent" />
-            <span>Budući računi: RSD, PDV uračunat</span>
+            <span>Future invoices: EUR</span>
           </div>
         </div>
 
         {isCompany && (
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="billingCompanyName">Naziv firme</Label>
+              <Label htmlFor="billingCompanyName">Company name</Label>
               <Input
                 id="billingCompanyName"
                 name="billingCompanyName"
@@ -238,7 +237,7 @@ export function ProfileForm({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="billingCompanyAddress">Adresa firme</Label>
+              <Label htmlFor="billingCompanyAddress">Company address</Label>
               <Input
                 id="billingCompanyAddress"
                 name="billingCompanyAddress"
@@ -248,7 +247,7 @@ export function ProfileForm({
             </div>
             <div className="space-y-2">
               <Label htmlFor="billingCompanyTaxId">
-                {isSerbia ? "PIB" : "VAT ID / Tax ID (opciono)"}
+                {isSerbia ? "PIB" : "VAT ID / Tax ID (optional)"}
               </Label>
               <Input
                 id="billingCompanyTaxId"
@@ -259,30 +258,15 @@ export function ProfileForm({
                 required={isCompany && isSerbia}
               />
               <p className="text-xs text-muted-foreground">
-                {isSerbia ? "PIB mora imati 9 cifara." : "Ako postoji, unesite ga sa prefiksom države."}
+                {isSerbia ? "PIB must have 9 digits." : "If available, enter it with the country prefix."}
               </p>
             </div>
-            {isSerbia && (
-              <div className="space-y-2">
-                <Label htmlFor="billingCompanyMb">Matični broj</Label>
-                <Input
-                  id="billingCompanyMb"
-                  name="billingCompanyMb"
-                  defaultValue={defaultBilling.companyMb}
-                  inputMode="numeric"
-                  maxLength={8}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Opciono, 8 cifara.
-                </p>
-              </div>
-            )}
           </div>
         )}
       </section>
 
       <Button type="submit" variant="accent" size="lg" disabled={pending}>
-        {pending ? "Čuvanje…" : "Sačuvajte izmene"}
+        {pending ? "Saving..." : "Save changes"}
       </Button>
     </form>
   );

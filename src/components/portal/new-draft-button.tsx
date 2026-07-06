@@ -18,7 +18,7 @@ export function NewDraftButton() {
     start(async () => {
       const res = await createEmptyDraft();
       if (res.error || !res.orderId) {
-        alert(res.error ?? "Greška pri kreiranju nacrta.");
+        alert(res.error ?? "Error creating draft.");
         return;
       }
       router.push(`/portal/orders/${res.orderId}`);
@@ -37,7 +37,7 @@ export function NewDraftButton() {
       ) : (
         <Plus className="h-4 w-4 transition-transform group-hover:rotate-90" />
       )}
-      {pending ? "Kreira se…" : "Novi nacrt"}
+      {pending ? "Creating..." : "New draft"}
     </button>
   );
 }

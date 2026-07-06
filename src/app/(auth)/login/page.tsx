@@ -6,12 +6,12 @@ import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { SignInForm } from "./sign-in-form";
 
 export const metadata: Metadata = {
-  title: "Prijava",
-  description: "Prijavite se na svoj Elegant Render nalog.",
+  title: "Login",
+  description: "Log in to your Elegant Render account.",
   robots: NO_INDEX_ROBOTS,
 };
 
-export default async function PrijavaPage({
+export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ callbackUrl?: string | string[] }>;
@@ -33,10 +33,9 @@ export default async function PrijavaPage({
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
       <div className="w-full max-w-md">
         <div className="text-center">
-          <h1 className="text-3xl text-foreground md:text-4xl">Prijava</h1>
+          <h1 className="text-3xl text-foreground md:text-4xl">Login</h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Prijavite se na svoj nalog da pratite porudžbine i komunicirate sa
-            timom.
+            Log in to track orders and communicate with the team.
           </p>
         </div>
         <SignInForm callbackUrl={callbackUrl} />

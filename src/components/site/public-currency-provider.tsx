@@ -11,7 +11,7 @@ import {
   type PricingSettings,
 } from "@/lib/pricing/catalog";
 
-const PublicCurrencyContext = createContext<DisplayCurrency>("rsd");
+const PublicCurrencyContext = createContext<DisplayCurrency>("EUR");
 const PublicPricingSettingsContext = createContext<PricingSettings>(
   DEFAULT_PRICING_SETTINGS,
 );

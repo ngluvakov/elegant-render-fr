@@ -5,7 +5,7 @@ import type {
   QuoteCalculation,
 } from "@/lib/catalog/calculate";
 
-export type GoogleConversionCurrency = "RSD";
+export type GoogleConversionCurrency = "EUR";
 
 export type GoogleDataLayerItem = {
   item_id: string;
@@ -103,9 +103,9 @@ export function buildBeginCheckoutDataLayerEvent({
     event: "er_begin_checkout",
     event_id: `begin_checkout:${Date.now()}`,
     value,
-    currency: "RSD",
+    currency: "EUR",
     transaction_value: value,
-    transaction_currency: "RSD",
+    transaction_currency: "EUR",
     items: calculation.items.map(quoteItemToDataLayerItem),
     ...(sourcePath ? { source_path: sourcePath } : {}),
     conversion_source: conversionSource,

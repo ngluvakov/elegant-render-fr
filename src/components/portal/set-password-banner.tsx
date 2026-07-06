@@ -16,11 +16,11 @@ export function SetPasswordBanner() {
         </div>
         <div>
           <p className="text-sm font-semibold text-foreground">
-            Postavite lozinku za brži pristup
+            Set a password for faster access
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Ubuduće ćete moći da se prijavite direktno, bez čekanja na
-            link iz email-a. Magic link i dalje radi ako preskočite.
+            Next time, you will be able to log in directly without waiting for
+            an email link. Magic links stylel work if you skip this.
           </p>
         </div>
       </div>
@@ -28,7 +28,7 @@ export function SetPasswordBanner() {
         href="/portal/profile#password"
         className="inline-flex shrink-0 items-center justify-center rounded-lg border border-accent/40 bg-background px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent/10"
       >
-        Postavi lozinku
+        Set password
       </Link>
     </div>
   );

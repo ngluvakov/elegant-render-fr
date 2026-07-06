@@ -44,7 +44,7 @@ export function PortalLayoutShell({
       {/* Mobile drawer */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent side="left" className="w-64 p-0">
-          <SheetTitle className="sr-only">Navigacija</SheetTitle>
+          <SheetTitle className="sr-only">Navigation</SheetTitle>
           <PortalSidebar
             userName={userName}
             userEmail={userEmail}

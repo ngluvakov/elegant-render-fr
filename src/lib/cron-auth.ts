@@ -1,12 +1,9 @@
 /**
- * cron-auth.ts — autorizacija za cron/webhook rute.
+ * cron-auth.ts — authorization for cron/webhook routes.
  *
- * Fail-closed: ako secret env var nije podešen, zahtev se ODBIJA —
- * `header !== `Bearer ${undefined}`` poređenja su ranije propuštala
- * literal "Bearer undefined". Poređenje je timing-safe.
- *
- * NAPOMENA: api/cron/nestpay-reconcile namerno NE koristi ovaj helper —
- * platna zona je zamrznuta do završetka retesta banke.
+ * Fail-closed: if the secret env var is not set, the request is
+ * REJECTED — `header !== `Bearer ${undefined}`` comparisons used to
+ * let the literal "Bearer undefined" through. Comparison is timing-safe.
  */
 import crypto from "node:crypto";
 

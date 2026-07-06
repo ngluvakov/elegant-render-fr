@@ -64,7 +64,7 @@ export function ServiceMatrixRow({
   const hasActiveDiscount =
     discount !== null && !isPreviewDiscount && cartItems.length > 0;
 
-  const originalPerUnit = product.displayPerUnitRsd ?? product.basePriceRsd;
+  const originalPerUnit = product.displayPerUnitEur ?? product.basePriceEur;
   const discountedPerUnit = discount
     ? Math.round(originalPerUnit * (1 - discount.pct / 100))
     : null;
@@ -114,12 +114,12 @@ export function ServiceMatrixRow({
           </h4>
           {isInCart && (
             <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage-deep)]/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[color:var(--color-sage-deep)]">
-              <Check className="h-2.5 w-2.5" strokeWidth={3} /> U korpi
+              <Check className="h-2.5 w-2.5" strokeWidth={3} /> In cart
             </span>
           )}
           {recommended && !isInCart && (
             <span className="inline-flex items-center rounded-full bg-[color:var(--color-sage)]/20 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[color:var(--color-sage-deep)]">
-              Povoljnije
+              Better value
             </span>
           )}
         </div>
@@ -140,7 +140,7 @@ export function ServiceMatrixRow({
           </div>
         ) : (
           <span className="text-sm sm:text-base font-semibold text-foreground">
-            od {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
+            from {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
           </span>
         )}
         {/* The discount badge line is ALWAYS in flow (invisible when there is
@@ -176,7 +176,7 @@ export function ServiceMatrixRow({
         <button
           type="button"
           onClick={handleInfo}
-          aria-label={`Detalji o usluzi: ${product.label}`}
+          aria-label={`Service details: ${product.label}`}
           className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-background text-muted-foreground transition-colors hover:border-[color:var(--color-sage-deep)]/40 hover:text-foreground"
         >
           <Info className="h-4 w-4" />
@@ -185,40 +185,40 @@ export function ServiceMatrixRow({
         {isInquiry ? (
           <Link
             href={`/contact?service=${product.id}`}
-            aria-label="Pošalji upit"
+            aria-label="Send inquiry"
             className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
           >
             <Mail className="h-4 w-4" />
-            <span className="hidden sm:inline">Upit</span>
+            <span className="hidden sm:inline">Inquiry</span>
           </Link>
         ) : isInCart ? (
           isInterior ? (
             <Link
               href="#korpa"
-              aria-label="Konfiguriši u korpi"
+              aria-label="Configure in cart"
               className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[color:var(--color-sage-deep)] px-3 text-xs font-semibold text-white transition-colors hover:bg-[color:var(--color-sage-deep)]/85"
             >
               <Sliders className="h-4 w-4" />
-              <span className="hidden sm:inline">Konfiguriši</span>
+              <span className="hidden sm:inline">Configure</span>
             </Link>
           ) : (
             <span
-              aria-label="Već u korpi"
+              aria-label="Already in cart"
               className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[color:var(--color-sage-deep)]/15 px-3 text-xs font-semibold text-[color:var(--color-sage-deep)]"
             >
               <Check className="h-4 w-4" />
-              <span className="hidden sm:inline">U korpi</span>
+              <span className="hidden sm:inline">In cart</span>
             </span>
           )
         ) : (
           <button
             type="button"
             onClick={handleAdd}
-            aria-label="Dodaj u korpu"
+            aria-label="Add to cart"
             className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
           >
             <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Dodaj</span>
+            <span className="hidden sm:inline">Add</span>
           </button>
         )}
       </div>

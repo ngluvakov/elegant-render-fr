@@ -19,7 +19,7 @@ export async function syncNewDeal(orderId: string) {
       user: true,
       items: {
         where: { kind: "service" },
-        select: { productLabel: true, categoryLabel: true, totalRsd: true },
+        select: { productLabel: true, categoryLabel: true, totalEur: true },
       },
     },
   });
@@ -36,7 +36,7 @@ export async function syncNewDeal(orderId: string) {
   const itemsDescription = order.items
     .map(
       (i) =>
-        `${i.productLabel} (${i.categoryLabel}) — ${i.totalRsd.toLocaleString("sr-Latn-RS", { maximumFractionDigits: 0 })} RSD`,
+        `${i.productLabel} (${i.categoryLabel}) — €${i.totalEur.toLocaleString("en-GB", { maximumFractionDigits: 0 })}`,
     )
     .join("\n");
 
@@ -48,8 +48,8 @@ export async function syncNewDeal(orderId: string) {
       CATEGORY_ID: process.env.BITRIX24_PIPELINE_ID,
       STAGE_ID: stageId,
       CONTACT_ID: contactId,
-      OPPORTUNITY: order.premiumTotalRsd ?? order.totalRsd,
-      CURRENCY_ID: "RSD",
+      OPPORTUNITY: order.premiumTotalEur ?? order.totalEur,
+      CURRENCY_ID: "EUR",
       COMMENTS: `Portal: ${process.env.AUTH_URL}/portal/admin/orders/${order.id}\n\nStavke:\n${itemsDescription}${order.customerNote ? `\n\nNapomena: ${order.customerNote}` : ""}`,
     },
   }, { entityType: "deal", entityId: orderId, direction: "outbound" });

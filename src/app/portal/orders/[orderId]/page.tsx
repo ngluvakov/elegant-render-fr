@@ -21,13 +21,13 @@ import { OrderAssistantGuideContext } from "@/components/chat/order-guide-contex
 import { OrderCurrencyProvider } from "@/components/portal/order-currency-context";
 import { AlertCircle } from "lucide-react";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
-import { displayCurrencyForBillingCurrency } from "@/lib/billing";
-import { getDisplayCurrencyForCountry } from "@/lib/catalog/display-currency";
+import { displayCurrencyForOrderSnapshot } from "@/lib/billing";
+import { OrderFileUpload } from "@/components/portal/order-file-upload";
 
 export const metadata: Metadata = {
-  title: "Detalji porudžbine",
+  title: "Order details",
   description:
-    "Detalji izabrane porudžbine, status projekta, stavke, poruke i isporuke.",
+    "Details for the selected order, project status, items, messages, and deliverables.",
   robots: { index: false, follow: false },
 };
 
@@ -42,8 +42,8 @@ export default async function OrderDetailPage({
   const session = await auth();
   if (!session?.user?.id) return notFound();
 
-  // Sva četiri upita zavise samo od orderId/session — paralelno umesto
-  // sekvencijalno (ranije 4 serijska round-tripa po otvaranju detalja).
+  // All four queries only depend on orderId/session, so run them in parallel
+  // instead of sequentially.
   const [order, pricingCatalog, userBilling, referencableOrders] =
     await Promise.all([
       prisma.order.findUnique({
@@ -104,16 +104,20 @@ export default async function OrderDetailPage({
 
   if (!order || order.userId !== session.user.id) return notFound();
 
-  const displayCurrency = order.billingCurrency
-    ? displayCurrencyForBillingCurrency(order.billingCurrency)
-    : getDisplayCurrencyForCountry(userBilling?.billingCountryCode);
+  // The order's charged-currency snapshot wins (paid orders display in
+  // the currency the buyer was actually charged); legacy orders without
+  // a snapshot fall back to the profile billing country geo mapping.
+  const displayCurrency = displayCurrencyForOrderSnapshot(
+    order.chargedCurrency,
+    userBilling?.billingCountryCode,
+  );
 
   const firstItem = order.items[0];
   const serviceItems = order.items.filter((item) => item.kind === "service");
   const sourceFiles = order.files.filter((f) => f.kind === "source" || f.kind === "revision");
   const deliverableFiles = order.files.filter((f) => f.kind === "deliverable");
-  const savingsRsd = order.items.reduce(
-    (sum, i) => sum + Math.max(0, (i.originalTotalRsd ?? i.totalRsd) - i.totalRsd),
+  const savingsEur = order.items.reduce(
+    (sum, i) => sum + Math.max(0, (i.originalTotalEur ?? i.totalEur) - i.totalEur),
     0,
   );
   const isDraft = order.status === "draft";
@@ -151,11 +155,11 @@ export default async function OrderDetailPage({
         orderId={order.id}
         orderNumber={order.orderNumber}
         status={order.status}
-        totalRsd={order.totalRsd}
+        totalEur={order.totalEur}
         totalCents={order.totalCents}
         billingCurrency={order.billingCurrency}
         billingTotalCents={order.billingTotalCents}
-        savingsRsd={savingsRsd}
+        savingsEur={savingsEur}
         createdAt={order.createdAt}
         updatedAt={order.updatedAt}
         projectName={order.projectName}
@@ -176,10 +180,11 @@ export default async function OrderDetailPage({
           {canEditItems && (
             <section>
               <h2 className="mb-4 text-sm font-semibold text-foreground">
-                Podešavanje stavki ({serviceItems.length})
+                Item setup ({serviceItems.length})
               </h2>
               <p className="mb-4 text-xs text-muted-foreground">
-                Za svaku stavku dodajte opis, osnove i reference stila. Za detaljnije opcije koristite „Napredno podešavanje”.
+                For each item, add a description, plans, and style references.
+                Use advanced setup for more detailed options.
               </p>
 
               {unconfiguredCount > 0 && (
@@ -191,15 +196,16 @@ export default async function OrderDetailPage({
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-bold text-[color:var(--color-ember-deep)]">
                       {unconfiguredCount === 1
-                        ? "1 stavka čeka vaše podatke"
-                        : `${unconfiguredCount} stavk${unconfiguredCount < 5 ? "e" : "i"} čeka${unconfiguredCount === 1 ? "" : "ju"} vaše podatke`}
+                        ? "1 item needs your details"
+                        : `${unconfiguredCount} items need your details`}
                     </p>
                     <p className="mt-1 text-xs text-foreground/70">
-                      Dodajte opis ili prebacite fajlove (osnove, fotografije, skice) da bismo mogli da započnemo projekat. Stavke označene sa{" "}
+                      Add a description or upload files (plans, photos,
+                      sketches) so we can start the project. Items marked{" "}
                       <span className="inline-flex translate-y-[1px] items-center gap-1 rounded bg-[color:var(--color-ember)]/20 px-1.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wider text-[color:var(--color-ember-deep)]">
-                        Potrebni podaci
+                        Details needed
                       </span>{" "}
-                      su u pitanju.
+                      need attention.
                     </p>
                   </div>
                 </div>
@@ -216,8 +222,8 @@ export default async function OrderDetailPage({
                       productId: item.productId,
                       productLabel: item.productLabel,
                       categoryLabel: item.categoryLabel,
-                      totalRsd: item.totalRsd,
-                      originalTotalRsd: item.originalTotalRsd,
+                      totalEur: item.totalEur,
+                      originalTotalEur: item.originalTotalEur,
                       discountPct: item.discountPct,
                       discountReason: item.discountReason,
                       clientNote: item.clientNote,
@@ -246,6 +252,22 @@ export default async function OrderDetailPage({
             </section>
           )}
 
+          {/* Post-payment upload: a paid service order with no source
+              files can't start production — surface the dropzone here
+              (the same component the checkout success screen mounts). */}
+          {order.paymentStatus === "completed" &&
+            serviceItems.length > 0 &&
+            sourceFiles.length === 0 &&
+            !["delivered", "closed", "cancelled", "refunded"].includes(
+              order.status,
+            ) && (
+              <OrderFileUpload
+                orderId={order.id}
+                title="Upload your plans"
+                description="We need your floor plans, photos or references to start the project. Files upload straight into this order."
+              />
+            )}
+
           <OrderChargesCard
             charges={order.charges.map((c) => ({
               id: c.id,
@@ -253,8 +275,9 @@ export default async function OrderDetailPage({
               totalCents: c.totalCents,
               billingCurrency: c.billingCurrency,
               billingVatRate: c.billingVatRate,
-              billingRsdRate: c.billingRsdRate,
               billingTotalCents: c.billingTotalCents,
+              chargedCurrency: c.chargedCurrency,
+              chargedAmountMinor: c.chargedAmountMinor,
               status: c.status,
               paidAt: c.paidAt,
               createdAt: c.createdAt,
@@ -290,7 +313,7 @@ export default async function OrderDetailPage({
                 orderNumber={order.orderNumber}
                 proformaNumber={order.proformaNumber}
                 proformaIssuedAt={order.proformaIssuedAt}
-                totalRsd={order.totalRsd}
+                totalEur={order.totalEur}
                 totalCents={order.totalCents}
                 billingCurrency={order.billingCurrency}
                 billingTotalCents={order.billingTotalCents}
@@ -300,10 +323,10 @@ export default async function OrderDetailPage({
             order.paymentMethod !== "wire_transfer" && (
               <PendingPaymentCard
                 orderId={order.id}
-                totalRsd={order.totalRsd}
+                totalEur={order.totalEur}
                 totalCents={order.totalCents}
-                billingCurrency={order.billingCurrency}
-                billingTotalCents={order.billingTotalCents}
+                chargedCurrency={order.chargedCurrency}
+                chargedAmountMinor={order.chargedAmountMinor}
               />
             )}
           <DeliverablesCard files={deliverableFiles} orderId={order.id} />

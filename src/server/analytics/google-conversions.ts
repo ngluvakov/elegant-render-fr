@@ -7,25 +7,29 @@ import {
   type GooglePurchaseDataLayerEvent,
 } from "@/lib/analytics/google-data-layer";
 
-type PurchaseConversionSource =
+export type PurchaseConversionSource =
+  | "paypal_capture"
+  | "paypal_capture_replay"
+  | "paypal_capture_race"
+  | "paypal_webhook"
+  | "paypal_reconciler"
   | "mock_card_success"
   | "mock_card_replay"
-  | "mock_card_race"
-  | "nestpay_success_page";
+  | "mock_card_race";
 
 function orderValueCents(order: {
   billingTotalCents: number | null;
   totalCents: number | null;
-  totalRsd: number;
+  totalEur: number;
 }): number {
-  return order.billingTotalCents ?? order.totalCents ?? order.totalRsd * 100;
+  return order.billingTotalCents ?? order.totalCents ?? order.totalEur * 100;
 }
 
 function itemValueCents(item: {
   totalCents: number | null;
-  totalRsd: number;
+  totalEur: number;
 }): number {
-  return item.totalCents ?? item.totalRsd * 100;
+  return item.totalCents ?? item.totalEur * 100;
 }
 
 export async function buildPurchaseDataLayerEvent(
@@ -40,7 +44,7 @@ export async function buildPurchaseDataLayerEvent(
       buyerType: true,
       billingTotalCents: true,
       totalCents: true,
-      totalRsd: true,
+      totalEur: true,
       containsAiCredits: true,
       items: {
         select: {
@@ -50,7 +54,7 @@ export async function buildPurchaseDataLayerEvent(
           categoryLabel: true,
           kind: true,
           totalCents: true,
-          totalRsd: true,
+          totalEur: true,
           aiCreditQuantity: true,
         },
       },
@@ -78,9 +82,9 @@ export async function buildPurchaseDataLayerEvent(
     event_id: `purchase:${order.orderNumber}`,
     transaction_id: order.orderNumber,
     value,
-    currency: "RSD",
+    currency: "EUR",
     transaction_value: value,
-    transaction_currency: "RSD",
+    transaction_currency: "EUR",
     items,
     payment_provider: order.paymentProvider,
     buyer_type: order.buyerType,

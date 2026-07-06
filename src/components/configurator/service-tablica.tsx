@@ -2,13 +2,13 @@
  * ServiceTablica — Full-width product card for the /pricing browse grid.
  *
  * 3-zone layout: hero image / content / price-strip band.
- * Mobile: collapsed by default behind "Detalji ›" toggle.
+ * Mobile: collapsed by default behind a "Details" toggle.
  * Desktop: always expanded.
  *
  * Branched CTA logic:
- *   - inquiryOnly → "Pošalji upit" link → /contact?service={id}
- *   - int-static | int-360 → "Konfiguriši sprat" → addProduct (opens InteriorQuoteEditor)
- *   - else → "Dodaj u korpu" → addProduct
+ *   - inquiryOnly → "Send inquiry" link → /contact?service={id}
+ *   - int-static | int-360 → "Configure floor" → addProduct (opens InteriorQuoteEditor)
+ *   - else → "Add to cart" → addProduct
  *
  * Upsell hint: sage callout band with preview chips, expand to RelatedUpsellCard grid.
  * Price strip: live cart-triggered discount when product has a qualifying sibling in cart.
@@ -33,18 +33,18 @@ import type { ConfiguratorCategory, ConfiguratorProduct } from "@/lib/catalog/co
 import type { QuoteItem } from "@/lib/catalog/calculate";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 
-// Serbian pluralization for unit labels used in "U paketu od X Y" annotation.
+// English pluralization for unit labels used in the "Package of X Y" annotation.
 // Only needed for the small set of units that appear on /pricing. Extend if needed.
 function pluralizeUnit(unitLabel: string, qty: number): string {
   const map: Record<string, [string, string, string]> = {
-    "render":    ["render",   "rendera",  "rendera"],
-    "panoramu":  ["panoramu", "panorame", "panorama"],
-    "sekundu":   ["sekundu",  "sekunde",  "sekundi"],
-    "sliku":     ["sliku",    "slike",    "slika"],
-    "kadar":     ["kadar",    "kadra",    "kadrova"],
-    "nivo":      ["nivo",     "nivoa",    "nivoa"],
-    "pogled":    ["pogled",   "pogleda",  "pogleda"],
-    "prostoriju": ["prostoriju", "prostorije", "prostorija"],
+    "render": ["render", "renders", "renders"],
+    "panorama": ["panorama", "panoramas", "panoramas"],
+    "second": ["second", "seconds", "seconds"],
+    "image": ["image", "images", "images"],
+    "frame": ["frame", "frames", "frames"],
+    "level": ["level", "levels", "levels"],
+    "view": ["view", "views", "views"],
+    "room": ["room", "rooms", "rooms"],
   };
   const forms = map[unitLabel] ?? [unitLabel, unitLabel, unitLabel];
   if (qty === 1) return forms[0];
@@ -101,8 +101,8 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
   const displayMinQty = product.displayMinQty;
   const displayPackageNote = product.displayPackageNote;
 
-  const originalPerUnit = product.displayPerUnitRsd ?? product.basePriceRsd;
-  const originalPackage = product.basePriceRsd;
+  const originalPerUnit = product.displayPerUnitEur ?? product.basePriceEur;
+  const originalPackage = product.basePriceEur;
 
   const discountedPerUnit = showOwnDiscount
     ? Math.round(originalPerUnit * (1 - ownDiscount.pct / 100))
@@ -129,10 +129,10 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
         href={`/contact?service=${product.id}`}
         className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2.5 text-sm font-semibold transition-colors"
       >
-        Pošalji upit
+        Send inquiry
       </Link>
       <p className="mt-2 text-xs text-muted-foreground text-center">
-        Odgovaramo u roku od jednog radnog dana.
+        We respond within one working day.
       </p>
     </div>
   ) : marketingMode ? (
@@ -147,7 +147,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
       }
       className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2.5 text-sm font-semibold transition-colors"
     >
-      Pogledaj na cenovniku
+      View in pricing
     </Link>
   ) : (
     <button
@@ -155,13 +155,13 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
       onClick={handleAddToCart}
       className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2.5 text-sm font-semibold transition-colors"
     >
-      {isInterior ? "Konfiguriši sprat" : "Dodaj u korpu"}
+      {isInterior ? "Configure floor" : "Add to cart"}
     </button>
   );
 
   // ── Price strip container style ──────────────────────────────────────────
   // showOwnDiscount → stronger sage (15%/40 border)
-  // no discount but paket product → quiet sage (8%)
+  // no discount but package product → quiet sage (8%)
   // else → no tint
   const hasPriceStripBand = showOwnDiscount || (displayMinQty !== undefined && displayMinQty > 1);
   const priceStripBandClass = showOwnDiscount
@@ -225,10 +225,10 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
               {/* Kicker row */}
               <div className="flex items-start justify-between gap-3 mb-3">
                 <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[color:var(--color-sage-deep)] leading-none">
-                  Često ide zajedno
+                  Often ordered together
                   {hasAnyUpsellDiscount && (
                     <span className="ml-2 inline-flex items-center rounded bg-[color:var(--color-sage-deep)]/15 px-1.5 py-0.5 text-[0.6rem] font-bold normal-case tracking-normal text-[color:var(--color-sage-deep)]">
-                      Sa popustom
+                      Discounted
                     </span>
                   )}
                 </p>
@@ -237,7 +237,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                   onClick={() => setUpsellOpen((v) => !v)}
                   className="inline-flex items-center gap-1 text-xs font-medium text-foreground hover:text-[color:var(--color-sage-deep)] transition-colors shrink-0"
                 >
-                  {upsellOpen ? "Sakrij" : "Vidi sve"}
+                  {upsellOpen ? "Hide" : "View all"}
                   <ChevronDown
                     className={cn(
                       "h-3.5 w-3.5 transition-transform",
@@ -290,10 +290,10 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
             </div>
           )}
 
-          {/* Konfiguriši / Detalji ghost link — for interior products only on desktop */}
+          {/* Configure / Details ghost link — for interior products only on desktop */}
           {!isInquiry && isInterior && (
             <p className="text-xs text-muted-foreground">
-              Cena zavisi od broja spratova i prostorija — konfiguriši u korpi.
+              The price depends on the number of floors and rooms - configure it in the cart.
             </p>
           )}
         </div>
@@ -305,7 +305,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
             onClick={() => setExpanded((v) => !v)}
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            <span>{expanded ? "Zatvori" : "Detalji"}</span>
+            <span>{expanded ? "Close" : "Details"}</span>
             <ChevronRight
               className={cn(
                 "h-4 w-4 transition-transform",
@@ -325,14 +325,14 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
           {/* Issue 4: own discount badge */}
           {showOwnDiscount && (
             <div className="mb-2 inline-flex items-center gap-1.5 rounded bg-[color:var(--color-sage-deep)] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
-              Popust &minus;{ownDiscount.pct}%
+              Discount &minus;{ownDiscount.pct}%
             </div>
           )}
 
           {/* Issue 3a: kicker for package products (no discount state) */}
           {!showOwnDiscount && displayMinQty !== undefined && displayMinQty > 1 && (
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--color-sage-deep)] mb-1">
-              Cena po renderu
+              Price per render
             </p>
           )}
 
@@ -346,18 +346,18 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                 <span className="text-foreground font-medium">
                   {formatPublicPrice(discountedPackage!, displayCurrency, pricingSettings)}
                 </span>
-                {" / paket"}
+                {" / package"}
               </>
             ) : (
               <>
                 {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}
-                {" / paket"}
+                {" / package"}
               </>
             )}
           </p>
 
           {/* Hero per-unit figure */}
-          {product.displayPerUnitRsd !== undefined ? (
+          {product.displayPerUnitEur !== undefined ? (
             <>
               <p className="text-5xl font-bold text-foreground leading-none mt-1">
                 {showOwnDiscount ? (
@@ -368,7 +368,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                     {formatPublicPrice(discountedPerUnit!, displayCurrency, pricingSettings)}
                   </>
                 ) : (
-                  <>od {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}</>
+                  <>from {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}</>
                 )}
               </p>
               <p className="text-lg text-muted-foreground mt-1">
@@ -385,7 +385,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                   {formatPublicPrice(discountedPackage!, displayCurrency, pricingSettings)}
                 </>
               ) : (
-                <>od {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}</>
+                <>from {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}</>
               )}
             </p>
           )}
@@ -408,10 +408,10 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
             </p>
           )}
 
-          {/* Issue 3a: "U paketu od X" annotation — only when no own discount showing */}
+          {/* Issue 3a: "Package of X" annotation — only when no own discount showing */}
           {!showOwnDiscount && displayMinQty !== undefined && displayMinQty > 1 && (
             <p className="text-xs text-[color:var(--color-sage-deep)] mt-1.5">
-              U paketu od {displayMinQty} {pluralizeUnit(formattedDisplayUnitLabel ?? "", displayMinQty)}
+              Package of {displayMinQty} {pluralizeUnit(formattedDisplayUnitLabel ?? "", displayMinQty)}
             </p>
           )}
         </div>

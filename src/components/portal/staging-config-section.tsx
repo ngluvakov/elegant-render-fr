@@ -120,15 +120,15 @@ export function StagingConfigSection({
   // Per-product copy
   const angleAddOnLabel = is360 ? "hotspot" : "ugao";
   const angleStepperLabel = is360
-    ? "Dodatni hotspot iste sobe"
-    : "Dodatni ugao iste sobe";
-  const angleAddOnPriceRsd = is360 ? 24 : 12;
-  const restylePriceRsd = is360 ? 22 : 12;
+    ? "Additional hotspot of the same room"
+    : "Additional angle of the same room";
+  const angleAddOnPriceEur = is360 ? 24 : 12;
+  const restylePriceEur = is360 ? 22 : 12;
   const sourceAcceptHint = is360
-    ? "Sferične (equirectangular) panorame"
-    : "Obične fotografije praznog prostora";
+    ? "Spherical (equirectangular) panoramas"
+    : "Standard photos of the empty space";
 
-  const totalRsd = useMemo(() => {
+  const totalEur = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -137,7 +137,7 @@ export function StagingConfigSection({
         addOnQuantities: addOnQuantitiesFor(config, productId),
       },
     ]);
-    return calc.items[0]?.totalRsd ?? 0;
+    return calc.items[0]?.totalEur ?? 0;
   }, [itemId, productId, config]);
 
   useEffect(() => {
@@ -189,7 +189,7 @@ export function StagingConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -248,7 +248,7 @@ export function StagingConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Ukloni fajl"
+                aria-label="Remove file"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -300,7 +300,7 @@ export function StagingConfigSection({
           <Sparkles className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.roomName || "Soba"}
+              {config.roomName || "Room"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
               <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-accent">
@@ -326,7 +326,7 @@ export function StagingConfigSection({
               )}
               {config.extraAnglesCount > 0 && (
                 <span className="ml-2">
-                  +{config.extraAnglesCount} dodatn
+                  +{config.extraAnglesCount} extra
                   {config.extraAnglesCount === 1 ? "i" : "ih"}{" "}
                   {angleNoun(productId, config.extraAnglesCount)}
                 </span>
@@ -338,11 +338,11 @@ export function StagingConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Sačuvano
+              Saved
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalRsd)}
+            {formatPrice(totalEur)}
           </p>
         </div>
       </div>
@@ -353,10 +353,10 @@ export function StagingConfigSection({
           <p className="text-[0.78rem] leading-relaxed text-foreground">
             Prebacujem na{" "}
             <strong>
-              {is360 ? "Statički staging" : "360 staging"}
+              {is360 ? "Static staging" : "360 staging"}
             </strong>
-            ? Trenutna podešavanja se brišu (osim naziva sobe), fajlovi
-            ostaju attachovani — proverite da li su odgovarajućeg formata.
+            ? Current settings are cleared (except the room name), files
+            stay attached - check that they are in the correct format.
           </p>
           <div className="flex flex-shrink-0 gap-2">
             <button
@@ -364,7 +364,7 @@ export function StagingConfigSection({
               onClick={() => setSwapState({ kind: "idle" })}
               className="inline-flex items-center justify-center rounded-lg bg-secondary px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80"
             >
-              Otkaži
+              Cancel
             </button>
             <button
               type="button"
@@ -380,7 +380,7 @@ export function StagingConfigSection({
       {swapState.kind === "swapping" && (
         <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-card/60 p-3 text-[0.78rem] text-muted-foreground">
           <Loader2 className="h-3.5 w-3.5 animate-spin text-accent" />
-          Prebacujem tip…
+          Switching type...
         </div>
       )}
       {swapState.kind === "error" && (
@@ -403,7 +403,7 @@ export function StagingConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Naziv prostorije
+          Room name
         </Label>
         <input
           id={`room-name-${itemId}`}
@@ -424,7 +424,7 @@ export function StagingConfigSection({
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
             <Sofa className="h-3 w-3 text-accent/60" />
-            Stil nameštaja
+            Furniture style
           </Label>
           <select
             id={`fstyle-${itemId}`}
@@ -448,7 +448,7 @@ export function StagingConfigSection({
             htmlFor={`purpose-${itemId}`}
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
-            Namena prostorije
+            Room purpose
           </Label>
           <select
             id={`purpose-${itemId}`}
@@ -472,14 +472,14 @@ export function StagingConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Opis i napomene
+          Description and notes
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Šta je najvažnije istaći u ovoj sobi? Da li postoji neki komad nameštaja koji obavezno želite?"
+          placeholder="What is most important to highlight in this room? Is there a piece of furniture you definitely want?"
           rows={3}
           className="resize-none text-sm"
         />
@@ -487,7 +487,7 @@ export function StagingConfigSection({
 
       {/* Source files */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Fotografije praznog prostora</Label>
+        <Label className="text-xs">Photos of the empty room</Label>
         {renderUploadZone(
           sourceInputRef,
           sourceAcceptHint,
@@ -506,7 +506,7 @@ export function StagingConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Otpremanje…</span>
+              <span className="text-accent">Uploading...</span>
             </div>
           ))}
         </div>
@@ -520,10 +520,10 @@ export function StagingConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Napredno podešavanje
+            Advanced settings
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · osvetljenje, detalji, uklanjanje predmeta
+            · lighting, details, item removal
           </span>
         </div>
         <Switch
@@ -539,11 +539,11 @@ export function StagingConfigSection({
           {/* 2.1 Mood & lighting */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Atmosfera i osvetljenje
+              Atmosphere and lighting
             </p>
             <div className="space-y-1">
               <Label htmlFor={`mood-${itemId}`} className="text-[0.7rem]">
-                Atmosfera (Mood)
+                Mood
               </Label>
               <select
                 id={`mood-${itemId}`}
@@ -558,7 +558,7 @@ export function StagingConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— izaberite —</option>
+                <option value="">Select...</option>
                 {VS_MOODS.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.label}
@@ -574,7 +574,7 @@ export function StagingConfigSection({
               >
                 <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                   <Sun className="h-3.5 w-3.5 text-accent" />
-                  Posvetli i koriguj boje na fotografiji
+                  Brighten and correct colors in the photo
                 </span>
                 <Switch
                   id={`light-corr-${itemId}`}
@@ -589,7 +589,7 @@ export function StagingConfigSection({
               >
                 <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                   <Lightbulb className="h-3.5 w-3.5 text-accent" />
-                  Uključi lampe i ambijentalno svetlo
+                  Include lamps and ambient lighting
                 </span>
                 <Switch
                   id={`art-light-${itemId}`}
@@ -604,7 +604,7 @@ export function StagingConfigSection({
           {/* 2.2 Item removal */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Korekcije prostora
+              Room corrections
             </p>
             <label
               htmlFor={`removal-${itemId}`}
@@ -612,7 +612,7 @@ export function StagingConfigSection({
             >
               <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                 <Eraser className="h-3.5 w-3.5 text-accent" />
-                Ukloniti stari nameštaj ili nered sa fotografije
+                Remove old furniture or clutter from the photo
               </span>
               <Switch
                 id={`removal-${itemId}`}
@@ -633,14 +633,14 @@ export function StagingConfigSection({
                   htmlFor={`remove-${itemId}`}
                   className="text-[0.7rem]"
                 >
-                  Šta treba ukloniti?
+                  What should be removed?
                 </Label>
                 <Textarea
                   id={`remove-${itemId}`}
                   value={config.itemsToRemove ?? ""}
                   onChange={(e) => patch({ itemsToRemove: e.target.value })}
                   disabled={!editable}
-                  placeholder="Stari kauč, kutije u uglu, slike na zidu…"
+                  placeholder="Old sofa, boxes in the corner, pictures on the wall..."
                   rows={2}
                   className="resize-none text-[0.78rem]"
                 />
@@ -649,14 +649,14 @@ export function StagingConfigSection({
 
             <div className="space-y-1">
               <Label htmlFor={`keep-${itemId}`} className="text-[0.7rem]">
-                Šta obavezno mora ostati?
+                What must stay?
               </Label>
               <Textarea
                 id={`keep-${itemId}`}
                 value={config.itemsToKeep ?? ""}
                 onChange={(e) => patch({ itemsToKeep: e.target.value })}
                 disabled={!editable}
-                placeholder="Ugradni plakar, kamin, postojeća stolarija…"
+                placeholder="Built-in wardrobe, fireplace, existing woodwork..."
                 rows={2}
                 className="resize-none text-[0.78rem]"
               />
@@ -666,14 +666,14 @@ export function StagingConfigSection({
           {/* 2.3 References & target audience */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Reference i specifični zahtevi
+              References and specific requirements
             </p>
 
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Reference za stil</Label>
+              <Label className="text-[0.7rem]">Reference za style</Label>
               {renderUploadZone(
                 refInputRef,
-                "Pinterest, časopisi, slike željenog nameštaja",
+                "Pinterest, magazines, images of desired furniture",
                 "image/*",
                 "reference",
               )}
@@ -701,7 +701,7 @@ export function StagingConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— izaberite —</option>
+                <option value="">Select...</option>
                 {VS_TARGET_AUDIENCES.map((a) => (
                   <option key={a.id} value={a.id}>
                     {a.label}
@@ -721,8 +721,8 @@ export function StagingConfigSection({
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
             {is360
-              ? "Više hotspota iste sobe ili re-style druge stilske varijante."
-              : "Više uglova iste sobe ili re-style druge stilske varijante."}
+              ? "More hotspots of the same room or restyle another style variant."
+              : "More angles of the same room or restyle another style variant."}
           </p>
         </div>
 
@@ -736,7 +736,7 @@ export function StagingConfigSection({
                   {angleStepperLabel}
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  Imate više fotografija iste sobe? Dodajte ih uz popust.
+                  Have multiple photos of the same room? Add them with a discount.
                 </span>
               </div>
             </div>
@@ -745,7 +745,7 @@ export function StagingConfigSection({
                 type="button"
                 disabled={!editable || config.extraAnglesCount <= 0}
                 onClick={decExtra}
-                aria-label={`Smanji broj dodatnih ${angleAddOnLabel}a`}
+                aria-label={`Decrease number of extra ${angleAddOnLabel}s`}
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Minus className="h-3 w-3" />
@@ -757,7 +757,7 @@ export function StagingConfigSection({
                 type="button"
                 disabled={!editable || config.extraAnglesCount >= 30}
                 onClick={incExtra}
-                aria-label={`Povećaj broj dodatnih ${angleAddOnLabel}a`}
+                aria-label={`Increase number of extra ${angleAddOnLabel}s`}
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Plus className="h-3 w-3" />
@@ -765,10 +765,10 @@ export function StagingConfigSection({
             </div>
           </div>
           <p className="text-[0.7rem] text-muted-foreground">
-            +{formatPrice(angleAddOnPriceRsd)} po dodatnom {angleAddOnLabel}u
+            +{formatPrice(angleAddOnPriceEur)} per extra {angleAddOnLabel}
             {config.extraAnglesCount > 0 && (
               <span className="ml-1 font-semibold text-accent">
-                · ukupno +{formatPrice(config.extraAnglesCount * angleAddOnPriceRsd)}
+                · total +{formatPrice(config.extraAnglesCount * angleAddOnPriceEur)}
               </span>
             )}
           </p>
@@ -776,13 +776,13 @@ export function StagingConfigSection({
           <Collapsible open={config.extraAnglesCount > 0}>
             <div className="space-y-1.5">
               <Label className="text-[0.7rem]">
-                Upload za dodatne {angleAddOnLabel}e
+                Upload extra {angleAddOnLabel}s
               </Label>
               {renderUploadZone(
                 extraInputRef,
                 is360
-                  ? "Dodatne 360 panorame iste sobe"
-                  : "Dodatne fotografije iste sobe",
+                  ? "Additional 360 panoramas of the same room"
+                  : "Additional photos of the same room",
                 "image/*",
                 "extra-angle",
               )}
@@ -800,17 +800,17 @@ export function StagingConfigSection({
             <Palette className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                Ponovno opremanje (Re-style)
+                Restaging (re-style)
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Ista fotografija u potpuno drugačijem stilu
+                Same photo in a completely different style
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {config.restyleEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(restylePriceRsd)}
+                +{formatPrice(restylePriceEur)}
               </span>
             )}
             <Switch
@@ -833,7 +833,7 @@ export function StagingConfigSection({
               htmlFor={`restyle-style-${itemId}`}
               className="text-[0.7rem]"
             >
-              Stil za re-style varijantu
+              Style za re-style varijantu
             </Label>
             <select
               id={`restyle-style-${itemId}`}
@@ -848,7 +848,7 @@ export function StagingConfigSection({
               disabled={!editable}
               className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
             >
-              <option value="">— izaberite —</option>
+              <option value="">Select...</option>
               {VS_FURNITURE_STYLES.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.label}

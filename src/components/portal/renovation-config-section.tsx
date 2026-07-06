@@ -63,10 +63,10 @@ import {
   updateRenovationConfig,
 } from "@/server/actions/item-config";
 
-// Catalog prices (kept inline for the +N RSD hints; source of truth is
+// Catalog prices (kept inline for the +€N hints; source of truth is
 // configurator.ts).
-const RENO_ANGLE_RSD = 6915;     // drops to 6.212 RSD from 4th onward (volume rule)
-const RENO_VARIANT_RSD = 6563;   // reno-room (drops to 5.860 RSD from 6th onward)
+const RENO_ANGLE_EUR = 59;     // drops to €53 from 4th onward (volume rule)
+const RENO_VARIANT_EUR = 56;   // reno-room (drops to €50 from 6th onward)
 
 type ItemFile = {
   id: string;
@@ -111,7 +111,7 @@ export function RenovationConfigSection({
   const router = useRouter();
   const { formatPrice, formatPriceText } = useOrderCurrency();
 
-  const totalRsd = useMemo(() => {
+  const totalEur = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -120,7 +120,7 @@ export function RenovationConfigSection({
         addOnQuantities: addOnQuantitiesFor(config),
       },
     ]);
-    return calc.items[0]?.totalRsd ?? 0;
+    return calc.items[0]?.totalEur ?? 0;
   }, [itemId, config]);
 
   useEffect(() => {
@@ -173,7 +173,7 @@ export function RenovationConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -216,7 +216,7 @@ export function RenovationConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Ukloni fajl"
+                aria-label="Remove file"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -280,11 +280,11 @@ export function RenovationConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Sačuvano
+              Saved
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalRsd)}
+            {formatPrice(totalEur)}
           </p>
         </div>
       </div>
@@ -296,7 +296,7 @@ export function RenovationConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Naziv prostorije
+          Room name
         </Label>
         <input
           id={`name-${itemId}`}
@@ -317,7 +317,7 @@ export function RenovationConfigSection({
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
             <Home className="h-3 w-3 text-accent/60" />
-            Tip prostorije
+            Room type
           </Label>
           <select
             id={`rtype-${itemId}`}
@@ -341,7 +341,7 @@ export function RenovationConfigSection({
             htmlFor={`scope-${itemId}`}
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
-            Obim renovacije
+            Renovation scope
           </Label>
           <select
             id={`scope-${itemId}`}
@@ -365,14 +365,14 @@ export function RenovationConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Opis željenih promena
+          Description of requested changes
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Tamne pločice na podu, bela kuhinja bez ručki, srušiti zid prema trpezariji…"
+          placeholder="Dark floor tiles, white handleless kitchen, remove the wall toward the dining room..."
           rows={3}
           className="resize-none text-sm"
         />
@@ -380,10 +380,10 @@ export function RenovationConfigSection({
 
       {/* Source photos (existing state) */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Fotografije postojećeg stanja</Label>
+        <Label className="text-xs">Photos of the current condition</Label>
         {renderUploadZone(
           sourceInputRef,
-          "Fotografije prostora koji se renovira",
+          "Photos of the room being renovated",
           "image/*",
           "source",
         )}
@@ -392,10 +392,10 @@ export function RenovationConfigSection({
 
       {/* Reference photos (inspiration) */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Reference (inspiracija)</Label>
+        <Label className="text-xs">References (inspiration)</Label>
         {renderUploadZone(
           refInputRef,
-          "Pinterest, primeri materijala ili stilova",
+          "Pinterest, material examples, or style references",
           "image/*",
           "reference",
         )}
@@ -411,7 +411,7 @@ export function RenovationConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Otpremanje…</span>
+              <span className="text-accent">Uploading...</span>
             </div>
           ))}
         </div>
@@ -425,10 +425,10 @@ export function RenovationConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Napredno podešavanje
+            Advanced settings
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · materijali, struktura, detalji
+            · materials, structure, details
           </span>
         </div>
         <Switch
@@ -472,7 +472,7 @@ export function RenovationConfigSection({
                   htmlFor={`walls-desc-${itemId}`}
                   className="text-[0.7rem]"
                 >
-                  Opis strukturnih promena
+                  Structural change description
                 </Label>
                 <Textarea
                   id={`walls-desc-${itemId}`}
@@ -481,7 +481,7 @@ export function RenovationConfigSection({
                     patch({ wallChangesDescription: e.target.value })
                   }
                   disabled={!editable}
-                  placeholder="Koji zid se ruši, gde se dodaje pregrada…"
+                  placeholder="Which wall is removed, where a partition is added..."
                   rows={2}
                   className="resize-none text-[0.78rem]"
                 />
@@ -494,7 +494,7 @@ export function RenovationConfigSection({
             >
               <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                 <DoorOpen className="h-3.5 w-3.5 text-accent" />
-                Promena prozora i vrata
+                Window and door changes
               </span>
               <Switch
                 id={`doors-${itemId}`}
@@ -508,7 +508,7 @@ export function RenovationConfigSection({
           {/* 2.2 Materials */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Materijali i obrade
+              Materials and finishes
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1">
@@ -517,7 +517,7 @@ export function RenovationConfigSection({
                   className="text-[0.7rem]"
                 >
                   <Layers className="h-3 w-3 text-accent/60" />
-                  Novi podovi
+                  New flooring
                 </Label>
                 <select
                   id={`floor-${itemId}`}
@@ -532,7 +532,7 @@ export function RenovationConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {RENO_FLOOR_MATERIALS.map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.label}
@@ -547,7 +547,7 @@ export function RenovationConfigSection({
                   className="text-[0.7rem]"
                 >
                   <Paintbrush className="h-3 w-3 text-accent/60" />
-                  Novi zidovi
+                  New walls
                 </Label>
                 <select
                   id={`wall-mat-${itemId}`}
@@ -562,7 +562,7 @@ export function RenovationConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {RENO_WALL_MATERIALS.map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.label}
@@ -573,10 +573,10 @@ export function RenovationConfigSection({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Specifični materijali</Label>
+              <Label className="text-[0.7rem]">Specific materials</Label>
               {renderUploadZone(
                 materialInputRef,
-                "Teksture pločica, parketa ili boja",
+                "Tile, flooring, or paint textures",
                 "image/*,application/pdf",
                 "material-spec",
               )}
@@ -587,7 +587,7 @@ export function RenovationConfigSection({
           {/* 2.3 Furniture & retention */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Opremanje i nameštaj
+              Furniture and styling
             </p>
             <div className="space-y-1">
               <Label
@@ -595,7 +595,7 @@ export function RenovationConfigSection({
                 className="text-[0.7rem]"
               >
                 <Sofa className="h-3 w-3 text-accent/60" />
-                Stil nameštaja
+                Furniture style
               </Label>
               <select
                 id={`fstyle-${itemId}`}
@@ -610,7 +610,7 @@ export function RenovationConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— izaberite —</option>
+                <option value="">Select...</option>
                 {RENO_FURNITURE_STYLES.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.label}
@@ -621,14 +621,14 @@ export function RenovationConfigSection({
 
             <div className="space-y-1">
               <Label htmlFor={`keep-${itemId}`} className="text-[0.7rem]">
-                Šta obavezno mora ostati?
+                What must stay?
               </Label>
               <Textarea
                 id={`keep-${itemId}`}
                 value={config.itemsToKeep ?? ""}
                 onChange={(e) => patch({ itemsToKeep: e.target.value })}
                 disabled={!editable}
-                placeholder="Postojeći kamin, isti prozor, ugradni plakar…"
+                placeholder="Existing fireplace, same window, built-in wardrobe..."
                 rows={2}
                 className="resize-none text-[0.78rem]"
               />
@@ -644,8 +644,8 @@ export function RenovationConfigSection({
             Dodatne opcije
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Dodatni uglovi iste sobe ili druga varijanta dizajna iste
-            prostorije.
+            Additional angles of the same room or another design variant of the same
+            rooms.
           </p>
         </div>
 
@@ -656,10 +656,10 @@ export function RenovationConfigSection({
               <Camera className="h-3.5 w-3.5 text-accent" />
               <div>
                 <span className="block text-[0.78rem] font-medium text-foreground">
-                  Dodatni ugao iste sobe
+                  Additional angle of the same room
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  Renovirana soba iz drugog ugla
+                  Renovated room from another angle
                 </span>
               </div>
             </div>
@@ -668,7 +668,7 @@ export function RenovationConfigSection({
                 type="button"
                 disabled={!editable || config.extraAnglesCount <= 0}
                 onClick={decExtra}
-                aria-label="Smanji broj uglova"
+                aria-label="Decrease number of angles"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Minus className="h-3 w-3" />
@@ -680,7 +680,7 @@ export function RenovationConfigSection({
                 type="button"
                 disabled={!editable || config.extraAnglesCount >= 30}
                 onClick={incExtra}
-                aria-label="Povećaj broj uglova"
+                aria-label="Increase number of angles"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Plus className="h-3 w-3" />
@@ -689,16 +689,16 @@ export function RenovationConfigSection({
           </div>
           <p className="text-[0.7rem] text-muted-foreground">
             {formatPriceText(
-              `+${RENO_ANGLE_RSD.toLocaleString("sr-Latn-RS")} RSD po dodatnom uglu (6.212 RSD od 4. ugla nadalje)`,
+              `+€${RENO_ANGLE_EUR} per extra angle (€53 from the 4th angle onward)`,
             )}
           </p>
 
           <Collapsible open={config.extraAnglesCount > 0}>
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Upload za dodatne uglove</Label>
+              <Label className="text-[0.7rem]">Upload extra angles</Label>
               {renderUploadZone(
                 extraInputRef,
-                "Dodatne fotografije iste sobe",
+                "Additional photos of the same room",
                 "image/*",
                 "extra-angle",
               )}
@@ -716,24 +716,24 @@ export function RenovationConfigSection({
             <Palette className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
-                Varijanta dizajna
+                Design variant
                 <HelpTip>
-                  <strong>Drugi predlog dizajna</strong> iste sobe — npr.
-                  prvi render je moderni minimalizam, drugi je topli
-                  skandi stil. Geometrija prostora je ista, samo se menja
-                  paleta materijala / nameštaja, pa je jeftinije nego
-                  novi render od nule.
+                  <strong>Second design proposal</strong> for the same room,
+                  for example modern minimalism first and warm Scandi second.
+                  The room geometry stays the same; only the material and
+                  furniture palette changes, so it is cheaper than a new render
+                  from scratch.
                 </HelpTip>
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Ista prostorija u drugačijem stilu ili sa drugim materijalima
+                Same room in another style or with different materials
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {config.variantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(RENO_VARIANT_RSD)}
+                +{formatPrice(RENO_VARIANT_EUR)}
               </span>
             )}
             <Switch
@@ -756,7 +756,7 @@ export function RenovationConfigSection({
               htmlFor={`variant-desc-${itemId}`}
               className="text-[0.7rem]"
             >
-              Opis za varijantu
+              Variant description
             </Label>
             <Textarea
               id={`variant-desc-${itemId}`}
@@ -765,7 +765,7 @@ export function RenovationConfigSection({
                 patch({ variantDescription: e.target.value })
               }
               disabled={!editable}
-              placeholder="Po čemu se varijanta razlikuje od prve verzije…"
+              placeholder="How this variant differs from the first version..."
               rows={2}
               className="resize-none text-[0.78rem]"
             />

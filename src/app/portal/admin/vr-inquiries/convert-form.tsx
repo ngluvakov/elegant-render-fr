@@ -13,7 +13,7 @@ import { track } from "@/lib/posthog-events";
 type Props = {
   inquiryId: string;
   defaultProjectName: string;
-  defaultPriceRsd: number;
+  defaultPriceEur: number;
   convertedOrderId: string | null;
   convertedOrderNumber?: string;
 };
@@ -21,12 +21,12 @@ type Props = {
 export function VrInquiryConvertForm({
   inquiryId,
   defaultProjectName,
-  defaultPriceRsd,
+  defaultPriceEur,
   convertedOrderId,
   convertedOrderNumber,
 }: Props) {
   const [open, setOpen] = useState(false);
-  const [priceRsd, setPriceRsd] = useState(String(defaultPriceRsd));
+  const [priceEur, setPriceEur] = useState(String(defaultPriceEur));
   const [projectName, setProjectName] = useState(defaultProjectName);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +39,7 @@ export function VrInquiryConvertForm({
         className="inline-flex items-center gap-1.5 rounded-md bg-[color:var(--color-sage)]/15 px-3 py-1.5 text-xs font-medium text-[color:var(--color-sage-deep)] hover:bg-[color:var(--color-sage)]/25"
       >
         <Check className="h-3 w-3" />
-        Otvori order {convertedOrderNumber ?? ""}
+        Open order {convertedOrderNumber ?? ""}
         <ArrowRight className="h-3 w-3" />
       </Link>
     );
@@ -62,7 +62,7 @@ export function VrInquiryConvertForm({
     startTransition(async () => {
       const res = await convertVrInquiryToOrder({
         inquiryId,
-        priceRsd: Number(priceRsd),
+        priceEur: Number(priceEur),
         projectName: projectName.trim() || undefined,
       });
       if ("error" in res) {
@@ -72,7 +72,7 @@ export function VrInquiryConvertForm({
       track("vr_inquiry_converted", {
         inquiry_id: inquiryId,
         order_number: res.orderNumber,
-        price_rsd: Number(priceRsd),
+        price_eur: Number(priceEur),
       });
       router.refresh();
     });
@@ -86,7 +86,7 @@ export function VrInquiryConvertForm({
       <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
         <div className="space-y-1.5">
           <Label htmlFor={`pname-${inquiryId}`} className="text-[0.72rem]">
-            Naziv projekta
+            Project name
           </Label>
           <Input
             id={`pname-${inquiryId}`}
@@ -98,23 +98,23 @@ export function VrInquiryConvertForm({
         </div>
         <div className="space-y-1.5">
           <Label htmlFor={`price-${inquiryId}`} className="text-[0.72rem]">
-            Cena (RSD)
+            Price (RSD)
           </Label>
           <Input
             id={`price-${inquiryId}`}
             type="number"
             min={1}
             step={1}
-            value={priceRsd}
-            onChange={(e) => setPriceRsd(e.target.value)}
+            value={priceEur}
+            onChange={(e) => setPriceEur(e.target.value)}
             disabled={pending}
             className="w-32"
           />
         </div>
       </div>
       <p className="text-[0.7rem] text-muted-foreground">
-        Order ide u <strong>awaiting_payment</strong> sa ovom cenom. Klijent
-        dobija email sa magic-link-om i može da plati.
+        The order moves to <strong>awaiting_payment</strong> with this price. The client
+        receives an email with a magic link and can pay.
       </p>
       {error && (
         <p className="text-[0.72rem] text-destructive">{error}</p>
@@ -130,7 +130,7 @@ export function VrInquiryConvertForm({
           }}
           disabled={pending}
         >
-          Otkaži
+          Cancel
         </Button>
         <Button
           type="button"
@@ -144,7 +144,7 @@ export function VrInquiryConvertForm({
               <Loader2 className="h-3 w-3 animate-spin" /> Konvertujem…
             </>
           ) : (
-            "Potvrdi i pošalji email"
+            "Confirm and send email"
           )}
         </Button>
       </div>

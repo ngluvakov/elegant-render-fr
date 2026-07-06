@@ -40,11 +40,11 @@ export function AdminGrantCreditsPanel({
     setError("");
     const parsedCredits = Math.floor(Number(credits));
     if (!Number.isFinite(parsedCredits) || parsedCredits <= 0) {
-      setError("Unesite ispravan broj kredita.");
+      setError("Enter a valid credit count.");
       return;
     }
     if (!note.trim()) {
-      setError("Razlog dodavanja je obavezan.");
+      setError("Reason for adding credits is required.");
       return;
     }
     setPending(true);
@@ -70,24 +70,24 @@ export function AdminGrantCreditsPanel({
         <div>
           <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
             <Sparkles className="h-3.5 w-3.5 text-[color:var(--color-sage-deep)]" />
-            AI krediti — {userName ?? userEmail}
+            AI credits - {userName ?? userEmail}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Trenutni balans:{" "}
+            Current balance:{" "}
             <strong className="text-foreground">
               {formatCreditsFromUnits(balanceUnits)}
             </strong>
             {expiresAt && (
               <>
-                {" · ističu "}
-                {expiresAt.toLocaleDateString("sr-Latn-RS")}
+                {" · expires "}
+                {expiresAt.toLocaleDateString("en-GB")}
               </>
             )}
           </p>
         </div>
         {!open && (
           <Button size="sm" onClick={() => setOpen(true)}>
-            Dodaj kredite
+            Add credits
           </Button>
         )}
       </div>
@@ -95,7 +95,7 @@ export function AdminGrantCreditsPanel({
       {open && (
         <form onSubmit={handleSubmit} className="mt-4 space-y-3">
           <div>
-            <Label className="text-xs">Broj kredita</Label>
+            <Label className="text-xs">Credit count</Label>
             <Input
               type="number"
               min="1"
@@ -104,15 +104,15 @@ export function AdminGrantCreditsPanel({
               className="mt-1"
             />
             <p className="mt-1 text-[0.68rem] text-muted-foreground">
-              1 kredit = {AI_CREDIT_UNITS_PER_CREDIT} jedinica · krediti važe 12 meseci
+              1 credit = {AI_CREDIT_UNITS_PER_CREDIT} units · credits are valid for 12 months
             </p>
           </div>
           <div>
-            <Label className="text-xs">Razlog (vidljiv u istoriji)</Label>
+            <Label className="text-xs">Reason (visible in history)</Label>
             <Textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="npr. Kompenzacija za neuspelu obradu, marketing gift…"
+              placeholder="e.g. Compensation for failed processing, marketing gift..."
               rows={2}
               className="mt-1 resize-none"
             />
@@ -120,7 +120,7 @@ export function AdminGrantCreditsPanel({
           {error && <p className="text-xs text-destructive">{error}</p>}
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={pending}>
-              {pending ? "Dodavanje…" : "Dodaj kredite"}
+              {pending ? "Adding..." : "Add credits"}
             </Button>
             <Button
               type="button"
@@ -132,7 +132,7 @@ export function AdminGrantCreditsPanel({
               }}
               disabled={pending}
             >
-              Otkaži
+              Cancel
             </Button>
           </div>
         </form>

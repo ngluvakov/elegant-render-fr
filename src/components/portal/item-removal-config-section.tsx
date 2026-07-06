@@ -1,6 +1,6 @@
 /**
  * ItemRemovalConfigSection — Per-item configurator for ir-simple +
- * ir-complex (Uklanjanje elemenata). One component handles both via a
+ * ir-complex (item removal). One component handles both via a
  * productId prop (drives label, additional add-on ID, per-photo
  * surcharge, and visibility of the "background reconstruction" section
  * which only applies to ir-complex).
@@ -46,7 +46,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   addOnQuantitiesFor,
-  itemRemovalAdditionalPriceRsd,
+  itemRemovalAdditionalPriceEur,
   itemRemovalProductLabel,
   type ItemRemovalConfig,
   type ItemRemovalProductId,
@@ -106,9 +106,9 @@ export function ItemRemovalConfigSection({
   const { formatPrice } = useOrderCurrency();
 
   const isComplex = productId === "ir-complex";
-  const additionalPriceRsd = itemRemovalAdditionalPriceRsd(productId);
+  const additionalPriceEur = itemRemovalAdditionalPriceEur(productId);
 
-  const totalRsd = useMemo(() => {
+  const totalEur = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -117,7 +117,7 @@ export function ItemRemovalConfigSection({
         addOnQuantities: addOnQuantitiesFor(config, productId),
       },
     ]);
-    return calc.items[0]?.totalRsd ?? 0;
+    return calc.items[0]?.totalEur ?? 0;
   }, [itemId, productId, config]);
 
   useEffect(() => {
@@ -169,7 +169,7 @@ export function ItemRemovalConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -212,7 +212,7 @@ export function ItemRemovalConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Ukloni fajl"
+                aria-label="Remove file"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -264,15 +264,14 @@ export function ItemRemovalConfigSection({
           <Eraser className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.imageName || "Slika"}
+              {config.imageName || "Image"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
               <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-accent">
                 {itemRemovalProductLabel(productId)}
               </span>
               <span className="ml-2">
-                {config.photoCount} fotografij
-                {config.photoCount === 1 ? "a" : "e"}
+                {config.photoCount} photo{config.photoCount === 1 ? "" : "s"}
               </span>
             </p>
           </div>
@@ -281,11 +280,11 @@ export function ItemRemovalConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Sačuvano
+              Saved
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalRsd)}
+            {formatPrice(totalEur)}
           </p>
         </div>
       </div>
@@ -297,7 +296,7 @@ export function ItemRemovalConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Naziv prostorije / slike
+          Room name / images
         </Label>
         <input
           id={`name-${itemId}`}
@@ -314,14 +313,14 @@ export function ItemRemovalConfigSection({
       <div className="space-y-1">
         <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
           <Camera className="h-3 w-3 text-accent/60" />
-          Broj fotografija
+          Number of photos
         </Label>
         <div className="inline-flex items-center rounded-md bg-secondary/40">
           <button
             type="button"
             disabled={!editable || config.photoCount <= 1}
             onClick={decPhotos}
-            aria-label="Smanji broj fotografija"
+            aria-label="Decrease number of photos"
             className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
           >
             <Minus className="h-3.5 w-3.5" />
@@ -333,13 +332,13 @@ export function ItemRemovalConfigSection({
             type="button"
             disabled={!editable || config.photoCount >= 200}
             onClick={incPhotos}
-            aria-label="Povećaj broj fotografija"
+            aria-label="Increase number of photos"
             className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
           <span className="ml-2 text-[0.7rem] text-muted-foreground">
-            1 uključena, +{formatPrice(additionalPriceRsd)} svaka sledeća
+            1 included, +{formatPrice(additionalPriceEur)} each additional
           </span>
         </div>
       </div>
@@ -348,14 +347,14 @@ export function ItemRemovalConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Šta treba ukloniti?
+          What should be removed?
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Kutije u uglu, slike sa zida, stari kauč, žice na zidovima…"
+          placeholder="Boxes in the corner, pictures on the wall, old sofa, wall cables..."
           rows={3}
           className="resize-none text-sm"
         />
@@ -363,10 +362,10 @@ export function ItemRemovalConfigSection({
 
       {/* Source upload */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Originalne fotografije</Label>
+        <Label className="text-xs">Original photos</Label>
         {renderUploadZone(
           sourceInputRef,
-          "Prevucite fotografije prostora",
+          "Drag photos of the space",
           "image/*",
           "source",
         )}
@@ -382,7 +381,7 @@ export function ItemRemovalConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Otpremanje…</span>
+              <span className="text-accent">Uploading...</span>
             </div>
           ))}
         </div>
@@ -396,10 +395,10 @@ export function ItemRemovalConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Napredno podešavanje
+            Advanced settings
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · označavanje, rekonstrukcija, detalji
+            · marking, reconstruction, details
           </span>
         </div>
         <Switch
@@ -415,17 +414,17 @@ export function ItemRemovalConfigSection({
           {/* 2.1 Annotation & retention */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Precizno označavanje
+              Precise marking
             </p>
 
             <div className="space-y-1.5">
               <Label className="text-[0.7rem]">
                 <Highlighter className="h-3 w-3 text-accent/60" />
-                Upload označenih skica
+                Upload marked sketches
               </Label>
               {renderUploadZone(
                 annotatedInputRef,
-                "Slike sa zaokruženim elementima koje treba ukloniti",
+                "Images with circled elements to remove",
                 "image/*",
                 "annotated",
               )}
@@ -434,14 +433,14 @@ export function ItemRemovalConfigSection({
 
             <div className="space-y-1">
               <Label htmlFor={`keep-${itemId}`} className="text-[0.7rem]">
-                Šta obavezno mora ostati?
+                What must stay?
               </Label>
               <Textarea
                 id={`keep-${itemId}`}
                 value={config.itemsToKeep ?? ""}
                 onChange={(e) => patch({ itemsToKeep: e.target.value })}
                 disabled={!editable}
-                placeholder="Ugradni plakar, kamin, specifična lampa…"
+                placeholder="Built-in wardrobe, fireplace, specific lamp..."
                 rows={2}
                 className="resize-none text-[0.78rem]"
               />
@@ -460,7 +459,7 @@ export function ItemRemovalConfigSection({
                   htmlFor={`bg-desc-${itemId}`}
                   className="text-[0.7rem]"
                 >
-                  Šta se nalazi iza predmeta?
+                  What is behind the item?
                 </Label>
                 <Textarea
                   id={`bg-desc-${itemId}`}
@@ -469,7 +468,7 @@ export function ItemRemovalConfigSection({
                     patch({ backgroundDescription: e.target.value })
                   }
                   disabled={!editable}
-                  placeholder="Nastavlja se drveni parket i beli zid; iza kauča je prozor; ispod sata je kamen…"
+                  placeholder="Wood flooring and a white wall continue; there is a window behind the sofa; stone below the clock..."
                   rows={2}
                   className="resize-none text-[0.78rem]"
                 />
@@ -481,7 +480,7 @@ export function ItemRemovalConfigSection({
                 </Label>
                 {renderUploadZone(
                   bgRefInputRef,
-                  "Slika iste sobe iz drugog ugla gde se vidi prazan zid / pod",
+                  "Image of the same room from another angle showing an empty wall / floor",
                   "image/*",
                   "background-ref",
                 )}
@@ -499,8 +498,8 @@ export function ItemRemovalConfigSection({
             Dodatne opcije
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Nakon čišćenja prostora, možete dodatno naručiti virtuelno
-            opremanje — uslugu naručujete posebno (Statički staging).
+            After cleaning the space, you can additionally order virtual
+            staging as a separate service (static staging).
           </p>
         </div>
 
@@ -512,10 +511,10 @@ export function ItemRemovalConfigSection({
             <Sparkles className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                Želim virtuelno opremanje (Staging)
+                I want virtual staging
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Označite intenciju — naručite vs-static stavku posebno
+                Mark the intent - order the vs-static item separately
               </span>
             </div>
           </div>
@@ -539,7 +538,7 @@ export function ItemRemovalConfigSection({
               className="text-[0.7rem]"
             >
               <Sofa className="h-3 w-3 text-accent/60" />
-              Stil za staging
+              Style za staging
             </Label>
             <select
               id={`stage-style-${itemId}`}
@@ -554,7 +553,7 @@ export function ItemRemovalConfigSection({
               disabled={!editable}
               className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
             >
-              <option value="">— izaberite —</option>
+              <option value="">Select...</option>
               {VS_FURNITURE_STYLES.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.label}
@@ -562,8 +561,8 @@ export function ItemRemovalConfigSection({
               ))}
             </select>
             <p className="mt-1 text-[0.62rem] text-muted-foreground">
-              Ovaj izbor pamtimo kao informaciju — naručite uslugu
-              „Statički staging” (vs-static) posebno iz cenovnika.
+              We save this choice as information - order the
+              "Static staging" (vs-static) service separately from pricing.
             </p>
           </div>
         </Collapsible>

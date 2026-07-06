@@ -1,102 +1,113 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Pencil } from "lucide-react";
+/**
+ * step-payment.tsx — step 2 of the 2-step checkout: PayPal buttons +
+ * amount recap in the charged currency.
+ *
+ * The server actions charge exactly the snapshot locked at order
+ * creation; this component only renders the same converted amount.
+ * eCheck captures come back "processing" — the wizard shows an
+ * explicit pending state, not a failure. The mock-card tile exists
+ * only outside production builds.
+ */
+
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { TurnstileWidget } from "@/components/ui/turnstile-widget";
 import {
   formatPublicPrice,
   type PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 import { track } from "@/lib/posthog-events";
-import { useCheckout } from "../checkout-context";
-import { NestpayRedirectForm } from "../nestpay-redirect-form";
-import { mockCardPaymentAction } from "@/server/actions/payment";
-import { initiateNestpayPayment } from "@/server/actions/nestpay";
-import { NESTPAY_INSTALLMENT_OPTIONS } from "@/lib/nestpay/installments";
-import { isTurnstileTestingSiteKey } from "@/lib/turnstile-keys";
 import { pushGoogleDataLayerEvent } from "@/lib/analytics/google-data-layer-client";
+import { PayPalButtons } from "@/components/payments/paypal-buttons";
+import {
+  capturePayPalOrderAction,
+  createPayPalOrderAction,
+  mockCardPaymentAction,
+} from "@/server/actions/payment";
+import { useCheckout } from "../checkout-context";
 
-type PaymentMethod = "nestpay" | "card_mock";
-
-// Mock card path is dev-only. Render only when explicitly opted in
-// via NEXT_PUBLIC_NESTPAY_MODE=test; absence of the env var should
-// NOT expose a mock checkout on production.
-const NESTPAY_TEST_MODE =
-  process.env.NEXT_PUBLIC_NESTPAY_MODE === "test";
-const NESTPAY_INSTALLMENTS_ENABLED =
-  process.env.NEXT_PUBLIC_NESTPAY_INSTALLMENTS_ENABLED === "true";
+const SHOW_MOCK_CARD = process.env.NODE_ENV !== "production";
 
 export function StepPayment() {
   const {
     orderId,
     calculation,
-    installmentCount,
-    setInstallmentCount,
     setPaymentComplete,
+    setPaymentProcessing,
     setStep,
     displayCurrency,
     pricingCatalog,
   } = useCheckout();
-  const [method, setMethod] = useState<PaymentMethod>("nestpay");
-  const [cardPending, setCardPending] = useState(false);
-  const [nestpayPending, setNestpayPending] = useState(false);
   const [error, setError] = useState("");
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [redirect, setRedirect] = useState<{
-    url: string;
-    fields: Record<string, string>;
-  } | null>(null);
+  const [cardPending, setCardPending] = useState(false);
 
   const pricingSettings: PublicPricingFormatSettings | undefined =
     pricingCatalog
-      ? {
-          rsdRate: pricingCatalog.settings.rsdRate,
-          serbiaVatRate: pricingCatalog.settings.serbiaVatRate,
-        }
+      ? { serbiaVatRate: pricingCatalog.settings.serbiaVatRate }
       : undefined;
-  const formatTotal = (amountRsd: number) =>
-    formatPublicPrice(amountRsd, displayCurrency, pricingSettings);
+  const amountLabel = formatPublicPrice(
+    calculation.total,
+    displayCurrency,
+    pricingSettings,
+  );
+
+  const handleCreate = useCallback(() => {
+    track("payment_started", {
+      provider: "paypal",
+      total_eur: calculation.total,
+      charged_currency: displayCurrency,
+    });
+    return createPayPalOrderAction(orderId ?? "");
+  }, [orderId, calculation.total, displayCurrency]);
+
+  const handleCapture = useCallback(
+    (paypalOrderId: string) =>
+      capturePayPalOrderAction(orderId ?? "", paypalOrderId),
+    [orderId],
+  );
+
+  const handleSuccess = useCallback(() => {
+    track("payment_completed", {
+      provider: "paypal",
+      total_eur: calculation.total,
+      order_number: orderId ?? "",
+      charged_currency: displayCurrency,
+    });
+    setPaymentComplete();
+  }, [calculation.total, orderId, displayCurrency, setPaymentComplete]);
+
+  const handleProcessing = useCallback(() => {
+    track("payment_processing", {
+      provider: "paypal",
+      total_eur: calculation.total,
+      charged_currency: displayCurrency,
+    });
+    setPaymentProcessing();
+  }, [calculation.total, displayCurrency, setPaymentProcessing]);
+
+  const handleError = useCallback((message: string) => {
+    setError(message);
+    track("payment_failed", {
+      provider: "paypal",
+      error_kind: message.slice(0, 80),
+    });
+  }, []);
 
   if (!orderId) {
     return (
       <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-6 text-sm text-destructive">
-        Porudžbina nije kreirana. Vratite se na prethodni korak.
+        The order has not been created yet. Go back to the previous step.
       </div>
     );
   }
-
-  if (redirect) {
-    return <NestpayRedirectForm url={redirect.url} fields={redirect.fields} />;
-  }
-
-  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-  const turnstileUsesTestingSiteKey =
-    process.env.NODE_ENV === "production" &&
-    isTurnstileTestingSiteKey(turnstileSiteKey);
-  const requiresTurnstile =
-    Boolean(turnstileSiteKey) && !turnstileUsesTestingSiteKey;
-  const turnstileConfigMissing =
-    process.env.NODE_ENV === "production" && !turnstileSiteKey;
-  const turnstileConfigError = turnstileConfigMissing
-    ? "Sigurnosna provera nije konfigurisana. Potrebno je podesiti NEXT_PUBLIC_TURNSTILE_SITE_KEY u produkcionom okruženju."
-    : turnstileUsesTestingSiteKey
-      ? "Sigurnosna provera koristi test ključ. Za završnu verziju potrebno je podesiti realan Cloudflare Turnstile site key."
-      : "";
-  const hasTurnstileToken =
-    !requiresTurnstile || Boolean(turnstileToken);
-  const canSubmit =
-    acceptedTerms && hasTurnstileToken && !turnstileConfigError;
 
   const handleMockCard = async () => {
     setCardPending(true);
     setError("");
     track("payment_started", {
       provider: "card_mock",
-      total_rsd: calculation.total,
+      total_eur: calculation.total,
     });
     const result = await mockCardPaymentAction(orderId);
     if (result.error) {
@@ -110,7 +121,7 @@ export function StepPayment() {
     }
     track("payment_completed", {
       provider: "card_mock",
-      total_rsd: calculation.total,
+      total_eur: calculation.total,
       order_number: orderId,
     });
     if (result.purchaseEvent) {
@@ -119,51 +130,19 @@ export function StepPayment() {
     setPaymentComplete();
   };
 
-  const handleNestpay = async () => {
-    setNestpayPending(true);
-    setError("");
-    track("payment_started", {
-      provider: "nestpay",
-      total_rsd: calculation.total,
-    });
-    try {
-      const result = await initiateNestpayPayment({
-        orderId,
-        turnstileToken,
-        taksit: NESTPAY_INSTALLMENTS_ENABLED ? installmentCount : 1,
-      });
-      if ("error" in result) {
-        setError(result.error);
-        setNestpayPending(false);
-        track("payment_failed", {
-          provider: "nestpay",
-          error_kind: result.error.slice(0, 80),
-        });
-        return;
-      }
-      setRedirect(result);
-    } catch (err) {
-      // Network failure or unhandled server rejection. Re-enable the
-      // button instead of leaving it stuck on "Preusmeravanje…".
-      const message = err instanceof Error ? err.message : "Nepoznata greška";
-      setError(`Greška mreže: ${message}`);
-      setNestpayPending(false);
-      track("payment_failed", {
-        provider: "nestpay",
-        error_kind: message.slice(0, 80),
-      });
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
-        <h2 className="text-xl font-semibold text-foreground">Plaćanje</h2>
+        <h2 className="text-xl font-semibold text-foreground">Payment</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Ukupno za plaćanje:{" "}
-          <strong className="text-foreground">
-            {formatTotal(calculation.total)}
-          </strong>
+          Total to pay:{" "}
+          <strong className="text-foreground">{amountLabel}</strong>
+          {displayCurrency !== "EUR" && (
+            <span className="text-muted-foreground">
+              {" "}
+              — charged in {displayCurrency}; invoice issued in EUR.
+            </span>
+          )}
         </p>
 
         {error && (
@@ -175,176 +154,43 @@ export function StepPayment() {
           </div>
         )}
 
-        {/* Method selector */}
-        <div className="mt-6 grid gap-3">
-          <button
-            type="button"
-            onClick={() => setMethod("nestpay")}
-            className={`relative flex h-full flex-col gap-4 rounded-xl border p-5 text-left transition ${
-              method === "nestpay"
-                ? "border-accent bg-accent/5"
-                : "border-border/60 bg-background/40 hover:border-accent/40"
-            }`}
-          >
-            {method === "nestpay" && (
-              <Check className="absolute right-4 top-4 h-4 w-4 text-accent" />
-            )}
-            <div className="pr-6">
-              <p className="text-base font-semibold text-foreground">
-                Platna kartica
-              </p>
-            </div>
-          </button>
-
+        <div className="mt-6">
+          <PayPalButtons
+            currency={displayCurrency}
+            createAction={handleCreate}
+            captureAction={handleCapture}
+            onSuccess={handleSuccess}
+            onProcessing={handleProcessing}
+            onError={handleError}
+          />
         </div>
 
-        {/* Nestpay card */}
-        {method === "nestpay" && (
-          <div className="mt-6 space-y-4">
-            <label className="flex items-start gap-3 text-sm text-muted-foreground">
-              <input
-                type="checkbox"
-                checked={acceptedTerms}
-                onChange={(e) => setAcceptedTerms(e.target.checked)}
-                className="mt-1 h-4 w-4 cursor-pointer"
-                aria-required
-              />
-              <span>
-                Pročitao/la sam i prihvatam{" "}
-                <a
-                  href="/legal/terms"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-accent underline"
-                >
-                  Pravna dokumenta
-                </a>{" "}
-                (Opšti uslovi, Politika privatnosti i Politika povraćaja sredstava).
-              </span>
-            </label>
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          You pay securely through PayPal — with your PayPal balance or a
+          card, no PayPal account required.
+        </p>
 
-            {NESTPAY_INSTALLMENTS_ENABLED && (
-              <div className="rounded-lg border border-border/60 bg-background/40 p-4">
-                <label className="flex flex-col gap-2 text-sm">
-                  <span className="font-semibold text-foreground">
-                    Plaćanje na rate
-                  </span>
-                  <span className="text-xs leading-relaxed text-muted-foreground">
-                    Podelite iznos na rate bez kamate — banka izdavalac kartice
-                    obračunava mesečne rate kupcu, a Banca Intesa nam isplaćuje
-                    ukupan iznos odjednom.
-                  </span>
-                  <select
-                    value={installmentCount}
-                    onChange={(event) =>
-                      setInstallmentCount(Number(event.target.value))
-                    }
-                    className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none transition focus:border-accent"
-                  >
-                    {NESTPAY_INSTALLMENT_OPTIONS.map((count) => (
-                      <option key={count} value={count}>
-                        {count === 1
-                          ? "Jednokratno (puna cena odmah)"
-                          : `${count} ${count < 5 ? "rate" : "rata"} bez kamate`}
-                      </option>
-                    ))}
-                  </select>
-                  {installmentCount > 1 && (
-                    <p className="text-xs text-muted-foreground">
-                      Mesečna rata:{" "}
-                      <strong className="text-foreground">
-                        ~{formatTotal(calculation.total / installmentCount)}
-                      </strong>{" "}
-                      × {installmentCount}{" "}
-                      {installmentCount < 5 ? "rate" : "rata"}.
-                    </p>
-                  )}
-                </label>
-              </div>
-            )}
-
-            {turnstileConfigError && (
-              <div
-                role="alert"
-                className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs text-destructive"
-              >
-                {turnstileConfigError}
-              </div>
-            )}
-
-            {requiresTurnstile && (
-              <div aria-label="Sigurnosna provera">
-                <TurnstileWidget onVerify={setTurnstileToken} />
-              </div>
-            )}
-
-            <Button
-              variant="accent"
-              size="xl"
-              className="w-full"
-              onClick={handleNestpay}
-              disabled={nestpayPending || !canSubmit}
-            >
-              {nestpayPending
-                ? "Preusmeravanje…"
-                : `Plati ${formatTotal(calculation.total)} karticom`}
-            </Button>
-            <p className="text-center text-xs text-muted-foreground">
-              Bezbedno plaćanje — bićete preusmereni na zaštićenu stranicu
-              Banca Intesa za unos podataka kartice.
-            </p>
-          </div>
-        )}
-
-        {/* Legacy mock card — kept in test mode only so dev iteration
-            on the post-payment flow doesn't require hitting the real
-            Nestpay test gateway. Hidden in production. */}
-        {NESTPAY_TEST_MODE && method === "card_mock" && (
-          <div className="mt-6 space-y-4">
+        {SHOW_MOCK_CARD && (
+          <div className="mt-6 border-t border-border/40 pt-5">
             <p className="rounded-lg bg-secondary/60 px-4 py-2.5 text-xs text-muted-foreground">
-              Test režim. Unesite bilo koji podatak da simulirate plaćanje.
+              Development only: simulate a successful payment without
+              contacting PayPal.
             </p>
-            <div className="space-y-2">
-              <Label>
-                <Pencil className="h-3 w-3 text-accent/60" />
-                Broj kartice
-              </Label>
-              <Input defaultValue="4111 1111 1111 1111" />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>
-                  <Pencil className="h-3 w-3 text-accent/60" />
-                  Ističe
-                </Label>
-                <Input defaultValue="12/28" />
-              </div>
-              <div className="space-y-2">
-                <Label>
-                  <Pencil className="h-3 w-3 text-accent/60" />
-                  CVV
-                </Label>
-                <Input defaultValue="123" />
-              </div>
-            </div>
             <Button
-              variant="accent"
-              size="xl"
-              className="w-full"
+              variant="outline"
+              size="lg"
+              className="mt-3 w-full"
               onClick={handleMockCard}
               disabled={cardPending}
             >
-              {cardPending
-                ? "Obrada…"
-                : `Plati ${formatTotal(calculation.total)} (mock)`}
+              {cardPending ? "Processing…" : `Pay ${amountLabel} (mock)`}
             </Button>
           </div>
         )}
-
       </div>
 
-      <Button variant="outline" onClick={() => setStep(2)}>
-        Nazad na pregled
+      <Button variant="outline" onClick={() => setStep(0)}>
+        Back to details
       </Button>
     </div>
   );

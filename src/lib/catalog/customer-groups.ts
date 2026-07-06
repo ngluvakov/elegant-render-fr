@@ -99,11 +99,11 @@ export const CUSTOMER_GROUP_BY_ID: Record<CustomerGroupId, CustomerGroup> =
 /**
  * Lowest entry price across all products in a group's catalog categories.
  * Skips inquiry-only products (consultations like VR) and uses
- * `minSeconds × perSecondRsd` for duration-based products (animation).
+ * `minSeconds × perSecondEur` for duration-based products (animation).
  *
  * Always returns the live catalog value — never cache or hardcode.
  */
-export function getGroupStartingPriceRsd(
+export function getGroupStartingPriceEur(
   group: CustomerGroup,
   categories: ConfiguratorCategory[] = CONFIGURATOR_CATEGORIES,
 ): number {
@@ -114,8 +114,8 @@ export function getGroupStartingPriceRsd(
       if (product.inquiryOnly) continue;
       const price = product.durationConfig
         ? product.durationConfig.minSeconds *
-          product.durationConfig.perSecondRsd
-        : product.basePriceRsd;
+          product.durationConfig.perSecondEur
+        : product.basePriceEur;
       prices.push(price);
     }
   }

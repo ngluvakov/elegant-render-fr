@@ -5,16 +5,16 @@
  * Used on: StatusTracker, OrderDetailHero, OrderOverviewCard, OrdersFilterBar.
  */
 export const STATUS_LABELS: Record<string, string> = {
-  draft: "Nacrt",
-  awaiting_payment: "Čeka uplatu",
-  paid: "Plaćeno",
-  in_progress: "U izradi",
-  in_review: "Spremno za pregled",
-  revision_requested: "Izmene zatražene",
-  delivered: "Isporučeno",
-  closed: "Završeno",
-  cancelled: "Otkazano",
-  refunded: "Refundirano",
+  draft: "Draft",
+  awaiting_payment: "Awaiting payment",
+  paid: "Paid",
+  in_progress: "In progress",
+  in_review: "Ready for review",
+  revision_requested: "Revisions requested",
+  delivered: "Delivered",
+  closed: "Closed",
+  cancelled: "Cancelled",
+  refunded: "Refunded",
 };
 
 export function statusLabel(status: string): string {
@@ -42,13 +42,13 @@ export function statusAccent(status: string): string {
 }
 
 export const STATUS_STEPS = [
-  { key: "draft", label: "Narudžbina" },
-  { key: "paid", label: "Plaćanje" },
-  { key: "in_progress", label: "Izrada" },
-  { key: "in_review", label: "Pregled" },
-  { key: "revision_requested", label: "Revizija" },
-  { key: "delivered", label: "Isporuka" },
-  { key: "closed", label: "Završeno" },
+  { key: "draft", label: "Order" },
+  { key: "paid", label: "Payment" },
+  { key: "in_progress", label: "Production" },
+  { key: "in_review", label: "Review" },
+  { key: "revision_requested", label: "Revision" },
+  { key: "delivered", label: "Delivery" },
+  { key: "closed", label: "Closed" },
 ] as const;
 
 // Customer-friendly explanation for each order status. The `tone` drives
@@ -63,63 +63,63 @@ export const STATUS_GUIDANCE: Record<
   { title: string; description: string; tone: StatusTone }
 > = {
   draft: {
-    title: "Pripremite stavke za plaćanje",
+    title: "Prepare items for payment",
     description:
-      "Popunite sve stavke (naziv, broj kadrova, opis, fajlovi) — kad bude sve spremno, kliknite na „Nastavi na plaćanje“ u sumarnoj kartici.",
+      "Complete every item (name, number of frames, description, files). When everything is ready, click \"Continue to payment\" in the summary card.",
     tone: "action",
   },
   awaiting_payment: {
-    title: "Završite plaćanje",
+    title: "Complete payment",
     description:
-      "Stavke su zaključane. Čim primimo uplatu, naš tim počinje izradu — prvi nacrti za 24–48 časova.",
+      "Items are locked. As soon as we receive payment, our team starts production. First drafts arrive within 24-48 hours.",
     tone: "action",
   },
   paid: {
-    title: "Plaćanje primljeno",
+    title: "Payment received",
     description:
-      "Hvala! Naš tim je započeo pripremu projekta. Prve nacrte šaljemo u roku od 24–48 časova.",
+      "Thank you. Our team has started preparing the project. We send first drafts within 24-48 hours.",
     tone: "info",
   },
   in_progress: {
-    title: "Tim radi na vašem projektu",
+    title: "The team is working on your project",
     description:
-      "Obavestićemo vas čim budu spremni nacrti za pregled. U međuvremenu možete dodavati napomene i fajlove na pojedinačne stavke.",
+      "We will notify you as soon as drafts are ready for review. In the meantime, you can add notes and files to individual items.",
     tone: "info",
   },
   in_review: {
-    title: "Pregled je na vama",
+    title: "Review is with you",
     description:
-      "Naš tim je poslao prve render-e. Pogledajte fajlove i odgovorite — odobrite ih ili zatražite izmene. Imate do 5 radnih dana.",
+      "Our team has sent the first renders. Review the files and reply: approve them or request revisions. You have up to 5 working days.",
     tone: "action",
   },
   revision_requested: {
-    title: "Tim radi na izmenama",
+    title: "The team is working on revisions",
     description:
-      "Vaše izmene su primljene. Procena za novu verziju: 2–3 radna dana. Bićete obavešteni čim bude spremno.",
+      "Your revision request has been received. Estimated turnaround for the new version: 2-3 working days. We will notify you when it is ready.",
     tone: "info",
   },
   delivered: {
-    title: "Finalni fajlovi su spremni",
+    title: "Final files are ready",
     description:
-      "Preuzmite isporučene fajlove iz sekcije „Isporučeni fajlovi“. Hvala što ste izabrali Elegant Render — iskoristite ovu porudžbinu kao referencu za buduće popuste.",
+      "Download the delivered files from the \"Delivered files\" section. Thank you for choosing Elegant Render. Use this order as a reference for future discounts.",
     tone: "info",
   },
   closed: {
-    title: "Projekat zatvoren",
+    title: "Project closed",
     description:
-      "Porudžbina je arhivirana. Pri sledećoj porudžbini možete je referencirati i dobiti popust — model je već izgrađen.",
+      "The order has been archived. On your next order, you can reference it and receive a discount because the model has already been built.",
     tone: "info",
   },
   cancelled: {
-    title: "Porudžbina otkazana",
+    title: "Order cancelled",
     description:
-      "Ova porudžbina više nije aktivna. Ako mislite da je ovo greška, kontaktirajte nas preko chat-a ili e-pošte.",
+      "This order is no longer active. If you think this is an error, contact us through chat or email.",
     tone: "alert",
   },
   refunded: {
-    title: "Sredstva refundirana",
+    title: "Funds refunded",
     description:
-      "Porudžbina je otkazana i sredstva vraćena. Ako imate pitanja ili želite da naručite ponovo, slobodno nas kontaktirajte.",
+      "The order has been cancelled and the funds returned. If you have questions or want to order again, contact us.",
     tone: "alert",
   },
 };

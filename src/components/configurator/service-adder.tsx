@@ -1,13 +1,13 @@
 /**
- * ServiceAdder — Customer-facing tab bar with browsable product cards and "Dodaj" buttons.
- * Five top-level groups (Eksterijer / Enterijer / Planovi / Animacija / Opremanje) that
+ * ServiceAdder — Customer-facing tab bar with browsable product cards and "Add" buttons.
+ * Five top-level groups (Exterior / Interior / Plans / Animation / Staging) that
  * each map to one or more catalog categories, so internal section codes
  * ("1.1 — Rendering" etc.) never reach the customer.
  *
  * The animation category is rendered specially: instead of showing the
  * 3 source-mode product variants as separate cards, a single
- * "Animacija" card exposes a 3-segment mode picker (od nule / postojeći
- * model / aktivan projekat). All three feed the same `anim` catalog
+ * "Animation" card exposes a 3-segment mode picker (from scratch / existing
+ * model / active project). All three feed the same `anim` catalog
  * product; the picked mode is passed to addProduct as `sourceMode`.
  *
  * Used on: PricingConfigurator (main column, /pricing page).
@@ -96,7 +96,7 @@ export function ServiceAdder() {
       <div
         className="flex flex-wrap gap-1.5"
         role="tablist"
-        aria-label="Tipovi usluga"
+        aria-label="Service types"
       >
         {CUSTOMER_GROUPS.map((group) => {
           const isActive = group.id === activeGroupId;
@@ -238,18 +238,18 @@ function ProductCard({
           <p className="text-xl font-semibold text-foreground">
             {product.durationConfig
               ? formatPublicPrice(
-                  product.durationConfig.perSecondRsd,
+                  product.durationConfig.perSecondEur,
                   displayCurrency,
                   pricingSettings,
                 )
               : formatPublicPrice(
-                  product.basePriceRsd,
+                  product.basePriceEur,
                   displayCurrency,
                   pricingSettings,
                 )}
             {product.durationConfig && (
               <span className="text-xs font-normal text-muted-foreground">
-                /sek
+                /sec
               </span>
             )}
           </p>
@@ -258,7 +258,7 @@ function ProductCard({
               href={`/services/vr/consultation?p=${product.id}`}
               className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-4 py-2 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-white"
             >
-              <Headphones className="h-3 w-3" /> Zatraži konsultaciju
+              <Headphones className="h-3 w-3" /> Request consultation
               <ArrowRight className="h-3 w-3" />
             </Link>
           ) : (
@@ -274,11 +274,11 @@ function ProductCard({
             >
               {isAdded ? (
                 <>
-                  <Check className="h-3 w-3" /> Dodato
+                  <Check className="h-3 w-3" /> Added
                 </>
               ) : (
                 <>
-                  <Plus className="h-3 w-3" /> Dodaj
+                  <Plus className="h-3 w-3" /> Add
                 </>
               )}
             </button>
@@ -331,9 +331,9 @@ function AnimationCard({
   const [mode, setMode] = useState<AnimSourceMode>("scratch");
   const modeMeta = ANIM_SOURCE_MODES.find((m) => m.id === mode);
   const perSec =
-    product.sourceModeRules?.[mode]?.perSecondRsd ??
-    modeMeta?.perSecondRsd ??
-    product.durationConfig?.perSecondRsd ??
+    product.sourceModeRules?.[mode]?.perSecondEur ??
+    modeMeta?.perSecondEur ??
+    product.durationConfig?.perSecondEur ??
     15;
 
   return (
@@ -342,17 +342,17 @@ function AnimationCard({
         <div className="min-w-0 flex-1">
           <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
             <Film className="h-4 w-4 text-accent" />
-            3D animacija
+            3D animation
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Cinematski flythrough / walkthrough — minimum 15 sekundi
+            Cinematic flythrough / walkthrough - minimum 15 seconds
           </p>
         </div>
         <div className="flex flex-shrink-0 flex-col items-end gap-2">
           <p className="text-xl font-semibold text-foreground">
             {formatPublicPrice(perSec, displayCurrency, pricingSettings)}
             <span className="text-xs font-normal text-muted-foreground">
-              /sek
+              /sec
             </span>
           </p>
         </div>
@@ -383,8 +383,8 @@ function AnimationCard({
                 </span>
                 <span className="text-[0.7rem] font-bold text-accent tabular-nums">
                   {formatPublicPrice(
-                    product.sourceModeRules?.[m.id]?.perSecondRsd ??
-                      m.perSecondRsd,
+                    product.sourceModeRules?.[m.id]?.perSecondEur ??
+                      m.perSecondEur,
                     displayCurrency,
                     pricingSettings,
                   )}
@@ -412,11 +412,11 @@ function AnimationCard({
         >
           {isAdded ? (
             <>
-              <Check className="h-3 w-3" /> Dodato
+              <Check className="h-3 w-3" /> Added
             </>
           ) : (
             <>
-              <Plus className="h-3 w-3" /> Dodaj animaciju
+              <Plus className="h-3 w-3" /> Add animation
             </>
           )}
         </button>
@@ -424,4 +424,3 @@ function AnimationCard({
     </div>
   );
 }
-

@@ -1,80 +1,100 @@
 /**
- * PendingPaymentCard — NestPay card payment card for unpaid orders.
+ * PendingPaymentCard — PayPal payment card for unpaid orders.
+ *
+ * Renders the unified <PayPalButtons> wired to the order payment
+ * actions; the amount shown is the order's charged-amount snapshot
+ * (the exact amount PayPal captures).
  *
  * Used on: /portal/orders/[orderId] (order detail page, when unpaid).
  */
 "use client";
 
 import { useState } from "react";
-import { AlertCircle, Check, CreditCard } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { formatRsd } from "@/lib/catalog/calculate";
-import {
-  formatBillingMoney,
-  type BillingCurrency,
-} from "@/lib/billing";
+import { useRouter } from "next/navigation";
+import { AlertCircle, Check, Clock } from "lucide-react";
+import { formatBillingMoney } from "@/lib/billing";
+import { isChargeCurrency } from "@/lib/currency/config";
+import { formatChargeAmount } from "@/lib/currency/convert";
 import { track } from "@/lib/posthog-events";
-import { initiateNestpayPayment } from "@/server/actions/nestpay";
-import { NestpayRedirectForm } from "@/app/(marketing)/checkout/nestpay-redirect-form";
+import { PayPalButtons } from "@/components/payments/paypal-buttons";
+import {
+  capturePayPalOrderAction,
+  createPayPalOrderAction,
+} from "@/server/actions/payment";
 
 type PendingPaymentCardProps = {
   orderId: string;
-  totalRsd: number;
+  totalEur: number;
   totalCents?: number | null;
-  billingCurrency?: BillingCurrency | null;
-  billingTotalCents?: number | null;
+  chargedCurrency?: string | null;
+  chargedAmountMinor?: number | null;
 };
 
 export function PendingPaymentCard({
   orderId,
-  totalRsd,
+  totalEur,
   totalCents,
-  billingCurrency,
-  billingTotalCents,
+  chargedCurrency,
+  chargedAmountMinor,
 }: PendingPaymentCardProps) {
-  const [pending, setPending] = useState(false);
+  const router = useRouter();
   const [error, setError] = useState("");
-  const [redirect, setRedirect] = useState<{
-    url: string;
-    fields: Record<string, string>;
-  } | null>(null);
-  const amountLabel =
-    billingCurrency && billingTotalCents != null
-      ? formatBillingMoney(billingTotalCents, billingCurrency)
-      : formatRsd((totalCents ?? totalRsd * 100) / 100);
+  const [state, setState] = useState<"idle" | "completed" | "processing">(
+    "idle",
+  );
 
-  if (redirect) {
-    return <NestpayRedirectForm url={redirect.url} fields={redirect.fields} />;
+  const hasSnapshot =
+    isChargeCurrency(chargedCurrency) &&
+    chargedAmountMinor != null &&
+    chargedAmountMinor > 0;
+  const currency = isChargeCurrency(chargedCurrency) ? chargedCurrency : "EUR";
+  const amountLabel = hasSnapshot
+    ? formatChargeAmount(chargedAmountMinor, currency)
+    : formatBillingMoney(totalCents ?? totalEur * 100);
+
+  if (state === "completed") {
+    return (
+      <div className="rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/5 p-6 text-center">
+        <Check className="mx-auto h-6 w-6 text-[color:var(--color-sage-deep)]" />
+        <p className="mt-2 text-sm font-semibold text-foreground">
+          Payment received
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Thank you — refreshing the order…
+        </p>
+      </div>
+    );
   }
 
-  const handleNestpay = async () => {
-    setPending(true);
-    setError("");
-    track("payment_started", { provider: "nestpay", total_rsd: totalRsd });
-    const result = await initiateNestpayPayment({ orderId, turnstileToken: null });
-    if ("error" in result) {
-      setError(result.error);
-      setPending(false);
-      track("payment_failed", {
-        provider: "nestpay",
-        error_kind: result.error.slice(0, 80),
-      });
-      return;
-    }
-    setRedirect(result);
-  };
+  if (state === "processing") {
+    return (
+      <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 text-center">
+        <Clock className="mx-auto h-6 w-6 text-accent" />
+        <p className="mt-2 text-sm font-semibold text-foreground">
+          Your payment is processing
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          PayPal confirms eCheck payments within a few days — we&apos;ll
+          email you as soon as it clears.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6">
       <div className="flex items-center gap-2">
         <AlertCircle className="h-4 w-4 text-accent" />
         <h3 className="text-sm font-semibold text-foreground">
-          Čeka uplatu
+          Awaiting payment
         </h3>
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
-        Ova porudžbina još nije plaćena. Ukupno:{" "}
+        This order has not been paid yet. Total:{" "}
         <strong className="text-foreground">{amountLabel}</strong>
+        {currency !== "EUR" && (
+          <span> — charged in {currency}; invoice issued in EUR.</span>
+        )}
       </p>
 
       {error && (
@@ -83,29 +103,47 @@ export function PendingPaymentCard({
         </div>
       )}
 
-      <div className="mt-4 flex items-center gap-2 rounded-xl border border-accent bg-accent/5 p-3 text-left text-xs">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground/10">
-          <CreditCard className="h-4 w-4" />
-        </div>
-        <span className="font-medium text-foreground">Platna kartica</span>
-        <Check className="ml-auto h-3 w-3 text-accent" />
+      <div className="mt-4">
+        <PayPalButtons
+          currency={currency}
+          createAction={() => {
+            track("payment_started", {
+              provider: "paypal",
+              total_eur: totalEur,
+              charged_currency: currency,
+            });
+            return createPayPalOrderAction(orderId);
+          }}
+          captureAction={(paypalOrderId) =>
+            capturePayPalOrderAction(orderId, paypalOrderId)
+          }
+          onSuccess={() => {
+            track("payment_completed", {
+              provider: "paypal",
+              total_eur: totalEur,
+              order_number: orderId,
+              charged_currency: currency,
+            });
+            setState("completed");
+            setTimeout(() => router.refresh(), 1200);
+          }}
+          onProcessing={() => {
+            setState("processing");
+            setTimeout(() => router.refresh(), 2500);
+          }}
+          onError={(message) => {
+            setError(message);
+            track("payment_failed", {
+              provider: "paypal",
+              error_kind: message.slice(0, 80),
+            });
+          }}
+        />
       </div>
-
-      <div className="mt-4 space-y-3">
-        <Button
-          variant="accent"
-          size="xl"
-          className="w-full"
-          onClick={handleNestpay}
-          disabled={pending}
-        >
-          {pending ? "Preusmeravanje…" : `Plati ${amountLabel} karticom`}
-        </Button>
-        <p className="text-center text-[0.72rem] text-muted-foreground">
-          Bezbedno plaćanje — preusmeravamo Vas na zaštićenu stranicu Banca
-          Intesa za unos podataka kartice.
-        </p>
-      </div>
+      <p className="mt-3 text-center text-[0.72rem] text-muted-foreground">
+        You pay securely through PayPal — with your PayPal balance or a
+        card, no PayPal account required.
+      </p>
     </div>
   );
 }

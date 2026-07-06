@@ -1,6 +1,6 @@
 /**
  * OrderInvoicesCard — Sidebar block on the project detail page that lists
- * every issued document for the order: predračun, račun za porudžbinu,
+ * every issued document for the order: proforma, order invoice,
  * and a row per OrderCharge invoice. Replaces the old single-invoice card.
  */
 import { Download, ReceiptText } from "lucide-react";
@@ -24,10 +24,10 @@ export function OrderInvoicesCard({
       <div className="rounded-2xl border border-border/40 bg-card/60 p-5 md:p-6">
         <div className="flex items-center gap-1.5">
           <ReceiptText className="h-3.5 w-3.5 text-muted-foreground" />
-          <h3 className="text-sm font-semibold text-foreground">Računi</h3>
+          <h3 className="text-sm font-semibold text-foreground">Invoices</h3>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          Nema izdatih računa. Račun se izdaje posle plaćanja.
+          No issued invoices. The invoice is issued after payment.
         </p>
       </div>
     );
@@ -37,7 +37,7 @@ export function OrderInvoicesCard({
     <div className="rounded-2xl border border-border/40 bg-card/60 p-5 md:p-6">
       <div className="flex items-center gap-1.5">
         <ReceiptText className="h-3.5 w-3.5 text-muted-foreground" />
-        <h3 className="text-sm font-semibold text-foreground">Računi</h3>
+        <h3 className="text-sm font-semibold text-foreground">Invoices</h3>
       </div>
       <ul className="mt-3 space-y-2">
         {invoices.map((inv) => (
@@ -51,7 +51,7 @@ export function OrderInvoicesCard({
                 {inv.number}
               </p>
               <p className="text-[0.72rem] text-muted-foreground">
-                izdato {formatDate(inv.issuedAt)}
+                issued {formatDate(inv.issuedAt)}
                 {inv.amountCents !== null && inv.currency
                   ? ` · ${formatBillingMoney(inv.amountCents, inv.currency)}`
                   : ""}
@@ -61,7 +61,7 @@ export function OrderInvoicesCard({
               href={inv.href}
               target="_blank"
               rel="noreferrer"
-              aria-label={`Preuzmi ${inv.label} ${inv.number}`}
+              aria-label={`Download ${inv.label} ${inv.number}`}
               className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-foreground text-background transition hover:opacity-90"
             >
               <Download className="h-3.5 w-3.5" />
@@ -74,7 +74,7 @@ export function OrderInvoicesCard({
 }
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString("sr-Latn-RS", {
+  return date.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

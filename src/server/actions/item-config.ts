@@ -345,10 +345,10 @@ export async function addOrderItem(
                                   : undefined;
   const initialTotal =
     productId === "int-static"
-      ? pricingCatalog.settings.specialPricing.interior.firstFloorRsd
+      ? pricingCatalog.settings.specialPricing.interior.firstFloorEur
       : productId === "int-360"
-        ? pricingCatalog.settings.specialPricing.tour360.firstFloorRsd
-        : breakdown.totalRsd;
+        ? pricingCatalog.settings.specialPricing.tour360.firstFloorEur
+        : breakdown.totalEur;
 
   const created = await prisma.orderItem.create({
     data: {
@@ -357,8 +357,8 @@ export async function addOrderItem(
       categoryId: lookup.category.id,
       productLabel: breakdown.productLabel,
       categoryLabel: breakdown.categoryLabel,
-      basePriceRsd: breakdown.basePriceRsd,
-      totalRsd: initialTotal,
+      basePriceEur: breakdown.basePriceEur,
+      totalEur: initialTotal,
       addOnsJson: breakdown.addOns,
       durationSeconds: breakdown.durationSeconds ?? null,
       durationDiscount: breakdown.durationDiscount ?? null,
@@ -489,7 +489,7 @@ export async function updateTour360Config(
     .slice(0, 20)
     .map(sanitizeTour360Floor);
   const sanitizedAssembly = sanitizeTourAssembly(config.tourAssembly);
-  const { totalRsd } = calcTour360Total(sanitizedFloors, sanitizedAssembly);
+  const { totalEur } = calcTour360Total(sanitizedFloors, sanitizedAssembly);
 
   await prisma.orderItem.update({
     where: { id: itemId },
@@ -498,7 +498,7 @@ export async function updateTour360Config(
         floors: sanitizedFloors,
         tourAssembly: sanitizedAssembly,
       } as unknown as Prisma.InputJsonValue,
-      totalRsd,
+      totalEur,
     },
   });
 
@@ -817,8 +817,8 @@ export async function swapStagingType(
         categoryId: "staging",
         productLabel: lookup.product.label,
         categoryLabel: lookup.category.label,
-        basePriceRsd: lookup.product.basePriceRsd,
-        totalRsd: breakdown.totalRsd,
+        basePriceEur: lookup.product.basePriceEur,
+        totalEur: breakdown.totalEur,
         configJson: sanitized as unknown as Prisma.InputJsonValue,
         addOnsJson: breakdown.addOns as unknown as Prisma.InputJsonValue,
       },
@@ -1139,13 +1139,13 @@ export async function updateInteriorFloors(
     return { error: "Izmene dozvoljene samo u nacrtu." };
 
   const sanitized = floors.slice(0, 20).map(sanitizeFloor);
-  const { totalRsd } = calcInteriorTotal(sanitized);
+  const { totalEur } = calcInteriorTotal(sanitized);
 
   await prisma.orderItem.update({
     where: { id: itemId },
     data: {
       configJson: { floors: sanitized } as unknown as Prisma.InputJsonValue,
-      totalRsd,
+      totalEur,
     },
   });
 

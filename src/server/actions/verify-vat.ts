@@ -46,7 +46,7 @@ export async function verifyOrderVat(
     });
     if (!order) return { ok: false, reason: "order_not_found" };
 
-    if (order.buyerType !== "company_foreign") {
+    if (order.buyerType !== "business") {
       return { ok: false, reason: "not_foreign_company" };
     }
     if (!order.companyTaxId || !order.companyCountryCode) {

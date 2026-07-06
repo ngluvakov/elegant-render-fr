@@ -55,7 +55,6 @@ export async function updateProfileAction(
   const companyTaxId = ((formData.get("billingCompanyTaxId") as string) || "")
     .trim()
     .toUpperCase();
-  const companyMb = ((formData.get("billingCompanyMb") as string) || "").trim();
   const companyAddress = ((formData.get("billingCompanyAddress") as string) || "")
     .trim();
 
@@ -66,10 +65,9 @@ export async function updateProfileAction(
     buyerCountryCode: billingCountryCode,
     companyName,
     companyTaxId,
-    companyMb,
     companyAddress,
     companyCountryCode:
-      billingBuyerType === "company_foreign" ? billingCountryCode : null,
+      billingBuyerType === "business" ? billingCountryCode : null,
   });
   if (buyerError) return { error: buyerError };
 
@@ -80,8 +78,7 @@ export async function updateProfileAction(
     billingBuyerType === "individual" ? null : companyName;
   data.billingCompanyTaxId =
     billingBuyerType === "individual" ? null : companyTaxId;
-  data.billingCompanyMb =
-    billingBuyerType === "company_rs" && companyMb ? companyMb : null;
+  data.billingCompanyMb = null;
   data.billingCompanyAddress =
     billingBuyerType === "individual" ? null : companyAddress;
 
@@ -107,7 +104,6 @@ export async function updateProfileAction(
       hasCompanyTaxId: Boolean(
         billingBuyerType !== "individual" && companyTaxId,
       ),
-      hasCompanyMb: Boolean(billingBuyerType === "company_rs" && companyMb),
     },
   });
 

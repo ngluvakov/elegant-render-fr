@@ -34,30 +34,30 @@ describe("calculateQuote — invarijante preko celog kataloga", () => {
       expect(calc.items).toHaveLength(1);
       const item = calc.items[0];
 
-      // RSD major-unit cene su celobrojne (pravilo platforme).
-      expect(Number.isInteger(item.totalRsd)).toBe(true);
+      // EUR major-unit cene su celobrojne (pravilo platforme).
+      expect(Number.isInteger(item.totalEur)).toBe(true);
       expect(Number.isInteger(item.totalCents)).toBe(true);
-      expect(item.totalRsd).toBeGreaterThanOrEqual(0);
+      expect(item.totalEur).toBeGreaterThanOrEqual(0);
 
       // Centi i major-unit ne smeju da se raziđu više od zaokruživanja.
-      expect(Math.abs(item.totalCents / 100 - item.totalRsd)).toBeLessThan(1);
+      expect(Math.abs(item.totalCents / 100 - item.totalEur)).toBeLessThan(1);
 
       // Popust u [0, 100] i original ≥ finalna cena.
       expect(item.discountPct).toBeGreaterThanOrEqual(0);
       expect(item.discountPct).toBeLessThanOrEqual(100);
-      expect(item.originalTotalRsd).toBeGreaterThanOrEqual(item.totalRsd);
+      expect(item.originalTotalEur).toBeGreaterThanOrEqual(item.totalEur);
     });
   }
 
-  it("ukupno = suma stavki (RSD i centi)", () => {
+  it("ukupno = suma stavki (EUR i centi)", () => {
     const items = ALL_PRODUCTS.slice(0, 4).map(({ productId, categoryId }, i) => ({
       ...singleItem(productId, categoryId),
       instanceId: `multi-${i}`,
     }));
     const calc = calculateQuote(items);
-    const sumRsd = calc.items.reduce((s, i) => s + i.totalRsd, 0);
+    const sumEur = calc.items.reduce((s, i) => s + i.totalEur, 0);
     const sumCents = calc.items.reduce((s, i) => s + i.totalCents, 0);
-    expect(calc.total).toBe(sumRsd);
+    expect(calc.total).toBe(sumEur);
     expect(calc.totalCents).toBe(sumCents);
   });
 

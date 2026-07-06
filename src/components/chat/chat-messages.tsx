@@ -218,7 +218,7 @@ function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
             </span>
             <span className="font-semibold text-foreground">
               {formatPublicPrice(
-                item.product!.product.basePriceRsd * item.qty,
+                item.product!.product.basePriceEur * item.qty,
                 displayCurrency,
                 pricingSettings,
               )}

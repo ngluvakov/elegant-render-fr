@@ -17,20 +17,20 @@ import { ProjectInquiryActions } from "./inquiry-actions";
 import { adminHas, requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "Upiti — Admin",
+  title: "Inquiries — Admin",
   description:
-    "Admin pregled projektnih upita, statusa obrade i prioriteta za follow-up.",
+    "Admin overview of project inquiries, processing status, and follow-up priorities.",
   robots: { index: false, follow: false },
 };
 
 type SearchParams = Promise<{ status?: string; highlight?: string }>;
 
 const STATUS_LABELS: Record<ProjectInquiryStatus, string> = {
-  pending: "Čeka pregled",
-  in_progress: "U razgovoru",
-  proposal_sent: "Ponuda poslata",
-  converted: "Konvertovano",
-  closed: "Zatvoreno",
+  pending: "Pending review",
+  in_progress: "In conversation",
+  proposal_sent: "Estimate sent",
+  converted: "Converted",
+  closed: "Closed",
 };
 
 const STATUS_VARIANTS: Record<
@@ -116,10 +116,10 @@ export default async function ProjectInquiriesPage({
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="font-heading text-3xl text-foreground">Upiti</h1>
+        <h1 className="font-heading text-3xl text-foreground">Inquiries</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Brzi i kontakt upiti sa marketing sajta. Ovo su pre-sales leadovi;
-          ponuda se šalje ručno iz emaila ili Bitrixa.
+          Quick and contact inquiries from the marketing site. These are pre-sales leads;
+          the estimate is sent manually from email or Bitrix.
         </p>
       </div>
 
@@ -137,7 +137,7 @@ export default async function ProjectInquiriesPage({
                   : "border-border bg-background/60 text-muted-foreground hover:border-accent/40 hover:text-foreground"
               }`}
             >
-              {item ? STATUS_LABELS[item] : "Sve"}
+              {item ? STATUS_LABELS[item] : "All"}
               <span className="rounded bg-foreground/10 px-1.5 py-0.5 text-[0.62rem] tabular-nums">
                 {count}
               </span>
@@ -150,7 +150,7 @@ export default async function ProjectInquiriesPage({
         <div className="rounded-xl border border-dashed border-border/40 bg-card/40 px-6 py-16 text-center">
           <Inbox className="mx-auto h-8 w-8 text-muted-foreground/40" />
           <p className="mt-3 text-sm text-muted-foreground">
-            Još nema upita za izabrani filter.
+            There are no inquiries for the selected filter yet.
           </p>
         </div>
       ) : (
@@ -177,11 +177,11 @@ export default async function ProjectInquiriesPage({
                         {STATUS_LABELS[inquiry.status]}
                       </Badge>
                       <span className="text-[0.72rem] text-muted-foreground">
-                        pre {formatRelative(inquiry.createdAt)}
+                        {formatRelative(inquiry.createdAt)} ago
                       </span>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {inquiry.serviceType ?? "Tip usluge nije naveden"}
+                      {inquiry.serviceType ?? "Service type not provided"}
                       {inquiry.sourceLabel ? ` · ${inquiry.sourceLabel}` : ""}
                     </p>
                   </div>
@@ -196,7 +196,7 @@ export default async function ProjectInquiriesPage({
                 <div className="mt-4 grid gap-4 text-xs lg:grid-cols-[0.9fr_1.1fr]">
                   <div className="space-y-1.5">
                     <p className="font-semibold uppercase tracking-wider text-muted-foreground">
-                      Kontakt
+                      Contact
                     </p>
                     <p className="flex items-center gap-1.5 text-foreground">
                       <User className="h-3 w-3 text-muted-foreground" />
@@ -221,21 +221,21 @@ export default async function ProjectInquiriesPage({
 
                   <div className="space-y-1.5">
                     <p className="font-semibold uppercase tracking-wider text-muted-foreground">
-                      Procena
+                      Estimate
                     </p>
                     {inquiry.budget && (
                       <p className="text-foreground">
-                        <strong>Budžet:</strong> {inquiry.budget}
+                        <strong>Budget:</strong> {inquiry.budget}
                       </p>
                     )}
                     {inquiry.deadline && (
                       <p className="text-foreground">
-                        <strong>Rok:</strong> {inquiry.deadline}
+                        <strong>Deadline:</strong> {inquiry.deadline}
                       </p>
                     )}
                     <p className="text-foreground">
-                      <strong>Izvor:</strong>{" "}
-                      {inquiry.sourceLabel ?? inquiry.source ?? "Nije navedeno"}
+                      <strong>Source:</strong>{" "}
+                      {inquiry.sourceLabel ?? inquiry.source ?? "Not provided"}
                       {inquiry.sourcePath ? ` (${inquiry.sourcePath})` : ""}
                     </p>
                   </div>
@@ -243,7 +243,7 @@ export default async function ProjectInquiriesPage({
 
                 <div className="mt-4 rounded-md bg-secondary/40 px-3 py-2">
                   <p className="mb-1 text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Opis projekta
+                    Project description
                   </p>
                   <p className="whitespace-pre-wrap text-xs leading-relaxed text-foreground">
                     {inquiry.message}
@@ -253,7 +253,7 @@ export default async function ProjectInquiriesPage({
                 {inquiry.files.length > 0 && (
                   <div className="mt-4">
                     <p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                      Fajlovi ({inquiry.files.length})
+                      Files ({inquiry.files.length})
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {inquiry.files.map((file) => {
@@ -264,7 +264,7 @@ export default async function ProjectInquiriesPage({
                             href={`/api/admin/inquiries/download?fileId=${file.id}`}
                             title={
                               unscanned
-                                ? "Ovaj fajl NIJE antivirus-skeniran (skener je bio nedostupan pri slanju). Preuzmite ga oprezno."
+                                ? "This file was NOT antivirus-scanned (the scanner was unavailable when it was sent). Download it carefully."
                                 : undefined
                             }
                             className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs transition-colors ${
@@ -311,7 +311,7 @@ export default async function ProjectInquiriesPage({
                 {inquiry.convertedOrders.length > 0 && (
                   <div className="mt-4 rounded-md border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/8 px-3 py-2">
                     <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
-                      Konvertovano u porudžbinu
+                      Converted to order
                     </p>
                     <a
                       href={`/portal/admin/orders/${inquiry.convertedOrders[0].id}`}
@@ -334,7 +334,7 @@ export default async function ProjectInquiriesPage({
                   ) : inquiry.bitrixSyncError ? (
                     <span className="inline-flex items-center gap-1.5 rounded-md bg-destructive/10 px-2.5 py-1 text-destructive">
                       <AlertTriangle className="h-3.5 w-3.5" />
-                      Bitrix greška: {inquiry.bitrixSyncError}
+                      Bitrix error: {inquiry.bitrixSyncError}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-2.5 py-1 text-muted-foreground">

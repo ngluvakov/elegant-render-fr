@@ -3,7 +3,7 @@
  * `anim` product. Source mode (scratch / existing / active) lives on
  * config.sourceMode and drives:
  *   - the type badge label
- *   - per-second base price (1.758 RSD / 1.172 RSD / 938 RSD)
+ *   - per-second base price (€15 / €10 / €8)
  *   - which add-on suffix gets driven for paths/daynight
  *   - visibility of upsell options (daynight not on active; season
  *     only on scratch)
@@ -63,7 +63,7 @@ import {
   ANIM_TIMES_OF_DAY,
   ANIM_TYPES,
   addOnQuantitiesFor,
-  animPerSecondRsd,
+  animPerSecondEur,
   animSourceModeLabel,
   animSupportsDayNight,
   animSupportsSeason,
@@ -126,10 +126,10 @@ export function AnimationConfigSection({
 
   const showDayNight = animSupportsDayNight(config.sourceMode);
   const showSeason = animSupportsSeason(config.sourceMode);
-  const perSecondRsd = animPerSecondRsd(config.sourceMode);
+  const perSecondEur = animPerSecondEur(config.sourceMode);
   const tierDiscountPct = animTierDiscountPct(config.durationSeconds);
 
-  const totalRsd = useMemo(() => {
+  const totalEur = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -140,7 +140,7 @@ export function AnimationConfigSection({
         sourceMode: config.sourceMode,
       },
     ]);
-    return calc.items[0]?.totalRsd ?? 0;
+    return calc.items[0]?.totalEur ?? 0;
   }, [itemId, config]);
 
   useEffect(() => {
@@ -209,7 +209,7 @@ export function AnimationConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -252,7 +252,7 @@ export function AnimationConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Ukloni fajl"
+                aria-label="Remove file"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -293,11 +293,11 @@ export function AnimationConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Sačuvano
+              Saved
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalRsd)}
+            {formatPrice(totalEur)}
           </p>
         </div>
       </div>
@@ -307,7 +307,7 @@ export function AnimationConfigSection({
           flags via sanitizeAnimationConfig on save. */}
       <div className="space-y-2 rounded-xl border border-border/40 bg-card/60 p-3">
         <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
-          Šta već postoji?
+          What already exists?
         </Label>
         <div className="grid gap-2 sm:grid-cols-3">
           {ANIM_SOURCE_MODES.map((m) => {
@@ -337,7 +337,7 @@ export function AnimationConfigSection({
                     {m.shortLabel}
                   </span>
                   <span className="text-[0.7rem] font-bold text-accent tabular-nums">
-                    {formatPrice(m.perSecondRsd)}/s
+                    {formatPrice(m.perSecondEur)}/s
                   </span>
                 </span>
                 <span className="text-[0.7rem] leading-snug text-muted-foreground">
@@ -356,7 +356,7 @@ export function AnimationConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Naziv animacije
+          Animation name
         </Label>
         <input
           id={`name-${itemId}`}
@@ -377,7 +377,7 @@ export function AnimationConfigSection({
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
             <Clapperboard className="h-3 w-3 text-accent/60" />
-            Tip animacije
+            Animation type
           </Label>
           <select
             id={`atype-${itemId}`}
@@ -399,14 +399,14 @@ export function AnimationConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Clock className="h-3 w-3 text-accent/60" />
-            Dužina animacije
+            Animation length
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.durationSeconds <= ANIM_DURATION_MIN}
               onClick={decDuration}
-              aria-label={`Smanji za ${ANIM_DURATION_STEP}s`}
+              aria-label={`Decrease by ${ANIM_DURATION_STEP}s`}
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -418,13 +418,13 @@ export function AnimationConfigSection({
               type="button"
               disabled={!editable || config.durationSeconds >= ANIM_DURATION_MAX}
               onClick={incDuration}
-              aria-label={`Povećaj za ${ANIM_DURATION_STEP}s`}
+              aria-label={`Increase by ${ANIM_DURATION_STEP}s`}
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              {formatPrice(perSecondRsd)}/sek
+              {formatPrice(perSecondEur)}/s
               {tierDiscountPct > 0 && (
                 <span className="ml-1 font-semibold text-[color:var(--color-sage-deep)]">
                   · −{tierDiscountPct}% tier
@@ -433,7 +433,7 @@ export function AnimationConfigSection({
             </span>
           </div>
           <p className="mt-0.5 text-[0.62rem] text-muted-foreground">
-            Tier popusti: 31–60s = −10% · 61–120s = −20% · 121s+ = −25%
+            Tier discounts: 31-60s = -10% | 61-120s = -20% | 121s+ = -25%
           </p>
         </div>
       </div>
@@ -442,14 +442,14 @@ export function AnimationConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Opis putanje kamere
+          Camera path description
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Počinje ispred kuće, ulazi kroz ulazna vrata, prolazi kroz dnevnu sobu do terase…"
+          placeholder="Starts in front of the house, enters through the front door, moves through the living room to the terrace..."
           rows={3}
           className="resize-none text-sm"
         />
@@ -457,7 +457,7 @@ export function AnimationConfigSection({
 
       {/* Source upload */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Osnove i reference</Label>
+        <Label className="text-xs">Plans and references</Label>
         <div
           onClick={() => editable && sourceInputRef.current?.click()}
           className={cn(
@@ -467,7 +467,7 @@ export function AnimationConfigSection({
         >
           <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
           <span className="text-[0.7rem] text-muted-foreground">
-            Osnove, skice putanje, referentni video klipovi
+            Plans, path sketches, reference video clips
           </span>
           <input
             ref={sourceInputRef}
@@ -498,7 +498,7 @@ export function AnimationConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Otpremanje…</span>
+              <span className="text-accent">Uploading...</span>
             </div>
           ))}
         </div>
@@ -512,10 +512,10 @@ export function AnimationConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Napredno podešavanje
+            Advanced settings
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · atmosfera, stil, dodatne putanje
+            · atmosphere, style, extra paths
           </span>
         </div>
         <Switch
@@ -531,12 +531,12 @@ export function AnimationConfigSection({
           {/* 2.1 Atmosphere */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Atmosfera i okruženje
+              Atmosphere and surroundings
             </p>
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor={`tod-${itemId}`} className="text-[0.7rem]">
-                  Doba dana
+                  Time of day
                 </Label>
                 <select
                   id={`tod-${itemId}`}
@@ -551,7 +551,7 @@ export function AnimationConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {ANIM_TIMES_OF_DAY.map((t) => (
                     <option key={t.id} value={t.id}>
                       {t.label}
@@ -565,7 +565,7 @@ export function AnimationConfigSection({
                   htmlFor={`season-${itemId}`}
                   className="text-[0.7rem]"
                 >
-                  Godišnje doba
+                  Season
                 </Label>
                 <select
                   id={`season-${itemId}`}
@@ -580,7 +580,7 @@ export function AnimationConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {ANIM_SEASONS.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.label}
@@ -592,7 +592,7 @@ export function AnimationConfigSection({
               <div className="space-y-1">
                 <Label htmlFor={`speed-${itemId}`} className="text-[0.7rem]">
                   <Gauge className="h-3 w-3 text-accent/60" />
-                  Brzina kamere
+                  Camera speed
                 </Label>
                 <select
                   id={`speed-${itemId}`}
@@ -607,7 +607,7 @@ export function AnimationConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {ANIM_CAMERA_SPEEDS.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.label}
@@ -621,7 +621,7 @@ export function AnimationConfigSection({
           {/* 2.2 Direction & detail */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Režija i detalji
+              Direction and details
             </p>
 
             <div className="space-y-1">
@@ -659,7 +659,7 @@ export function AnimationConfigSection({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Dodatni elementi u sceni</Label>
+              <Label className="text-[0.7rem]">Additional scene elements</Label>
               <div className="grid gap-1.5 sm:grid-cols-2">
                 {ANIM_SCENE_ELEMENT_OPTIONS.map((o) => (
                   <label
@@ -710,7 +710,7 @@ export function AnimationConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— izaberite —</option>
+                <option value="">Select...</option>
                 {ANIM_MUSIC_MOODS.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.label}
@@ -729,7 +729,7 @@ export function AnimationConfigSection({
             Dodatne opcije
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Dodatne putanje kamere ili sezonske / dnevno-noćne
+            Additional camera paths or seasonal / day-to-dusk
             varijacije iste animacije.
           </p>
         </div>
@@ -741,10 +741,10 @@ export function AnimationConfigSection({
               <Camera className="h-3.5 w-3.5 text-accent" />
               <div>
                 <span className="block text-[0.78rem] font-medium text-foreground">
-                  Dodatna putanja kamere
+                  Additional camera path
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  {formatPriceText("Još jedan video iz istog modela — 586 RSD/sek po putanji")}
+                  {formatPriceText("Another video from the same model - €5/sec per path")}
                 </span>
               </div>
             </div>
@@ -753,7 +753,7 @@ export function AnimationConfigSection({
                 type="button"
                 disabled={!editable || config.extraPathsCount <= 0}
                 onClick={decPaths}
-                aria-label="Smanji broj putanja"
+                aria-label="Decrease number of putanja"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Minus className="h-3 w-3" />
@@ -765,7 +765,7 @@ export function AnimationConfigSection({
                 type="button"
                 disabled={!editable || config.extraPathsCount >= 10}
                 onClick={incPaths}
-                aria-label="Povećaj broj putanja"
+                aria-label="Increase number of putanja"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Plus className="h-3 w-3" />
@@ -793,10 +793,10 @@ export function AnimationConfigSection({
               <CloudMoon className="h-3.5 w-3.5 text-accent" />
               <div>
                 <span className="block text-[0.78rem] font-medium text-foreground">
-                  Dan / Noć verzija
+                  Day / night version
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  Ista animacija u dnevnoj i noćnoj varijanti
+                  Same animation in day and night versions
                 </span>
               </div>
             </div>
@@ -829,7 +829,7 @@ export function AnimationConfigSection({
                   Sezonska varijacija
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  Ista animacija u drugom godišnjem dobu
+                  Same animation in another season
                 </span>
               </div>
             </div>

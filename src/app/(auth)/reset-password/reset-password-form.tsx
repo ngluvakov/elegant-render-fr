@@ -28,7 +28,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
       <div className="space-y-2">
         <Label htmlFor="password">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Nova lozinka
+          New password
         </Label>
         <Input
           id="password"
@@ -38,7 +38,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
           required
           minLength={8}
         />
-        <p className="text-xs text-muted-foreground">Najmanje 8 karaktera</p>
+        <p className="text-xs text-muted-foreground">At least 8 characters</p>
       </div>
 
       <Button
@@ -48,7 +48,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         className="w-full"
         disabled={pending}
       >
-        {pending ? "Čuvanje…" : "Postavite novu lozinku"}
+        {pending ? "Saving..." : "Set new password"}
       </Button>
     </form>
   );

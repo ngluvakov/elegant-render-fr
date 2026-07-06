@@ -1,5 +1,5 @@
 /**
- * AdminProformaButton — admin trigger to issue a predračun for an
+ * AdminProformaButton — admin trigger to issue a proforma for an
  * order on the wire-transfer path. Server action runs the
  * issueProforma pipeline (PDF + Supabase + email + audit log).
  *
@@ -48,8 +48,8 @@ export function AdminProformaButton({ orderId, alreadyIssued }: Props) {
         {pending
           ? "Izdajem…"
           : issued
-            ? "Ponovo izdaj predračun"
-            : "Izdaj predračun"}
+            ? "Reissue proforma"
+            : "Issue proforma"}
       </button>
       {error && (
         <p className="text-[0.78rem] text-destructive">{error}</p>
@@ -60,7 +60,7 @@ export function AdminProformaButton({ orderId, alreadyIssued }: Props) {
 
 function humanReason(reason: string): string {
   if (reason === "not_admin") return "Niste admin.";
-  if (reason === "order_not_found") return "Porudžbina nije pronađena.";
-  if (reason === "no_billable_items") return "Porudžbina nema naplatljive stavke.";
-  return `Greška pri izdavanju: ${reason}`;
+  if (reason === "order_not_found") return "Order was not found.";
+  if (reason === "no_billable_items") return "Order has no billable items.";
+  return `Error pri izdavanju: ${reason}`;
 }

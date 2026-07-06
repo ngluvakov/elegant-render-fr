@@ -5,7 +5,7 @@ import { AiStudioWorkspace } from "./workspace";
 export const metadata: Metadata = {
   title: "AI Studio — Portal",
   description:
-    "Radni prostor za AI obradu fotografija, maske, promptove i generisanje novih varijanti.",
+    "Workspace for AI photo edits, masks, prompts, and generating new variants.",
   robots: { index: false, follow: false },
 };
 

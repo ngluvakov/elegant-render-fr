@@ -81,8 +81,8 @@ type ItemData = {
   productId: string;
   productLabel: string;
   categoryLabel: string;
-  totalRsd: number;
-  originalTotalRsd: number | null;
+  totalEur: number;
+  originalTotalEur: number | null;
   discountPct: number | null;
   discountReason: string | null;
   clientNote: string | null;
@@ -232,7 +232,7 @@ export function ItemConfigPanel({
               {isConfigured ? (
                 <span className="inline-flex items-center gap-1 rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
                   <span className="h-1 w-1 rounded-full bg-[color:var(--color-sage-deep)]" />
-                  Podešeno
+                  Configured
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 rounded bg-[color:var(--color-ember)]/20 px-2 py-0.5 text-[0.72rem] font-bold uppercase tracking-wider text-[color:var(--color-ember-deep)]">
@@ -240,7 +240,7 @@ export function ItemConfigPanel({
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--color-ember)]/70" />
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--color-ember-deep)]" />
                   </span>
-                  Potrebni podaci
+                  Details needed
                 </span>
               )}
             </div>
@@ -248,8 +248,8 @@ export function ItemConfigPanel({
               {item.categoryLabel} ·{" "}
               {(() => {
                 const { primary, struck } = formatDiscounted(
-                  item.totalRsd,
-                  item.originalTotalRsd ?? item.totalRsd,
+                  item.totalEur,
+                  item.originalTotalEur ?? item.totalEur,
                   item.discountPct ?? 0,
                 );
                 return struck ? (
@@ -285,7 +285,7 @@ export function ItemConfigPanel({
             {!confirmDelete ? (
               <button
                 type="button"
-                aria-label="Ukloni stavku"
+                aria-label="Remove item"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -297,7 +297,7 @@ export function ItemConfigPanel({
               </button>
             ) : (
               <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in slide-in-from-right-1 duration-150">
-                <span className="px-1.5 text-[0.72rem] font-semibold">Ukloniti?</span>
+                <span className="px-1.5 text-[0.72rem] font-semibold">Remove?</span>
                 <button
                   type="button"
                   disabled={deletePending}
@@ -505,7 +505,7 @@ function NonInteriorBody({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -543,10 +543,10 @@ function NonInteriorBody({
         <div className="flex items-center gap-2">
               <Settings2 className="h-3.5 w-3.5 text-accent" />
               <span className="text-xs font-medium text-foreground">
-                Napredno podešavanje
+                Advanced settings
               </span>
               <span className="text-[0.72rem] text-muted-foreground">
-                · reference, detalji po sobi, tehničke napomene
+                · references, room details, technical notes
               </span>
             </div>
             <Switch
@@ -560,13 +560,13 @@ function NonInteriorBody({
           <div className="space-y-2">
             <Label htmlFor={`note-${item.id}`} className="text-xs">
               <Pencil className="h-3 w-3 text-accent/60" />
-              Opis projekta za ovu stavku
+              Project description for this item
             </Label>
             <Textarea
               id={`note-${item.id}`}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Opišite šta želite — stil, atmosferu, posebne zahteve…"
+              placeholder="Describe what you want - style, atmosphere, special requirements..."
               rows={3}
               className="resize-none text-sm"
             />
@@ -574,14 +574,14 @@ function NonInteriorBody({
 
           {/* Simple mode: file upload */}
           <div className="space-y-2">
-            <Label className="text-xs">Osnove i fotografije</Label>
+            <Label className="text-xs">Plans and photos</Label>
             <div
               onClick={() => inputRef.current?.click()}
               className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-border/40 px-4 py-4 transition-colors hover:border-accent/40"
             >
               <Upload className="mr-2 h-4 w-4 text-muted-foreground/50" />
               <span className="text-xs text-muted-foreground">
-                Prevucite ili kliknite — osnove, foto, skice
+                Drag or click - plans, photos, sketches
               </span>
               <input
                 ref={inputRef}
@@ -620,7 +620,7 @@ function NonInteriorBody({
                 >
                   <FileUp className="h-3 w-3 text-accent" />
                   <span className="flex-1 truncate text-foreground">{name}</span>
-                  <span className="text-accent">Otpremanje…</span>
+                  <span className="text-accent">Uploading...</span>
                 </div>
               ))}
             </div>
@@ -632,13 +632,13 @@ function NonInteriorBody({
               <div className="space-y-2">
                 <Label htmlFor={`style-${item.id}`} className="text-xs">
                   <Pencil className="h-3 w-3 text-accent/60" />
-                  Reference stila i atmosfera
+                  Style references and atmosphere
                 </Label>
                 <Textarea
                   id={`style-${item.id}`}
                   value={styleDesc}
                   onChange={(e) => setStyleDesc(e.target.value)}
-                  placeholder="Opišite željeni stil — moderna, skandinavska, minimalistička, topla…"
+                  placeholder="Describe the desired style - modern, Scandinavian, minimalist, warm..."
                   rows={2}
                   className="resize-none text-sm"
                 />
@@ -648,7 +648,7 @@ function NonInteriorBody({
                 >
                   <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/40" />
                   <span className="text-[0.72rem] text-muted-foreground">
-                    Upload slika inspiracije (mood board)
+                    Upload inspiration images (mood board)
                   </span>
                   <input
                     ref={refInputRef}
@@ -669,13 +669,13 @@ function NonInteriorBody({
               <div className="space-y-2">
                 <Label htmlFor={`rooms-${item.id}`} className="text-xs">
                   <Pencil className="h-3 w-3 text-accent/60" />
-                  Detalji po prostoriji
+                  Room-by-room details
                 </Label>
                 <Textarea
                   id={`rooms-${item.id}`}
                   value={roomDetails}
                   onChange={(e) => setRoomDetails(e.target.value)}
-                  placeholder="Dnevna soba: svetli tonovi, drveni pod&#10;Spavaća: tamni zidovi, tople boje&#10;Kuhinja: moderna, beli elementi"
+                  placeholder="Living room: light tones, wooden floor&#10;Bedroom: dark walls, warm colours&#10;Kitchen: modern, white cabinets"
                   rows={4}
                   className="resize-none text-sm"
                 />
@@ -684,13 +684,13 @@ function NonInteriorBody({
               <div className="space-y-2">
                 <Label htmlFor={`tech-${item.id}`} className="text-xs">
                   <Pencil className="h-3 w-3 text-accent/60" />
-                  Tehničke napomene
+                  Technical notes
                 </Label>
                 <Textarea
                   id={`tech-${item.id}`}
                   value={techNotes}
                   onChange={(e) => setTechNotes(e.target.value)}
-                  placeholder="Format isporuke, rezolucija, posebni zahtevi…"
+                  placeholder="Delivery format, resolution, special requirements..."
                   rows={2}
                   className="resize-none text-sm"
                 />
@@ -701,7 +701,7 @@ function NonInteriorBody({
           {/* Save button */}
           <div className="flex items-center justify-between">
             <p className="text-[0.72rem] text-muted-foreground">
-              Fajlovi se čuvaju automatski. Kliknite sačuvaj za opis i podešavanja.
+              Files are saved automatically. Click save for descriptions and settings.
             </p>
             <Button
               variant="accent"
@@ -711,12 +711,12 @@ function NonInteriorBody({
             >
               {saved ? (
                 <>
-                  <Check className="mr-1 h-3 w-3" /> Sačuvano
+                  <Check className="mr-1 h-3 w-3" /> Saved
                 </>
               ) : saving ? (
-                "Čuvanje…"
+                "Saving..."
               ) : (
-                "Sačuvaj"
+                "Save"
               )}
             </Button>
           </div>

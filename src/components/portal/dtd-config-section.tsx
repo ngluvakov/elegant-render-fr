@@ -1,7 +1,7 @@
 /**
  * DtdConfigSection — Per-item configurator for the dtd-image product
- * (Dan u noć / Day-to-Dusk). Photo-count stepper drives dtd-volume
- * (938 RSD per extra photo). Shadow-removal toggle drives dtd-shadow (586 RSD
+ * (day-to-dusk).. Photo-count stepper drives dtd-volume
+ * (€8 per extra photo). Shadow-removal toggle drives dtd-shadow (€5
  * one-time). Rush-delivery toggle drives dtd-rush (+50% percent).
  */
 "use client";
@@ -56,8 +56,8 @@ import {
   updateDtdConfig,
 } from "@/server/actions/item-config";
 
-const DTD_PHOTO_RSD = 938;     // dtd-volume per extra photo
-const DTD_SHADOW_RSD = 586;    // dtd-shadow one-time
+const DTD_PHOTO_EUR = 8;     // dtd-volume per extra photo
+const DTD_SHADOW_EUR = 5;    // dtd-shadow one-time
 const DTD_RUSH_PERCENT = 50;   // dtd-rush +50% on item total
 
 type ItemFile = {
@@ -101,7 +101,7 @@ export function DtdConfigSection({
   const refInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  const totalRsd = useMemo(() => {
+  const totalEur = useMemo(() => {
     const calc = calculateQuote([
       {
         instanceId: itemId,
@@ -110,7 +110,7 @@ export function DtdConfigSection({
         addOnQuantities: addOnQuantitiesFor(config),
       },
     ]);
-    return calc.items[0]?.totalRsd ?? 0;
+    return calc.items[0]?.totalEur ?? 0;
   }, [itemId, config]);
 
   useEffect(() => {
@@ -161,7 +161,7 @@ export function DtdConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -204,7 +204,7 @@ export function DtdConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Ukloni fajl"
+                aria-label="Remove file"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -256,11 +256,10 @@ export function DtdConfigSection({
           <CloudMoon className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.projectName || "Nekretnina"}
+              {config.projectName || "Property"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {config.photoCount} fotografij
-              {config.photoCount === 1 ? "a" : "e"} ·{" "}
+              {config.photoCount} photo{config.photoCount === 1 ? "" : "s"} ·{" "}
               {DTD_SKY_MOODS.find((m) => m.id === config.skyMood)?.label ??
                 config.skyMood}
             </p>
@@ -270,11 +269,11 @@ export function DtdConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Sačuvano
+              Saved
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalRsd)}
+            {formatPrice(totalEur)}
           </p>
         </div>
       </div>
@@ -286,7 +285,7 @@ export function DtdConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Naziv projekta / nekretnine
+          Project / property name
         </Label>
         <input
           id={`name-${itemId}`}
@@ -304,14 +303,14 @@ export function DtdConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Camera className="h-3 w-3 text-accent/60" />
-            Broj fotografija
+            Number of photos
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.photoCount <= 1}
               onClick={decPhotos}
-              aria-label="Smanji broj fotografija"
+              aria-label="Decrease number of photos"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -323,13 +322,13 @@ export function DtdConfigSection({
               type="button"
               disabled={!editable || config.photoCount >= 200}
               onClick={incPhotos}
-              aria-label="Povećaj broj fotografija"
+              aria-label="Increase number of photos"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 uključena, +{formatPrice(DTD_PHOTO_RSD)} svaka sledeća
+              1 included, +{formatPrice(DTD_PHOTO_EUR)} each additional
             </span>
           </div>
         </div>
@@ -340,7 +339,7 @@ export function DtdConfigSection({
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
             <CloudMoon className="h-3 w-3 text-accent/60" />
-            Željena atmosfera (nebo)
+            Desired atmosphere (sky)
           </Label>
           <select
             id={`sky-${itemId}`}
@@ -364,14 +363,14 @@ export function DtdConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Opis i napomene
+          Description and notes
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Posebni zahtevi za osvetljenje (npr. obavezno upaliti svetla na bazenu)…"
+          placeholder="Special lighting requirements (for example, keep the pool lights on)..."
           rows={3}
           className="resize-none text-sm"
         />
@@ -379,10 +378,10 @@ export function DtdConfigSection({
 
       {/* Source photos */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Dnevne fotografije</Label>
+        <Label className="text-xs">Daytime photos</Label>
         {renderUploadZone(
           sourceInputRef,
-          "Prevucite više slika odjednom",
+          "Drag several images at once",
           "image/*",
           "source",
         )}
@@ -398,7 +397,7 @@ export function DtdConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Otpremanje…</span>
+              <span className="text-accent">Uploading...</span>
             </div>
           ))}
         </div>
@@ -412,10 +411,10 @@ export function DtdConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Napredno podešavanje
+            Advanced settings
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · osvetljenje, senke, detalji
+            · lighting, shadows, details
           </span>
         </div>
         <Switch
@@ -431,7 +430,7 @@ export function DtdConfigSection({
           {/* 2.1 Lighting */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Kontrola osvetljenja
+              Lighting control
             </p>
             <div className="space-y-1">
               <Label
@@ -439,7 +438,7 @@ export function DtdConfigSection({
                 className="text-[0.7rem]"
               >
                 <Lightbulb className="h-3 w-3 text-accent/60" />
-                Unutrašnje osvetljenje
+                Interior lighting
               </Label>
               <select
                 id={`int-light-${itemId}`}
@@ -454,7 +453,7 @@ export function DtdConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— izaberite —</option>
+                <option value="">Select...</option>
                 {DTD_INTERIOR_LIGHTS.map((l) => (
                   <option key={l.id} value={l.id}>
                     {l.label}
@@ -464,7 +463,7 @@ export function DtdConfigSection({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Spoljašnje osvetljenje</Label>
+              <Label className="text-[0.7rem]">Exterior lighting</Label>
               <div className="grid gap-1.5 sm:grid-cols-2">
                 {DTD_EXTERIOR_LIGHTING_OPTIONS.map((o) => (
                   <label
@@ -503,7 +502,7 @@ export function DtdConfigSection({
           {/* 2.2 Photo corrections */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Korekcije fotografije
+              Photo corrections
             </p>
 
             <label
@@ -514,17 +513,17 @@ export function DtdConfigSection({
                 <Sun className="h-3.5 w-3.5 text-accent" />
                 <div>
                   <span className="block text-[0.78rem] font-medium text-foreground">
-                    Uklanjanje oštrih dnevnih senki
+                    Removing harsh daytime shadows
                   </span>
                   <span className="block text-[0.7rem] text-muted-foreground">
-                    Složena korekcija jakih senki sa fasade
+                    Complex correction of strong facade shadows
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 {config.shadowRemoval && (
                   <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                    +{formatPrice(DTD_SHADOW_RSD)}
+                    +{formatPrice(DTD_SHADOW_EUR)}
                   </span>
                 )}
                 <Switch
@@ -542,7 +541,7 @@ export function DtdConfigSection({
                 className="text-[0.7rem]"
               >
                 <Wand2 className="h-3 w-3 text-accent/60" />
-                Korekcija boja (color grading)
+                Color correction (color grading)
               </Label>
               <select
                 id={`grade-${itemId}`}
@@ -557,7 +556,7 @@ export function DtdConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— izaberite —</option>
+                <option value="">Select...</option>
                 {DTD_COLOR_GRADES.map((g) => (
                   <option key={g.id} value={g.id}>
                     {g.label}
@@ -573,11 +572,11 @@ export function DtdConfigSection({
               Reference
             </p>
             <Label className="text-[0.7rem]">
-              Reference za nebo / atmosferu
+              Sky / atmosphere references
             </Label>
             {renderUploadZone(
               refInputRef,
-              "Slike željenog neba ili atmosfere",
+              "Images of the desired sky or atmosphere",
               "image/*",
               "reference",
             )}
@@ -590,10 +589,10 @@ export function DtdConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Dodatne opcije
+            Additional options
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Hitna isporuka sa prioritetnom obradom.
+            Rush delivery with priority processing.
           </p>
         </div>
 
@@ -605,10 +604,10 @@ export function DtdConfigSection({
             <Zap className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                Hitna isporuka (24h)
+                Rush delivery (24h)
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Prioritetna obrada i isporuka u roku od 24 sata
+                Priority processing and delivery within 24 hours
               </span>
             </div>
           </div>

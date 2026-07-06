@@ -6,12 +6,12 @@ import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { SignUpForm } from "./sign-up-form";
 
 export const metadata: Metadata = {
-  title: "Registracija",
-  description: "Napravite Elegant Render nalog — besplatno.",
+  title: "Register",
+  description: "Create an Elegant Render account for free.",
   robots: NO_INDEX_ROBOTS,
 };
 
-export default async function RegistracijaPage({
+export default async function RegisterPage({
   searchParams,
 }: {
   searchParams: Promise<{ callbackUrl?: string | string[] }>;
@@ -31,11 +31,11 @@ export default async function RegistracijaPage({
       <div className="w-full max-w-md">
         <div className="text-center">
           <h1 className="text-3xl text-foreground md:text-4xl">
-            Registracija
+            Register
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Napravite nalog da biste mogli da naručujete, pratite projekte i
-            komunicirate sa timom.
+            Create an account to order, track projects, and communicate with
+            the team.
           </p>
         </div>
         <SignUpForm callbackUrl={callbackUrl} />

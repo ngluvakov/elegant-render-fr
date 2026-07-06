@@ -1,11 +1,11 @@
 /**
  * CompanyVatVerifier — debounced inline VIES check for the
- * company_foreign branch of step-review. Calls the public action
+ * business block of checkout step-details. Calls the public action
  * 800ms after the customer stops typing, surfaces a tone-bucketed
  * one-line result.
  *
  * Doesn't block submission — VIES outages happen, and admin
- * re-verifies before issuing the predračun (#102). The badge here
+ * re-verifies before issuing the proforma (#102). The badge here
  * is a UX nicety that catches typos early.
  */
 "use client";
@@ -66,7 +66,7 @@ export function CompanyVatVerifier({
             key: ready.key,
             result: {
               status: "error",
-              message: "Greška mreže — admin će proveriti ručno.",
+              message: "Network error — our team will verify manually.",
             },
           });
         }
@@ -86,7 +86,7 @@ export function CompanyVatVerifier({
     return (
       <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-muted-foreground">
         <Loader2 className="h-3 w-3 animate-spin" />
-        Proveravam VAT preko VIES-a…
+        Checking the VAT ID through VIES…
       </p>
     );
   }
@@ -95,7 +95,7 @@ export function CompanyVatVerifier({
     return (
       <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-[color:var(--color-sage-deep)]">
         <CheckCircle2 className="h-3 w-3" />
-        VIES potvrdio VAT
+        VIES confirmed the VAT ID
         {result.verifiedName ? (
           <span className="text-muted-foreground">
             {" "}
@@ -110,8 +110,8 @@ export function CompanyVatVerifier({
     return (
       <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-destructive">
         <ShieldAlert className="h-3 w-3" />
-        VIES kaže: VAT ID nije važeći. Možete nastaviti i tim će
-        proveriti, ili ispravite ako je tipfeler.
+        VIES reports this VAT ID as not valid. You can continue and our
+        team will verify it, or correct it if it's a typo.
       </p>
     );
   }
@@ -120,7 +120,7 @@ export function CompanyVatVerifier({
     return (
       <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-muted-foreground">
         <AlertCircle className="h-3 w-3" />
-        Zemlja nije u EU — VIES provera nije primenljiva.
+        Country is outside the EU — the VIES check does not apply.
       </p>
     );
   }
@@ -138,7 +138,7 @@ export function CompanyVatVerifier({
   return (
     <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-muted-foreground">
       <AlertCircle className="h-3 w-3" />
-      VIES nije dostupan trenutno — tim će ručno proveriti.
+      VIES is unavailable right now — our team will verify manually.
     </p>
   );
 }

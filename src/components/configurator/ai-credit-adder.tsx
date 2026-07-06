@@ -38,11 +38,11 @@ export function AiCreditAdder() {
             AI Studio
           </div>
           <h3 className="mt-3 text-lg font-semibold text-foreground">
-            Dodajte AI kredite u istu porudžbinu
+            Add AI credits to the same order
           </h3>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-            Krediti se aktiviraju odmah nakon plaćanja. Jedan kredit pokriva
-            jednu kompleksnu ili dve jednostavne AI obrade.
+            Credits activate immediately after payment. One credit covers one
+            complex AI edit or two simple edits.
           </p>
         </div>
         <div className="text-right">
@@ -59,7 +59,7 @@ export function AiCreditAdder() {
               displayCurrency,
               pricingSettings,
             )}{" "}
-            po kreditu
+            per credit
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ export function AiCreditAdder() {
                 }`}
               >
                 <span className="block text-sm font-semibold text-foreground">
-                  {preset} kredita
+                  {preset} credits
                 </span>
                 <span className="mt-1 block text-xs text-muted-foreground">
                   {formatPublicPriceFromCents(
@@ -97,7 +97,7 @@ export function AiCreditAdder() {
 
         <div className="rounded-xl border border-border/50 bg-background/50 p-3">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Slobodan unos
+            Custom amount
           </p>
           <div className="mt-2 flex items-center gap-2">
             <Button
@@ -142,7 +142,7 @@ export function AiCreditAdder() {
                   displayCurrency,
                   pricingSettings,
                 )}
-                /kredit
+                /credit
               </span>
             );
           })}
@@ -153,7 +153,7 @@ export function AiCreditAdder() {
           onClick={() => setAiCredits(credits)}
         >
           <Coins className="h-4 w-4" />
-          {existingCredits > 0 ? "Ažuriraj kredite" : "Dodaj kredite"}
+          {existingCredits > 0 ? "Update credits" : "Add credits"}
         </Button>
       </div>
     </div>

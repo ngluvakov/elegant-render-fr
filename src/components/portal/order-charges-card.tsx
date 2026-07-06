@@ -5,9 +5,9 @@
  */
 import { Receipt } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { formatRsd } from "@/lib/catalog/calculate";
+import { formatEur } from "@/lib/catalog/calculate";
 import {
-  billingCentsFromRsdCents,
+  billingCentsFromEurCents,
   formatBillingMoney,
   type BillingCurrency,
 } from "@/lib/billing";
@@ -19,8 +19,9 @@ export type ChargeView = {
   totalCents: number;
   billingCurrency: BillingCurrency | null;
   billingVatRate: number | null;
-  billingRsdRate: number | null;
   billingTotalCents: number | null;
+  chargedCurrency: string | null;
+  chargedAmountMinor: number | null;
   status: "pending" | "paid" | "cancelled";
   paidAt: Date | null;
   createdAt: Date;
@@ -33,9 +34,9 @@ export type ChargeView = {
 };
 
 function statusLabel(status: ChargeView["status"]): string {
-  if (status === "pending") return "Čeka uplatu";
-  if (status === "paid") return "Plaćeno";
-  return "Otkazano";
+  if (status === "pending") return "Awaiting payment";
+  if (status === "paid") return "Paid";
+  return "Cancelled";
 }
 
 function statusAccent(status: ChargeView["status"]): string {
@@ -56,12 +57,12 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
       <div className="flex items-center gap-1.5">
         <Receipt className="h-3.5 w-3.5 text-accent" />
         <h3 className="text-sm font-semibold text-foreground">
-          Dodatne naplate
+          Additional charges
         </h3>
       </div>
       <p className="mt-1 text-xs text-muted-foreground">
-        Stavke van prvobitnog scope-a porudžbine. Plaćanje je dostupno kroz iste
-        opcije kao i prvobitna porudžbina.
+        Items outside the original order scope. Payment is available through the
+        same options as the original order.
       </p>
 
       <div className="mt-4 space-y-4">
@@ -98,8 +99,8 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
             <ChargePaymentCard
               chargeId={charge.id}
               totalCents={charge.totalCents}
-              billingCurrency={charge.billingCurrency}
-              billingTotalCents={charge.billingTotalCents}
+              chargedCurrency={charge.chargedCurrency}
+              chargedAmountMinor={charge.chargedAmountMinor}
             />
           </div>
         ))}
@@ -108,7 +109,7 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
           <div className="space-y-2">
             {pending.length > 0 && (
               <p className="text-[0.68rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                Istorija
+                History
               </p>
             )}
             {history.map((charge) => (
@@ -123,7 +124,7 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
                     </Badge>
                     <p className="mt-1 text-[0.68rem] text-muted-foreground">
                       {(charge.paidAt ?? charge.createdAt).toLocaleDateString(
-                        "sr-Latn-RS",
+                        "en-GB",
                         { day: "numeric", month: "short", year: "numeric" },
                       )}
                     </p>
@@ -149,23 +150,18 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
 function formatChargeTotal(charge: ChargeView): string {
   return charge.billingCurrency && charge.billingTotalCents != null
     ? formatBillingMoney(charge.billingTotalCents, charge.billingCurrency)
-    : formatRsd(charge.totalCents / 100);
+    : formatEur(charge.totalCents / 100);
 }
 
-function formatChargeLine(charge: ChargeView, rsdCents: number): string {
-  if (
-    charge.billingCurrency &&
-    charge.billingVatRate != null &&
-    charge.billingRsdRate != null
-  ) {
+function formatChargeLine(charge: ChargeView, eurCents: number): string {
+  if (charge.billingCurrency && charge.billingVatRate != null) {
     return formatBillingMoney(
-      billingCentsFromRsdCents(rsdCents, {
+      billingCentsFromEurCents(eurCents, {
         billingCurrency: charge.billingCurrency,
         billingVatRate: charge.billingVatRate,
-        billingRsdRate: charge.billingRsdRate,
       }),
       charge.billingCurrency,
     );
   }
-  return formatRsd(rsdCents / 100);
+  return formatEur(eurCents / 100);
 }

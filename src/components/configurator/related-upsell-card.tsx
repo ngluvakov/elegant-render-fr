@@ -2,8 +2,8 @@
  * RelatedUpsellCard — Mini card surfaced in the upsell hint grid of a ServiceTablica.
  *
  * Computes discount via resolveDiscount + upsell-helpers synthetic items.
- * Shows sage POPUST badge when a discount applies; strikethrough original + discounted price.
- * "+ Dodaj" ghost button adds to cart via useQuote().addProduct.
+ * Shows sage discount badge when a discount applies; strikethrough original + discounted price.
+ * "+ Add" ghost button adds to cart via useQuote().addProduct.
  */
 "use client";
 
@@ -39,7 +39,7 @@ export function RelatedUpsellCard({
   const siblings: QuoteItem[] = [primaryItem, ...cartItems];
   const discount = resolveDiscount(targetItem, siblings, pricingCatalog);
 
-  const originalPrice = relatedProduct.displayPerUnitRsd ?? relatedProduct.basePriceRsd;
+  const originalPrice = relatedProduct.displayPerUnitEur ?? relatedProduct.basePriceEur;
   const discountedPrice = discount
     ? Math.round(originalPrice * (1 - discount.pct / 100))
     : null;
@@ -56,7 +56,7 @@ export function RelatedUpsellCard({
 
   return (
     <div className="flex flex-col rounded-xl border border-border/50 bg-card p-3 gap-1.5">
-      {/* Header row: name + POPUST badge */}
+      {/* Header row: name + discount badge */}
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-medium text-foreground leading-snug line-clamp-2">
           {relatedProduct.label}
@@ -89,7 +89,7 @@ export function RelatedUpsellCard({
           </div>
         ) : (
           <span className="text-sm text-muted-foreground">
-            od {formatPublicPrice(originalPrice, displayCurrency, pricingSettings)}
+            from {formatPublicPrice(originalPrice, displayCurrency, pricingSettings)}
           </span>
         )}
       </div>
@@ -100,7 +100,7 @@ export function RelatedUpsellCard({
         onClick={handleAdd}
         className="mt-1 w-full rounded-md border border-foreground/20 bg-transparent px-2 py-1 text-xs font-medium text-foreground hover:bg-foreground/5 transition-colors"
       >
-        + Dodaj
+        + Add
       </button>
     </div>
   );

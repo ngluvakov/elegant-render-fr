@@ -284,9 +284,9 @@ const MOBILE_LABEL_BY_TOOL: Record<AiEditType, string> = {
 
 /**
  * Lowest-tier single-purchase starting price for a tool, stored internally
- * in RSD because AI credits and checkout are RSD-only.
+ * in EUR because AI credits and checkout are EUR-only.
  */
-function toolStartingRsd(
+function toolStartingEur(
   units: number,
   tiers: AiCreditTier[],
   unitsPerCredit: number,
@@ -352,8 +352,8 @@ export default async function AiStudioLandingPage() {
                 "@type": "Offer",
                 name: item.label,
                 description: toolDetails[item.id].benefit,
-                priceCurrency: "RSD",
-                price: toolStartingRsd(
+                priceCurrency: "EUR",
+                price: toolStartingEur(
                   item.units,
                   pricingSettings.aiCreditTiers,
                   pricingSettings.aiCreditUnitsPerCredit,
@@ -415,7 +415,7 @@ function HeroContent({
   pricingSettings: PricingSettings;
 }) {
   const simpleStarting = formatPublicPrice(
-    toolStartingRsd(
+    toolStartingEur(
       1,
       pricingSettings.aiCreditTiers,
       pricingSettings.aiCreditUnitsPerCredit,
@@ -539,7 +539,7 @@ function ToolPickerGrid({
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
         {AI_EDIT_TYPES.map((item) => {
           const detail = toolDetails[item.id];
-          const startingRsd = toolStartingRsd(
+          const startingEur = toolStartingEur(
             item.units,
             pricingSettings.aiCreditTiers,
             pricingSettings.aiCreditUnitsPerCredit,
@@ -561,7 +561,7 @@ function ToolPickerGrid({
                 pricingSettings.aiCreditUnitsPerCredit,
               )}
               startingRsdLabel={formatPublicPrice(
-                startingRsd,
+                startingEur,
                 displayCurrency,
                 pricingSettings,
               )}
@@ -786,7 +786,7 @@ function ComparisonSection({
               "Treba bolji oglas za nekretninu",
               "Treba čišćenje ili stilizacija postojeće slike",
               `Cena: od ${formatPublicPrice(
-                toolStartingRsd(
+                toolStartingEur(
                   1,
                   pricingSettings.aiCreditTiers,
                   pricingSettings.aiCreditUnitsPerCredit,

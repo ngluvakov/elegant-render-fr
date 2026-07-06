@@ -1,24 +1,21 @@
 import type { InvoiceData, InvoiceLineItem } from "@/lib/invoice-pdf";
 import {
-  billingCentsFromRsdCents,
+  billingCentsFromEurCents,
   billingCurrencyForCountry,
   type BillingCurrency,
 } from "@/lib/billing";
-import { PUBLIC_SERBIA_VAT_RATE } from "@/lib/catalog/display-currency";
 
-type BuyerType = "individual" | "company_rs" | "company_foreign";
+type BuyerType = "individual" | "business";
 
 type InvoiceBuyer = {
   buyerType: BuyerType;
   buyerCountryCode?: string | null;
   companyName: string | null;
   companyTaxId: string | null;
-  companyMb: string | null;
   companyAddress: string | null;
   companyCountryCode: string | null;
   billingCurrency?: BillingCurrency | null;
   billingVatRate?: number | null;
-  billingRsdRate?: number | null;
   user: { name: string | null; email: string | null };
 };
 
@@ -37,7 +34,6 @@ export function buildInvoiceRecipient(
     name: buyer.companyName ?? "-",
     address: buyer.companyAddress ?? "-",
     taxId: buyer.companyTaxId,
-    mb: buyer.companyMb,
     countryCode: buyer.companyCountryCode,
     email: buyer.user.email,
   };
@@ -50,8 +46,8 @@ export function invoiceCurrencyForBuyer(
   >,
 ): InvoiceData["currency"] {
   void buyer;
-  if (typeof buyer === "string") return "RSD";
-  return billingCurrencyForCountry("RS");
+  if (typeof buyer === "string") return "EUR";
+  return billingCurrencyForCountry(null);
 }
 
 export function isExportInvoice(
@@ -61,7 +57,9 @@ export function isExportInvoice(
   >,
 ): boolean {
   void buyer;
-  return false;
+  // Every invoice is an export invoice: White Rook DOO (RS) supplying
+  // services to foreign recipients, 0% Serbian VAT.
+  return true;
 }
 
 export function invoiceVatRateForBuyer(
@@ -71,11 +69,11 @@ export function invoiceVatRateForBuyer(
   >,
 ): number {
   if (buyer.billingVatRate != null) return buyer.billingVatRate;
-  return isExportInvoice(buyer) ? 0 : PUBLIC_SERBIA_VAT_RATE;
+  return 0;
 }
 
-export function invoiceGrossCentsFromRsdCents(
-  rsdCents: number,
+export function invoiceGrossCentsFromEurCents(
+  eurCents: number,
   buyer: Pick<
     InvoiceBuyer,
     | "buyerType"
@@ -83,11 +81,10 @@ export function invoiceGrossCentsFromRsdCents(
     | "companyCountryCode"
     | "billingCurrency"
     | "billingVatRate"
-    | "billingRsdRate"
   >,
 ): number {
   void buyer;
-  return billingCentsFromRsdCents(rsdCents);
+  return billingCentsFromEurCents(eurCents);
 }
 
 export function paymentMethodLabel(
@@ -96,15 +93,15 @@ export function paymentMethodLabel(
 ): string {
   void isExport;
   if (provider === "wire_transfer") {
-    return "Uplata na račun";
+    return "Bank transfer (SWIFT)";
   }
   if (provider === "card_mock") {
-    return "Platna kartica";
+    return "Card payment";
   }
-  if (provider === "nestpay") {
-    return "Platna kartica (Banca Intesa)";
+  if (provider === "paypal") {
+    return "PayPal";
   }
-  return "Online plaćanje";
+  return "Online payment";
 }
 
 export function buildInvoiceLineItem(args: {

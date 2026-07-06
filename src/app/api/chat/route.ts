@@ -100,8 +100,8 @@ const guideContextSchema = z.object({
   readinessWarnings: z.array(z.string().max(300)).max(50).optional(),
   canGenerate: z.boolean().optional(),
   cartItemCount: z.number().int().min(0).max(1000).optional(),
-  cartTotalRsd: z.number().min(0).optional(),
-  cartOriginalTotalRsd: z.number().min(0).optional(),
+  cartTotalEur: z.number().min(0).optional(),
+  cartOriginalTotalEur: z.number().min(0).optional(),
   cartHasDiscount: z.boolean().optional(),
 });
 

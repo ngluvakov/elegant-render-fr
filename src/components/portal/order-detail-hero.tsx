@@ -24,11 +24,11 @@ type OrderDetailHeroProps = {
   orderId: string;
   orderNumber: string;
   status: string;
-  totalRsd: number;
+  totalEur: number;
   totalCents?: number | null;
   billingCurrency?: BillingCurrency | null;
   billingTotalCents?: number | null;
-  savingsRsd?: number;
+  savingsEur?: number;
   createdAt: Date;
   updatedAt: Date;
   projectName: string | null;
@@ -42,11 +42,11 @@ export function OrderDetailHero({
   orderId,
   orderNumber,
   status,
-  totalRsd,
+  totalEur,
   totalCents,
   billingCurrency,
   billingTotalCents,
-  savingsRsd = 0,
+  savingsEur = 0,
   createdAt,
   updatedAt,
   projectName,
@@ -65,7 +65,7 @@ export function OrderDetailHero({
         className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
-        Porudžbine
+        Orders
       </Link>
 
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -85,15 +85,15 @@ export function OrderDetailHero({
             </p>
           )}
           <p className="mt-2 text-xs text-muted-foreground">
-            Kreirana{" "}
-            {createdAt.toLocaleDateString("sr-Latn-RS", {
+            Created{" "}
+            {createdAt.toLocaleDateString("en-GB", {
               day: "numeric",
               month: "long",
               year: "numeric",
             })}
             {" · "}
-            Ažurirano{" "}
-            {updatedAt.toLocaleDateString("sr-Latn-RS", {
+            Updated{" "}
+            {updatedAt.toLocaleDateString("en-GB", {
               day: "numeric",
               month: "short",
             })}
@@ -106,15 +106,15 @@ export function OrderDetailHero({
               {billingCurrency && billingTotalCents != null
                 ? formatBillingMoney(billingTotalCents, billingCurrency)
                 : formatPublicPrice(
-                    (totalCents ?? totalRsd * 100) / 100,
+                    (totalCents ?? totalEur * 100) / 100,
                     displayCurrency,
                     pricingSettings,
                   )}
             </p>
-            {savingsRsd > 0 && (
+            {savingsEur > 0 && (
               <p className="text-xs font-semibold text-[color:var(--color-sage-deep)]">
-                −{formatPublicPrice(savingsRsd, displayCurrency, pricingSettings)}{" "}
-                ušteđeno
+                −{formatPublicPrice(savingsEur, displayCurrency, pricingSettings)}{" "}
+                saved
               </p>
             )}
           </div>

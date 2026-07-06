@@ -4,7 +4,7 @@
  * Each floor is a self-contained subset: rooms + cameras (with the
  * per-room camera noun), description, per-floor files (OrderFile.floorId),
  * and an advanced-settings switch (references / per-room details / tech
- * notes). First floor base = 19.924 RSD; every additional floor = 14.064 RSD (30%
+ * notes). First floor base = €170; every additional floor = €120 (30%
  * discount over the standalone price). Autosaves the floors array to
  * OrderItem.configJson with a 600ms debounce.
  */
@@ -45,9 +45,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import {
   calcInteriorTotal,
-  INT_STATIC_EXTRA_CAMERA_RSD,
-  INT_STATIC_EXTRA_FLOOR_RSD,
-  INT_STATIC_EXTRA_ROOM_RSD,
+  INT_STATIC_EXTRA_CAMERA_EUR,
+  INT_STATIC_EXTRA_FLOOR_EUR,
+  INT_STATIC_EXTRA_ROOM_EUR,
   INT_STATIC_INCLUDED_CAMERAS,
   makeFloorId,
   newFloor,
@@ -73,34 +73,36 @@ function floorPricingRows(calc: InteriorFloorCalc) {
   const rows: { label: string; value: number; sub?: string }[] = [
     {
       label: calc.isFirstFloor
-        ? "Cena prvog sprata (uključeno 10 prostorija + 10 rendera)"
-        : "Cena dodatnog sprata (−30%)",
+        ? "First floor price (includes 10 rooms + 10 renders)"
+        : "Additional floor price (-30%)",
       value: calc.baseCost,
     },
   ];
   if (calc.extraRoomsCost > 0) {
     rows.push({
-      label: `+${calc.extraRooms} dodatn${calc.extraRooms === 1 ? "a prostorija" : "ih prostorija"}`,
+      label:
+        calc.extraRooms === 1
+          ? "+1 extra room"
+          : `+${calc.extraRooms} extra rooms`,
       value: calc.extraRoomsCost,
-      sub: `${INT_STATIC_EXTRA_ROOM_RSD.toLocaleString("sr-Latn-RS")} RSD/kom`,
+      sub: `€${INT_STATIC_EXTRA_ROOM_EUR} each`,
     });
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
-      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"}`,
+      label:
+        calc.extraCameras === 1
+          ? "+1 extra frame"
+          : `+${calc.extraCameras} extra frames`,
       value: calc.extraCamerasCost,
-      sub: `${INT_STATIC_EXTRA_CAMERA_RSD.toLocaleString("sr-Latn-RS")} RSD/kom`,
+      sub: `€${INT_STATIC_EXTRA_CAMERA_EUR} each`,
     });
   }
   return rows;
 }
 
-export function kameraNoun(n: number): string {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  if (mod10 === 1 && mod100 !== 11) return "kamera";
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "kamere";
-  return "kamera";
+export function cameraNoun(n: number): string {
+  return n === 1 ? "camera" : "cameras";
 }
 
 type FloorFile = {
@@ -179,7 +181,7 @@ function FloorPanel({
       rooms: [
         ...floor.rooms,
         {
-          name: `Prostorija ${floor.rooms.length + 1}`,
+          name: `Room ${floor.rooms.length + 1}`,
           cameras: 1,
           ...(floor.globalStyleId ? { styleId: floor.globalStyleId } : {}),
         },
@@ -204,7 +206,7 @@ function FloorPanel({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -265,8 +267,8 @@ function FloorPanel({
               )}
             </div>
             <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
-              {calc.totalRooms} prostor{calc.totalRooms === 1 ? "ija" : "ija"} ·{" "}
-              {calc.totalCameras} {kameraNoun(calc.totalCameras)} ·{" "}
+              {calc.totalRooms} room{calc.totalRooms === 1 ? "ija" : "ija"} ·{" "}
+              {calc.totalCameras} {cameraNoun(calc.totalCameras)} ·{" "}
               {formatPrice(calc.floorTotal)}
             </p>
           </div>
@@ -283,7 +285,7 @@ function FloorPanel({
             {!confirmDelete ? (
               <button
                 type="button"
-                aria-label={`Ukloni ${floor.name}`}
+                aria-label={`Remove ${floor.name}`}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -295,7 +297,7 @@ function FloorPanel({
               </button>
             ) : (
               <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in duration-150">
-                <span className="px-1 text-[0.62rem] font-semibold">Ukloniti?</span>
+                <span className="px-1 text-[0.62rem] font-semibold">Remove?</span>
                 <button
                   type="button"
                   onClick={onRemove}
@@ -326,7 +328,7 @@ function FloorPanel({
               className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
             >
               <Pencil className="h-3 w-3 text-accent/60" />
-              Naziv sprata
+              Floor name
             </Label>
             <input
               id={`floor-name-${floor.id}`}
@@ -342,7 +344,7 @@ function FloorPanel({
           {/* Advanced toggle — switch stays at top; body renders at bottom. */}
           <p className="flex items-center gap-1.5 text-[0.7rem] text-[color:var(--color-sage-deep)]">
             <Check className="h-3 w-3" />
-            Sprat je spreman za naručivanje. Ispod je fino podešavanje.
+            This floor is ready to order. Fine-tuning is below.
           </p>
           <label
             htmlFor={`adv-${floor.id}`}
@@ -351,11 +353,11 @@ function FloorPanel({
             <div className="flex items-center gap-2">
               <Settings2 className="h-3 w-3 text-accent" />
               <span className="text-[0.7rem] font-medium text-foreground">
-                Napredno podešavanje{" "}
-                <span className="text-muted-foreground">(opciono)</span>
+                Advanced settings{" "}
+                <span className="text-muted-foreground">(optional)</span>
               </span>
               <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-                · doba dana, godišnje doba, pogled kroz prozor
+                · time of day, season, window view
               </span>
             </div>
             <Switch
@@ -371,10 +373,10 @@ function FloorPanel({
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h6 className="text-xs font-semibold text-foreground">
-                  Sobe i kadrovi
+                  Rooms and cameras
                 </h6>
                 <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
-                  10 prostorija + 10 rendera uključeno po spratu
+                  10 rooms + 10 renders included per floor
                 </p>
               </div>
               <button
@@ -383,24 +385,24 @@ function FloorPanel({
                 className="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-[0.72rem] font-semibold text-accent transition-all hover:border-accent hover:bg-accent/15 hover:-translate-y-px"
               >
                 <Palette className="h-3.5 w-3.5" />
-                Vodič kroz stilove
+                Style guide
               </button>
             </div>
 
             <div className="flex items-start gap-2 rounded-md bg-secondary/30 px-2.5 py-1.5 text-[0.72rem] text-muted-foreground">
               <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-accent/70" />
               <p>
-                Broj pored prostorije = kamere (renderi) u toj prostoriji. Preko
-                10 rendera na spratu = {formatPrice(INT_STATIC_EXTRA_CAMERA_RSD)} po kameri.
+                The number beside each room is the camera/render count for that room. Above
+                10 renders per floor = {formatPrice(INT_STATIC_EXTRA_CAMERA_EUR)} per camera.
               </p>
             </div>
 
             {/* Counters */}
             <div className="grid grid-cols-3 gap-2">
-              <CounterPill icon={<Home className="h-3 w-3" />} label="Sobe" value={calc.totalRooms} extra={calc.extraRooms} />
-              <CounterPill icon={<Camera className="h-3 w-3" />} label="Renderi" value={calc.totalCameras} slash={INT_STATIC_INCLUDED_CAMERAS} />
+              <CounterPill icon={<Home className="h-3 w-3" />} label="Rooms" value={calc.totalRooms} extra={calc.extraRooms} />
+              <CounterPill icon={<Camera className="h-3 w-3" />} label="Renders" value={calc.totalCameras} slash={INT_STATIC_INCLUDED_CAMERAS} />
               <CounterPill
-                label="Preostalo"
+                label="Remaining"
                 value={calc.remainingRenders >= 0 ? calc.remainingRenders : `+${Math.abs(calc.remainingRenders)}`}
                 variant={
                   calc.remainingRenders >= 3 ? "good" : calc.remainingRenders >= 0 ? "warn" : "bad"
@@ -417,12 +419,12 @@ function FloorPanel({
                 <div className="flex items-center gap-2">
                   <Palette className="h-3 w-3 text-accent" />
                   <span className="text-[0.7rem] font-medium text-foreground">
-                    Stil po sobi
+                    Style per room
                   </span>
                   <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
                     · {styleMode === "per-room"
-                      ? "svaka soba bira sama"
-                      : "isti stil za sve sobe"}
+                      ? "each room chooses separately"
+                      : "same style for all rooms"}
                   </span>
                 </div>
                 <Switch
@@ -441,7 +443,7 @@ function FloorPanel({
                     htmlFor={`global-style-${floor.id}`}
                     className="text-[0.7rem]"
                   >
-                    Stil za sve sobe
+                    Style for all rooms
                   </Label>
                   <select
                     id={`global-style-${floor.id}`}
@@ -457,7 +459,7 @@ function FloorPanel({
                     disabled={!editable}
                     className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                   >
-                    <option value="">— izaberite —</option>
+                    <option value="">Select...</option>
                     {ROOM_STYLES.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.label}
@@ -472,7 +474,7 @@ function FloorPanel({
             {floor.rooms.length === 0 ? (
               <div className="rounded-md border border-dashed border-border/40 px-3 py-4 text-center">
                 <p className="text-[0.72rem] text-muted-foreground">
-                  Nemate nijednu prostoriju. Dodajte prvu ispod.
+                  No rooms yet. Add the first one below.
                 </p>
               </div>
             ) : (
@@ -495,7 +497,7 @@ function FloorPanel({
                           disabled={!editable}
                           maxLength={80}
                           className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground/50"
-                          placeholder="Naziv prostorije"
+                          placeholder="Room name"
                         />
                         {styleMode === "per-room" && (
                           <select
@@ -506,10 +508,10 @@ function FloorPanel({
                               })
                             }
                             disabled={!editable}
-                            aria-label="Stil enterijera"
+                            aria-label="Interior style"
                             className="rounded bg-secondary/60 px-2 py-1 text-[0.72rem] text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
                           >
-                            <option value="">Stil — izaberite</option>
+                            <option value="">Style - select</option>
                             {ROOM_STYLES.map((s) => (
                               <option key={s.id} value={s.id}>
                                 {s.label}
@@ -519,7 +521,7 @@ function FloorPanel({
                         )}
                         {isBeyondRooms && (
                           <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.62rem] font-semibold text-accent">
-                            +{formatPrice(INT_STATIC_EXTRA_ROOM_RSD)}
+                            +{formatPrice(INT_STATIC_EXTRA_ROOM_EUR)}
                           </span>
                         )}
                         <div className="inline-flex items-center rounded bg-secondary/60">
@@ -527,7 +529,7 @@ function FloorPanel({
                             type="button"
                             disabled={!editable || room.cameras <= 1}
                             onClick={() => decCamera(rIdx)}
-                            aria-label="Smanji broj kamera u ovoj sobi"
+                            aria-label="Decrease cameras in this room"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Minus className="h-3 w-3" />
@@ -539,20 +541,20 @@ function FloorPanel({
                             type="button"
                             disabled={!editable || room.cameras >= 10}
                             onClick={() => incCamera(rIdx)}
-                            aria-label="Povećaj broj kamera u ovoj sobi"
+                            aria-label="Increase cameras in this room"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Plus className="h-3 w-3" />
                           </button>
                         </div>
                         <span className="hidden w-12 text-[0.72rem] text-muted-foreground sm:inline">
-                          {kameraNoun(room.cameras)}
+                          {cameraNoun(room.cameras)}
                         </span>
                         {editable && (
                           <button
                             type="button"
                             onClick={() => removeRoom(rIdx)}
-                            aria-label="Ukloni prostoriju"
+                            aria-label="Remove room"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                           >
                             <Trash2 className="h-3 w-3" />
@@ -563,7 +565,7 @@ function FloorPanel({
                         value={room.notes ?? ""}
                         onChange={(e) => updateRoom(rIdx, { notes: e.target.value })}
                         disabled={!editable}
-                        placeholder="Detalji za ovu prostoriju — položaj kamere, atmosfera, posebni zahtevi…"
+                        placeholder="Details for this room - camera position, atmosphere, special requirements..."
                         rows={2}
                         className="resize-none text-[0.78rem]"
                       />
@@ -580,10 +582,10 @@ function FloorPanel({
                 className="inline-flex items-center gap-1.5 self-start rounded-lg border border-accent/50 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-accent transition-all hover:-translate-y-px hover:border-accent hover:bg-accent/15 hover:shadow-[0_4px_12px_-4px_rgba(184,131,99,0.3)]"
               >
                 <Plus className="h-3.5 w-3.5" />
-                Dodaj prostoriju
+                Add room
                 {calc.totalRooms >= 10 && (
                   <span className="text-[0.62rem] text-accent/80">
-                    (+{formatPrice(INT_STATIC_EXTRA_ROOM_RSD)})
+                    (+{formatPrice(INT_STATIC_EXTRA_ROOM_EUR)})
                   </span>
                 )}
               </button>
@@ -594,14 +596,14 @@ function FloorPanel({
           <div className="space-y-1.5">
             <Label htmlFor={`desc-${floor.id}`} className="text-xs">
               <Pencil className="h-3 w-3 text-accent/60" />
-              Opis projekta za ovaj sprat
+              Project description for this floor
             </Label>
             <Textarea
               id={`desc-${floor.id}`}
               value={floor.description ?? ""}
               onChange={(e) => onPatch({ description: e.target.value })}
               disabled={!editable}
-              placeholder="Stil, atmosfera, posebni zahtevi za ovaj sprat…"
+              placeholder="Style, atmosphere, special requirements for this floor..."
               rows={3}
               className="resize-none text-sm"
             />
@@ -609,7 +611,7 @@ function FloorPanel({
 
           {/* Files */}
           <div className="space-y-1.5">
-            <Label className="text-xs">Osnove i fotografije (ovaj sprat)</Label>
+            <Label className="text-xs">Plans and photos (this floor)</Label>
             <div
               onClick={() => editable && inputRef.current?.click()}
               className={cn(
@@ -621,7 +623,7 @@ function FloorPanel({
             >
               <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
               <span className="text-[0.7rem] text-muted-foreground">
-                Prevucite ili kliknite — osnove sprata, foto, skice
+                Drag or click - floor plans, photos, sketches
               </span>
               <input
                 ref={inputRef}
@@ -652,7 +654,7 @@ function FloorPanel({
                     {editable && (
                       <button
                         type="button"
-                        aria-label="Ukloni fajl"
+                        aria-label="Remove file"
                         onClick={() => handleFileDelete(f.id)}
                         className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                       >
@@ -672,7 +674,7 @@ function FloorPanel({
                   >
                     <FileUp className="h-3 w-3 text-accent" />
                     <span className="flex-1 truncate text-foreground">{name}</span>
-                    <span className="text-accent">Otpremanje…</span>
+                    <span className="text-accent">Uploading...</span>
                   </div>
                 ))}
               </div>
@@ -684,13 +686,13 @@ function FloorPanel({
           <Collapsible open={advanced}>
             <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
               <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                Napredno
+                Advanced
               </p>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1">
                   <Label htmlFor={`tod-${floor.id}`} className="text-[0.7rem]">
-                    Doba dana
+                    Time of day
                   </Label>
                   <select
                     id={`tod-${floor.id}`}
@@ -704,7 +706,7 @@ function FloorPanel({
                     disabled={!editable}
                     className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                   >
-                    <option value="">— izaberite —</option>
+                    <option value="">Select...</option>
                     {TIMES_OF_DAY.map((t) => (
                       <option key={t.id} value={t.id}>
                         {t.label}
@@ -715,7 +717,7 @@ function FloorPanel({
 
                 <div className="space-y-1">
                   <Label htmlFor={`season-${floor.id}`} className="text-[0.7rem]">
-                    Godišnje doba
+                    Season
                   </Label>
                   <select
                     id={`season-${floor.id}`}
@@ -729,7 +731,7 @@ function FloorPanel({
                     disabled={!editable}
                     className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                   >
-                    <option value="">— izaberite —</option>
+                    <option value="">Select...</option>
                     {SEASONS.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.label}
@@ -741,7 +743,7 @@ function FloorPanel({
 
               <div className="space-y-1.5">
                 <Label className="text-[0.7rem]">
-                  Pogled kroz prozor (reference)
+                  Window view (reference)
                 </Label>
                 <div
                   onClick={() => editable && viewInputRef.current?.click()}
@@ -754,7 +756,7 @@ function FloorPanel({
                 >
                   <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
                   <span className="text-[0.7rem] text-muted-foreground">
-                    Fotografije pogleda kroz prozore ovog sprata
+                    Window-view photos for this floor
                   </span>
                   <input
                     ref={viewInputRef}
@@ -791,7 +793,7 @@ function FloorPanel({
                         {editable && (
                           <button
                             type="button"
-                            aria-label="Ukloni fajl"
+                            aria-label="Remove file"
                             onClick={() => handleFileDelete(f.id)}
                             className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                           >
@@ -805,7 +807,7 @@ function FloorPanel({
               </div>
 
               <PricingBreakdown
-                title="Sastav cene za ovaj sprat"
+                title="Price breakdown for this floor"
                 rows={floorPricingRows(calc)}
                 total={calc.floorTotal}
               />
@@ -865,18 +867,18 @@ export function StyleGuideModal({
         <div className="flex items-start justify-between gap-3 border-b border-border/40 p-5">
           <div>
             <h3 className="font-heading text-xl text-foreground">
-              Vodič kroz stilove
+              Style guide
             </h3>
             <p className="mt-1 text-[0.78rem] text-muted-foreground">
-              Kliknite „Primeni na sve prostorije” da brzo postavite isti
-              stil za sve sobe ovog sprata. Pojedinačne sobe možete uvek
-              ručno promeniti posle.
+              Click "Apply to all rooms" to quickly set the same
+              style for all rooms on this floor. You can always
+              change individual rooms manually later.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Zatvori"
+            aria-label="Close"
             className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <X className="h-4 w-4" />
@@ -892,7 +894,7 @@ export function StyleGuideModal({
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <Image
                   src={style.image}
-                  alt={`Primer enterijera: ${style.label}`}
+                  alt={`Interior example: ${style.label}`}
                   fill
                   sizes="(min-width: 640px) 40vw, 90vw"
                   className="object-cover"
@@ -914,7 +916,7 @@ export function StyleGuideModal({
                     className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-[0.72rem] font-semibold text-accent transition-all hover:border-accent hover:bg-accent/15"
                   >
                     <Check className="h-3 w-3" />
-                    Primeni na sve prostorije
+                    Apply to all rooms
                   </button>
                 )}
               </div>
@@ -928,7 +930,7 @@ export function StyleGuideModal({
             onClick={onClose}
             className="rounded-lg px-4 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
-            Zatvori
+            Close
           </button>
         </div>
       </div>
@@ -1062,11 +1064,11 @@ export function InteriorConfigSection({
           <Layers className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {calc.floorCount} sprat{calc.floorCount === 1 ? "" : "a"}
+              {calc.floorCount} floor{calc.floorCount === 1 ? "" : "a"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {calc.floors.reduce((s, f) => s + f.totalRooms, 0)} prostorija ·{" "}
-              {calc.floors.reduce((s, f) => s + f.totalCameras, 0)} rendera ukupno
+              {calc.floors.reduce((s, f) => s + f.totalRooms, 0)} rooms ·{" "}
+              {calc.floors.reduce((s, f) => s + f.totalCameras, 0)} renders total
             </p>
           </div>
         </div>
@@ -1074,18 +1076,18 @@ export function InteriorConfigSection({
           {savedAt && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Sačuvano
+              Saved
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(calc.totalRsd)}
+            {formatPrice(calc.totalEur)}
           </p>
         </div>
       </div>
 
       {/* Style guide CTA — surfaced at section level so customers can
           browse the gallery before configuring any floors. Per-floor
-          panels also have their own "Vodič kroz stilove" button that
+          panels also have their own "Style guide" button that
           can apply the picked style to that floor's rooms. */}
       <button
         type="button"
@@ -1098,15 +1100,15 @@ export function InteriorConfigSection({
           </span>
           <div>
             <p className="text-sm font-semibold text-foreground">
-              Pogledaj galeriju stilova
+              View style gallery
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              Skandi, moderan, klasika, industrijski — birajte šta vam se sviđa pre nego što podesite spratove.
+              Scandi, modern, classic, industrial - choose what you like before setting up floors.
             </p>
           </div>
         </div>
         <span className="hidden flex-shrink-0 text-[0.72rem] font-semibold text-accent sm:inline">
-          Otvori →
+          Open →
         </span>
       </button>
 
@@ -1115,7 +1117,7 @@ export function InteriorConfigSection({
         <div className="rounded-xl border border-dashed border-border/40 bg-card/40 px-4 py-8 text-center">
           <Layers className="mx-auto h-6 w-6 text-muted-foreground/40" />
           <p className="mt-2 text-xs text-muted-foreground">
-            Nijedan sprat još nije dodat. Dodajte prvi ispod.
+            No floor has been added yet. Add the first one below.
           </p>
         </div>
       ) : (
@@ -1151,16 +1153,16 @@ export function InteriorConfigSection({
             </span>
             <div>
               <p className="text-sm font-semibold text-foreground">
-                {floors.length === 0 ? "Dodaj prvi sprat" : "Dodaj još jedan sprat"}
+                {floors.length === 0 ? "Add first floor" : "Add another floor"}
               </p>
               <p className="text-[0.72rem] text-muted-foreground">
-                Svaki sprat ima svoje sobe, fotografije i podešavanja.
+                Each floor has its own rooms, photos, and settings.
               </p>
             </div>
           </div>
           {floors.length > 0 && (
             <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-1 text-[0.72rem] font-bold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
-              −30% · {formatPrice(INT_STATIC_EXTRA_FLOOR_RSD)}
+              −30% · {formatPrice(INT_STATIC_EXTRA_FLOOR_EUR)}
             </span>
           )}
         </button>

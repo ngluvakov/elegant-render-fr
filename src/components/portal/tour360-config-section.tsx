@@ -57,15 +57,15 @@ import {
   ROOM_STYLES,
   SEASONS,
   TIMES_OF_DAY,
-  TOUR360_ASSEMBLY_BASE_RSD,
+  TOUR360_ASSEMBLY_BASE_EUR,
   TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD,
-  TOUR360_EXTRA_CAMERA_RSD,
-  TOUR360_EXTRA_FLOOR_RSD,
-  TOUR360_EXTRA_HOTSPOT_RSD,
-  TOUR360_FLOOR_PLAN_NAV_RSD,
+  TOUR360_EXTRA_CAMERA_EUR,
+  TOUR360_EXTRA_FLOOR_EUR,
+  TOUR360_EXTRA_HOTSPOT_EUR,
+  TOUR360_FLOOR_PLAN_NAV_EUR,
   TOUR360_INCLUDED_CAMERAS,
   TOUR360_INCLUDED_HOTSPOTS,
-  TOUR360_WHITE_LABEL_RSD,
+  TOUR360_WHITE_LABEL_EUR,
   type RoomStyleId,
   type SeasonId,
   type StyleMode,
@@ -88,23 +88,29 @@ function floorPricingRows(calc: Tour360FloorCalc) {
   const rows: { label: string; value: number; sub?: string }[] = [
     {
       label: calc.isFirstFloor
-        ? "Cena prvog sprata (uključeno 10 hotspotova + 10 stat. kamera)"
-        : "Cena dodatnog sprata (−30%)",
+        ? "First floor price (includes 10 hotspots + 10 static cameras)"
+        : "Additional floor price (-30%)",
       value: calc.baseCost,
     },
   ];
   if (calc.extraHotspotsCost > 0) {
     rows.push({
-      label: `+${calc.extraHotspots} dodatn${calc.extraHotspots === 1 ? "i hotspot" : "ih hotspotova"}`,
+      label:
+        calc.extraHotspots === 1
+          ? "+1 extra hotspot"
+          : `+${calc.extraHotspots} extra hotspots`,
       value: calc.extraHotspotsCost,
-      sub: `${TOUR360_EXTRA_HOTSPOT_RSD.toLocaleString("sr-Latn-RS")} RSD/kom`,
+      sub: `€${TOUR360_EXTRA_HOTSPOT_EUR} each`,
     });
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
-      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "a stat. kamera" : "ih stat. kamera"}`,
+      label:
+        calc.extraCameras === 1
+          ? "+1 extra static camera"
+          : `+${calc.extraCameras} extra static cameras`,
       value: calc.extraCamerasCost,
-      sub: `${TOUR360_EXTRA_CAMERA_RSD.toLocaleString("sr-Latn-RS")} RSD/kom`,
+      sub: `€${TOUR360_EXTRA_CAMERA_EUR} each`,
     });
   }
   return rows;
@@ -196,7 +202,7 @@ function Tour360FloorPanel({
       rooms: [
         ...floor.rooms,
         {
-          name: `Prostorija ${floor.rooms.length + 1}`,
+          name: `Room ${floor.rooms.length + 1}`,
           hotspots: 1,
           staticCameras: 0,
           ...(floor.globalStyleId ? { styleId: floor.globalStyleId } : {}),
@@ -222,7 +228,7 @@ function Tour360FloorPanel({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -254,7 +260,7 @@ function Tour360FloorPanel({
   const floorIsConfigured =
     (floor.description?.trim().length ?? 0) > 0 || files.length > 0;
 
-  const roomsSummary = `${calc.totalRooms} prostor${calc.totalRooms === 1 ? "ija" : "ija"} · ${calc.totalHotspots} hotspot${calc.totalHotspots === 1 ? "" : "ova"} · ${calc.totalCameras} stat. ${calc.totalCameras === 1 ? "kamera" : "kamere"}`;
+  const roomsSummary = `${calc.totalRooms} room${calc.totalRooms === 1 ? "" : "s"} · ${calc.totalHotspots} hotspot${calc.totalHotspots === 1 ? "" : "s"} · ${calc.totalCameras} static camera${calc.totalCameras === 1 ? "" : "s"}`;
 
   return (
     <div
@@ -301,7 +307,7 @@ function Tour360FloorPanel({
             {!confirmDelete ? (
               <button
                 type="button"
-                aria-label={`Ukloni ${floor.name}`}
+                aria-label={`Remove ${floor.name}`}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -313,7 +319,7 @@ function Tour360FloorPanel({
               </button>
             ) : (
               <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in duration-150">
-                <span className="px-1 text-[0.62rem] font-semibold">Ukloniti?</span>
+                <span className="px-1 text-[0.62rem] font-semibold">Remove?</span>
                 <button
                   type="button"
                   onClick={onRemove}
@@ -344,7 +350,7 @@ function Tour360FloorPanel({
               className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
             >
               <Pencil className="h-3 w-3 text-accent/60" />
-              Naziv sprata
+              Floor name
             </Label>
             <input
               id={`floor-name-${floor.id}`}
@@ -360,7 +366,7 @@ function Tour360FloorPanel({
           {/* Advanced toggle */}
           <p className="flex items-center gap-1.5 text-[0.7rem] text-[color:var(--color-sage-deep)]">
             <Check className="h-3 w-3" />
-            Sprat je spreman za naručivanje. Ispod je fino podešavanje.
+            This floor is ready to order. Fine-tuning is below.
           </p>
           <label
             htmlFor={`adv-${floor.id}`}
@@ -369,11 +375,11 @@ function Tour360FloorPanel({
             <div className="flex items-center gap-2">
               <Settings2 className="h-3 w-3 text-accent" />
               <span className="text-[0.7rem] font-medium text-foreground">
-                Napredno podešavanje{" "}
-                <span className="text-muted-foreground">(opciono)</span>
+                Advanced settings{" "}
+                <span className="text-muted-foreground">(optional)</span>
               </span>
               <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-                · doba dana, godišnje doba, pogled kroz prozor
+                · time of day, season, window view
               </span>
             </div>
             <Switch
@@ -389,10 +395,10 @@ function Tour360FloorPanel({
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h6 className="text-xs font-semibold text-foreground">
-                  Sobe i kadrovi
+                  Rooms and cameras
                 </h6>
                 <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
-                  10 soba sa hotspotom + 10 statičkih kamera uključeno po spratu
+                  10 rooms with hotspots + 10 static cameras included per floor
                 </p>
               </div>
               <button
@@ -401,17 +407,17 @@ function Tour360FloorPanel({
                 className="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-[0.72rem] font-semibold text-accent transition-all hover:border-accent hover:bg-accent/15 hover:-translate-y-px"
               >
                 <Palette className="h-3.5 w-3.5" />
-                Vodič kroz stilove
+                Style guide
               </button>
             </div>
 
             <div className="flex items-start gap-2 rounded-md bg-secondary/30 px-2.5 py-1.5 text-[0.72rem] text-muted-foreground">
               <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-accent/70" />
               <p>
-                Po spratu je uključeno {TOUR360_INCLUDED_HOTSPOTS} hotspotova
-                + {TOUR360_INCLUDED_CAMERAS} statičkih kamera. Preko toga:
-                {formatPrice(TOUR360_EXTRA_HOTSPOT_RSD)} po dodatnom hotspot-u i
-                {formatPrice(TOUR360_EXTRA_CAMERA_RSD)} po dodatnoj kameri.
+                Per floor, this includes {TOUR360_INCLUDED_HOTSPOTS} hotspots
+                + {TOUR360_INCLUDED_CAMERAS} static cameras. Above that:
+                {formatPrice(TOUR360_EXTRA_HOTSPOT_EUR)} per extra hotspot and
+                {formatPrice(TOUR360_EXTRA_CAMERA_EUR)} per extra static camera.
               </p>
             </div>
 
@@ -419,25 +425,25 @@ function Tour360FloorPanel({
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               <CounterPill
                 icon={<Home className="h-3 w-3" />}
-                label="Sobe"
+                label="Rooms"
                 value={calc.totalRooms}
               />
               <CounterPill
                 icon={<Compass className="h-3 w-3" />}
-                label="Hotspotovi"
+                label="Hotspots"
                 value={calc.totalHotspots}
                 slash={TOUR360_INCLUDED_HOTSPOTS}
                 extra={calc.extraHotspots}
               />
               <CounterPill
                 icon={<Camera className="h-3 w-3" />}
-                label="Stat. kamere"
+                label="Static cameras"
                 value={calc.totalCameras}
                 slash={TOUR360_INCLUDED_CAMERAS}
                 extra={calc.extraCameras}
               />
               <CounterPill
-                label="Preostalo"
+                label="Remaining"
                 value={
                   calc.remainingHotspots >= 0 && calc.remainingCameras >= 0
                     ? Math.min(calc.remainingHotspots, calc.remainingCameras)
@@ -462,12 +468,12 @@ function Tour360FloorPanel({
                 <div className="flex items-center gap-2">
                   <Palette className="h-3 w-3 text-accent" />
                   <span className="text-[0.7rem] font-medium text-foreground">
-                    Stil po sobi
+                    Style per room
                   </span>
                   <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
                     · {styleMode === "per-room"
-                      ? "svaka soba bira sama"
-                      : "isti stil za sve sobe"}
+                      ? "each room chooses separately"
+                      : "same style for all rooms"}
                   </span>
                 </div>
                 <Switch
@@ -486,7 +492,7 @@ function Tour360FloorPanel({
                     htmlFor={`global-style-${floor.id}`}
                     className="text-[0.7rem]"
                   >
-                    Stil za sve sobe
+                    Style for all rooms
                   </Label>
                   <select
                     id={`global-style-${floor.id}`}
@@ -502,7 +508,7 @@ function Tour360FloorPanel({
                     disabled={!editable}
                     className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                   >
-                    <option value="">— izaberite —</option>
+                    <option value="">Select...</option>
                     {ROOM_STYLES.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.label}
@@ -517,7 +523,7 @@ function Tour360FloorPanel({
             {floor.rooms.length === 0 ? (
               <div className="rounded-md border border-dashed border-border/40 px-3 py-4 text-center">
                 <p className="text-[0.72rem] text-muted-foreground">
-                  Nemate nijednu prostoriju. Dodajte prvu ispod.
+                  No rooms yet. Add the first one below.
                 </p>
               </div>
             ) : (
@@ -536,7 +542,7 @@ function Tour360FloorPanel({
                           disabled={!editable}
                           maxLength={80}
                           className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground/50"
-                          placeholder="Naziv prostorije"
+                          placeholder="Room name"
                         />
                         {styleMode === "per-room" && (
                           <select
@@ -547,10 +553,10 @@ function Tour360FloorPanel({
                               })
                             }
                             disabled={!editable}
-                            aria-label="Stil enterijera"
+                            aria-label="Interior style"
                             className="rounded bg-secondary/60 px-2 py-1 text-[0.72rem] text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
                           >
-                            <option value="">Stil — izaberite</option>
+                            <option value="">Style - select</option>
                             {ROOM_STYLES.map((s) => (
                               <option key={s.id} value={s.id}>
                                 {s.label}
@@ -561,14 +567,14 @@ function Tour360FloorPanel({
                         {/* Hotspots stepper */}
                         <div
                           className="inline-flex items-center rounded bg-secondary/60"
-                          aria-label="360 hotspotovi"
+                          aria-label="360 hotspots"
                         >
                           <Wand2 className="ml-1 h-3 w-3 text-accent/70" />
                           <button
                             type="button"
                             disabled={!editable || room.hotspots <= 0}
                             onClick={() => decHotspots(rIdx)}
-                            aria-label="Smanji broj hotspotova"
+                            aria-label="Decrease number of hotspots"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Minus className="h-3 w-3" />
@@ -580,7 +586,7 @@ function Tour360FloorPanel({
                             type="button"
                             disabled={!editable || room.hotspots >= 20}
                             onClick={() => incHotspots(rIdx)}
-                            aria-label="Povećaj broj hotspotova"
+                            aria-label="Increase number of hotspots"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Plus className="h-3 w-3" />
@@ -589,14 +595,14 @@ function Tour360FloorPanel({
                         {/* Static cameras stepper */}
                         <div
                           className="inline-flex items-center rounded bg-secondary/60"
-                          aria-label="Statičke kamere"
+                          aria-label="Static cameras"
                         >
                           <Camera className="ml-1 h-3 w-3 text-accent/70" />
                           <button
                             type="button"
                             disabled={!editable || room.staticCameras <= 0}
                             onClick={() => decCameras(rIdx)}
-                            aria-label="Smanji broj statičkih kamera"
+                            aria-label="Decrease number of static cameras"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Minus className="h-3 w-3" />
@@ -608,7 +614,7 @@ function Tour360FloorPanel({
                             type="button"
                             disabled={!editable || room.staticCameras >= 20}
                             onClick={() => incCameras(rIdx)}
-                            aria-label="Povećaj broj statičkih kamera"
+                            aria-label="Increase number of static cameras"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Plus className="h-3 w-3" />
@@ -618,7 +624,7 @@ function Tour360FloorPanel({
                           <button
                             type="button"
                             onClick={() => removeRoom(rIdx)}
-                            aria-label="Ukloni prostoriju"
+                            aria-label="Remove room"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                           >
                             <Trash2 className="h-3 w-3" />
@@ -629,7 +635,7 @@ function Tour360FloorPanel({
                         value={room.notes ?? ""}
                         onChange={(e) => updateRoom(rIdx, { notes: e.target.value })}
                         disabled={!editable}
-                        placeholder="Detalji za ovu prostoriju — pozicije hotspotova, atmosfera, posebni zahtevi…"
+                        placeholder="Details for this room - hotspot positions, atmosphere, special requirements..."
                         rows={2}
                         className="resize-none text-[0.78rem]"
                       />
@@ -646,7 +652,7 @@ function Tour360FloorPanel({
                 className="inline-flex items-center gap-1.5 self-start rounded-lg border border-accent/50 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-accent transition-all hover:-translate-y-px hover:border-accent hover:bg-accent/15 hover:shadow-[0_4px_12px_-4px_rgba(184,131,99,0.3)]"
               >
                 <Plus className="h-3.5 w-3.5" />
-                Dodaj prostoriju
+                Add room
               </button>
             )}
           </div>
@@ -655,14 +661,14 @@ function Tour360FloorPanel({
           <div className="space-y-1.5">
             <Label htmlFor={`desc-${floor.id}`} className="text-xs">
               <Pencil className="h-3 w-3 text-accent/60" />
-              Opis projekta za ovaj sprat
+              Project description for this floor
             </Label>
             <Textarea
               id={`desc-${floor.id}`}
               value={floor.description ?? ""}
               onChange={(e) => onPatch({ description: e.target.value })}
               disabled={!editable}
-              placeholder="Stil, atmosfera, posebni zahtevi za ovaj sprat…"
+              placeholder="Style, atmosphere, special requirements for this floor..."
               rows={3}
               className="resize-none text-sm"
             />
@@ -670,7 +676,7 @@ function Tour360FloorPanel({
 
           {/* Files */}
           <div className="space-y-1.5">
-            <Label className="text-xs">Osnove i fotografije (ovaj sprat)</Label>
+            <Label className="text-xs">Plans and photos (this floor)</Label>
             <div
               onClick={() => editable && inputRef.current?.click()}
               className={cn(
@@ -682,7 +688,7 @@ function Tour360FloorPanel({
             >
               <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
               <span className="text-[0.7rem] text-muted-foreground">
-                Prevucite ili kliknite — osnove sprata, foto, skice
+                Drag or click - floor plans, photos, sketches
               </span>
               <input
                 ref={inputRef}
@@ -713,7 +719,7 @@ function Tour360FloorPanel({
                     {editable && (
                       <button
                         type="button"
-                        aria-label="Ukloni fajl"
+                        aria-label="Remove file"
                         onClick={() => handleFileDelete(f.id)}
                         className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                       >
@@ -733,7 +739,7 @@ function Tour360FloorPanel({
                   >
                     <FileUp className="h-3 w-3 text-accent" />
                     <span className="flex-1 truncate text-foreground">{name}</span>
-                    <span className="text-accent">Otpremanje…</span>
+                    <span className="text-accent">Uploading...</span>
                   </div>
                 ))}
               </div>
@@ -744,13 +750,13 @@ function Tour360FloorPanel({
           <Collapsible open={advanced}>
             <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
               <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                Napredno
+                Advanced
               </p>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1">
                   <Label htmlFor={`tod-${floor.id}`} className="text-[0.7rem]">
-                    Doba dana
+                    Time of day
                   </Label>
                   <select
                     id={`tod-${floor.id}`}
@@ -764,7 +770,7 @@ function Tour360FloorPanel({
                     disabled={!editable}
                     className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                   >
-                    <option value="">— izaberite —</option>
+                    <option value="">Select...</option>
                     {TIMES_OF_DAY.map((t) => (
                       <option key={t.id} value={t.id}>
                         {t.label}
@@ -775,7 +781,7 @@ function Tour360FloorPanel({
 
                 <div className="space-y-1">
                   <Label htmlFor={`season-${floor.id}`} className="text-[0.7rem]">
-                    Godišnje doba
+                    Season
                   </Label>
                   <select
                     id={`season-${floor.id}`}
@@ -789,7 +795,7 @@ function Tour360FloorPanel({
                     disabled={!editable}
                     className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                   >
-                    <option value="">— izaberite —</option>
+                    <option value="">Select...</option>
                     {SEASONS.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.label}
@@ -801,7 +807,7 @@ function Tour360FloorPanel({
 
               <div className="space-y-1.5">
                 <Label className="text-[0.7rem]">
-                  Pogled kroz prozor (reference)
+                  Window view (reference)
                 </Label>
                 <div
                   onClick={() => editable && viewInputRef.current?.click()}
@@ -814,7 +820,7 @@ function Tour360FloorPanel({
                 >
                   <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
                   <span className="text-[0.7rem] text-muted-foreground">
-                    Fotografije pogleda kroz prozore ovog sprata
+                    Window-view photos for this floor
                   </span>
                   <input
                     ref={viewInputRef}
@@ -851,7 +857,7 @@ function Tour360FloorPanel({
                         {editable && (
                           <button
                             type="button"
-                            aria-label="Ukloni fajl"
+                            aria-label="Remove file"
                             onClick={() => handleFileDelete(f.id)}
                             className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                           >
@@ -865,7 +871,7 @@ function Tour360FloorPanel({
               </div>
 
               <PricingBreakdown
-                title="Sastav cene za ovaj sprat"
+                title="Price breakdown for this floor"
                 rows={floorPricingRows(calc)}
                 total={calc.floorTotal}
               />
@@ -934,7 +940,7 @@ export function TourAssemblyCard({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -973,11 +979,11 @@ export function TourAssemblyCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Dodaci za turu
+            Tour add-ons
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Spojite 360 rendere u interaktivnu web turu sa navigacijom između
-            prostorija.
+            Combine 360 renders into an interactive web tour with navigation between
+            rooms.
           </p>
         </div>
         {assemblyCalc.enabled && (
@@ -995,20 +1001,20 @@ export function TourAssemblyCard({
           <Compass className="h-3.5 w-3.5 text-accent" />
           <div>
             <span className="block text-[0.78rem] font-medium text-foreground">
-              Želim interaktivnu web turu
+              I want an interactive web tour
             </span>
             <span className="block text-[0.7rem] text-muted-foreground">
               {totalHotspots >= TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD ? (
                 <>
-                  Besplatno — porudžbina ima {totalHotspots} hotspotova (≥{" "}
+                  Free - this order has {totalHotspots} hotspots (≥{" "}
                   {TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD})
                 </>
               ) : (
                 <>
-                  {formatPrice(TOUR360_ASSEMBLY_BASE_RSD)} (besplatno od{" "}
-                  {TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD} hotspotova
+                  {formatPrice(TOUR360_ASSEMBLY_BASE_EUR)} (free from{" "}
+                  {TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD} hotspots
                   {hotspotsShortBy > 0
-                    ? ` — fali još ${hotspotsShortBy}`
+                    ? ` — missing ${hotspotsShortBy}`
                     : ""}
                   )
                 </>
@@ -1050,14 +1056,14 @@ export function TourAssemblyCard({
             <div className="flex flex-1 items-start justify-between gap-2">
               <div>
                 <p className="text-[0.78rem] font-medium text-foreground">
-                  Interaktivna navigacija planom
+                  Interactive floor plan navigation
                 </p>
                 <p className="text-[0.72rem] text-muted-foreground">
-                  Klikabilni tlocrt za navigaciju između prostorija
+                  Clickable floor plan for navigation between rooms
                 </p>
               </div>
               <span className="flex-shrink-0 text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(TOUR360_FLOOR_PLAN_NAV_RSD)}
+                +{formatPrice(TOUR360_FLOOR_PLAN_NAV_EUR)}
               </span>
             </div>
           </label>
@@ -1079,20 +1085,20 @@ export function TourAssemblyCard({
             <div className="flex flex-1 items-start justify-between gap-2">
               <div>
                 <p className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
-                  Brendirana tura (white-label)
+                  Branded tour (white-label)
                   <HelpTip>
-                    <strong>White-label</strong> tura nema Elegant Render
-                    logo niti reklame — vaš klijent vidi samo vaš
-                    brending (logo, boje, naziv). Korisno za agencije
-                    koje turu daju kao deo svoje usluge.
+                    A <strong>white-label</strong> tour has no Elegant Render
+                    logo or ads. Your client sees only your branding
+                    (logo, colours, name), which is useful for agencies
+                    offering the tour as part of their own service.
                   </HelpTip>
                 </p>
                 <p className="text-[0.72rem] text-muted-foreground">
-                  Prilagođen interfejs sa vašim logom i bojama
+                  Custom interface with your logo and colours
                 </p>
               </div>
               <span className="flex-shrink-0 text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(TOUR360_WHITE_LABEL_RSD)}
+                +{formatPrice(TOUR360_WHITE_LABEL_EUR)}
               </span>
             </div>
           </label>
@@ -1111,7 +1117,7 @@ export function TourAssemblyCard({
               >
                 <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
                 <span className="text-[0.7rem] text-muted-foreground">
-                  Otpremite logo za brendiranu turu
+                  Upload a logo for the branded tour
                 </span>
                 <input
                   ref={inputRef}
@@ -1146,7 +1152,7 @@ export function TourAssemblyCard({
                       {editable && (
                         <button
                           type="button"
-                          aria-label="Ukloni logo"
+                          aria-label="Remove logo"
                           onClick={() => handleLogoDelete(f.id)}
                           className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                         >
@@ -1168,7 +1174,7 @@ export function TourAssemblyCard({
                       <span className="flex-1 truncate text-foreground">
                         {name}
                       </span>
-                      <span className="text-accent">Otpremanje…</span>
+                      <span className="text-accent">Uploading...</span>
                     </div>
                   ))}
                 </div>
@@ -1178,7 +1184,7 @@ export function TourAssemblyCard({
 
           <div className="rounded bg-secondary/30 px-2.5 py-1.5 text-[0.7rem]">
             <div className="flex items-center justify-between gap-2 text-muted-foreground">
-              <span>Sklapanje ture</span>
+              <span>Tour assembly</span>
               <span
                 className={cn(
                   "font-semibold tabular-nums",
@@ -1188,13 +1194,13 @@ export function TourAssemblyCard({
                 )}
               >
                 {assemblyCalc.freeByHotspotThreshold
-                  ? "BESPLATNO"
+                  ? "FREE"
                   : formatPrice(assemblyCalc.baseCost)}
               </span>
             </div>
             {assembly.floorPlanNavEnabled && (
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <span>+ Navigacija planom</span>
+                <span>+ Floor plan navigation</span>
                 <span className="font-semibold tabular-nums text-foreground">
                   {formatPrice(assemblyCalc.floorPlanNavCost)}
                 </span>
@@ -1202,14 +1208,14 @@ export function TourAssemblyCard({
             )}
             {assembly.whiteLabelEnabled && (
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <span>+ Brendirana tura</span>
+                <span>+ Branded tour</span>
                 <span className="font-semibold tabular-nums text-foreground">
                   {formatPrice(assemblyCalc.whiteLabelCost)}
                 </span>
               </div>
             )}
             <div className="mt-1 flex items-center justify-between gap-2 border-t border-border/30 pt-1 text-foreground">
-              <span className="font-medium">Ukupno za turu</span>
+              <span className="font-medium">Tour total</span>
               <span className="text-sm font-bold tabular-nums">
                 +{formatPrice(assemblyCalc.totalCost)}
               </span>
@@ -1314,12 +1320,12 @@ export function Tour360ConfigSection({
           <Layers className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {calc.floorCount} sprat{calc.floorCount === 1 ? "" : "a"}
+              {calc.floorCount} floor{calc.floorCount === 1 ? "" : "s"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {totalRooms} prostorija · {totalHotspots} hotspot
-              {totalHotspots === 1 ? "" : "ova"} · {totalCameras} stat.{" "}
-              {totalCameras === 1 ? "kamera" : "kamere"}
+              {totalRooms} room{totalRooms === 1 ? "" : "s"} · {totalHotspots}{" "}
+              hotspot{totalHotspots === 1 ? "" : "s"} · {totalCameras} static{" "}
+              camera{totalCameras === 1 ? "" : "s"}
             </p>
           </div>
         </div>
@@ -1327,11 +1333,11 @@ export function Tour360ConfigSection({
           {savedAt && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Sačuvano
+              Saved
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(calc.totalRsd)}
+            {formatPrice(calc.totalEur)}
           </p>
         </div>
       </div>
@@ -1363,15 +1369,15 @@ export function Tour360ConfigSection({
           </span>
           <div>
             <p className="text-sm font-semibold text-foreground">
-              Pogledaj galeriju stilova
+              View style gallery
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              Skandi, moderan, klasika, industrijski — birajte šta vam se sviđa pre nego što podesite spratove.
+              Scandi, modern, classic, industrial - choose what you like before setting up floors.
             </p>
           </div>
         </div>
         <span className="hidden flex-shrink-0 text-[0.72rem] font-semibold text-accent sm:inline">
-          Otvori →
+          Open →
         </span>
       </button>
 
@@ -1380,7 +1386,7 @@ export function Tour360ConfigSection({
         <div className="rounded-xl border border-dashed border-border/40 bg-card/40 px-4 py-8 text-center">
           <Layers className="mx-auto h-6 w-6 text-muted-foreground/40" />
           <p className="mt-2 text-xs text-muted-foreground">
-            Nijedan sprat još nije dodat. Dodajte prvi ispod.
+            No floor has been added yet. Add the first one below.
           </p>
         </div>
       ) : (
@@ -1416,16 +1422,16 @@ export function Tour360ConfigSection({
             </span>
             <div>
               <p className="text-sm font-semibold text-foreground">
-                {floors.length === 0 ? "Dodaj prvi sprat" : "Dodaj još jedan sprat"}
+                {floors.length === 0 ? "Add first floor" : "Add another floor"}
               </p>
               <p className="text-[0.72rem] text-muted-foreground">
-                Svaki sprat ima svoje sobe, fotografije i podešavanja.
+                Each floor has its own rooms, photos, and settings.
               </p>
             </div>
           </div>
           {floors.length > 0 && (
             <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-1 text-[0.72rem] font-bold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
-              −30% · {formatPrice(TOUR360_EXTRA_FLOOR_RSD)}
+              −30% · {formatPrice(TOUR360_EXTRA_FLOOR_EUR)}
             </span>
           )}
         </button>

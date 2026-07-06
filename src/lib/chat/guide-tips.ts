@@ -52,13 +52,13 @@ const PRICING_TIPS: ChatGuideTip[] = [
     id: "animation-active",
     label: "Animacija jeftinije",
     body:
-      "Animacija je najpovoljnija uz aktivan 3D projekat: 1.758 RSD/sek pada na 938 RSD/sek.",
+      "Animacija je najpovoljnija uz aktivan 3D projekat: €15/sek pada na €8/sek.",
   },
   {
     id: "vr-existing-model",
     label: "VR sa modelom",
     body:
-      "VR sa postojećim modelom kreće od 175.800 RSD; samostalni VR od 351.600 RSD.",
+      "VR sa postojećim modelom kreće od €1500; samostalni VR od €3000.",
   },
   {
     id: "interior-included",
@@ -520,7 +520,7 @@ function formatTipPrices(
 export function getChatGuideTips(
   pathname: string,
   context?: AssistantGuideContext | null,
-  displayCurrency: DisplayCurrency = "rsd",
+  displayCurrency: DisplayCurrency = "EUR",
   pricingSettings?: PublicPricingFormatSettings,
 ): ChatGuideTip[] {
   if (pathname.startsWith("/contact")) {

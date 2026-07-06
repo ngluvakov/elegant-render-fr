@@ -1,6 +1,6 @@
 /**
  * SiteplanConfigSection — Per-item configurator for the sp-first
- * product (3D situacioni prikaz). Single-level; angle-count stepper
+ * product (3D site plan view). Single-level; angle-count stepper
  * drives sp-angle add-on; season/phase variant toggles drive sp-season
  * and sp-phase add-ons.
  */
@@ -70,8 +70,8 @@ import {
   updateSiteplanConfig,
 } from "@/server/actions/item-config";
 
-const SP_SEASON_RSD = 9962;
-const SP_PHASE_RSD = 11134;
+const SP_SEASON_EUR = 85;
+const SP_PHASE_EUR = 95;
 
 type ItemFile = {
   id: string;
@@ -126,7 +126,7 @@ export function SiteplanConfigSection({
     ]);
     return calc.items[0]!;
   }, [itemId, config]);
-  const totalRsd = breakdown.totalRsd;
+  const totalEur = breakdown.totalEur;
 
   useEffect(() => {
     if (!editable) return;
@@ -187,7 +187,7 @@ export function SiteplanConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -230,7 +230,7 @@ export function SiteplanConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Ukloni fajl"
+                aria-label="Remove file"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -321,11 +321,11 @@ export function SiteplanConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Sačuvano
+              Saved
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalRsd)}
+            {formatPrice(totalEur)}
           </p>
         </div>
       </div>
@@ -337,7 +337,7 @@ export function SiteplanConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Naziv kompleksa / lokacije
+          Complex / location name
         </Label>
         <input
           id={`name-${itemId}`}
@@ -355,14 +355,14 @@ export function SiteplanConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Building2 className="h-3 w-3 text-accent/60" />
-            Broj glavnih objekata
+            Number of main buildings
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.buildingCount <= 1}
               onClick={decBuildings}
-              aria-label="Smanji broj objekata"
+              aria-label="Decrease number of buildings"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -374,13 +374,13 @@ export function SiteplanConfigSection({
               type="button"
               disabled={!editable || config.buildingCount >= 100}
               onClick={incBuildings}
-              aria-label="Povećaj broj objekata"
+              aria-label="Increase number of buildings"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              koliko zgrada/kuća
+              how many buildings/houses
             </span>
           </div>
         </div>
@@ -388,14 +388,14 @@ export function SiteplanConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Camera className="h-3 w-3 text-accent/60" />
-            Broj uglova (kadrova)
+            Number of angles (frames)
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.angleCount <= 1}
               onClick={decAngles}
-              aria-label="Smanji broj uglova"
+              aria-label="Decrease number of uglova"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -407,13 +407,13 @@ export function SiteplanConfigSection({
               type="button"
               disabled={!editable || config.angleCount >= 30}
               onClick={incAngles}
-              aria-label="Povećaj broj uglova"
+              aria-label="Increase number of uglova"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 uključen, +{formatPrice(65)} svaki sledeći
+              1 included, +{formatPrice(65)} each additional
             </span>
           </div>
         </div>
@@ -446,14 +446,14 @@ export function SiteplanConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Opis projekta
+          Project description
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Opis namene objekata, glavnih saobraćajnica, zelenih površina…"
+          placeholder="Describe building uses, main roads, green areas..."
           rows={3}
           className="resize-none text-sm"
         />
@@ -461,10 +461,10 @@ export function SiteplanConfigSection({
 
       {/* Master plan upload */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Situacioni plan (Master plan)</Label>
+        <Label className="text-xs">Site plan (master plan)</Label>
         {renderUploadZone(
           sourceInputRef,
-          "PDF, DWG, CAD sa granicama parcele i pozicijama objekata",
+          "PDF, DWG, CAD with plot boundaries and building positions",
           "image/*,application/pdf,.dwg,.dxf",
           "source",
         )}
@@ -473,10 +473,10 @@ export function SiteplanConfigSection({
 
       {/* Architecture upload */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Arhitektura objekata</Label>
+        <Label className="text-xs">Building architecture</Label>
         {renderUploadZone(
           archInputRef,
-          "Fasade, osnove ili 3D modeli zgrada na parceli",
+          "Facades, plans, or 3D models of buildings on the plot",
           "image/*,application/pdf,.dwg,.dxf,.skp,.3ds,.fbx,.obj",
           "architecture",
         )}
@@ -492,7 +492,7 @@ export function SiteplanConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Otpremanje…</span>
+              <span className="text-accent">Uploading...</span>
             </div>
           ))}
         </div>
@@ -501,7 +501,7 @@ export function SiteplanConfigSection({
       {/* Advanced toggle */}
       <p className="flex items-center gap-1.5 text-[0.7rem] text-[color:var(--color-sage-deep)]">
         <Check className="h-3 w-3" />
-        Stavka je spremna za naručivanje. Ispod je fino podešavanje.
+        This item is ready to order. Fine-tuning is below.
       </p>
       <label
         htmlFor={`adv-${itemId}`}
@@ -510,11 +510,11 @@ export function SiteplanConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Napredno podešavanje{" "}
-            <span className="text-muted-foreground">(opciono)</span>
+            Advanced settings{" "}
+            <span className="text-muted-foreground">(optional)</span>
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · okruženje, infrastruktura, oznake
+            · surroundings, infrastructure, labels
           </span>
         </div>
         <Switch
@@ -530,11 +530,11 @@ export function SiteplanConfigSection({
           {/* 2.1 Context & atmosphere */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Kontekst i okruženje
+              Context and surroundings
             </p>
             <div className="space-y-1">
               <Label htmlFor={`env-${itemId}`} className="text-[0.7rem]">
-                Prikaz šireg okruženja
+                Wider surroundings view
               </Label>
               <select
                 id={`env-${itemId}`}
@@ -549,7 +549,7 @@ export function SiteplanConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— izaberite —</option>
+                <option value="">Select...</option>
                 {SP_ENV_REPS.map((e) => (
                   <option key={e.id} value={e.id}>
                     {e.label}
@@ -561,7 +561,7 @@ export function SiteplanConfigSection({
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1">
                 <Label htmlFor={`tod-${itemId}`} className="text-[0.7rem]">
-                  Doba dana
+                  Time of day
                 </Label>
                 <select
                   id={`tod-${itemId}`}
@@ -576,7 +576,7 @@ export function SiteplanConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {TIMES_OF_DAY.map((t) => (
                     <option key={t.id} value={t.id}>
                       {t.label}
@@ -587,7 +587,7 @@ export function SiteplanConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`season-${itemId}`} className="text-[0.7rem]">
-                  Godišnje doba
+                  Season
                 </Label>
                 <select
                   id={`season-${itemId}`}
@@ -602,7 +602,7 @@ export function SiteplanConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {SEASONS.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.label}
@@ -616,11 +616,11 @@ export function SiteplanConfigSection({
             <Collapsible open={showDroneUpload}>
               <div className="space-y-1.5 rounded-md bg-card/60 p-2.5">
                 <Label className="text-[0.7rem]">
-                  Dron fotografije (za fotomontažu)
+                  Drone photos (for photomontage)
                 </Label>
                 {renderUploadZone(
                   droneInputRef,
-                  "Postojeće dron fotografije lokacije",
+                  "Existing drone photos of the location",
                   "image/*",
                   "drone-photo",
                 )}
@@ -632,11 +632,11 @@ export function SiteplanConfigSection({
           {/* 2.2 Infrastructure & landscape */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Infrastruktura i pejzaž
+              Infrastructure and landscape
             </p>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Saobraćaj i parking</Label>
+              <Label className="text-[0.7rem]">Traffic and parking</Label>
               {renderCheckboxGroup<keyof SpTraffic>(
                 SP_TRAFFIC_OPTIONS,
                 config.traffic,
@@ -651,7 +651,7 @@ export function SiteplanConfigSection({
                 className="text-[0.7rem]"
               >
                 <Trees className="h-3 w-3 text-accent/60" />
-                Stil pejzažnog uređenja
+                Landscape design style
               </Label>
               <select
                 id={`landscape-${itemId}`}
@@ -666,7 +666,7 @@ export function SiteplanConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— izaberite —</option>
+                <option value="">Select...</option>
                 {SP_LANDSCAPE_STYLES.map((l) => (
                   <option key={l.id} value={l.id}>
                     {l.label}
@@ -676,7 +676,7 @@ export function SiteplanConfigSection({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Zajednički sadržaji</Label>
+              <Label className="text-[0.7rem]">Shared amenities</Label>
               {renderCheckboxGroup<keyof SpAmenities>(
                 SP_AMENITY_OPTIONS,
                 config.amenities,
@@ -691,7 +691,7 @@ export function SiteplanConfigSection({
           {/* 2.3 Labels & graphics */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Oznake i grafika
+              Labels and graphics
             </p>
             <div className="space-y-1.5">
               <label
@@ -699,7 +699,7 @@ export function SiteplanConfigSection({
                 className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-card/60 px-3 py-2"
               >
                 <span className="text-[0.78rem] text-foreground">
-                  Tekstualne oznake za zgrade i ulice
+                  Text labels for buildings and streets
                 </span>
                 <Switch
                   id={`labels-${itemId}`}
@@ -713,7 +713,7 @@ export function SiteplanConfigSection({
                 className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-card/60 px-3 py-2"
               >
                 <span className="text-[0.78rem] text-foreground">
-                  Istakni granice parcele
+                  Highlight plot boundaries
                 </span>
                 <Switch
                   id={`boundary-${itemId}`}
@@ -728,7 +728,7 @@ export function SiteplanConfigSection({
               >
                 <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                   <Compass className="h-3.5 w-3.5 text-accent" />
-                  Oznaka severa (kompas)
+                  North marker (compass)
                 </span>
                 <Switch
                   id={`compass-${itemId}`}
@@ -751,7 +751,7 @@ export function SiteplanConfigSection({
             Dodatne opcije
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Sezonske i fazne varijante istog prikaza za urbanističke
+            Seasonal and phasing variants of the same view for urban planning
             prezentacije.
           </p>
         </div>
@@ -767,21 +767,21 @@ export function SiteplanConfigSection({
               <span className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
                 Sezonska varijanta
                 <HelpTip>
-                  Isti rendering generisan još jednom sa drugačijim
-                  vremenskim uslovima (npr. zimski dan + letnja noć).
-                  Korisno za marketing — jedna prezentacija pokriva više
-                  godišnjih doba.
+                  The same rendering generated again with different
+                  weather conditions (for example, winter day + summer night).
+                  Useful for marketing - one presentation covers multiple
+                  seasons.
                 </HelpTip>
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Isti prikaz u drugom dobu dana ili godišnjem dobu
+                Same view in another time of day or season
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {config.seasonVariantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(SP_SEASON_RSD)}
+                +{formatPrice(SP_SEASON_EUR)}
               </span>
             )}
             <Switch
@@ -810,7 +810,7 @@ export function SiteplanConfigSection({
                 htmlFor={`svar-tod-${itemId}`}
                 className="text-[0.7rem]"
               >
-                Doba dana za varijantu
+                Time of day za varijantu
               </Label>
               <select
                 id={`svar-tod-${itemId}`}
@@ -838,7 +838,7 @@ export function SiteplanConfigSection({
                 htmlFor={`svar-season-${itemId}`}
                 className="text-[0.7rem]"
               >
-                Godišnje doba za varijantu
+                Season za varijantu
               </Label>
               <select
                 id={`svar-season-${itemId}`}
@@ -876,20 +876,20 @@ export function SiteplanConfigSection({
                 Fazna varijanta (Phasing)
                 <HelpTip>
                   <strong>Phasing</strong> prikazuje gradnju u etapama —
-                  trenutno izgrađeni objekti su puni, planirana faza se
+                  currently built structures are solid, the planned phase is
                   prikazuje providnim ili konturnim blokovima. Standard u
-                  urbanističkim prezentacijama velikih kompleksa.
+                  urban-planning presentations for large complexes.
                 </HelpTip>
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Faza 1 izgrađena, Faza 2 u transparentnim blokovima
+                Phase 1 built, Phase 2 as transparent blocks
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {config.phaseVariantEnabled && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{formatPrice(SP_PHASE_RSD)}
+                +{formatPrice(SP_PHASE_EUR)}
               </span>
             )}
             <Switch
@@ -909,14 +909,14 @@ export function SiteplanConfigSection({
         <Collapsible open={config.phaseVariantEnabled}>
           <div className="space-y-1 rounded-md border border-border/30 bg-background/40 p-3">
             <Label htmlFor={`pdesc-${itemId}`} className="text-[0.7rem]">
-              Opis faza
+              Phase description
             </Label>
             <Textarea
               id={`pdesc-${itemId}`}
               value={config.phaseDescription ?? ""}
               onChange={(e) => patch({ phaseDescription: e.target.value })}
               disabled={!editable}
-              placeholder="Opišite šta pripada kojoj fazi…"
+              placeholder="Describe what belongs to each phase..."
               rows={3}
               className="resize-none text-sm"
             />

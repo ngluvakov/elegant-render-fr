@@ -5,9 +5,9 @@ import { chatFeedbackCategoryLabel } from "@/lib/chat/feedback";
 import { requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "AI asistent — zahtevi klijenata",
+  title: "AI assistant - client requests",
   description:
-    "Admin pregled zahteva, primedbi i predloga koje korisnici šalju kroz AI asistenta.",
+    "Admin overview of requests, complaints, and suggestions users send through the AI assistant.",
   robots: { index: false, follow: false },
 };
 
@@ -37,11 +37,11 @@ export default async function AdminChatFeedbackPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-3xl text-foreground md:text-4xl">
-          AI asistent — zahtevi klijenata
+          AI assistant - client requests
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Mesto za kritike, nedostajuće opcije, nejasnoće i korisničke predloge
-          uhvaćene kroz chat.
+          A place for complaints, missing options, unclear points, and user suggestions
+          captured through chat.
         </p>
       </div>
 
@@ -97,14 +97,14 @@ export default async function AdminChatFeedbackPage() {
               </div>
               <div className="text-right text-xs text-muted-foreground">
                 <p>
-                  {item.createdAt.toLocaleDateString("sr-Latn-RS", {
+                  {item.createdAt.toLocaleDateString("en-GB", {
                     day: "numeric",
                     month: "short",
                     year: "numeric",
                   })}
                 </p>
                 <p>
-                  {item.createdAt.toLocaleTimeString("sr-Latn-RS", {
+                  {item.createdAt.toLocaleTimeString("en-GB", {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
@@ -124,7 +124,7 @@ export default async function AdminChatFeedbackPage() {
 
         {feedback.length === 0 && (
           <div className="rounded-2xl border border-border/40 bg-card/80 px-6 py-10 text-center text-sm text-muted-foreground">
-            Još nema zabeleženih kritika ili zahteva iz AI chata.
+            There are no recorded complaints or requests from AI chat yet.
           </div>
         )}
       </div>

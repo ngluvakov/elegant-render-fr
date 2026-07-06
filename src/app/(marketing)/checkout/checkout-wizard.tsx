@@ -1,55 +1,56 @@
 "use client";
 
+/**
+ * checkout-wizard.tsx — 2-step checkout (details → payment) plus the
+ * post-payment SuccessScreen with the moved-after-payment file upload.
+ */
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check, Mail } from "lucide-react";
+import { Check, Clock, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type QuoteItem } from "@/lib/catalog/calculate";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 import type { DisplayCurrency } from "@/lib/catalog/display-currency";
 import { ButtonLink } from "@/components/ui/button-link";
+import { OrderFileUpload } from "@/components/portal/order-file-upload";
 import { requestPortalAccessAction } from "@/server/actions/auth";
 import { CHECKOUT_QUOTE_STORAGE_KEY } from "@/lib/checkout-session";
 import {
   CheckoutProvider,
   useCheckout,
   type BuyerInfoState,
+  type PaymentState,
 } from "./checkout-context";
 import { StepDetails } from "./steps/step-details";
-import { StepUpload } from "./steps/step-upload";
-import { StepReview } from "./steps/step-review";
 import { StepPayment } from "./steps/step-payment";
 
 const STEPS = [
-  { label: "Podaci", short: "1" },
-  { label: "Fajlovi", short: "2" },
-  { label: "Pregled", short: "3" },
-  { label: "Plaćanje", short: "4" },
+  { label: "Details", short: "1" },
+  { label: "Payment", short: "2" },
 ];
 
 function WizardInner() {
   const {
     step,
-    setStep,
-    calculation,
-    paymentComplete,
+    paymentState,
     orderId,
     initiallySignedIn,
     customerEmail,
-  } =
-    useCheckout();
-  const requiresUpload = calculation.items.some((item) => item.kind === "service");
+    calculation,
+  } = useCheckout();
+  const requiresUpload = calculation.items.some(
+    (item) => item.kind === "service",
+  );
 
-  useEffect(() => {
-    if (step === 1 && !requiresUpload) setStep(2);
-  }, [step, requiresUpload, setStep]);
-
-  if (paymentComplete) {
+  if (paymentState !== "idle") {
     return (
       <SuccessScreen
         orderId={orderId}
         initiallySignedIn={initiallySignedIn}
         customerEmail={customerEmail}
+        paymentState={paymentState}
+        requiresUpload={requiresUpload}
       />
     );
   }
@@ -89,9 +90,7 @@ function WizardInner() {
 
       {/* Active step */}
       {step === 0 && <StepDetails />}
-      {step === 1 && <StepUpload />}
-      {step === 2 && <StepReview />}
-      {step === 3 && <StepPayment />}
+      {step === 1 && <StepPayment />}
     </div>
   );
 }
@@ -100,15 +99,20 @@ function SuccessScreen({
   orderId,
   initiallySignedIn,
   customerEmail,
+  paymentState,
+  requiresUpload,
 }: {
   orderId: string | null;
   initiallySignedIn: boolean;
   customerEmail: string;
+  paymentState: PaymentState;
+  requiresUpload: boolean;
 }) {
   const [linkState, setLinkState] = useState<
     "idle" | "sending" | "sent" | "error"
   >("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const processing = paymentState === "processing";
 
   useEffect(() => {
     if (initiallySignedIn || !orderId || linkState !== "idle") return;
@@ -141,14 +145,44 @@ function SuccessScreen({
 
   return (
     <div className="mx-auto max-w-lg py-12 text-center">
-      <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--color-sage)]/15">
-        <Check className="h-8 w-8 text-[color:var(--color-sage-deep)]" />
+      <div
+        className={cn(
+          "mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full",
+          processing
+            ? "bg-accent/10"
+            : "bg-[color:var(--color-sage)]/15",
+        )}
+      >
+        {processing ? (
+          <Clock className="h-8 w-8 text-accent" />
+        ) : (
+          <Check className="h-8 w-8 text-[color:var(--color-sage-deep)]" />
+        )}
       </div>
-      <h2 className="text-3xl text-foreground">Porudžbina primljena!</h2>
+      <h2 className="text-3xl text-foreground">
+        {processing ? "Your payment is processing" : "Payment received"}
+      </h2>
       <p className="mt-4 text-muted-foreground">
-        Hvala vam na poverenju. Poslali smo potvrdu na{" "}
-        <strong className="text-foreground">{customerEmail}</strong>.
+        {processing
+          ? "PayPal confirms eCheck payments within a few days — we'll email you as soon as it clears. Your order is saved and nothing else is needed from you right now."
+          : "Thank you for your order. We've sent a confirmation to"}
+        {!processing && (
+          <>
+            {" "}
+            <strong className="text-foreground">{customerEmail}</strong>.
+          </>
+        )}
       </p>
+
+      {requiresUpload && orderId && (
+        <div className="mt-8">
+          <OrderFileUpload
+            orderId={orderId}
+            title="Upload your plans now — or later from your portal"
+            description="Floor plans, photos and style references help us start right away. You can always add them from your portal."
+          />
+        </div>
+      )}
 
       {!initiallySignedIn && (
         <div className="mt-6 rounded-2xl border border-border/60 bg-card/60 p-5 text-left">
@@ -159,43 +193,43 @@ function SuccessScreen({
             <div className="flex-1">
               {linkState === "sending" && (
                 <p className="text-sm text-muted-foreground">
-                  Šaljemo vam link za pristup portalu…
+                  Sending your portal access link…
                 </p>
               )}
               {linkState === "sent" && (
                 <>
                   <p className="text-sm font-semibold text-foreground">
-                    Pristupite portalu jednim klikom
+                    One-click portal access
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Poslali smo vam link na{" "}
+                    We've sent a link to{" "}
                     <strong className="text-foreground">{customerEmail}</strong>.
-                    Klik na link iz email-a vas automatski prijavljuje — bez
-                    lozinke.
+                    Clicking it signs you in automatically — no password
+                    needed.
                   </p>
                   <button
                     type="button"
                     onClick={resend}
                     className="mt-3 text-xs text-accent underline-offset-4 hover:underline"
                   >
-                    Pošaljite ponovo
+                    Send again
                   </button>
                 </>
               )}
               {linkState === "error" && (
                 <>
                   <p className="text-sm font-semibold text-destructive">
-                    Email nije poslat
+                    Email not sent
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {errorMsg || "Pokušajte ponovo za nekoliko sekundi."}
+                    {errorMsg || "Try again in a few seconds."}
                   </p>
                   <button
                     type="button"
                     onClick={resend}
                     className="mt-3 text-xs text-accent underline-offset-4 hover:underline"
                   >
-                    Pokušajte ponovo
+                    Try again
                   </button>
                 </>
               )}
@@ -206,10 +240,10 @@ function SuccessScreen({
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
         <ButtonLink href={orderHref} variant="accent" size="lg">
-          {initiallySignedIn ? "Otvorite porudžbinu" : "Otvorite portal"}
+          {initiallySignedIn ? "Open your order" : "Open your portal"}
         </ButtonLink>
         <ButtonLink href="/pricing" variant="outline" size="lg">
-          Nova porudžbina
+          New order
         </ButtonLink>
       </div>
     </div>
@@ -255,7 +289,7 @@ export function CheckoutWizard({
   if (!quoteItems) {
     return (
       <div className="py-20 text-center text-muted-foreground">
-        Učitavanje…
+        Loading…
       </div>
     );
   }

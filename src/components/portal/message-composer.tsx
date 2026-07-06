@@ -57,13 +57,13 @@ export function MessageComposer({ orderId }: MessageComposerProps) {
         ref={textareaRef}
         value={body}
         onChange={(e) => setBody(e.target.value)}
-        placeholder="Napišite poruku timu…"
+        placeholder="Write a message to the team..."
         rows={3}
         className="resize-none"
       />
       <div className="mt-3 flex items-center justify-between">
         <p className="text-[0.72rem] text-muted-foreground">
-          Tim obično odgovara u roku od jednog radnog dana.
+          The team usually responds within one working day.
         </p>
         <Button
           type="submit"
@@ -72,7 +72,7 @@ export function MessageComposer({ orderId }: MessageComposerProps) {
           disabled={pending || !body.trim()}
         >
           <Send className="mr-1.5 h-3 w-3" />
-          {pending ? "Slanje…" : "Pošalji"}
+          {pending ? "Sending..." : "Send"}
         </Button>
       </div>
     </form>

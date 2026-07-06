@@ -34,11 +34,11 @@ type Props = {
 const PAGE_SIZE = 24;
 
 const STATUS_LABELS: Record<AiGenerationStatusValue | "all", string> = {
-  all: "Svi statusi",
-  queued: "U redu",
-  processing: "Obrada",
-  completed: "Završeno",
-  failed: "Neuspešno",
+  all: "All statuses",
+  queued: "Queued",
+  processing: "Processing",
+  completed: "Completed",
+  failed: "Failed",
 };
 
 export function AiCreationsClient({ initialState }: Props) {
@@ -94,7 +94,7 @@ export function AiCreationsClient({ initialState }: Props) {
       setNextCursor(data.nextCursor ?? null);
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
-      setError("AI kreacije trenutno nisu dostupne.");
+      setError("AI creations are currently unavailable.");
     } finally {
       setLoading(false);
     }
@@ -113,11 +113,11 @@ export function AiCreationsClient({ initialState }: Props) {
 
   const handleDelete = async (generation: SignedAiGeneration) => {
     if (generation.status === "queued" || generation.status === "processing") {
-      setError("Obrada je još u toku. Sačekajte završetak pre brisanja.");
+      setError("The generation is still running. Wait for it to finish before deleting it.");
       return;
     }
     const confirmed = window.confirm(
-      "Trajno obrisati ovu AI kreaciju i njene fajlove? Ova radnja ne može da se poništi.",
+      "Permanently delete this AI creation and its files? This action cannot be undone.",
     );
     if (!confirmed) return;
 
@@ -134,11 +134,11 @@ export function AiCreationsClient({ initialState }: Props) {
       const data = (await response.json()) as { error?: string };
       if (!response.ok || data.error) {
         setItems(previous);
-        setError(data.error ?? "Brisanje nije uspelo.");
+        setError(data.error ?? "Delete failed.");
       }
     } catch {
       setItems(previous);
-      setError("Brisanje nije uspelo. Pokušajte ponovo.");
+      setError("Delete failed. Try again.");
     } finally {
       setDeletingId(null);
     }
@@ -152,11 +152,11 @@ export function AiCreationsClient({ initialState }: Props) {
             Portal
           </p>
           <h1 className="mt-1 font-heading text-3xl text-foreground md:text-4xl">
-            AI kreacije
+            AI creations
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Pregled svih AI obrada, preuzimanje rezultata i ponovno korišćenje
-            završene slike u AI Studio-u.
+            Review all AI generations, download results, and reuse a completed
+            image in AI Studio.
           </p>
         </div>
         <Link
@@ -164,14 +164,14 @@ export function AiCreationsClient({ initialState }: Props) {
           className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground shadow-[0_14px_34px_-12px_rgba(159,106,75,0.45)] transition-colors hover:bg-accent/90"
         >
           <Sparkles className="h-4 w-4" />
-          Nova obrada
+          New generation
         </Link>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <StatPill label="U listi" value={items.length} />
-        <StatPill label="Završeno" value={completedCount} />
-        <StatPill label="Status" value={hasFilters ? "Filter" : "Sve"} />
+        <StatPill label="In list" value={items.length} />
+        <StatPill label="Completed" value={completedCount} />
+        <StatPill label="Status" value={hasFilters ? "Filter" : "All"} />
       </div>
 
       <div className="flex flex-wrap gap-3 rounded-2xl border border-border/40 bg-card/60 p-3">
@@ -192,7 +192,7 @@ export function AiCreationsClient({ initialState }: Props) {
           </select>
         </label>
         <label className="min-w-[220px] flex-1 text-xs font-semibold text-muted-foreground">
-          Tip obrade
+          Edit type
           <select
             value={editTypeFilter}
             onChange={(event) =>
@@ -200,7 +200,7 @@ export function AiCreationsClient({ initialState }: Props) {
             }
             className="mt-1 h-9 w-full rounded-lg border border-border/40 bg-background px-3 text-sm font-medium text-foreground outline-none focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-ring/50"
           >
-            <option value="all">Sve obrade</option>
+            <option value="all">All obrade</option>
             {AI_EDIT_TYPES.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.label}
@@ -219,13 +219,13 @@ export function AiCreationsClient({ initialState }: Props) {
       {items.length === 0 && !loading ? (
         <EmptyState
           icon={Wand2}
-          heading={hasFilters ? "Nema kreacija za izabrani filter" : "Još nema AI kreacija"}
+          heading={hasFilters ? "No creations match the selected filter" : "No AI creations yet"}
           description={
             hasFilters
-              ? "Promenite filtere ili pokrenite novu obradu."
-              : "Kada pokrenete AI obradu, rezultat će se pojaviti ovde."
+              ? "Change the filters or start a new generation."
+              : "When you start an AI generation, the result will appear here."
           }
-          action={{ label: "Otvori AI Studio", href: "/portal/ai-studio" }}
+          action={{ label: "Open AI Studio", href: "/portal/ai-studio" }}
         />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -251,16 +251,16 @@ export function AiCreationsClient({ initialState }: Props) {
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Učitavamo…
+                Loading...
               </>
             ) : (
-              "Učitaj još"
+              "Load more"
             )}
           </Button>
         ) : loading ? (
           <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Učitavamo…
+            Loading...
           </p>
         ) : null}
       </div>
@@ -314,7 +314,7 @@ function AiCreationCard({
               <ImageIcon className="h-7 w-7" />
             )}
             <span className="text-sm">
-              {item.filesExpired ? "Fajl je istekao" : STATUS_LABELS[item.status]}
+              {item.filesExpired ? "File expired" : STATUS_LABELS[item.status]}
             </span>
           </div>
         )}
@@ -338,7 +338,7 @@ function AiCreationCard({
             {edit.label}
           </h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {new Date(item.createdAt).toLocaleDateString("sr-RS")} ·{" "}
+            {new Date(item.createdAt).toLocaleDateString("en-GB")} ·{" "}
             {getAiEngineLabelForGeneration(item.provider, item.model)}
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground">
@@ -365,7 +365,7 @@ function AiCreationCard({
               className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.8rem] font-medium text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
             >
               <Wand2 className="h-3.5 w-3.5" />
-              Koristi
+              Use
             </Link>
           )}
           {item.downloadUrl && !item.filesExpired && (
@@ -375,7 +375,7 @@ function AiCreationCard({
               className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.8rem] font-medium text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
             >
               <Download className="h-3.5 w-3.5" />
-              Preuzmi
+              Download
             </a>
           )}
           <Button
@@ -390,7 +390,7 @@ function AiCreationCard({
             ) : (
               <Trash2 className="h-3.5 w-3.5" />
             )}
-            Obriši
+            Delete
           </Button>
         </div>
       </div>

@@ -1,83 +1,128 @@
 /**
- * /checkout/success — payment success confirmation screen.
+ * /checkout/success — PayPal payment confirmation landing.
  *
- * Customers land here after the Nestpay HPP redirect resolves to
- * Approved. The bank's transaction parameters (the 7 fields EPM
- * standard 2.7 requires) are read from the persisted Order snapshot,
- * not from the URL — the URL only carries the oid for lookup.
+ * Used by flows that finish outside the in-wizard success screen:
+ * webhook/reconciler-completed orders (eCheck), portal-initiated
+ * payments and emailed links. Looks the order up by ?orderId=.
  *
- * Server-rendered: no auth gate. The order is looked up by oid; anyone
- * who knows the oid can see the receipt. The oid is the bank-facing
- * id and was never broadcast — they had to complete the flow to know
- * it. Same trust model as the hosted card return URL.
+ * Server-rendered, no auth gate: the internal order id is an
+ * unguessable capability, the same trust model as the previous
+ * bank-return receipt page.
+ *
+ * States: completed → receipt + purchase dataLayer event (deduped
+ * client-side per transaction id); pending PayPal capture (eCheck) →
+ * processing copy without the purchase event; anything else → 404.
  */
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { buttonVariants } from "@/components/ui/button";
-import { getNestpayReceiptData } from "@/lib/nestpay/receipt-data";
-import { NestpayReceipt } from "@/components/marketing/nestpay-receipt";
+import { formatChargeAmount } from "@/lib/currency/convert";
+import { isChargeCurrency } from "@/lib/currency/config";
+import { formatBillingMoney } from "@/lib/billing";
+import { PayPalReceipt } from "@/components/marketing/paypal-receipt";
 import { DataLayerEvent } from "@/components/analytics/data-layer-event";
 import { buildPurchaseDataLayerEvent } from "@/server/analytics/google-conversions";
 
 export const dynamic = "force-dynamic";
 
 type PageProps = {
-  searchParams: Promise<{ oid?: string }>;
+  searchParams: Promise<{ orderId?: string }>;
 };
 
-export default async function NestpaySuccessPage({ searchParams }: PageProps) {
-  const { oid } = await searchParams;
-  if (!oid) notFound();
+export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
+  const { orderId } = await searchParams;
+  if (!orderId) notFound();
 
-  const order = await prisma.order.findFirst({
-    where: { paymentId: oid, paymentProvider: "nestpay" },
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
     select: {
       id: true,
+      orderNumber: true,
       paymentStatus: true,
+      paymentProvider: true,
+      paypalCaptureId: true,
+      paypalCaptureStatus: true,
+      paypalPayerEmail: true,
+      chargedCurrency: true,
+      chargedAmountMinor: true,
+      billingTotalCents: true,
+      totalCents: true,
+      totalEur: true,
     },
   });
-  if (!order) notFound();
-  if (order.paymentStatus !== "completed") notFound();
+  if (!order || order.paymentProvider !== "paypal") notFound();
 
-  const receipt = await getNestpayReceiptData(order.id);
-  if (!receipt) notFound();
-  const purchaseEvent = await buildPurchaseDataLayerEvent(
-    order.id,
-    "nestpay_success_page",
-  );
+  const completed = order.paymentStatus === "completed";
+  const processing =
+    !completed &&
+    order.paymentStatus === "pending" &&
+    order.paypalCaptureStatus === "PENDING";
+  if (!completed && !processing) notFound();
+
+  const amountLabel =
+    order.chargedAmountMinor != null && isChargeCurrency(order.chargedCurrency)
+      ? formatChargeAmount(order.chargedAmountMinor, order.chargedCurrency)
+      : formatBillingMoney(
+          order.billingTotalCents ?? order.totalCents ?? order.totalEur * 100,
+        );
+
+  const purchaseEvent = completed
+    ? await buildPurchaseDataLayerEvent(order.id, "paypal_webhook")
+    : null;
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 px-4 py-12">
       {purchaseEvent && <DataLayerEvent event={purchaseEvent} />}
-      <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 md:p-8">
-        <p className="text-xs font-semibold uppercase tracking-wider text-accent">
-          Uspešno plaćanje
-        </p>
-        <h1 className="mt-2 text-2xl font-semibold text-foreground">
-          Uspešno ste izvršili plaćanje — račun Vaše platne kartice je zadužen.
-        </h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Hvala vam na poverenju. Potvrda sa svim parametrima transakcije
-          poslata je na vašu email adresu. Status porudžbine možete pratiti u
-          portalu.
-        </p>
-      </div>
+      {completed ? (
+        <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 md:p-8">
+          <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+            Payment received
+          </p>
+          <h1 className="mt-2 text-2xl font-semibold text-foreground">
+            Your payment has been received — thank you.
+          </h1>
+          <p className="mt-3 text-sm text-muted-foreground">
+            A confirmation with your invoice is on its way to your email.
+            You can follow the order status in your portal.
+          </p>
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-border/60 bg-card/60 p-6 md:p-8">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Payment processing
+          </p>
+          <h1 className="mt-2 text-2xl font-semibold text-foreground">
+            Your payment is processing.
+          </h1>
+          <p className="mt-3 text-sm text-muted-foreground">
+            PayPal confirms eCheck payments within a few days — we&apos;ll
+            email you as soon as it clears. Your order is saved and nothing
+            else is needed from you right now.
+          </p>
+        </div>
+      )}
 
-      <NestpayReceipt data={receipt} variant="success" />
+      <PayPalReceipt
+        orderNumber={order.orderNumber}
+        captureId={order.paypalCaptureId}
+        captureStatus={order.paypalCaptureStatus}
+        amountLabel={amountLabel}
+        payerEmail={order.paypalPayerEmail}
+      />
 
       <div className="flex flex-wrap gap-3">
         <Link
           href={`/portal/orders/${order.id}`}
           className={buttonVariants({ variant: "accent", size: "lg" })}
         >
-          Otvorite porudžbinu u portalu
+          Open the order in your portal
         </Link>
         <Link
           href="/portal"
           className={buttonVariants({ variant: "outline", size: "lg" })}
         >
-          Idite u portal
+          Go to portal
         </Link>
       </div>
     </main>

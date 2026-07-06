@@ -4,9 +4,9 @@ import { Search } from "lucide-react";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import { formatRsd } from "@/lib/catalog/calculate";
+import { formatEur } from "@/lib/catalog/calculate";
 import {
-  billingCentsFromRsdCents,
+  billingCentsFromEurCents,
   formatBillingMoney,
   type BillingCurrency,
 } from "@/lib/billing";
@@ -17,9 +17,9 @@ import { DeleteOrderButton } from "@/components/portal/delete-order-button";
 import { NewDraftButton } from "@/components/portal/new-draft-button";
 
 export const metadata: Metadata = {
-  title: "Porudžbine",
+  title: "Orders",
   description:
-    "Lista vaših Elegant Render porudžbina sa statusima, pretragom i osnovnim detaljima.",
+    "List of your Elegant Render orders with statuses, search, and key details.",
   robots: { index: false, follow: false },
 };
 
@@ -29,40 +29,34 @@ type OrderMoneySnapshot = {
   billingCurrency: BillingCurrency | null;
   billingTotalCents: number | null;
   billingVatRate: number | null;
-  billingRsdRate: number | null;
   totalCents: number | null;
-  totalRsd: number;
+  totalEur: number;
 };
 
 function formatOrderTotal(order: OrderMoneySnapshot): string {
   if (order.billingCurrency && order.billingTotalCents != null) {
     return formatBillingMoney(order.billingTotalCents, order.billingCurrency);
   }
-  return formatRsd((order.totalCents ?? order.totalRsd * 100) / 100);
+  return formatEur((order.totalCents ?? order.totalEur * 100) / 100);
 }
 
-function formatOrderRsdAmount(
+function formatOrderEurAmount(
   order: OrderMoneySnapshot,
-  amountRsd: number,
+  amountEur: number,
 ): string {
-  if (
-    order.billingCurrency &&
-    order.billingVatRate != null &&
-    order.billingRsdRate != null
-  ) {
+  if (order.billingCurrency && order.billingVatRate != null) {
     return formatBillingMoney(
-      billingCentsFromRsdCents(Math.round(amountRsd * 100), {
+      billingCentsFromEurCents(Math.round(amountEur * 100), {
         billingCurrency: order.billingCurrency,
         billingVatRate: order.billingVatRate,
-        billingRsdRate: order.billingRsdRate,
       }),
       order.billingCurrency,
     );
   }
-  return formatRsd(amountRsd);
+  return formatEur(amountEur);
 }
 
-export default async function PorudzbinePage({
+export default async function OrdersPage({
   searchParams,
 }: {
   searchParams: SearchParams;
@@ -84,8 +78,8 @@ export default async function PorudzbinePage({
         select: {
           productLabel: true,
           categoryLabel: true,
-          totalRsd: true,
-          originalTotalRsd: true,
+          totalEur: true,
+          originalTotalEur: true,
         },
         orderBy: { id: "asc" },
       },
@@ -97,10 +91,10 @@ export default async function PorudzbinePage({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl text-foreground md:text-3xl">
-            Porudžbine
+            Orders
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {orders.length} porudžbin{orders.length === 1 ? "a" : "a"}
+            {orders.length} order{orders.length === 1 ? "" : "s"}
           </p>
         </div>
         <NewDraftButton />
@@ -111,8 +105,8 @@ export default async function PorudzbinePage({
       {orders.length === 0 ? (
         <EmptyState
           icon={Search}
-          heading="Nema rezultata"
-          description="Pokušajte sa drugim filterima ili pretragom."
+          heading="No results"
+          description="Try different filters or search terms."
         />
       ) : (
         <>
@@ -121,11 +115,11 @@ export default async function PorudzbinePage({
             <div className="space-y-1.5">
               {/* Header row */}
               <div className="grid grid-cols-[2fr_1fr_1fr_auto_auto_auto] gap-4 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                <span>Projekat</span>
-                <span>Usluga</span>
-                <span>Aktivnost</span>
+                <span>Project</span>
+                <span>Service</span>
+                <span>Activity</span>
                 <span className="w-28 text-center">Status</span>
-                <span className="w-20 text-right">Iznos</span>
+                <span className="w-20 text-right">Amount</span>
                 <span className="w-[120px]" />
               </div>
 
@@ -137,10 +131,10 @@ export default async function PorudzbinePage({
                 const displayName =
                   order.projectName ??
                   firstItem?.productLabel ??
-                  "Porudžbina";
-                const savingsRsd = order.items.reduce(
+                  "Order";
+                const savingsEur = order.items.reduce(
                   (s, i) =>
-                    s + Math.max(0, (i.originalTotalRsd ?? i.totalRsd) - i.totalRsd),
+                    s + Math.max(0, (i.originalTotalEur ?? i.totalEur) - i.totalEur),
                   0,
                 );
                 return (
@@ -151,7 +145,7 @@ export default async function PorudzbinePage({
                     <Link
                       href={`/portal/orders/${order.id}`}
                       className="absolute inset-0 rounded-xl"
-                      aria-label={`Otvori ${order.orderNumber}`}
+                      aria-label={`Open ${order.orderNumber}`}
                     />
                     <div className="relative pointer-events-none">
                       <p className="text-sm font-medium text-foreground">
@@ -165,7 +159,7 @@ export default async function PorudzbinePage({
                       {firstItem?.categoryLabel ?? "—"}
                     </p>
                     <p className="relative pointer-events-none text-xs text-muted-foreground">
-                      {order.updatedAt.toLocaleDateString("sr-Latn-RS", {
+                      {order.updatedAt.toLocaleDateString("en-GB", {
                         day: "numeric",
                         month: "short",
                       })}
@@ -179,9 +173,9 @@ export default async function PorudzbinePage({
                       <p className="text-sm font-semibold text-foreground">
                         {formatOrderTotal(order)}
                       </p>
-                      {savingsRsd > 0 && (
+                      {savingsEur > 0 && (
                         <p className="mt-0.5 text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
-                          −{formatOrderRsdAmount(order, savingsRsd)} ušteda
+                          −{formatOrderEurAmount(order, savingsEur)} saved
                         </p>
                       )}
                     </div>
@@ -208,10 +202,10 @@ export default async function PorudzbinePage({
               const displayName =
                 order.projectName ??
                 firstItem?.productLabel ??
-                "Porudžbina";
-              const savingsRsd = order.items.reduce(
+                "Order";
+              const savingsEur = order.items.reduce(
                 (s, i) =>
-                  s + Math.max(0, (i.originalTotalRsd ?? i.totalRsd) - i.totalRsd),
+                  s + Math.max(0, (i.originalTotalEur ?? i.totalEur) - i.totalEur),
                 0,
               );
               return (
@@ -222,7 +216,7 @@ export default async function PorudzbinePage({
                   <Link
                     href={`/portal/orders/${order.id}`}
                     className="absolute inset-0 rounded-2xl"
-                    aria-label={`Otvori ${order.orderNumber}`}
+                    aria-label={`Open ${order.orderNumber}`}
                   />
                   <div className="relative pointer-events-none flex items-start justify-between gap-3">
                     <div>
@@ -239,7 +233,7 @@ export default async function PorudzbinePage({
                   </div>
                   <div className="relative pointer-events-none mt-3 flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">
-                      {order.updatedAt.toLocaleDateString("sr-Latn-RS", {
+                      {order.updatedAt.toLocaleDateString("en-GB", {
                         day: "numeric",
                         month: "short",
                       })}
@@ -255,9 +249,9 @@ export default async function PorudzbinePage({
                         <p className="text-sm font-semibold text-foreground">
                           {formatOrderTotal(order)}
                         </p>
-                        {savingsRsd > 0 && (
+                        {savingsEur > 0 && (
                           <p className="text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
-                            −{formatOrderRsdAmount(order, savingsRsd)}
+                            −{formatOrderEurAmount(order, savingsEur)}
                           </p>
                         )}
                       </div>

@@ -34,7 +34,7 @@ export function RetryOutboxButton({ eventId }: { eventId: string }) {
         disabled={pending}
         className="inline-flex items-center gap-1 rounded-md border border-foreground bg-card px-2.5 py-1 text-[0.72rem] font-medium text-foreground transition hover:bg-foreground hover:text-background disabled:opacity-50"
       >
-        {pending ? "Šaljem…" : "Pošalji ponovo"}
+        {pending ? "Sending..." : "Send again"}
       </button>
       {error && (
         <p className="text-[0.7rem] text-destructive">{error}</p>
@@ -45,8 +45,8 @@ export function RetryOutboxButton({ eventId }: { eventId: string }) {
 
 function humanReason(reason: string): string {
   if (reason === "not_admin") return "Niste admin.";
-  if (reason === "event_not_found") return "Događaj nije pronađen.";
+  if (reason === "event_not_found") return "Event was not found.";
   if (reason.startsWith("cannot_retry_"))
-    return `Ne može retry — status je ${reason.replace("cannot_retry_", "")}.`;
-  return `Greška: ${reason}`;
+    return `Cannot retry - status is ${reason.replace("cannot_retry_", "")}.`;
+  return `Error: ${reason}`;
 }

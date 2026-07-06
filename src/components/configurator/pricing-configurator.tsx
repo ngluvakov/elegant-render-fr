@@ -54,7 +54,7 @@ export function ConfiguratorBody({
     stashCheckoutQuote(items);
     track("checkout_started", {
       cart_size: calculation.items.length,
-      total_rsd: calculation.total,
+      total_eur: calculation.total,
     });
     router.push("/checkout");
   };
@@ -146,7 +146,7 @@ export function ConfiguratorBody({
     // Check on mount (navigated from another page with proposal)
     applyProposal();
 
-    // Listen for live events (user clicks "Dodaj" while already on /pricing)
+    // Listen for live events (user clicks "Add" while already on /pricing)
     window.addEventListener("er-chat-proposal", applyProposal);
     return () => window.removeEventListener("er-chat-proposal", applyProposal);
   }, [addProduct, pricingCatalog]);
@@ -185,7 +185,7 @@ export function ConfiguratorBody({
           {calculation.items.length > 0 && (
             <section>
               <h2 className="mb-4 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
-                Vaše stavke ({calculation.items.length})
+                Your items ({calculation.items.length})
               </h2>
               <div className="space-y-4">
                 {calculation.items.map((breakdown) => (
@@ -205,11 +205,11 @@ export function ConfiguratorBody({
                 className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-2xl border border-dashed border-border/60 bg-transparent px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent"
               >
                 <Plus className="h-4 w-4" />
-                Dodaj još jednu uslugu
+                Add another service
               </button>
               <div className="mt-6 border-t border-border/40 pt-5">
                 <div className="mb-3 flex items-baseline justify-between gap-3">
-                  <span className="text-sm text-muted-foreground">Ukupno</span>
+                  <span className="text-sm text-muted-foreground">Total</span>
                   <span className="text-2xl font-bold text-foreground tabular-nums">
                     {formatPublicPrice(
                       calculation.total,
@@ -226,7 +226,7 @@ export function ConfiguratorBody({
                     "w-full justify-center rounded-xl",
                   )}
                 >
-                  Naruči
+                  Order
                   <ArrowRight className="ml-1.5 h-4 w-4" />
                 </button>
               </div>
@@ -240,7 +240,7 @@ export function ConfiguratorBody({
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
                   <span className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <Sparkles className="h-4 w-4 text-accent" />
-                    Dodajte AI kredite uz porudžbinu
+                    Add AI credits to your order
                   </span>
                   <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
                 </summary>

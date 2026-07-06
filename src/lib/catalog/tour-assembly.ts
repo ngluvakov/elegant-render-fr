@@ -6,9 +6,9 @@
  * tour360-config and exterior-config.
  *
  * Pricing (per Pillar 1 cenovnik):
- *   - 2.344 RSD base assembly fee — FREE if the item has ≥5 hotspots
- *   - +1.758 RSD floor-plan navigation
- *   - +4.102 RSD white-label branding
+ *   - €20 base assembly fee — FREE if the item has ≥5 hotspots
+ *   - +€15 floor-plan navigation
+ *   - +€35 white-label branding
  *
  * The free-by-hotspot threshold is evaluated per item; since each
  * product appears at most once per order this is also the per-order
@@ -32,23 +32,23 @@ export type TourAssemblyCalc = {
   freeByHotspotThreshold: boolean;
 };
 
-export const TOUR_ASSEMBLY_BASE_RSD = 2344;
+export const TOUR_ASSEMBLY_BASE_EUR = 20;
 export const TOUR_ASSEMBLY_FREE_HOTSPOT_THRESHOLD = 5;
-export const TOUR_FLOOR_PLAN_NAV_RSD = 1758;
-export const TOUR_WHITE_LABEL_RSD = 4102;
+export const TOUR_FLOOR_PLAN_NAV_EUR = 15;
+export const TOUR_WHITE_LABEL_EUR = 35;
 
 export type TourAssemblyPricing = {
-  baseRsd: number;
+  baseEur: number;
   freeHotspotThreshold: number;
-  floorPlanNavRsd: number;
-  whiteLabelRsd: number;
+  floorPlanNavEur: number;
+  whiteLabelEur: number;
 };
 
 export const DEFAULT_TOUR_ASSEMBLY_PRICING: TourAssemblyPricing = {
-  baseRsd: TOUR_ASSEMBLY_BASE_RSD,
+  baseEur: TOUR_ASSEMBLY_BASE_EUR,
   freeHotspotThreshold: TOUR_ASSEMBLY_FREE_HOTSPOT_THRESHOLD,
-  floorPlanNavRsd: TOUR_FLOOR_PLAN_NAV_RSD,
-  whiteLabelRsd: TOUR_WHITE_LABEL_RSD,
+  floorPlanNavEur: TOUR_FLOOR_PLAN_NAV_EUR,
+  whiteLabelEur: TOUR_WHITE_LABEL_EUR,
 };
 
 export function defaultTourAssembly(): TourAssembly {
@@ -75,12 +75,12 @@ export function calcTourAssemblyCost(
     };
   }
   const free = totalHotspots >= pricing.freeHotspotThreshold;
-  const baseCost = free ? 0 : pricing.baseRsd;
+  const baseCost = free ? 0 : pricing.baseEur;
   const floorPlanNavCost = assembly.floorPlanNavEnabled
-    ? pricing.floorPlanNavRsd
+    ? pricing.floorPlanNavEur
     : 0;
   const whiteLabelCost = assembly.whiteLabelEnabled
-    ? pricing.whiteLabelRsd
+    ? pricing.whiteLabelEur
     : 0;
   return {
     enabled: true,

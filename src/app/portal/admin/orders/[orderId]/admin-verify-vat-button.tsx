@@ -46,14 +46,14 @@ export function AdminVerifyVatButton({ orderId }: Props) {
         case "invalid":
           setFeedback({
             kind: "invalid",
-            text: "VIES kaže: VAT ID nije važeći.",
+            text: "VIES says: VAT ID is invalid.",
           });
           router.refresh();
           break;
         case "error":
           setFeedback({
             kind: "neutral",
-            text: `VIES greška: ${result.result.reason}. Pokušajte ponovo za par minuta.`,
+            text: `VIES error: ${result.result.reason}. Try again in a few minutes.`,
           });
           break;
         case "unsupported_country":
@@ -93,12 +93,12 @@ export function AdminVerifyVatButton({ orderId }: Props) {
 
 function humanReason(reason: string): string {
   if (reason === "not_admin") return "Niste admin.";
-  if (reason === "order_not_found") return "Porudžbina nije pronađena.";
+  if (reason === "order_not_found") return "Order was not found.";
   if (reason === "not_foreign_company")
     return "Verifikacija je samo za strane firme.";
   if (reason === "missing_vat_data")
-    return "VAT ID ili zemlja nedostaju na porudžbini.";
+    return "VAT ID or country is missing from the order.";
   if (reason === "non_eu_country")
     return "Zemlja nije u EU — VIES nije primenljiv.";
-  return `Greška: ${reason}`;
+  return `Error: ${reason}`;
 }

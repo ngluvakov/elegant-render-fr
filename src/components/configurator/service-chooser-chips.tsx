@@ -21,13 +21,13 @@ export type ChipDef = {
 };
 
 export const CHIP_DEFS: ChipDef[] = [
-  { label: "Sve", filter: "sve", catIds: ["exterior", "landscape", "interior", "floorplans-3d", "floorplans-2d", "siteplans", "animation", "staging", "renovation", "day-to-dusk", "item-removal", "vr-experiences"] },
-  { label: "Eksterijer", filter: "exterior", catIds: ["exterior", "landscape"] },
-  { label: "Enterijer", filter: "interior", catIds: ["interior"] },
-  { label: "Planovi", filter: "plans", catIds: ["floorplans-3d", "floorplans-2d", "siteplans"] },
-  { label: "360 i Animacija", filter: "animation-360", catIds: ["animation"] },
-  { label: "Opremanje", filter: "transformation", catIds: ["staging", "renovation", "day-to-dusk", "item-removal"] },
-  { label: "VR iskustvo", filter: "vr-experiences", catIds: ["vr-experiences"] },
+  { label: "All", filter: "sve", catIds: ["exterior", "landscape", "interior", "floorplans-3d", "floorplans-2d", "siteplans", "animation", "staging", "renovation", "day-to-dusk", "item-removal", "vr-experiences"] },
+  { label: "Exterior", filter: "exterior", catIds: ["exterior", "landscape"] },
+  { label: "Interior", filter: "interior", catIds: ["interior"] },
+  { label: "Plans", filter: "plans", catIds: ["floorplans-3d", "floorplans-2d", "siteplans"] },
+  { label: "360 and animation", filter: "animation-360", catIds: ["animation"] },
+  { label: "Transformations", filter: "transformation", catIds: ["staging", "renovation", "day-to-dusk", "item-removal"] },
+  { label: "VR experience", filter: "vr-experiences", catIds: ["vr-experiences"] },
 ];
 
 export const DEFAULT_FILTER = "exterior";

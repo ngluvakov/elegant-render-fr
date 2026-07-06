@@ -15,7 +15,7 @@ import {
   type PublicPricingFormatSettings,
 } from "@/lib/catalog/display-currency";
 
-type VolumeRule = { afterQty: number; priceRsd: number };
+type VolumeRule = { afterQty: number; priceEur: number };
 
 type AddOnStepperProps = {
   label: string;
@@ -23,8 +23,8 @@ type AddOnStepperProps = {
   quantity: number;
   includedQty: number;
   maxQty: number;
-  priceRsd: number;
-  basePriceRsd: number;
+  priceEur: number;
+  basePriceEur: number;
   priceType: "fixed" | "percent";
   isVolumeRate: boolean;
   volumeRules: VolumeRule[];
@@ -39,8 +39,8 @@ export function AddOnStepper({
   quantity,
   includedQty,
   maxQty,
-  priceRsd,
-  basePriceRsd,
+  priceEur,
+  basePriceEur,
   priceType,
   isVolumeRate,
   volumeRules,
@@ -57,7 +57,7 @@ export function AddOnStepper({
   // Increases are not advertised proactively; only real bulk discounts are.
   const upcomingDiscount = !isVolumeRate
     ? volumeRules
-        .filter((r) => r.priceRsd < basePriceRsd && quantity <= r.afterQty)
+        .filter((r) => r.priceEur < basePriceEur && quantity <= r.afterQty)
         .sort((a, b) => a.afterQty - b.afterQty)[0]
     : undefined;
 
@@ -73,12 +73,12 @@ export function AddOnStepper({
           <p className="text-sm font-medium text-foreground">{label}</p>
           {isWithinIncluded && quantity > 0 && (
             <span className="rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.72rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
-              Uključeno
+              Included
             </span>
           )}
           {billableQty > 0 && (
             <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[0.72rem] font-semibold text-accent">
-              +{billableQty} dodatno
+              +{billableQty} extra
             </span>
           )}
         </div>
@@ -87,24 +87,24 @@ export function AddOnStepper({
         </p>
         {isVolumeRate && billableQty > 0 && (
           <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
-            Cena za veću količinu:{" "}
-            {formatPublicPrice(priceRsd, displayCurrency, pricingSettings)} po
-            komadu
+            Volume price:{" "}
+            {formatPublicPrice(priceEur, displayCurrency, pricingSettings)} per
+            item
           </p>
         )}
         {upcomingDiscount && (
           <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
-            Od {upcomingDiscount.afterQty + 1}. nadalje:{" "}
+            From {upcomingDiscount.afterQty + 1} onward:{" "}
             {formatPublicPrice(
-              upcomingDiscount.priceRsd,
+              upcomingDiscount.priceEur,
               displayCurrency,
               pricingSettings,
-            )} po
-            komadu
+            )} per
+            item
             <span className="ml-1 text-muted-foreground">
               (-
               {formatPublicPrice(
-                basePriceRsd - upcomingDiscount.priceRsd,
+                basePriceEur - upcomingDiscount.priceEur,
                 displayCurrency,
                 pricingSettings,
               )}
@@ -117,15 +117,15 @@ export function AddOnStepper({
       <div className="flex flex-shrink-0 items-center gap-2">
         <span className="w-24 text-right text-xs font-medium text-muted-foreground">
           {priceType === "percent"
-            ? `+${priceRsd}%`
-            : formatPublicPrice(priceRsd, displayCurrency, pricingSettings)}
+            ? `+${priceEur}%`
+            : formatPublicPrice(priceEur, displayCurrency, pricingSettings)}
         </span>
         <div className="flex items-center rounded-lg bg-secondary/70">
           <button
             type="button"
             onClick={() => onChange(quantity - 1)}
             disabled={atMin}
-            aria-label={`Smanji ${label}`}
+            aria-label={`Decrease ${label}`}
             className="flex h-8 w-8 items-center justify-center rounded-l-lg transition-colors hover:bg-muted disabled:opacity-30"
           >
             <Minus className="h-3.5 w-3.5" />
@@ -137,7 +137,7 @@ export function AddOnStepper({
             type="button"
             onClick={() => onChange(quantity + 1)}
             disabled={atMax}
-            aria-label={`Povećaj ${label}`}
+            aria-label={`Increase ${label}`}
             className="flex h-8 w-8 items-center justify-center rounded-r-lg transition-colors hover:bg-muted disabled:opacity-30"
           >
             <Plus className="h-3.5 w-3.5" />

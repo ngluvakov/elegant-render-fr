@@ -28,35 +28,35 @@ const scenarios: { label: string; floors: InteriorFloor[]; expected: number }[] 
     {
       label: "1x int-static, default (1 prazan sprat)",
       floors: [newFloor(0)],
-      expected: 19924,
+      expected: 170,
     },
     {
       label: "1 soba (1 cam)",
       floors: [
         { id: makeFloorId(), name: "Sprat 1", rooms: makeRooms(1, 1) },
       ],
-      expected: 19924,
+      expected: 170,
     },
     {
       label: "10 soba x 1 cam",
       floors: [
         { id: makeFloorId(), name: "Sprat 1", rooms: makeRooms(10, 1) },
       ],
-      expected: 19924,
+      expected: 170,
     },
     {
       label: "11 soba x 1 cam",
       floors: [
         { id: makeFloorId(), name: "Sprat 1", rooms: makeRooms(11, 1) },
       ],
-      expected: 24378,
+      expected: 208,
     },
     {
       label: "12 soba x 1 cam",
       floors: [
         { id: makeFloorId(), name: "Sprat 1", rooms: makeRooms(12, 1) },
       ],
-      expected: 28832,
+      expected: 246,
     },
     {
       label: "11 soba; jedna ima 2 cam",
@@ -70,7 +70,7 @@ const scenarios: { label: string; floors: InteriorFloor[]; expected: number }[] 
           ],
         },
       ],
-      expected: 25550,
+      expected: 218,
     },
     {
       label: "1 sprat 10 soba + 2. prazan sprat",
@@ -78,7 +78,7 @@ const scenarios: { label: string; floors: InteriorFloor[]; expected: number }[] 
         { id: makeFloorId(), name: "Sprat 1", rooms: makeRooms(10, 1) },
         newFloor(1),
       ],
-      expected: 33988,
+      expected: 290,
     },
     {
       label: "11 soba na 2 sprata",
@@ -86,7 +86,7 @@ const scenarios: { label: string; floors: InteriorFloor[]; expected: number }[] 
         { id: makeFloorId(), name: "Sprat 1", rooms: makeRooms(11, 1) },
         { id: makeFloorId(), name: "Sprat 2", rooms: makeRooms(11, 1) },
       ],
-      expected: 42896,
+      expected: 366,
     },
   ];
 
@@ -97,7 +97,7 @@ for (const s of scenarios) {
   const calc = priceItems([item]);
   const ok = calc.total === s.expected;
   console.log(
-    `${ok ? "PASS" : "FAIL"}  ${s.label.padEnd(40)} -> ${calc.total} RSD (expected ${s.expected} RSD)`,
+    `${ok ? "PASS" : "FAIL"}  ${s.label.padEnd(40)} → €${calc.total} (expected €${s.expected})`,
   );
   if (ok) pass++;
   else fail++;

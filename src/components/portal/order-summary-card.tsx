@@ -15,9 +15,9 @@ type OrderSummaryCardProps = {
     id: string;
     productLabel: string;
     categoryLabel: string;
-    totalRsd: number;
+    totalEur: number;
     totalCents: number | null;
-    originalTotalRsd: number | null;
+    originalTotalEur: number | null;
     discountPct: number | null;
     discountReason: string | null;
   }>;
@@ -37,15 +37,15 @@ export function OrderSummaryCard({
   return (
     <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
       <h3 className="text-sm font-semibold text-foreground">
-        Pregled porudžbine
+        Order summary
       </h3>
 
       {/* Items */}
       <div className="mt-4 space-y-2">
         {items.map((item) => {
           const { primary, struck } = formatPublicDiscountedPrice(
-            (item.totalCents ?? item.totalRsd * 100) / 100,
-            item.originalTotalRsd ?? item.totalRsd,
+            (item.totalCents ?? item.totalEur * 100) / 100,
+            item.originalTotalEur ?? item.totalEur,
             item.discountPct ?? 0,
             displayCurrency,
             pricingSettings,
@@ -83,7 +83,7 @@ export function OrderSummaryCard({
       {sourceFiles.length > 0 && (
         <div className="mt-4 border-t border-border/30 pt-3">
           <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-            Priloženi materijali ({sourceFiles.length})
+            Attached materials ({sourceFiles.length})
           </p>
           <div className="mt-2 space-y-1">
             {sourceFiles.map((f) => (
@@ -99,7 +99,7 @@ export function OrderSummaryCard({
       {customerNote && (
         <div className="mt-4 border-t border-border/30 pt-3">
           <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-            Napomena
+            Note
           </p>
           <p className="mt-1 text-xs text-foreground/80">{customerNote}</p>
         </div>

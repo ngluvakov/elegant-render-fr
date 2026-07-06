@@ -5,7 +5,7 @@
  */
 import {
   invoiceCurrencyForBuyer,
-  invoiceGrossCentsFromRsdCents,
+  invoiceGrossCentsFromEurCents,
 } from "@/lib/invoice-data";
 import type { BillingCurrency } from "@/lib/billing";
 
@@ -22,15 +22,14 @@ export type InvoiceDoc = {
 
 type OrderInput = {
   id: string;
-  buyerType: "individual" | "company_rs" | "company_foreign";
+  buyerType: "individual" | "business";
   buyerCountryCode?: string | null;
   companyCountryCode: string | null;
   billingCurrency?: BillingCurrency | null;
   billingVatRate?: number | null;
-  billingRsdRate?: number | null;
   billingTotalCents?: number | null;
   totalCents: number | null;
-  totalRsd: number;
+  totalEur: number;
   proformaNumber: string | null;
   proformaIssuedAt: Date | null;
   proformaPdfPath: string | null;
@@ -43,12 +42,11 @@ type ChargeInput = {
   id: string;
   reason: string | null;
   totalCents: number;
-  buyerType?: "individual" | "company_rs" | "company_foreign" | null;
+  buyerType?: "individual" | "business" | null;
   buyerCountryCode?: string | null;
   companyCountryCode?: string | null;
   billingCurrency?: BillingCurrency | null;
   billingVatRate?: number | null;
-  billingRsdRate?: number | null;
   billingTotalCents?: number | null;
   status: "pending" | "paid" | "cancelled";
   invoiceNumber: string | null;
@@ -109,8 +107,6 @@ export function buildInvoiceList(
         charge.companyCountryCode ?? order.companyCountryCode ?? null,
       billingCurrency: charge.billingCurrency ?? order.billingCurrency ?? null,
       billingVatRate: charge.billingVatRate ?? order.billingVatRate ?? null,
-      billingRsdRate:
-        charge.billingRsdRate ?? order.billingRsdRate ?? null,
     };
     docs.push({
       id: `charge:${charge.id}`,
@@ -119,7 +115,7 @@ export function buildInvoiceList(
       issuedAt: charge.invoiceIssuedAt,
       amountCents:
         charge.billingTotalCents ??
-        invoiceGrossCentsFromRsdCents(charge.totalCents, chargeBuyer),
+        invoiceGrossCentsFromEurCents(charge.totalCents, chargeBuyer),
       currency: invoiceCurrencyForBuyer(chargeBuyer),
       label: `Račun za doplatu${reasonHint}`,
       href: `/api/portal/charge-invoice/${charge.id}`,
@@ -130,8 +126,8 @@ export function buildInvoiceList(
 }
 
 function orderAmountCents(order: OrderInput): number {
-  return invoiceGrossCentsFromRsdCents(
-    order.totalCents ?? order.totalRsd * 100,
+  return invoiceGrossCentsFromEurCents(
+    order.totalCents ?? order.totalEur * 100,
     order,
   );
 }

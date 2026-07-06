@@ -3,7 +3,7 @@
  *
  * fetch() ne izlaže upload progress, pa direktni upload ka Supabase
  * Storage signed URL-u ide kroz XMLHttpRequest. Koriste ga checkout
- * StepUpload i portal RevisionUploadCard.
+ * OrderFileUpload and portal RevisionUploadCard.
  */
 export function putFileWithProgress(
   url: string,

@@ -20,9 +20,11 @@ import { enqueueOutboxEvent } from "@/lib/outbox";
 import { captureServerEvent } from "@/lib/posthog";
 import { requirePermission } from "@/lib/admin-auth";
 import {
-  billingCentsFromRsdCents,
+  billingCentsFromEurCents,
   buildBillingSnapshot,
+  buildChargeSnapshotForCurrency,
 } from "@/lib/billing";
+import { isChargeCurrency } from "@/lib/currency/config";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export type ChargeItemInput = {
@@ -84,9 +86,9 @@ export async function adminCreateCharge(args: {
         buyerCountryCode: true,
         companyName: true,
         companyTaxId: true,
-        companyMb: true,
         companyAddress: true,
         companyCountryCode: true,
+        chargedCurrency: true,
         user: {
           select: {
             email: true,
@@ -94,7 +96,6 @@ export async function adminCreateCharge(args: {
             billingCountryCode: true,
             billingCompanyName: true,
             billingCompanyTaxId: true,
-            billingCompanyMb: true,
             billingCompanyAddress: true,
           },
         },
@@ -113,33 +114,40 @@ export async function adminCreateCharge(args: {
           buyerCountryCode: order.user.billingCountryCode,
           companyName: order.user.billingCompanyName,
           companyTaxId: order.user.billingCompanyTaxId,
-          companyMb: order.user.billingCompanyMb,
           companyAddress: order.user.billingCompanyAddress,
           companyCountryCode: order.user.billingCountryCode,
         }
       : {
           buyerType: order.buyerType,
-          buyerCountryCode:
-            order.buyerCountryCode ??
-            (order.buyerType === "company_rs" ? "RS" : order.companyCountryCode),
+          buyerCountryCode: order.buyerCountryCode ?? order.companyCountryCode,
           companyName: order.companyName,
           companyTaxId: order.companyTaxId,
-          companyMb: order.companyMb,
           companyAddress: order.companyAddress,
           companyCountryCode: order.companyCountryCode,
         },
     pricingCatalog.settings,
-    order.buyerCountryCode ??
-      (order.buyerType === "company_rs" ? "RS" : order.companyCountryCode),
+    order.buyerCountryCode ?? order.companyCountryCode,
   );
   const billingTotalCents = normalized.reduce(
     (sum, item) =>
       sum +
-      billingCentsFromRsdCents(
+      billingCentsFromEurCents(
         item.amountCents * item.quantity,
         billingSnapshot,
       ),
     0,
+  );
+
+  // Charged-amount snapshot: the charge inherits the parent order's
+  // presentment currency (so the customer pays add-ons in the same
+  // currency as the original order) and converts the charge's EUR
+  // total at the current FX table.
+  const chargeCurrency = isChargeCurrency(order.chargedCurrency)
+    ? order.chargedCurrency
+    : "EUR";
+  const chargeSnapshot = buildChargeSnapshotForCurrency(
+    totalCents,
+    chargeCurrency,
   );
 
   const admin = await requirePermission("FINANCE_MANAGE");
@@ -155,13 +163,15 @@ export async function adminCreateCharge(args: {
         buyerCountryCode: billingSnapshot.buyerCountryCode,
         companyName: billingSnapshot.companyName,
         companyTaxId: billingSnapshot.companyTaxId,
-        companyMb: billingSnapshot.companyMb,
         companyAddress: billingSnapshot.companyAddress,
         companyCountryCode: billingSnapshot.companyCountryCode,
         billingCurrency: billingSnapshot.billingCurrency,
         billingVatRate: billingSnapshot.billingVatRate,
-        billingRsdRate: billingSnapshot.billingRsdRate,
         billingTotalCents,
+        chargedCurrency: chargeSnapshot.chargedCurrency,
+        chargedAmountMinor: chargeSnapshot.chargedAmountMinor,
+        chargedFxRate: chargeSnapshot.chargedFxRate,
+        chargedFxAsOf: chargeSnapshot.chargedFxAsOf,
         items: {
           create: normalized.map((item) => ({
             productId: item.productId,
@@ -195,7 +205,7 @@ export async function adminCreateCharge(args: {
             label: item.label,
             quantity: item.quantity,
             amountCents: item.amountCents,
-            billingSubtotalCents: billingCentsFromRsdCents(
+            billingSubtotalCents: billingCentsFromEurCents(
               item.amountCents * item.quantity,
               billingSnapshot,
             ),

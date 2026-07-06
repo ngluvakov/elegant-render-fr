@@ -80,7 +80,7 @@ export function Tour360QuoteEditor({
     const floor = config.floors[floorIdx];
     if (floor.rooms.length >= MAX_ROOMS_PER_FLOOR) return;
     const next: Tour360Room = {
-      name: `Prostorija ${floor.rooms.length + 1}`,
+      name: `Room ${floor.rooms.length + 1}`,
       hotspots: 1,
       staticCameras: 0,
     };
@@ -138,9 +138,9 @@ export function Tour360QuoteEditor({
   return (
     <div className="space-y-4">
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Svaki sprat uključuje 10 prostorija + 10 hotspotova + 10 statičkih
-        kadrova u baznoj ceni. Iznad praga se obračunavaju dodatni; sledeći
-        spratovi automatski idu po sniženoj ceni (−30%).
+        Each floor includes 10 rooms + 10 hotspots + 10 static frames in the
+        base price. Additional items are charged above that threshold; following
+        floors are automatically priced at a discount (-30%).
       </p>
 
       <div className="space-y-3">
@@ -173,11 +173,11 @@ export function Tour360QuoteEditor({
           className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-white disabled:opacity-40 disabled:hover:bg-accent/15 disabled:hover:text-accent"
         >
           <Plus className="h-3 w-3" />
-          Dodaj sprat
+          Add floor
         </button>
         <p className="text-right text-xs text-muted-foreground">
           {config.floors.length}{" "}
-          {config.floors.length === 1 ? "sprat" : "sprata"}
+          {config.floors.length === 1 ? "floor" : "floors"}
         </p>
       </div>
 
@@ -193,7 +193,7 @@ export function Tour360QuoteEditor({
       />
 
       <ItemTotal
-        preDiscountRsd={calc.totalRsd}
+        preDiscountEur={calc.totalEur}
         discount={discount}
         displayCurrency={displayCurrency}
         pricingSettings={pricingSettings}
@@ -229,7 +229,7 @@ function FloorPanel({
   onSetRoomStaticCameras: (roomIdx: number, n: number) => void;
   onRemoveFloor: () => void;
 }) {
-  const floorLabel = index === 0 ? "Sprat 1" : `Sprat ${index + 1}`;
+  const floorLabel = index === 0 ? "Floor 1" : `Floor ${index + 1}`;
   return (
     <div className="rounded-xl border border-border/60 bg-card/60 p-4">
       <div className="flex items-center justify-between gap-3">
@@ -245,7 +245,7 @@ function FloorPanel({
           <button
             type="button"
             onClick={onRemoveFloor}
-            aria-label={`Ukloni ${floorLabel}`}
+            aria-label={`Remove ${floorLabel}`}
             className="flex h-7 w-7 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors hover:bg-destructive/20"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -256,13 +256,13 @@ function FloorPanel({
       <div className="mt-3 space-y-1.5">
         {floor.rooms.length === 0 && (
           <p className="rounded-lg bg-background/40 px-3 py-3 text-center text-[0.72rem] text-muted-foreground">
-            Bez prostorija — dodaj prvu da vidiš obračun.
+            No rooms yet - add the first one to see the calculation.
           </p>
         )}
         {floor.rooms.map((room, rIdx) => (
           <RoomRow
             key={rIdx}
-            name={room.name || `Prostorija ${rIdx + 1}`}
+            name={room.name || `Room ${rIdx + 1}`}
             hotspots={room.hotspots ?? 1}
             staticCameras={room.staticCameras ?? 0}
             onHotspotsChange={(n) => onSetRoomHotspots(rIdx, n)}
@@ -277,7 +277,7 @@ function FloorPanel({
           className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/60 bg-transparent px-3 py-2 text-[0.72rem] font-medium text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
         >
           <Plus className="h-3 w-3" />
-          Dodaj prostoriju
+          Add room
         </button>
       </div>
 
@@ -320,7 +320,7 @@ function RoomRow({
           onChange={onHotspotsChange}
         />
         <CompactStepper
-          label="stat. kadar"
+          label="static frame"
           value={staticCameras}
           min={0}
           max={MAX_CAMERAS_PER_ROOM}
@@ -329,7 +329,7 @@ function RoomRow({
         <button
           type="button"
           onClick={onRemove}
-          aria-label={`Ukloni ${name}`}
+          aria-label={`Remove ${name}`}
           className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -353,14 +353,14 @@ function FloorBreakdown({
   const rows: { label: string; value: string }[] = [
     {
       label: calc.isFirstFloor
-        ? "Cena prvog sprata (uključeno 10 prostorija + 10 hotspotova + 10 kadrova)"
-        : "Cena dodatnog sprata (−30%)",
+        ? "First floor price (includes 10 rooms + 10 hotspots + 10 frames)"
+        : "Additional floor price (-30%)",
       value: formatPublicPrice(calc.baseCost, displayCurrency, pricingSettings),
     },
   ];
   if (calc.extraHotspotsCost > 0) {
     rows.push({
-      label: `+${calc.extraHotspots} dodatn${calc.extraHotspots === 1 ? "i hotspot" : "ih hotspotova"} · ${formatPublicPrice(pricing?.extraHotspotRsd ?? 27, displayCurrency, pricingSettings)}/kom`,
+      label: `+${calc.extraHotspots} extra hotspot${calc.extraHotspots === 1 ? "" : "s"} · ${formatPublicPrice(pricing?.extraHotspotEur ?? 27, displayCurrency, pricingSettings)}/item`,
       value: formatPublicPrice(
         calc.extraHotspotsCost,
         displayCurrency,
@@ -370,7 +370,7 @@ function FloorBreakdown({
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
-      label: `+${calc.extraCameras} dodatn${calc.extraCameras === 1 ? "i kadar" : "ih kadrova"} · ${formatPublicPrice(pricing?.extraCameraRsd ?? 10, displayCurrency, pricingSettings)}/kom`,
+      label: `+${calc.extraCameras} extra frame${calc.extraCameras === 1 ? "" : "s"} · ${formatPublicPrice(pricing?.extraCameraEur ?? 10, displayCurrency, pricingSettings)}/item`,
       value: formatPublicPrice(
         calc.extraCamerasCost,
         displayCurrency,
@@ -394,7 +394,7 @@ function FloorBreakdown({
       ))}
       <div className="mt-1.5 flex items-baseline justify-between gap-2 border-t border-border/40 pt-2 text-xs">
         <span className="font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Sprat ukupno
+          Floor total
         </span>
         <span className="text-sm font-bold text-foreground tabular-nums">
           {formatPublicPrice(
@@ -430,30 +430,31 @@ function TourAssemblySection({
   const webOn = assembly.webTourEnabled;
   const assemblyPricing = pricing?.assembly;
   const freeThreshold = assemblyPricing?.freeHotspotThreshold ?? 5;
-  const baseRsd = assemblyPricing?.baseRsd ?? 20;
+  const baseEur = assemblyPricing?.baseEur ?? 20;
   const hotspotsToFree = Math.max(
     0,
     freeThreshold - totalHotspots,
   );
   const baseLabel = webTourFree
-    ? `besplatno (${freeThreshold}+ hotspotova)`
+    ? `free (${freeThreshold}+ hotspots)`
     : webOn
-      ? `+${formatPublicPrice(baseRsd, displayCurrency, pricingSettings)}${hotspotsToFree > 0 ? ` (besplatno sa još ${hotspotsToFree} hotspot${hotspotsToFree === 1 ? "om" : "ova"})` : ""}`
-      : `+${formatPublicPrice(baseRsd, displayCurrency, pricingSettings)} (besplatno sa ${freeThreshold}+ hotspotova)`;
+      ? `+${formatPublicPrice(baseEur, displayCurrency, pricingSettings)}${hotspotsToFree > 0 ? ` (free with ${hotspotsToFree} more hotspot${hotspotsToFree === 1 ? "" : "s"})` : ""}`
+      : `+${formatPublicPrice(baseEur, displayCurrency, pricingSettings)} (free with ${freeThreshold}+ hotspots)`;
 
   return (
     <div className="rounded-xl border border-border/60 bg-card/60 p-4">
       <p className="text-[0.72rem] font-bold uppercase tracking-[0.22em] text-muted-foreground">
-        Web tura i brending
+        Web tour and branding
       </p>
       <p className="mt-1 text-[0.72rem] leading-relaxed text-muted-foreground">
-        Pretvara render u interaktivni viewer koji se može deliti linkom.
-        Bez ovih opcija dobijate samo statične izlaze (panorame i kadrove).
+        Converts the render into an interactive viewer that can be shared by
+        link. Without these options, you receive static outputs only (panoramas
+        and frames).
       </p>
 
       <div className="mt-3 space-y-2">
         <ToggleRow
-          label="Web tura — interaktivni viewer"
+          label="Web tour - interactive viewer"
           sub={baseLabel}
           checked={webOn}
           onChange={(v) =>
@@ -469,9 +470,9 @@ function TourAssemblySection({
           }
         />
         <ToggleRow
-          label="Navigacija po osnovi sprata"
+          label="Floor-plan navigation"
           sub={`+${formatPublicPrice(
-            assemblyPricing?.floorPlanNavRsd ?? 15,
+            assemblyPricing?.floorPlanNavEur ?? 15,
             displayCurrency,
             pricingSettings,
           )}`}
@@ -481,12 +482,12 @@ function TourAssemblySection({
           indented
         />
         <ToggleRow
-          label="White-label brending"
+          label="White-label branding"
           sub={`+${formatPublicPrice(
-            assemblyPricing?.whiteLabelRsd ?? 35,
+            assemblyPricing?.whiteLabelEur ?? 35,
             displayCurrency,
             pricingSettings,
-          )} · logo se postavlja u portalu`}
+          )} · logo is uploaded in the portal`}
           checked={webOn && assembly.whiteLabelEnabled}
           disabled={!webOn}
           onChange={(v) => onChange({ whiteLabelEnabled: v })}
@@ -497,7 +498,7 @@ function TourAssemblySection({
       {webOn && (
         <div className="mt-3 flex items-baseline justify-between gap-2 border-t border-border/40 pt-2 text-xs">
           <span className="font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Web tura ukupno
+            Web tour total
           </span>
           <span className="text-sm font-bold text-foreground tabular-nums">
             {formatPublicPrice(assemblyCost, displayCurrency, pricingSettings)}
@@ -566,7 +567,7 @@ function CompactStepper({
           type="button"
           onClick={() => onChange(value - 1)}
           disabled={atMin}
-          aria-label={`Smanji ${label}`}
+          aria-label={`Decrease ${label}`}
           className="flex h-7 w-7 items-center justify-center rounded-l-md transition-colors hover:bg-muted disabled:opacity-30"
         >
           <Minus className="h-3 w-3" />
@@ -578,7 +579,7 @@ function CompactStepper({
           type="button"
           onClick={() => onChange(value + 1)}
           disabled={atMax}
-          aria-label={`Povećaj ${label}`}
+          aria-label={`Increase ${label}`}
           className="flex h-7 w-7 items-center justify-center rounded-r-md transition-colors hover:bg-muted disabled:opacity-30"
         >
           <Plus className="h-3 w-3" />

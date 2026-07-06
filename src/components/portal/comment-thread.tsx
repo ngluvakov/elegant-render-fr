@@ -53,15 +53,15 @@ export function CommentThread({
     return (
       <EmptyState
         icon={MessageSquare}
-        heading="Nema poruka"
-        description="Započnite konverzaciju sa timom koristeći polje ispod."
+        heading="No messages"
+        description="Start a conversation with the team using the field below."
       />
     );
   }
 
   const formatTime = (date: Date) => {
     const d = new Date(date);
-    return d.toLocaleDateString("sr-Latn-RS", {
+    return d.toLocaleDateString("en-GB", {
       day: "numeric",
       month: "short",
       hour: "2-digit",
@@ -74,7 +74,7 @@ export function CommentThread({
       {comments.map((comment) => {
         const isClient = comment.role === "client";
         const authorName = isClient
-          ? comment.author?.name ?? "Vi"
+          ? comment.author?.name ?? "You"
           : "Elegant Render";
 
         return (

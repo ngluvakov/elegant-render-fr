@@ -28,7 +28,7 @@ export function AdminDeliverableUpload({ orderId }: { orderId: string }) {
 
         if (!urlRes.ok) {
           const { error } = await urlRes.json();
-          throw new Error(error || "Greška");
+          throw new Error(error || "Error");
         }
 
         const { signedUrl, storagePath } = await urlRes.json();
@@ -39,7 +39,7 @@ export function AdminDeliverableUpload({ orderId }: { orderId: string }) {
           body: file,
         });
 
-        if (!uploadRes.ok) throw new Error("Upload nije uspeo");
+        if (!uploadRes.ok) throw new Error("Upload failed");
 
         await adminUploadDeliverable(orderId, file.name, file.size, file.type, storagePath);
         setUploading((prev) => prev.filter((u) => u.name !== file.name));
@@ -48,7 +48,7 @@ export function AdminDeliverableUpload({ orderId }: { orderId: string }) {
         setUploading((prev) =>
           prev.map((u) =>
             u.name === file.name
-              ? { ...u, error: err instanceof Error ? err.message : "Greška" }
+              ? { ...u, error: err instanceof Error ? err.message : "Error" }
               : u,
           ),
         );
@@ -60,10 +60,10 @@ export function AdminDeliverableUpload({ orderId }: { orderId: string }) {
   return (
     <div className="rounded-2xl border border-accent/20 bg-accent/5 p-5">
       <h3 className="text-sm font-semibold text-foreground">
-        Otpremi deliverable
+        Upload deliverable
       </h3>
       <p className="mt-1 text-xs text-muted-foreground">
-        Fajlovi će biti vidljivi klijentu u sekciji „Spremno za preuzimanje”.
+        Files will be visible to the client in the “Ready to download” section.
       </p>
 
       <div
@@ -71,7 +71,7 @@ export function AdminDeliverableUpload({ orderId }: { orderId: string }) {
         className="mt-3 flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-accent/30 px-4 py-4 transition-colors hover:border-accent/50 hover:bg-accent/5"
       >
         <Upload className="mr-2 h-4 w-4 text-accent" />
-        <span className="text-xs font-medium text-accent">Izaberi fajlove</span>
+        <span className="text-xs font-medium text-accent">Choose files</span>
         <input
           ref={inputRef}
           type="file"
@@ -90,7 +90,7 @@ export function AdminDeliverableUpload({ orderId }: { orderId: string }) {
               {u.error ? (
                 <span className="text-destructive">{u.error}</span>
               ) : (
-                <span className="text-accent">Otpremanje…</span>
+                <span className="text-accent">Uploading...</span>
               )}
             </div>
           ))}

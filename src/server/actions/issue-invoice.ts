@@ -28,7 +28,7 @@ import { renderInvoicePdf, type InvoiceData } from "@/lib/invoice-pdf";
 import {
   buildInvoiceLineItem,
   buildInvoiceRecipient,
-  invoiceGrossCentsFromRsdCents,
+  invoiceGrossCentsFromEurCents,
   invoiceCurrencyForBuyer,
   invoiceVatRateForBuyer,
   isExportInvoice,
@@ -67,12 +67,12 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
     const vatRate = invoiceVatRateForBuyer(order);
     const recipient = buildInvoiceRecipient(order);
     const items = order.items
-      .filter((it) => (it.totalCents ?? Math.round(it.totalRsd * 100)) > 0)
+      .filter((it) => (it.totalCents ?? Math.round(it.totalEur * 100)) > 0)
       .map((it) => {
-        const totalCents = it.totalCents ?? Math.round(it.totalRsd * 100);
+        const totalCents = it.totalCents ?? Math.round(it.totalEur * 100);
         return buildInvoiceLineItem({
           description: it.productLabel,
-          grossUnitCents: invoiceGrossCentsFromRsdCents(totalCents, order),
+          grossUnitCents: invoiceGrossCentsFromEurCents(totalCents, order),
           vatRate,
         });
       });
@@ -128,7 +128,7 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
           orderId,
           to: order.user.email,
           invoiceNumber: allocation.formatted,
-          totalRsd: order.totalRsd,
+          totalEur: order.totalEur,
           billingCurrency: currency,
           billingTotalCents: order.billingTotalCents,
           pdfPath: storagePath,
@@ -145,7 +145,7 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
         invoiceNumber: allocation.formatted,
         buyerType,
         currency,
-        totalRsd: order.totalRsd,
+        totalEur: order.totalEur,
         billingTotalCents: order.billingTotalCents,
         pdfPath: storagePath,
       },

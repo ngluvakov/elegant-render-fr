@@ -1,30 +1,37 @@
 /**
- * env.ts — provera prisustva env varova pri boot-u (instrumentation.ts).
+ * env.ts — boot-time env var presence check (instrumentation.ts).
  *
- * Dva nivoa:
- *  - CORE: bez njih ništa ne radi ni lokalno → u developmentu THROW
- *    (fail-fast dok je jeftino), u produkciji glasan log.
- *  - INTEGRATIONS: očekivani u produkciji, ali lokalni dev legitimno
- *    radi bez njih (mock kartica umesto NestPay-a, in-memory rate
- *    limit umesto Upstash-a, Turnstile isključen) → uvek samo log,
- *    u developmentu utišan.
+ * Three levels:
+ *  - CORE: nothing works without them, even locally → THROW in
+ *    development (fail fast while it's cheap), loud log in production.
+ *  - INTEGRATIONS: expected in production, but local dev legitimately
+ *    runs without them (mock card instead of PayPal, in-memory rate
+ *    limit instead of Upstash) → always log-only, silenced in dev.
+ *  - WARN: nice-to-have in production (webhook sync degrades without
+ *    them but payments still work) → console.warn in production.
  *
- * Namerno ne baca u produkciji: pogrešna lista bi srušila deploy.
- * Runtime mesta drže svoje guard-ove (cron-auth fail-closed itd.).
+ * Deliberately never throws in production: a stale list would take the
+ * deploy down. Runtime call sites keep their own guards (cron-auth
+ * fail-closed, PayPal client errors, webhook signature fail-closed).
  */
 const CORE_ENV = ["DATABASE_URL", "AUTH_SECRET"] as const;
 
 const INTEGRATION_ENV = [
   "CRON_SECRET",
   "RESEND_API_KEY",
-  "NESTPAY_CLIENT_ID",
-  "NESTPAY_STORE_KEY",
+  "PAYPAL_CLIENT_ID",
+  "PAYPAL_CLIENT_SECRET",
+  "NEXT_PUBLIC_PAYPAL_CLIENT_ID",
   "OPENAI_API_KEY",
   "BITRIX24_WEBHOOK_URL",
-  "TURNSTILE_SECRET_KEY",
   "UPSTASH_REDIS_REST_URL",
   "UPSTASH_REDIS_REST_TOKEN",
 ] as const;
+
+// Without PAYPAL_WEBHOOK_ID the webhook route rejects every delivery
+// (fail-closed signature verification): eCheck completions and
+// dashboard-initiated refunds won't sync until it is configured.
+const WARN_ENV = ["PAYPAL_WEBHOOK_ID"] as const;
 
 function missingOf(names: readonly string[]): string[] {
   return names.filter((name) => !process.env[name]?.trim());
@@ -35,7 +42,7 @@ export function checkServerEnv() {
 
   const missingCore = missingOf(CORE_ENV);
   if (missingCore.length > 0) {
-    const message = `[env] Nedostaju CORE env varovi: ${missingCore.join(", ")}`;
+    const message = `[env] Missing CORE env vars: ${missingCore.join(", ")}`;
     if (isDev) throw new Error(message);
     console.error(message);
   }
@@ -43,7 +50,14 @@ export function checkServerEnv() {
   const missingIntegrations = missingOf(INTEGRATION_ENV);
   if (missingIntegrations.length > 0 && !isDev) {
     console.error(
-      `[env] Nedostaju integration env varovi (očekivani u produkciji): ${missingIntegrations.join(", ")}`,
+      `[env] Missing integration env vars (required in production): ${missingIntegrations.join(", ")}`,
+    );
+  }
+
+  const missingWarn = missingOf(WARN_ENV);
+  if (missingWarn.length > 0 && !isDev) {
+    console.warn(
+      `[env] Missing optional env vars (webhook sync degraded): ${missingWarn.join(", ")}`,
     );
   }
 }

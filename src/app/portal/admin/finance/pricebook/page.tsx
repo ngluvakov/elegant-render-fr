@@ -9,9 +9,9 @@ import {
 } from "@/server/pricing/catalog";
 
 export const metadata: Metadata = {
-  title: "Admin — Cenovnik i finansije",
+  title: "Admin - Pricebook and finance",
   description:
-    "Admin upravljanje cenovnikom, finansijskim pravilima i publikacijom cena.",
+    "Admin management of the pricebook, financial rules, and price publishing.",
   robots: { index: false, follow: false },
 };
 

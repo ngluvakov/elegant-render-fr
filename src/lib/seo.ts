@@ -396,7 +396,7 @@ export function buildServiceJsonLd(service: Service) {
         name: variant.title,
         description: variant.description,
         price: variant.basePrice,
-        priceCurrency: "RSD",
+        priceCurrency: "EUR",
         url: serviceUrl,
         itemOffered: {
           "@type": "Service",
@@ -406,7 +406,7 @@ export function buildServiceJsonLd(service: Service) {
         priceSpecification: {
           "@type": "UnitPriceSpecification",
           price: variant.basePrice,
-          priceCurrency: "RSD",
+          priceCurrency: "EUR",
           unitText: variant.unitLabel,
         },
       })),
@@ -439,7 +439,7 @@ export function buildOfferCatalogJsonLd(
     "@id": `${absoluteUrl("/pricing")}#offer-catalog`,
     name: "Elegant Render cenovnik",
     description:
-      "Osnovne cene arhitektonske vizuelizacije su u RSD, bruto sa PDV-om uračunatim.",
+      "Osnovne cene arhitektonske vizuelizacije su u EUR.",
     url: absoluteUrl("/pricing"),
     provider: {
       "@id": SEO.organizationId,
@@ -452,8 +452,8 @@ export function buildOfferCatalogJsonLd(
         "@type": "Offer",
         name: product.label,
         description: product.includes.join(", "),
-        price: product.basePriceRsd,
-        priceCurrency: "RSD",
+        price: product.basePriceEur,
+        priceCurrency: "EUR",
         url: absoluteUrl("/pricing"),
         availability: product.inquiryOnly
           ? "https://schema.org/PreOrder"
@@ -468,8 +468,8 @@ export function buildOfferCatalogJsonLd(
         },
         priceSpecification: {
           "@type": "UnitPriceSpecification",
-          price: product.basePriceRsd,
-          priceCurrency: "RSD",
+          price: product.basePriceEur,
+          priceCurrency: "EUR",
           unitText: product.unitLabel,
         },
       })),

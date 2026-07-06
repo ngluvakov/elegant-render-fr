@@ -10,21 +10,21 @@ import { convertInquiryToOrder } from "@/server/actions/convert-inquiry-to-order
 
 const NEXT_STATUS: Record<string, Array<{ to: string; label: string }>> = {
   pending: [
-    { to: "in_progress", label: "Pokreni" },
-    { to: "closed", label: "Zatvori" },
+    { to: "in_progress", label: "Start" },
+    { to: "closed", label: "Close" },
   ],
   in_progress: [
-    { to: "proposal_sent", label: "Ponuda poslata" },
-    { to: "converted", label: "Konvertovano" },
-    { to: "closed", label: "Zatvori" },
+    { to: "proposal_sent", label: "Estimate sent" },
+    { to: "converted", label: "Converted" },
+    { to: "closed", label: "Close" },
   ],
   proposal_sent: [
-    { to: "converted", label: "Konvertovano" },
-    { to: "closed", label: "Zatvori" },
-    { to: "in_progress", label: "Vrati u razgovor" },
+    { to: "converted", label: "Converted" },
+    { to: "closed", label: "Close" },
+    { to: "in_progress", label: "Back to conversation" },
   ],
-  converted: [{ to: "closed", label: "Zatvori" }],
-  closed: [{ to: "pending", label: "Vrati u čekanje" }],
+  converted: [{ to: "closed", label: "Close" }],
+  closed: [{ to: "pending", label: "Move back to pending" }],
 };
 
 export function ProjectInquiryActions({
@@ -99,7 +99,7 @@ export function ProjectInquiryActions({
                 onClick={convertToOrder}
                 className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background transition hover:opacity-90 disabled:opacity-50"
               >
-                {pending ? "Konvertujem…" : "Potvrdi konverziju"}
+                {pending ? "Konvertujem…" : "Confirm konverziju"}
               </button>
               <button
                 type="button"
@@ -107,7 +107,7 @@ export function ProjectInquiryActions({
                 onClick={() => setConfirmingConvert(false)}
                 className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-secondary disabled:opacity-50"
               >
-                Otkaži
+                Cancel
               </button>
             </>
           ) : (
@@ -117,7 +117,7 @@ export function ProjectInquiryActions({
               onClick={() => setConfirmingConvert(true)}
               className="rounded-md border border-foreground bg-card px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-foreground hover:text-background disabled:opacity-50"
             >
-              Konvertuj u porudžbinu
+              Convert to order
             </button>
           ))}
         {transitions.map((transition) => (
@@ -149,8 +149,8 @@ export function ProjectInquiryActions({
 
 function humanConvertReason(reason: string): string {
   if (reason === "not_admin") return "Niste admin.";
-  if (reason === "inquiry_not_found") return "Upit nije pronađen.";
+  if (reason === "inquiry_not_found") return "Inquiry was not found.";
   if (reason === "already_converted")
-    return "Upit je već konvertovan u porudžbinu.";
-  return `Greška: ${reason}`;
+    return "Inquiry has already been converted to an order.";
+  return `Error: ${reason}`;
 }

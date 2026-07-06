@@ -10,13 +10,13 @@ import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import type { BuyerInfoState } from "./checkout-context";
 
 export const metadata: Metadata = {
-  title: "Porudžbina",
+  title: "Checkout",
   description:
-    "Završite porudžbinu, proverite podatke za kupca i pošaljite zahtev timu Elegant Render.",
+    "Complete your order, confirm your details and pay securely through PayPal.",
   robots: NO_INDEX_ROBOTS,
 };
 
-export default async function PoruciPage() {
+export default async function CheckoutPage() {
   const [session, pricingCatalog, publicCountryCode] = await Promise.all([
     auth(),
     getPublishedPricingCatalog(),
@@ -30,7 +30,6 @@ export default async function PoruciPage() {
           billingCountryCode: true,
           billingCompanyName: true,
           billingCompanyTaxId: true,
-          billingCompanyMb: true,
           billingCompanyAddress: true,
         },
       })
@@ -43,21 +42,21 @@ export default async function PoruciPage() {
     buyerCountryCode: initialCountryCode,
     companyName: user?.billingCompanyName ?? "",
     companyTaxId: user?.billingCompanyTaxId ?? "",
-    companyMb: user?.billingCompanyMb ?? "",
     companyAddress: user?.billingCompanyAddress ?? "",
     companyCountryCode:
-      user?.billingBuyerType === "company_foreign" ? initialCountryCode : "",
+      user?.billingBuyerType === "business" ? initialCountryCode : "",
   };
-  const displayCurrency = initialCountryCode
-    ? getDisplayCurrencyForCountry(initialCountryCode)
-    : getDisplayCurrencyForCountry(publicCountryCode);
+  // Display currency is geo-derived only — it must match the charge
+  // snapshot createOrder locks server-side from the same geo header
+  // (WYSIWYG: what this page shows is what PayPal charges).
+  const displayCurrency = getDisplayCurrencyForCountry(publicCountryCode);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-6 py-16 md:py-24">
       <div className="mb-10 text-center">
-        <SectionKicker align="center">Porudžbina</SectionKicker>
+        <SectionKicker align="center">Checkout</SectionKicker>
         <h1 className="mt-4 text-3xl text-foreground md:text-4xl">
-          Završite porudžbinu
+          Complete your order
         </h1>
       </div>
 

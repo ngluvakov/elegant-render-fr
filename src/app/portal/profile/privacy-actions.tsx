@@ -32,7 +32,7 @@ export function PrivacyActions({
       const res = await fetch("/api/account/export");
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setError(body.error ?? `Greška pri preuzimanju (HTTP ${res.status}).`);
+        setError(body.error ?? `Download failed (HTTP ${res.status}).`);
         return;
       }
       const blob = await res.blob();
@@ -48,7 +48,7 @@ export function PrivacyActions({
       a.remove();
       URL.revokeObjectURL(url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Greška pri preuzimanju.");
+      setError(err instanceof Error ? err.message : "Download failed.");
     } finally {
       setExportPending(false);
     }
@@ -74,10 +74,10 @@ export function PrivacyActions({
   return (
     <section className="mt-12 space-y-5 rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Privatnost</h2>
+        <h2 className="text-xl font-semibold text-foreground">Privacy</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Vaša prava po članu 20. i članu 17. GDPR-a — preuzimanje kopije
-          podataka i zahtev za brisanje naloga.
+          Your rights under GDPR Articles 20 and 17: download a copy of your
+          data or request account deletion.
         </p>
       </div>
 
@@ -92,12 +92,12 @@ export function PrivacyActions({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <h3 className="text-base font-medium text-foreground">
-              Preuzmite kopiju svojih podataka
+              Download a copy of your data
             </h3>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              JSON fajl sa profilom, porudžbinama, komentarima, AI generisanjima
-              i transakcijama kredita. Binarni sadržaji fajlova se preuzimaju
-              odvojeno iz portala.
+              A JSON file with your profile, orders, comments, AI generations,
+              and credit transactions. Binary file contents are downloaded
+              separately from the portal.
             </p>
           </div>
           <button
@@ -107,7 +107,7 @@ export function PrivacyActions({
             className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
-            {exportPending ? "Pripremam…" : "Preuzmi (.json)"}
+            {exportPending ? "Preparing..." : "Download (.json)"}
           </button>
         </div>
       </div>
@@ -119,20 +119,20 @@ export function PrivacyActions({
             <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-[color:var(--color-clay-deep)]" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-foreground">
-                Zahtev za brisanje naloga je u obradi
+                Account deletion request is in progress
               </p>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Zahtev je registrovan{" "}
+                The request was registered on{" "}
                 <strong className="text-foreground">
-                  {new Date(deletionRequestedAt).toLocaleDateString("sr-Latn-RS", {
+                  {new Date(deletionRequestedAt).toLocaleDateString("en-GB", {
                     day: "2-digit",
                     month: "2-digit",
                     year: "numeric",
                   })}
                 </strong>
-                . Tim će obraditi zahtev u roku od 30 dana — anonimizujemo
-                lične podatke uz zadržavanje računovodstvenih zapisa o
-                porudžbinama (po Zakonu o računovodstvu, čuvanje 10 godina).
+                . The team will process it within 30 days. We anonymize
+                personal data while retaining accounting records for orders
+                as legally required.
               </p>
               <div className="mt-4">
                 <button
@@ -141,7 +141,7 @@ export function PrivacyActions({
                   disabled={pending}
                   className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary disabled:opacity-50"
                 >
-                  {pending ? "Obrađujem…" : "Otkaži zahtev"}
+                  {pending ? "Processing..." : "Cancel request"}
                 </button>
               </div>
             </div>
@@ -152,12 +152,12 @@ export function PrivacyActions({
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <h3 className="text-base font-medium text-foreground">
-                Zatražite brisanje naloga
+                Request account deletion
               </h3>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Anonimizujemo vaše lične podatke u roku od 30 dana. Računi i
-                porudžbine zadržavaju se po Zakonu o računovodstvu (10 godina),
-                ali bez identifikacionih podataka.
+                We anonymize your personal data within 30 days. Invoices and
+                orders are retained for accounting compliance, but without
+                identifying personal data.
               </p>
             </div>
             {confirming ? (
@@ -168,7 +168,7 @@ export function PrivacyActions({
                   disabled={pending}
                   className="inline-flex items-center gap-2 rounded-full bg-destructive px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
                 >
-                  {pending ? "Obrađujem…" : "Potvrdi"}
+                  {pending ? "Processing..." : "Confirm"}
                 </button>
                 <button
                   type="button"
@@ -176,7 +176,7 @@ export function PrivacyActions({
                   disabled={pending}
                   className="text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
                 >
-                  Otkaži
+                  Cancel
                 </button>
               </div>
             ) : (
@@ -186,7 +186,7 @@ export function PrivacyActions({
                 className="inline-flex items-center gap-2 rounded-full border border-destructive/40 bg-destructive/5 px-4 py-2 text-sm font-medium text-destructive transition hover:bg-destructive/10"
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                Obriši nalog
+                Delete account
               </button>
             )}
           </div>

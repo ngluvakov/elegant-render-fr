@@ -40,7 +40,7 @@ const tests: Array<{
     label: "1× int-360 default (1 sprat, 0 soba, assembly off)",
     floors: [{ id: makeFloorId(), name: "Sprat 1", rooms: [] }],
     assembly: defaultTourAssembly(),
-    expected: 34574,
+    expected: 295,
   },
   {
     label: "5 soba × 1 hotspot, web tour ON (free by 5+ threshold)",
@@ -54,7 +54,7 @@ const tests: Array<{
       floorPlanNavEnabled: false,
       whiteLabelEnabled: false,
     },
-    expected: 34574, // 5 hotspots >= 5 threshold -> assembly base free
+    expected: 295, // 5 hotspots ≥ 5 threshold → assembly base free
   },
   {
     label: "5 soba × 1 hotspot + floor-plan + white-label",
@@ -68,7 +68,7 @@ const tests: Array<{
       floorPlanNavEnabled: true,
       whiteLabelEnabled: true,
     },
-    expected: 40434, // 34574 + 0 (free base) + 1758 + 4102
+    expected: 345, // 295 + 0 (free base) + 15 + 35
   },
   {
     label: "4 soba × 1 hotspot, web tour ON (paid base, below threshold)",
@@ -82,7 +82,7 @@ const tests: Array<{
       floorPlanNavEnabled: false,
       whiteLabelEnabled: false,
     },
-    expected: 36918, // 34574 + 2344 base (below threshold)
+    expected: 315, // 295 + 20 base (below threshold)
   },
   {
     label: "11 soba × 1 hotspot (1 extra), web tour off",
@@ -92,7 +92,7 @@ const tests: Array<{
       ),
     ],
     assembly: defaultTourAssembly(),
-    expected: 37738, // 34574 + 3164 (1 extra hotspot)
+    expected: 322, // 295 + 27 (1 extra hotspot @ €27)
   },
 ];
 
@@ -103,7 +103,7 @@ for (const t of tests) {
   const calc = priceItems([item]);
   const ok = calc.total === t.expected;
   console.log(
-    `${ok ? "PASS" : "FAIL"}  ${t.label.padEnd(60)} -> ${calc.total} RSD (expected ${t.expected} RSD)`,
+    `${ok ? "PASS" : "FAIL"}  ${t.label.padEnd(60)} → €${calc.total} (expected €${t.expected})`,
   );
   if (ok) pass++;
   else fail++;

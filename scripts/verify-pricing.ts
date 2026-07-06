@@ -7,9 +7,9 @@ import {
   resolveDiscount,
   type QuoteItem,
 } from "../src/lib/catalog/calculate";
-import { billingCentsFromRsdCents } from "../src/lib/billing";
+import { billingCentsFromEurCents } from "../src/lib/billing";
 import {
-  formatAsPublicRsd,
+  formatPublicPrice,
   formatPublicPriceText,
 } from "../src/lib/catalog/display-currency";
 
@@ -57,7 +57,7 @@ const cases: Case[] = [
   {
     name: "Solo exterior-static — no discount",
     items: [qi("a", "ext-static", "exterior")],
-    expect: { perItem: [{ instanceId: "a", total: 29300, discountPct: 0 }] },
+    expect: { perItem: [{ instanceId: "a", total: 250, discountPct: 0 }] },
   },
   {
     name: "ext-static + ext-360 — 360 discounted 40% from exterior-shell",
@@ -81,7 +81,7 @@ const cases: Case[] = [
     expect: {
       perItem: [
         { instanceId: "i", discountPct: 0 },
-        { instanceId: "f", total: 1020, discountPct: 70 },
+        { instanceId: "f", total: 9, discountPct: 70 },
       ],
     },
   },
@@ -93,7 +93,7 @@ const cases: Case[] = [
     ],
     expect: {
       perItem: [
-        { instanceId: "f", total: 1172, discountPct: 50 },
+        { instanceId: "f", total: 10, discountPct: 50 },
       ],
     },
   },
@@ -176,7 +176,7 @@ const externalCases: ExternalCase[] = [
     items: [qi("f", "fp3d-single", "floorplans-3d")],
     externalSources: [qi("ref-i", "int-static", "interior")],
     expect: {
-      perItem: [{ instanceId: "f", total: 1020, discountPct: 70 }],
+      perItem: [{ instanceId: "f", total: 9, discountPct: 70 }],
     },
   },
   {
@@ -265,7 +265,7 @@ for (const c of cases) {
       continue;
     }
     if (exp.total !== undefined)
-      check(`${exp.instanceId} total`, b.totalRsd, exp.total);
+      check(`${exp.instanceId} total`, b.totalEur, exp.total);
     if (exp.discountPct !== undefined)
       check(`${exp.instanceId} discountPct`, b.discountPct, exp.discountPct);
   }
@@ -284,7 +284,7 @@ for (const c of externalCases) {
       continue;
     }
     if (exp.total !== undefined)
-      check(`${exp.instanceId} total`, b.totalRsd, exp.total);
+      check(`${exp.instanceId} total`, b.totalEur, exp.total);
     if (exp.discountPct !== undefined)
       check(`${exp.instanceId} discountPct`, b.discountPct, exp.discountPct);
   }
@@ -300,23 +300,18 @@ console.log("• resolveDiscount: self-only creator returns null");
   check("null result", r, null);
 }
 
-console.log("\n• RSD gross amount stays the public and billing amount");
+console.log("\n• EUR display/billing identity");
 {
-  const settings = { rsdRate: 117.2, serbiaVatRate: 0.2 };
-  check("public 100 RSD", formatAsPublicRsd(100, settings), 100);
+  check("public 100 EUR", formatPublicPrice(100), "€100");
   check(
-    "billing 100 RSD cents",
-    billingCentsFromRsdCents(10000, {
-      billingCurrency: "RSD",
-      billingVatRate: settings.serbiaVatRate,
-      billingRsdRate: settings.rsdRate,
-    }),
+    "billing 100 EUR -> EUR cents (identity)",
+    billingCentsFromEurCents(10000),
     10000,
   );
   check(
-    "range text formatting",
-    formatPublicPriceText("RSD 1000–1500", "rsd", settings),
-    "1.000 RSD-1.500 RSD",
+    "range text conversion",
+    formatPublicPriceText("€10–15", "EUR"),
+    "€10–€15",
   );
 }
 

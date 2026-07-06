@@ -1,12 +1,12 @@
 /**
  * Outbox observability — read-only dashboard over the OutboxEvent
  * table that powers transactional emails (order confirmation,
- * predračun, faktura, inquiry-converted, AI credit reminders, etc).
+ * proforma, invoice, inquiry-converted, AI credit reminders, etc).
  *
  * Lets admin see at a glance whether the cron processor is moving
  * rows and triage failed deliveries (e.g. Resend domain not yet
  * verified → invoice emails pile up in `failed`). Each failed row
- * gets a one-click "Pošalji ponovo" button that resets it to
+ * gets a one-click "Send again" button that resets it to
  * pending; the cron picks it up on the next tick.
  *
  * Filterable by status via search params; default view shows all
@@ -23,7 +23,7 @@ import { requirePermission } from "@/lib/admin-auth";
 export const metadata: Metadata = {
   title: "Outbox — Admin",
   description:
-    "Admin outbox za email poruke, statuse slanja i ponovna slanja sistemskih obaveštenja.",
+    "Admin outbox for email messages, send statuses, and resending system notifications.",
   robots: { index: false, follow: false },
 };
 
@@ -43,7 +43,7 @@ const STATUS_META: Record<
   { label: string; tone: string; icon: typeof Clock }
 > = {
   pending: {
-    label: "Čeka",
+    label: "Pending",
     tone: "bg-muted-foreground/15 text-muted-foreground",
     icon: Clock,
   },
@@ -53,18 +53,18 @@ const STATUS_META: Record<
     icon: Loader2,
   },
   succeeded: {
-    label: "Uspešno",
+    label: "Successful",
     tone: "bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]",
     icon: CheckCircle2,
   },
   failed: {
-    label: "Neuspeh",
+    label: "Failed",
     tone: "bg-destructive/15 text-destructive",
     icon: AlertCircle,
   },
 };
 
-const dateFormatter = new Intl.DateTimeFormat("sr-Latn-RS", {
+const dateFormatter = new Intl.DateTimeFormat("en-GB", {
   day: "2-digit",
   month: "2-digit",
   year: "2-digit",
@@ -109,11 +109,11 @@ export default async function AdminOutboxPage({
       <div>
         <h1 className="text-3xl font-semibold text-foreground">Outbox</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          Cron procesor obrađuje transakcione emailove (predračuni,
-          fakture, potvrde porudžbina, AI krediti). Ako Resend ima
-          ispad ili domen nije verifikovan, redovi se nakupljaju u{" "}
-          <strong>Neuspeh</strong> — fix-uj uzrok i klikni{" "}
-          {"„Pošalji ponovo”"}.
+          The cron processor handles transactional emails (proformas,
+          invoices, order confirmations, AI credits). If Resend has
+          an outage or the domain is not verified, rows pile up as{" "}
+          <strong>Failed</strong> — fix the cause and click{" "}
+          {"„Send again”"}.
         </p>
       </div>
 
@@ -156,7 +156,7 @@ export default async function AdminOutboxPage({
           href="/portal/admin/outbox"
           className={filterChip(!filter)}
         >
-          Sve · {totalCount}
+          All · {totalCount}
         </a>
         {(["pending", "running", "succeeded", "failed"] as const).map(
           (s) => (
@@ -175,19 +175,19 @@ export default async function AdminOutboxPage({
       <div className="mt-6 -mx-2 overflow-x-auto sm:mx-0">
         {events.length === 0 ? (
           <p className="rounded-xl border border-dashed border-border/60 bg-card/40 p-12 text-center text-sm text-muted-foreground">
-            Nema redova u skupu.
+            No rows in this set.
           </p>
         ) : (
           <table className="min-w-full text-sm">
             <thead className="text-left text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground">
               <tr className="border-b border-border/60">
-                <th className="px-2 py-3">Vreme</th>
-                <th className="px-2 py-3">Tip</th>
+                <th className="px-2 py-3">Time</th>
+                <th className="px-2 py-3">Type</th>
                 <th className="px-2 py-3">Status</th>
-                <th className="px-2 py-3">Poks.</th>
-                <th className="px-2 py-3">Sledeći pokušaj</th>
-                <th className="px-2 py-3">Greška</th>
-                <th className="px-2 py-3 text-right">Akcija</th>
+                <th className="px-2 py-3">Attempts</th>
+                <th className="px-2 py-3">Next attempt</th>
+                <th className="px-2 py-3">Error</th>
+                <th className="px-2 py-3 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/40 text-foreground/85">

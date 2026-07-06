@@ -32,14 +32,14 @@ export async function POST(request: Request) {
 
   if (fileSize > MAX_FILE_SIZE) {
     return NextResponse.json(
-      { error: "Fajl je prevelik (max 50MB)" },
+      { error: "File is too large (max 50MB)" },
       { status: 400 },
     );
   }
 
   if (!ALLOWED_TYPES.includes(mimeType)) {
     return NextResponse.json(
-      { error: "Nedozvoljeni tip fajla" },
+      { error: "File type not allowed" },
       { status: 400 },
     );
   }

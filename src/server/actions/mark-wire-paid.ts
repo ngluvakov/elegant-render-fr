@@ -94,7 +94,7 @@ export async function markWireTransferPaid(
       entityId: orderId,
       metadata: {
         proformaNumber: order.proformaNumber,
-        totalRsd: order.totalRsd,
+        totalEur: order.totalEur,
         buyerType: order.buyerType,
       },
     });

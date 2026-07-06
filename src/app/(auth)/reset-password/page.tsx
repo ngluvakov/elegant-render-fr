@@ -3,14 +3,14 @@ import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { ResetPasswordForm } from "./reset-password-form";
 
 export const metadata: Metadata = {
-  title: "Nova lozinka",
-  description: "Postavite novu lozinku za vaš nalog.",
+  title: "New password",
+  description: "Set a new password for your account.",
   robots: NO_INDEX_ROBOTS,
 };
 
 type SearchParams = Promise<{ token?: string }>;
 
-export default async function NovaLozinkaPage({
+export default async function ResetPasswordPage({
   searchParams,
 }: {
   searchParams: SearchParams;
@@ -21,9 +21,9 @@ export default async function NovaLozinkaPage({
     return (
       <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
         <div className="w-full max-w-md text-center">
-          <h1 className="text-3xl text-foreground">Nevažeći link</h1>
+          <h1 className="text-3xl text-foreground">Invalid link</h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Link za resetovanje lozinke je nevažeći ili je istekao.
+            The password reset link is invalid or has expired.
           </p>
         </div>
       </div>
@@ -35,10 +35,10 @@ export default async function NovaLozinkaPage({
       <div className="w-full max-w-md">
         <div className="text-center">
           <h1 className="text-3xl text-foreground md:text-4xl">
-            Nova lozinka
+            New password
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Unesite novu lozinku za vaš nalog.
+            Enter a new password for your account.
           </p>
         </div>
         <ResetPasswordForm token={token} />

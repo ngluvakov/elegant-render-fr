@@ -200,7 +200,7 @@ export function AiStudioWorkspace({
     null,
   );
 
-  // Set when the user clicks "Resetuj sve" — suppresses the next
+  // Set when the user clicks "Reset all" — suppresses the next
   // auto-populate from refreshState / refreshGeneration so the result
   // doesn't sneak back into the workspace via polling or the focus
   // listener. Cleared the moment the user actively populates the
@@ -310,15 +310,15 @@ export function AiStudioWorkspace({
     activeGeneration?.status === "queued" ||
     activeGeneration?.status === "processing";
   const processingLabel = pending
-    ? "Pokrećemo obradu…"
+    ? "Starting generation..."
     : activeGeneration?.status === "queued"
-      ? "Obrada je u redu čekanja…"
+      ? "Generation is queued..."
       : activeGenerationProcessing
-        ? "Obrada u toku…"
+        ? "Processing…"
         : null;
   const processingError =
     activeGeneration?.status === "failed"
-      ? activeGeneration.errorMessage ?? "AI obrada nije uspela."
+      ? activeGeneration.errorMessage ?? "AI generation failed."
       : null;
   const readiness = useMemo(
     () =>
@@ -409,7 +409,7 @@ export function AiStudioWorkspace({
     const response = await fetch("/api/ai-studio/state", { cache: "no-store" });
     const nextState = (await response.json()) as AiStudioState;
     if ("error" in nextState) {
-      setError(nextState.error ?? "AI Studio stanje nije dostupno.");
+      setError(nextState.error ?? "AI Studio status is not available.");
       return;
     }
     setBalanceUnits(nextState.balanceUnits);
@@ -511,11 +511,11 @@ export function AiStudioWorkspace({
       setParentGenerationId(data.generation.id);
       setActiveGenerationId(data.generation.id);
       resultSuppressedForInputPathRef.current = null;
-      setNotice("AI obrada je završena.");
+      setNotice("AI generation is complete.");
     }
     if (data.generation.status === "failed") {
       setActiveGenerationId(data.generation.id);
-      setError(data.generation.errorMessage ?? "AI obrada nije uspela.");
+      setError(data.generation.errorMessage ?? "AI generation failed.");
     }
   }, [trackGenerationOutcome]);
 
@@ -573,7 +573,7 @@ export function AiStudioWorkspace({
     }
   }, [editType, objectMode]);
 
-  // Wipes the workspace back to defaults — radna slika, rezultat,
+  // Wipes the workspace back to defaults — working image, result,
   // promptovi, kontrole, modal. Ne dira history ni balance. Sets the
   // dismissed flag so a focus-fired or interval-fired refresh doesn't
   // immediately re-populate the cleared workspace.
@@ -595,7 +595,7 @@ export function AiStudioWorkspace({
     setEditorResetToken((value) => value + 1);
     setOpenGenerationId(null);
     setError("");
-    setNotice("Radna slika i podešavanja su obrisani.");
+    setNotice("Working image and settings were cleared.");
     workspaceDismissedRef.current = true;
     resultSuppressedForInputPathRef.current = null;
   }, []);
@@ -627,7 +627,7 @@ export function AiStudioWorkspace({
       setActiveGenerationId(null);
       setEditorResetToken((value) => value + 1);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload nije uspeo.");
+      setError(err instanceof Error ? err.message : "Upload failed.");
     }
   };
 
@@ -638,17 +638,17 @@ export function AiStudioWorkspace({
     if (files.length === 0) return;
     const invalid = files.find((file) => validateAiImageFile(file));
     if (invalid) {
-      setError(validateAiImageFile(invalid) ?? "Fajl nije podržan.");
+      setError(validateAiImageFile(invalid) ?? "File is not supported.");
       return;
     }
     const remaining = MAX_OBJECT_REFERENCE_IMAGES - referenceInputs.length;
     if (remaining <= 0) {
-      setError("Možete dodati najviše 5 slika komada po obradi.");
+      setError("You can add up to 5 item images per generation.");
       return;
     }
     const selected = files.slice(0, remaining);
     if (files.length > remaining) {
-      setNotice(`Dodato je ${remaining} slika. Maksimum je 5 uglova istog komada.`);
+      setNotice(`Added ${remaining} image${remaining === 1 ? "" : "s"}. The maximum is 5 angles of the same item.`);
     }
     try {
       const uploads = await Promise.all(
@@ -665,11 +665,11 @@ export function AiStudioWorkspace({
       setReferenceInputs((prev) => [...prev, ...uploads]);
       if (referenceInputs.length + uploads.length > 1) {
         setNotice(
-          "Prva slika je glavna referenca. Dodatni uglovi moraju prikazivati isti komad/model/boju/materijal; ako se razlikuju, AI prati prvu.",
+          "The first image is the main reference. Additional angles must show the same item, model, color, and material. If they differ, the AI follows the first image.",
         );
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload slike komada nije uspeo.");
+      setError(err instanceof Error ? err.message : "Item image upload failed.");
     }
   };
 
@@ -684,7 +684,7 @@ export function AiStudioWorkspace({
       return [selected, ...prev.filter((_, itemIndex) => itemIndex !== index)];
     });
     setNotice(
-      "Izabrana slika je postavljena kao glavna referenca. Ostale slike se koriste samo kao pomoćni uglovi.",
+      "The selected image is now the main reference. Other images are used only as supporting angles.",
     );
   }, []);
 
@@ -696,7 +696,7 @@ export function AiStudioWorkspace({
     setActiveGenerationId(null);
     setMaskDirty(false);
     setEditorResetToken((value) => value + 1);
-    setNotice("Rezultat je postavljen kao nova slika za obradu.");
+    setNotice("The result was set as the new image to edit.");
   }, [markWorkspaceActive]);
 
   useEffect(() => {
@@ -728,7 +728,7 @@ export function AiStudioWorkspace({
           !generation.resultStoragePath ||
           generation.filesExpired
         ) {
-          setError("Izabrana AI kreacija nije dostupna kao radna slika.");
+          setError("The selected AI creation is not available as a working image.");
           return;
         }
         setHistory((prev) =>
@@ -747,10 +747,10 @@ export function AiStudioWorkspace({
         setResultAsBaseInput(nextInput);
         setParentGenerationId(generation.id);
         setResultUrl(generation.resultUrl);
-        setNotice("AI kreacija je postavljena kao nova radna slika.");
+        setNotice("The AI creation has been set as the new working image.");
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return;
-        setError("AI kreacija trenutno nije dostupna.");
+        setError("The AI creation is currently unavailable.");
       }
     };
 
@@ -876,7 +876,7 @@ export function AiStudioWorkspace({
         url: gen.inputUrl,
         storagePath: item.inputStoragePath,
         mimeType: item.inputMimeType,
-        fileName: gen.inputFileName ?? "slika-za-obradu",
+        fileName: gen.inputFileName ?? "image-to-edit",
         generationId: gen.parentGenerationId ?? undefined,
       });
       setReferenceInputs(
@@ -890,8 +890,8 @@ export function AiStudioWorkspace({
                 fileName:
                   reference.fileName ??
                   (reference.sortOrder === 0
-                    ? "komad-za-ubacivanje"
-                    : `komad-ugao-${reference.sortOrder + 1}`),
+                    ? "item-to-place"
+                    : `item-angle-${reference.sortOrder + 1}`),
               }))
           : gen.referenceUrl && item.referenceStoragePath
             ? [
@@ -899,7 +899,7 @@ export function AiStudioWorkspace({
                   url: gen.referenceUrl,
                   storagePath: item.referenceStoragePath,
                   mimeType: item.referenceMimeType ?? "image/jpeg",
-                  fileName: gen.referenceFileName ?? "komad-za-ubacivanje",
+                  fileName: gen.referenceFileName ?? "item-to-place",
                 },
               ]
             : [],
@@ -917,7 +917,7 @@ export function AiStudioWorkspace({
       setMaskDirty(false);
       setEditorResetToken((value) => value + 1);
       setOpenGenerationId(null);
-      setNotice("Podešavanja su učitana. Pokrenite obradu kada budete spremni.");
+      setNotice("Settings have loaded. Start the generation when you are ready.");
     },
     [history, markWorkspaceActive],
   );
@@ -925,11 +925,11 @@ export function AiStudioWorkspace({
   const handleDeleteGeneration = useCallback(
     async (item: GenerationHistoryItem | GenerationDetail) => {
       if (item.status === "queued" || item.status === "processing") {
-        setError("Obrada je još u toku. Sačekajte završetak pre brisanja.");
+        setError("The generation is still running. Wait for it to finish before deleting it.");
         return;
       }
       const confirmed = window.confirm(
-        "Trajno obrisati ovu AI kreaciju i njene fajlove? Ova radnja ne može da se poništi.",
+        "Permanently delete this AI creation and its files? This action cannot be undone.",
       );
       if (!confirmed) return;
 
@@ -960,17 +960,17 @@ export function AiStudioWorkspace({
           setResultUrl(previousResultUrl);
           setActiveGenerationId(previousActiveGenerationId);
           setParentGenerationId(previousParentGenerationId);
-          setError(data.error ?? "Brisanje nije uspelo.");
+          setError(data.error ?? "Delete failed.");
           return;
         }
-        setNotice("AI kreacija je trajno obrisana.");
+        setNotice("The AI creation was permanently deleted.");
       } catch {
         setHistory(previousHistory);
         setCurrentResult(previousCurrentResult);
         setResultUrl(previousResultUrl);
         setActiveGenerationId(previousActiveGenerationId);
         setParentGenerationId(previousParentGenerationId);
-        setError("Brisanje nije uspelo. Pokušajte ponovo.");
+        setError("Delete failed. Try again.");
       } finally {
         setDeletingGenerationId(null);
       }
@@ -980,15 +980,15 @@ export function AiStudioWorkspace({
 
   const handleGenerate = async (maskBlob: Blob | null) => {
     if (!readiness.canGenerate) {
-      setError(readiness.primaryMessage ?? "Proverite šta nedostaje pre generisanja.");
+      setError(readiness.primaryMessage ?? "Check what is missing before generating.");
       return;
     }
     if (!activeInput) {
-      setError("Prvo uploadujte fotografiju.");
+      setError("Upload a photo first.");
       return;
     }
     if (needsReferenceImage && referenceInputs.length === 0) {
-      setError("Dodajte sliku nameštaja/dekora koji želite da ubacite u enterijer.");
+      setError("Add an image of the furniture/decor you want to place in the interior.");
       return;
     }
     if (
@@ -997,7 +997,7 @@ export function AiStudioWorkspace({
       (!maskBlob || mode !== "advanced" || !maskDirty)
     ) {
       setError(
-        "Za zamenu označite postojeći komad koji menjamo. Maska ne mora biti savršena; sistem će proširiti lokalnu zonu za novi komad, senku i kontakt.",
+        "For replacement, mark the existing item to replace. The mask does not need to be perfect; the system will expand the local area for the new item, shadow, and contact.",
       );
       return;
     }
@@ -1005,11 +1005,11 @@ export function AiStudioWorkspace({
       activeEdit.multiSelect &&
       parseSelectedOptions(selectedOption).length === 0
     ) {
-      setError(`Izaberite barem jednu kategoriju u "${activeEdit.optionsLabel ?? "opcije"}".`);
+      setError(`Select at least one category in "${activeEdit.optionsLabel ?? "options"}".`);
       return;
     }
     if (!linkedParentGenerationId && balanceUnits < activeEdit.units) {
-      setError("Nemate dovoljno AI kredita. Dopunite balans pre generisanja.");
+      setError("You do not have enough AI credits. Top up your balance before generating.");
       return;
     }
 
@@ -1022,7 +1022,7 @@ export function AiStudioWorkspace({
       editType === "object_insertion" && objectMode === "insert" && !maskDirty;
     setNotice(
       objectInsertWithoutMask
-        ? "Generišemo bez maske: AI sam bira poziciju komada, pa rezultat može biti manje predvidljiv."
+        ? "Generating without a mask: the AI chooses the item position, so the result may be less predictable."
         : "",
     );
     markWorkspaceActive();
@@ -1085,7 +1085,7 @@ export function AiStudioWorkspace({
         return;
       }
       if (!result.generationId) {
-        setError("AI obrada nije pokrenuta.");
+        setError("AI generation was not started.");
         return;
       }
       setActiveGenerationId(result.generationId);
@@ -1183,7 +1183,7 @@ export function AiStudioWorkspace({
       setPrompt("");
       setMaskDirty(false);
       setEditorResetToken((value) => value + 1);
-      setNotice("AI obrada je pokrenuta. Možete ostati ovde ili se vratiti kasnije.");
+      setNotice("AI generation has started. You can stay here or come back later.");
       void refreshGeneration(result.generationId);
     } finally {
       setPending(false);
@@ -1208,7 +1208,7 @@ export function AiStudioWorkspace({
           aria-hidden="true"
         >
           <Sparkles className="h-4 w-4" />
-          <span>AI obrada</span>
+          <span>AI generation</span>
         </div>
       )}
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -1217,11 +1217,11 @@ export function AiStudioWorkspace({
             AI Studio · Beta
           </p>
           <h1 className="mt-1 font-heading text-3xl text-foreground md:text-4xl">
-            Brza obrada fotografija
+            Fast photo editing
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Brz simple mode, precizan advanced mode sa maskama, selekcijom i
-            crtanjem po slici. Krediti važe 12 meseci od poslednje dopune.
+            Fast simple mode, precise advanced mode with masks, selections, and
+            drawing on the image. Credits are valid for 12 months from the last top-up.
           </p>
         </div>
         <BalanceCard
@@ -1370,7 +1370,7 @@ function StudioControls({
     <div className="rounded-2xl border border-border/40 bg-card/60 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
       <div className="grid gap-5 lg:grid-cols-3">
         <div>
-          <ControlLabel>Obrada</ControlLabel>
+          <ControlLabel>Processing</ControlLabel>
           <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
             {AI_EDIT_TYPES.map((item) => (
               <SelectableTile
@@ -1387,7 +1387,7 @@ function StudioControls({
         <div className="space-y-5">
           {edit.supportsMask !== false && (
             <div>
-              <ControlLabel>Mod</ControlLabel>
+              <ControlLabel>Mode</ControlLabel>
               <div className="mt-2 grid grid-cols-2 rounded-xl border border-border/40 bg-card/40 p-1">
                 {(["simple", "advanced"] as ToolMode[]).map((item) => {
                   const disabled =
@@ -1415,9 +1415,9 @@ function StudioControls({
               <p className="mt-1 text-[0.68rem] text-muted-foreground">
                 {edit.requiresReferenceImage
                   ? objectMode === "replace"
-                    ? "Označite postojeći komad koji menjamo; sistem će proširiti lokalnu zonu za novi komad, senku i kontakt."
-                    : "Maska je smernica za poziciju; AI može blago proširiti zonu zbog senke, kontakta i prirodnog uklapanja."
-                  : "Advanced otključava masku za precizno označavanje."}
+                    ? "Mark the existing item to replace; the system will expand the local area for the new item, shadow, and contact."
+                    : "The mask is a position guide; the AI may slightly expand the area for shadow, contact, and natural blending."
+                  : "Advanced unlocks the mask for precise marking."}
               </p>
             </div>
           )}
@@ -1453,7 +1453,7 @@ function StudioControls({
                   })}
                 </div>
                 <p className="mt-1 text-[0.68rem] text-muted-foreground">
-                  Označite jednu ili više kategorija.
+                  Select one or more categories.
                 </p>
               </div>
             ) : (
@@ -1475,7 +1475,7 @@ function StudioControls({
 
           {edit.supportsStyles && (
             <div>
-              <ControlLabel>Stil</ControlLabel>
+              <ControlLabel>Style</ControlLabel>
               <div className="mt-2 grid grid-cols-2 gap-2">
                 {AI_STYLE_OPTIONS.filter((item) => item.id !== "none").map(
                   (item) => (
@@ -1493,7 +1493,7 @@ function StudioControls({
                       {item.image && (
                         <Image
                           src={item.image}
-                          alt={`Primer stila: ${item.label}`}
+                          alt={`Style example: ${item.label}`}
                           width={160}
                           height={90}
                           className="h-16 w-full object-cover"
@@ -1518,7 +1518,7 @@ function StudioControls({
 
           {edit.supportsColor && (
             <div>
-              <ControlLabel>Boja</ControlLabel>
+              <ControlLabel>Color</ControlLabel>
               <div className="mt-2 flex items-center gap-2">
                 <Input
                   type="color"
@@ -1543,7 +1543,7 @@ function StudioControls({
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
           placeholder={
-            edit.promptPlaceholder ?? "Dodatne instrukcije (opciono)"
+            edit.promptPlaceholder ?? "Additional instructions (optional)"
           }
           className="mt-2 min-h-24"
         />
@@ -1830,11 +1830,11 @@ function AiImageEditor({
     <div className="rounded-2xl border border-border/40 bg-card/60 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-heading text-lg text-foreground">Radna slika</h2>
+          <h2 className="font-heading text-lg text-foreground">Working image</h2>
           <p className="text-sm text-muted-foreground">
             {needsReferenceImage
-              ? "Dodajte fotografiju enterijera i 1-5 uglova istog komada nameštaja/dekora. Maska je smernica za poziciju ili komad za zamenu."
-              : "Jedna slika po obradi. Advanced maska je opciona."}
+              ? "Add an interior photo and 1-5 angles of the same furniture/decor item. The mask is a guide for placement or the item to replace."
+              : "One image per generation. Advanced mask is optional."}
           </p>
         </div>
         {currentResult && (
@@ -1848,7 +1848,7 @@ function AiImageEditor({
             size="sm"
             onClick={() => onUseCurrentResult(currentResult)}
           >
-            Koristi rezultat kao sliku za obradu
+            Use result as image to edit
           </Button>
         )}
         <input
@@ -1880,8 +1880,8 @@ function AiImageEditor({
           <div className="grid grid-cols-2 rounded-lg bg-card/50 p-1">
             {(
               [
-                ["insert", "Dodaj komad"],
-                ["replace", "Zameni postojeći"],
+                ["insert", "Add item"],
+                ["replace", "Replace existing"],
               ] as const
             ).map(([modeId, label]) => (
               <button
@@ -1901,8 +1901,8 @@ function AiImageEditor({
           </div>
           <p className="min-w-[220px] flex-1 text-xs text-muted-foreground">
             {objectMode === "replace"
-              ? "Advanced maska je obavezna: označite postojeći komad koji menjamo. Maska ne mora biti savršena."
-              : "Maska je poželjna za preciznu poziciju. Bez maske AI sam bira mesto i rezultat može biti manje predvidljiv."}
+              ? "Advanced mask is required: mark the existing item to replace. The mask does not need to be perfect."
+              : "A mask is recommended for precise placement. Without a mask, the AI chooses the spot and the result may be less predictable."}
           </p>
         </div>
       )}
@@ -1926,7 +1926,7 @@ function AiImageEditor({
               setRectPreview(null);
             }}
             icon={RectangleHorizontal}
-            label="Pravougaonik"
+            label="Rectangle"
           />
           <label className="flex items-center gap-2 text-xs text-muted-foreground">
             Brush
@@ -2051,7 +2051,7 @@ function AiImageEditor({
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Slika za obradu
+                Image to edit
               </p>
               {baseInput?.fileName && (
                 <p className="mt-0.5 truncate font-mono text-[0.68rem] text-foreground/60">
@@ -2062,7 +2062,7 @@ function AiImageEditor({
             <div className="flex items-center gap-2">
               {baseInput?.generationId && parentGenerationId && (
                 <span className="rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
-                  Iz prethodnog
+                  From previous
                 </span>
               )}
               {activeImage && (
@@ -2073,7 +2073,7 @@ function AiImageEditor({
                   onClick={() => fileRef.current?.click()}
                 >
                   <Upload className="h-3 w-3" />
-                  Promeni
+                  Change
                 </Button>
               )}
             </div>
@@ -2091,7 +2091,7 @@ function AiImageEditor({
               <img
                 ref={imageRef}
                 src={activeImage.url}
-                alt="Radna slika"
+                alt="Working image"
                 className="block h-auto w-full select-none"
                 onLoad={(event) => {
                   setImageFrame({
@@ -2148,15 +2148,15 @@ function AiImageEditor({
               </span>
               <span className="px-6">
                 <span className="block text-base font-semibold text-foreground">
-                  Dodajte fotografiju
+                  Add a photo
                 </span>
                 <span className="mt-1 block max-w-xs text-sm text-muted-foreground">
-                  Prevucite fajl ovde ili izaberite JPG, PNG ili WebP do 50MB.
+                  Drag a file here or choose a JPG, PNG, or WebP up to 50 MB.
                 </span>
               </span>
               <span className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground shadow-[0_14px_34px_-12px_rgba(159,106,75,0.45)] transition-transform group-hover:translate-y-[-1px]">
                 <Upload className="h-3.5 w-3.5" />
-                Izaberi fajl
+                Choose file
               </span>
             </button>
           )}
@@ -2183,7 +2183,7 @@ function AiImageEditor({
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Rezultat
+                Result
               </p>
               {currentResult?.fileName && resultUrl && !processingLabel && (
                 <p className="mt-0.5 truncate font-mono text-[0.68rem] text-foreground/60">
@@ -2198,7 +2198,7 @@ function AiImageEditor({
                 className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.72rem] font-semibold text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
               >
                 <Download className="h-3 w-3" />
-                Preuzmi
+                Download
               </a>
             )}
           </div>
@@ -2215,7 +2215,7 @@ function AiImageEditor({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={resultUrl}
-                alt="AI rezultat"
+                alt="AI result"
                 className="block h-full w-full object-contain"
               />
             </div>
@@ -2226,7 +2226,7 @@ function AiImageEditor({
               </span>
               <span className="px-6">
                 <span className="block text-sm font-semibold text-destructive">
-                  Obrada nije uspela
+                  Processing nije uspela
                 </span>
                 <span className="mt-1 block text-xs text-destructive/80">
                   {processingError}
@@ -2240,10 +2240,10 @@ function AiImageEditor({
               </span>
               <span className="px-6">
                 <span className="block text-sm font-semibold text-foreground">
-                  Rezultat će se prikazati ovde
+                  The result will appear here
                 </span>
                 <span className="mt-1 block max-w-xs text-xs text-muted-foreground">
-                  Kada pokrenete obradu, ovde se odmah prikazuje status.
+                  When you start a generation, the status appears here immediately.
                 </span>
               </span>
             </div>
@@ -2255,7 +2255,7 @@ function AiImageEditor({
         {confirmingClear ? (
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="text-muted-foreground">
-              Obriši radnu sliku, rezultat i podešavanja?
+              Clear the working image, result, and settings?
             </span>
             <Button
               type="button"
@@ -2266,7 +2266,7 @@ function AiImageEditor({
                 setConfirmingClear(false);
               }}
             >
-              Da, obriši
+              Yes, clear
             </Button>
             <Button
               type="button"
@@ -2274,7 +2274,7 @@ function AiImageEditor({
               size="sm"
               onClick={() => setConfirmingClear(false)}
             >
-              Otkaži
+              Cancel
             </Button>
           </div>
         ) : (
@@ -2286,7 +2286,7 @@ function AiImageEditor({
             disabled={pending}
           >
             <Trash2 className="h-3.5 w-3.5" />
-            Resetuj sve
+            Reset all
           </Button>
         )}
         <div className="flex items-center gap-3">
@@ -2304,17 +2304,17 @@ function AiImageEditor({
             {pending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Pokrećemo…
+                Starting...
               </>
             ) : processingLabel ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Obrada u toku…
+                Processing…
               </>
             ) : (
               <>
                 <Sparkles className="h-4 w-4" />
-                Generiši
+                Generate
               </>
             )}
           </Button>
@@ -2361,7 +2361,8 @@ function ProcessingResultPreview({
             {label}
           </span>
           <span className="mt-1 block max-w-xs text-sm text-muted-foreground">
-            Originalni kadar ostaje osnova; rezultat će se pojaviti čim AI obrada završi.
+            The original frame remains the base; the result will appear as soon
+            as the AI generation finishes.
           </span>
         </span>
       </div>
@@ -2417,10 +2418,10 @@ function ReferenceImagesPanel({
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Nameštaj/dekor / uglovi
+            Furniture/decor / angles
           </p>
           <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
-            {references.length}/{MAX_OBJECT_REFERENCE_IMAGES} slika
+            {references.length}/{MAX_OBJECT_REFERENCE_IMAGES} image
           </p>
         </div>
         {canAdd && (
@@ -2432,7 +2433,7 @@ function ReferenceImagesPanel({
             disabled={busy}
           >
             <Plus className="h-3 w-3" />
-            Dodaj ugao
+            Add angle
           </Button>
         )}
       </div>
@@ -2448,15 +2449,15 @@ function ReferenceImagesPanel({
         >
           <p className="font-semibold">
             {hasMultipleReferences
-              ? "Više uglova mora biti potpuno isti komad"
+              ? "Multiple angles must show the exact same item"
               : objectMode === "replace"
-                ? "Referenca ide direktno u zamenu"
-                : "Referenca ide direktno u dodavanje"}
+                ? "The reference goes directly into the replacement"
+                : "The reference goes directly into the insertion"}
           </p>
           <p className="mt-0.5 leading-relaxed">
             {hasMultipleReferences
-              ? "Dodatne slike moraju prikazivati isti model, istu boju i isti materijal. Različiti komadi kvare rezultat, a AI treba da prati prvu sliku kao glavnu."
-              : "Ako slika ima pozadinu ili više predmeta, AI pokušava da koristi najveći, centralni ili najfokusiraniji komad nameštaja/dekora i ignoriše ostatak."}
+              ? "Additional images must show the same model, color, and material. Different items harm the result, and the AI should follow the first image as primary."
+              : "If the image has a background or multiple objects, the AI tries to use the largest, most central, or sharpest furniture/decor item and ignore the rest."}
           </p>
         </div>
       )}
@@ -2470,19 +2471,19 @@ function ReferenceImagesPanel({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={reference.url}
-              alt={index === 0 ? "Primarna slika komada" : `Ugao komada ${index + 1}`}
+              alt={index === 0 ? "Primary item image" : `Item angle ${index + 1}`}
               className="aspect-square w-full object-contain"
               draggable={false}
             />
             <div className="absolute left-1.5 top-1.5 rounded-full bg-card/90 px-2 py-0.5 text-[0.62rem] font-semibold text-foreground shadow-sm">
-              {index === 0 ? "Primarna" : `Ugao ${index + 1}`}
+              {index === 0 ? "Primary" : `Angle ${index + 1}`}
             </div>
             <button
               type="button"
               onClick={() => onRemove(index)}
               disabled={busy}
               className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-foreground/75 text-background transition-colors hover:bg-destructive disabled:opacity-50"
-              aria-label={`Ukloni sliku komada ${index + 1}`}
+              aria-label={`Remove item image ${index + 1}`}
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -2498,7 +2499,7 @@ function ReferenceImagesPanel({
                   className="inline-flex h-7 w-full items-center justify-center gap-1 rounded-md border border-border/40 bg-background/70 px-2 text-[0.62rem] font-semibold text-foreground transition-colors hover:border-accent/40 disabled:opacity-50"
                 >
                   <Star className="h-3 w-3" />
-                  Postavi kao glavnu
+                  Set as primary
                 </button>
               </div>
             )}
@@ -2516,15 +2517,16 @@ function ReferenceImagesPanel({
               <Upload className="h-4 w-4" />
             </span>
             <span className="text-xs font-semibold text-foreground">
-              {references.length === 0 ? "Dodajte komad" : "Dodaj ugao"}
+              {references.length === 0 ? "Add item" : "Add angle"}
             </span>
           </button>
         )}
       </div>
 
       <p className="mt-3 text-[0.68rem] leading-relaxed text-muted-foreground">
-        Podržani su nameštaj, dekor, rasveta, uređaji, biljke i umetnost. Torbe,
-        odeća, ruke, ljudi i sitni lični predmeti nisu namenjeni ovom flow-u.
+        Supported inputs include furniture, decor, lighting, appliances, plants,
+        and art. Bags, clothing, hands, people, and small personal items are not
+        intended for this flow.
       </p>
     </div>
   );
@@ -2581,22 +2583,22 @@ function HistoryPanel({
   return (
     <aside className="rounded-2xl border border-border/40 bg-card/60 p-4 shadow-[0_4px_16px_rgba(28,26,25,0.03)] xl:sticky xl:top-8 xl:flex xl:h-[calc(100vh-7rem)] xl:min-h-[calc(100vh-7rem)] xl:flex-col">
       <div className="mb-4" data-ai-history-dropzone>
-        <h2 className="font-heading text-lg text-foreground">Istorija</h2>
+        <h2 className="font-heading text-lg text-foreground">History</h2>
         <p className="mt-1 text-xs text-muted-foreground">
-          Klikni na obradu za detalje. Fajlovi su dostupni 30 dana.
+          Click a generation for details. Files are available for 30 days.
         </p>
         <Link
           href="/portal/ai-creations"
           className="mt-2 inline-flex text-xs font-semibold text-accent hover:underline"
         >
-          Prikaži sve AI kreacije
+          View all AI creations
         </Link>
       </div>
       {history.length === 0 ? (
         <EmptyState
           icon={Wand2}
-          heading="Bez obrada"
-          description="Vaše AI obrade će se pojaviti ovde."
+          heading="No generations"
+          description="Your AI generations will appear here."
         />
       ) : (
         <div ref={listRef} className="scrollbar-warm min-h-0 space-y-3 overflow-y-auto pr-1 xl:flex-1">
@@ -2617,7 +2619,7 @@ function HistoryPanel({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={item.resultUrl}
-                    alt={`AI rezultat: ${getAiEditType(item.editType).label}`}
+                    alt={`AI result: ${getAiEditType(item.editType).label}`}
                     className="h-16 w-16 shrink-0 rounded-xl object-cover"
                   />
                 ) : (
@@ -2630,7 +2632,7 @@ function HistoryPanel({
                     {getAiEditType(item.editType).label}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {new Date(item.createdAt).toLocaleDateString("sr-RS")} ·{" "}
+                    {new Date(item.createdAt).toLocaleDateString("en-GB")} ·{" "}
                     {getAiEngineLabelForGeneration(item.provider, item.model)}
                   </p>
                   {(() => {
@@ -2649,17 +2651,17 @@ function HistoryPanel({
                   {(item.status === "queued" || item.status === "processing") && (
                     <p className="mt-1 inline-flex items-center gap-1 text-xs text-accent">
                       <Loader2 className="h-3 w-3 animate-spin" />
-                      {item.status === "queued" ? "Čeka obradu" : "Obrada u toku"}
+                      {item.status === "queued" ? "Queued" : "Processing"}
                     </p>
                   )}
                   {item.status === "failed" && (
                     <p className="mt-1 text-xs text-destructive">
-                      {item.errorMessage ?? "Obrada nije uspela."}
+                      {item.errorMessage ?? "The generation failed."}
                     </p>
                   )}
                   {item.filesExpired && (
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Fajl je istekao.
+                      File expired.
                     </p>
                   )}
                 </div>
@@ -2679,7 +2681,7 @@ function HistoryPanel({
                           onUseResult(item);
                         }}
                       >
-                        Koristi kao sliku
+                        Use as image
                       </Button>
                       <a
                         href={item.downloadUrl ?? `/api/ai-studio/generations/${item.id}/download`}
@@ -2688,7 +2690,7 @@ function HistoryPanel({
                         className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.8rem] font-medium text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
                       >
                         <Download className="h-3 w-3" />
-                        Preuzmi
+                        Download
                       </a>
                     </>
                   )}
@@ -2708,7 +2710,7 @@ function HistoryPanel({
                       ) : (
                         <Trash2 className="h-3.5 w-3.5" />
                       )}
-                      Obriši
+                      Delete
                     </Button>
                   )}
                 </div>
@@ -2808,8 +2810,8 @@ function BalanceCard({
       </div>
       <p className="mt-1 text-xs text-muted-foreground">
         {expiresAt
-          ? `Dostupno do ${expiresAt.toLocaleDateString("sr-RS")}`
-          : "Krediti nisu aktivni"}
+          ? `Available do ${expiresAt.toLocaleDateString("en-GB")}`
+          : "Credits are not active"}
       </p>
       <Link
         href="/portal/ai-studio/credits"
@@ -2820,7 +2822,7 @@ function BalanceCard({
             : "text-[color:var(--color-sage-deep)]",
         )}
       >
-        Dopuni kredite
+        Top up credits
       </Link>
     </div>
   );
@@ -2856,7 +2858,7 @@ function CostPreviewLabel({
   if (!preview) {
     return (
       <span className="text-xs text-muted-foreground">
-        Naplata:{" "}
+        Billing:{" "}
         <strong className="text-foreground">
           {formatCreditsFromUnits(editUnits)}
         </strong>
@@ -2866,24 +2868,24 @@ function CostPreviewLabel({
   if (preview.unitsCharged === 0) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-3 py-1 text-xs font-semibold text-[color:var(--color-sage-deep)]">
-        Besplatan pokušaj #{preview.freeAttemptIndex} od {AI_FREE_REGENERATIONS}
+        Free attempt #{preview.freeAttemptIndex} od {AI_FREE_REGENERATIONS}
       </span>
     );
   }
   if (preview.freeAttemptIndex !== null) {
     return (
       <span className="text-xs text-muted-foreground">
-        Doplata{" "}
+        Additional charge{" "}
         <strong className="text-foreground">
           {formatCreditsFromUnits(preview.unitsCharged)}
         </strong>{" "}
-        · besplatan #{preview.freeAttemptIndex}
+        · free #{preview.freeAttemptIndex}
       </span>
     );
   }
   return (
     <span className="text-xs text-muted-foreground">
-      Naplata:{" "}
+      Billing:{" "}
       <strong className="text-foreground">
         {formatCreditsFromUnits(preview.unitsCharged)}
       </strong>
@@ -2921,27 +2923,27 @@ function RetryStatusBanner({
     return (
       <div className="flex items-start gap-3 rounded-xl border border-[color:var(--color-sage)]/35 bg-[color:var(--color-sage)]/10 px-4 py-3 text-sm">
         <span className="mt-0.5 inline-flex h-5 items-center rounded-full bg-[color:var(--color-sage)]/20 px-2 text-[0.62rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
-          Besplatno
+          Free
         </span>
         <div className="flex-1 text-foreground/85">
-          {`Aktivno je besplatno ponavljanje obrade „${parentLabel}". Slika, prompt i sva ostala podešavanja smeju da se menjaju — promenom `}
-          <strong className="px-0.5">tipa obrade</strong>
-          {" gubi se besplatno ponavljanje."}
+          {`A free retry is active for "${parentLabel}". The image, prompt, and all other settings can change. Changing the `}
+          <strong className="px-0.5">edit type</strong>
+          {" removes the free retry."}
         </div>
         <button
           type="button"
           onClick={onCancel}
           className="shrink-0 text-xs font-semibold text-muted-foreground hover:text-foreground"
         >
-          Otkaži
+          Cancel
         </button>
       </div>
     );
   }
 
   const message = editTypeChanged
-    ? `Promenili ste tip obrade — besplatno ponavljanje važi samo za „${parentLabel}". Pokretanje će se naplatiti.`
-    : `Besplatno ponavljanje za „${parentLabel}" je iskorišćeno. Sledeća obrada će se naplatiti.`;
+    ? `You changed the edit type. The free retry only applies to "${parentLabel}", so this generation will be charged.`
+    : `The free retry for "${parentLabel}" has been used. The next generation will be charged.`;
 
   return (
     <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-50/60 px-4 py-3 text-sm dark:bg-amber-950/30">
@@ -2952,7 +2954,7 @@ function RetryStatusBanner({
         onClick={onCancel}
         className="shrink-0 text-xs font-semibold text-muted-foreground hover:text-foreground"
       >
-        Otkaži
+        Cancel
       </button>
     </div>
   );
@@ -2989,22 +2991,22 @@ function buildAiStudioReadiness({
   const warnings: string[] = [];
 
   if (!activeInput) {
-    blockers.push("Dodajte fotografiju za obradu.");
+    blockers.push("Add a photo to edit.");
   }
   if (needsReferenceImage && referenceCount === 0) {
-    blockers.push("Dodajte bar jednu sliku nameštaja/dekora.");
+    blockers.push("Add at least one furniture/decor image.");
   }
   if (editType === "object_insertion" && objectMode === "replace" && !maskDirty) {
-    blockers.push("Označite maskom postojeći komad koji menjamo.");
+    blockers.push("Use the mask to mark the existing item to replace.");
   }
   if (
     activeEdit.multiSelect &&
     parseSelectedOptions(selectedOption).length === 0
   ) {
-    blockers.push(`Izaberite barem jednu kategoriju u "${activeEdit.optionsLabel ?? "opcije"}".`);
+    blockers.push(`Select at least one category in "${activeEdit.optionsLabel ?? "options"}".`);
   }
   if (!linkedParentGenerationId && balanceUnits < activeEdit.units) {
-    blockers.push("Dopunite AI kredite pre generisanja.");
+    blockers.push("Top up AI credits before generating.");
   }
 
   if (
@@ -3015,12 +3017,12 @@ function buildAiStudioReadiness({
     !maskDirty
   ) {
     warnings.push(
-      "Maska nije obavezna, ali bez nje AI sam bira poziciju i rezultat može biti manje predvidljiv.",
+      "A mask is optional, but without it the AI chooses the position and the result may be less predictable.",
     );
   }
   if (editType === "object_insertion" && referenceCount > 1) {
     warnings.push(
-      "Dodatni uglovi moraju biti isti model, boja i materijal; različiti komadi kvare rezultat, a AI prati prvu sliku.",
+      "Additional angles must show the same model, color, and material; different items harm the result, and the AI follows the first image.",
     );
   }
 
@@ -3032,9 +3034,9 @@ function buildAiStudioReadiness({
         ? "warning"
         : "ready";
   const primaryMessage = pending
-    ? "Pokrećemo obradu…"
+    ? "Starting generation..."
     : processing
-      ? "Obrada je u toku…"
+      ? "Processing je u toku…"
       : blockers[0] ?? warnings[0] ?? null;
 
   return {
@@ -3042,10 +3044,10 @@ function buildAiStudioReadiness({
     blockers,
     warnings,
     buttonLabel: pending
-      ? "Pokrećemo…"
+      ? "Starting..."
       : processing
-        ? "Obrada u toku…"
-        : "Generiši",
+        ? "Processing…"
+        : "Generate",
     primaryMessage,
     tone,
   };
@@ -3130,10 +3132,10 @@ async function uploadAiFile(file: File, purpose: "input" | "mask" | "reference")
 
 function validateAiImageFile(file: File): string | null {
   if (!AI_UPLOAD_MIME_TYPES.includes(file.type)) {
-    return "Dozvoljeni su JPG, PNG i WebP fajlovi.";
+    return "Only JPG, PNG, and WebP files are allowed.";
   }
   if (file.size > MAX_AI_UPLOAD_BYTES) {
-    return "Fajl je prevelik (max 50MB).";
+    return "File is too large (max 50 MB).";
   }
   return null;
 }

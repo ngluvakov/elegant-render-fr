@@ -32,7 +32,7 @@ export function OrdersFilterBar() {
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Pretraži po broju porudžbine…"
+          placeholder="Search by order number..."
           defaultValue={currentSearch}
           onChange={(e) => updateParam("q", e.target.value)}
           className="pl-9"
@@ -43,7 +43,7 @@ export function OrdersFilterBar() {
         onChange={(e) => updateParam("status", e.target.value)}
         className="h-9 rounded-lg border border-border bg-background px-3 text-sm text-foreground"
       >
-        <option value="">Svi statusi</option>
+        <option value="">All statuses</option>
         {Object.entries(STATUS_LABELS).map(([key, label]) => (
           <option key={key} value={key}>
             {label}

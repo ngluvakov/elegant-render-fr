@@ -34,12 +34,12 @@ export function ReworkRequestCard({ orderId }: { orderId: string }) {
       <div className="flex items-center gap-2">
         <RefreshCcw className="h-4 w-4 text-muted-foreground" />
         <h3 className="text-sm font-semibold text-foreground">
-          Zatražite izmene
+          Request revisions
         </h3>
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
-        U cenu je uračunato 3 kruga revizija. Opišite željene izmene kroz
-        poruke iznad, a zatim kliknite dugme ispod.
+        The price includes 3 revision rounds. Describe the requested changes in
+        the messages above, then click the button below.
       </p>
       {error && (
         <p className="mt-2 text-xs text-destructive">{error}</p>
@@ -51,7 +51,7 @@ export function ReworkRequestCard({ orderId }: { orderId: string }) {
         onClick={handleRework}
         disabled={pending}
       >
-        {pending ? "Slanje…" : "Zatraži reviziju"}
+        {pending ? "Sending..." : "Request revision"}
       </Button>
     </div>
   );

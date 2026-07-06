@@ -1,9 +1,9 @@
 /**
  * LandscapeConfigSection — Per-item configurator for the land-static
- * product (Pejzažni render). Single-level config (no floors): name,
+ * product (Landscapeni render). Single-level config (no floors): name,
  * camera stepper (drives land-cam add-on), style, description, source +
  * site-photo uploads, an Aerial Upsell card surfaced above the advanced
- * toggle (land-aerial add-on, +44.536 RSD), then the advanced collapsible
+ * toggle (land-aerial add-on, +€380), then the advanced collapsible
  * (atmosphere / terrain / optional elements / references).
  */
 "use client";
@@ -76,7 +76,7 @@ import {
   updateLandscapeConfig,
 } from "@/server/actions/item-config";
 
-const LAND_AERIAL_PRICE_RSD = 44536;
+const LAND_AERIAL_PRICE_EUR = 380;
 
 type ItemFile = {
   id: string;
@@ -137,7 +137,7 @@ export function LandscapeConfigSection({
     ]);
     return calc.items[0]!;
   }, [itemId, config.cameraCount, config.aerialEnabled]);
-  const totalRsd = breakdown.totalRsd;
+  const totalEur = breakdown.totalEur;
 
   useEffect(() => {
     if (!editable) return;
@@ -193,7 +193,7 @@ export function LandscapeConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Greška");
+        if (!urlRes.ok) throw new Error("Error");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -236,7 +236,7 @@ export function LandscapeConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Ukloni fajl"
+                aria-label="Remove file"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -323,10 +323,10 @@ export function LandscapeConfigSection({
           <Trees className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.projectName || "Pejzaž"}
+              {config.projectName || "Landscape"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {config.cameraCount} kamer{config.cameraCount === 1 ? "a" : "e"}
+              {config.cameraCount} camera{config.cameraCount === 1 ? "" : "s"}
               {config.aerialEnabled ? " · aerial" : ""}
             </p>
           </div>
@@ -335,11 +335,11 @@ export function LandscapeConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Sačuvano
+              Saved
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
-            {formatPrice(totalRsd)}
+            {formatPrice(totalEur)}
           </p>
         </div>
       </div>
@@ -351,7 +351,7 @@ export function LandscapeConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Naziv projekta / lokacije
+          Project / location name
         </Label>
         <input
           id={`name-${itemId}`}
@@ -369,14 +369,14 @@ export function LandscapeConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Camera className="h-3 w-3 text-accent/60" />
-            Broj kadrova (kamera)
+            Number of frames
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.cameraCount <= 1}
               onClick={decCameras}
-              aria-label="Smanji broj kadrova"
+              aria-label="Decrease number of frames"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -388,13 +388,13 @@ export function LandscapeConfigSection({
               type="button"
               disabled={!editable || config.cameraCount >= 30}
               onClick={incCameras}
-              aria-label="Povećaj broj kadrova"
+              aria-label="Increase number of frames"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 uključen, +{formatPrice(45)} svaki sledeći
+              1 included, +{formatPrice(45)} each additional
             </span>
           </div>
         </div>
@@ -404,7 +404,7 @@ export function LandscapeConfigSection({
             htmlFor={`style-${itemId}`}
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
-            Stil pejzažnog uređenja
+            Landscape design style
           </Label>
           <select
             id={`style-${itemId}`}
@@ -419,7 +419,7 @@ export function LandscapeConfigSection({
             disabled={!editable}
             className="w-full rounded-md bg-secondary/40 px-2.5 py-1.5 text-sm text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
           >
-            <option value="">— izaberite —</option>
+            <option value="">Select...</option>
             {LANDSCAPE_STYLES.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.label}
@@ -433,14 +433,14 @@ export function LandscapeConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Opis projekta
+          Project description
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Opis terena, željene biljke, staze, ograde, bazen ili vodene površine…"
+          placeholder="Terrain description, desired plants, paths, fences, pool, or water features..."
           rows={3}
           className="resize-none text-sm"
         />
@@ -448,10 +448,10 @@ export function LandscapeConfigSection({
 
       {/* Source files */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Situacioni plan i osnove</Label>
+        <Label className="text-xs">Site plan and drawings</Label>
         {renderUploadZone(
           sourceInputRef,
-          "Prevucite ili kliknite — PDF, DWG, CAD, skice",
+          "Drag or click - PDF, DWG, CAD, sketches",
           "image/*,application/pdf,.dwg,.dxf",
           "source",
         )}
@@ -460,10 +460,10 @@ export function LandscapeConfigSection({
 
       {/* Site photos */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Fotografije postojećeg stanja</Label>
+        <Label className="text-xs">Photos of the current condition</Label>
         {renderUploadZone(
           sitePhotoInputRef,
-          "Slike lokacije iz više uglova",
+          "Location images from several angles",
           "image/*",
           "site-photo",
         )}
@@ -480,27 +480,27 @@ export function LandscapeConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Otpremanje…</span>
+              <span className="text-accent">Uploading...</span>
             </div>
           ))}
         </div>
       )}
 
       {/* Aerial upsell — surfaced above the advanced toggle so the
-          44.536 RSD add-on is visible without expanding fine-tuning. */}
+          €380 add-on is visible without expanding fine-tuning. */}
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h5 className="text-sm font-semibold text-foreground">
-              Aerial pejzažni prikaz
+              Aerial landscape view
             </h5>
             <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-              Dodajte pogled iz ptičje perspektive na celokupno rešenje.
+              Add a bird's-eye view of the full solution.
             </p>
           </div>
           {config.aerialEnabled && (
             <p className="flex-shrink-0 text-sm font-bold text-foreground tabular-nums">
-              +{formatPrice(LAND_AERIAL_PRICE_RSD)}
+              +{formatPrice(LAND_AERIAL_PRICE_EUR)}
             </p>
           )}
         </div>
@@ -512,7 +512,7 @@ export function LandscapeConfigSection({
           <div className="flex items-center gap-2">
             <MountainSnow className="h-3.5 w-3.5 text-accent" />
             <span className="text-[0.78rem] font-medium text-foreground">
-              Želim aerial (vazdušni) prikaz
+              I want an aerial view
             </span>
           </div>
           <Switch
@@ -532,7 +532,7 @@ export function LandscapeConfigSection({
           <div className="space-y-2 rounded-md border border-border/30 bg-background/40 p-3">
             <div className="space-y-1">
               <Label htmlFor={`aer-env-${itemId}`} className="text-[0.7rem]">
-                Prikaz šireg okruženja
+                Wider surroundings view
               </Label>
               <select
                 id={`aer-env-${itemId}`}
@@ -547,7 +547,7 @@ export function LandscapeConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— izaberite —</option>
+                <option value="">Select...</option>
                 {AERIAL_ENV_REPS.map((a) => (
                   <option key={a.id} value={a.id}>
                     {a.label}
@@ -560,11 +560,11 @@ export function LandscapeConfigSection({
               <div className="space-y-1.5 rounded-md bg-card/60 p-2.5">
                 <Label className="text-[0.7rem]">
                   <ImageIcon className="h-3 w-3 text-accent/60" />
-                  Dron fotografije (za fotomontažu)
+                  Drone photos (for photomontage)
                 </Label>
                 {renderUploadZone(
                   droneInputRef,
-                  "Postojeće dron fotografije lokacije",
+                  "Existing drone photos of the location",
                   "image/*",
                   "drone-photo",
                 )}
@@ -578,7 +578,7 @@ export function LandscapeConfigSection({
       {/* Advanced toggle */}
       <p className="flex items-center gap-1.5 text-[0.7rem] text-[color:var(--color-sage-deep)]">
         <Check className="h-3 w-3" />
-        Stavka je spremna za naručivanje. Ispod je fino podešavanje.
+        This item is ready to order. Fine-tuning is below.
       </p>
       <label
         htmlFor={`adv-${itemId}`}
@@ -587,11 +587,11 @@ export function LandscapeConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Napredno podešavanje{" "}
-            <span className="text-muted-foreground">(opciono)</span>
+            Advanced settings{" "}
+            <span className="text-muted-foreground">(optional)</span>
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · teren, vegetacija, osvetljenje, atmosfera
+            · terrain, vegetation, lighting, atmosphere
           </span>
         </div>
         <Switch
@@ -608,12 +608,12 @@ export function LandscapeConfigSection({
           {/* 2.1 Atmosphere */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Atmosfera i okruženje
+              Atmosphere and surroundings
             </p>
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor={`tod-${itemId}`} className="text-[0.7rem]">
-                  Doba dana
+                  Time of day
                 </Label>
                 <select
                   id={`tod-${itemId}`}
@@ -628,7 +628,7 @@ export function LandscapeConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {TIMES_OF_DAY.map((t) => (
                     <option key={t.id} value={t.id}>
                       {t.label}
@@ -639,7 +639,7 @@ export function LandscapeConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`season-${itemId}`} className="text-[0.7rem]">
-                  Godišnje doba
+                  Season
                 </Label>
                 <select
                   id={`season-${itemId}`}
@@ -654,7 +654,7 @@ export function LandscapeConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {SEASONS.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.label}
@@ -680,7 +680,7 @@ export function LandscapeConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {VEGETATION_AGES.map((v) => (
                     <option key={v.id} value={v.id}>
                       {v.label}
@@ -696,8 +696,8 @@ export function LandscapeConfigSection({
             <p className="flex items-center gap-1.5 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
               Teren i hardscape
               <HelpTip>
-                <strong>Hardscape</strong> — neživi delovi pejzaža:
-                staze, popločani prostori, zidići, stepenice, ograde,
+                <strong>Hardscape</strong> - non-living landscape elements:
+                paths, paved areas, low walls, stairs, fences,
                 drvene terase. Suprotno od „softscape“ (biljke, trava).
               </HelpTip>
             </p>
@@ -719,7 +719,7 @@ export function LandscapeConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {TOPOGRAPHIES.map((t) => (
                     <option key={t.id} value={t.id}>
                       {t.label}
@@ -730,7 +730,7 @@ export function LandscapeConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`paths-${itemId}`} className="text-[0.7rem]">
-                  Materijali staza
+                  Path materials
                 </Label>
                 <select
                   id={`paths-${itemId}`}
@@ -745,7 +745,7 @@ export function LandscapeConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {PATH_MATERIALS.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.label}
@@ -756,7 +756,7 @@ export function LandscapeConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`fence-${itemId}`} className="text-[0.7rem]">
-                  Ograde i granice
+                  Ograde i boundaries
                 </Label>
                 <select
                   id={`fence-${itemId}`}
@@ -771,7 +771,7 @@ export function LandscapeConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">— izaberite —</option>
+                  <option value="">Select...</option>
                   {FENCES.map((f) => (
                     <option key={f.id} value={f.id}>
                       {f.label}
@@ -785,11 +785,11 @@ export function LandscapeConfigSection({
           {/* 2.3 Optional elements */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Specifični elementi
+              Specific elements
             </p>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Vodene površine</Label>
+              <Label className="text-[0.7rem]">Water features</Label>
               <CheckboxRow<keyof WaterFeatures>
                 options={WATER_FEATURE_OPTIONS}
                 state={config.waterFeatures}
@@ -802,7 +802,7 @@ export function LandscapeConfigSection({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Dodatni objekti u prostoru</Label>
+              <Label className="text-[0.7rem]">Additional objects in the space</Label>
               <CheckboxRow<keyof Structures>
                 options={STRUCTURE_OPTIONS}
                 state={config.structures}
@@ -838,10 +838,10 @@ export function LandscapeConfigSection({
             </p>
 
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Reference biljaka i materijala</Label>
+              <Label className="text-[0.7rem]">Plant and material references</Label>
               {renderUploadZone(
                 referenceInputRef,
-                "Slike željenih biljaka, tekstura, nameštaja",
+                "Images of desired plants, textures, furniture",
                 "image/*",
                 "reference",
               )}

@@ -64,11 +64,11 @@ export const rateLimiters = {
   // typing/retry loops at 15/hour per identifier to keep our
   // outbound budget healthy.
   viesPublic: makeLimiter(15, "1 h", "rl:vies-public"),
-  // Card-payment initiation. Each call mints a new bank-facing oid;
+  // PayPal order creation. Each call can mint a new PayPal order;
   // unbounded retries would let a hostile client probe the gateway
-  // or spend our daily transaction quota. 15/hour comfortably covers
-  // an order with several legitimate decline-and-retry attempts.
-  nestpayInitiate: makeLimiter(15, "1 h", "rl:nestpay-init"),
+  // or spam our merchant account with abandoned orders. 15/hour
+  // comfortably covers several legitimate decline-and-retry attempts.
+  paypalCreate: makeLimiter(15, "1 h", "rl:paypal-create"),
 } as const;
 
 export type RateLimiterKey = keyof typeof rateLimiters;
@@ -128,12 +128,12 @@ export function rateLimitMessage(
   retryAfterSeconds: number,
 ): string {
   if (retryAfterSeconds < 60) {
-    return `Previše zahteva u kratkom periodu. Pokušajte za ${retryAfterSeconds} sekundi.`;
+    return `Too many requests in a short period. Try again in ${retryAfterSeconds} seconds.`;
   }
   const minutes = Math.ceil(retryAfterSeconds / 60);
   if (minutes < 60) {
-    return `Previše zahteva. Pokušajte za ${minutes} minut${minutes === 1 ? "" : minutes < 5 ? "a" : "a"}.`;
+    return `Too many requests. Try again in ${minutes} ${minutes === 1 ? "minute" : "minutes"}.`;
   }
   const hours = Math.ceil(minutes / 60);
-  return `Previše zahteva. Pokušajte za ${hours} sat${hours === 1 ? "" : "a"}.`;
+  return `Too many requests. Try again in ${hours} ${hours === 1 ? "hour" : "hours"}.`;
 }

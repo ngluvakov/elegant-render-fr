@@ -14,7 +14,7 @@ import { requirePermission } from "@/lib/admin-auth";
 import { normalizeAdminPermissions } from "@/lib/admin-permissions";
 
 export const metadata: Metadata = {
-  title: "Revizije — Admin",
+  title: "Audit log — Admin",
   description:
     "Admin audit trail za izmene, akcije i trag aktivnosti na platformi.",
   robots: { index: false, follow: false },
@@ -59,15 +59,15 @@ export default async function AdminAuditLogPage({
     <div className="mx-auto w-full max-w-[min(96vw,1400px)] px-6 py-12">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-semibold text-foreground">Revizije</h1>
+          <h1 className="text-3xl font-semibold text-foreground">Audit log</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Forenzički zapis o admin akcijama. ISO 27001 A.8.15 i GDPR čl. 32.
-            Prikazujemo poslednjih 200 događaja{" "}
+            Forensic record of admin actions. ISO 27001 A.8.15 and GDPR Art. 32.
+            Showing the latest 200 events{" "}
             {action || entity ? "po filteru" : "u sistemu"}.
           </p>
         </div>
         <p className="text-[0.78rem] text-muted-foreground">
-          Ukupno u skupu (filter primenjen): <strong>{totalCount}</strong>
+          Total in set (filter applied): <strong>{totalCount}</strong>
         </p>
       </div>
 
@@ -77,7 +77,7 @@ export default async function AdminAuditLogPage({
           href="/portal/admin/revisions"
           className={filterChip(!action && !entity)}
         >
-          Sve
+          All
         </Link>
         {distinctActions.map((a) => (
           <Link
@@ -94,17 +94,17 @@ export default async function AdminAuditLogPage({
       <div className="mt-6 -mx-2 overflow-x-auto sm:mx-0">
         {logs.length === 0 ? (
           <p className="rounded-xl border border-dashed border-border/60 bg-card/40 p-12 text-center text-sm text-muted-foreground">
-            Nema zapisa po trenutnom filteru.
+            No records match the current filter.
           </p>
         ) : (
           <table className="min-w-full text-sm">
             <thead className="text-left text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground">
               <tr className="border-b border-border/60">
-                <th className="px-2 py-3">Vreme</th>
-                <th className="px-2 py-3">Akter</th>
-                <th className="px-2 py-3">Akcija</th>
-                <th className="px-2 py-3">Entitet</th>
-                <th className="px-2 py-3">Detalji</th>
+                <th className="px-2 py-3">Time</th>
+                <th className="px-2 py-3">Actor</th>
+                <th className="px-2 py-3">Action</th>
+                <th className="px-2 py-3">Entity</th>
+                <th className="px-2 py-3">Details</th>
                 <th className="px-2 py-3">IP</th>
               </tr>
             </thead>
@@ -117,7 +117,7 @@ export default async function AdminAuditLogPage({
                 return (
                   <tr key={log.id} className="align-top">
                     <td className="whitespace-nowrap px-2 py-3 font-mono text-[0.78rem] text-muted-foreground">
-                      {new Date(log.createdAt).toLocaleString("sr-Latn-RS", {
+                      {new Date(log.createdAt).toLocaleString("en-GB", {
                         year: "2-digit",
                         month: "2-digit",
                         day: "2-digit",

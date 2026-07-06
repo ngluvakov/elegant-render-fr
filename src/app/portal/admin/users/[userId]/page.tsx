@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import { formatRsd } from "@/lib/catalog/calculate";
+import { formatEur } from "@/lib/catalog/calculate";
 import {
   formatCreditsFromUnits,
   formatCents,
@@ -22,9 +22,9 @@ import {
 } from "@/lib/admin-permissions";
 
 export const metadata: Metadata = {
-  title: "Admin — Korisnik",
+  title: "Admin — User",
   description:
-    "Admin detalji korisnika, porudžbine, krediti, transakcije i podešavanja naloga.",
+    "Admin user details, orders, credits, transactions, and account settings.",
   robots: { index: false, follow: false },
 };
 
@@ -32,9 +32,9 @@ type Params = Promise<{ userId: string }>;
 
 const TX_TYPE_LABEL: Record<string, string> = {
   purchase: "Kupovina",
-  spend: "Potrošnja",
-  refund: "Povraćaj",
-  expiry: "Isticanje",
+  spend: "Spend",
+  refund: "Refund",
+  expiry: "Expiry",
   adjustment: "Admin grant",
 };
 
@@ -61,7 +61,7 @@ export default async function AdminUserDetailPage({
           orderNumber: true,
           projectName: true,
           status: true,
-          totalRsd: true,
+          totalEur: true,
           createdAt: true,
         },
       },
@@ -107,7 +107,7 @@ export default async function AdminUserDetailPage({
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
-        Korisnici
+        Users
       </Link>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -128,15 +128,15 @@ export default async function AdminUserDetailPage({
             {user.phone && ` · ${user.phone}`}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Registrovan{" "}
-            {user.createdAt.toLocaleDateString("sr-Latn-RS", {
+            Registered{" "}
+            {user.createdAt.toLocaleDateString("en-GB", {
               day: "numeric",
               month: "long",
               year: "numeric",
             })}
             {user.lastActiveAt &&
               ` · poslednja aktivnost ${user.lastActiveAt.toLocaleDateString(
-                "sr-Latn-RS",
+                "en-GB",
                 {
                   day: "numeric",
                   month: "short",
@@ -169,7 +169,7 @@ export default async function AdminUserDetailPage({
                 Administrativni pristup
               </h3>
               <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted-foreground">
-                Preset je brzi izbor, a čekirane dozvole su izvor istine za
+                Preset is a shortcut, and checked permissions are the source of truth for
                 backend provere na stranicama, akcijama i API rutama.
               </p>
             </div>
@@ -208,7 +208,7 @@ export default async function AdminUserDetailPage({
                 type="submit"
                 className="w-fit rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-accent/90"
               >
-                Sačuvaj pristup
+                Save access
               </button>
             </div>
           </div>
@@ -222,17 +222,17 @@ export default async function AdminUserDetailPage({
           </h3>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <UsageStat label="Portal posete" value={usageTotals.portalVisits} />
-            <UsageStat label="Porudžbine" value={usageTotals.ordersCreated} />
+            <UsageStat label="Orders" value={usageTotals.ordersCreated} />
             <UsageStat
               label="AI obrade"
               value={usageTotals.aiGenerationsStarted}
             />
             <UsageStat
-              label="Potrošeni krediti"
+              label="Credits spent"
               value={formatCreditsFromUnits(usageTotals.aiCreditsSpentUnits)}
             />
             <UsageStat
-              label="Dodeljeni krediti"
+              label="Granted credits"
               value={formatCreditsFromUnits(usageTotals.aiCreditsGrantedUnits)}
             />
           </div>
@@ -241,19 +241,19 @@ export default async function AdminUserDetailPage({
               <table className="min-w-full text-xs">
                 <thead className="text-left text-muted-foreground">
                   <tr className="border-b border-border/40">
-                    <th className="py-2 pr-3">Dan</th>
-                    <th className="py-2 pr-3">Posete</th>
-                    <th className="py-2 pr-3">Porudžbine</th>
-                    <th className="py-2 pr-3">AI obrade</th>
-                    <th className="py-2 pr-3">Krediti</th>
-                    <th className="py-2 pr-3">Poslednje</th>
+                    <th className="py-2 pr-3">Day</th>
+                    <th className="py-2 pr-3">Visits</th>
+                    <th className="py-2 pr-3">Orders</th>
+                    <th className="py-2 pr-3">AI jobs</th>
+                    <th className="py-2 pr-3">Credits</th>
+                    <th className="py-2 pr-3">Latest</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/30">
                   {user.usageDaily.map((day) => (
                     <tr key={day.id}>
                       <td className="py-2 pr-3 text-foreground">
-                        {day.day.toLocaleDateString("sr-Latn-RS")}
+                        {day.day.toLocaleDateString("en-GB")}
                       </td>
                       <td className="py-2 pr-3">{day.portalVisits}</td>
                       <td className="py-2 pr-3">{day.ordersCreated}</td>
@@ -269,7 +269,7 @@ export default async function AdminUserDetailPage({
                       </td>
                       <td className="py-2 pr-3 text-muted-foreground">
                         {day.lastActiveAt
-                          ? day.lastActiveAt.toLocaleTimeString("sr-Latn-RS", {
+                          ? day.lastActiveAt.toLocaleTimeString("en-GB", {
                               hour: "2-digit",
                               minute: "2-digit",
                             })
@@ -287,10 +287,10 @@ export default async function AdminUserDetailPage({
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
           <h3 className="text-sm font-semibold text-foreground">
-            Istorija AI kredita ({user.aiCreditTransactions.length})
+            AI credit history ({user.aiCreditTransactions.length})
           </h3>
           {user.aiCreditTransactions.length === 0 ? (
-            <p className="mt-3 text-xs text-muted-foreground">Nema transakcija.</p>
+            <p className="mt-3 text-xs text-muted-foreground">No transactions.</p>
           ) : (
             <div className="mt-3 space-y-2">
               {user.aiCreditTransactions.map((tx) => (
@@ -328,13 +328,13 @@ export default async function AdminUserDetailPage({
                     </div>
                   </div>
                   <p className="mt-1 text-[0.62rem] text-muted-foreground/80">
-                    {tx.createdAt.toLocaleDateString("sr-Latn-RS", {
+                    {tx.createdAt.toLocaleDateString("en-GB", {
                       day: "numeric",
                       month: "short",
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
-                    {" · balans posle: "}
+                    {" · balance after: "}
                     {formatCreditsFromUnits(tx.balanceAfterUnits)}
                   </p>
                 </div>
@@ -345,10 +345,10 @@ export default async function AdminUserDetailPage({
 
         <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
           <h3 className="text-sm font-semibold text-foreground">
-            Porudžbine ({user.orders.length})
+            Orders ({user.orders.length})
           </h3>
           {user.orders.length === 0 ? (
-            <p className="mt-3 text-xs text-muted-foreground">Nema porudžbina.</p>
+            <p className="mt-3 text-xs text-muted-foreground">No orders.</p>
           ) : (
             <div className="mt-3 space-y-2">
               {user.orders.map((order) => {
@@ -360,7 +360,7 @@ export default async function AdminUserDetailPage({
                     </p>
                     <p className="text-[0.68rem] text-muted-foreground">
                       {order.orderNumber} ·{" "}
-                      {order.createdAt.toLocaleDateString("sr-Latn-RS")}
+                      {order.createdAt.toLocaleDateString("en-GB")}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
@@ -369,7 +369,7 @@ export default async function AdminUserDetailPage({
                     </Badge>
                     {canViewFinance && (
                       <span className="text-xs font-semibold text-foreground">
-                        {formatRsd(order.totalRsd)}
+                        {formatEur(order.totalEur)}
                       </span>
                     )}
                   </div>

@@ -33,15 +33,15 @@ export default async function PortalLayout({
   const adminPermissions = normalizeAdminPermissions(user?.adminPermissions, {
     isAdmin: user?.isAdmin,
   });
-  // after(): upis aktivnosti ne sme da blokira render — izvršava se kad
-  // odgovor završi streaming (serverless-bezbedno, za razliku od golog
-  // fire-and-forget promisa koji bi Vercel mogao da ubije).
+  // after(): activity logging must not block rendering. It runs after the
+  // response finishes streaming, which is serverless-safe compared with a
+  // bare fire-and-forget promise that Vercel could terminate.
   const visitorId = session.user.id;
   after(() => recordUserActivity(visitorId, { portalVisits: 1 }).catch(() => {}));
 
   return (
     <PortalLayoutShell
-      userName={session.user.name ?? "Korisnik"}
+      userName={session.user.name ?? "User"}
       userEmail={session.user.email ?? ""}
       adminPermissions={adminPermissions}
       hasPassword={Boolean(user?.passwordHash)}

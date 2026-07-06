@@ -11,15 +11,15 @@ import {
 } from "@/lib/billing";
 import {
   invoiceCurrencyForBuyer,
-  invoiceGrossCentsFromRsdCents,
+  invoiceGrossCentsFromEurCents,
 } from "@/lib/invoice-data";
 import { buildInvoiceList, type InvoiceDoc } from "@/lib/invoice-list";
 import { FinanceInvoicesCell } from "@/components/portal/finance-invoices-cell";
 
 export const metadata: Metadata = {
-  title: "Finansije",
+  title: "Finance",
   description:
-    "Pregled plaćanja, računa, refundacija i finansijskog statusa za vaše projekte.",
+    "Overview of payments, invoices, refunds, and financial status for your projects.",
   robots: { index: false, follow: false },
 };
 
@@ -39,7 +39,7 @@ type ProjectRow = {
   invoices: InvoiceDoc[];
 };
 
-type CurrencyTotals = { RSD: number };
+type CurrencyTotals = { EUR: number };
 
 export default async function FinancePage() {
   const session = await auth();
@@ -60,9 +60,8 @@ export default async function FinancePage() {
       companyCountryCode: true,
       billingCurrency: true,
       billingVatRate: true,
-      billingRsdRate: true,
       billingTotalCents: true,
-      totalRsd: true,
+      totalEur: true,
       totalCents: true,
       createdAt: true,
       updatedAt: true,
@@ -88,7 +87,6 @@ export default async function FinancePage() {
           companyCountryCode: true,
           billingCurrency: true,
           billingVatRate: true,
-          billingRsdRate: true,
           billingTotalCents: true,
           status: true,
           createdAt: true,
@@ -108,11 +106,11 @@ export default async function FinancePage() {
   });
 
   const rows: ProjectRow[] = orders.map((order) => {
-    const baseProviderCents = order.totalCents ?? order.totalRsd * 100;
+    const baseProviderCents = order.totalCents ?? order.totalEur * 100;
     const orderCurrency = invoiceCurrencyForBuyer(order);
     const baseBillingCents =
       order.billingTotalCents ??
-      invoiceGrossCentsFromRsdCents(baseProviderCents, order);
+      invoiceGrossCentsFromEurCents(baseProviderCents, order);
     const orderPaid = order.paymentStatus === "completed";
     const total = emptyTotals();
     const paid = emptyTotals();
@@ -129,13 +127,11 @@ export default async function FinancePage() {
           charge.companyCountryCode ?? order.companyCountryCode,
         billingCurrency: charge.billingCurrency ?? order.billingCurrency,
         billingVatRate: charge.billingVatRate ?? order.billingVatRate,
-        billingRsdRate:
-          charge.billingRsdRate ?? order.billingRsdRate,
       };
       const chargeCurrency = invoiceCurrencyForBuyer(chargeBuyer);
       const chargeBillingCents =
         charge.billingTotalCents ??
-        invoiceGrossCentsFromRsdCents(charge.totalCents, chargeBuyer);
+        invoiceGrossCentsFromEurCents(charge.totalCents, chargeBuyer);
       addCurrencyTotal(total, chargeCurrency, chargeBillingCents);
       if (charge.status === "paid") {
         addCurrencyTotal(paid, chargeCurrency, chargeBillingCents);
@@ -162,7 +158,7 @@ export default async function FinancePage() {
     const projectName =
       order.projectName ??
       order.items[0]?.productLabel ??
-      "Porudžbina";
+      "Order";
 
     return {
       orderId: order.id,
@@ -205,10 +201,10 @@ export default async function FinancePage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl text-foreground md:text-3xl">
-            Finansije
+            Finance
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Pregled projekata, uplata i izdatih računa.
+            Overview of projects, payments, and issued invoices.
           </p>
         </div>
       </div>
@@ -216,18 +212,18 @@ export default async function FinancePage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard
           icon={CheckCircle2}
-          label="Plaćeno"
+          label="Paid"
           value={formatCurrencyTotals(paidTotal)}
           tone="sage"
         />
         <StatCard
           icon={Clock}
-          label="Čeka uplatu"
+          label="Awaiting payment"
           value={formatCurrencyTotals(pendingTotal)}
         />
         <StatCard
           icon={AlertCircle}
-          label="Račun u pripremi"
+          label="Invoice in preparation"
           value={missingInvoiceCount.toString()}
           tone={missingInvoiceCount > 0 ? "accent" : "neutral"}
         />
@@ -237,7 +233,7 @@ export default async function FinancePage() {
         <div className="rounded-2xl border border-dashed border-border/60 bg-card/40 p-12 text-center">
           <ReceiptText className="mx-auto h-8 w-8 text-muted-foreground/60" />
           <p className="mt-3 text-sm font-medium text-foreground">
-            Još nema finansijskih transakcija.
+            There are no financial transactions yet.
           </p>
         </div>
       ) : (
@@ -247,11 +243,11 @@ export default async function FinancePage() {
             <div className="space-y-1">
               {/* Header */}
               <div className="grid grid-cols-[2fr_8rem_6.5rem_8rem_10rem] items-center gap-4 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                <span>Projekat</span>
+                <span>Project</span>
                 <span className="text-center">Status</span>
-                <span>Datum</span>
-                <span className="text-right">Iznos</span>
-                <span className="text-right">Računi</span>
+                <span>Date</span>
+                <span className="text-right">Amount</span>
+                <span className="text-right">Invoices</span>
               </div>
 
               {rows.map((row, idx) => (
@@ -265,7 +261,7 @@ export default async function FinancePage() {
                   <Link
                     href={`/portal/orders/${row.orderId}`}
                     className="absolute inset-0 rounded-lg"
-                    aria-label={`Otvori ${row.orderNumber}`}
+                    aria-label={`Open ${row.orderNumber}`}
                   />
                   <div className="relative pointer-events-none min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">
@@ -289,7 +285,7 @@ export default async function FinancePage() {
                     </p>
                     {totalsValue(row.pending) > 0 && row.status !== "pending" && (
                       <p className="mt-0.5 text-[0.62rem] text-accent">
-                        {formatCurrencyTotals(row.pending)} čeka
+                        {formatCurrencyTotals(row.pending)} pending
                       </p>
                     )}
                   </div>
@@ -314,7 +310,7 @@ export default async function FinancePage() {
                 <Link
                   href={`/portal/orders/${row.orderId}`}
                   className="absolute inset-0 rounded-2xl"
-                  aria-label={`Otvori ${row.orderNumber}`}
+                  aria-label={`Open ${row.orderNumber}`}
                 />
                 <div className="relative pointer-events-none flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -339,7 +335,7 @@ export default async function FinancePage() {
                     </p>
                     {totalsValue(row.pending) > 0 && row.status !== "pending" && (
                       <p className="mt-0.5 text-[0.62rem] text-accent">
-                        {formatCurrencyTotals(row.pending)} čeka
+                        {formatCurrencyTotals(row.pending)} pending
                       </p>
                     )}
                   </div>
@@ -397,11 +393,11 @@ function StatCard({
 }
 
 function statusLabel(status: RowStatus): string {
-  if (status === "completed") return "Plaćeno";
-  if (status === "partial") return "Doplata u toku";
-  if (status === "failed") return "Neuspelo";
-  if (status === "refunded") return "Refundirano";
-  return "Čeka uplatu";
+  if (status === "completed") return "Paid";
+  if (status === "partial") return "Additional payment pending";
+  if (status === "failed") return "Failed";
+  if (status === "refunded") return "Refunded";
+  return "Awaiting payment";
 }
 
 function statusAccent(status: RowStatus): string {
@@ -415,7 +411,7 @@ function statusAccent(status: RowStatus): string {
 }
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString("sr-Latn-RS", {
+  return date.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -432,7 +428,7 @@ function maxDate(dates: Array<Date | null>): Date {
 }
 
 function emptyTotals(): CurrencyTotals {
-  return { RSD: 0 };
+  return { EUR: 0 };
 }
 
 function addCurrencyTotal(
@@ -440,23 +436,23 @@ function addCurrencyTotal(
   _currency: BillingCurrency,
   cents: number,
 ): void {
-  totals.RSD += cents;
+  totals.EUR += cents;
 }
 
 function mergeCurrencyTotals(
   base: CurrencyTotals,
   next: CurrencyTotals,
 ): CurrencyTotals {
-  base.RSD += next.RSD;
+  base.EUR += next.EUR;
   return base;
 }
 
 function totalsValue(totals: CurrencyTotals): number {
-  return totals.RSD;
+  return totals.EUR;
 }
 
 function formatCurrencyTotals(totals: CurrencyTotals): string {
   const parts: string[] = [];
-  if (totals.RSD > 0) parts.push(formatBillingMoney(totals.RSD, "RSD"));
+  if (totals.EUR > 0) parts.push(formatBillingMoney(totals.EUR, "EUR"));
   return parts.length > 0 ? parts.join(" / ") : "0";
 }

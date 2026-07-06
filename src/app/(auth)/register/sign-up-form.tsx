@@ -24,7 +24,7 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
 
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-border" />
-        <span className="text-xs text-muted-foreground">ili sa email-om</span>
+        <span className="text-xs text-muted-foreground">or with email</span>
         <div className="h-px flex-1 bg-border" />
       </div>
 
@@ -39,7 +39,7 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
       <div className="space-y-2">
         <Label htmlFor="name">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Ime i prezime
+          Full name
         </Label>
         <Input
           id="name"
@@ -66,7 +66,7 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
       <div className="space-y-2">
         <Label htmlFor="password">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Lozinka
+          Password
         </Label>
         <Input
           id="password"
@@ -76,17 +76,17 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
           required
           minLength={8}
         />
-        <p className="text-xs text-muted-foreground">Najmanje 8 karaktera</p>
+        <p className="text-xs text-muted-foreground">At least 8 characters</p>
       </div>
 
       <Button type="submit" variant="accent" size="lg" className="w-full" disabled={pending}>
-        {pending ? "Kreiranje…" : "Napravite nalog"}
+        {pending ? "Creating..." : "Create account"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        Već imate nalog?{" "}
+        Already have an account?{" "}
         <Link href={signInHref} className="font-medium text-foreground hover:text-accent">
-          Prijavite se
+          Log in
         </Link>
       </p>
     </form>

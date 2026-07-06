@@ -37,7 +37,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import {
-  formatRsd,
+  formatEur,
   priceItems,
   type QuoteItem,
 } from "@/lib/catalog/calculate";
@@ -137,7 +137,7 @@ export function PricingWorkbench({
     } catch (error) {
       setNotice({
         kind: "error",
-        text: error instanceof Error ? error.message : "Izmena nije sačuvana.",
+        text: error instanceof Error ? error.message : "Change was not saved.",
       });
     } finally {
       setSavingKey(null);
@@ -171,7 +171,7 @@ export function PricingWorkbench({
     startTransition(async () => {
       try {
         await publishPricingBook();
-        setNotice({ kind: "success", text: "Draft je objavljen kao live cenovnik." });
+        setNotice({ kind: "success", text: "Draft was published as the live pricebook." });
         router.refresh();
       } catch (error) {
         setNotice({
@@ -179,7 +179,7 @@ export function PricingWorkbench({
           text:
             error instanceof Error
               ? error.message
-              : "Cenovnik nije objavljen.",
+              : "Pricebook was not published.",
         });
       }
     });
@@ -192,7 +192,7 @@ export function PricingWorkbench({
         await clonePublishedPricingToDraft();
         setNotice({
           kind: "success",
-          text: "Draft je resetovan iz trenutno objavljenog cenovnika.",
+          text: "Draft was reset from the currently published pricebook.",
         });
         router.refresh();
       } catch (error) {
@@ -201,7 +201,7 @@ export function PricingWorkbench({
           text:
             error instanceof Error
               ? error.message
-              : "Draft nije resetovan.",
+              : "Draft was not reset.",
         });
       }
     });
@@ -214,12 +214,11 @@ export function PricingWorkbench({
           <div className="flex items-center gap-2">
             <CircleDollarSign className="h-6 w-6 text-accent" />
             <h1 className="font-heading text-3xl text-foreground">
-              Cenovnik i finansijska pravila
+              Pricebook and financial rules
             </h1>
           </div>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            Vizuelni workbench za draft cenovnik. Promene se vide odmah u
-            preview-u, ali se čuvaju tek kada kliknete Sačuvaj.
+            Visual workbench for the draft pricebook. Changes appear immediately in the preview, but are saved only when you click Save.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -230,7 +229,7 @@ export function PricingWorkbench({
             disabled={isPending || Boolean(savingKey)}
           >
             <Copy className="h-4 w-4" />
-            Resetuj draft
+            Reset draft
           </Button>
           <Button
             type="button"
@@ -266,26 +265,26 @@ export function PricingWorkbench({
         <StatusCard
           label="Draft"
           value={draft.name}
-          meta={`Ažurirano ${formatDateTime(draft.updatedAt)}`}
+          meta={`Updated ${formatDateTime(draft.updatedAt)}`}
           badge="Preview"
         />
         <StatusCard
           label="Live"
-          value={published.status === "static" ? "Fallback TS cenovnik" : published.name}
+          value={published.status === "static" ? "Fallback TS pricebook" : published.name}
           meta={
             published.publishedAt
-              ? `Objavljeno ${formatDateTime(published.publishedAt)}`
-              : "Još nema DB publish-a"
+              ? `Published ${formatDateTime(published.publishedAt)}`
+              : "No DB publish yet"
           }
-          badge={published.status === "static" ? "Fallback" : "Objavljeno"}
+          badge={published.status === "static" ? "Fallback" : "Published"}
         />
         <PreviewCard
-          label="Draft test obračun"
+          label="Draft test calculation"
           total={draftPreview.total}
           original={draftPreview.originalTotal}
         />
         <PreviewCard
-          label="Live test obračun"
+          label="Live test calculation"
           total={livePreview.total}
           original={livePreview.originalTotal}
         />
@@ -305,9 +304,9 @@ export function PricingWorkbench({
           >
             <span className="inline-flex items-center gap-2">
               <SlidersHorizontal className="h-4 w-4" />
-              Globalna pravila
+              Global rules
             </span>
-            <Badge variant="secondary">AI + kurs + PDV</Badge>
+            <Badge variant="secondary">AI + rate + VAT</Badge>
           </button>
           {draft.categories.map((category) => (
             <button
@@ -342,7 +341,7 @@ export function PricingWorkbench({
                 savePatch(
                   "settings",
                   { kind: "settings", settings: draft.settings },
-                  "Globalna finansijska podešavanja su sačuvana u draft.",
+                  "Global financial settings were saved to draft.",
                 )
               }
             />
@@ -404,9 +403,9 @@ function PreviewCard({
         <CardDescription className="text-[0.72rem] font-semibold uppercase tracking-[0.18em]">
           {label}
         </CardDescription>
-        <CardTitle className="text-2xl tabular-nums">{formatRsd(total)}</CardTitle>
+        <CardTitle className="text-2xl tabular-nums">{formatEur(total)}</CardTitle>
         <CardDescription>
-          {savings > 0 ? `Ušteda u testu: ${formatRsd(savings)}` : "Bez popusta u testu"}
+          {savings > 0 ? `Test savings: ${formatEur(savings)}` : "No discount in test"}
         </CardDescription>
       </CardHeader>
     </Card>
@@ -514,11 +513,11 @@ function ProductWorkbenchCard({
         productId: product.id,
         label: product.label,
         unitLabel: product.unitLabel,
-        basePriceRsd: product.basePriceRsd,
+        basePriceEur: product.basePriceEur,
         includes: product.includes,
         inquiryOnly: product.inquiryOnly ?? false,
       },
-      `${product.label} je sačuvan u draft.`,
+      `${product.label} was saved to draft.`,
     );
 
   return (
@@ -528,12 +527,12 @@ function ProductWorkbenchCard({
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">{category.label}</Badge>
-              {product.inquiryOnly && <Badge variant="outline">Samo upit</Badge>}
+              {product.inquiryOnly && <Badge variant="outline">Inquiry only</Badge>}
               {product.durationConfig && <Badge variant="outline">Trajanje</Badge>}
             </div>
             <div className="mt-3 grid gap-3 lg:grid-cols-[1.2fr_1fr_180px]">
               <TextInput
-                label="Naziv paketa"
+                label="Package name"
                 value={product.label}
                 onChange={(label) =>
                   onProductChange(product.id, (current) => ({
@@ -543,7 +542,7 @@ function ProductWorkbenchCard({
                 }
               />
               <TextInput
-                label="Kako se naplaćuje"
+                label="Billing model"
                 value={product.unitLabel}
                 onChange={(unitLabel) =>
                   onProductChange(product.id, (current) => ({
@@ -553,22 +552,22 @@ function ProductWorkbenchCard({
                 }
               />
               <NumberInput
-                label={product.durationConfig ? "Fallback baza RSD" : "Bazna cena RSD"}
-                value={product.basePriceRsd}
+                label={product.durationConfig ? "Fallback base EUR" : "Base price EUR"}
+                value={product.basePriceEur}
                 min={0}
-                onChange={(basePriceRsd) =>
+                onChange={(basePriceEur) =>
                   onProductChange(product.id, (current) => ({
                     ...current,
-                    basePriceRsd,
+                    basePriceEur,
                   }))
                 }
               />
             </div>
           </div>
           <MiniProductPreview
-            total={preview?.totalRsd ?? 0}
-            original={preview?.originalTotalRsd ?? 0}
-            label="Mini obračun"
+            total={preview?.totalEur ?? 0}
+            original={preview?.originalTotalEur ?? 0}
+            label="Mini calculation"
           />
         </div>
 
@@ -584,7 +583,7 @@ function ProductWorkbenchCard({
           />
           <div className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-background/45 px-4 py-3 lg:flex-col lg:items-start lg:justify-center">
             <Label htmlFor={`inquiry-${product.id}`} className="text-xs">
-              Samo upit
+              Inquiry only
             </Label>
             <Switch
               id={`inquiry-${product.id}`}
@@ -610,7 +609,7 @@ function ProductWorkbenchCard({
             <ChevronDown
               className={cn("h-4 w-4 transition-transform", expanded && "rotate-180")}
             />
-            Detalji cene
+            Price details
           </Button>
           <Button
             type="button"
@@ -620,7 +619,7 @@ function ProductWorkbenchCard({
             disabled={savingKey === `product:${product.id}`}
           >
             <Save className="h-4 w-4" />
-            Sačuvaj paket
+            Save package
           </Button>
         </div>
       </CardHeader>
@@ -642,8 +641,8 @@ function ProductWorkbenchCard({
             <div className="space-y-3">
               <SectionTitle
                 icon={PackageCheck}
-                title="Add-on cene"
-                description="Podesite šta je uključeno, doplate i količinske pragove."
+                title="Add-on prices"
+                description="Set what is included, add-ons, and quantity thresholds."
               />
               {product.addOns.map((addOn) => (
                 <AddOnWorkbench
@@ -675,12 +674,12 @@ function ProductWorkbenchCard({
                         addOnId: addOn.id,
                         label: addOn.label,
                         description: addOn.description,
-                        priceRsd: addOn.priceRsd,
+                        priceEur: addOn.priceEur,
                         includedQty: addOn.includedQty,
                         maxQty: Number.isFinite(addOn.maxQty) ? addOn.maxQty : null,
                         volumeRules: addOn.volumeRules,
                       },
-                      `${addOn.label} je sačuvan u draft.`,
+                      `${addOn.label} was saved to draft.`,
                     )
                   }
                 />
@@ -724,13 +723,13 @@ function DurationWorkbench({
   if (!product.durationConfig) return null;
   const config = product.durationConfig;
   const discountPct = durationDiscountPct(config, previewSeconds);
-  const subtotal = config.perSecondRsd * previewSeconds;
+  const subtotal = config.perSecondEur * previewSeconds;
   const total = Math.round(subtotal * (1 - discountPct / 100));
 
   const saveDuration = (sourceMode: string | null = null) => {
-    const perSecondRsd = sourceMode
-      ? product.sourceModeRules?.[sourceMode]?.perSecondRsd ?? config.perSecondRsd
-      : config.perSecondRsd;
+    const perSecondEur = sourceMode
+      ? product.sourceModeRules?.[sourceMode]?.perSecondEur ?? config.perSecondEur
+      : config.perSecondEur;
     return onSavePatch(
       `duration:${product.id}:${sourceMode ?? "base"}`,
       {
@@ -740,10 +739,10 @@ function DurationWorkbench({
         minSeconds: config.minSeconds,
         defaultSeconds: config.defaultSeconds,
         maxSeconds: Number.isFinite(config.maxSeconds) ? config.maxSeconds : null,
-        perSecondRsd,
+        perSecondEur,
         discountTiers: config.discountTiers,
       },
-      `Trajanje za ${product.label} je sačuvano u draft.`,
+      `Duration for ${product.label} je saved to draft.`,
     );
   };
 
@@ -751,14 +750,14 @@ function DurationWorkbench({
     <div className="rounded-xl border border-border/50 bg-background/45 p-4">
       <SectionTitle
         icon={SlidersHorizontal}
-        title="Trajanje i cena po sekundi"
-        description="Slider prikazuje kako sekunde i duration popusti menjaju obračun."
+        title="Duration and price per second"
+        description="The slider shows how seconds and duration discounts change the calculation."
       />
       <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_240px]">
         <div className="space-y-4">
           <div className="grid gap-3 md:grid-cols-4">
             <NumberInput
-              label="Min sekundi"
+              label="Minimum seconds"
               value={config.minSeconds}
               step={1}
               min={1}
@@ -773,7 +772,7 @@ function DurationWorkbench({
               }
             />
             <NumberInput
-              label="Default sekundi"
+              label="Default seconds"
               value={config.defaultSeconds}
               step={1}
               min={1}
@@ -788,7 +787,7 @@ function DurationWorkbench({
               }
             />
             <NumberInput
-              label="Max sekundi"
+              label="Maximum seconds"
               value={Number.isFinite(config.maxSeconds) ? config.maxSeconds : 240}
               step={1}
               min={1}
@@ -803,15 +802,15 @@ function DurationWorkbench({
               }
             />
             <NumberInput
-              label="RSD/sek"
-              value={config.perSecondRsd}
+              label="RSD/sec"
+              value={config.perSecondEur}
               min={0}
-              onChange={(perSecondRsd) =>
+              onChange={(perSecondEur) =>
                 onProductChange(product.id, (current) => ({
                   ...current,
                   durationConfig: {
                     ...current.durationConfig!,
-                    perSecondRsd,
+                    perSecondEur,
                   },
                 }))
               }
@@ -820,7 +819,7 @@ function DurationWorkbench({
 
           <div className="rounded-xl border border-border/40 bg-card/60 p-3">
             <div className="flex items-center justify-between gap-3">
-              <Label className="text-xs">Preview trajanja</Label>
+              <Label className="text-xs">Duration preview</Label>
               <span className="text-sm font-semibold tabular-nums">
                 {previewSeconds}s
               </span>
@@ -835,7 +834,7 @@ function DurationWorkbench({
             />
             <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
               <span>{config.minSeconds}s</span>
-              <span>{Number.isFinite(config.maxSeconds) ? `${config.maxSeconds}s` : "bez limita"}</span>
+              <span>{Number.isFinite(config.maxSeconds) ? `${config.maxSeconds}s` : "no limit"}</span>
             </div>
           </div>
 
@@ -855,12 +854,12 @@ function DurationWorkbench({
 
         <div className="rounded-xl border border-accent/25 bg-accent/10 p-4">
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Live obračun
+            Live calculation
           </p>
           <div className="mt-3 space-y-2 text-sm">
-            <PriceRow label={`${previewSeconds}s × ${formatRsd(config.perSecondRsd)}`} value={formatRsd(subtotal)} />
-            <PriceRow label={`Popust na trajanje`} value={discountPct > 0 ? `−${discountPct}%` : "0%"} />
-            <PriceRow label="Ukupno" value={formatRsd(total)} strong />
+            <PriceRow label={`${previewSeconds}s × ${formatEur(config.perSecondEur)}`} value={formatEur(subtotal)} />
+            <PriceRow label="Duration discount" value={discountPct > 0 ? `−${discountPct}%` : "0%"} />
+            <PriceRow label="Total" value={formatEur(total)} strong />
           </div>
           <Button
             type="button"
@@ -871,7 +870,7 @@ function DurationWorkbench({
             disabled={savingKey === `duration:${product.id}:base`}
           >
             <Save className="h-4 w-4" />
-            Sačuvaj trajanje
+            Save duration
           </Button>
         </div>
       </div>
@@ -885,17 +884,17 @@ function DurationWorkbench({
             >
               <p className="text-xs font-semibold text-foreground">{sourceMode}</p>
               <NumberInput
-                label="RSD/sek za mod"
-                value={rule.perSecondRsd ?? config.perSecondRsd}
+                label="RSD/sec for mode"
+                value={rule.perSecondEur ?? config.perSecondEur}
                 min={0}
-                onChange={(perSecondRsd) =>
+                onChange={(perSecondEur) =>
                   onProductChange(product.id, (current) => ({
                     ...current,
                     sourceModeRules: {
                       ...current.sourceModeRules,
                       [sourceMode]: {
                         ...(current.sourceModeRules?.[sourceMode] ?? {}),
-                        perSecondRsd,
+                        perSecondEur,
                       },
                     },
                   }))
@@ -910,7 +909,7 @@ function DurationWorkbench({
                 disabled={savingKey === `duration:${product.id}:${sourceMode}`}
               >
                 <Save className="h-4 w-4" />
-                Sačuvaj mod
+                Save mode
               </Button>
             </div>
           ))}
@@ -941,8 +940,8 @@ function AddOnWorkbench({
   const unitPrice = unitPriceForQuantity(addOn, previewQty);
   const previewTotal =
     addOn.priceType === "percent"
-      ? `+${addOn.priceRsd}%`
-      : formatRsd(Math.round(unitPrice * billableQty));
+      ? `+${addOn.priceEur}%`
+      : formatEur(Math.round(unitPrice * billableQty));
   const max = Number.isFinite(addOn.maxQty) ? addOn.maxQty : 30;
 
   return (
@@ -951,25 +950,25 @@ function AddOnWorkbench({
         <div className="space-y-3">
           <div className="grid gap-3 md:grid-cols-[1fr_1.4fr]">
             <TextInput
-              label="Naziv dodatka"
+              label="Add-on name"
               value={addOn.label}
               onChange={(label) => onChange({ ...addOn, label })}
             />
             <TextInput
-              label="Opis za kupca"
+              label="Customer description"
               value={addOn.description}
               onChange={(description) => onChange({ ...addOn, description })}
             />
           </div>
           <div className="grid gap-3 md:grid-cols-4">
             <NumberInput
-              label={addOn.priceType === "percent" ? "Procenat" : "Cena RSD"}
-              value={addOn.priceRsd}
+              label={addOn.priceType === "percent" ? "Percentage" : "Price EUR"}
+              value={addOn.priceEur}
               min={0}
-              onChange={(priceRsd) => onChange({ ...addOn, priceRsd })}
+              onChange={(priceEur) => onChange({ ...addOn, priceEur })}
             />
             <NumberInput
-              label="Uključeno"
+              label="Included"
               value={addOn.includedQty}
               step={1}
               min={0}
@@ -994,7 +993,7 @@ function AddOnWorkbench({
                 Tip cene
               </Label>
               <div className="mt-2 rounded-lg border border-border/50 bg-background/50 px-3 py-2 text-sm font-medium">
-                {addOn.priceType === "percent" ? "Procenat" : "Fiksno"}
+                {addOn.priceType === "percent" ? "Percentage" : "Fixed"}
               </div>
             </div>
           </div>
@@ -1007,7 +1006,7 @@ function AddOnWorkbench({
 
         <div className="rounded-xl border border-accent/25 bg-accent/10 p-4">
           <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Test količine
+            Test quantities
           </p>
           <div className="mt-3 flex items-center justify-between gap-2">
             <Stepper
@@ -1022,11 +1021,11 @@ function AddOnWorkbench({
             </span>
           </div>
           <div className="mt-3 space-y-1 text-xs text-muted-foreground">
-            <PriceRow label="Uključeno" value={`${addOn.includedQty}`} />
+            <PriceRow label="Included" value={`${addOn.includedQty}`} />
             <PriceRow label="Naplativo" value={`${billableQty}`} />
             <PriceRow
-              label="Efektivna jedinična cena"
-              value={addOn.priceType === "percent" ? `${addOn.priceRsd}%` : formatRsd(unitPrice)}
+              label="Effective unit price"
+              value={addOn.priceType === "percent" ? `${addOn.priceEur}%` : formatEur(unitPrice)}
             />
           </div>
           <Button
@@ -1038,7 +1037,7 @@ function AddOnWorkbench({
             disabled={saving}
           >
             <Save className="h-4 w-4" />
-            Sačuvaj dodatak
+            Save add-on
           </Button>
         </div>
       </div>
@@ -1067,10 +1066,10 @@ function VolumeRulesEditor({
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold text-foreground">
-            Količinski pragovi
+            Quantity thresholds
           </p>
           <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
-            Primer: od 5. komada cena postaje niža po jedinici.
+            Example: from the 5th unit, the price becomes lower per unit.
           </p>
         </div>
         <Button
@@ -1084,7 +1083,7 @@ function VolumeRulesEditor({
                 afterQty:
                   (addOn.volumeRules[addOn.volumeRules.length - 1]?.afterQty ??
                     addOn.includedQty) + 1,
-                priceRsd: addOn.priceRsd,
+                priceEur: addOn.priceEur,
               },
             ])
           }
@@ -1097,7 +1096,7 @@ function VolumeRulesEditor({
       <div className="mt-3 space-y-2">
         {addOn.volumeRules.length === 0 && (
           <p className="rounded-lg bg-card/50 px-3 py-2 text-xs text-muted-foreground">
-            Nema količinskih pravila; svaka dodatna jedinica koristi osnovnu cenu.
+            No quantity rules; every additional unit uses the base price.
           </p>
         )}
         {addOn.volumeRules.map((rule, index) => (
@@ -1106,7 +1105,7 @@ function VolumeRulesEditor({
             className="grid items-end gap-2 rounded-lg bg-card/60 p-2 md:grid-cols-[1fr_1fr_auto]"
           >
             <NumberInput
-              label="Posle količine"
+              label="After quantity"
               value={rule.afterQty}
               step={1}
               min={0}
@@ -1115,10 +1114,10 @@ function VolumeRulesEditor({
               }
             />
             <NumberInput
-              label="Cena RSD"
-              value={rule.priceRsd}
+              label="Price EUR"
+              value={rule.priceEur}
               min={0}
-              onChange={(priceRsd) => updateRule(index, { priceRsd })}
+              onChange={(priceEur) => updateRule(index, { priceEur })}
             />
             <Button
               type="button"
@@ -1127,7 +1126,7 @@ function VolumeRulesEditor({
               onClick={() =>
                 onChange(addOn.volumeRules.filter((_, i) => i !== index))
               }
-              aria-label="Ukloni prag"
+              aria-label="Remove threshold"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -1158,8 +1157,8 @@ function DiscountRulesWorkbench({
     <div className="space-y-3">
       <SectionTitle
         icon={Layers3}
-        title="Cross-service popusti"
-        description="Vizuelno pravilo: ako postoji izvorni model/usluga, ova stavka dobija popust."
+        title="Cross-service discounts"
+        description="Visual rule: if a source model/service exists, this item receives a discount."
       />
       <div className="grid gap-3 lg:grid-cols-2">
         {rules.map((rule, index) => (
@@ -1187,7 +1186,7 @@ function DiscountRulesWorkbench({
                   discountPct: rule.discountPct,
                   reason: rule.reason,
                 },
-                `Popust za ${product.label} je sačuvan u draft.`,
+                `Discount for ${product.label} was saved to draft.`,
               )
             }
           />
@@ -1212,13 +1211,13 @@ function DiscountRuleCard({
   onChange: (rule: ConsumeRule) => void;
   onSave: () => void;
 }) {
-  const discounted = Math.round(product.basePriceRsd * (1 - rule.discountPct / 100));
+  const discounted = Math.round(product.basePriceEur * (1 - rule.discountPct / 100));
   return (
     <div className="rounded-xl border border-border/45 bg-card/60 p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Ako postoji
+            If present
           </p>
           <p className="mt-1 text-sm font-semibold text-foreground">
             {rule.sourceProducts?.join(", ") ?? rule.requires}
@@ -1227,7 +1226,7 @@ function DiscountRuleCard({
         <ArrowRight className="mt-5 h-4 w-4 text-muted-foreground" />
         <div className="text-right">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Onda
+            Then
           </p>
           <p className="mt-1 text-sm font-semibold text-[color:var(--color-sage-deep)]">
             −{rule.discountPct}%
@@ -1236,7 +1235,7 @@ function DiscountRuleCard({
       </div>
       <div className="mt-4 grid gap-3 md:grid-cols-[120px_1fr]">
         <NumberInput
-          label="Popust %"
+          label="Discount %"
           value={rule.discountPct}
           step={1}
           min={0}
@@ -1246,14 +1245,14 @@ function DiscountRuleCard({
           }
         />
         <TextInput
-          label="Razlog prikazan u obračunu"
+          label="Reason shown in calculation"
           value={rule.reason}
           onChange={(reason) => onChange({ ...rule, reason })}
         />
       </div>
       <div className="mt-3 rounded-lg bg-background/50 px-3 py-2 text-xs">
-        <PriceRow label="Primer baza" value={formatRsd(product.basePriceRsd)} />
-        <PriceRow label="Posle popusta" value={formatRsd(discounted)} strong />
+        <PriceRow label="Base example" value={formatEur(product.basePriceEur)} />
+        <PriceRow label="After discount" value={formatEur(discounted)} strong />
       </div>
       <Button
         type="button"
@@ -1264,7 +1263,7 @@ function DiscountRuleCard({
         disabled={saving}
       >
         <Save className="h-4 w-4" />
-        Sačuvaj popust #{index + 1}
+        Save discount #{index + 1}
       </Button>
     </div>
   );
@@ -1293,7 +1292,7 @@ function SettingsWorkbench({
       onSettingsChange(() => parsed);
       setAdvancedError(null);
     } catch {
-      setAdvancedError("JSON nije ispravan.");
+      setAdvancedError("JSON is invalid.");
     }
   };
 
@@ -1305,26 +1304,18 @@ function SettingsWorkbench({
             Finance settings
           </p>
           <h2 className="mt-1 font-heading text-2xl text-foreground">
-            Globalna pravila, AI paketi i specijalne cene
+            Global rules, AI paketi i specijalne cene
           </h2>
         </div>
         <Button type="button" variant="accent" onClick={onSave} disabled={saving}>
           <Save className="h-4 w-4" />
-          Sačuvaj podešavanja
+          Save settings
         </Button>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <MetricEditor
-          label="RSD kurs"
-          value={settings.rsdRate}
-          suffix="RSD"
-          onChange={(rsdRate) =>
-            onSettingsChange((current) => ({ ...current, rsdRate }))
-          }
-        />
-        <MetricEditor
-          label="PDV za razlaganje RSD cene"
+          label="PDV stopa"
           value={settings.serbiaVatRate}
           suffix="decimal"
           step={0.01}
@@ -1333,7 +1324,7 @@ function SettingsWorkbench({
           }
         />
         <MetricEditor
-          label="AI krediti važe"
+          label="AI credits are valid for"
           value={settings.aiCreditExpiresAfterMonths}
           suffix="meseci"
           step={1}
@@ -1365,7 +1356,7 @@ function SettingsWorkbench({
               <div>
                 <CardTitle>Advanced fallback JSON</CardTitle>
                 <CardDescription>
-                  Skriveni tehnički izlaz za retka pravila koja još nemaju
+                  Hidden technical output for rare rules that do not yet have
                   posebnu vizuelnu kontrolu.
                 </CardDescription>
               </div>
@@ -1389,11 +1380,11 @@ function SettingsWorkbench({
             <div className="flex flex-wrap gap-2">
               <Button type="button" variant="outline" onClick={applyAdvanced}>
                 <Eye className="h-4 w-4" />
-                Primeni u preview
+                Apply in preview
               </Button>
               <Button type="button" variant="accent" onClick={onSave} disabled={saving}>
                 <Save className="h-4 w-4" />
-                Sačuvaj settings
+                Save settings
               </Button>
             </div>
           </CardContent>
@@ -1421,7 +1412,7 @@ function AiTiersEditor({
               AI credit paketi
             </CardTitle>
             <CardDescription>
-              Svaka kartica pokazuje prag i primer kupovine za taj tier.
+              Each card shows the threshold and an example purchase for that tier.
             </CardDescription>
           </div>
           <Button
@@ -1439,7 +1430,7 @@ function AiTiersEditor({
             }
           >
             <Plus className="h-4 w-4" />
-            Dodaj paket
+            Add package
           </Button>
         </div>
       </CardHeader>
@@ -1452,7 +1443,7 @@ function AiTiersEditor({
               className="rounded-xl border border-border/45 bg-background/45 p-4"
             >
               <div className="flex items-start justify-between gap-2">
-                <Badge variant="secondary">{tier.minCredits}+ kredita</Badge>
+                <Badge variant="secondary">{tier.minCredits}+ credits</Badge>
                 <Button
                   type="button"
                   variant="destructive"
@@ -1463,14 +1454,14 @@ function AiTiersEditor({
                       aiCreditTiers: current.aiCreditTiers.filter((_, i) => i !== index),
                     }))
                   }
-                  aria-label="Ukloni AI tier"
+                  aria-label="Remove AI tier"
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
               </div>
               <div className="mt-3 grid gap-2">
                 <NumberInput
-                  label="Minimum kredita"
+                  label="Minimum credits"
                   value={tier.minCredits}
                   step={1}
                   min={1}
@@ -1486,7 +1477,7 @@ function AiTiersEditor({
                   }
                 />
                 <NumberInput
-                  label="Centi po kreditu"
+                  label="Cents per credit"
                   value={tier.centsPerCredit}
                   step={1}
                   min={1}
@@ -1506,8 +1497,8 @@ function AiTiersEditor({
                 />
               </div>
               <div className="mt-3 rounded-lg bg-card/70 px-3 py-2 text-xs">
-                <PriceRow label="Primer ukupno" value={formatRsd(example.totalCents / 100)} />
-                <PriceRow label="Cena/kredit" value={formatRsd(example.centsPerCredit / 100)} />
+                <PriceRow label="Example total" value={formatEur(example.totalCents / 100)} />
+                <PriceRow label="Price/credit" value={formatEur(example.centsPerCredit / 100)} />
               </div>
             </div>
           );
@@ -1533,32 +1524,32 @@ function SpecialPricingEditor({
     <div className="grid gap-4 xl:grid-cols-3">
       <Card>
         <CardHeader>
-          <CardTitle>Enterijer po spratu</CardTitle>
-          <CardDescription>Prvi sprat, dodatni sprat i pragovi uključeni u cenu.</CardDescription>
+          <CardTitle>Interior by floor</CardTitle>
+          <CardDescription>First floor, additional floor, and thresholds included in the price.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">
           <SpecialNumber
-            label="Prvi sprat RSD"
-            value={special.interior.firstFloorRsd}
-            onChange={(firstFloorRsd) =>
+            label="First floor EUR"
+            value={special.interior.firstFloorEur}
+            onChange={(firstFloorEur) =>
               setSpecial((current) => ({
                 ...current,
-                interior: { ...current.interior, firstFloorRsd },
+                interior: { ...current.interior, firstFloorEur },
               }))
             }
           />
           <SpecialNumber
-            label="Dodatni sprat RSD"
-            value={special.interior.extraFloorRsd}
-            onChange={(extraFloorRsd) =>
+            label="Additional floor EUR"
+            value={special.interior.extraFloorEur}
+            onChange={(extraFloorEur) =>
               setSpecial((current) => ({
                 ...current,
-                interior: { ...current.interior, extraFloorRsd },
+                interior: { ...current.interior, extraFloorEur },
               }))
             }
           />
           <SpecialNumber
-            label="Uključene prostorije"
+            label="Included rooms"
             value={special.interior.includedRooms}
             step={1}
             onChange={(includedRooms) =>
@@ -1572,7 +1563,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Uključeni kadrovi"
+            label="Included frames"
             value={special.interior.includedCameras}
             step={1}
             onChange={(includedCameras) =>
@@ -1586,22 +1577,22 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Dodatna prostorija RSD"
-            value={special.interior.extraRoomRsd}
-            onChange={(extraRoomRsd) =>
+            label="Additional room EUR"
+            value={special.interior.extraRoomEur}
+            onChange={(extraRoomEur) =>
               setSpecial((current) => ({
                 ...current,
-                interior: { ...current.interior, extraRoomRsd },
+                interior: { ...current.interior, extraRoomEur },
               }))
             }
           />
           <SpecialNumber
-            label="Dodatni kadar RSD"
-            value={special.interior.extraCameraRsd}
-            onChange={(extraCameraRsd) =>
+            label="Additional frame EUR"
+            value={special.interior.extraCameraEur}
+            onChange={(extraCameraEur) =>
               setSpecial((current) => ({
                 ...current,
-                interior: { ...current.interior, extraCameraRsd },
+                interior: { ...current.interior, extraCameraEur },
               }))
             }
           />
@@ -1610,32 +1601,32 @@ function SpecialPricingEditor({
 
       <Card>
         <CardHeader>
-          <CardTitle>360 enterijer</CardTitle>
-          <CardDescription>Spratovi, hotspotovi, statične kamere i tour assembly.</CardDescription>
+          <CardTitle>360 interior</CardTitle>
+          <CardDescription>Floors, hotspots, static cameras, and tour assembly.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">
           <SpecialNumber
-            label="Prvi sprat RSD"
-            value={special.tour360.firstFloorRsd}
-            onChange={(firstFloorRsd) =>
+            label="First floor EUR"
+            value={special.tour360.firstFloorEur}
+            onChange={(firstFloorEur) =>
               setSpecial((current) => ({
                 ...current,
-                tour360: { ...current.tour360, firstFloorRsd },
+                tour360: { ...current.tour360, firstFloorEur },
               }))
             }
           />
           <SpecialNumber
-            label="Dodatni sprat RSD"
-            value={special.tour360.extraFloorRsd}
-            onChange={(extraFloorRsd) =>
+            label="Additional floor EUR"
+            value={special.tour360.extraFloorEur}
+            onChange={(extraFloorEur) =>
               setSpecial((current) => ({
                 ...current,
-                tour360: { ...current.tour360, extraFloorRsd },
+                tour360: { ...current.tour360, extraFloorEur },
               }))
             }
           />
           <SpecialNumber
-            label="Uključeni hotspotovi"
+            label="Included hotspots"
             value={special.tour360.includedHotspots}
             step={1}
             onChange={(includedHotspots) =>
@@ -1649,7 +1640,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Uključeni kadrovi"
+            label="Included frames"
             value={special.tour360.includedCameras}
             step={1}
             onChange={(includedCameras) =>
@@ -1663,22 +1654,22 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Dodatni hotspot RSD"
-            value={special.tour360.extraHotspotRsd}
-            onChange={(extraHotspotRsd) =>
+            label="Additional hotspot EUR"
+            value={special.tour360.extraHotspotEur}
+            onChange={(extraHotspotEur) =>
               setSpecial((current) => ({
                 ...current,
-                tour360: { ...current.tour360, extraHotspotRsd },
+                tour360: { ...current.tour360, extraHotspotEur },
               }))
             }
           />
           <SpecialNumber
-            label="Dodatni kadar RSD"
-            value={special.tour360.extraCameraRsd}
-            onChange={(extraCameraRsd) =>
+            label="Additional frame EUR"
+            value={special.tour360.extraCameraEur}
+            onChange={(extraCameraEur) =>
               setSpecial((current) => ({
                 ...current,
-                tour360: { ...current.tour360, extraCameraRsd },
+                tour360: { ...current.tour360, extraCameraEur },
               }))
             }
           />
@@ -1688,25 +1679,25 @@ function SpecialPricingEditor({
       <Card>
         <CardHeader>
           <CardTitle>Tour assembly</CardTitle>
-          <CardDescription>Web tour fee, free hotspot prag i opcije navigacije/brendinga.</CardDescription>
+          <CardDescription>Web tour fee, free hotspot threshold, and navigation/branding options.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">
           <SpecialNumber
-            label="Base assembly RSD"
-            value={special.tourAssembly.baseRsd}
-            onChange={(baseRsd) =>
+            label="Base assembly EUR"
+            value={special.tourAssembly.baseEur}
+            onChange={(baseEur) =>
               setSpecial((current) => ({
                 ...current,
-                tourAssembly: { ...current.tourAssembly, baseRsd },
+                tourAssembly: { ...current.tourAssembly, baseEur },
                 tour360: {
                   ...current.tour360,
-                  assembly: { ...current.tour360.assembly, baseRsd },
+                  assembly: { ...current.tour360.assembly, baseEur },
                 },
               }))
             }
           />
           <SpecialNumber
-            label="Free hotspot prag"
+            label="Free hotspot threshold"
             value={special.tourAssembly.freeHotspotThreshold}
             step={1}
             onChange={(freeHotspotThreshold) =>
@@ -1727,29 +1718,29 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Floorplan nav RSD"
-            value={special.tourAssembly.floorPlanNavRsd}
-            onChange={(floorPlanNavRsd) =>
+            label="Floorplan nav EUR"
+            value={special.tourAssembly.floorPlanNavEur}
+            onChange={(floorPlanNavEur) =>
               setSpecial((current) => ({
                 ...current,
-                tourAssembly: { ...current.tourAssembly, floorPlanNavRsd },
+                tourAssembly: { ...current.tourAssembly, floorPlanNavEur },
                 tour360: {
                   ...current.tour360,
-                  assembly: { ...current.tour360.assembly, floorPlanNavRsd },
+                  assembly: { ...current.tour360.assembly, floorPlanNavEur },
                 },
               }))
             }
           />
           <SpecialNumber
-            label="White-label RSD"
-            value={special.tourAssembly.whiteLabelRsd}
-            onChange={(whiteLabelRsd) =>
+            label="White-label EUR"
+            value={special.tourAssembly.whiteLabelEur}
+            onChange={(whiteLabelEur) =>
               setSpecial((current) => ({
                 ...current,
-                tourAssembly: { ...current.tourAssembly, whiteLabelRsd },
+                tourAssembly: { ...current.tourAssembly, whiteLabelEur },
                 tour360: {
                   ...current.tour360,
-                  assembly: { ...current.tour360.assembly, whiteLabelRsd },
+                  assembly: { ...current.tour360.assembly, whiteLabelEur },
                 },
               }))
             }
@@ -1770,7 +1761,7 @@ function IncludesEditor({
   return (
     <div>
       <Label className="text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
-        Šta je uključeno
+        What is included
       </Label>
       <Textarea
         value={includes.join("\n")}
@@ -1814,7 +1805,7 @@ function DurationTiersEditor({
             Duration popusti
           </p>
           <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
-            Pravila se čitaju redom: min sekundi, max sekundi, procenat.
+            Rules are read in order: minimum seconds, maximum seconds, percentage.
           </p>
         </div>
         <Button
@@ -1829,7 +1820,7 @@ function DurationTiersEditor({
           }
         >
           <Plus className="h-3 w-3" />
-          Popust
+          Discount
         </Button>
       </div>
       <div className="mt-3 space-y-2">
@@ -1865,7 +1856,7 @@ function DurationTiersEditor({
               }
             />
             <NumberInput
-              label="Popust %"
+              label="Discount %"
               value={tier.discountPct}
               step={1}
               min={0}
@@ -1885,7 +1876,7 @@ function DurationTiersEditor({
               variant="destructive"
               size="icon-sm"
               onClick={() => onChange(tiers.filter((_, i) => i !== index))}
-              aria-label="Ukloni duration popust"
+              aria-label="Remove duration discount"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -2022,7 +2013,7 @@ function Stepper({
         type="button"
         onClick={() => onChange(clamped(value - 1))}
         disabled={value <= min}
-        aria-label={`Smanji ${label}`}
+        aria-label={`Decrease ${label}`}
         className="flex h-8 w-8 items-center justify-center rounded-l-lg transition-colors hover:bg-muted disabled:opacity-30"
       >
         <Minus className="h-3.5 w-3.5" />
@@ -2034,7 +2025,7 @@ function Stepper({
         type="button"
         onClick={() => onChange(clamped(value + 1))}
         disabled={value >= max}
-        aria-label={`Povećaj ${label}`}
+        aria-label={`Increase ${label}`}
         className="flex h-8 w-8 items-center justify-center rounded-r-lg transition-colors hover:bg-muted disabled:opacity-30"
       >
         <Plus className="h-3.5 w-3.5" />
@@ -2061,11 +2052,11 @@ function MiniProductPreview({
       <div className="mt-2 flex items-end justify-between gap-2 xl:block">
         {hasDiscount && (
           <p className="text-sm text-muted-foreground line-through tabular-nums">
-            {formatRsd(original)}
+            {formatEur(original)}
           </p>
         )}
         <p className="text-2xl font-bold text-foreground tabular-nums">
-          {formatRsd(total)}
+          {formatEur(total)}
         </p>
       </div>
     </div>
@@ -2141,7 +2132,7 @@ function makePreviewItem(
     base.interiorConfig = [
       {
         id: "preview-floor-1",
-        name: "Sprat 1",
+        name: "Floor 1",
         rooms: [],
         description: "",
       },
@@ -2152,7 +2143,7 @@ function makePreviewItem(
       floors: [
         {
           id: "preview-tour-floor-1",
-          name: "Sprat 1",
+          name: "Floor 1",
           rooms: [],
           description: "",
         },
@@ -2168,9 +2159,9 @@ function makePreviewItem(
 }
 
 function unitPriceForQuantity(addOn: ConfiguratorAddOn, quantity: number) {
-  let unitPrice = addOn.priceRsd;
+  let unitPrice = addOn.priceEur;
   for (const rule of addOn.volumeRules) {
-    if (quantity > rule.afterQty) unitPrice = rule.priceRsd;
+    if (quantity > rule.afterQty) unitPrice = rule.priceEur;
   }
   return unitPrice;
 }
@@ -2189,7 +2180,7 @@ function numberFromInput(value: string) {
 
 function formatDateTime(value: string | null) {
   if (!value) return "—";
-  return new Date(value).toLocaleString("sr-Latn-RS", {
+  return new Date(value).toLocaleString("en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",

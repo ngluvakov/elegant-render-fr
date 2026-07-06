@@ -14,9 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "Analitika — Admin",
+  title: "Analytics — Admin",
   description:
-    "Admin hub za Google, LinkedIn, Vercel, PostHog, Sentry i SEO dashboard linkove.",
+    "Admin hub for Google, LinkedIn, Vercel, PostHog, Sentry, and SEO dashboard links.",
   robots: { index: false, follow: false },
 };
 
@@ -41,39 +41,39 @@ function dashboardUrl(envName: string): string | null {
 const dashboardLinks: DashboardLink[] = [
   {
     title: "PostHog",
-    description: "Funneli, ponašanje u konfiguratoru, upiti, checkout i AI Studio događaji.",
+    description: "Funnels, configurator behavior, inquiries, checkout, and AI Studio events.",
     envName: "POSTHOG_DASHBOARD_URL",
     href: dashboardUrl("POSTHOG_DASHBOARD_URL"),
     icon: BarChart3,
-    note: "Najbolje mesto za product analytics i konverzije.",
+    note: "Best place for product analytics and conversions.",
   },
   {
     title: "Sentry",
-    description: "Greške, performanse, stack trace i session replay kada je korisnik dao saglasnost.",
+    description: "Errors, performance, stack traces, and session replay when the user has consented.",
     envName: "SENTRY_DASHBOARD_URL",
     href: dashboardUrl("SENTRY_DASHBOARD_URL"),
     icon: ShieldAlert,
-    note: "Prvo proveriti kada korisnik prijavi problem.",
+    note: "Check this first when a user reports a problem.",
   },
   {
     title: "Vercel Web Analytics",
-    description: "Pageviews, referreri, uređaji, zemlje i javni saobraćaj bez posebnog internog dashboarda.",
+    description: "Pageviews, referrers, devices, countries, and public traffic without a separate internal dashboard.",
     envName: "VERCEL_WEB_ANALYTICS_URL",
     href: dashboardUrl("VERCEL_WEB_ANALYTICS_URL"),
     icon: LineChart,
-    note: "Brz pregled odakle dolaze posete.",
+    note: "Quick overview of where visits come from.",
   },
   {
     title: "Vercel Speed Insights",
-    description: "Core Web Vitals po ruti: LCP, INP, CLS, FCP i TTFB na realnim posetama.",
+    description: "Core Web Vitals by route: LCP, INP, CLS, FCP, and TTFB from real visits.",
     envName: "VERCEL_SPEED_INSIGHTS_URL",
     href: dashboardUrl("VERCEL_SPEED_INSIGHTS_URL"),
     icon: Gauge,
-    note: "Koristiti pre većih UX i SEO izmena.",
+    note: "Use before larger UX and SEO changes.",
   },
   {
     title: "Vercel Project",
-    description: "Deployments, runtime logs, build logs i opšte stanje produkcije.",
+    description: "Deployments, runtime logs, build logs, and overall production health.",
     envName: "VERCEL_PROJECT_DASHBOARD_URL",
     href: dashboardUrl("VERCEL_PROJECT_DASHBOARD_URL"),
     icon: Server,
@@ -81,51 +81,51 @@ const dashboardLinks: DashboardLink[] = [
   },
   {
     title: "Google Analytics 4",
-    description: "GA4 dashboard za post-live merenje organskog i kampanjskog saobraćaja.",
+    description: "GA4 dashboard for post-launch organic and campaign traffic measurement.",
     envName: "GOOGLE_ANALYTICS_DASHBOARD_URL",
     href: dashboardUrl("GOOGLE_ANALYTICS_DASHBOARD_URL"),
     icon: BarChart3,
     note:
       process.env.NEXT_PUBLIC_GA4_ENABLED === "true"
-        ? "Tag je aktivan samo posle analytics consent-a."
+        ? "The tag is active only after analytics consent."
         : process.env.NEXT_PUBLIC_GTM_ENABLED === "true"
-          ? "GA4 ide kroz GTM; direct tag je isključen."
-        : "Pripremljeno; tag je isključen do live puštanja.",
+          ? "GA4 runs through GTM; the direct tag is disabled."
+        : "Prepared; the tag is disabled until launch.",
   },
   {
     title: "Google Tag Manager",
-    description: "GTM container za tagove, dataLayer događaje i buduće marketing integracije.",
+    description: "GTM container for tags, dataLayer events, and future marketing integrations.",
     envName: "GOOGLE_TAG_MANAGER_DASHBOARD_URL",
     href: dashboardUrl("GOOGLE_TAG_MANAGER_DASHBOARD_URL"),
     icon: BarChart3,
     note:
       process.env.NEXT_PUBLIC_GTM_ENABLED === "true"
-        ? "Container je aktivan samo posle analytics consent-a."
-        : "Pripremljeno; container je isključen do live puštanja.",
+        ? "The container is active only after analytics consent."
+        : "Prepared; the container is disabled until launch.",
   },
   {
     title: "LinkedIn Campaign Manager",
-    description: "Insight Tag, LinkedIn kampanje, publike i conversion tracking status.",
+    description: "Insight Tag, LinkedIn campaigns, audiences, and conversion tracking status.",
     envName: "LINKEDIN_CAMPAIGN_MANAGER_URL",
     href: dashboardUrl("LINKEDIN_CAMPAIGN_MANAGER_URL"),
     icon: BarChart3,
-    note: "Insight Tag partner ID 9178042 se učitava samo posle marketing consent-a.",
+    note: "Insight Tag partner ID 9178042 loads only after marketing consent.",
   },
   {
     title: "Google Search Console",
-    description: "Indeksiranje, search queries, pozicije, sitemap i tehnički SEO signali.",
+    description: "Indexing, search queries, positions, sitemap, and technical SEO signals.",
     envName: "GOOGLE_SEARCH_CONSOLE_URL",
     href: dashboardUrl("GOOGLE_SEARCH_CONSOLE_URL"),
     icon: Search,
-    note: "Podesiti čim domen bude povezan.",
+    note: "Set this up as soon as the domain is connected.",
   },
   {
     title: "Bing Webmaster",
-    description: "Bing indeksiranje, sitemap i dodatni SEO signali za AI/search ekosistem.",
+    description: "Bing indexing, sitemap, and additional SEO signals for the AI/search ecosystem.",
     envName: "BING_WEBMASTER_URL",
     href: dashboardUrl("BING_WEBMASTER_URL"),
     icon: Search,
-    note: "Opcioni kanal, ali koristan za širi discovery.",
+    note: "Optional channel, but useful for broader discovery.",
   },
 ];
 
@@ -146,16 +146,16 @@ export default async function AdminAnalyticsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="font-heading text-3xl text-foreground md:text-4xl">
-            Analitika i praćenje sajta
+            Analytics and site tracking
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Jedno mesto za spoljne dashboarde: product funnel, greške,
-            performanse, SEO i deploy logove. Linkovi su admin-only i čitaju se
-            iz server env varijabli.
+            One place for external dashboards: product funnel, errors,
+            performance, SEO, and deploy logs. Links are admin-only and read from
+            server environment variables.
           </p>
         </div>
         <Badge className="w-fit bg-secondary text-foreground">
-          {configuredCount}/{dashboardLinks.length} linkova podešeno
+          {configuredCount}/{dashboardLinks.length} links configured
         </Badge>
       </div>
 
@@ -163,23 +163,23 @@ export default async function AdminAnalyticsPage() {
         <SignalCard
           icon={BarChart3}
           title="PostHog funnel"
-          body="Konfigurator, upiti, checkout, plaćanje i AI Studio događaji bez PII podataka."
+          body="Configurator, inquiries, checkout, payment, and AI Studio events without PII."
         />
         <SignalCard
           icon={ShieldAlert}
-          title="Sentry greške"
-          body="Client i server greške, tracing i replay kada postoji korisnička saglasnost."
+          title="Sentry errors"
+          body="Client and server errors, tracing, and replay when user consent exists."
         />
         <SignalCard
           icon={Activity}
-          title="Vercel metrika"
-          body="Pageviews i Core Web Vitals kao agregatni signali produkcionog iskustva."
+          title="Vercel metrics"
+          body="Pageviews and Core Web Vitals as aggregate signals of the production experience."
         />
       </div>
 
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          Dashboard linkovi
+          Dashboard links
         </h2>
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           {dashboardLinks.map((item) => (
@@ -190,25 +190,25 @@ export default async function AdminAnalyticsPage() {
 
       <section className="rounded-2xl border border-border/40 bg-card/80 p-5">
         <h2 className="text-lg font-semibold text-foreground">
-          Kako da se koristi
+          How to use it
         </h2>
         <div className="mt-4 grid gap-4 text-sm text-muted-foreground md:grid-cols-2">
           <p>
-            Za marketing odluke prvo otvoriti Vercel Web Analytics: najposećenije
-            stranice, izvori saobraćaja i zemlje posetilaca pokazuju gde treba
-            pojačati sadržaj.
+            For marketing decisions, open Vercel Web Analytics first: the most visited
+            pages, traffic sources, and visitor countries show where to
+            strengthen content.
           </p>
           <p>
-            Za konverzije otvoriti PostHog: gledati putanju od posete ka
-            konfiguratoru, brzom upitu, checkout-u i plaćanju.
+            For conversions, open PostHog: review the path from visit to
+            configurator, quick inquiry, checkout, and payment.
           </p>
           <p>
-            Za padove i prijavljene probleme prvo otvoriti Sentry, pa Vercel
-            logs ako treba proveriti server-side tok.
+            For outages and reported problems, open Sentry first, then Vercel
+            logs if the server-side flow needs checking.
           </p>
           <p>
-            Za SEO i UX prioritete koristiti Speed Insights: spore javne rute
-            direktno utiču na konverziju i organski reach.
+            For SEO and UX priorities, use Speed Insights: slow public routes
+            directly affect conversion and organic reach.
           </p>
         </div>
       </section>
@@ -217,11 +217,11 @@ export default async function AdminAnalyticsPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">
-              GA4 režim merenja
+              GA4 measurement mode
             </h2>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Google Analytics 4 je podešen kroz Google Tag Manager. Direct
-              GA4 tag ostaje isključen da se ne dupliraju pageview događaji.
+              Google Analytics 4 is configured through Google Tag Manager. The direct
+              GA4 tag stays disabled to avoid duplicate pageview events.
             </p>
           </div>
           <Badge
@@ -232,10 +232,10 @@ export default async function AdminAnalyticsPage() {
             }
           >
             {ga4Enabled
-              ? "Direct GA4 uključen"
+              ? "Direct GA4 enabled"
               : gtmEnabled
                 ? "GA4 preko GTM-a"
-                : "GA4 direct isključen"}
+                : "GA4 direct disabled"}
           </Badge>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -244,7 +244,7 @@ export default async function AdminAnalyticsPage() {
             title="Measurement ID"
             detail={
               ga4MeasurementReady
-                ? "NEXT_PUBLIC_GA4_MEASUREMENT_ID je podešen."
+                ? "NEXT_PUBLIC_GA4_MEASUREMENT_ID is set."
                 : "Dodati GA4 Web Data Stream ID, format G-XXXXXXXXXX."
             }
           />
@@ -253,22 +253,22 @@ export default async function AdminAnalyticsPage() {
             title="Dashboard link"
             detail={
               ga4DashboardReady
-                ? "GOOGLE_ANALYTICS_DASHBOARD_URL je podešen."
+                ? "GOOGLE_ANALYTICS_DASHBOARD_URL is set."
                 : "Dodati GA4 dashboard URL za brzi admin pristup."
             }
           />
           <ReadinessItem
             ready
             title="Consent gating"
-            detail="GTM container i GA4 merenje se učitavaju tek nakon analytics saglasnosti."
+            detail="GTM container and GA4 measurement load only after analytics consent."
           />
           <ReadinessItem
             ready={!ga4Enabled}
             title="Direct GA4 tag"
             detail={
               ga4Enabled
-                ? "Uključen je direct GA4 tag; proveriti da li GTM ne šalje isti pageview."
-                : "Ispravno: direct tag je isključen jer GA4 ide kroz GTM."
+                ? "Direct GA4 tag is enabled; check that GTM does not send the same pageview."
+                : "Correct: the direct tag is disabled because GA4 runs through GTM."
             }
           />
         </div>
@@ -281,8 +281,8 @@ export default async function AdminAnalyticsPage() {
               GTM priprema za live
             </h2>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Google Tag Manager je spreman u kodu. Container se učitava samo
-              kada je env prekidač uključen i posetilac prihvati analitiku.
+              Google Tag Manager is ready in code. The container loads only
+              when the env switch is enabled and the visitor accepts analytics.
             </p>
           </div>
           <Badge
@@ -292,7 +292,7 @@ export default async function AdminAnalyticsPage() {
                 : "bg-secondary text-muted-foreground"
             }
           >
-            {gtmEnabled ? "GTM uključen" : "GTM isključen do live-a"}
+            {gtmEnabled ? "GTM enabled" : "GTM disabled until launch"}
           </Badge>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
@@ -301,7 +301,7 @@ export default async function AdminAnalyticsPage() {
             title="Container ID"
             detail={
               gtmContainerReady
-                ? "NEXT_PUBLIC_GTM_CONTAINER_ID je podešen."
+                ? "NEXT_PUBLIC_GTM_CONTAINER_ID is set."
                 : "Dodati GTM Web Container ID, format GTM-XXXXXXX."
             }
           />
@@ -310,22 +310,22 @@ export default async function AdminAnalyticsPage() {
             title="Dashboard link"
             detail={
               gtmDashboardReady
-                ? "GOOGLE_TAG_MANAGER_DASHBOARD_URL je podešen."
+                ? "GOOGLE_TAG_MANAGER_DASHBOARD_URL is set."
                 : "Dodati GTM dashboard URL za brzi admin pristup."
             }
           />
           <ReadinessItem
             ready
             title="Consent gating"
-            detail="GTM container se učitava tek nakon analytics saglasnosti."
+            detail="GTM container loads only after analytics consent."
           />
           <ReadinessItem
             ready={!gtmEnabled}
-            title="Pre-live stanje"
+            title="Pre-live status"
             detail={
               gtmEnabled
-                ? "Aktivno je uključeno; proveriti da li je container spreman."
-                : "Ispravno: container je pripremljen, ali ne meri test posete."
+                ? "It is currently enabled; check that the container is ready."
+                : "Correct: the container is prepared, but it does not measure test visits."
             }
           />
         </div>
@@ -388,7 +388,7 @@ function DashboardCard({ item }: { item: DashboardLink }) {
               : "bg-secondary text-muted-foreground"
           }
         >
-          {item.href ? "Podešeno" : `Nedostaje ${item.envName}`}
+          {item.href ? "Configured" : `Nedostaje ${item.envName}`}
         </Badge>
         <span className="text-xs text-muted-foreground">{item.note}</span>
       </div>
@@ -440,7 +440,7 @@ function ReadinessItem({
               : "bg-secondary text-muted-foreground"
           }
         >
-          {ready ? "OK" : "Čeka"}
+          {ready ? "OK" : "Pending"}
         </Badge>
       </div>
     </div>

@@ -33,7 +33,7 @@ export function AdminFreeRevisionPanel({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!note.trim()) {
-      setError("Razlog je obavezan.");
+      setError("Reason is required.");
       return;
     }
     setPending(true);
@@ -58,17 +58,17 @@ export function AdminFreeRevisionPanel({
         <div>
           <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
             <Gift className="h-3.5 w-3.5 text-accent" />
-            Besplatna izmena
+            Free revision
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
             {willReopen
-              ? "Vraća porudžbinu u rad bez naplate. Klijent dobija email."
-              : "Beleži se napomena o besplatnoj izmeni. Klijent dobija email."}
+              ? "Returns the order to work without a charge. The client receives an email."
+              : "Records a note about the free change. The client receives an email."}
           </p>
         </div>
         {!open && (
           <Button variant="accent" size="sm" onClick={() => setOpen(true)}>
-            Odobri besplatno
+            Approve free revision
           </Button>
         )}
       </div>
@@ -76,11 +76,11 @@ export function AdminFreeRevisionPanel({
       {open && (
         <form onSubmit={handleSubmit} className="mt-4 space-y-3">
           <div>
-            <Label className="text-xs">Razlog (klijent vidi u emailu)</Label>
+            <Label className="text-xs">Reason (client sees this in the email)</Label>
             <Textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="npr. Odobreno na osnovu telefonskog razgovora — uskladiti boju vrata."
+              placeholder="e.g. Approved after a phone conversation - adjust the door color."
               rows={2}
               className="mt-1 resize-none"
             />
@@ -88,7 +88,7 @@ export function AdminFreeRevisionPanel({
           {error && <p className="text-xs text-destructive">{error}</p>}
           <div className="flex gap-2">
             <Button type="submit" variant="accent" size="sm" disabled={pending}>
-              {pending ? "Slanje…" : "Potvrdi besplatnu izmenu"}
+              {pending ? "Sending..." : "Confirm besplatnu izmenu"}
             </Button>
             <Button
               type="button"
@@ -100,7 +100,7 @@ export function AdminFreeRevisionPanel({
               }}
               disabled={pending}
             >
-              Otkaži
+              Cancel
             </Button>
           </div>
         </form>

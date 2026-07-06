@@ -84,11 +84,11 @@ export async function convertInquiryToOrder(
 
     const customerNote = composeCustomerNote(inquiry);
 
-    // Default buyerType to company_rs when the inquiry came in with a
-    // company name. Admin can flip this on the order detail before
-    // issuing the predračun if the company turns out to be foreign.
-    const buyerType: "individual" | "company_rs" = inquiry.company
-      ? "company_rs"
+    // Default buyerType to business when the inquiry came in with a
+    // company name. Admin can adjust details on the order detail
+    // before issuing the proforma.
+    const buyerType: "individual" | "business" = inquiry.company
+      ? "business"
       : "individual";
 
     const orderNumber = generateOrderNumber();
@@ -101,8 +101,8 @@ export async function convertInquiryToOrder(
       inquiry.quoteSnapshotJson,
       catalog,
     );
-    const seedTotalRsd = itemSeeds.reduce(
-      (sum, item) => sum + item.totalRsd,
+    const seedTotalEur = itemSeeds.reduce(
+      (sum, item) => sum + item.totalEur,
       0,
     );
 
@@ -117,8 +117,8 @@ export async function convertInquiryToOrder(
           buyerType,
           companyName: inquiry.company ?? null,
           customerNote,
-          totalRsd: seedTotalRsd,
-          totalCents: seedTotalRsd * 100,
+          totalEur: seedTotalEur,
+          totalCents: seedTotalEur * 100,
           sourceInquiryId: inquiryId,
           items: {
             create: itemSeeds.map((seed) => ({
@@ -126,8 +126,8 @@ export async function convertInquiryToOrder(
               productLabel: seed.productLabel,
               categoryId: seed.categoryId,
               categoryLabel: seed.categoryLabel,
-              basePriceRsd: seed.basePriceRsd,
-              totalRsd: seed.totalRsd,
+              basePriceEur: seed.basePriceEur,
+              totalEur: seed.totalEur,
               kind: "service" as const,
               addOnsJson: [],
             })),
@@ -180,7 +180,7 @@ export async function convertInquiryToOrder(
         userId,
         actorId: admin.id,
         itemsSeeded: itemSeeds.length,
-        seedTotalRsd,
+        seedTotalEur,
         filesForwarded: forwardResult.forwarded,
         filesSkipped: forwardResult.skipped,
         fileErrors: forwardResult.errors,

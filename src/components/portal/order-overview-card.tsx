@@ -7,7 +7,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { formatRsd } from "@/lib/catalog/calculate";
+import { formatEur } from "@/lib/catalog/calculate";
 import { formatBillingMoney, type BillingCurrency } from "@/lib/billing";
 import { statusLabel, statusAccent } from "./status-utils";
 
@@ -17,7 +17,7 @@ type OrderOverviewCardProps = {
     orderNumber: string;
     projectName: string | null;
     status: string;
-    totalRsd: number;
+    totalEur: number;
     totalCents: number | null;
     billingCurrency: BillingCurrency | null;
     billingTotalCents: number | null;
@@ -31,10 +31,10 @@ type OrderOverviewCardProps = {
 export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
   const firstItem = order.items[0];
   const accent = statusAccent(order.status);
-  const title = order.projectName ?? firstItem?.productLabel ?? "Porudžbina";
+  const title = order.projectName ?? firstItem?.productLabel ?? "Order";
   const total = order.billingCurrency && order.billingTotalCents != null
     ? formatBillingMoney(order.billingTotalCents, order.billingCurrency)
-    : formatRsd((order.totalCents ?? order.totalRsd * 100) / 100);
+    : formatEur((order.totalCents ?? order.totalEur * 100) / 100);
 
   return (
     <Link
@@ -52,7 +52,8 @@ export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
           {firstItem && (
             <p className="mt-0.5 text-xs text-muted-foreground">
               {firstItem.productLabel} · {firstItem.categoryLabel}
-              {order.items.length > 1 && ` + ${order.items.length - 1} stavk${order.items.length - 1 === 1 ? "a" : "i"}`}
+              {order.items.length > 1 &&
+                ` + ${order.items.length - 1} ${order.items.length - 1 === 1 ? "item" : "items"}`}
             </p>
           )}
         </div>
@@ -63,14 +64,14 @@ export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span>{total}</span>
           <span>
-            {order.updatedAt.toLocaleDateString("sr-Latn-RS", {
+            {order.updatedAt.toLocaleDateString("en-GB", {
               day: "numeric",
               month: "short",
             })}
           </span>
         </div>
         <span className="flex items-center gap-1 text-xs font-medium text-accent opacity-0 transition-opacity group-hover:opacity-100">
-          Otvori <ArrowRight className="h-3 w-3" />
+          Open <ArrowRight className="h-3 w-3" />
         </span>
       </div>
     </Link>

@@ -25,10 +25,10 @@ export function DeliverablesCard({ files, orderId }: DeliverablesCardProps) {
     return (
       <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
         <h3 className="text-sm font-semibold text-foreground">
-          Spremno za preuzimanje
+          Ready to download
         </h3>
         <p className="mt-3 text-center text-xs text-muted-foreground">
-          Još nema gotovih fajlova. Pojaviće se ovde kada budu spremni.
+          No final files are ready yet. They will appear here when available.
         </p>
       </div>
     );
@@ -44,7 +44,7 @@ export function DeliverablesCard({ files, orderId }: DeliverablesCardProps) {
       <div className="flex items-center gap-2">
         <Download className="h-4 w-4 text-[color:var(--color-sage-deep)]" />
         <h3 className="text-sm font-semibold text-foreground">
-          Spremno za preuzimanje
+          Ready to download
         </h3>
       </div>
 
@@ -61,7 +61,7 @@ export function DeliverablesCard({ files, orderId }: DeliverablesCardProps) {
               </p>
               <p className="text-[0.72rem] text-muted-foreground">
                 {formatSize(file.fileSize)} ·{" "}
-                {file.uploadedAt.toLocaleDateString("sr-Latn-RS", {
+                {file.uploadedAt.toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "short",
                 })}

@@ -11,109 +11,95 @@ describe("validateBuyerInfo", () => {
   it("odbija fizičko lice bez države", () => {
     expect(
       validateBuyerInfo({ buyerType: "individual", buyerCountryCode: null }),
-    ).toMatch(/Država/);
+    ).toMatch(/country/i);
   });
 
   it("normalizuje mala slova u kodu države", () => {
     expect(
-      validateBuyerInfo({ buyerType: "individual", buyerCountryCode: " rs " }),
+      validateBuyerInfo({ buyerType: "individual", buyerCountryCode: " de " }),
     ).toBeNull();
   });
 
-  describe("company_rs", () => {
+  describe("business", () => {
     const base = {
-      buyerType: "company_rs" as const,
-      companyName: "White Rook DOO",
-      companyAddress: "Bulevar 1, Beograd",
-    };
-
-    it("prihvata firmu sa validnim PIB-om (9 cifara)", () => {
-      expect(
-        validateBuyerInfo({ ...base, companyTaxId: "123456789" }),
-      ).toBeNull();
-    });
-
-    it("odbija PIB koji nema tačno 9 cifara", () => {
-      expect(validateBuyerInfo({ ...base, companyTaxId: "12345678" })).toMatch(
-        /PIB/,
-      );
-      expect(
-        validateBuyerInfo({ ...base, companyTaxId: "1234567890" }),
-      ).toMatch(/PIB/);
-      expect(validateBuyerInfo({ ...base, companyTaxId: "12345678a" })).toMatch(
-        /PIB/,
-      );
-    });
-
-    it("odbija firmu bez naziva ili adrese", () => {
-      expect(
-        validateBuyerInfo({
-          buyerType: "company_rs",
-          companyTaxId: "123456789",
-          companyAddress: "Adresa 1",
-        }),
-      ).toMatch(/Naziv firme/);
-      expect(
-        validateBuyerInfo({
-          buyerType: "company_rs",
-          companyName: "Firma",
-          companyTaxId: "123456789",
-        }),
-      ).toMatch(/Adresa/);
-    });
-
-    it("matični broj je opcion, ali ako postoji mora imati 8 cifara", () => {
-      expect(
-        validateBuyerInfo({ ...base, companyTaxId: "123456789", companyMb: "" }),
-      ).toBeNull();
-      expect(
-        validateBuyerInfo({
-          ...base,
-          companyTaxId: "123456789",
-          companyMb: "1234567",
-        }),
-      ).toMatch(/Matični broj/);
-    });
-
-    it("odbija domaću firmu sa stranom državom", () => {
-      expect(
-        validateBuyerInfo({
-          ...base,
-          buyerCountryCode: "DE",
-          companyTaxId: "123456789",
-        }),
-      ).toMatch(/Srbij/);
-    });
-  });
-
-  describe("company_foreign", () => {
-    const base = {
-      buyerType: "company_foreign" as const,
+      buyerType: "business" as const,
       companyName: "Acme GmbH",
       companyAddress: "Hauptstrasse 1, Berlin",
       buyerCountryCode: "DE",
     };
 
-    it("prihvata stranu firmu bez VAT ID-a (opcion za ne-EU)", () => {
+    it("prihvata firmu bez VAT ID-a (opcion)", () => {
       expect(validateBuyerInfo(base)).toBeNull();
     });
 
-    it("prihvata validan VAT ID", () => {
+    it("odbija firmu bez naziva ili adrese", () => {
+      expect(
+        validateBuyerInfo({
+          buyerType: "business",
+          buyerCountryCode: "DE",
+          companyAddress: "Adresa 1",
+        }),
+      ).toMatch(/Company name/);
+      expect(
+        validateBuyerInfo({
+          buyerType: "business",
+          buyerCountryCode: "DE",
+          companyName: "Firma",
+        }),
+      ).toMatch(/address/i);
+    });
+
+    it("odbija firmu bez države", () => {
+      expect(
+        validateBuyerInfo({
+          buyerType: "business",
+          companyName: "Firma",
+          companyAddress: "Adresa 1",
+        }),
+      ).toMatch(/country/i);
+    });
+
+    it("koristi companyCountryCode kao rezervu za državu", () => {
+      expect(
+        validateBuyerInfo({
+          buyerType: "business",
+          companyName: "Firma",
+          companyAddress: "Adresa 1",
+          companyCountryCode: "fr",
+        }),
+      ).toBeNull();
+    });
+
+    it("prihvata validan EU VAT ID", () => {
       expect(
         validateBuyerInfo({ ...base, companyTaxId: "DE123456789" }),
       ).toBeNull();
     });
 
-    it("odbija VAT ID pogrešnog formata", () => {
-      expect(validateBuyerInfo({ ...base, companyTaxId: "12345" })).toMatch(
+    it("odbija EU VAT ID pogrešnog formata (VIES prefiks)", () => {
+      expect(validateBuyerInfo({ ...base, companyTaxId: "DE123" })).toMatch(
         /VAT ID/,
       );
+      expect(
+        validateBuyerInfo({ ...base, companyTaxId: "FR 12-34" }),
+      ).toMatch(/VAT ID/);
     });
 
-    it("preusmerava RS firmu na tip company_rs", () => {
+    it("prihvata ne-EU poreski broj u slobodnom formatu", () => {
       expect(
-        validateBuyerInfo({ ...base, buyerCountryCode: "RS" }),
-      ).toMatch(/Firma — Srbija/);
+        validateBuyerInfo({
+          ...base,
+          buyerCountryCode: "US",
+          companyTaxId: "98-7654321",
+        }),
+      ).toBeNull();
+      expect(
+        validateBuyerInfo({
+          ...base,
+          buyerCountryCode: "CH",
+          companyTaxId: "CHE-123.456.789",
+        }),
+      ).toBeNull();
     });
   });
 });

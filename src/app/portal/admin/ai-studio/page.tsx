@@ -10,7 +10,7 @@ import { requirePermission } from "@/lib/admin-auth";
 export const metadata: Metadata = {
   title: "AI Studio generacije",
   description:
-    "Admin pregled AI Studio generacija, korisnika, statusa i potrošnje kredita.",
+    "Admin overview of AI Studio generations, users, statuses, and credit usage.",
   robots: { index: false, follow: false },
 };
 
@@ -103,7 +103,7 @@ export default async function AdminAiStudioPage() {
           AI Studio generacije
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Admin pregled svih AI obrada, promptova, engine-a, grešaka i fajlova dok
+          Admin overview of all AI generations, prompts, engines, errors, and files while
           nisu istekli.
         </p>
       </div>
@@ -113,13 +113,13 @@ export default async function AdminAiStudioPage() {
           <table className="w-full min-w-[980px] text-left text-sm">
             <thead className="border-b border-border/60 bg-secondary/50 text-xs uppercase tracking-[0.16em] text-muted-foreground">
               <tr>
-                <th className="px-4 py-3">Korisnik</th>
-                <th className="px-4 py-3">Obrada</th>
+                <th className="px-4 py-3">User</th>
+                <th className="px-4 py-3">Processing</th>
                 <th className="px-4 py-3">Engine</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Krediti</th>
+                <th className="px-4 py-3">Credits</th>
                 <th className="px-4 py-3">Prompt</th>
-                <th className="px-4 py-3">Fajlovi</th>
+                <th className="px-4 py-3">Files</th>
               </tr>
             </thead>
             <tbody>
@@ -138,7 +138,7 @@ export default async function AdminAiStudioPage() {
                 >
                   <td className="px-4 py-3">
                     <p className="font-medium text-foreground">
-                      {generation.user.name ?? "Korisnik"}
+                      {generation.user.name ?? "User"}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {generation.user.email}
@@ -200,7 +200,7 @@ export default async function AdminAiStudioPage() {
                           rel="noreferrer"
                           className="text-xs font-medium text-accent hover:underline"
                         >
-                          Rezultat
+                          Result
                         </a>
                       )}
                       {providerOutputUrl && (
@@ -263,7 +263,7 @@ export default async function AdminAiStudioPage() {
                     colSpan={7}
                     className="px-4 py-10 text-center text-muted-foreground"
                   >
-                    Još nema AI generacija.
+                    There are no AI generations yet.
                   </td>
                 </tr>
               )}
@@ -289,13 +289,13 @@ function DiagnosticThumb({ label, url }: { label: string; url: string | null }) 
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={url}
-            alt={`AI Studio dijagnostika - ${label}`}
+            alt={`AI Studio diagnostics - ${label}`}
             className="h-full w-full object-cover"
             loading="lazy"
           />
         ) : (
           <span className="px-2 text-center text-[0.62rem] text-muted-foreground">
-            Nema
+            No image
           </span>
         )}
       </div>

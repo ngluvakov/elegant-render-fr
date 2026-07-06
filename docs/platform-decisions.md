@@ -20,6 +20,18 @@ The pre-fork Serbian platform history is preserved as a brief archive in `docs/p
 - **References:** PR, commit, issue, or chat context if available.
 ```
 
+## 2026-07-06 - Homepage restored to .rs layout parity (owner override of the handoff hero)
+
+- **Area:** design | conversion
+- **What changed:** The homepage returns to the elegantrender.rs section order 1:1 — interactive QuickOrderHero with the right-side "Quick estimate" panel (service picker, pricing-model picker, live order summary, per-service before/after across the whole SERVICES catalog), search-intent columns, ResultsProof, PlatformPrinciples, ModelFirst, NextIteration and the MarketingServicesShowcase catalog — plus the IsoStrip kept from the international redesign. The four components were recovered from git (e6e10d7), translated to English and restyled to the White Rook tokens; layout/behavior byte-compatible with .rs. The handoff-only static sections (static hero, spec strip, hardcoded virtual-staging before/after, static service cards, closing CTA) were removed.
+- **Why:** The design handoff's homepage spec silently replaced the .rs layout, violating the owner's primary requirement ("same structure, new design language only") and reducing the before/after to a single hardcoded virtual-staging pair. Owner override recorded in docs/design-handoff/DEVIATIONS.md; the handoff remains binding for tokens/typography/motion/copy.
+- **Impact on conversion:** The catalog-driven hero funnel (service -> variant -> prefilled /pricing configurator) is back on the landing page.
+- **Impact on design:** Homepage layout parity with .rs is the binding rule going forward; White Rook tokens throughout.
+- **Impact on code:** src/app/(marketing)/page.tsx rebuilt; quick-order-hero/results-proof/next-iteration/marketing-services-showcase recovered + translated + restyled; iso-strip extracted to its own component.
+- **Impact on docs:** This entry; docs/design-handoff/DEVIATIONS.md added.
+- **Related files:** src/app/(marketing)/page.tsx, src/components/marketing/quick-order-hero.tsx, src/components/marketing/iso-strip.tsx
+- **References:** Recovery anchor e6e10d7 (tag s1-paypal-eur); owner decisions 2026-07-06.
+
 ## 2026-07-06 - Track C: marketing surface on the White Rook design system, fully English
 
 - **Area:** design | conversion | docs

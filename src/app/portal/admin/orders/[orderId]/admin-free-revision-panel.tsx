@@ -53,7 +53,7 @@ export function AdminFreeRevisionPanel({
     currentStatus === "delivered" || currentStatus === "revision_requested";
 
   return (
-    <div className="rounded-2xl border border-accent/20 bg-accent/5 p-5">
+    <div className="rounded-lg border border-accent/20 bg-accent/5 p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">

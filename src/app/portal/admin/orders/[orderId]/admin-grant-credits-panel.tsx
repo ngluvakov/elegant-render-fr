@@ -65,11 +65,11 @@ export function AdminGrantCreditsPanel({
   };
 
   return (
-    <div className="rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/5 p-5">
+    <div className="rounded-lg border border-border bg-secondary/50 p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
-            <Sparkles className="h-3.5 w-3.5 text-[color:var(--color-sage-deep)]" />
+            <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
             AI credits - {userName ?? userEmail}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">

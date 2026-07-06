@@ -171,7 +171,7 @@ export function StepDetails() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Identity */}
-      <div className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
+      <div className="rounded-lg border border-border/60 bg-card/80 p-6 md:p-8">
         <h2 className="text-xl font-semibold text-foreground">Your details</h2>
 
         {error && (
@@ -241,7 +241,7 @@ export function StepDetails() {
       </div>
 
       {/* Order summary */}
-      <div className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
+      <div className="rounded-lg border border-border/60 bg-card/80 p-6 md:p-8">
         <h2 className="text-xl font-semibold text-foreground">Order summary</h2>
 
         <div className="mt-5 space-y-3">
@@ -306,7 +306,7 @@ export function StepDetails() {
       </div>
 
       {/* Business invoice toggle */}
-      <div className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
+      <div className="rounded-lg border border-border/60 bg-card/80 p-6 md:p-8">
         <label className="flex cursor-pointer items-start gap-3">
           <input
             type="checkbox"

@@ -30,7 +30,7 @@ export function ReworkRequestCard({ orderId }: { orderId: string }) {
   };
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <div className="flex items-center gap-2">
         <RefreshCcw className="h-4 w-4 text-muted-foreground" />
         <h3 className="text-sm font-semibold text-foreground">

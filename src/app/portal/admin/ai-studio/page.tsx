@@ -108,10 +108,10 @@ export default async function AdminAiStudioPage() {
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border/60 bg-card/80">
+      <div className="overflow-hidden rounded-lg border border-border/60 bg-card/80">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[980px] text-left text-sm">
-            <thead className="border-b border-border/60 bg-secondary/50 text-xs uppercase tracking-[0.16em] text-muted-foreground">
+            <thead className="border-b border-border/60 bg-secondary/50 text-xs font-mono uppercase tracking-[0.08em] text-muted-foreground">
               <tr>
                 <th className="px-4 py-3">User</th>
                 <th className="px-4 py-3">Processing</th>

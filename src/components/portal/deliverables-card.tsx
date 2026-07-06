@@ -23,7 +23,7 @@ type DeliverablesCardProps = {
 export function DeliverablesCard({ files, orderId }: DeliverablesCardProps) {
   if (files.length === 0) {
     return (
-      <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+      <div className="rounded-lg border border-border/40 bg-card/60 p-5">
         <h3 className="text-sm font-semibold text-foreground">
           Ready to download
         </h3>
@@ -40,9 +40,9 @@ export function DeliverablesCard({ files, orderId }: DeliverablesCardProps) {
   };
 
   return (
-    <div className="rounded-2xl border border-[color:var(--color-sage)]/20 bg-[color:var(--color-sage)]/5 p-5">
+    <div className="rounded-lg border border-border bg-secondary/50 p-5">
       <div className="flex items-center gap-2">
-        <Download className="h-4 w-4 text-[color:var(--color-sage-deep)]" />
+        <Download className="h-4 w-4 text-muted-foreground" />
         <h3 className="text-sm font-semibold text-foreground">
           Ready to download
         </h3>
@@ -54,7 +54,7 @@ export function DeliverablesCard({ files, orderId }: DeliverablesCardProps) {
             key={file.id}
             className="flex items-center gap-3 rounded-xl bg-background/80 px-3 py-2.5"
           >
-            <FileDown className="h-4 w-4 flex-shrink-0 text-[color:var(--color-sage-deep)]" />
+            <FileDown className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-medium text-foreground">
                 {file.fileName}
@@ -69,7 +69,7 @@ export function DeliverablesCard({ files, orderId }: DeliverablesCardProps) {
             </div>
             <a
               href={`/api/portal/download?path=${encodeURIComponent(file.storagePath)}&orderId=${orderId}`}
-              className="flex h-7 w-7 items-center justify-center rounded-lg bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)] transition-colors hover:bg-[color:var(--color-sage)]/20"
+              className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/10 text-foreground transition-colors hover:bg-accent/20"
             >
               <Download className="h-3.5 w-3.5" />
             </a>

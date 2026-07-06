@@ -58,7 +58,7 @@ export function AdminDeliverableUpload({ orderId }: { orderId: string }) {
   );
 
   return (
-    <div className="rounded-2xl border border-accent/20 bg-accent/5 p-5">
+    <div className="rounded-lg border border-accent/20 bg-accent/5 p-5">
       <h3 className="text-sm font-semibold text-foreground">
         Upload deliverable
       </h3>

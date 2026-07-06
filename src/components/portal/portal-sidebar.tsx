@@ -154,10 +154,10 @@ export function PortalSidebar({
     : CLIENT_NAV;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       {/* Brand */}
       <div className="border-b border-sidebar-border px-5 py-5">
-        <BrandLogo size="sm" />
+        <BrandLogo size="sm" surface="dark" />
       </div>
 
       {/* Navigation */}
@@ -169,10 +169,10 @@ export function PortalSidebar({
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-[4px] border-l-2 px-3 py-2.5 text-sm font-medium transition-colors duration-200",
                 active
-                  ? "bg-sidebar-accent text-foreground shadow-[0_2px_8px_rgba(28,26,25,0.04)]"
-                  : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
+                  ? "border-l-sidebar-primary bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "border-l-transparent text-white/65 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
               )}
             >
               <item.icon className="h-4 w-4 flex-shrink-0" />
@@ -186,22 +186,22 @@ export function PortalSidebar({
       <div className="border-t border-sidebar-border px-3 py-4 space-y-2">
         <Link
           href="/"
-          className="flex items-center gap-3 rounded-xl px-3 py-2 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          className="flex items-center gap-3 rounded-[4px] px-3 py-2 text-xs text-white/50 transition-colors hover:text-white"
         >
           <ExternalLink className="h-3.5 w-3.5" />
           Back to site
         </Link>
 
         {/* User info + sign out */}
-        <div className="flex items-center gap-3 rounded-xl bg-sidebar-accent/40 px-3 py-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-xs font-bold text-white">
+        <div className="flex items-center gap-3 rounded-[4px] bg-sidebar-accent px-3 py-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-primary text-xs font-bold text-sidebar-primary-foreground">
             {userName?.charAt(0)?.toUpperCase() || "U"}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-xs font-medium text-foreground">
+            <p className="truncate text-xs font-medium text-sidebar-foreground">
               {userName}
             </p>
-            <p className="truncate text-[0.72rem] text-muted-foreground">
+            <p className="truncate text-[0.72rem] text-white/50">
               {userEmail}
             </p>
           </div>
@@ -209,7 +209,7 @@ export function PortalSidebar({
             <button
               type="submit"
               aria-label="Log out"
-              className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
+              className="rounded-[4px] p-1.5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
             >
               <LogOut className="h-3.5 w-3.5" />
             </button>

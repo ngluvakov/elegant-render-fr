@@ -251,7 +251,7 @@ function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
       <button
         type="button"
         onClick={handleAccept}
-        className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-accent/90"
+        className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
       >
         <ShoppingCart className="h-3.5 w-3.5" />
         {isOnCene ? "Add to configurator" : "View on the pricing page"}
@@ -293,7 +293,7 @@ export function ChatMessages({ messages }: { messages: ChatMessage[] }) {
         <div
           key={i}
           className={cn(
-            "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
+            "max-w-[85%] rounded-lg px-4 py-2.5 text-sm leading-relaxed",
             msg.role === "user"
               ? "ml-auto bg-accent/10 text-foreground"
               : "mr-auto bg-secondary/60 text-foreground/85",

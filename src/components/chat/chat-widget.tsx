@@ -266,11 +266,11 @@ export function ChatWidget() {
         type="button"
         onClick={toggleOpen}
         className={cn(
-          "fixed right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-[0_8px_30px_rgba(28,26,25,0.15)] transition-all hover:scale-105 sm:right-6 sm:h-14 sm:w-14",
+          "fixed right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full shadow-lg transition-all sm:right-6 sm:h-14 sm:w-14",
           fabBottomClass,
           open
             ? "bg-foreground text-background"
-            : "bg-accent text-white",
+            : "bg-accent text-accent-foreground",
         )}
         aria-label={open ? "Close assistant" : "Open assistant"}
       >
@@ -284,10 +284,10 @@ export function ChatWidget() {
       {showGuideBubble && (
         <div
           className={cn(
-            "fixed right-4 z-40 w-[min(19rem,calc(100vw-5.25rem))] rounded-2xl border px-3.5 py-3 pr-9 text-foreground shadow-[0_14px_42px_rgba(28,26,25,0.14)] backdrop-blur animate-in fade-in slide-in-from-bottom-2 duration-300 after:absolute after:-bottom-1.5 after:right-5 after:h-3 after:w-3 after:rotate-45 after:border-b after:border-r sm:right-6 sm:w-80 sm:px-4",
+            "fixed right-4 z-40 w-[min(19rem,calc(100vw-5.25rem))] rounded-lg border px-3.5 py-3 pr-9 text-foreground shadow-lg backdrop-blur animate-in fade-in slide-in-from-bottom-2 duration-300 after:absolute after:-bottom-1.5 after:right-5 after:h-3 after:w-3 after:rotate-45 after:border-b after:border-r sm:right-6 sm:w-80 sm:px-4",
             bubbleBottomClass,
             missingItems.length > 0
-              ? "border-[color:var(--color-ember)]/55 bg-[color:var(--color-sand-soft)]/95 after:border-[color:var(--color-ember)]/55 after:bg-[color:var(--color-sand-soft)]/95"
+              ? "border-amber-300 bg-amber-50/95 after:border-amber-300 after:bg-amber-50/95"
               : readinessWarnings.length > 0
                 ? "border-accent/45 bg-background/95 after:border-accent/45 after:bg-background/95"
                 : "border-border/50 bg-background/95 after:border-border/50 after:bg-background/95",
@@ -295,9 +295,9 @@ export function ChatWidget() {
         >
           <p
             className={cn(
-              "text-[0.68rem] font-semibold uppercase tracking-[0.14em]",
+              "text-[0.68rem] font-semibold font-mono uppercase tracking-[0.08em]",
               missingItems.length > 0
-                ? "text-[color:var(--color-ember-deep)]"
+                ? "text-amber-700"
                 : "text-accent",
             )}
           >
@@ -321,7 +321,7 @@ export function ChatWidget() {
             </ul>
           )}
           {missingItems.length === 0 && readinessWarnings.length > 0 && (
-            <div className="mt-2 space-y-1 text-[0.76rem] leading-snug text-[color:var(--color-ember-deep)] sm:text-xs">
+            <div className="mt-2 space-y-1 text-[0.76rem] leading-snug text-amber-700 sm:text-xs">
               {readinessWarnings.map((item) => (
                 <p key={item}>{item}</p>
               ))}
@@ -342,7 +342,7 @@ export function ChatWidget() {
 
       {/* Chat panel */}
       {open && (
-        <div className="fixed bottom-20 right-4 z-50 flex h-[min(520px,70vh)] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-border/60 bg-background shadow-[0_20px_60px_rgba(28,26,25,0.15)] sm:bottom-24 sm:right-6 sm:w-[min(400px,calc(100vw-3rem))]">
+        <div className="fixed bottom-20 right-4 z-50 flex h-[min(520px,70vh)] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-xl sm:bottom-24 sm:right-6 sm:w-[min(400px,calc(100vw-3rem))]">
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-border/40 bg-card/80 px-4 py-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/15">

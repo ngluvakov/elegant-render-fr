@@ -161,7 +161,7 @@ export function AiCreationsClient({ initialState }: Props) {
         </div>
         <Link
           href="/portal/ai-studio"
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground shadow-[0_14px_34px_-12px_rgba(159,106,75,0.45)] transition-colors hover:bg-accent/90"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
         >
           <Sparkles className="h-4 w-4" />
           New generation
@@ -174,7 +174,7 @@ export function AiCreationsClient({ initialState }: Props) {
         <StatPill label="Status" value={hasFilters ? "Filter" : "All"} />
       </div>
 
-      <div className="flex flex-wrap gap-3 rounded-2xl border border-border/40 bg-card/60 p-3">
+      <div className="flex flex-wrap gap-3 rounded-lg border border-border/40 bg-card/60 p-3">
         <label className="min-w-[180px] flex-1 text-xs font-semibold text-muted-foreground">
           Status
           <select
@@ -270,8 +270,8 @@ export function AiCreationsClient({ initialState }: Props) {
 
 function StatPill({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 px-4 py-3">
-      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+    <div className="rounded-lg border border-border/40 bg-card/60 px-4 py-3">
+      <p className="text-[0.68rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
         {label}
       </p>
       <p className="mt-1 font-heading text-2xl text-foreground">{value}</p>
@@ -294,7 +294,7 @@ function AiCreationCard({
   const canDelete = item.status === "completed" || item.status === "failed";
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-border/40 bg-card/60 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
+    <article className="overflow-hidden rounded-lg border border-border/40 bg-card/60">
       <div className="relative aspect-[4/3] bg-secondary/50">
         {item.resultUrl && !item.filesExpired ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -322,7 +322,7 @@ function AiCreationCard({
           className={cn(
             "absolute left-3 top-3 rounded-full px-2.5 py-1 text-xs font-semibold shadow-sm",
             item.status === "completed"
-              ? "bg-[color:var(--color-sage)]/90 text-white"
+              ? "bg-primary/90 text-primary-foreground"
               : item.status === "failed"
                 ? "bg-destructive/90 text-white"
                 : "bg-accent/90 text-accent-foreground",

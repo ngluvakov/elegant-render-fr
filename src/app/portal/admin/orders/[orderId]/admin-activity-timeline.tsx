@@ -30,7 +30,7 @@ const TONE_STYLES: Record<
 > = {
   neutral: { dot: "bg-muted-foreground/30 text-muted-foreground", icon: Circle },
   success: {
-    dot: "bg-[color:var(--color-sage)]/20 text-[color:var(--color-sage-deep)]",
+    dot: "bg-accent/15 text-foreground",
     icon: CheckCircle2,
   },
   warning: { dot: "bg-accent/15 text-accent", icon: AlertCircle },
@@ -46,7 +46,7 @@ export async function AdminActivityTimeline({
 
   if (entries.length === 0) {
     return (
-      <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+      <div className="rounded-lg border border-border/40 bg-card/60 p-5">
         <h3 className="text-sm font-semibold text-foreground">Timeline</h3>
         <p className="mt-2 text-xs text-muted-foreground">
           There are no recorded events for this order yet.
@@ -56,7 +56,7 @@ export async function AdminActivityTimeline({
   }
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <h3 className="text-sm font-semibold text-foreground">
         Timeline ({entries.length})
       </h3>

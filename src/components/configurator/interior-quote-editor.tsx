@@ -147,7 +147,7 @@ export function InteriorQuoteEditor({
           type="button"
           onClick={addFloor}
           disabled={floors.length >= MAX_FLOORS}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-white disabled:opacity-40 disabled:hover:bg-accent/15 disabled:hover:text-accent"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-accent-foreground disabled:opacity-40 disabled:hover:bg-accent/15 disabled:hover:text-accent"
         >
           <Plus className="h-3 w-3" />
           Add floor
@@ -199,7 +199,7 @@ function FloorPanel({
         <div className="text-sm font-semibold text-foreground">
           {floorLabel}
           {index > 0 && (
-            <span className="ml-2 text-[0.68rem] font-medium uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+            <span className="ml-2 text-[0.68rem] font-medium uppercase tracking-wider text-muted-foreground">
               −30%
             </span>
           )}
@@ -343,7 +343,7 @@ function FloorBreakdown({
         </div>
       ))}
       <div className="mt-1.5 flex items-baseline justify-between gap-2 border-t border-border/40 pt-2 text-xs">
-        <span className="font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        <span className="font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
           Floor total
         </span>
         <span className="text-sm font-bold text-foreground tabular-nums">
@@ -382,7 +382,7 @@ export function ItemTotal({
   if (!hasDiscount) {
     return (
       <div className="flex items-baseline justify-between gap-2 rounded-xl bg-foreground/5 px-4 py-3 text-sm">
-        <span className="font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        <span className="font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
           Total
         </span>
         <span className="text-base font-bold text-foreground tabular-nums">
@@ -400,7 +400,7 @@ export function ItemTotal({
           {formatPublicPrice(preDiscountEur, displayCurrency, pricingSettings)}
         </span>
       </div>
-      <div className="flex items-baseline justify-between gap-2 text-[color:var(--color-sage-deep)]">
+      <div className="flex items-baseline justify-between gap-2 text-muted-foreground">
         <span className="min-w-0 truncate">
           −{discount!.pct}%
           <span className="ml-1.5 text-[0.7rem] font-normal text-muted-foreground">
@@ -412,7 +412,7 @@ export function ItemTotal({
         </span>
       </div>
       <div className="flex items-baseline justify-between gap-2 border-t border-border/40 pt-2 text-sm">
-        <span className="font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        <span className="font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
           Total
         </span>
         <span className="text-base font-bold text-foreground tabular-nums">

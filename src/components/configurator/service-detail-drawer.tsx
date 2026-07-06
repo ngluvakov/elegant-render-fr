@@ -108,7 +108,7 @@ export function ServiceDetailDrawer({
 
         <div className="flex flex-col gap-5 p-6">
           <div>
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-[0.7rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
               {category.label}
             </p>
             <h2 className="mt-1 text-2xl font-semibold leading-snug text-foreground">
@@ -123,12 +123,12 @@ export function ServiceDetailDrawer({
             className={cn(
               "rounded-xl border px-4 py-4",
               discount
-                ? "border-[color:var(--color-sage)]/40 bg-[color:var(--color-sage)]/10"
+                ? "border-accent/45 bg-accent/10"
                 : "border-border/60 bg-secondary/40",
             )}
           >
             {discount && (
-              <div className="mb-2 inline-flex items-center gap-1.5 rounded bg-[color:var(--color-sage-deep)] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
+              <div className="mb-2 inline-flex items-center gap-1.5 rounded bg-accent px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-accent-foreground">
                 Discount &minus;{discount.pct}%
               </div>
             )}
@@ -184,7 +184,7 @@ export function ServiceDetailDrawer({
             )}
 
             {discount && (
-              <p className="mt-2 text-xs italic text-[color:var(--color-sage-deep)]">
+              <p className="mt-2 text-xs italic text-muted-foreground">
                 {discount.reason}
               </p>
             )}
@@ -202,14 +202,14 @@ export function ServiceDetailDrawer({
 
           {product.includes.length > 0 && (
             <div>
-              <p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="mb-2 text-[0.7rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 What is included
               </p>
               <ul className="flex flex-col gap-1.5">
                 {product.includes.map((line) => (
                   <li key={line} className="flex items-start gap-2 text-sm text-foreground">
                     <Check
-                      className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--color-sage-deep)]"
+                      className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
                       strokeWidth={2.5}
                     />
                     {line}
@@ -221,7 +221,7 @@ export function ServiceDetailDrawer({
 
           {product.addOns.length > 0 && (
             <div>
-              <p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="mb-2 text-[0.7rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 Add-ons
               </p>
               <ul className="flex flex-col gap-2">
@@ -264,7 +264,7 @@ export function ServiceDetailDrawer({
             {product.inquiryOnly ? (
               <Link
                 href={`/contact?service=${product.id}`}
-                className="inline-flex w-full items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
+                className="inline-flex w-full items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
               >
                 Send inquiry
               </Link>
@@ -272,7 +272,7 @@ export function ServiceDetailDrawer({
               <button
                 type="button"
                 onClick={handleAdd}
-                className="inline-flex w-full items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
+                className="inline-flex w-full items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
               >
                 {product.id === "int-static" || product.id === "int-360"
                   ? "Configure in cart"

@@ -303,7 +303,7 @@ export function StagingConfigSection({
               {config.roomName || "Room"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-accent">
+              <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-foreground">
                 {stagingProductLabel(productId)}
               </span>
               {editable && (
@@ -341,7 +341,7 @@ export function StagingConfigSection({
         </div>
         <div className="flex items-center gap-3">
           {savedAt && Date.now() - savedAt < 2500 && (
-            <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
+            <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
               Saved
             </span>

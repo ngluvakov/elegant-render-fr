@@ -70,27 +70,27 @@ const GROUP_VISUALS: Record<
 > = {
   "exterior-renders": {
     icon: Building2,
-    gradient: "from-[color:var(--color-sage)]/15 to-[color:var(--color-sage-deep)]/25",
+    gradient: "from-secondary to-secondary",
   },
   interior: {
     icon: Sofa,
-    gradient: "from-accent/15 to-accent/25",
+    gradient: "from-secondary to-secondary",
   },
   plans: {
     icon: Layers,
-    gradient: "from-foreground/10 to-foreground/20",
+    gradient: "from-secondary to-secondary",
   },
   animation: {
     icon: Camera,
-    gradient: "from-accent/20 to-[color:var(--color-sage-deep)]/20",
+    gradient: "from-secondary to-secondary",
   },
   "staging-renovation": {
     icon: Sparkles,
-    gradient: "from-[color:var(--color-sage)]/20 to-accent/15",
+    gradient: "from-secondary to-secondary",
   },
   "vr-experience": {
     icon: Glasses,
-    gradient: "from-foreground/15 to-[color:var(--color-sage-deep)]/20",
+    gradient: "from-secondary to-secondary",
   },
 };
 
@@ -176,7 +176,7 @@ function PreviewCard({
     <Link
       href={href}
       onClick={onClick}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)]"
+      className="group flex flex-col overflow-hidden rounded-lg border border-border/40 bg-card/80 transition-all hover:border-accent/40 hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
     >
       <div
         className={cn(

@@ -74,15 +74,15 @@ export function ProjectNameEditor({
 
   return (
     <div className="mt-1 space-y-1.5">
-      <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80">
+      <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground/80">
         Project name
       </p>
       <div
         onClick={() => inputRef.current?.focus()}
         className={cn(
           "group relative flex max-w-full cursor-text items-center gap-2 rounded-lg px-2 py-1 -mx-2 transition-colors duration-200",
-          "hover:bg-[color:var(--color-clay)]/[0.06]",
-          focused && "bg-[color:var(--color-clay)]/[0.04]",
+          "hover:bg-secondary/70",
+          focused && "bg-secondary/50",
         )}
       >
         <div className="relative min-w-0 flex-1">
@@ -113,7 +113,7 @@ export function ProjectNameEditor({
           )}
         </div>
         {savedAt && (
-          <span className="inline-flex flex-shrink-0 items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
+          <span className="inline-flex flex-shrink-0 items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
             <Check className="h-3 w-3" />
             <span className="hidden sm:inline">Saved</span>
           </span>

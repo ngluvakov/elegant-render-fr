@@ -35,7 +35,7 @@ export function OrderSummaryCard({
   pricingSettings,
 }: OrderSummaryCardProps) {
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <h3 className="text-sm font-semibold text-foreground">
         Order summary
       </h3>
@@ -61,7 +61,7 @@ export function OrderSummaryCard({
                   {item.categoryLabel}
                 </p>
                 {item.discountReason && (
-                  <p className="mt-0.5 text-[0.68rem] text-[color:var(--color-sage-deep)]">
+                  <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
                     {item.discountReason}
                   </p>
                 )}

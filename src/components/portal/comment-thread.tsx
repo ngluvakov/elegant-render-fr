@@ -70,7 +70,7 @@ export function CommentThread({
   };
 
   return (
-    <div className="scrollbar-warm max-h-[480px] space-y-3 overflow-y-auto rounded-2xl border border-border/40 bg-card/60 p-4">
+    <div className="scrollbar-warm max-h-[480px] space-y-3 overflow-y-auto rounded-lg border border-border/40 bg-card/60 p-4">
       {comments.map((comment) => {
         const isClient = comment.role === "client";
         const authorName = isClient
@@ -81,9 +81,9 @@ export function CommentThread({
           <div
             key={comment.id}
             className={cn(
-              "max-w-[85%] rounded-2xl px-4 py-3",
+              "max-w-[85%] rounded-lg px-4 py-3",
               isClient
-                ? "ml-auto bg-accent/8 text-right"
+                ? "ml-auto bg-accent/10 text-right"
                 : "mr-auto bg-secondary/60",
             )}
           >
@@ -91,7 +91,7 @@ export function CommentThread({
               <span
                 className={cn(
                   "text-[0.72rem] font-semibold uppercase tracking-wider",
-                  isClient ? "text-accent" : "text-[color:var(--color-sage-deep)]",
+                  isClient ? "text-foreground" : "text-muted-foreground",
                 )}
               >
                 {authorName}

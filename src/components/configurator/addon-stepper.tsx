@@ -72,12 +72,12 @@ export function AddOnStepper({
         <div className="flex flex-wrap items-center gap-1.5">
           <p className="text-sm font-medium text-foreground">{label}</p>
           {isWithinIncluded && quantity > 0 && (
-            <span className="rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.72rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+            <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[0.72rem] font-semibold uppercase tracking-wider text-foreground">
               Included
             </span>
           )}
           {billableQty > 0 && (
-            <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[0.72rem] font-semibold text-accent">
+            <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[0.72rem] font-semibold text-foreground">
               +{billableQty} extra
             </span>
           )}
@@ -86,14 +86,14 @@ export function AddOnStepper({
           {formatPublicPriceText(description, displayCurrency, pricingSettings)}
         </p>
         {isVolumeRate && billableQty > 0 && (
-          <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
+          <p className="mt-0.5 text-[0.68rem] font-medium text-muted-foreground">
             Volume price:{" "}
             {formatPublicPrice(priceEur, displayCurrency, pricingSettings)} per
             item
           </p>
         )}
         {upcomingDiscount && (
-          <p className="mt-0.5 text-[0.68rem] font-medium text-[color:var(--color-sage-deep)]">
+          <p className="mt-0.5 text-[0.68rem] font-medium text-muted-foreground">
             From {upcomingDiscount.afterQty + 1} onward:{" "}
             {formatPublicPrice(
               upcomingDiscount.priceEur,

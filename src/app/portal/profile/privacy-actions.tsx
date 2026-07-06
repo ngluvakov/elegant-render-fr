@@ -72,7 +72,7 @@ export function PrivacyActions({
   };
 
   return (
-    <section className="mt-12 space-y-5 rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
+    <section className="mt-12 space-y-5 rounded-lg border border-border/60 bg-card/80 p-6 md:p-8">
       <div>
         <h2 className="text-xl font-semibold text-foreground">Privacy</h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -114,9 +114,9 @@ export function PrivacyActions({
 
       {/* Deletion — pending banner OR action button */}
       {deletionRequestedAt ? (
-        <div className="rounded-xl border border-[color:var(--color-clay-deep)]/30 bg-[color:var(--color-clay)]/10 p-5">
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-5">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-[color:var(--color-clay-deep)]" />
+            <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-foreground">
                 Account deletion request is in progress

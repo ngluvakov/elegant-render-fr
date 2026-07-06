@@ -184,7 +184,7 @@ export function ConfiguratorBody({
           {/* Added items */}
           {calculation.items.length > 0 && (
             <section>
-              <h2 className="mb-4 text-[0.7rem] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+              <h2 className="mb-4 text-[0.7rem] font-bold font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 Your items ({calculation.items.length})
               </h2>
               <div className="space-y-4">
@@ -202,7 +202,7 @@ export function ConfiguratorBody({
                     .getElementById("usluge")
                     ?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
-                className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-2xl border border-dashed border-border/60 bg-transparent px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent"
+                className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/60 bg-transparent px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent"
               >
                 <Plus className="h-4 w-4" />
                 Add another service
@@ -236,7 +236,7 @@ export function ConfiguratorBody({
           {/* AI credits — secondary upsell, only after at least one service is added */}
           {calculation.items.length > 0 && (
             <section>
-              <details className="group rounded-2xl border border-border/40 bg-card/60 p-5 open:bg-card/80 [&_summary::-webkit-details-marker]:hidden">
+              <details className="group rounded-lg border border-border/40 bg-card/60 p-5 open:bg-card/80 [&_summary::-webkit-details-marker]:hidden">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
                   <span className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <Sparkles className="h-4 w-4 text-accent" />

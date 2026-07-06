@@ -106,7 +106,7 @@ export default async function AdminUsersPage({
             <Link
               key={user.id}
               href={`/portal/admin/users/${user.id}`}
-              className="block rounded-xl border border-border/30 bg-card/80 px-4 py-3 transition-all hover:border-border hover:shadow-[0_4px_16px_rgba(28,26,25,0.04)] lg:grid lg:grid-cols-[2fr_1.4fr_1fr_0.6fr_0.8fr_auto] lg:items-center lg:gap-3"
+              className="block rounded-xl border border-border/30 bg-card/80 px-4 py-3 transition-all hover:border-border hover: lg:grid lg:grid-cols-[2fr_1.4fr_1fr_0.6fr_0.8fr_auto] lg:items-center lg:gap-3"
             >
               <div className="flex items-center gap-2">
                 <p className="text-sm font-medium text-foreground">
@@ -123,7 +123,7 @@ export default async function AdminUsersPage({
                 {user.email}
               </p>
               <div className="mt-1 flex items-center gap-1 text-xs lg:mt-0">
-                <Sparkles className="h-3 w-3 text-[color:var(--color-sage-deep)]" />
+                <Sparkles className="h-3 w-3 text-muted-foreground" />
                 <span className="font-medium text-foreground">
                   {formatCreditsFromUnits(user.aiCreditBalanceUnits)}
                 </span>

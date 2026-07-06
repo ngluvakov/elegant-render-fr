@@ -30,37 +30,20 @@
 
 @theme inline {
   /* Brand palette (Brand Guidelines §03) */
-  --color-ink: #111111;            /* was --color-coal #1c1a19 */
-  --color-canvas: #ffffff;         /* was --color-ivory #f6f1ea */
-  --color-section: #fafafa;        /* was --color-sand #dccfc2 */
+  --color-ink: #111111;            /* was coal #1c1a19 */
+  --color-canvas: #ffffff;         /* was ivory #f6f1ea */
+  --color-section: #fafafa;        /* was sand #dccfc2 */
   --color-dark: #0a0a0a;           /* footer, hero protection, dark panels */
-  --color-green: #00d98a;          /* was --color-clay #b88363 */
+  --color-green: #00d98a;          /* was clay #b88363 */
   --color-green-hover: #00c77e;    /* primary CTA hover (darken one step) */
   --color-green-pressed: #00b372;  /* primary CTA press */
   --color-green-ink: #06120c;      /* text ON green — never white */
   --color-border-subtle: #e8e8e8;  /* was --color-border-soft #d8cec4 */
   --color-border-default: #d4d4d4; /* was --color-border-warm #b9b0a7 */
 
-  /* Retired: sand-soft, clay-deep, clay-light, sage, sage-deep, ember,
-     ember-deep, warm-white. Grep for usages and map to the tokens above:
-     sage → neutral greys; ember → keep amber only for warning states. */
-
-  /* TEMPORARY compat aliases (TODO Track C): ~330 component usages of the
-     retired warm palette still exist. These aliases keep every surface
-     render-sane under the international theme until the component-level
-     grep sweep replaces them. Delete this block when the sweep is done. */
-  --color-sage: #d4d4d4;
-  --color-sage-deep: #737373;
-  --color-clay: #00d98a;
-  --color-clay-deep: #00b372;
-  --color-clay-light: #00d98a;
-  --color-sand: #fafafa;
-  --color-sand-soft: #fafafa;
-  --color-coal: #0a0a0a;
-  --color-ivory: #ffffff;
-  --color-warm-white: #ffffff;
-  --color-ember: #b45309;
-  --color-ember-deep: #92400e;
+  /* Retired: the warm Serbian palette (sand, clay, sage, ember, coal, ivory,
+     warm white). Component usages were swept to the tokens above:
+     sage → neutral greys / green states; ember → Tailwind amber utilities. */
 
   /* Fonts — wired through next/font CSS variables */
   --font-sans: var(--font-sans);       /* Inter Tight */

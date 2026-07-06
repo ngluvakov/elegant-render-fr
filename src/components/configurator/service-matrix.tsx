@@ -51,7 +51,7 @@ export function ServiceMatrix({ cartSlot }: Props = {}) {
         </h2>
       </header>
 
-      <div className="mb-5 flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/[0.06] p-4 md:p-5">
+      <div className="mb-5 flex items-start gap-3 rounded-lg border border-accent/40 bg-accent/[0.06] p-4 md:p-5">
         <Percent className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
         <div>
           <p className="text-base md:text-lg font-medium leading-snug text-foreground">

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 const CATEGORY_STYLES: Record<string, string> = {
   complaint: "bg-destructive/10 text-destructive",
   missing_feature: "bg-accent/10 text-accent",
-  request: "bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]",
+  request: "bg-accent/10 text-foreground",
   confusion: "bg-secondary text-muted-foreground",
 };
 
@@ -50,7 +50,7 @@ export default async function AdminChatFeedbackPage() {
           (category) => (
             <div
               key={category}
-              className="rounded-2xl border border-border/40 bg-card/80 p-4"
+              className="rounded-lg border border-border/40 bg-card/80 p-4"
             >
               <p className="text-2xl font-bold text-foreground">
                 {counts[category] ?? 0}
@@ -67,7 +67,7 @@ export default async function AdminChatFeedbackPage() {
         {feedback.map((item) => (
           <article
             key={item.id}
-            className="rounded-2xl border border-border/40 bg-card/80 p-4"
+            className="rounded-lg border border-border/40 bg-card/80 p-4"
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="flex min-w-0 items-start gap-3">
@@ -123,7 +123,7 @@ export default async function AdminChatFeedbackPage() {
         ))}
 
         {feedback.length === 0 && (
-          <div className="rounded-2xl border border-border/40 bg-card/80 px-6 py-10 text-center text-sm text-muted-foreground">
+          <div className="rounded-lg border border-border/40 bg-card/80 px-6 py-10 text-center text-sm text-muted-foreground">
             There are no recorded complaints or requests from AI chat yet.
           </div>
         )}

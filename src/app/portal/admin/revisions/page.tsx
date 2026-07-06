@@ -98,7 +98,7 @@ export default async function AdminAuditLogPage({
           </p>
         ) : (
           <table className="min-w-full text-sm">
-            <thead className="text-left text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground">
+            <thead className="text-left text-[0.72rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
               <tr className="border-b border-border/60">
                 <th className="px-2 py-3">Time</th>
                 <th className="px-2 py-3">Actor</th>

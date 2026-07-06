@@ -178,7 +178,7 @@ export default async function AdminAnalyticsPage() {
       </div>
 
       <section>
-        <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+        <h2 className="text-sm font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
           Dashboard links
         </h2>
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
@@ -188,7 +188,7 @@ export default async function AdminAnalyticsPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-border/40 bg-card/80 p-5">
+      <section className="rounded-lg border border-border/40 bg-card/80 p-5">
         <h2 className="text-lg font-semibold text-foreground">
           How to use it
         </h2>
@@ -213,7 +213,7 @@ export default async function AdminAnalyticsPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-border/40 bg-card/80 p-5">
+      <section className="rounded-lg border border-border/40 bg-card/80 p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">
@@ -227,7 +227,7 @@ export default async function AdminAnalyticsPage() {
           <Badge
             className={
               ga4Enabled
-                ? "bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]"
+                ? "bg-accent/10 text-foreground"
                 : "bg-secondary text-muted-foreground"
             }
           >
@@ -274,7 +274,7 @@ export default async function AdminAnalyticsPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-border/40 bg-card/80 p-5">
+      <section className="rounded-lg border border-border/40 bg-card/80 p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">
@@ -288,7 +288,7 @@ export default async function AdminAnalyticsPage() {
           <Badge
             className={
               gtmEnabled
-                ? "bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]"
+                ? "bg-accent/10 text-foreground"
                 : "bg-secondary text-muted-foreground"
             }
           >
@@ -344,7 +344,7 @@ function SignalCard({
   body: string;
 }) {
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/80 p-4">
+    <div className="rounded-lg border border-border/40 bg-card/80 p-4">
       <div className="flex items-start gap-3">
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
           <Icon className="h-5 w-5" />
@@ -384,7 +384,7 @@ function DashboardCard({ item }: { item: DashboardLink }) {
         <Badge
           className={
             item.href
-              ? "bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]"
+              ? "bg-accent/10 text-foreground"
               : "bg-secondary text-muted-foreground"
           }
         >
@@ -397,7 +397,7 @@ function DashboardCard({ item }: { item: DashboardLink }) {
 
   if (!item.href) {
     return (
-      <div className="rounded-2xl border border-dashed border-border/60 bg-card/50 p-5 opacity-80">
+      <div className="rounded-lg border border-dashed border-border/60 bg-card/50 p-5 opacity-80">
         {content}
       </div>
     );
@@ -408,7 +408,7 @@ function DashboardCard({ item }: { item: DashboardLink }) {
       href={item.href}
       target="_blank"
       rel="noreferrer"
-      className="block rounded-2xl border border-border/40 bg-card/80 p-5 transition-all hover:border-border hover:shadow-[0_8px_24px_rgba(28,26,25,0.06)]"
+      className="block rounded-lg border border-border/40 bg-card/80 p-5 transition-all hover:border-border hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
     >
       {content}
     </a>
@@ -436,7 +436,7 @@ function ReadinessItem({
         <Badge
           className={
             ready
-              ? "bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]"
+              ? "bg-accent/10 text-foreground"
               : "bg-secondary text-muted-foreground"
           }
         >

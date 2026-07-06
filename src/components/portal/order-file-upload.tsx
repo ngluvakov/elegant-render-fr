@@ -140,7 +140,7 @@ export function OrderFileUpload({
   };
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/80 p-6 text-left">
+    <div className="rounded-lg border border-border/60 bg-card/80 p-6 text-left">
       <h3 className="text-base font-semibold text-foreground">{title}</h3>
       <p className="mt-1.5 text-sm text-muted-foreground">{description}</p>
 
@@ -247,9 +247,9 @@ export function OrderFileUpload({
           {uploadedFiles.map((f) => (
             <div
               key={f.storagePath}
-              className="flex items-center gap-3 rounded-lg border border-[color:var(--color-sage)]/20 bg-[color:var(--color-sage)]/5 px-4 py-2.5"
+              className="flex items-center gap-3 rounded-lg border border-border bg-secondary/50 px-4 py-2.5"
             >
-              <FileUp className="h-4 w-4 flex-shrink-0 text-[color:var(--color-sage-deep)]" />
+              <FileUp className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm text-foreground">{f.fileName}</p>
               </div>

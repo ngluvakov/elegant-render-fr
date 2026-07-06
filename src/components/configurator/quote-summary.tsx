@@ -136,7 +136,7 @@ export function QuoteSummary() {
   };
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-foreground/10 bg-foreground text-background shadow-[0_30px_80px_rgba(28,26,25,0.22)]">
+    <div className="overflow-hidden rounded-lg border border-foreground/10 bg-foreground text-background">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-background/10 px-5 py-4">
         <div className="flex items-center gap-2">
@@ -145,7 +145,7 @@ export function QuoteSummary() {
             Your estimate
           </h3>
           {hasItems && (
-            <span className="rounded-full bg-accent px-2 py-0.5 text-[0.72rem] font-bold text-white">
+            <span className="rounded-full bg-accent px-2 py-0.5 text-[0.72rem] font-bold text-accent-foreground">
               {calculation.items.length}
             </span>
           )}
@@ -245,11 +245,11 @@ export function QuoteSummary() {
                   <Info
                     className={cn(
                       "h-3 w-3 transition-colors",
-                      explainerOpen && "text-[color:var(--color-sage)]",
+                      explainerOpen && "text-accent",
                     )}
                   />
                 </button>
-                <p className="font-semibold text-[color:var(--color-sage)]">
+                <p className="font-semibold text-accent">
                   -
                   {formatPublicPrice(
                     calculation.originalTotal - calculation.total,
@@ -268,14 +268,14 @@ export function QuoteSummary() {
                   <ul className="mt-2 space-y-1">
                     <li>
                       • Exterior + 360° exterior → 360° is{" "}
-                      <strong className="text-[color:var(--color-sage)]">
+                      <strong className="text-accent">
                         −40%
                       </strong>{" "}
                       (the exterior is already built in the model)
                     </li>
                     <li>
                       • Interior + 3D floor plan → the floor plan is{" "}
-                      <strong className="text-[color:var(--color-sage)]">
+                      <strong className="text-accent">
                         −70%
                       </strong>{" "}
                       (the space is already modelled)

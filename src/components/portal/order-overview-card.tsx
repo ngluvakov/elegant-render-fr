@@ -39,7 +39,7 @@ export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
   return (
     <Link
       href={`/portal/orders/${order.id}`}
-      className="group block rounded-2xl border border-border/40 bg-card/80 p-5 transition-all hover:border-border hover:shadow-[0_14px_40px_rgba(28,26,25,0.05)]"
+      className="group block rounded-lg border border-border/40 bg-card/80 p-5 transition-all hover:border-border hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">

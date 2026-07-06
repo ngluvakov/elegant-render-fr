@@ -21,7 +21,7 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
   const guidance = statusGuidance(currentStatus);
 
   return (
-    <div className="mt-6 rounded-2xl border border-border/40 bg-card/60 p-5">
+    <div className="mt-6 rounded-lg border border-border bg-card p-5">
       {/* Desktop: horizontal */}
       <div className="hidden items-center sm:flex">
         {STATUS_STEPS.map((step, i) => {
@@ -35,8 +35,8 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
                 <div
                   className={cn(
                     "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-colors",
-                    isCompleted && "bg-[color:var(--color-sage)] text-white",
-                    isActive && "bg-accent text-white shadow-[0_4px_12px_rgba(184,131,99,0.3)]",
+                    isCompleted && "bg-accent text-accent-foreground",
+                    isActive && "bg-primary text-primary-foreground",
                     isFuture && "bg-secondary text-muted-foreground/40",
                   )}
                 >
@@ -45,7 +45,7 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
                 <span
                   className={cn(
                     "text-[0.72rem] font-medium",
-                    isCompleted && "text-[color:var(--color-sage-deep)]",
+                    isCompleted && "text-muted-foreground",
                     isActive && "text-foreground",
                     isFuture && "text-muted-foreground/40",
                   )}
@@ -57,9 +57,7 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
                 <div
                   className={cn(
                     "mx-2 h-px flex-1",
-                    i < activeIndex
-                      ? "bg-[color:var(--color-sage)]/40"
-                      : "bg-border/40",
+                    i < activeIndex ? "bg-accent/50" : "bg-border/40",
                   )}
                 />
               )}
@@ -80,8 +78,8 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
               <div
                 className={cn(
                   "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-[0.72rem] font-semibold",
-                  isCompleted && "bg-[color:var(--color-sage)] text-white",
-                  isActive && "bg-accent text-white",
+                  isCompleted && "bg-accent text-accent-foreground",
+                  isActive && "bg-primary text-primary-foreground",
                   isFuture && "bg-secondary text-muted-foreground/40",
                 )}
               >
@@ -106,11 +104,10 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
       {guidance.description && (
         <div
           className={cn(
-            "mt-5 flex items-start gap-3 rounded-xl border px-4 py-3",
+            "mt-5 flex items-start gap-3 rounded-lg border px-4 py-3",
             guidance.tone === "action" &&
               "border-accent/30 bg-accent/[0.06]",
-            guidance.tone === "info" &&
-              "border-[color:var(--color-sage)]/25 bg-[color:var(--color-sage)]/[0.06]",
+            guidance.tone === "info" && "border-border bg-secondary/60",
             guidance.tone === "alert" &&
               "border-destructive/25 bg-destructive/[0.05]",
           )}
@@ -118,9 +115,8 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
           <div
             className={cn(
               "mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full",
-              guidance.tone === "action" && "bg-accent text-white",
-              guidance.tone === "info" &&
-                "bg-[color:var(--color-sage-deep)] text-white",
+              guidance.tone === "action" && "bg-accent text-accent-foreground",
+              guidance.tone === "info" && "bg-muted-foreground text-background",
               guidance.tone === "alert" && "bg-destructive text-white",
             )}
           >
@@ -136,9 +132,8 @@ export function StatusTracker({ currentStatus }: StatusTrackerProps) {
             <p
               className={cn(
                 "text-[0.78rem] font-semibold",
-                guidance.tone === "action" && "text-accent",
-                guidance.tone === "info" &&
-                  "text-[color:var(--color-sage-deep)]",
+                guidance.tone === "action" && "text-foreground",
+                guidance.tone === "info" && "text-foreground",
                 guidance.tone === "alert" && "text-destructive",
               )}
             >

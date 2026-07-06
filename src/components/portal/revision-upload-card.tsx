@@ -77,7 +77,7 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
   };
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <h3 className="text-sm font-semibold text-foreground">
         Send revisions / additional materials
       </h3>

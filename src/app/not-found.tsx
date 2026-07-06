@@ -15,20 +15,20 @@ export default function NotFound() {
     <main className="relative grid flex-1 grid-cols-[minmax(0,1fr)] place-items-center overflow-hidden px-6 pt-14 pb-72 sm:py-32">
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border-warm to-transparent"
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"
       />
       <div
         aria-hidden
-        className="absolute left-1/2 top-12 h-48 w-[min(38rem,85vw)] -translate-x-1/2 border border-border-soft/70 bg-warm-white/45 shadow-[0_32px_90px_-55px_rgba(28,26,25,0.55)] sm:top-16 sm:h-72"
+        className="absolute left-1/2 top-12 h-48 w-[min(38rem,85vw)] -translate-x-1/2 border border-border bg-secondary/50 sm:top-16 sm:h-72"
       />
       <div
         aria-hidden
-        className="absolute left-1/2 top-20 h-44 w-[min(32rem,76vw)] -translate-x-1/2 border border-border-warm/70 sm:top-28 sm:h-72"
+        className="absolute left-1/2 top-20 h-44 w-[min(32rem,76vw)] -translate-x-1/2 border border-border sm:top-28 sm:h-72"
       />
 
       <section className="relative mx-auto flex w-full min-w-0 max-w-3xl flex-col items-center text-center">
         <SectionKicker align="center">404</SectionKicker>
-        <p className="mt-8 font-heading text-[clamp(5rem,18vw,10rem)] leading-none text-coal/10">
+        <p className="mt-8 font-heading text-[clamp(5rem,18vw,10rem)] leading-none text-foreground/10">
           404
         </p>
         <h1 className="mt-[-1rem] max-w-[18rem] text-3xl leading-tight text-foreground sm:mt-[-1.4rem] sm:max-w-2xl sm:text-6xl">

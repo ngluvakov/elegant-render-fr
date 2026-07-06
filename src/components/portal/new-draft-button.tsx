@@ -30,7 +30,7 @@ export function NewDraftButton() {
       type="button"
       onClick={handleClick}
       disabled={pending}
-      className="group inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground shadow-[0_14px_34px_-12px_rgba(159,106,75,0.45)] transition-all hover:bg-accent/90 hover:shadow-[0_18px_40px_-10px_rgba(159,106,75,0.55)] disabled:opacity-70"
+      className="group inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground transition-all hover:bg-[var(--color-green-hover)] disabled:opacity-70"
     >
       {pending ? (
         <Loader2 className="h-4 w-4 animate-spin" />

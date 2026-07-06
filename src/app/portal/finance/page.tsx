@@ -230,7 +230,7 @@ export default async function FinancePage() {
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border/60 bg-card/40 p-12 text-center">
+        <div className="rounded-lg border border-dashed border-border/60 bg-card/40 p-12 text-center">
           <ReceiptText className="mx-auto h-8 w-8 text-muted-foreground/60" />
           <p className="mt-3 text-sm font-medium text-foreground">
             There are no financial transactions yet.
@@ -305,11 +305,11 @@ export default async function FinancePage() {
             {rows.map((row) => (
               <div
                 key={row.orderId}
-                className="relative rounded-2xl border border-border/40 bg-card/80 p-4"
+                className="relative rounded-lg border border-border/40 bg-card/80 p-4"
               >
                 <Link
                   href={`/portal/orders/${row.orderId}`}
-                  className="absolute inset-0 rounded-2xl"
+                  className="absolute inset-0 rounded-lg"
                   aria-label={`Open ${row.orderNumber}`}
                 />
                 <div className="relative pointer-events-none flex items-start justify-between gap-3">
@@ -368,13 +368,13 @@ function StatCard({
 }) {
   const toneClass =
     tone === "sage"
-      ? "bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]"
+      ? "bg-accent/10 text-foreground"
       : tone === "accent"
         ? "bg-accent/10 text-accent"
         : "bg-secondary/70 text-muted-foreground";
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/80 p-4">
+    <div className="rounded-lg border border-border/40 bg-card/80 p-4">
       <div className="flex items-center gap-3">
         <div
           className={`flex h-10 w-10 items-center justify-center rounded-xl ${toneClass}`}
@@ -402,7 +402,7 @@ function statusLabel(status: RowStatus): string {
 
 function statusAccent(status: RowStatus): string {
   if (status === "completed") {
-    return "bg-[color:var(--color-sage)]/20 text-[color:var(--color-sage-deep)]";
+    return "bg-accent/15 text-foreground";
   }
   if (status === "failed" || status === "refunded") {
     return "bg-destructive/10 text-destructive";

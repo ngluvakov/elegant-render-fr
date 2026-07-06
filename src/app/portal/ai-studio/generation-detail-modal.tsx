@@ -204,10 +204,10 @@ export function GenerationDetailModal({
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-border/40 bg-card/95 shadow-[0_24px_60px_rgba(28,26,25,0.18)] backdrop-blur">
+      <div className="relative max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-lg border border-border/40 bg-card/95 shadow-xl backdrop-blur">
         <div className="sticky top-0 z-10 flex items-start justify-between gap-3 border-b border-border/40 bg-card/95 px-6 py-4 backdrop-blur">
           <div className="min-w-0">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            <p className="text-[0.68rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
               {STATUS_LABEL[generation.status]} · {providerLabel}
             </p>
             <h2 className="mt-1 truncate font-heading text-xl text-foreground md:text-2xl">
@@ -270,7 +270,7 @@ export function GenerationDetailModal({
             />
           </div>
 
-          <div className="rounded-2xl border border-border/40 bg-card/60 p-4">
+          <div className="rounded-lg border border-border/40 bg-card/60 p-4">
             <h3 className="text-sm font-semibold text-foreground">Settings</h3>
             <dl className="mt-3 grid gap-3 text-xs sm:grid-cols-2">
               <SettingRow label="Edit type" value={editDef.label} />
@@ -278,7 +278,7 @@ export function GenerationDetailModal({
                 label="Billing"
                 value={
                   generation.unitsCharged === 0 ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.7rem] font-semibold text-[color:var(--color-sage-deep)]">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[0.7rem] font-semibold text-foreground">
                       Free attempt #{generation.freeAttemptIndex ?? 1}
                     </span>
                   ) : generation.freeAttemptIndex !== null ? (
@@ -345,7 +345,7 @@ export function GenerationDetailModal({
                   generation.status !== "completed" ? (
                     <span className="text-muted-foreground">—</span>
                   ) : freeRetriesRemaining > 0 ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.7rem] font-semibold text-[color:var(--color-sage-deep)]">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[0.7rem] font-semibold text-foreground">
                       Available ({freeRetriesRemaining}/{AI_FREE_REGENERATIONS}) · same type
                     </span>
                   ) : (
@@ -356,7 +356,7 @@ export function GenerationDetailModal({
             </dl>
             {generation.prompt && (
               <div className="mt-3 rounded-xl border border-border/30 bg-background/60 p-3">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <p className="text-[0.62rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
                   Prompt
                 </p>
                 <p className="mt-1 text-sm leading-relaxed text-foreground/85">
@@ -423,10 +423,10 @@ function ImagePane({
   fileExpired: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-3">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-[0.62rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             {title}
           </p>
           {fileName && (
@@ -479,10 +479,10 @@ function ReferenceImagesPane({
   fileExpired: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-3">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-3">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-[0.62rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             Furniture/decor / angles
           </p>
           <p className="mt-0.5 text-[0.68rem] text-foreground/70">
@@ -557,7 +557,7 @@ function SettingRow({
 }) {
   return (
     <div>
-      <dt className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+      <dt className="text-[0.62rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
         {label}
       </dt>
       <dd className="mt-0.5 text-sm text-foreground/90">{value}</dd>

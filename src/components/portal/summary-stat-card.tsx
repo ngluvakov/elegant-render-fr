@@ -22,13 +22,13 @@ export function SummaryStatCard({
   accent = "default",
 }: SummaryStatCardProps) {
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/80 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
+    <div className="rounded-lg border border-border bg-card p-5">
       <div className="flex items-center gap-3">
         <div
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-xl",
+            "flex h-10 w-10 items-center justify-center rounded-[4px]",
             accent === "clay" && "bg-accent/10 text-accent",
-            accent === "sage" && "bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]",
+            accent === "sage" && "bg-secondary text-foreground",
             accent === "default" && "bg-secondary/60 text-muted-foreground",
           )}
         >

@@ -54,8 +54,8 @@ export function PendingPaymentCard({
 
   if (state === "completed") {
     return (
-      <div className="rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/5 p-6 text-center">
-        <Check className="mx-auto h-6 w-6 text-[color:var(--color-sage-deep)]" />
+      <div className="rounded-lg border border-border bg-secondary/50 p-6 text-center">
+        <Check className="mx-auto h-6 w-6 text-muted-foreground" />
         <p className="mt-2 text-sm font-semibold text-foreground">
           Payment received
         </p>
@@ -68,7 +68,7 @@ export function PendingPaymentCard({
 
   if (state === "processing") {
     return (
-      <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 text-center">
+      <div className="rounded-lg border border-accent/30 bg-accent/5 p-6 text-center">
         <Clock className="mx-auto h-6 w-6 text-accent" />
         <p className="mt-2 text-sm font-semibold text-foreground">
           Your payment is processing
@@ -82,7 +82,7 @@ export function PendingPaymentCard({
   }
 
   return (
-    <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6">
+    <div className="rounded-lg border border-accent/30 bg-accent/5 p-6">
       <div className="flex items-center gap-2">
         <AlertCircle className="h-4 w-4 text-accent" />
         <h3 className="text-sm font-semibold text-foreground">

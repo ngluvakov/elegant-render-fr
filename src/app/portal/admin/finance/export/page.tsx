@@ -114,7 +114,7 @@ export default async function InvoiceExportPage({
       <form
         action="/portal/admin/finance/export"
         method="get"
-        className="mt-6 flex flex-wrap items-end gap-3 rounded-2xl border border-border/40 bg-card/80 p-5"
+        className="mt-6 flex flex-wrap items-end gap-3 rounded-lg border border-border/40 bg-card/80 p-5"
       >
         <label className="flex flex-col gap-1.5">
           <span className="text-[0.78rem] font-medium text-foreground">From</span>
@@ -175,7 +175,7 @@ export default async function InvoiceExportPage({
               Preview of the top 20 rows. The downloaded CSV contains everything.
             </p>
             <table className="min-w-full text-sm">
-              <thead className="text-left text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground">
+              <thead className="text-left text-[0.72rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 <tr className="border-b border-border/60">
                   <th className="px-2 py-3">Invoice number</th>
                   <th className="px-2 py-3">Date</th>
@@ -235,7 +235,7 @@ export default async function InvoiceExportPage({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-border/40 bg-card/60 p-4">
-      <p className="text-[0.7rem] uppercase tracking-[0.16em] text-muted-foreground">
+      <p className="text-[0.7rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
         {label}
       </p>
       <p className="mt-1 text-base font-semibold text-foreground tabular-nums">

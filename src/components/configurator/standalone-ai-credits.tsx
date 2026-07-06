@@ -130,10 +130,10 @@ function PackageCard({
       onClick={onSelect}
       aria-pressed={isActive}
       className={cn(
-        "group relative flex flex-col rounded-2xl border bg-card/80 p-5 text-left transition-all",
-        "hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)]",
+        "group relative flex flex-col rounded-lg border bg-card/80 p-5 text-left transition-all",
+        "hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]",
         isActive
-          ? "border-accent bg-accent/5 shadow-[0_18px_44px_rgba(184,131,99,0.12)]"
+          ? "border-accent bg-accent/5"
           : "border-border/40 hover:border-accent/40",
       )}
     >
@@ -151,7 +151,7 @@ function PackageCard({
             pricingSettings,
           )}
         </div>
-        <div className="text-[0.7rem] uppercase tracking-[0.16em] text-muted-foreground">
+        <div className="text-[0.7rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
           {formatPublicPriceFromCents(
             purchase.centsPerCredit,
             displayCurrency,
@@ -164,8 +164,8 @@ function PackageCard({
         className={cn(
           "mt-5 inline-flex items-center gap-1.5 self-start rounded-full px-3 py-1 text-[0.72rem] font-semibold transition-colors",
           isActive
-            ? "bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]"
-            : "bg-accent/12 text-accent group-hover:bg-accent group-hover:text-white",
+            ? "bg-accent/15 text-foreground"
+            : "bg-accent/12 text-accent group-hover:bg-accent group-hover:text-accent-foreground",
         )}
       >
         {isActive ? (
@@ -219,10 +219,10 @@ function CustomAmountRow({
   const isCommitted = isCustomActive && existingCredits === draft;
 
   return (
-    <div className="mt-4 rounded-2xl border border-border/40 bg-card/60 p-4 md:p-5">
+    <div className="mt-4 rounded-lg border border-border/40 bg-card/60 p-4 md:p-5">
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
         <div>
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             Or enter an exact number of credits
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -269,7 +269,7 @@ function CustomAmountRow({
                 pricingSettings,
               )}
             </div>
-            <div className="text-[0.65rem] uppercase tracking-[0.14em] text-muted-foreground">
+            <div className="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
               {formatPublicPriceFromCents(
                 purchase.centsPerCredit,
                 displayCurrency,
@@ -286,8 +286,8 @@ function CustomAmountRow({
             className={cn(
               "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-colors",
               isCommitted
-                ? "bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]"
-                : "bg-accent text-white hover:bg-accent/90",
+                ? "bg-accent/15 text-foreground"
+                : "bg-accent text-accent-foreground hover:bg-[var(--color-green-hover)]",
             )}
           >
             {isCommitted ? (

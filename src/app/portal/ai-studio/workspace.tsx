@@ -1192,7 +1192,7 @@ export function AiStudioWorkspace({
 
   if ("error" in initialState) {
     return (
-      <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-6 text-sm text-destructive">
+      <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-6 text-sm text-destructive">
         {initialState.error}
       </div>
     );
@@ -1367,7 +1367,7 @@ function StudioControls({
   const edit = getAiEditType(editType);
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <div className="grid gap-5 lg:grid-cols-3">
         <div>
           <ControlLabel>Processing</ControlLabel>
@@ -1403,7 +1403,7 @@ function StudioControls({
                       className={cn(
                         "rounded-lg px-3 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-45",
                         mode === item
-                          ? "bg-accent text-accent-foreground shadow-[0_8px_24px_-12px_rgba(184,131,99,0.45)]"
+                          ? "bg-accent text-accent-foreground"
                           : "text-muted-foreground hover:text-foreground",
                       )}
                     >
@@ -1486,7 +1486,7 @@ function StudioControls({
                       className={cn(
                         "overflow-hidden rounded-xl border text-left text-xs transition-all",
                         styleId === item.id
-                          ? "border-accent bg-accent/5 shadow-[0_8px_24px_-12px_rgba(184,131,99,0.35)]"
+                          ? "border-accent bg-accent/5"
                           : "border-border/40 bg-card/40 hover:border-accent/40",
                       )}
                     >
@@ -1827,7 +1827,7 @@ function AiImageEditor({
     : { aspectRatio: "4 / 3", maxWidth: "100%" };
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-5 shadow-[0_4px_16px_rgba(28,26,25,0.03)]">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-heading text-lg text-foreground">Working image</h2>
@@ -1891,7 +1891,7 @@ function AiImageEditor({
                 className={cn(
                   "rounded-md px-3 py-2 text-xs font-semibold transition-colors sm:text-sm",
                   objectMode === modeId
-                    ? "bg-accent text-accent-foreground shadow-[0_8px_24px_-12px_rgba(184,131,99,0.45)]"
+                    ? "bg-accent text-accent-foreground"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -2038,7 +2038,7 @@ function AiImageEditor({
       >
         <div
           className={cn(
-            "rounded-2xl border border-border/30 bg-muted/30 p-3 transition-colors",
+            "rounded-lg border border-border/30 bg-muted/30 p-3 transition-colors",
             baseDragOver && "border-accent/60 bg-accent/5",
           )}
           onDragOver={(event) => {
@@ -2050,7 +2050,7 @@ function AiImageEditor({
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              <p className="text-xs font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 Image to edit
               </p>
               {baseInput?.fileName && (
@@ -2061,7 +2061,7 @@ function AiImageEditor({
             </div>
             <div className="flex items-center gap-2">
               {baseInput?.generationId && parentGenerationId && (
-                <span className="rounded-full bg-[color:var(--color-sage)]/15 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+                <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-foreground">
                   From previous
                 </span>
               )}
@@ -2113,7 +2113,7 @@ function AiImageEditor({
               />
               {mode === "advanced" && tool === "rect" && rectPreview && (
                 <span
-                  className="pointer-events-none absolute rounded-sm border border-dashed border-white/95 bg-accent/20 shadow-[0_0_0_1px_rgba(184,80,70,0.85),0_0_18px_rgba(184,80,70,0.2)]"
+                  className="pointer-events-none absolute rounded-sm border border-dashed border-white/95 bg-accent/20 shadow-[0_0_0_1px_rgba(0,217,138,0.85),0_0_18px_rgba(0,217,138,0.2)]"
                   style={{
                     left: rectPreview.left,
                     top: rectPreview.top,
@@ -2125,7 +2125,7 @@ function AiImageEditor({
               )}
               {mode === "advanced" && tool === "brush" && brushPreview && (
                 <span
-                  className="pointer-events-none absolute rounded-full border border-white/90 bg-accent/10 shadow-[0_0_0_1px_rgba(184,80,70,0.75),0_0_18px_rgba(184,80,70,0.25)]"
+                  className="pointer-events-none absolute rounded-full border border-white/90 bg-accent/10 shadow-[0_0_0_1px_rgba(0,217,138,0.75),0_0_18px_rgba(0,217,138,0.25)]"
                   style={{
                     left: brushPreview.x,
                     top: brushPreview.y,
@@ -2143,7 +2143,7 @@ function AiImageEditor({
               onClick={() => fileRef.current?.click()}
               className="group flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-xl border border-border/40 bg-card/40 text-center transition-colors hover:border-accent/50 hover:bg-card/60"
             >
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/15 text-foreground">
                 <ImageIcon className="h-5 w-5" />
               </span>
               <span className="px-6">
@@ -2154,7 +2154,7 @@ function AiImageEditor({
                   Drag a file here or choose a JPG, PNG, or WebP up to 50 MB.
                 </span>
               </span>
-              <span className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground shadow-[0_14px_34px_-12px_rgba(159,106,75,0.45)] transition-transform group-hover:translate-y-[-1px]">
+              <span className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground">
                 <Upload className="h-3.5 w-3.5" />
                 Choose file
               </span>
@@ -2176,13 +2176,13 @@ function AiImageEditor({
 
         <div
           className={cn(
-            "rounded-2xl border border-border/30 bg-muted/30 p-3",
+            "rounded-lg border border-border/30 bg-muted/30 p-3",
             needsReferenceImage && "xl:col-span-2",
           )}
         >
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              <p className="text-xs font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 Result
               </p>
               {currentResult?.fileName && resultUrl && !processingLabel && (
@@ -2327,7 +2327,7 @@ function AiImageEditor({
             readiness.tone === "blocked"
               ? "text-destructive"
               : readiness.tone === "warning"
-                ? "text-[color:var(--color-ember-deep)]"
+                ? "text-amber-700"
                 : "text-muted-foreground",
           )}
         >
@@ -2350,7 +2350,7 @@ function ProcessingResultPreview({
       className="relative mx-auto flex max-h-[620px] min-h-[220px] w-full overflow-hidden rounded-xl border border-accent/30 bg-card/50 text-center"
       style={style}
     >
-      <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_0%,rgba(184,131,99,0.16)_38%,transparent_76%)] animate-[ai-result-scan_2.2s_ease-in-out_infinite]" />
+      <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_0%,rgba(17,17,17,0.05)_38%,transparent_76%)] animate-[ai-result-scan_2.2s_ease-in-out_infinite]" />
       <div className="absolute inset-x-6 top-1/2 h-px bg-gradient-to-r from-transparent via-accent/45 to-transparent" />
       <div className="relative z-10 m-auto flex flex-col items-center gap-3 px-6">
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
@@ -2404,7 +2404,7 @@ function ReferenceImagesPanel({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border/30 bg-muted/30 p-3 transition-colors",
+        "rounded-lg border border-border/30 bg-muted/30 p-3 transition-colors",
         dragOver && "border-accent/60 bg-accent/5",
       )}
       onDragOver={(event) => {
@@ -2417,7 +2417,7 @@ function ReferenceImagesPanel({
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="text-xs font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             Furniture/decor / angles
           </p>
           <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
@@ -2548,7 +2548,7 @@ function ToolButton({
       type="button"
       onClick={onClick}
       className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition ${
-        active ? "bg-accent text-white" : "bg-background text-muted-foreground"
+        active ? "bg-accent text-accent-foreground" : "bg-background text-muted-foreground"
       }`}
     >
       <Icon className="h-3.5 w-3.5" />
@@ -2581,7 +2581,7 @@ function HistoryPanel({
   }, [firstId]);
 
   return (
-    <aside className="rounded-2xl border border-border/40 bg-card/60 p-4 shadow-[0_4px_16px_rgba(28,26,25,0.03)] xl:sticky xl:top-8 xl:flex xl:h-[calc(100vh-7rem)] xl:min-h-[calc(100vh-7rem)] xl:flex-col">
+    <aside className="rounded-lg border border-border/40 bg-card/60 p-4 xl:sticky xl:top-8 xl:flex xl:h-[calc(100vh-7rem)] xl:min-h-[calc(100vh-7rem)] xl:flex-col">
       <div className="mb-4" data-ai-history-dropzone>
         <h2 className="font-heading text-lg text-foreground">History</h2>
         <p className="mt-1 text-xs text-muted-foreground">
@@ -2725,7 +2725,7 @@ function HistoryPanel({
 
 function ControlLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+    <p className="text-[0.68rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
       {children}
     </p>
   );
@@ -2751,7 +2751,7 @@ function SelectableTile({
       className={cn(
         "flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-colors",
         active
-          ? "border-accent bg-accent/10 text-foreground shadow-[0_8px_24px_-12px_rgba(184,131,99,0.35)]"
+          ? "border-accent bg-accent/10 text-foreground"
           : "border-border/40 bg-card/40 text-muted-foreground hover:border-accent/40 hover:text-foreground",
       )}
     >
@@ -2793,17 +2793,15 @@ function BalanceCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border px-4 py-3 text-right shadow-[0_4px_16px_rgba(28,26,25,0.03)]",
-        lowBalance
-          ? "border-accent/30 bg-accent/5"
-          : "border-[color:var(--color-sage)]/25 bg-[color:var(--color-sage)]/5",
+        "rounded-lg border px-4 py-3 text-right",
+        lowBalance ? "border-amber-300 bg-amber-50" : "border-border bg-secondary/50",
       )}
     >
       <div className="flex items-center justify-end gap-2 text-sm font-semibold text-foreground">
         <Coins
           className={cn(
             "h-4 w-4",
-            lowBalance ? "text-accent" : "text-[color:var(--color-sage-deep)]",
+            lowBalance ? "text-amber-700" : "text-muted-foreground",
           )}
         />
         {formatCreditsFromUnits(balanceUnits)}
@@ -2817,9 +2815,7 @@ function BalanceCard({
         href="/portal/ai-studio/credits"
         className={cn(
           "mt-2 inline-flex text-xs font-semibold hover:underline",
-          lowBalance
-            ? "text-accent"
-            : "text-[color:var(--color-sage-deep)]",
+          lowBalance ? "text-amber-700" : "text-muted-foreground",
         )}
       >
         Top up credits
@@ -2867,7 +2863,7 @@ function CostPreviewLabel({
   }
   if (preview.unitsCharged === 0) {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-3 py-1 text-xs font-semibold text-[color:var(--color-sage-deep)]">
+      <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-foreground">
         Free attempt #{preview.freeAttemptIndex} od {AI_FREE_REGENERATIONS}
       </span>
     );
@@ -2921,8 +2917,8 @@ function RetryStatusBanner({
 
   if (isFree) {
     return (
-      <div className="flex items-start gap-3 rounded-xl border border-[color:var(--color-sage)]/35 bg-[color:var(--color-sage)]/10 px-4 py-3 text-sm">
-        <span className="mt-0.5 inline-flex h-5 items-center rounded-full bg-[color:var(--color-sage)]/20 px-2 text-[0.62rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+      <div className="flex items-start gap-3 rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm">
+        <span className="mt-0.5 inline-flex h-5 items-center rounded-full bg-accent/15 px-2 text-[0.62rem] font-semibold uppercase tracking-wider text-foreground">
           Free
         </span>
         <div className="flex-1 text-foreground/85">

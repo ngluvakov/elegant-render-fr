@@ -26,10 +26,10 @@ export function MobileQuoteBar() {
     : 0;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/10 bg-foreground text-background shadow-[0_-4px_20px_rgba(28,26,25,0.18)] xl:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-foreground/10 bg-foreground text-background shadow-[0_-4px_20px_rgba(0,0,0,0.25)] xl:hidden">
       <div className="mx-auto flex w-full max-w-[min(96vw,1720px)] items-center justify-between gap-3 px-5 py-3">
         <div className="min-w-0 flex-1">
-          <div className="text-[0.65rem] uppercase tracking-[0.18em] text-background/50">
+          <div className="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-background/50">
             Estimated price · {calculation.items.length}{" "}
             {calculation.items.length === 1 ? "item" : "items"}
           </div>
@@ -50,7 +50,7 @@ export function MobileQuoteBar() {
                     pricingSettings,
                   )}
                 </span>
-                <span className="rounded-md bg-[color:var(--color-sage)]/20 px-1.5 py-0.5 text-[0.68rem] font-semibold text-[color:var(--color-sage)]">
+                <span className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[0.68rem] font-semibold text-accent">
                   −{savingsPct}%
                 </span>
               </>
@@ -59,7 +59,7 @@ export function MobileQuoteBar() {
         </div>
         <a
           href="#quote-summary"
-          className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-accent/90"
+          className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
         >
           View estimate
           <ArrowDown className="h-3 w-3" />

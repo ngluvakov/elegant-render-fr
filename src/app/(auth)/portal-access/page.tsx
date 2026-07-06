@@ -57,7 +57,7 @@ export default async function PortalAccessPage({
         <noscript>
           <button
             type="submit"
-            className="rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-white"
+            className="rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground"
           >
             Access portal
           </button>

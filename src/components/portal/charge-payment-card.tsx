@@ -48,8 +48,8 @@ export function ChargePaymentCard({
 
   if (state === "completed") {
     return (
-      <div className="rounded-xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/5 p-4 text-center">
-        <Check className="mx-auto h-6 w-6 text-[color:var(--color-sage-deep)]" />
+      <div className="rounded-xl border border-border bg-secondary/50 p-4 text-center">
+        <Check className="mx-auto h-6 w-6 text-muted-foreground" />
         <p className="mt-2 text-xs font-semibold text-foreground">
           Payment received
         </p>

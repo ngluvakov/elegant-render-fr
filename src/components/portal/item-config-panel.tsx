@@ -211,10 +211,8 @@ export function ItemConfigPanel({
   return (
     <div
       className={cn(
-        "rounded-2xl border bg-card/80 transition-all hover:shadow-[0_4px_16px_rgba(28,26,25,0.03)]",
-        isConfigured
-          ? "border-border/40"
-          : "border-[color:var(--color-ember)]/60 bg-gradient-to-br from-[color:var(--color-ember)]/[0.08] to-[color:var(--color-ember)]/[0.02] shadow-[0_4px_16px_-8px_rgba(200,154,60,0.25)]",
+        "rounded-lg border bg-card transition-[border-color,box-shadow] hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]",
+        isConfigured ? "border-border" : "border-amber-300 bg-amber-50",
       )}
     >
       {/* Header — always visible */}
@@ -222,7 +220,7 @@ export function ItemConfigPanel({
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl p-5 text-left transition-colors hover:bg-foreground/[0.015]"
+          className="flex min-w-0 flex-1 items-center gap-3 rounded-lg p-5 text-left transition-colors hover:bg-foreground/[0.015]"
         >
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -230,15 +228,14 @@ export function ItemConfigPanel({
                 {item.productLabel}
               </h3>
               {isConfigured ? (
-                <span className="inline-flex items-center gap-1 rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
-                  <span className="h-1 w-1 rounded-full bg-[color:var(--color-sage-deep)]" />
+                <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold text-foreground">
+                  <span className="h-1 w-1 rounded-full bg-accent" />
                   Configured
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 rounded bg-[color:var(--color-ember)]/20 px-2 py-0.5 text-[0.72rem] font-bold uppercase tracking-wider text-[color:var(--color-ember-deep)]">
+                <span className="inline-flex items-center gap-1.5 rounded bg-amber-100 px-2 py-0.5 text-[0.72rem] font-bold uppercase tracking-wider text-amber-700">
                   <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--color-ember)]/70" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--color-ember-deep)]" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-600" />
                   </span>
                   Details needed
                 </span>
@@ -267,7 +264,7 @@ export function ItemConfigPanel({
               })()}
             </p>
             {item.discountReason && (
-              <p className="mt-0.5 text-[0.68rem] text-[color:var(--color-sage-deep)]">
+              <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
                 {item.discountReason}
               </p>
             )}

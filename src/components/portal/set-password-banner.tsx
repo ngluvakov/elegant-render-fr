@@ -9,7 +9,7 @@ import { KeyRound } from "lucide-react";
 
 export function SetPasswordBanner() {
   return (
-    <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mb-6 flex flex-col gap-3 rounded-lg border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex items-start gap-3">
         <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/15">
           <KeyRound className="h-4 w-4 text-accent" />
@@ -26,7 +26,7 @@ export function SetPasswordBanner() {
       </div>
       <Link
         href="/portal/profile#password"
-        className="inline-flex shrink-0 items-center justify-center rounded-lg border border-accent/40 bg-background px-4 py-2 text-sm font-semibold text-accent transition hover:bg-accent/10"
+        className="inline-flex shrink-0 items-center justify-center rounded-lg border border-accent/40 bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-accent/10"
       >
         Set password
       </Link>

@@ -75,7 +75,7 @@ export function ServiceMatrixSidebar({ activeCat }: { activeCat: string }) {
       {/* Desktop: sticky vertical list */}
       <aside className="hidden lg:block">
         <div className="sticky top-24">
-          <p className="mb-3 px-2 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="mb-3 px-2 text-[0.65rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             Kategorije
           </p>
           <ul ref={desktopRef} className="flex flex-col gap-0.5">

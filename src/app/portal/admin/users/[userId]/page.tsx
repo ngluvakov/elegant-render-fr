@@ -160,7 +160,7 @@ export default async function AdminUserDetailPage({
       {canManageAdminAccess && (
         <form
           action={saveUserAdminAccess}
-          className="rounded-2xl border border-border/40 bg-card/60 p-5"
+          className="rounded-lg border border-border/40 bg-card/60 p-5"
         >
           <input type="hidden" name="userId" value={user.id} />
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -206,7 +206,7 @@ export default async function AdminUserDetailPage({
               </div>
               <button
                 type="submit"
-                className="w-fit rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-accent/90"
+                className="w-fit rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
               >
                 Save access
               </button>
@@ -216,7 +216,7 @@ export default async function AdminUserDetailPage({
       )}
 
       {canViewUsage && (
-        <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+        <div className="rounded-lg border border-border/40 bg-card/60 p-5">
           <h3 className="text-sm font-semibold text-foreground">
             Activity in the last 30 days
           </h3>
@@ -285,7 +285,7 @@ export default async function AdminUserDetailPage({
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+        <div className="rounded-lg border border-border/40 bg-card/60 p-5">
           <h3 className="text-sm font-semibold text-foreground">
             AI credit history ({user.aiCreditTransactions.length})
           </h3>
@@ -313,7 +313,7 @@ export default async function AdminUserDetailPage({
                       <p
                         className={`text-xs font-semibold ${
                           tx.units > 0
-                            ? "text-[color:var(--color-sage-deep)]"
+                            ? "text-muted-foreground"
                             : "text-muted-foreground"
                         }`}
                       >
@@ -343,7 +343,7 @@ export default async function AdminUserDetailPage({
           )}
         </div>
 
-        <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+        <div className="rounded-lg border border-border/40 bg-card/60 p-5">
           <h3 className="text-sm font-semibold text-foreground">
             Orders ({user.orders.length})
           </h3>

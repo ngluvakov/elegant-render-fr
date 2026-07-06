@@ -79,7 +79,7 @@ function statusLabel(status: ChargeView["status"]): string {
 
 function statusAccent(status: ChargeView["status"]): string {
   if (status === "pending") return "bg-accent/15 text-accent";
-  if (status === "paid") return "bg-[color:var(--color-sage)]/20 text-[color:var(--color-sage-deep)]";
+  if (status === "paid") return "bg-accent/15 text-foreground";
   return "bg-muted text-muted-foreground";
 }
 
@@ -187,7 +187,7 @@ export function AdminChargesPanel({
   };
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">

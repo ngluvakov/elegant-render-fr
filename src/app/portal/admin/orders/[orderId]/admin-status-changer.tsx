@@ -44,7 +44,7 @@ export function AdminStatusChanger({
   };
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-4">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-4">
       <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
         Promeni status
       </p>

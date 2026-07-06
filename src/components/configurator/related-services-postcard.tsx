@@ -68,8 +68,8 @@ export function RelatedServicesPostcard({ productId }: Props) {
       className={cn(
         "relative mt-3 rounded-xl border p-4 transition-colors",
         hasAnyDiscount
-          ? "border-[color:var(--color-sage)]/45 bg-[color:var(--color-sage)]/15"
-          : "border-[color:var(--color-sage)]/25 bg-[color:var(--color-sage)]/8",
+          ? "border-accent/45 bg-accent/15"
+          : "border-border bg-secondary/50",
       )}
     >
       {/* Dismiss */}
@@ -84,11 +84,11 @@ export function RelatedServicesPostcard({ productId }: Props) {
 
       {/* Header — SectionKicker-style + optional discount pill */}
       <div className="mb-3 flex items-center gap-2 pr-6">
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[color:var(--color-sage-deep)]">
+        <p className="text-[0.7rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
           With this package
         </p>
         {hasAnyDiscount && (
-          <span className="inline-flex items-center rounded bg-[color:var(--color-sage-deep)]/15 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-[color:var(--color-sage-deep)]">
+          <span className="inline-flex items-center rounded bg-accent/15 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-foreground">
             Discounted
           </span>
         )}
@@ -117,7 +117,7 @@ export function RelatedServicesPostcard({ productId }: Props) {
 
               {discount && discounted !== null ? (
                 <>
-                  <span className="inline-flex items-center rounded border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/20 px-1.5 py-0.5 text-[0.65rem] font-bold tracking-wide text-[color:var(--color-sage-deep)]">
+                  <span className="inline-flex items-center rounded border border-border bg-accent/15 px-1.5 py-0.5 text-[0.65rem] font-bold tracking-wide text-foreground">
                     &minus;{discount.pct}%
                   </span>
                   <span className="text-xs text-muted-foreground/60 line-through">

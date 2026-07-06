@@ -163,7 +163,7 @@ export default async function ProjectInquiriesPage({
                 key={inquiry.id}
                 className={`rounded-xl border bg-card/80 p-5 ${
                   isHighlighted
-                    ? "border-accent shadow-[0_16px_45px_rgba(184,131,99,0.12)]"
+                    ? "border-accent"
                     : "border-border/40"
                 }`}
               >
@@ -309,8 +309,8 @@ export default async function ProjectInquiriesPage({
                 )}
 
                 {inquiry.convertedOrders.length > 0 && (
-                  <div className="mt-4 rounded-md border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/8 px-3 py-2">
-                    <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+                  <div className="mt-4 rounded-md border border-border bg-secondary/50 px-3 py-2">
+                    <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
                       Converted to order
                     </p>
                     <a
@@ -327,7 +327,7 @@ export default async function ProjectInquiriesPage({
 
                 <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border/30 pt-3 text-xs">
                   {inquiry.bitrixLeadId ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-md bg-[color:var(--color-sage)]/10 px-2.5 py-1 text-[color:var(--color-sage-deep)]">
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-accent/10 px-2.5 py-1 text-foreground">
                       <CheckCircle2 className="h-3.5 w-3.5" />
                       Bitrix Lead #{inquiry.bitrixLeadId}
                     </span>

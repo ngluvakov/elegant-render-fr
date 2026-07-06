@@ -244,7 +244,7 @@ function FloorPanel({
         "rounded-xl border bg-card/80 transition-all",
         floorIsConfigured
           ? "border-border/40"
-          : "border-[color:var(--color-ember)]/50",
+          : "border-amber-300",
       )}
     >
       {/* Floor header */}
@@ -261,7 +261,7 @@ function FloorPanel({
                 {floor.name}
               </h5>
               {!calc.isFirstFloor && (
-                <span className="inline-flex items-center gap-1 rounded bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
+                <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold text-foreground">
                   −30%
                 </span>
               )}
@@ -342,7 +342,7 @@ function FloorPanel({
           </div>
 
           {/* Advanced toggle — switch stays at top; body renders at bottom. */}
-          <p className="flex items-center gap-1.5 text-[0.7rem] text-[color:var(--color-sage-deep)]">
+          <p className="flex items-center gap-1.5 text-[0.7rem] text-muted-foreground">
             <Check className="h-3 w-3" />
             This floor is ready to order. Fine-tuning is below.
           </p>
@@ -369,7 +369,7 @@ function FloorPanel({
           </label>
 
           {/* Rooms & cameras */}
-          <div className="space-y-3 rounded-xl border border-accent/20 bg-gradient-to-br from-accent/[0.02] to-transparent p-3">
+          <div className="space-y-3 rounded-xl border border-accent/20 bg-accent/[0.03] p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h6 className="text-xs font-semibold text-foreground">
@@ -382,7 +382,7 @@ function FloorPanel({
               <button
                 type="button"
                 onClick={() => setStyleGuideOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-[0.72rem] font-semibold text-accent transition-all hover:border-accent hover:bg-accent/15 hover:-translate-y-px"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-[0.72rem] font-semibold text-foreground transition-all hover:border-accent hover:bg-accent/15"
               >
                 <Palette className="h-3.5 w-3.5" />
                 Style guide
@@ -520,7 +520,7 @@ function FloorPanel({
                           </select>
                         )}
                         {isBeyondRooms && (
-                          <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.62rem] font-semibold text-accent">
+                          <span className="hidden sm:inline-flex rounded bg-accent/15 px-1 py-0.5 text-[0.62rem] font-semibold text-foreground">
                             +{formatPrice(INT_STATIC_EXTRA_ROOM_EUR)}
                           </span>
                         )}
@@ -579,7 +579,7 @@ function FloorPanel({
               <button
                 type="button"
                 onClick={addRoom}
-                className="inline-flex items-center gap-1.5 self-start rounded-lg border border-accent/50 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-accent transition-all hover:-translate-y-px hover:border-accent hover:bg-accent/15 hover:shadow-[0_4px_12px_-4px_rgba(184,131,99,0.3)]"
+                className="inline-flex items-center gap-1.5 self-start rounded-lg border border-accent/50 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-accent hover:bg-accent/15 hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add room
@@ -861,7 +861,7 @@ export function StyleGuideModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-card shadow-[0_24px_64px_-16px_rgba(28,26,25,0.25)] animate-in fade-in zoom-in-95 duration-200"
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg bg-card shadow-xl animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3 border-b border-border/40 p-5">
@@ -889,7 +889,7 @@ export function StyleGuideModal({
           {ROOM_STYLES.map((style) => (
             <div
               key={style.id}
-              className="overflow-hidden rounded-xl border border-border/40 bg-background/60 transition-all hover:border-accent/40 hover:shadow-[0_8px_24px_-12px_rgba(28,26,25,0.12)]"
+              className="overflow-hidden rounded-xl border border-border/40 bg-background/60 transition-all hover:border-accent/40 hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <Image
@@ -913,7 +913,7 @@ export function StyleGuideModal({
                   <button
                     type="button"
                     onClick={() => onApplyToAll(style.id)}
-                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-[0.72rem] font-semibold text-accent transition-all hover:border-accent hover:bg-accent/15"
+                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-[0.72rem] font-semibold text-foreground transition-all hover:border-accent hover:bg-accent/15"
                   >
                     <Check className="h-3 w-3" />
                     Apply to all rooms
@@ -962,7 +962,7 @@ export function CounterPill({
       <p
         className={cn(
           "mt-0.5 text-sm font-bold tabular-nums",
-          variant === "good" && "text-[color:var(--color-sage-deep)]",
+          variant === "good" && "text-muted-foreground",
           variant === "warn" && "text-accent",
           variant === "bad" && "text-destructive",
           !variant && "text-foreground",
@@ -1074,7 +1074,7 @@ export function InteriorConfigSection({
         </div>
         <div className="flex items-center gap-3">
           {savedAt && (
-            <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
+            <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
               Saved
             </span>
@@ -1095,7 +1095,7 @@ export function InteriorConfigSection({
         className="group flex w-full items-center justify-between gap-3 rounded-xl border border-accent/30 bg-accent/[0.05] px-4 py-3 text-left transition-all hover:border-accent/60 hover:bg-accent/[0.08]"
       >
         <div className="flex items-center gap-3">
-          <span className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent transition-transform group-hover:scale-105">
+          <span className="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent transition-transform">
             <Palette className="h-4 w-4" />
           </span>
           <div>
@@ -1161,7 +1161,7 @@ export function InteriorConfigSection({
             </div>
           </div>
           {floors.length > 0 && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/15 px-2 py-1 text-[0.72rem] font-bold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-1 text-[0.72rem] font-bold uppercase tracking-wider text-foreground">
               −30% · {formatPrice(INT_STATIC_EXTRA_FLOOR_EUR)}
             </span>
           )}

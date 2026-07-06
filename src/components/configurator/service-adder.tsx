@@ -113,8 +113,8 @@ export function ServiceAdder() {
               className={cn(
                 "rounded-lg border px-3 py-2 text-left text-xs font-medium transition-all md:text-sm",
                 isActive
-                  ? "border-accent bg-accent/10 text-foreground shadow-[0_8px_20px_rgba(184,131,99,0.12)]"
-                  : "border-border bg-background/60 text-muted-foreground hover:border-[color:var(--color-border-warm)] hover:bg-background hover:text-foreground",
+                  ? "border-accent bg-accent/10 text-foreground"
+                  : "border-border bg-background/60 text-muted-foreground hover:border-input hover:bg-background hover:text-foreground",
               )}
             >
               {group.label}
@@ -165,7 +165,7 @@ function CategoryProducts({
   return (
     <div className="space-y-3">
       {showHeader && (
-        <h3 className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-muted-foreground">
+        <h3 className="text-[0.7rem] font-bold font-mono uppercase tracking-[0.08em] text-muted-foreground">
           {category.label}
         </h3>
       )}
@@ -207,7 +207,7 @@ function ProductCard({
   onAdd: () => void;
 }) {
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/80 p-5 transition-shadow hover:shadow-[0_14px_40px_rgba(28,26,25,0.05)]">
+    <div className="rounded-lg border border-border/60 bg-card/80 p-5 transition-shadow hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <h3 className="text-base font-semibold text-foreground">
@@ -225,7 +225,7 @@ function ProductCard({
               {product.includes.map((inc) => (
                 <span
                   key={inc}
-                  className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage)]/12 px-2 py-0.5 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)]"
+                  className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[0.72rem] font-medium text-foreground"
                 >
                   <Check className="h-3 w-3" />
                   {formatPublicPriceText(inc, displayCurrency, pricingSettings)}
@@ -256,7 +256,7 @@ function ProductCard({
           {product.inquiryOnly ? (
             <Link
               href={`/services/vr/consultation?p=${product.id}`}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-4 py-2 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-white"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-4 py-2 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-accent-foreground"
             >
               <Headphones className="h-3 w-3" /> Request consultation
               <ArrowRight className="h-3 w-3" />
@@ -268,8 +268,8 @@ function ProductCard({
               className={cn(
                 "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all",
                 isAdded
-                  ? "bg-[color:var(--color-sage)] text-white"
-                  : "bg-accent/15 text-accent hover:bg-accent hover:text-white",
+                  ? "bg-accent text-accent-foreground"
+                  : "bg-accent/15 text-foreground hover:bg-accent hover:text-accent-foreground",
               )}
             >
               {isAdded ? (
@@ -337,7 +337,7 @@ function AnimationCard({
     15;
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/80 p-5 transition-shadow hover:shadow-[0_14px_40px_rgba(28,26,25,0.05)]">
+    <div className="rounded-lg border border-border/60 bg-card/80 p-5 transition-shadow hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
@@ -406,8 +406,8 @@ function AnimationCard({
           className={cn(
             "inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-semibold transition-all",
             isAdded
-              ? "bg-[color:var(--color-sage)] text-white"
-              : "bg-accent/15 text-accent hover:bg-accent hover:text-white",
+              ? "bg-accent text-accent-foreground"
+              : "bg-accent/15 text-foreground hover:bg-accent hover:text-accent-foreground",
           )}
         >
           {isAdded ? (

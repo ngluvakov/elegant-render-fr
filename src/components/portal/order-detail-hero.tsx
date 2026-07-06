@@ -112,7 +112,7 @@ export function OrderDetailHero({
                   )}
             </p>
             {savingsEur > 0 && (
-              <p className="text-xs font-semibold text-[color:var(--color-sage-deep)]">
+              <p className="text-xs font-semibold text-muted-foreground">
                 −{formatPublicPrice(savingsEur, displayCurrency, pricingSettings)}{" "}
                 saved
               </p>

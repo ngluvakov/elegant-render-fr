@@ -54,7 +54,7 @@ const STATUS_META: Record<
   },
   succeeded: {
     label: "Successful",
-    tone: "bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]",
+    tone: "bg-accent/15 text-foreground",
     icon: CheckCircle2,
   },
   failed: {
@@ -127,7 +127,7 @@ export default async function AdminOutboxPage({
               <a
                 key={s}
                 href={`/portal/admin/outbox?status=${s}`}
-                className={`flex items-center justify-between rounded-2xl border border-border/40 bg-card/60 p-5 transition hover:border-foreground/30 ${
+                className={`flex items-center justify-between rounded-lg border border-border/40 bg-card/60 p-5 transition hover:border-foreground/30 ${
                   filter === s ? "border-foreground/50" : ""
                 }`}
               >
@@ -179,7 +179,7 @@ export default async function AdminOutboxPage({
           </p>
         ) : (
           <table className="min-w-full text-sm">
-            <thead className="text-left text-[0.72rem] uppercase tracking-[0.16em] text-muted-foreground">
+            <thead className="text-left text-[0.72rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
               <tr className="border-b border-border/60">
                 <th className="px-2 py-3">Time</th>
                 <th className="px-2 py-3">Type</th>

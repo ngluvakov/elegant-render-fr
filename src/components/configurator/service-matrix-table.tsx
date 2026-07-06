@@ -65,7 +65,7 @@ export function ServiceMatrixTable({
               <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-foreground">
                 {cat.label}
               </h3>
-              <span className="text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground">
+              <span className="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 {cat.sectionLabel}
               </span>
             </header>
@@ -141,7 +141,7 @@ export function ServiceMatrixTable({
           <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-accent">
             {activeCategory.label}
           </h3>
-          <span className="text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground">
+          <span className="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
             {activeCategory.sectionLabel}
           </span>
         </header>
@@ -164,10 +164,10 @@ export function ServiceMatrixTable({
       {cheaper.length > 0 && (
         <section>
           <header className="mb-2 flex items-baseline justify-between px-1">
-            <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[color:var(--color-sage-deep)]">
+            <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               Better value with {activeCategory.label.toLowerCase()}
             </h3>
-            <span className="text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground">
+            <span className="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
               Hover &rarr; discount preview
             </span>
           </header>
@@ -194,7 +194,7 @@ export function ServiceMatrixTable({
             <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               Other services
             </h3>
-            <span className="text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground/70">
+            <span className="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-muted-foreground/70">
               From other categories
             </span>
           </header>

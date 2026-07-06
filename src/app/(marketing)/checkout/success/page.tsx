@@ -75,7 +75,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
     <main className="mx-auto max-w-3xl space-y-8 px-4 py-12">
       {purchaseEvent && <DataLayerEvent event={purchaseEvent} />}
       {completed ? (
-        <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 md:p-8">
+        <div className="rounded-lg border border-accent/30 bg-accent/5 p-6 md:p-8">
           <p className="text-xs font-semibold uppercase tracking-wider text-accent">
             Payment received
           </p>
@@ -88,7 +88,7 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
           </p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-border/60 bg-card/60 p-6 md:p-8">
+        <div className="rounded-lg border border-border/60 bg-card/60 p-6 md:p-8">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Payment processing
           </p>

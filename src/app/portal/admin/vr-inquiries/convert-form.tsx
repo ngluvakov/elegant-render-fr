@@ -36,7 +36,7 @@ export function VrInquiryConvertForm({
     return (
       <Link
         href={`/portal/admin/orders/${convertedOrderId}`}
-        className="inline-flex items-center gap-1.5 rounded-md bg-[color:var(--color-sage)]/15 px-3 py-1.5 text-xs font-medium text-[color:var(--color-sage-deep)] hover:bg-[color:var(--color-sage)]/25"
+        className="inline-flex items-center gap-1.5 rounded-md bg-accent/15 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent/25"
       >
         <Check className="h-3 w-3" />
         Open order {convertedOrderNumber ?? ""}
@@ -50,7 +50,7 @@ export function VrInquiryConvertForm({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent/90"
+        className="rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-accent-foreground hover:bg-[var(--color-green-hover)]"
       >
         Convert to order →
       </button>

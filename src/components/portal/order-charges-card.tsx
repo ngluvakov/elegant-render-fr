@@ -42,7 +42,7 @@ function statusLabel(status: ChargeView["status"]): string {
 function statusAccent(status: ChargeView["status"]): string {
   if (status === "pending") return "bg-accent/15 text-accent";
   if (status === "paid")
-    return "bg-[color:var(--color-sage)]/20 text-[color:var(--color-sage-deep)]";
+    return "bg-accent/15 text-foreground";
   return "bg-muted text-muted-foreground";
 }
 
@@ -53,7 +53,7 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
   const history = charges.filter((c) => c.status !== "pending");
 
   return (
-    <section className="rounded-2xl border border-accent/20 bg-accent/[0.04] p-5">
+    <section className="rounded-lg border border-accent/20 bg-accent/[0.04] p-5">
       <div className="flex items-center gap-1.5">
         <Receipt className="h-3.5 w-3.5 text-accent" />
         <h3 className="text-sm font-semibold text-foreground">

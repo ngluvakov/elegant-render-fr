@@ -79,7 +79,7 @@ export function AddServiceDialog({
           "group inline-flex items-center justify-center gap-2.5 rounded-full px-8 py-4 text-base font-semibold transition-all duration-200",
           open
             ? "bg-card/80 text-foreground ring-1 ring-border/40 hover:bg-muted"
-            : "bg-accent text-accent-foreground shadow-[0_14px_34px_-12px_rgba(159,106,75,0.5)] hover:bg-accent/90 hover:shadow-[0_20px_44px_-10px_rgba(159,106,75,0.6)] hover:-translate-y-0.5 active:translate-y-0",
+            : "bg-accent text-accent-foreground hover:bg-[var(--color-green-hover)] hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]",
         )}
       >
         <Plus
@@ -92,7 +92,7 @@ export function AddServiceDialog({
       </button>
 
       <Collapsible open={open} className="w-full">
-        <div className="rounded-2xl border border-border/40 bg-card/80 p-4 shadow-[0_8px_24px_rgba(28,26,25,0.04)]">
+        <div className="rounded-lg border border-border/40 bg-card/80 p-4">
           {error && (
             <div className="mb-3 rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">
               {error}
@@ -111,7 +111,7 @@ export function AddServiceDialog({
                 className={cn(
                   "rounded-full border px-4 py-2 text-sm font-medium transition-all",
                   activeCat === cat.id
-                    ? "border-accent bg-accent text-accent-foreground shadow-[0_4px_12px_-4px_rgba(159,106,75,0.3)]"
+                    ? "border-accent bg-accent text-accent-foreground"
                     : "border-border/40 bg-card/60 text-foreground/80 hover:border-accent/40 hover:bg-accent/[0.04] hover:text-foreground",
                 )}
               >
@@ -128,7 +128,7 @@ export function AddServiceDialog({
                 ?.products.map((prod) => (
                   <div
                     key={prod.id}
-                    className="group flex items-center justify-between gap-3 rounded-xl border border-border/40 bg-card/80 px-4 py-3 transition-all hover:border-accent/40 hover:shadow-[0_4px_12px_rgba(28,26,25,0.04)]"
+                    className="group flex items-center justify-between gap-3 rounded-xl border border-border/40 bg-card/80 px-4 py-3 transition-all hover:border-accent/40 hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-foreground">
@@ -146,7 +146,7 @@ export function AddServiceDialog({
                         type="button"
                         onClick={() => handleAdd(prod.id)}
                         disabled={adding === prod.id}
-                        className="inline-flex h-8 items-center gap-1 rounded-lg bg-accent px-3 text-xs font-semibold text-accent-foreground shadow-sm transition-all hover:bg-accent/90 disabled:opacity-60"
+                        className="inline-flex h-8 items-center gap-1 rounded-lg bg-accent px-3 text-xs font-semibold text-accent-foreground shadow-sm transition-all hover:bg-[var(--color-green-hover)] disabled:opacity-60"
                       >
                         {adding === prod.id ? (
                           <>

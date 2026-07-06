@@ -248,7 +248,7 @@ export function PricingWorkbench({
           className={cn(
             "flex items-center gap-2 rounded-xl border px-4 py-3 text-sm",
             notice.kind === "success"
-              ? "border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]"
+              ? "border-border bg-accent/10 text-foreground"
               : "border-destructive/30 bg-destructive/10 text-destructive",
           )}
         >
@@ -322,7 +322,7 @@ export function PricingWorkbench({
             >
               <span>
                 <span className="block font-medium">{category.label}</span>
-                <span className="mt-0.5 block text-[0.68rem] uppercase tracking-[0.16em] text-muted-foreground">
+                <span className="mt-0.5 block text-[0.68rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
                   {category.sectionLabel}
                 </span>
               </span>
@@ -375,7 +375,7 @@ function StatusCard({
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between gap-3">
-          <CardDescription className="text-[0.72rem] font-semibold uppercase tracking-[0.18em]">
+          <CardDescription className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em]">
             {label}
           </CardDescription>
           <Badge variant="secondary">{badge}</Badge>
@@ -400,7 +400,7 @@ function PreviewCard({
   return (
     <Card>
       <CardHeader>
-        <CardDescription className="text-[0.72rem] font-semibold uppercase tracking-[0.18em]">
+        <CardDescription className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em]">
           {label}
         </CardDescription>
         <CardTitle className="text-2xl tabular-nums">{formatEur(total)}</CardTitle>
@@ -433,7 +433,7 @@ function CategoryWorkbench({
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             {category.sectionLabel}
           </p>
           <h2 className="mt-1 font-heading text-2xl text-foreground">
@@ -853,7 +853,7 @@ function DurationWorkbench({
         </div>
 
         <div className="rounded-xl border border-accent/25 bg-accent/10 p-4">
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             Live calculation
           </p>
           <div className="mt-3 space-y-2 text-sm">
@@ -989,7 +989,7 @@ function AddOnWorkbench({
               }
             />
             <div>
-              <Label className="text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
+              <Label className="text-[0.7rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 Price type
               </Label>
               <div className="mt-2 rounded-lg border border-border/50 bg-background/50 px-3 py-2 text-sm font-medium">
@@ -1005,7 +1005,7 @@ function AddOnWorkbench({
         </div>
 
         <div className="rounded-xl border border-accent/25 bg-accent/10 p-4">
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             Test quantities
           </p>
           <div className="mt-3 flex items-center justify-between gap-2">
@@ -1216,7 +1216,7 @@ function DiscountRuleCard({
     <div className="rounded-xl border border-border/45 bg-card/60 p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="text-xs font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             If present
           </p>
           <p className="mt-1 text-sm font-semibold text-foreground">
@@ -1225,10 +1225,10 @@ function DiscountRuleCard({
         </div>
         <ArrowRight className="mt-5 h-4 w-4 text-muted-foreground" />
         <div className="text-right">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="text-xs font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             Then
           </p>
-          <p className="mt-1 text-sm font-semibold text-[color:var(--color-sage-deep)]">
+          <p className="mt-1 text-sm font-semibold text-muted-foreground">
             −{rule.discountPct}%
           </p>
         </div>
@@ -1300,7 +1300,7 @@ function SettingsWorkbench({
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             Finance settings
           </p>
           <h2 className="mt-1 font-heading text-2xl text-foreground">
@@ -1760,7 +1760,7 @@ function IncludesEditor({
 }) {
   return (
     <div>
-      <Label className="text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
+      <Label className="text-[0.7rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
         What is included
       </Label>
       <Textarea
@@ -1903,7 +1903,7 @@ function MetricEditor({
   return (
     <Card>
       <CardHeader>
-        <CardDescription className="text-[0.72rem] font-semibold uppercase tracking-[0.18em]">
+        <CardDescription className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em]">
           {label}
         </CardDescription>
         <div className="flex items-center gap-2">
@@ -1948,7 +1948,7 @@ function TextInput({
 }) {
   return (
     <div>
-      <Label className="text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
+      <Label className="text-[0.7rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
         {label}
       </Label>
       <Input
@@ -1977,7 +1977,7 @@ function NumberInput({
 }) {
   return (
     <div>
-      <Label className="text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
+      <Label className="text-[0.7rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
         {label}
       </Label>
       <Input
@@ -2046,7 +2046,7 @@ function MiniProductPreview({
   const hasDiscount = original > total;
   return (
     <div className="w-full rounded-xl border border-accent/25 bg-accent/10 p-4 xl:w-56">
-      <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+      <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
         {label}
       </p>
       <div className="mt-2 flex items-end justify-between gap-2 xl:block">

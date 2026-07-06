@@ -53,7 +53,7 @@ export function ReferenceOrderPicker({
   if (availableOrders.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-4">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Link2 className="h-4 w-4 text-accent" />
@@ -70,7 +70,7 @@ export function ReferenceOrderPicker({
         </div>
         {current ? (
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-lg bg-[color:var(--color-sage)]/15 px-2.5 py-1 text-[0.72rem] font-semibold text-[color:var(--color-sage-deep)]">
+            <span className="inline-flex items-center gap-1 rounded-lg bg-accent/15 px-2.5 py-1 text-[0.72rem] font-semibold text-foreground">
               <Check className="h-3 w-3" />
               {current.projectName ?? current.orderNumber}
             </span>
@@ -88,7 +88,7 @@ export function ReferenceOrderPicker({
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition-all hover:border-accent hover:bg-accent/15"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-accent hover:bg-accent/15"
           >
             <Link2 className="h-3 w-3" />
             Link previous project

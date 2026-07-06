@@ -188,13 +188,13 @@ export default async function OrderDetailPage({
               </p>
 
               {unconfiguredCount > 0 && (
-                <div className="mb-4 flex items-start gap-3 rounded-2xl border-l-4 border-l-[color:var(--color-ember-deep)] border border-[color:var(--color-ember)]/50 bg-gradient-to-br from-[color:var(--color-ember)]/[0.12] to-[color:var(--color-ember)]/[0.04] p-4 shadow-[0_8px_24px_-12px_rgba(163,127,45,0.3)] animate-in fade-in slide-in-from-top-1 duration-300">
+                <div className="mb-4 flex items-start gap-3 rounded-lg border-l-4 border-l-amber-600 border border-amber-300 bg-amber-50 p-4 animate-in fade-in slide-in-from-top-1 duration-300">
                   <div className="relative mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--color-ember)]/40" />
-                    <AlertCircle className="relative h-6 w-6 text-[color:var(--color-ember-deep)]" strokeWidth={2.5} />
+                    
+                    <AlertCircle className="relative h-6 w-6 text-amber-700" strokeWidth={2.5} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-[color:var(--color-ember-deep)]">
+                    <p className="text-sm font-bold text-amber-700">
                       {unconfiguredCount === 1
                         ? "1 item needs your details"
                         : `${unconfiguredCount} items need your details`}
@@ -202,7 +202,7 @@ export default async function OrderDetailPage({
                     <p className="mt-1 text-xs text-foreground/70">
                       Add a description or upload files (plans, photos,
                       sketches) so we can start the project. Items marked{" "}
-                      <span className="inline-flex translate-y-[1px] items-center gap-1 rounded bg-[color:var(--color-ember)]/20 px-1.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wider text-[color:var(--color-ember-deep)]">
+                      <span className="inline-flex translate-y-[1px] items-center gap-1 rounded bg-amber-100 px-1.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wider text-amber-700">
                         Details needed
                       </span>{" "}
                       need attention.

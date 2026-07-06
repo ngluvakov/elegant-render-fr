@@ -96,7 +96,7 @@ export function StepPayment() {
 
   if (!orderId) {
     return (
-      <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-6 text-sm text-destructive">
+      <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-6 text-sm text-destructive">
         The order has not been created yet. Go back to the previous step.
       </div>
     );
@@ -132,7 +132,7 @@ export function StepPayment() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
+      <div className="rounded-lg border border-border/60 bg-card/80 p-6 md:p-8">
         <h2 className="text-xl font-semibold text-foreground">Payment</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Total to pay:{" "}

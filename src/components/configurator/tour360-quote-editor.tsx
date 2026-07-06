@@ -170,7 +170,7 @@ export function Tour360QuoteEditor({
           type="button"
           onClick={addFloor}
           disabled={config.floors.length >= MAX_FLOORS}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-white disabled:opacity-40 disabled:hover:bg-accent/15 disabled:hover:text-accent"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-accent-foreground disabled:opacity-40 disabled:hover:bg-accent/15 disabled:hover:text-accent"
         >
           <Plus className="h-3 w-3" />
           Add floor
@@ -236,7 +236,7 @@ function FloorPanel({
         <div className="text-sm font-semibold text-foreground">
           {floorLabel}
           {index > 0 && (
-            <span className="ml-2 text-[0.68rem] font-medium uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+            <span className="ml-2 text-[0.68rem] font-medium uppercase tracking-wider text-muted-foreground">
               −30%
             </span>
           )}
@@ -393,7 +393,7 @@ function FloorBreakdown({
         </div>
       ))}
       <div className="mt-1.5 flex items-baseline justify-between gap-2 border-t border-border/40 pt-2 text-xs">
-        <span className="font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        <span className="font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
           Floor total
         </span>
         <span className="text-sm font-bold text-foreground tabular-nums">
@@ -443,7 +443,7 @@ function TourAssemblySection({
 
   return (
     <div className="rounded-xl border border-border/60 bg-card/60 p-4">
-      <p className="text-[0.72rem] font-bold uppercase tracking-[0.22em] text-muted-foreground">
+      <p className="text-[0.72rem] font-bold font-mono uppercase tracking-[0.08em] text-muted-foreground">
         Web tour and branding
       </p>
       <p className="mt-1 text-[0.72rem] leading-relaxed text-muted-foreground">
@@ -497,7 +497,7 @@ function TourAssemblySection({
 
       {webOn && (
         <div className="mt-3 flex items-baseline justify-between gap-2 border-t border-border/40 pt-2 text-xs">
-          <span className="font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+          <span className="font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
             Web tour total
           </span>
           <span className="text-sm font-bold text-foreground tabular-nums">

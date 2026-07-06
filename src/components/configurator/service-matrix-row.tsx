@@ -103,12 +103,12 @@ export function ServiceMatrixRow({
       data-active={active ? "" : undefined}
       className={cn(
         "group relative flex items-center gap-3 rounded-lg border bg-card px-3 py-2 transition-colors duration-200",
-        "border-border/50 hover:border-[color:var(--color-sage)]/50 hover:bg-secondary/30",
+        "border-border/50 hover:border-input hover:bg-secondary/30",
         recommended &&
-          "border-[color:var(--color-sage)]/45 bg-[color:var(--color-sage)]/8",
+          "border-accent/45 bg-secondary/50",
         active &&
           "border-l-[3px] border-l-accent border-r-border/50 border-y-border/50 bg-accent/[0.04]",
-        isInCart && "border-[color:var(--color-sage-deep)]/45 bg-[color:var(--color-sage)]/10",
+        isInCart && "border-accent/45 bg-accent/10",
         // orbit-glow retired with the international theme; discounted rows
         // get a static 1px green border + mono badge in the Track C restyle.
         hasActiveDiscount && "border-[color:var(--color-green)]",
@@ -120,12 +120,12 @@ export function ServiceMatrixRow({
             {product.label}
           </h4>
           {isInCart && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--color-sage-deep)]/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[color:var(--color-sage-deep)]">
+            <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-foreground">
               <Check className="h-2.5 w-2.5" strokeWidth={3} /> In cart
             </span>
           )}
           {recommended && !isInCart && (
-            <span className="inline-flex items-center rounded-full bg-[color:var(--color-sage)]/20 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[color:var(--color-sage-deep)]">
+            <span className="inline-flex items-center rounded-full bg-accent/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-foreground">
               Better value
             </span>
           )}
@@ -171,8 +171,8 @@ export function ServiceMatrixRow({
             discount === null
               ? "invisible"
               : isPreviewDiscount
-                ? "bg-[color:var(--color-sage)]/25 text-[color:var(--color-sage-deep)] ring-1 ring-dashed ring-[color:var(--color-sage-deep)]/40"
-                : "bg-[color:var(--color-sage-deep)] text-white",
+                ? "bg-accent/15 text-foreground ring-1 ring-dashed ring-accent/40"
+                : "bg-accent text-accent-foreground",
           )}
           title={discount?.reason}
         >
@@ -194,7 +194,7 @@ export function ServiceMatrixRow({
           type="button"
           onClick={handleInfo}
           aria-label={`Service details: ${product.label}`}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-background text-muted-foreground transition-colors hover:border-[color:var(--color-sage-deep)]/40 hover:text-foreground"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-background text-muted-foreground transition-colors hover:border-input hover:text-foreground"
         >
           <Info className="h-4 w-4" />
         </button>
@@ -203,7 +203,7 @@ export function ServiceMatrixRow({
           <Link
             href={`/contact?service=${product.id}`}
             aria-label="Send inquiry"
-            className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
+            className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
           >
             <Mail className="h-4 w-4" />
             <span className="hidden sm:inline">Inquiry</span>
@@ -213,7 +213,7 @@ export function ServiceMatrixRow({
             <Link
               href="#korpa"
               aria-label="Configure in cart"
-              className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[color:var(--color-sage-deep)] px-3 text-xs font-semibold text-white transition-colors hover:bg-[color:var(--color-sage-deep)]/85"
+              className="inline-flex h-8 items-center gap-1.5 rounded-full bg-primary px-3 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/85"
             >
               <Sliders className="h-4 w-4" />
               <span className="hidden sm:inline">Configure</span>
@@ -221,7 +221,7 @@ export function ServiceMatrixRow({
           ) : (
             <span
               aria-label="Already in cart"
-              className="inline-flex h-8 items-center gap-1.5 rounded-full bg-[color:var(--color-sage-deep)]/15 px-3 text-xs font-semibold text-[color:var(--color-sage-deep)]"
+              className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent/15 px-3 text-xs font-semibold text-foreground"
             >
               <Check className="h-4 w-4" />
               <span className="hidden sm:inline">In cart</span>
@@ -232,7 +232,7 @@ export function ServiceMatrixRow({
             type="button"
             onClick={handleAdd}
             aria-label="Add to cart"
-            className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
+            className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
           >
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Add</span>

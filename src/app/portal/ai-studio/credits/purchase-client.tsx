@@ -74,7 +74,7 @@ function PortalCreditSummary() {
   };
 
   return (
-    <aside className="rounded-2xl border border-border/60 bg-card/80 p-5">
+    <aside className="rounded-lg border border-border/60 bg-card/80 p-5">
       <div className="flex items-center gap-2">
         <Coins className="h-4 w-4 text-accent" />
         <h2 className="text-lg font-semibold text-foreground">Purchase summary</h2>

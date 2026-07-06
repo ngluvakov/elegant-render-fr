@@ -127,7 +127,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
     <div>
       <Link
         href={`/contact?service=${product.id}`}
-        className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2.5 text-sm font-semibold transition-colors"
+        className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-[var(--color-green-hover)] px-4 py-2.5 text-sm font-semibold transition-colors"
       >
         Send inquiry
       </Link>
@@ -145,7 +145,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
           marketing_mode: true,
         })
       }
-      className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2.5 text-sm font-semibold transition-colors"
+      className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-[var(--color-green-hover)] px-4 py-2.5 text-sm font-semibold transition-colors"
     >
       View in pricing
     </Link>
@@ -153,7 +153,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
     <button
       type="button"
       onClick={handleAddToCart}
-      className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 px-4 py-2.5 text-sm font-semibold transition-colors"
+      className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-[var(--color-green-hover)] px-4 py-2.5 text-sm font-semibold transition-colors"
     >
       {isInterior ? "Configure floor" : "Add to cart"}
     </button>
@@ -165,15 +165,15 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
   // else → no tint
   const hasPriceStripBand = showOwnDiscount || (displayMinQty !== undefined && displayMinQty > 1);
   const priceStripBandClass = showOwnDiscount
-    ? "rounded-lg bg-[color:var(--color-sage)]/15 border border-[color:var(--color-sage)]/40 px-4 py-3 -mx-2 my-1"
+    ? "rounded-lg bg-accent/15 border border-accent/45 px-4 py-3 -mx-2 my-1"
     : displayMinQty !== undefined && displayMinQty > 1
-    ? "rounded-lg bg-[color:var(--color-sage)]/8 px-4 py-3 -mx-2 my-1"
+    ? "rounded-lg bg-secondary/50 px-4 py-3 -mx-2 my-1"
     : "";
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
+    <div className="rounded-lg border border-border/60 bg-card overflow-hidden">
       {/* ZONE 1 — Hero image */}
-      <div className="relative w-full aspect-video overflow-hidden bg-gradient-to-br from-[color:var(--color-sage)]/10 to-[color:var(--color-sage-deep)]/20">
+      <div className="relative w-full aspect-video overflow-hidden bg-secondary">
         {!imgFailed ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
@@ -210,7 +210,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
               {product.includes.map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm text-foreground">
                   <Check
-                    className="h-4 w-4 text-[color:var(--color-sage-deep)] shrink-0 mt-0.5"
+                    className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5"
                     strokeWidth={2.5}
                   />
                   {item}
@@ -221,13 +221,13 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
 
           {/* ── Issue 3b: Upsell sage callout band ── */}
           {hasUpsells && (
-            <div className="rounded-xl border border-[color:var(--color-sage)]/35 bg-[color:var(--color-sage)]/8 p-4 mt-2">
+            <div className="rounded-xl border border-border bg-secondary/50 p-4 mt-2">
               {/* Kicker row */}
               <div className="flex items-start justify-between gap-3 mb-3">
-                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[color:var(--color-sage-deep)] leading-none">
+                <p className="text-[0.7rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground leading-none">
                   Often ordered together
                   {hasAnyUpsellDiscount && (
-                    <span className="ml-2 inline-flex items-center rounded bg-[color:var(--color-sage-deep)]/15 px-1.5 py-0.5 text-[0.6rem] font-bold normal-case tracking-normal text-[color:var(--color-sage-deep)]">
+                    <span className="ml-2 inline-flex items-center rounded bg-accent/15 px-1.5 py-0.5 text-[0.6rem] font-bold normal-case tracking-normal text-foreground">
                       Discounted
                     </span>
                   )}
@@ -235,7 +235,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                 <button
                   type="button"
                   onClick={() => setUpsellOpen((v) => !v)}
-                  className="inline-flex items-center gap-1 text-xs font-medium text-foreground hover:text-[color:var(--color-sage-deep)] transition-colors shrink-0"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-foreground hover:underline transition-colors shrink-0"
                 >
                   {upsellOpen ? "Hide" : "View all"}
                   <ChevronDown
@@ -254,11 +254,11 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                   return (
                     <span
                       key={up.id}
-                      className="inline-flex items-center gap-1 rounded-full bg-card border border-[color:var(--color-sage)]/25 px-2.5 py-1 text-xs font-medium text-foreground"
+                      className="inline-flex items-center gap-1 rounded-full bg-card border border-border px-2.5 py-1 text-xs font-medium text-foreground"
                     >
                       {up.label}
                       {chipDiscount !== null && (
-                        <span className="text-[0.65rem] font-bold text-[color:var(--color-sage-deep)]">
+                        <span className="text-[0.65rem] font-bold text-muted-foreground">
                           &minus;{chipDiscount.pct}%
                         </span>
                       )}
@@ -324,14 +324,14 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
 
           {/* Issue 4: own discount badge */}
           {showOwnDiscount && (
-            <div className="mb-2 inline-flex items-center gap-1.5 rounded bg-[color:var(--color-sage-deep)] px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white">
+            <div className="mb-2 inline-flex items-center gap-1.5 rounded bg-accent px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-accent-foreground">
               Discount &minus;{ownDiscount.pct}%
             </div>
           )}
 
           {/* Issue 3a: kicker for package products (no discount state) */}
           {!showOwnDiscount && displayMinQty !== undefined && displayMinQty > 1 && (
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[color:var(--color-sage-deep)] mb-1">
+            <p className="text-[0.65rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground mb-1">
               Price per render
             </p>
           )}
@@ -392,7 +392,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
 
           {/* Issue 4: discount reason line */}
           {showOwnDiscount && (
-            <p className="mt-2 text-xs italic text-[color:var(--color-sage-deep)]">
+            <p className="mt-2 text-xs italic text-muted-foreground">
               {ownDiscount.reason}
             </p>
           )}
@@ -410,7 +410,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
 
           {/* Issue 3a: "Package of X" annotation — only when no own discount showing */}
           {!showOwnDiscount && displayMinQty !== undefined && displayMinQty > 1 && (
-            <p className="text-xs text-[color:var(--color-sage-deep)] mt-1.5">
+            <p className="text-xs text-muted-foreground mt-1.5">
               Package of {displayMinQty} {pluralizeUnit(formattedDisplayUnitLabel ?? "", displayMinQty)}
             </p>
           )}

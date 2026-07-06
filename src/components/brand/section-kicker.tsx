@@ -1,5 +1,6 @@
 /**
- * SectionKicker — Small eyebrow label with a gradient accent line.
+ * SectionKicker — Mono eyebrow label with a solid green tick (international spec:
+ * JetBrains Mono 12px, uppercase, +0.08em).
  *
  * Used on: multiple marketing pages (usluge, cene, portfolio, FAQ, etc.).
  * @prop align — "left" | "center"
@@ -26,11 +27,8 @@ export function SectionKicker({
         className,
       )}
     >
-      <span
-        aria-hidden
-        className="h-px w-10 bg-gradient-to-r from-accent to-transparent opacity-90"
-      />
-      <span className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+      <span aria-hidden className="h-[2px] w-5 bg-accent" />
+      <span className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
         {children}
       </span>
     </div>

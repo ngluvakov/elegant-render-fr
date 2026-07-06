@@ -65,9 +65,9 @@ function WizardInner() {
               className={cn(
                 "flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition-colors",
                 i < step
-                  ? "bg-[color:var(--color-sage)] text-white"
+                  ? "bg-accent text-accent-foreground"
                   : i === step
-                    ? "bg-accent text-white"
+                    ? "bg-primary text-primary-foreground"
                     : "bg-secondary text-muted-foreground",
               )}
             >
@@ -150,13 +150,13 @@ function SuccessScreen({
           "mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full",
           processing
             ? "bg-accent/10"
-            : "bg-[color:var(--color-sage)]/15",
+            : "bg-accent/15",
         )}
       >
         {processing ? (
           <Clock className="h-8 w-8 text-accent" />
         ) : (
-          <Check className="h-8 w-8 text-[color:var(--color-sage-deep)]" />
+          <Check className="h-8 w-8 text-foreground" />
         )}
       </div>
       <h2 className="text-3xl text-foreground">
@@ -185,7 +185,7 @@ function SuccessScreen({
       )}
 
       {!initiallySignedIn && (
-        <div className="mt-6 rounded-2xl border border-border/60 bg-card/60 p-5 text-left">
+        <div className="mt-6 rounded-lg border border-border/60 bg-card/60 p-5 text-left">
           <div className="flex items-start gap-3">
             <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent/10">
               <Mail className="h-4 w-4 text-accent" />

@@ -152,7 +152,7 @@ export default async function AdminPage({
       {/* Stat cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {canViewFinance && (
-          <div className="rounded-2xl border border-border/40 bg-card/80 p-4">
+          <div className="rounded-lg border border-border/40 bg-card/80 p-4">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent">
                 <DollarSign className="h-5 w-5" />
@@ -166,7 +166,7 @@ export default async function AdminPage({
             </div>
           </div>
         )}
-        <div className="rounded-2xl border border-border/40 bg-card/80 p-4">
+        <div className="rounded-lg border border-border/40 bg-card/80 p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/60 text-muted-foreground">
               <Briefcase className="h-5 w-5" />
@@ -177,7 +177,7 @@ export default async function AdminPage({
             </div>
           </div>
         </div>
-        <div className="rounded-2xl border border-border/40 bg-card/80 p-4">
+        <div className="rounded-lg border border-border/40 bg-card/80 p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent">
               <Clock className="h-5 w-5" />
@@ -188,9 +188,9 @@ export default async function AdminPage({
             </div>
           </div>
         </div>
-        <div className="rounded-2xl border border-border/40 bg-card/80 p-4">
+        <div className="rounded-lg border border-border/40 bg-card/80 p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-foreground">
               <CheckCircle2 className="h-5 w-5" />
             </div>
             <div>
@@ -199,7 +199,7 @@ export default async function AdminPage({
             </div>
           </div>
         </div>
-        <div className="rounded-2xl border border-border/40 bg-card/80 p-4">
+        <div className="rounded-lg border border-border/40 bg-card/80 p-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/60 text-muted-foreground">
               <Users className="h-5 w-5" />
@@ -250,7 +250,7 @@ export default async function AdminPage({
             <Link
               key={order.id}
               href={`/portal/admin/orders/${order.id}`}
-              className="block rounded-xl border border-border/30 bg-card/80 px-4 py-3 transition-all hover:border-border hover:shadow-[0_4px_16px_rgba(28,26,25,0.04)] lg:grid lg:grid-cols-[1.5fr_1.5fr_1fr_0.8fr_auto_auto_auto] lg:items-center lg:gap-3"
+              className="block rounded-xl border border-border/30 bg-card/80 px-4 py-3 transition-all hover:border-border hover: lg:grid lg:grid-cols-[1.5fr_1.5fr_1fr_0.8fr_auto_auto_auto] lg:items-center lg:gap-3"
             >
               {/* Client */}
               <div>

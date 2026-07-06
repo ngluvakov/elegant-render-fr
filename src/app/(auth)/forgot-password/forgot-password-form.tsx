@@ -24,7 +24,7 @@ export function ForgotPasswordForm() {
         </div>
       )}
       {state.success && (
-        <div className="rounded-lg border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10 px-4 py-3 text-sm text-[color:var(--color-sage-deep)]">
+        <div className="rounded-lg border border-border bg-accent/10 px-4 py-3 text-sm text-foreground">
           {state.message}
         </div>
       )}

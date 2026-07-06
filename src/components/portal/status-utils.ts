@@ -25,12 +25,12 @@ export function statusAccent(status: string): string {
   switch (status) {
     case "paid":
     case "in_progress":
-      return "bg-accent/10 text-accent border-accent/20";
+      return "bg-accent/10 text-foreground border-accent/30";
     case "in_review":
-      return "bg-accent/15 text-accent border-accent/30";
+      return "bg-accent/15 text-foreground border-accent/40";
     case "delivered":
     case "closed":
-      return "bg-[color:var(--color-sage)]/10 text-[color:var(--color-sage-deep)] border-[color:var(--color-sage)]/20";
+      return "bg-primary text-primary-foreground border-primary";
     case "revision_requested":
       return "bg-secondary text-secondary-foreground border-border";
     case "cancelled":
@@ -54,7 +54,7 @@ export const STATUS_STEPS = [
 // Customer-friendly explanation for each order status. The `tone` drives
 // how the StatusTracker renders the guidance card:
 //   - "action" — customer is expected to do something (highlighted)
-//   - "info"   — purely informational (default sage)
+//   - "info"   — purely informational (neutral grey)
 //   - "alert"  — off-track (cancelled / refunded) — shown in destructive
 export type StatusTone = "action" | "info" | "alert";
 

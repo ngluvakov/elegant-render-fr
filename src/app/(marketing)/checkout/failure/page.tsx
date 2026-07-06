@@ -57,7 +57,7 @@ export default async function CheckoutFailurePage({ searchParams }: PageProps) {
 
   return (
     <main className="mx-auto max-w-3xl space-y-8 px-4 py-12">
-      <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-6 md:p-8">
+      <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-6 md:p-8">
         <p className="text-xs font-semibold uppercase tracking-wider text-destructive">
           Payment not completed
         </p>

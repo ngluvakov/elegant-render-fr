@@ -48,7 +48,7 @@ export function MessageComposer({ orderId }: MessageComposerProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-border/40 bg-card/60 p-4"
+      className="rounded-lg border border-border/40 bg-card/60 p-4"
     >
       {error && (
         <p className="mb-3 text-xs text-destructive">{error}</p>

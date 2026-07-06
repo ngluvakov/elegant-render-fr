@@ -86,7 +86,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
     <>
     <div
       data-quote-item={breakdown.instanceId}
-      className="overflow-hidden rounded-2xl border border-border/60 bg-card/95 transition-shadow"
+      className="overflow-hidden rounded-lg border border-border/60 bg-card/95 transition-shadow"
     >
       {/* Header */}
       <div className="flex items-stretch bg-secondary/40">
@@ -97,14 +97,14 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           aria-expanded={expanded}
         >
           <div className="min-w-0 flex-1">
-            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
               {breakdown.categoryLabel}
             </p>
             <p className="mt-1 text-base font-semibold text-foreground">
               {breakdown.productLabel}
             </p>
             {breakdown.discountReason && (
-              <p className="mt-1 text-xs text-[color:var(--color-sage-deep)]">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {breakdown.discountReason}
               </p>
             )}
@@ -131,7 +131,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                     </span>
                   </div>
                   {badge && (
-                    <span className="mt-0.5 rounded-md bg-[color:var(--color-sage)]/15 px-1.5 py-0.5 text-[0.68rem] font-semibold text-[color:var(--color-sage-deep)]">
+                    <span className="mt-0.5 rounded-md bg-accent/15 px-1.5 py-0.5 text-[0.68rem] font-semibold text-foreground">
                       {badge}
                     </span>
                   )}
@@ -162,8 +162,8 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
         <div>
           {/* Included items badges */}
           {hasIncludedAddOns && (
-            <div className="border-t border-border/40 bg-[color:var(--color-sage)]/5 px-5 py-3">
-              <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-[color:var(--color-sage-deep)]">
+            <div className="border-t border-border/40 bg-secondary/50 px-5 py-3">
+              <p className="mb-2 text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 Already included
               </p>
               <div className="flex flex-wrap gap-2">
@@ -172,7 +172,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                   .map((ao) => (
                     <span
                       key={ao.addOnId}
-                      className="inline-flex items-center gap-1 rounded-md bg-[color:var(--color-sage)]/12 px-2.5 py-1 text-xs font-medium text-[color:var(--color-sage-deep)]"
+                      className="inline-flex items-center gap-1 rounded-md bg-accent/10 px-2.5 py-1 text-xs font-medium text-foreground"
                     >
                       <Check className="h-3 w-3" />
                       {ao.includedQty} {ao.label.toLowerCase()}
@@ -230,7 +230,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                 /sec ×{" "}
                 {item.durationSeconds}s
                 {breakdown.durationDiscount && breakdown.durationDiscount > 0 && (
-                  <span className="font-semibold text-[color:var(--color-sage-deep)]">
+                  <span className="font-semibold text-muted-foreground">
                     {" "}
                     - {Math.round(breakdown.durationDiscount * 100)}% duration
                     discount
@@ -243,7 +243,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {/* Per-floor editor for int-static / int-360 (replaces addon steppers) */}
           {usesInteriorEditor && item.interiorConfig && (
             <div className="border-t border-border/40 px-5 py-4">
-              <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="mb-3 text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 Configuration
               </p>
               <InteriorQuoteEditor
@@ -262,7 +262,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           )}
           {usesTour360Editor && item.tour360Config && (
             <div className="border-t border-border/40 px-5 py-4">
-              <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="mb-3 text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 Configuration
               </p>
               <Tour360QuoteEditor
@@ -281,7 +281,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {/* Add-on steppers — for products that don't use a special editor */}
           {!usesSpecialEditor && product.addOns.length > 0 && (
             <div className="border-t border-border/40 px-5 py-4">
-              <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="mb-3 text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 Customize
               </p>
               <div className="space-y-1">

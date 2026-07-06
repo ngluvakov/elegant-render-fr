@@ -62,7 +62,7 @@ export function ProfileForm({
         </div>
       )}
       {state.success && (
-        <div className="rounded-lg border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10 px-4 py-3 text-sm text-[color:var(--color-sage-deep)]">
+        <div className="rounded-lg border border-border bg-accent/10 px-4 py-3 text-sm text-foreground">
           Your details have been updated.
         </div>
       )}
@@ -131,7 +131,7 @@ export function ProfileForm({
         )}
       </div>
 
-      <section className="space-y-5 rounded-2xl border border-border/50 bg-card/60 p-5">
+      <section className="space-y-5 rounded-lg border border-border/50 bg-card/60 p-5">
         <div>
           <h2 className="text-sm font-semibold text-foreground">
             Billing details

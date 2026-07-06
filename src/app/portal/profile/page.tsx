@@ -87,7 +87,7 @@ export default async function ProfilePage() {
         <ul className="mt-3 space-y-2">
           {hasCredentials && (
             <li className="flex items-center gap-2 rounded-lg border border-border/40 bg-card/60 px-3 py-2 text-xs">
-              <KeyRound className="h-3.5 w-3.5 text-[color:var(--color-sage-deep)]" />
+              <KeyRound className="h-3.5 w-3.5 text-muted-foreground" />
               <span className="text-foreground">Email and password</span>
             </li>
           )}
@@ -96,7 +96,7 @@ export default async function ProfilePage() {
               key={p}
               className="flex items-center gap-2 rounded-lg border border-border/40 bg-card/60 px-3 py-2 text-xs"
             >
-              <ShieldCheck className="h-3.5 w-3.5 text-[color:var(--color-sage-deep)]" />
+              <ShieldCheck className="h-3.5 w-3.5 text-muted-foreground" />
               <span className="text-foreground">
                 {PROVIDER_LABELS[p] ?? p}
               </span>

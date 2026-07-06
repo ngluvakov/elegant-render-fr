@@ -23,8 +23,8 @@ export function AdminCommentComposer({ orderId }: { orderId: string }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/5 p-4">
-      <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-wider text-[color:var(--color-sage-deep)]">
+    <form onSubmit={handleSubmit} className="rounded-lg border border-border bg-secondary/50 p-4">
+      <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
         Team reply
       </p>
       <Textarea

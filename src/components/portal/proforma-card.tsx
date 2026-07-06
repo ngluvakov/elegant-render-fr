@@ -54,7 +54,7 @@ export function ProformaCard({
       : formatEur((totalCents ?? totalEur * 100) / 100);
 
   return (
-    <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6">
+    <div className="rounded-lg border border-accent/30 bg-accent/5 p-6">
       <div className="flex items-center gap-2">
         <Landmark className="h-4 w-4 text-accent" />
         <h3 className="text-sm font-semibold text-foreground">

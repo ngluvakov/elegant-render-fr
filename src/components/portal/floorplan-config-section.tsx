@@ -280,7 +280,7 @@ export function FloorplanConfigSection({
         </div>
         <div className="flex items-center gap-3">
           {savedAt && Date.now() - savedAt < 2500 && (
-            <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
+            <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
               Saved
             </span>

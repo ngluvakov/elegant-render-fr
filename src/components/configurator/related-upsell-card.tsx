@@ -65,10 +65,10 @@ export function RelatedUpsellCard({
           <span
             className={cn(
               "shrink-0 rounded px-1.5 py-0.5 text-[0.65rem] font-semibold tracking-wide border",
-              "text-[color:var(--color-sage-deep)] border-[color:var(--color-sage)]/30",
+              "text-muted-foreground border-border",
               pct >= 40
-                ? "bg-[color:var(--color-sage)]/25"
-                : "bg-[color:var(--color-sage)]/15",
+                ? "bg-accent/15"
+                : "bg-accent/15",
             )}
           >
             &minus;{pct}%

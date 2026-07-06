@@ -275,13 +275,13 @@ export function AnimationConfigSection({
               {config.animationName || "Animation"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-accent">
+              <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-foreground">
                 {animSourceModeLabel(config.sourceMode)}
               </span>
               <span className="ml-2">
                 {config.durationSeconds}s
                 {tierDiscountPct > 0 && (
-                  <span className="ml-1 text-[color:var(--color-sage-deep)]">
+                  <span className="ml-1 text-muted-foreground">
                     (−{tierDiscountPct}%)
                   </span>
                 )}
@@ -291,7 +291,7 @@ export function AnimationConfigSection({
         </div>
         <div className="flex items-center gap-3">
           {savedAt && Date.now() - savedAt < 2500 && (
-            <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)] animate-in fade-in duration-200">
+            <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
               Saved
             </span>
@@ -426,7 +426,7 @@ export function AnimationConfigSection({
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
               {formatPrice(perSecondEur)}/s
               {tierDiscountPct > 0 && (
-                <span className="ml-1 font-semibold text-[color:var(--color-sage-deep)]">
+                <span className="ml-1 font-semibold text-muted-foreground">
                   · −{tierDiscountPct}% tier
                 </span>
               )}

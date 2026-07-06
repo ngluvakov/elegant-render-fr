@@ -33,16 +33,14 @@ export function Switch({
       }}
       className={cn(
         "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2",
-        checked
-          ? "bg-accent shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)]"
-          : "bg-secondary ring-1 ring-inset ring-border/60",
+        checked ? "bg-accent" : "bg-secondary ring-1 ring-inset ring-border/60",
         disabled && "opacity-50 cursor-not-allowed",
         className,
       )}
     >
       <span
         className={cn(
-          "inline-block h-5 w-5 rounded-full bg-card shadow-[0_2px_6px_rgba(28,26,25,0.18)] transition-transform duration-200",
+          "inline-block h-5 w-5 rounded-full bg-card shadow-[0_1px_3px_rgba(17,17,17,0.15)] transition-transform duration-200",
           checked ? "translate-x-[1.375rem]" : "translate-x-0.5",
         )}
       />

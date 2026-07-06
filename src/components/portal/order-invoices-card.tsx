@@ -21,7 +21,7 @@ export function OrderInvoicesCard({
 
   if (invoices.length === 0) {
     return (
-      <div className="rounded-2xl border border-border/40 bg-card/60 p-5 md:p-6">
+      <div className="rounded-lg border border-border/40 bg-card/60 p-5 md:p-6">
         <div className="flex items-center gap-1.5">
           <ReceiptText className="h-3.5 w-3.5 text-muted-foreground" />
           <h3 className="text-sm font-semibold text-foreground">Invoices</h3>
@@ -34,7 +34,7 @@ export function OrderInvoicesCard({
   }
 
   return (
-    <div className="rounded-2xl border border-border/40 bg-card/60 p-5 md:p-6">
+    <div className="rounded-lg border border-border/40 bg-card/60 p-5 md:p-6">
       <div className="flex items-center gap-1.5">
         <ReceiptText className="h-3.5 w-3.5 text-muted-foreground" />
         <h3 className="text-sm font-semibold text-foreground">Invoices</h3>

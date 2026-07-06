@@ -140,7 +140,7 @@ export default async function OrdersPage({
                 return (
                   <div
                     key={order.id}
-                    className="group relative grid grid-cols-[2fr_1fr_1fr_auto_auto_auto] items-center gap-4 rounded-xl border border-border/30 bg-card/80 px-4 py-3.5 transition-all hover:border-border hover:shadow-[0_4px_16px_rgba(28,26,25,0.04)]"
+                    className="group relative grid grid-cols-[2fr_1fr_1fr_auto_auto_auto] items-center gap-4 rounded-xl border border-border/30 bg-card/80 px-4 py-3.5 transition-all hover:border-border hover:"
                   >
                     <Link
                       href={`/portal/orders/${order.id}`}
@@ -174,7 +174,7 @@ export default async function OrdersPage({
                         {formatOrderTotal(order)}
                       </p>
                       {savingsEur > 0 && (
-                        <p className="mt-0.5 text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
+                        <p className="mt-0.5 text-[0.62rem] font-semibold text-muted-foreground">
                           −{formatOrderEurAmount(order, savingsEur)} saved
                         </p>
                       )}
@@ -211,11 +211,11 @@ export default async function OrdersPage({
               return (
                 <div
                   key={order.id}
-                  className="relative rounded-2xl border border-border/40 bg-card/80 p-4 transition-shadow hover:shadow-[0_8px_24px_rgba(28,26,25,0.05)]"
+                  className="relative rounded-lg border border-border/40 bg-card/80 p-4 transition-shadow hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
                 >
                   <Link
                     href={`/portal/orders/${order.id}`}
-                    className="absolute inset-0 rounded-2xl"
+                    className="absolute inset-0 rounded-lg"
                     aria-label={`Open ${order.orderNumber}`}
                   />
                   <div className="relative pointer-events-none flex items-start justify-between gap-3">
@@ -250,7 +250,7 @@ export default async function OrdersPage({
                           {formatOrderTotal(order)}
                         </p>
                         {savingsEur > 0 && (
-                          <p className="text-[0.62rem] font-semibold text-[color:var(--color-sage-deep)]">
+                          <p className="text-[0.62rem] font-semibold text-muted-foreground">
                             −{formatOrderEurAmount(order, savingsEur)}
                           </p>
                         )}

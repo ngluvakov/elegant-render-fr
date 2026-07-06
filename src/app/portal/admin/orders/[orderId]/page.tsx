@@ -189,15 +189,15 @@ export default async function AdminOrderDetailPage({
             {order.comments.map((comment) => (
               <div
                 key={comment.id}
-                className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                className={`max-w-[85%] rounded-lg px-4 py-3 ${
                   comment.role === "team"
-                    ? "mr-auto bg-[color:var(--color-sage)]/10"
-                    : "ml-auto bg-accent/8"
+                    ? "mr-auto bg-secondary/60"
+                    : "ml-auto bg-accent/10"
                 }`}
               >
                 <div className="flex items-center gap-2">
                   <span className={`text-[0.72rem] font-semibold uppercase tracking-wider ${
-                    comment.role === "team" ? "text-[color:var(--color-sage-deep)]" : "text-accent"
+                    comment.role === "team" ? "text-muted-foreground" : "text-foreground"
                   }`}>
                     {comment.role === "team" ? "Team" : comment.author?.name ?? "Client"}
                   </span>
@@ -234,7 +234,7 @@ export default async function AdminOrderDetailPage({
 
           {/* Existing deliverables */}
           {deliverableFiles.length > 0 && (
-            <div className="rounded-2xl border border-[color:var(--color-sage)]/20 bg-[color:var(--color-sage)]/5 p-5">
+            <div className="rounded-lg border border-border bg-secondary/50 p-5">
               <h3 className="text-sm font-semibold text-foreground">
                 Delivered files ({deliverableFiles.length})
               </h3>
@@ -253,7 +253,7 @@ export default async function AdminOrderDetailPage({
 
           {/* Source files */}
           {sourceFiles.length > 0 && (
-            <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+            <div className="rounded-lg border border-border/40 bg-card/60 p-5">
               <h3 className="text-sm font-semibold text-foreground">
                 Client files ({sourceFiles.length})
               </h3>
@@ -271,7 +271,7 @@ export default async function AdminOrderDetailPage({
           )}
 
           {/* Items */}
-          <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+          <div className="rounded-lg border border-border/40 bg-card/60 p-5">
             <h3 className="text-sm font-semibold text-foreground">
               Items ({order.items.length})
             </h3>
@@ -282,7 +282,7 @@ export default async function AdminOrderDetailPage({
                     <p className="font-medium text-foreground">{item.productLabel}</p>
                     <p className="text-muted-foreground">{item.categoryLabel}</p>
                     {item.discountReason && (
-                      <p className="mt-0.5 text-[0.68rem] text-[color:var(--color-sage-deep)]">
+                      <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
                         {item.discountReason}
                       </p>
                     )}
@@ -307,7 +307,7 @@ export default async function AdminOrderDetailPage({
 
           {/* Customer note */}
           {order.customerNote && (
-            <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+            <div className="rounded-lg border border-border/40 bg-card/60 p-5">
               <h3 className="text-sm font-semibold text-foreground">Client note</h3>
               <p className="mt-2 text-xs text-foreground/80">{order.customerNote}</p>
             </div>
@@ -318,7 +318,7 @@ export default async function AdminOrderDetailPage({
               the original inquiry so admin can re-read context or
               grab attached files without searching. */}
           {order.sourceInquiry && (
-            <div className="rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/5 p-5">
+            <div className="rounded-lg border border-border bg-secondary/50 p-5">
               <h3 className="text-sm font-semibold text-foreground">
                 From inquiry
               </h3>
@@ -367,7 +367,7 @@ export default async function AdminOrderDetailPage({
           {/* Buyer identity (Phase A.1). For individual orders only the
               type label appears so the absence of company info is
               visually clear at a glance. */}
-          <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+          <div className="rounded-lg border border-border/40 bg-card/60 p-5">
             <h3 className="text-sm font-semibold text-foreground">Buyer type</h3>
             <p className="mt-2 text-xs uppercase tracking-wider text-muted-foreground">
               {order.buyerType === "business" ? "Business" : "Individual"}
@@ -411,7 +411,7 @@ export default async function AdminOrderDetailPage({
                 <div className="mt-4 border-t border-border/40 pt-4">
                   {order.vatVerifiedAt ? (
                     <div className="space-y-2">
-                      <div className="inline-flex items-center gap-1.5 rounded-full border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10 px-3 py-1 text-[0.72rem] font-medium text-[color:var(--color-sage-deep)]">
+                      <div className="inline-flex items-center gap-1.5 rounded-full border border-border bg-accent/10 px-3 py-1 text-[0.72rem] font-medium text-foreground">
                         ✓ VIES verified{" "}
                         <span className="font-normal text-muted-foreground">
                           ·{" "}
@@ -457,7 +457,7 @@ export default async function AdminOrderDetailPage({
           {/* Payment — provider snapshot + PayPal refund. The refund
               button appears only for completed PayPal payments with a
               capture id (that's what PayPal refunds). */}
-          <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+          <div className="rounded-lg border border-border/40 bg-card/60 p-5">
             <h3 className="text-sm font-semibold text-foreground">Payment</h3>
             <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
               <div className="flex flex-wrap gap-x-2">
@@ -518,7 +518,7 @@ export default async function AdminOrderDetailPage({
               paymentMethod to wire_transfer; switching the order back
               to online_payment is a separate (currently manual) admin
               concern. */}
-          <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+          <div className="rounded-lg border border-border/40 bg-card/60 p-5">
             <h3 className="text-sm font-semibold text-foreground">Proforma</h3>
             {order.proformaNumber && order.proformaIssuedAt ? (
               <>
@@ -603,7 +603,7 @@ export default async function AdminOrderDetailPage({
               admin re-run the pipeline (Supabase outage, PDF render
               error, etc.). issueInvoice is idempotent. */}
           {order.paymentStatus === "completed" && !order.invoiceNumber && (
-            <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-5">
+            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-5">
               <h3 className="text-sm font-semibold text-foreground">
                 Invoice - not issued
               </h3>
@@ -623,7 +623,7 @@ export default async function AdminOrderDetailPage({
           {/* Invoice (Phase A.2). Shows up only after the payment hook
               has run; for unpaid orders the section is hidden. */}
           {order.invoiceNumber && order.invoiceIssuedAt && (
-            <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
+            <div className="rounded-lg border border-border/40 bg-card/60 p-5">
               <h3 className="text-sm font-semibold text-foreground">Invoice</h3>
               <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
                 <div className="flex flex-wrap gap-x-2">

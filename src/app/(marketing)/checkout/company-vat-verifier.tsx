@@ -93,7 +93,7 @@ export function CompanyVatVerifier({
 
   if (result.status === "valid") {
     return (
-      <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-[color:var(--color-sage-deep)]">
+      <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-muted-foreground">
         <CheckCircle2 className="h-3 w-3" />
         VIES confirmed the VAT ID
         {result.verifiedName ? (

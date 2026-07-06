@@ -242,6 +242,7 @@ export function ProjectInquiryForm({
       currency: "EUR",
       event_id: `lead:${res.inquiryId}`,
       lead_type: mode === "quick" ? "quick_inquiry" : "project_inquiry",
+      lead_source: mode === "quick" ? "contact_form" : "quote_request",
       source_path: source?.sourcePath ?? window.location.pathname,
       conversion_source: resolvedSource,
       file_count: files.length,

@@ -29,6 +29,9 @@ export type GoogleLeadDataLayerEvent = {
   value: number;
   currency: GoogleConversionCurrency;
   lead_type: "project_inquiry" | "quick_inquiry" | "vr_inquiry";
+  /** GTM-facing aliases per the container's variable mapping. */
+  lead_source?: "contact_form" | "quote_request" | "vr_consultation";
+  service_type?: string;
   source_path?: string;
   conversion_source?: string;
   product_id?: string;

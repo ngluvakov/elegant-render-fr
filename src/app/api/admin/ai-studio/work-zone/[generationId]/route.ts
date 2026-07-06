@@ -47,7 +47,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
 
   if (error || !data) {
     return NextResponse.json(
-      { error: error?.message ?? "Maska nije dostupna." },
+      { error: error?.message ?? "The mask is not available." },
       { status: 404 },
     );
   }

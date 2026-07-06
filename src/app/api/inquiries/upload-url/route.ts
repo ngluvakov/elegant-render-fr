@@ -35,13 +35,13 @@ export async function POST(request: Request) {
 
   const safeDraftId = String(draftId);
   if (!validDraftId(safeDraftId)) {
-    return NextResponse.json({ error: "Neispravan draft upita" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid inquiry draft" }, { status: 400 });
   }
 
   const size = Number(fileSize);
   if (!Number.isFinite(size) || size <= 0 || size > PROJECT_INQUIRY_MAX_FILE_BYTES) {
     return NextResponse.json(
-      { error: "Fajl je prevelik (max 50MB)" },
+      { error: "File is too large (max 50MB)" },
       { status: 400 },
     );
   }
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   const type = String(mimeType);
   if (!isAllowedProjectInquiryMimeType(type)) {
     return NextResponse.json(
-      { error: "Dozvoljeni su JPG, PNG, WebP, TIFF i PDF fajlovi." },
+      { error: "Allowed file types are JPG, PNG, WebP, TIFF, and PDF." },
       { status: 400 },
     );
   }

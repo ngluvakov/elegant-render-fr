@@ -12,9 +12,9 @@ import { Resend } from "resend";
 import type { VrConfig } from "@/lib/catalog/vr-config";
 import { IMPRINT, formatAddress } from "@/lib/content/site";
 
-const FROM = process.env.EMAIL_FROM ?? "Elegant Render <noreply@elegantrender.rs>";
+const FROM = process.env.EMAIL_FROM ?? "Elegant Render <noreply@elegantrender.com>";
 const ADMIN_NOTIFY_EMAIL =
-  process.env.ADMIN_NOTIFY_EMAIL ?? "info@elegantrender.rs";
+  process.env.ADMIN_NOTIFY_EMAIL ?? "info@elegantrender.com";
 
 // Pick the host to embed in transactional links. Vercel preview deploys
 // share AUTH_URL with production, so a magic link emitted from a preview

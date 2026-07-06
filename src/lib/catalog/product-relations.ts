@@ -2,7 +2,7 @@
  * product-relations.ts — Presentation-layer mapping from a primary
  * product to a list of contextually-relevant related products.
  *
- * Used by the "Uz ovaj paket:" postcard surfaced under each cart item
+ * Used by the "With this package" postcard surfaced under each cart item
  * after the customer has committed to a primary service. Calculator
  * does NOT consult this file — it is display-only.
  *

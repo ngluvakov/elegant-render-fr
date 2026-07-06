@@ -114,10 +114,10 @@ export default async function ProfilePage() {
           If any method here does not match what you expect (for example, the
           email differs from your Google account), contact us at{" "}
           <a
-            href="mailto:kontakt@elegantrender.rs"
+            href="mailto:info@elegantrender.com"
             className="text-foreground underline-offset-2 hover:underline"
           >
-            kontakt@elegantrender.rs
+            info@elegantrender.com
           </a>
           .
         </p>

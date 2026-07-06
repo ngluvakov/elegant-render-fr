@@ -112,6 +112,8 @@ export function VrInquiryForm({
       currency: "EUR",
       event_id: `lead:${res.inquiryId}`,
       lead_type: "vr_inquiry",
+      lead_source: "vr_consultation",
+      service_type: "vr-tour",
       source_path: window.location.pathname,
       conversion_source: "vr_consultation_form",
       product_id: productId,

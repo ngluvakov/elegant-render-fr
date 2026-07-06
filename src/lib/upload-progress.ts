@@ -25,10 +25,10 @@ export function putFileWithProgress(
         onProgress(100);
         resolve();
       } else {
-        reject(new Error("Upload nije uspeo"));
+        reject(new Error("Upload failed"));
       }
     };
-    xhr.onerror = () => reject(new Error("Upload nije uspeo"));
+    xhr.onerror = () => reject(new Error("Upload failed"));
     xhr.onabort = () => reject(new Error("Upload je prekinut"));
     xhr.send(file);
   });

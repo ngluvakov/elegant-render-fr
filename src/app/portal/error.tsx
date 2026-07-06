@@ -21,8 +21,8 @@ export default function PortalError({
       <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
         There was an error loading this page. Your data and orders are safe.
         Try again, and if the issue keeps happening, write to us at{" "}
-        <a className="underline" href="mailto:info@elegantrender.rs">
-          info@elegantrender.rs
+        <a className="underline" href="mailto:info@elegantrender.com">
+          info@elegantrender.com
         </a>
         .
       </p>

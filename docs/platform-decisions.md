@@ -20,6 +20,18 @@ The pre-fork Serbian platform history is preserved as a brief archive in `docs/p
 - **References:** PR, commit, issue, or chat context if available.
 ```
 
+## 2026-07-07 - LIVE launch flip, price sign-off (a), PayPal-only billing
+
+- **Area:** payments | pricing | docs
+- **What changed:** Production flipped to live PayPal (PAYPAL_MODE=live, live REST credentials, PAYPAL_WEBHOOK_ID=2WR38591EE735110J). The live webhook registration was FIXED via the PayPal API before the flip - it pointed at the apex domain and a nonexistent path (https://elegantrender.com/api/webhooks/paypal); now https://www.elegantrender.com/api/paypal/webhook with CHECKOUT.ORDER.COMPLETED + PAYMENT.CAPTURE.{COMPLETED,DENIED,REFUNDED}. Price sign-off recorded: option (a) - the catalog EUR list stands (170/250/295...), marketing copy aligned (site.ts FAQ 249->250; glossary anchor updated; docs/pricing/price-signoff.md annotated APPROVED). PayPal-only billing: IMPRINT.bank blanked (proforma PDFs skip empty rows; wire-transfer flow stays dormant). Customer invoicing needs no change - the platform auto-issues the numbered EUR export invoice after every capture (email + portal); PayPal's receipt is supplementary.
+- **Why:** Owner decisions 2026-07-07; first real E2E purchase test runs on live.
+- **Impact on conversion:** Live payments enabled.
+- **Impact on design:** None.
+- **Impact on code:** site.ts (price copy + bank), docs only; env on Vercel.
+- **Impact on docs:** This entry; glossary + price-signoff updated.
+- **Related files:** src/lib/content/site.ts, docs/copy-glossary.md, docs/pricing/price-signoff.md
+- **References:** PayPal webhook id 2WR38591EE735110J; owner chat 2026-07-07.
+
 ## 2026-07-06 - Homepage restored to .rs layout parity (owner override of the handoff hero)
 
 - **Area:** design | conversion

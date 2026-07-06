@@ -7,7 +7,7 @@ Binding terminology and tone rules for every agent translating or writing user-f
 - Sentence case everywhere: headings, buttons, navigation, labels.
 - No exclamation marks. No sales-speak.
 - Calm, precise, confident. The feeling is a price, not a sales call.
-- Numbers stay numeric: `€169`, `3-5 working days`, `4K`, `3 revision rounds`.
+- Numbers stay numeric: `€170`, `3-5 working days`, `4K`, `3 revision rounds`.
 - Use second person where helpful, active voice, and short sentences.
 
 ## Canonical terms
@@ -33,7 +33,7 @@ Binding terminology and tone rules for every agent translating or writing user-f
 
 - Public prices can display in the visitor's local currency when that feature is enabled.
 - Invoices are issued in EUR.
-- Current public anchor prices use the signed-off x9 set: `€169` interiors, `€249` exteriors, and `€294` 360 virtual tours.
+- Signed-off public prices are the catalog EUR list (owner sign-off 2026-07-07, option a): `€170` interiors, `€250` exteriors, `€295` 360 virtual tours. Marketing copy must quote these catalog values, never the retired x9 handoff set.
 - Tax and invoice wording is owned by Track A for payment surfaces and by Track D for legal pages.
 
 ## Brand

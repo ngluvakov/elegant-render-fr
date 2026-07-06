@@ -86,11 +86,14 @@ export const IMPRINT = {
   // payment instruction. Currently a placeholder — fill in real
   // values when wire-transfer flow goes live (you can leave any
   // single field empty and the PDF will skip its row).
+  // PayPal-only billing (owner decision 2026-07-07): no wire-transfer
+  // account. Populate these only if a wire-transfer offer flow is ever
+  // activated — proforma PDFs skip every empty row.
   bank: {
-    name: "Banca Intesa AD Beograd",
-    iban: "RS35 1600 0000 0000 0000 00", // REPLACE with real IBAN
-    swift: "DBDBRSBG",
-    accountNumber: "160-0000000000-00", // domestic account for RSD payments
+    name: "",
+    iban: "",
+    swift: "",
+    accountNumber: "",
   },
 } as const;
 
@@ -228,7 +231,7 @@ export const ORDERING_STEPS = [
     step: "01",
     title: "A new camera angle",
     description:
-      "Exteriors start at €249 including the full 3D model. Each additional angle of the same building costs 81% less.",
+      "Exteriors start at €250 including the full 3D model. Each additional angle of the same building costs 81% less.",
   },
   {
     step: "02",

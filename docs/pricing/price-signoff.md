@@ -24,4 +24,4 @@
 | Simple removal | €12 | $19 | £19 | CHF 19 | 59 zł | 140 kr | ￥3,000 |
 | Complex removal | €25 | $29 | £29 | CHF 29 | 109 zł | 280 kr | ￥5,000 |
 
-Sign-off: ____________________  date: ____________
+Sign-off: **APPROVED — option (a), catalog EUR list kept; marketing copy aligned.** Owner, 2026-07-07 (chat).

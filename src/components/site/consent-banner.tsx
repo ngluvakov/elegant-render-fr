@@ -119,25 +119,25 @@ export function ConsentBanner() {
       role="dialog"
       aria-modal="false"
       aria-labelledby="consent-banner-title"
-      className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-lg rounded-2xl border border-border/70 bg-card/95 p-4 shadow-[0_24px_60px_rgba(28,26,25,0.18)] backdrop-blur-md sm:inset-x-auto sm:right-5 sm:bottom-5 sm:p-6"
+      className="fixed inset-x-3 bottom-3 z-[60] mx-auto max-w-lg rounded-[4px] border border-border bg-card/95 p-4 shadow-[0_8px_24px_rgba(17,17,17,0.12)] backdrop-blur-md sm:inset-x-auto sm:right-5 sm:bottom-5 sm:p-6"
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent/12 text-accent sm:h-9 sm:w-9">
+        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent/12 text-foreground sm:h-9 sm:w-9">
           <Cookie className="h-4 w-4" />
         </div>
         <div className="min-w-0 flex-1">
-          <h2 id="consent-banner-title" className="text-base font-semibold text-foreground">
-            Kolačići i privatnost
+          <h2 id="consent-banner-title" className="text-base font-medium text-foreground">
+            Cookies &amp; privacy
           </h2>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground sm:text-sm">
-            Koristimo neophodne kolačiće za rad sajta. Dodatnu analitiku,
-            marketinško merenje i snimanje sesija uključujemo samo uz vašu
-            saglasnost, da bismo popravili iskustvo.{" "}
+            We use necessary cookies to run the site. Additional analytics,
+            marketing measurement and session recording are enabled only with
+            your consent, to help us improve the experience.{" "}
             <Link
               href="/legal/cookies"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              Više o kolačićima
+              More about cookies
             </Link>
             .
           </p>
@@ -146,7 +146,7 @@ export function ConsentBanner() {
           <button
             type="button"
             onClick={closeAndClear}
-            aria-label="Zatvori"
+            aria-label="Close"
             className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
             <X className="h-3.5 w-3.5" />
@@ -157,26 +157,26 @@ export function ConsentBanner() {
       {view === "details" && (
         <div className="mt-5 space-y-3 border-t border-border/50 pt-4">
           <ConsentRow
-            label="Neophodni"
-            description="Sesija, prijava, čuvanje izbora kolačića. Uvek aktivni."
+            label="Necessary"
+            description="Session, sign-in, storing your cookie choice. Always active."
             checked
             disabled
           />
           <ConsentRow
-            label="Analitika"
-            description="Anonimne statistike o korišćenju (PostHog, Google Analytics 4 / Tag Manager) i izveštaji o greškama (Sentry)."
+            label="Analytics"
+            description="Anonymous usage statistics (PostHog, Google Analytics 4 / Tag Manager) and error reports (Sentry)."
             checked={analytics}
             onChange={setAnalytics}
           />
           <ConsentRow
             label="Marketing"
-            description="Merenje LinkedIn kampanja, konverzija i publike preko LinkedIn Insight Tag-a."
+            description="Measuring campaigns, conversions and audiences for our marketing tools."
             checked={marketing}
             onChange={setMarketing}
           />
           <ConsentRow
-            label="Snimanje sesija"
-            description="Anonimna snimanja kretanja po sajtu — pomaže nam da nađemo mesta gde se kupci muče."
+            label="Session recording"
+            description="Anonymous recordings of how the site is used — helps us find where buyers struggle."
             checked={recording}
             onChange={setRecording}
           />
@@ -189,24 +189,24 @@ export function ConsentBanner() {
             <button
               type="button"
               onClick={handleAcceptAll}
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--color-clay-deep)] sm:flex-none"
+              className="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-colors duration-200 hover:bg-[#00c77e] active:bg-[#00b372] sm:flex-none"
             >
-              Prihvati sve
+              Accept all
             </button>
             <button
               type="button"
               onClick={handleNecessaryOnly}
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary sm:flex-none"
+              className="inline-flex min-h-11 items-center justify-center rounded-[4px] border border-[#111111] bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-secondary sm:flex-none"
             >
-              Samo neophodne
+              Necessary only
             </button>
             <button
               type="button"
               onClick={() => setForceOpen(true)}
-              className="col-span-2 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground transition hover:text-foreground sm:col-span-1 sm:text-sm"
+              className="col-span-2 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-[4px] px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground sm:col-span-1 sm:text-sm"
             >
               <Settings className="h-3.5 w-3.5" />
-              Podešavanja
+              Settings
             </button>
           </>
         )}
@@ -215,16 +215,16 @@ export function ConsentBanner() {
             <button
               type="button"
               onClick={handleSavePrefs}
-              className="inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-[color:var(--color-clay-deep)] sm:flex-none"
+              className="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-colors duration-200 hover:bg-[#00c77e] active:bg-[#00b372] sm:flex-none"
             >
-              Sačuvaj izbor
+              Save choices
             </button>
             <button
               type="button"
               onClick={handleAcceptAll}
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary sm:flex-none"
+              className="inline-flex min-h-11 items-center justify-center rounded-[4px] border border-[#111111] bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-secondary sm:flex-none"
             >
-              Prihvati sve
+              Accept all
             </button>
           </>
         )}

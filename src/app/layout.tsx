@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { ConsentBanner } from "@/components/site/consent-banner";
 import { GoogleAnalyticsPostLaunch } from "@/components/analytics/google-analytics-post-launch";
 import { GoogleTagManagerPostLaunch } from "@/components/analytics/google-tag-manager-post-launch";
-import { LinkedInInsightTag } from "@/components/analytics/linkedin-insight-tag";
 import { SITE } from "@/lib/content/site";
 import {
   absoluteUrl,
@@ -70,7 +69,7 @@ export const metadata: Metadata = {
         url: absoluteUrl(SEO.defaultImage),
         width: 1200,
         height: 630,
-        alt: `${SITE.name} arhitektonska vizuelizacija`,
+        alt: `${SITE.name} architectural visualization`,
       },
     ],
   },
@@ -111,7 +110,6 @@ export default function RootLayout({
         <SpeedInsights />
         <GoogleAnalyticsPostLaunch />
         <GoogleTagManagerPostLaunch />
-        <LinkedInInsightTag />
       </body>
     </html>
   );

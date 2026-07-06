@@ -123,7 +123,7 @@ export function ProjectInquiryForm({
         const body = (await urlRes.json().catch(() => null)) as
           | { error?: string }
           | null;
-        throw new Error(body?.error ?? "Greška pri generisanju upload linka");
+        throw new Error(body?.error ?? "Could not generate an upload link");
       }
 
       const { signedUrl, storagePath } = (await urlRes.json()) as {
@@ -140,7 +140,7 @@ export function ProjectInquiryForm({
         body: file,
       });
 
-      if (!uploadRes.ok) throw new Error("Upload nije uspeo");
+      if (!uploadRes.ok) throw new Error("Upload failed");
 
       setFiles((prev) => [
         ...prev,
@@ -158,7 +158,7 @@ export function ProjectInquiryForm({
           item.file === file
             ? {
                 ...item,
-                error: err instanceof Error ? err.message : "Greška",
+                error: err instanceof Error ? err.message : "Something went wrong",
               }
             : item,
         ),
@@ -174,21 +174,21 @@ export function ProjectInquiryForm({
       if (file.size > PROJECT_INQUIRY_MAX_FILE_BYTES) {
         setUploading((prev) => [
           ...prev,
-          { file, error: "Fajl je veći od 50MB" },
+          { file, error: "File is larger than 50MB" },
         ]);
         return;
       }
       if (!isAllowedProjectInquiryMimeType(file.type)) {
         setUploading((prev) => [
           ...prev,
-          { file, error: "Dozvoljeni su JPG, PNG, WebP, TIFF i PDF" },
+          { file, error: "Allowed formats are JPG, PNG, WebP, TIFF and PDF" },
         ]);
         return;
       }
       if (nextTotal + file.size > PROJECT_INQUIRY_MAX_TOTAL_BYTES) {
         setUploading((prev) => [
           ...prev,
-          { file, error: "Ukupna veličina prelazi 100MB" },
+          { file, error: "Total size exceeds 100MB" },
         ]);
         return;
       }
@@ -201,7 +201,7 @@ export function ProjectInquiryForm({
     event.preventDefault();
     if (pending) return;
     if (uploading.some((file) => !file.error)) {
-      setResult({ kind: "error", message: "Sačekajte da se upload završi." });
+      setResult({ kind: "error", message: "Please wait for the upload to finish." });
       return;
     }
 
@@ -251,16 +251,16 @@ export function ProjectInquiryForm({
 
   if (result.kind === "success") {
     return (
-      <div className="rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/[0.07] p-7 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--color-sage)] text-white">
+      <div className="rounded-2xl border border-border bg-secondary p-7 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-foreground">
           <Check className="h-5 w-5" />
         </div>
         <h2 className="mt-4 text-2xl font-semibold text-foreground">
-          Upit je primljen
+          Inquiry received
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Hvala. Pregledaćemo brief i materijale, pa se javljamo sa predlogom
-          usluga i okvirnom cenom.
+          Thank you. We will review the brief and materials, then get back to
+          you with a service proposal and an estimate.
         </p>
         {mode === "contact" && (
           <Button
@@ -269,7 +269,7 @@ export function ProjectInquiryForm({
             className="mt-5"
             onClick={resetForAnother}
           >
-            Pošalji još jedan upit
+            Send another inquiry
           </Button>
         )}
       </div>
@@ -282,7 +282,7 @@ export function ProjectInquiryForm({
         <div className="space-y-2">
           <Label htmlFor={`${mode}-inquiry-name`}>
             <Pencil className="h-3 w-3 text-accent/60" />
-            Ime i prezime
+            Full name
           </Label>
           <Input
             id={`${mode}-inquiry-name`}
@@ -314,7 +314,7 @@ export function ProjectInquiryForm({
         <div className="space-y-2">
           <Label htmlFor={`${mode}-inquiry-phone`}>
             <Pencil className="h-3 w-3 text-accent/60" />
-            Telefon (opciono)
+            Phone (optional)
           </Label>
           <Input
             id={`${mode}-inquiry-phone`}
@@ -326,14 +326,14 @@ export function ProjectInquiryForm({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${mode}-inquiry-service`}>Tip projekta</Label>
+          <Label htmlFor={`${mode}-inquiry-service`}>Project type</Label>
           <select
             id={`${mode}-inquiry-service`}
             value={serviceType}
             onChange={(event) => setServiceType(event.target.value)}
             className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           >
-            <option value="">Izaberite ako znate</option>
+            <option value="">Select if you already know</option>
             {PROJECT_INQUIRY_SERVICE_TYPES.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -348,7 +348,7 @@ export function ProjectInquiryForm({
           <div className="space-y-2">
             <Label htmlFor="contact-inquiry-company">
               <Pencil className="h-3 w-3 text-accent/60" />
-              Kompanija (opciono)
+              Company (optional)
             </Label>
             <Input
               id="contact-inquiry-company"
@@ -359,22 +359,22 @@ export function ProjectInquiryForm({
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="contact-inquiry-budget">Okvirni budžet</Label>
+              <Label htmlFor="contact-inquiry-budget">Approximate budget</Label>
               <Input
                 id="contact-inquiry-budget"
                 value={budget}
                 onChange={(event) => setBudget(event.target.value)}
-                placeholder="npr. okvirni budžet ili raspon..."
+                placeholder="e.g. an approximate budget or a range..."
                 maxLength={80}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="contact-inquiry-deadline">Rok</Label>
+              <Label htmlFor="contact-inquiry-deadline">Deadline</Label>
               <Input
                 id="contact-inquiry-deadline"
                 value={deadline}
                 onChange={(event) => setDeadline(event.target.value)}
-                placeholder="npr. ove nedelje, do kraja meseca..."
+                placeholder="e.g. this week, by the end of the month..."
                 maxLength={80}
               />
             </div>
@@ -385,14 +385,14 @@ export function ProjectInquiryForm({
       <div className="space-y-2">
         <Label htmlFor={`${mode}-inquiry-message`}>
           <Pencil className="h-3 w-3 text-accent/60" />
-          Opis projekta
+          Project description
         </Label>
         <Textarea
           id={`${mode}-inquiry-message`}
           value={message}
           onChange={(event) => setMessage(event.target.value)}
           rows={mode === "contact" ? 7 : 4}
-          placeholder="Tip prostora, šta želite da postignete, koliko kadrova/prostorija imate, rok i linkovi ka referencama..."
+          placeholder="Type of space, what you want to achieve, how many views/rooms you have, your deadline and links to references..."
           required
           maxLength={4000}
         />
@@ -419,10 +419,10 @@ export function ProjectInquiryForm({
         >
           <Upload className="mb-3 h-7 w-7 text-muted-foreground/55" />
           <p className="text-sm font-medium text-foreground">
-            Priložite planove, fotografije ili reference
+            Attach floor plans, photos or references
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            JPG, PNG, WebP, TIFF, PDF · max 100MB ukupno
+            JPG, PNG, WebP, TIFF, PDF · max 100MB total
           </p>
           <input
             ref={inputRef}
@@ -458,7 +458,7 @@ export function ProjectInquiryForm({
                       item.error ? "text-destructive" : "text-accent"
                     }`}
                   >
-                    {item.error ?? "Otpremanje..."}
+                    {item.error ?? "Uploading..."}
                   </p>
                 </div>
                 <span className="text-xs text-muted-foreground">
@@ -469,9 +469,9 @@ export function ProjectInquiryForm({
             {files.map((file) => (
               <div
                 key={file.storagePath}
-                className="flex items-center gap-3 rounded-lg border border-[color:var(--color-sage)]/20 bg-[color:var(--color-sage)]/5 px-3 py-2"
+                className="flex items-center gap-3 rounded-lg border border-border bg-secondary/50 px-3 py-2"
               >
-                <Paperclip className="h-4 w-4 flex-shrink-0 text-[color:var(--color-sage-deep)]" />
+                <Paperclip className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm text-foreground">
                     {file.fileName}
@@ -488,7 +488,7 @@ export function ProjectInquiryForm({
                     )
                   }
                   className="rounded p-1 text-muted-foreground transition-colors hover:text-destructive"
-                  aria-label="Ukloni fajl iz upita"
+                  aria-label="Remove file from inquiry"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -506,10 +506,11 @@ export function ProjectInquiryForm({
 
       <div className="flex flex-col gap-3 border-t border-border/40 pt-5 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs leading-relaxed text-muted-foreground">
-          Slanjem forme pristajete da obradimo podatke radi pripreme odgovora.
+          By submitting this form you agree that we process your details to
+          prepare a response.
         </p>
         <Button type="submit" size="lg" variant="accent" disabled={pending}>
-          {pending ? "Šaljemo..." : "Pošalji upit"}
+          {pending ? "Sending..." : "Send an inquiry"}
         </Button>
       </div>
     </form>

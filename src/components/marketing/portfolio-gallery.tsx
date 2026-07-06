@@ -19,7 +19,6 @@ import Image from "next/image";
 import { Dialog } from "@base-ui/react/dialog";
 import { Maximize2, Play, X } from "lucide-react";
 import { Panorama360 } from "@/components/marketing/panorama-360";
-import { cn } from "@/lib/utils";
 import type { PortfolioTile } from "@/lib/portfolio-gallery";
 
 type PanoramaPortfolioTile = Extract<PortfolioTile, { kind: "panorama" }>;
@@ -47,20 +46,20 @@ function Tile({
         fill
         sizes={GRID_SIZES}
         priority={priority}
-        className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+        className="object-cover"
       />
 
       {/* Video play button */}
       {tile.kind === "video" && (
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-background/85 text-foreground shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+          <span className="flex h-14 w-14 items-center justify-center rounded-[4px] bg-background/85 text-foreground shadow-sm backdrop-blur-sm">
             <Play className="ml-0.5 h-6 w-6 fill-current" />
           </span>
         </span>
       )}
 
       {/* Category caption on hover */}
-      <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-2.5 pt-10 text-[0.72rem] font-medium uppercase tracking-[0.16em] text-background/95 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+      <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-2.5 pt-10 font-mono text-xs font-medium uppercase tracking-[0.08em] text-white/90 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
         {tile.label}
       </span>
     </button>
@@ -123,10 +122,7 @@ function PanoramaTile({
         fill
         sizes={GRID_SIZES}
         priority={priority}
-        className={cn(
-          "object-cover transition-transform duration-500",
-          !active && "group-hover:scale-[1.04]",
-        )}
+        className="object-cover"
       />
 
       {/* Live drag-to-look viewer — only while hovered. */}
@@ -137,7 +133,7 @@ function PanoramaTile({
       )}
 
       {/* 360 badge */}
-      <span className="pointer-events-none absolute left-3 top-3 z-10 rounded-full bg-foreground/75 px-2.5 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-background/95 backdrop-blur-sm">
+      <span className="pointer-events-none absolute left-3 top-3 z-10 rounded-full bg-foreground/75 px-2.5 py-1 font-mono text-xs font-medium uppercase tracking-[0.08em] text-white/90 backdrop-blur-sm">
         360°
       </span>
 
@@ -145,8 +141,8 @@ function PanoramaTile({
       <button
         type="button"
         onClick={onOpen}
-        aria-label={`Otvori preko celog ekrana: ${tile.alt}`}
-        className="absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-background/85 text-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label={`Open fullscreen: ${tile.alt}`}
+        className="absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-[4px] bg-background/85 text-foreground shadow-sm backdrop-blur-sm transition-colors duration-200 hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Maximize2 className="h-4 w-4" />
       </button>
@@ -158,14 +154,14 @@ function PanoramaTile({
         <button
           type="button"
           onClick={onOpen}
-          aria-label={`Otvori 360 prikaz: ${tile.alt}`}
+          aria-label={`Open 360° view: ${tile.alt}`}
           className="absolute inset-0 z-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         />
       )}
 
       {/* Caption / drag hint on hover */}
-      <span className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-2.5 pt-10 text-[0.72rem] font-medium uppercase tracking-[0.16em] text-background/95 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        {active ? "Prevucite za pogled" : tile.label}
+      <span className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-2.5 pt-10 font-mono text-xs font-medium uppercase tracking-[0.08em] text-white/90 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+        {active ? "Drag to look around" : tile.label}
       </span>
     </div>
   );
@@ -247,8 +243,8 @@ export function PortfolioGallery({ tiles }: { tiles: PortfolioTile[] }) {
               </>
             )}
             <Dialog.Close
-              aria-label="Zatvori"
-              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-background/85 text-foreground shadow-md backdrop-blur-sm transition-colors hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label="Close"
+              className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-[4px] bg-background/85 text-foreground shadow-sm backdrop-blur-sm transition-colors duration-200 hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <X className="h-5 w-5" />
             </Dialog.Close>

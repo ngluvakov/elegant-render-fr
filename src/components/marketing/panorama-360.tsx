@@ -100,7 +100,7 @@ export function Panorama360({ src, title, showZoomCtrl = true }: Props) {
       ref={containerRef}
       className="h-full w-full"
       role="img"
-      aria-label={title ?? "Interaktivna 360° panorama"}
+      aria-label={title ?? "Interactive 360° panorama"}
     />
   );
 }

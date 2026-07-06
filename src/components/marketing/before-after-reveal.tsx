@@ -9,8 +9,8 @@
  * `.before-after-divider`, with `@property --reveal` registered for smooth
  * transitions.
  *
- * Used by: tool-picker-card (AI Studio tool picker), quick-order-hero
- * ("Minimalni ulaz" preview for Virtuelno opremanje).
+ * Used by: tool-picker-card (AI Studio tool picker), the AI Studio landing
+ * page, the service detail pages and the services showcase.
  */
 "use client";
 
@@ -52,8 +52,8 @@ export function BeforeAfterReveal({
   beforeSrc,
   afterSrc,
   alt,
-  beforeAlt = `Pre: ${alt}`,
-  afterAlt = `Posle: ${alt}`,
+  beforeAlt = `Before: ${alt}`,
+  afterAlt = `After: ${alt}`,
   sizes = "(max-width: 768px) 100vw, 55vw",
   className,
   fallback,

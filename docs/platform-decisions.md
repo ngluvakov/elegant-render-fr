@@ -20,6 +20,18 @@ The pre-fork Serbian platform history is preserved as a brief archive in `docs/p
 - **References:** PR, commit, issue, or chat context if available.
 ```
 
+## 2026-07-06 - Track C: marketing surface on the White Rook design system, fully English
+
+- **Area:** design | conversion | docs
+- **What changed:** Homepage rebuilt to the handoff spec with verbatim final copy (hero "See your space before you decide.", spec strip, intent columns, before/after slider with demo-swipe + cursor tracking per the non-negotiables, model-first dark panel, services cards, process, ISO strip, native-details FAQ, closing CTA). Header (72px blur, Sign in + Start a project, no powered-by badge) and dark footer (White Rook attribution line) rebuilt. site.ts and seo.ts fully English (htmlLang en, en + x-default hreflang, English keywords/JSON-LD); consent banner English; LinkedIn Insight tag deleted; GTM fallback container removed (env-only); manifest EN + #0a0a0a; sitemap legal entries fixed. Marketing pages swept: zero Serbian copy, zero warm-palette var() usages, handoff radii/shadows/eyebrows everywhere in Track C paths. Button accent variant lost its clay glow (green hover/press tokens).
+- **Why:** Complete new visual identity per docs/design-handoff (owner decision); English marketing surface for elegantrender.com.
+- **Impact on conversion:** New handoff-specified funnel surfaces; homepage prices show handoff-verbatim price points (€169/€249/€294) pending the final price-table sign-off (catalog: €170/€250/€295).
+- **Impact on design:** Marketing fully on the international theme; portal restyle sweep still pending (compat alias block remains for portal).
+- **Impact on code:** ~50 files under (marketing)/**, components/{marketing,site}/**, site.ts, seo.ts, layout/manifest/sitemap, analytics components.
+- **Impact on docs:** This entry.
+- **Related files:** src/app/(marketing)/page.tsx, src/components/marketing/before-after-slider.tsx, src/components/site/{site-header,site-footer,consent-banner}.tsx, src/lib/content/site.ts, src/lib/seo.ts
+- **References:** docs/design-handoff/README.md; sync point: Track C phase 1 done. Open items: og-image redesign, portal design sweep, cross-domain sr hreflang, DEFAULT_SITE_URL fallback now elegantrender.com.
+
 ## 2026-07-06 - S1: PayPal live-path complete — EUR platform, Nestpay excised, 2-step checkout
 
 - **Area:** payments | pricing | order lifecycle | conversion | architecture

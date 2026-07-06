@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { SectionKicker } from "@/components/brand/section-kicker";
 import { JsonLd } from "@/components/seo/json-ld";
 import { PreFooterCta } from "@/components/site/pre-footer-cta";
 import {
@@ -19,18 +18,18 @@ import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 const FAQ_DESCRIPTION =
-  "Odgovori na najčešća pitanja o arhitektonskoj vizuelizaciji, cenama, rokovima, materijalima, revizijama i AI obradi fotografija nekretnina.";
+  "Answers to the most common questions about architectural visualization, pricing, timelines, materials, revision rounds and AI real-estate photo editing.";
 
 type FaqItem = { question: string; answer: string };
 type FaqGroup = { title: string; items: readonly FaqItem[] };
 
 const FAQ_GROUPS: readonly FaqGroup[] = [
   {
-    title: "Opšta pitanja",
+    title: "General questions",
     items: FAQ_ITEMS,
   },
   {
-    title: "Usluge i cene",
+    title: "Services and pricing",
     items: SERVICES_PAGE_FAQS,
   },
   {
@@ -40,12 +39,12 @@ const FAQ_GROUPS: readonly FaqGroup[] = [
 ];
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Često postavljana pitanja",
+  title: "Frequently asked questions",
   description: FAQ_DESCRIPTION,
   path: "/faq",
 });
 
-export default async function CestoPostavljanaPitanjaPage() {
+export default async function FaqPage() {
   const [displayCurrency, pricingCatalog] = await Promise.all([
     getPublicDisplayCurrency(),
     getPublishedPricingCatalog(),
@@ -68,13 +67,13 @@ export default async function CestoPostavljanaPitanjaPage() {
         data={[
           buildWebPageJsonLd({
             path: "/faq",
-            name: `Često postavljana pitanja — ${SITE.name}`,
+            name: `Frequently asked questions — ${SITE.name}`,
             description: FAQ_DESCRIPTION,
           }),
           buildBreadcrumbJsonLd([
-            { name: "Početna", path: "/" },
+            { name: "Home", path: "/" },
             {
-              name: "Često postavljana pitanja",
+              name: "Frequently asked questions",
               path: "/faq",
             },
           ]),
@@ -82,34 +81,46 @@ export default async function CestoPostavljanaPitanjaPage() {
         ]}
       />
       <main className="mx-auto w-full max-w-[min(96vw,1180px)] px-6 pb-24 pt-20 md:pt-28">
-        <SectionKicker>Pitanja</SectionKicker>
+        <p className="section-kicker">Questions</p>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
-          Često postavljana pitanja
+          Frequently asked questions
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-          Kratki, konkretni odgovori o procesu, rokovima, cenama, potrebnim
-          materijalima i AI obradi fotografija nekretnina.
+          Short, specific answers about the process, timelines, pricing,
+          required materials and AI real-estate photo editing.
         </p>
 
-        <div className="mt-14 space-y-12">
+        <div className="mt-14 space-y-14">
           {faqGroups.map((group) => (
             <section key={group.title} className="scroll-mt-24">
               <h2 className="text-3xl leading-tight text-foreground md:text-4xl">
                 {group.title}
               </h2>
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="mt-4 flex flex-col">
                 {group.items.map((item) => (
-                  <article
+                  <details
                     key={item.question}
-                    className="rounded-xl border border-border/70 bg-card/80 p-6 shadow-[0_14px_40px_rgba(28,26,25,0.04)]"
+                    className="group border-b border-border py-1"
                   >
-                    <h3 className="text-lg font-semibold text-foreground">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-[18px] text-[17px] font-medium text-foreground [&::-webkit-details-marker]:hidden">
                       {item.question}
-                    </h3>
-                    <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                      <span
+                        aria-hidden
+                        className="font-mono font-normal text-muted-foreground group-open:hidden"
+                      >
+                        +
+                      </span>
+                      <span
+                        aria-hidden
+                        className="hidden font-mono font-normal text-muted-foreground group-open:inline"
+                      >
+                        −
+                      </span>
+                    </summary>
+                    <p className="max-w-[640px] pb-5 text-[15px] leading-relaxed text-muted-foreground">
                       {item.answer}
                     </p>
-                  </article>
+                  </details>
                 ))}
               </div>
             </section>
@@ -117,8 +128,8 @@ export default async function CestoPostavljanaPitanjaPage() {
         </div>
       </main>
       <PreFooterCta
-        heading="Ostalo je još pitanja — ili si spreman?"
-        body="Ako odgovor nisi pronašao, otvori kalkulator i složi varijantu sam, ili pošalji brzi upit i vraćamo se istog radnog dana."
+        heading="Still have questions — or ready to start?"
+        body="If you didn't find your answer, open the calculator and build your configuration yourself, or send a quick inquiry and we reply the same working day."
       />
     </>
   );

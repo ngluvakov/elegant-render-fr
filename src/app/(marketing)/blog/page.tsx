@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { FinalCta } from "@/components/marketing/final-cta";
-import { SectionKicker } from "@/components/brand/section-kicker";
 import { JsonLd } from "@/components/seo/json-ld";
 import { BlogCard } from "@/components/marketing/blog/blog-card";
 import {
@@ -15,7 +14,7 @@ import {
 } from "@/lib/seo";
 
 const BLOG_DESCRIPTION =
-  "Saveti, vodiči i uvidi o arhitektonskoj vizuelizaciji — virtuelno opremanje, renderi, 2D i 3D osnove i prodaja nekretnina kroz sliku.";
+  "Advice, guides and insights on architectural visualization — virtual staging, renders, 2D and 3D floor plans and selling property through imagery.";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Blog",
@@ -36,7 +35,7 @@ export default function BlogPage() {
             description: BLOG_DESCRIPTION,
           }),
           buildBreadcrumbJsonLd([
-            { name: "Početna", path: "/" },
+            { name: "Home", path: "/" },
             { name: "Blog", path: "/blog" },
           ]),
           buildBlogItemListJsonLd(posts),
@@ -44,9 +43,9 @@ export default function BlogPage() {
       />
 
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
-        <SectionKicker>Blog</SectionKicker>
+        <p className="section-kicker">Blog</p>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
-          Uvidi i saveti iz arhitektonske vizuelizacije
+          Insights and advice on architectural visualization
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foreground/70">
           {BLOG_DESCRIPTION}
@@ -57,7 +56,7 @@ export default function BlogPage() {
         <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
           {posts.length === 0 ? (
             <p className="text-foreground/60">
-              Uskoro objavljujemo prve tekstove.
+              The first articles are coming soon.
             </p>
           ) : (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

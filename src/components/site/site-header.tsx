@@ -1,6 +1,10 @@
 /**
- * SiteHeader — Sticky marketing site header with mega-menu services dropdown,
- * main navigation links, auth/portal button, and a mobile drawer.
+ * SiteHeader — sticky marketing header per the White Rook design handoff:
+ * 72px tall, rgba(255,255,255,0.85) + 12px backdrop blur, 1px bottom
+ * border. Left: ER logo (48px) + wordmark; center: five nav links with
+ * hover underline; right: "Sign in" (secondary) + "Start a project"
+ * (primary green). The old "powered by White Rook" badge is removed —
+ * White Rook attribution lives in the footer only.
  *
  * Used on: marketing layout (all public pages).
  */
@@ -11,253 +15,98 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { ArrowRight, ChevronDown, Menu, User } from "lucide-react";
-import { BrandLogo } from "@/components/brand/brand-logo";
-import { buttonVariants } from "@/components/ui/button";
-import { ButtonLink } from "@/components/ui/button-link";
+import { Menu } from "lucide-react";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
-import {
-  usePublicCurrency,
-  usePublicPricingSettings,
-} from "@/components/site/public-currency-provider";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
 import {
   Sheet,
   SheetContent,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Collapsible } from "@/components/ui/collapsible";
-import {
-  CATEGORY_LABELS,
-  CATEGORY_ORDER,
-  SERVICES,
-  getServicesByCategory,
-} from "@/lib/catalog/services";
-import { formatPublicPriceText } from "@/lib/catalog/display-currency";
 import { SITE_FEATURES } from "@/lib/site-features";
 import { cn } from "@/lib/utils";
 
 const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
-  { href: "/ai-studio", label: "AI Studio", pattern: "/ai-studio" },
-  { href: "/pricing", label: "Cene", pattern: "/pricing" },
+  { href: "/services", label: "Services", pattern: "/services" },
+  { href: "/pricing", label: "Pricing", pattern: "/pricing" },
   ...(SITE_FEATURES.portfolio
-    ? [{ href: "/portfolio", label: "Portfolio", pattern: "/portfolio" }]
+    ? [{ href: "/portfolio", label: "Our work", pattern: "/portfolio" }]
     : []),
-  { href: "/blog", label: "Blog", pattern: "/blog" },
-  { href: "/about", label: "O nama", pattern: "/about" },
-  { href: "/contact", label: "Kontakt", pattern: "/contact" },
+  { href: "/faq", label: "FAQ", pattern: "/faq" },
+  { href: "/contact", label: "Contact", pattern: "/contact" },
 ];
 
-// Desktop "Usluge" mega-menu: split the visible service categories into two
-// stacked columns. Each column flows independently (no cross-column grid
-// gaps), so categories can be cleanly divided by a horizontal rule.
-const MENU_CATEGORIES = CATEGORY_ORDER.filter((category) =>
-  getServicesByCategory(category).some((service) => !service.hideFromMenu),
-);
-const MENU_COLUMNS = [
-  MENU_CATEGORIES.slice(0, Math.ceil(MENU_CATEGORIES.length / 2)),
-  MENU_CATEGORIES.slice(Math.ceil(MENU_CATEGORIES.length / 2)),
-];
+const SIGN_IN_CLASSES =
+  "inline-flex h-9 items-center rounded-[4px] border border-[#111111] bg-white px-4 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-secondary";
+const START_PROJECT_CLASSES =
+  "inline-flex h-9 items-center rounded-[4px] bg-accent px-4 text-sm font-medium text-accent-foreground transition-colors duration-200 hover:bg-[#00c77e] active:bg-[#00b372]";
 
 export function SiteHeader() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const displayCurrency = usePublicCurrency();
-  const pricingSettings = usePublicPricingSettings();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
-  // Controlled NavigationMenu state so we can close the mega-menu after
-  // the user clicks through a service link — Base-UI doesn't auto-close
-  // on Next.js Link navigation, so the menu would otherwise stay open and
-  // overlap the destination page.
-  const [navMenuValue, setNavMenuValue] = useState<string | null>(null);
   const isLoggedIn = !!session?.user;
 
   const isActive = (pattern: string) =>
     pathname === pattern || pathname.startsWith(`${pattern}/`);
 
-  const servicesActive = pathname === "/services" || pathname.startsWith("/services/");
-
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur">
-      {/* Full-bleed bar with 20px side padding so the brand sits 20px from the edge. */}
-      <div className="flex h-20 w-full items-center justify-between gap-6 px-5">
-        <div className="flex items-center gap-3">
-          {/* Logo sits inside the 80px bar, vertically centered: 72px logo with
-              ~4px breathing room top/bottom. No longer overflows the header. */}
-          <div className="flex h-20 items-center">
-            <BrandLogo size="xl" />
-          </div>
-          {/* Powered-by badge — link disabled for now (renders as a plain,
-              non-interactive image). Re-wrap in an <a href> to re-enable. */}
-          <span className="hidden items-center sm:inline-flex">
-            <Image
-              src="/branding/powered-by-whiterook.webp"
-              alt="Powered by White Rook"
-              width={480}
-              height={188}
-              priority
-              className="h-11 w-auto"
-            />
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-white/85 backdrop-blur-[12px]">
+      <div className="mx-auto flex h-[72px] w-full max-w-[1280px] items-center justify-between gap-8 px-6 sm:px-12">
+        <Link
+          href="/"
+          className="flex items-center gap-3.5 text-foreground"
+          aria-label="Elegant Render — home"
+        >
+          <Image
+            src="/branding/er-logo-black.png"
+            alt="Elegant Render"
+            width={2011}
+            height={3186}
+            priority
+            className="h-12 w-auto"
+          />
+          <span className="text-[15px] font-medium tracking-[-0.01em]">
+            Elegant Render
           </span>
-        </div>
+        </Link>
 
         {/* Desktop nav */}
-        <NavigationMenu
-          value={navMenuValue}
-          onValueChange={setNavMenuValue}
-          className="hidden max-w-none flex-1 justify-center md:flex"
-        >
-          <NavigationMenuList className="gap-1">
-            <NavigationMenuItem>
-              <NavigationMenuTrigger
-                className={cn(
-                  "text-foreground/70 hover:text-foreground",
-                  servicesActive && "text-foreground",
-                )}
-              >
-                Usluge
-              </NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <div className="w-[min(92vw,640px)] p-5">
-                  <div className="mb-5 flex items-end justify-between gap-4 border-b border-border/50 pb-3">
-                    <div>
-                      <p className="text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                        Usluge
-                      </p>
-                      <p className="mt-1 text-sm text-foreground">
-                        Sve iz zvaničnog cenovnika
-                      </p>
-                    </div>
-                    <NavigationMenuLink
-                      render={
-                        <Link
-                          href="/services"
-                          onClick={() => setNavMenuValue(null)}
-                          className="text-xs font-medium text-accent hover:underline"
-                        />
-                      }
-                    >
-                      Pogledaj sve
-                      <ArrowRight className="ml-1 inline h-3 w-3" />
-                    </NavigationMenuLink>
-                  </div>
+        <nav className="hidden items-center gap-7 md:flex">
+          {MAIN_NAV.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground hover:underline",
+                isActive(item.pattern) && "text-foreground",
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
 
-                  {/*
-                    Two stacked columns (not an auto grid/multicol): each
-                    column flows its categories independently, so there are no
-                    cross-column row gaps, and a horizontal rule cleanly
-                    separates categories within a column (skipped on the first
-                    of each column so no stray line floats at the top).
-                  */}
-                  <div className="grid gap-x-6 sm:grid-cols-2">
-                    {MENU_COLUMNS.map((column, columnIndex) => (
-                      <div key={columnIndex}>
-                        {column.map((category, indexInColumn) => {
-                          const services = getServicesByCategory(
-                            category,
-                          ).filter((s) => !s.hideFromMenu);
-                          return (
-                            <div
-                              key={category}
-                              className={cn(
-                                "space-y-1",
-                                indexInColumn > 0 &&
-                                  "mt-4 border-t border-border/50 pt-4",
-                              )}
-                            >
-                              <p className="px-2 text-[0.8rem] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                                {CATEGORY_LABELS[category]}
-                              </p>
-                              {services.map((service) => (
-                                <NavigationMenuLink
-                                  key={service.slug}
-                                  render={
-                                    <Link
-                                      href={`/services/${service.slug}`}
-                                      onClick={() => setNavMenuValue(null)}
-                                    />
-                                  }
-                                  className="!flex items-center justify-between gap-3 px-2 py-1.5"
-                                >
-                                  <span className="text-sm text-foreground">
-                                    {service.name}
-                                  </span>
-                                  <span className="text-[0.72rem] font-medium text-muted-foreground">
-                                    od{" "}
-                                    {formatPublicPriceText(
-                                      service.variants[0].priceLabel,
-                                      displayCurrency,
-                                      pricingSettings,
-                                    )}
-                                  </span>
-                                </NavigationMenuLink>
-                              ))}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-
-            {MAIN_NAV.map((item) => (
-              <NavigationMenuItem key={item.href}>
-                <NavigationMenuLink
-                  render={
-                    <Link
-                      href={item.href}
-                      onClick={() => setNavMenuValue(null)}
-                    />
-                  }
-                  className={cn(
-                    "px-3 py-1.5 text-sm font-medium text-foreground/70 hover:text-foreground",
-                    isActive(item.pattern) && "text-foreground",
-                  )}
-                >
-                  {item.label}
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-
-        <div className="hidden items-center gap-2 md:flex">
-          <ButtonLink
+        <div className="hidden items-center gap-3 md:flex">
+          <Link
             href={isLoggedIn ? "/portal" : "/login"}
-            size="sm"
-            variant="outline"
+            className={SIGN_IN_CLASSES}
           >
-            <User className="mr-1.5 h-3.5 w-3.5" />
-            {isLoggedIn ? "Portal" : "Prijava"}
-          </ButtonLink>
+            {isLoggedIn ? "Portal" : "Sign in"}
+          </Link>
           <QuickInquiryLink
-            size="sm"
-            variant="accent"
+            className={START_PROJECT_CLASSES}
             inquiry={{ source: "site-header", sourceLabel: "Header CTA" }}
           >
-            Pošaljite upit
+            Start a project
           </QuickInquiryLink>
         </div>
 
         {/* Mobile trigger */}
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger
-            aria-label="Otvori meni"
-            className={cn(
-              buttonVariants({ variant: "ghost", size: "icon" }),
-              "md:hidden",
-            )}
+            aria-label="Open menu"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-[4px] text-foreground transition-colors duration-200 hover:bg-secondary md:hidden"
           >
             <Menu className="h-5 w-5" />
           </SheetTrigger>
@@ -265,95 +114,68 @@ export function SiteHeader() {
             side="right"
             className="flex flex-col gap-6 overflow-y-auto p-6"
           >
-            <SheetTitle className="sr-only">Glavni meni</SheetTitle>
-            <BrandLogo />
+            <SheetTitle className="sr-only">Main menu</SheetTitle>
+            <Link
+              href="/"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-3 text-foreground"
+            >
+              <Image
+                src="/branding/er-logo-black.png"
+                alt="Elegant Render"
+                width={2011}
+                height={3186}
+                className="h-10 w-auto"
+              />
+              <span className="text-[15px] font-medium tracking-[-0.01em]">
+                Elegant Render
+              </span>
+            </Link>
 
             <nav className="flex flex-col gap-1">
-              <button
-                type="button"
-                onClick={() => setMobileServicesOpen((v) => !v)}
-                className={cn(
-                  "flex items-center justify-between rounded-lg px-3 py-2.5 text-left text-lg text-foreground transition-colors hover:bg-muted",
-                  servicesActive && "bg-muted/50",
-                )}
-                aria-expanded={mobileServicesOpen}
-              >
-                Usluge
-                <ChevronDown
-                  className={cn(
-                    "h-4 w-4 transition-transform duration-300",
-                    mobileServicesOpen && "rotate-180",
-                  )}
-                />
-              </button>
-
-              <Collapsible open={mobileServicesOpen}>
-                <div className="ml-2 border-l border-border/60 pl-3">
-                  <Link
-                    href="/services"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-between rounded-md px-2 py-2 text-sm font-medium text-accent hover:bg-muted"
-                  >
-                    Pogledaj sve
-                    <ArrowRight className="h-3 w-3" />
-                  </Link>
-                  {SERVICES.map((service) => (
-                    <Link
-                      key={service.slug}
-                      href={`/services/${service.slug}`}
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center justify-between gap-3 rounded-md px-2 py-2 text-sm text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
-                    >
-                      <span>{service.name}</span>
-                      <span className="text-[0.72rem] text-muted-foreground">
-                        od{" "}
-                        {formatPublicPriceText(
-                          service.variants[0].priceLabel,
-                          displayCurrency,
-                          pricingSettings,
-                        )}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </Collapsible>
-
               {MAIN_NAV.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
                   className={cn(
-                    "rounded-lg px-3 py-2.5 text-lg text-foreground transition-colors hover:bg-muted",
-                    isActive(item.pattern) && "bg-muted/50",
+                    "rounded-[4px] px-3 py-2.5 text-lg text-foreground transition-colors duration-200 hover:bg-secondary",
+                    isActive(item.pattern) && "bg-secondary",
                   )}
                 >
                   {item.label}
                 </Link>
               ))}
+              <Link
+                href="/ai-studio"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "rounded-[4px] px-3 py-2.5 text-lg text-foreground transition-colors duration-200 hover:bg-secondary",
+                  isActive("/ai-studio") && "bg-secondary",
+                )}
+              >
+                AI Studio
+              </Link>
             </nav>
 
-            <div className="mt-auto space-y-2">
-              <ButtonLink
+            <div className="mt-auto flex flex-col gap-2">
+              <Link
                 href={isLoggedIn ? "/portal" : "/login"}
                 onClick={() => setMobileOpen(false)}
-                variant="outline"
-                className="w-full"
+                className={cn(SIGN_IN_CLASSES, "h-11 justify-center")}
               >
-                <User className="mr-1.5 h-3.5 w-3.5" />
-                {isLoggedIn ? "Portal" : "Prijava"}
-              </ButtonLink>
+                {isLoggedIn ? "Portal" : "Sign in"}
+              </Link>
               <QuickInquiryLink
                 onClick={() => setMobileOpen(false)}
                 onOpen={() => setMobileOpen(false)}
-                variant="accent"
-                className="w-full"
+                className={cn(START_PROJECT_CLASSES, "h-11 justify-center")}
                 inquiry={{
                   source: "mobile-menu",
                   sourceLabel: "Mobile header CTA",
                 }}
               >
-                Pošaljite upit
+                Start a project
               </QuickInquiryLink>
             </div>
           </SheetContent>

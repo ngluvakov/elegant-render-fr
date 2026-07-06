@@ -36,7 +36,7 @@ const SLIDER_MAX = 200;
 
 export function aiCreditTaxLabel(displayCurrency: DisplayCurrency) {
   void displayCurrency;
-  return "PDV uračunat";
+  return "VAT included";
 }
 
 type CreditBuyDockProps = {
@@ -97,13 +97,13 @@ export function CreditBuyDockMobile({
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border/60 bg-background/95 px-4 py-3 shadow-[0_-12px_40px_rgba(28,26,25,0.08)] backdrop-blur lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border/60 bg-background/95 px-4 py-3 backdrop-blur lg:hidden"
       style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 0.75rem)" }}
     >
       <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            {credits} {credits === 1 ? "kredit" : "kredita"}
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            {credits} {credits === 1 ? "credit" : "credits"}
           </p>
           <p className="truncate text-lg font-semibold text-foreground">
             {formatPublicPriceFromCents(
@@ -118,7 +118,7 @@ export function CreditBuyDockMobile({
             render={
               <Button variant="accent" size="lg">
                 <Coins className="h-4 w-4" />
-                Izaberi
+                Select
               </Button>
             }
           />
@@ -127,7 +127,7 @@ export function CreditBuyDockMobile({
             className="max-h-[90dvh] overflow-y-auto rounded-t-2xl"
           >
             <SheetHeader>
-              <SheetTitle>Kupi AI kredite</SheetTitle>
+              <SheetTitle>Buy AI credits</SheetTitle>
             </SheetHeader>
             <div className="px-4 pb-6">
               <CreditPickerBody
@@ -136,7 +136,7 @@ export function CreditBuyDockMobile({
                 pricingSettings={pricingSettings}
                 displayCurrency={displayCurrency}
                 onConfirm={handleBuy}
-                ctaLabel="Idi na plaćanje"
+                ctaLabel="Continue to checkout"
               />
             </div>
           </SheetContent>
@@ -159,14 +159,14 @@ function CreditPickerCard({
   };
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card/85 p-5 shadow-[0_24px_60px_-30px_rgba(28,26,25,0.25)]">
-      <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-accent">
+    <div className="rounded-2xl border border-border/60 bg-card/85 p-5">
+      <div className="inline-flex items-center gap-2 rounded-full bg-accent/10 px-3 py-1 font-mono text-xs font-medium uppercase tracking-[0.08em] text-accent">
         <Sparkles className="h-3.5 w-3.5" />
-        Kupi kredite
+        Buy credits
       </div>
       <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        Veći paket — niža cena po kreditu. Klizač pokazuje u kom popustu se
-        nalazi vaša porudžbina.
+        Larger packages have a lower price per credit. The slider shows which
+        discount tier your order falls into.
       </p>
       <div className="mt-5">
         <CreditPickerBody
@@ -175,7 +175,7 @@ function CreditPickerCard({
           pricingSettings={pricingSettings}
           displayCurrency={displayCurrency}
           onConfirm={handleBuy}
-          ctaLabel="Kupi kredite"
+          ctaLabel="Buy credits"
         />
       </div>
     </div>
@@ -243,8 +243,8 @@ function CreditPickerBody({
   return (
     <>
       <div className="flex items-baseline justify-between gap-2">
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          Količina
+        <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          Quantity
         </p>
         <p className="text-[0.7rem] text-muted-foreground">
           {formatPublicPriceFromCents(
@@ -252,7 +252,7 @@ function CreditPickerBody({
             displayCurrency,
             pricingSettings,
           )}{" "}
-          / kredit
+          / credit
         </p>
       </div>
 
@@ -261,7 +261,7 @@ function CreditPickerBody({
           type="button"
           variant="outline"
           size="icon-sm"
-          aria-label="Smanji"
+          aria-label="Decrease"
           onClick={() => onCreditsChange(clamp(credits - 1))}
         >
           <Minus className="h-3.5 w-3.5" />
@@ -280,7 +280,7 @@ function CreditPickerBody({
           type="button"
           variant="outline"
           size="icon-sm"
-          aria-label="Povećaj"
+          aria-label="Increase"
           onClick={() => onCreditsChange(clamp(credits + 1))}
         >
           <Plus className="h-3.5 w-3.5" />
@@ -296,7 +296,7 @@ function CreditPickerBody({
           step={1}
           value={sliderValue}
           onChange={(event) => onCreditsChange(clamp(Number(event.target.value)))}
-          aria-label="Broj kredita"
+          aria-label="Number of credits"
           className={cn(
             "h-2 w-full cursor-pointer appearance-none rounded-full bg-secondary/80 outline-none",
             "[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:bg-accent [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:transition",
@@ -329,7 +329,7 @@ function CreditPickerBody({
             >
               <span
                 className={cn(
-                  "text-[0.65rem] font-bold uppercase tracking-[0.16em]",
+                  "font-mono text-xs font-medium uppercase tracking-[0.08em]",
                   active ? "text-accent" : "text-muted-foreground",
                 )}
               >
@@ -343,7 +343,7 @@ function CreditPickerBody({
                 )}
                 <span className="font-normal text-muted-foreground">
                   {" "}
-                  / kredit
+                  / credit
                 </span>
               </span>
             </button>
@@ -353,8 +353,9 @@ function CreditPickerBody({
 
       {nextHint && nextHint.creditsAway > 0 && (
         <p className="mt-3 rounded-lg bg-secondary/60 px-3 py-2 text-[0.72rem] leading-relaxed text-foreground/82">
-          Dodajte još <strong>{nextHint.creditsAway}</strong>{" "}
-          {nextHint.creditsAway === 1 ? "kredit" : "kredita"} i cena pada na{" "}
+          Add <strong>{nextHint.creditsAway}</strong> more{" "}
+          {nextHint.creditsAway === 1 ? "credit" : "credits"} and the price
+          drops to{" "}
           <strong>
             {formatPublicPriceFromCents(
               nextHint.pricePerCredit,
@@ -362,13 +363,13 @@ function CreditPickerBody({
               pricingSettings,
             )}
           </strong>{" "}
-          po kreditu.
+          per credit.
         </p>
       )}
 
       <div className="mt-4 flex items-baseline justify-between border-t border-border/50 pt-4">
         <span className="text-sm text-muted-foreground">
-          Ukupno ({aiCreditTaxLabel(displayCurrency)})
+          Total ({aiCreditTaxLabel(displayCurrency)})
         </span>
         <span className="text-2xl font-bold text-foreground tabular-nums">
           {formatPublicPriceFromCents(
@@ -391,8 +392,8 @@ function CreditPickerBody({
         <ArrowRight className="h-4 w-4" />
       </Button>
       <p className="mt-2 text-center text-[0.7rem] text-muted-foreground">
-        Krediti važe {pricingSettings.aiCreditExpiresAfterMonths} meseci. Plaćanje
-        kreirate u sledećem koraku.
+        Credits stay valid for {pricingSettings.aiCreditExpiresAfterMonths}{" "}
+        months. Payment is set up in the next step.
       </p>
     </>
   );

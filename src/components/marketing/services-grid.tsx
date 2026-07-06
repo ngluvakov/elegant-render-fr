@@ -8,7 +8,6 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { SectionKicker } from "@/components/brand/section-kicker";
 import {
   CATEGORY_DESCRIPTIONS,
   CATEGORY_LABELS,
@@ -36,14 +35,14 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         {!preview && (
           <div className="mx-auto max-w-2xl text-center">
-            <SectionKicker align="center">Usluge</SectionKicker>
+            <p className="section-kicker">Services</p>
             <h2 className="mt-4 text-4xl leading-tight text-foreground md:text-5xl">
-              Sve što vam treba za jasan prikaz prostora
+              Everything you need to present a space clearly
             </h2>
             <p className="mt-6 text-base leading-relaxed text-muted-foreground">
-              Od pojedinačnih kadrova do kompletnih virtuelnih tura. Svaka
-              usluga je definisana jasno — unapred znate šta dobijate i koliko
-              to košta.
+              From single views to complete virtual tours. Every service is
+              clearly defined — you know upfront what you get and what it
+              costs.
             </p>
           </div>
         )}
@@ -63,8 +62,8 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
                       {CATEGORY_DESCRIPTIONS[category]}
                     </p>
                   </div>
-                  <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                    {services.length} uslug{services.length === 1 ? "a" : "e"}
+                  <span className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                    {services.length} service{services.length === 1 ? "" : "s"}
                   </span>
                 </div>
 
@@ -75,13 +74,13 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
                       <Link
                         key={service.slug}
                         href={`/services/${service.slug}`}
-                        className="group flex flex-col gap-3 rounded-2xl border border-border/70 bg-card/80 p-6 transition-colors hover:border-accent/60"
+                        className="group flex flex-col gap-3 rounded-2xl border border-border/70 bg-card/80 p-6 transition-[border-color,box-shadow] duration-200 hover:border-[#d4d4d4] hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <h4 className="text-lg text-foreground">
                             {service.name}
                           </h4>
-                          <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+                          <ArrowUpRight className="h-4 w-4 text-muted-foreground transition-colors duration-200 group-hover:text-accent" />
                         </div>
                         <p className="text-sm leading-relaxed text-muted-foreground">
                           {service.tagline}
@@ -89,7 +88,7 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
                         {service.priceContext && (
                           <p className="text-[0.78rem] leading-6 text-muted-foreground">
                             <span className="font-semibold text-foreground">
-                              Šta dobijate:
+                              What you get:
                             </span>{" "}
                             {formatPublicPriceText(
                               service.priceContext,
@@ -100,7 +99,7 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
                         )}
                         <div className="mt-auto flex items-center justify-between pt-4">
                           <span className="text-sm font-medium text-foreground">
-                            od{" "}
+                            from{" "}
                             {formatPublicPriceText(
                               firstVariant.priceLabel,
                               displayCurrency,
@@ -112,7 +111,7 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
                               variant="outline"
                               className="text-[10px] uppercase tracking-wider"
                             >
-                              Partner mreža
+                              Partner network
                             </Badge>
                           )}
                         </div>

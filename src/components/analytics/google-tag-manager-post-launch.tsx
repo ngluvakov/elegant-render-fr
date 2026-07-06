@@ -9,9 +9,10 @@ import {
   type ConsentPrefs,
 } from "@/lib/consent";
 
+// Env-only: no hardcoded fallback container (the old fallback id belongs
+// to the Serbian site). GTM stays disabled until the env var is set.
 const GTM_ENABLED = process.env.NEXT_PUBLIC_GTM_ENABLED === "true";
-const GTM_CONTAINER_ID =
-  process.env.NEXT_PUBLIC_GTM_CONTAINER_ID?.trim() || "GTM-5X2MCQ87";
+const GTM_CONTAINER_ID = process.env.NEXT_PUBLIC_GTM_CONTAINER_ID?.trim() ?? "";
 
 declare global {
   interface Window {
@@ -118,7 +119,11 @@ export function GoogleTagManagerPostLaunch() {
     });
   }, [analyticsConsent, pathname]);
 
-  if (!GTM_ENABLED || (!analyticsConsent && !marketingConsent)) {
+  if (
+    !GTM_ENABLED ||
+    !GTM_CONTAINER_ID ||
+    (!analyticsConsent && !marketingConsent)
+  ) {
     return null;
   }
 

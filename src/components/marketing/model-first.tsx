@@ -1,48 +1,62 @@
 /**
- * ModelFirst — Explains the "model-first pricing" philosophy: first output
- * builds the 3D model, subsequent outputs cost less. Includes ordering steps.
+ * ModelFirst — "Model-first pricing" section per the design handoff: a dark
+ * #0a0a0a panel (green mono eyebrow + display heading) next to a 2×2 grid of
+ * white cards with mono indices, each a concrete saving from reusing the
+ * 3D model. Copy is final English from docs/design-handoff/README.md.
  *
  * Used on: / (home page).
  */
 import { ORDERING_STEPS } from "@/lib/content/site";
+import { formatPublicPriceText } from "@/lib/catalog/display-currency";
+import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
+import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
-export function ModelFirst() {
+export async function ModelFirst() {
+  const [displayCurrency, pricingCatalog] = await Promise.all([
+    getPublicDisplayCurrency(),
+    getPublishedPricingCatalog(),
+  ]);
+
   return (
-    <section id="model-first" className="py-10 md:py-14 lg:py-20">
-      <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
-        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <article className="rounded-3xl border border-foreground/10 bg-foreground p-6 text-background shadow-[0_30px_70px_rgba(28,26,25,0.18)] sm:p-8">
-            <p className="text-[0.7rem] uppercase tracking-[0.28em] text-background/65">
-              Više rendera, niža cena po renderu
-            </p>
-            <h2 className="mt-4 text-4xl leading-tight text-background sm:text-5xl">
-              Zašto je naš model cena bolji?
-            </h2>
-            <p className="mt-5 text-sm leading-7 text-background/70">
-              Kada jednom izgradimo 3D model Vaše nekretnine, on postaje Vaš
-              digitalni resurs. Svaka sledeća usluga iz tog modela je značajno
-              jeftinija — od dodatnih uglova do animacije i situacionog plana.
-            </p>
-          </article>
+    <section id="model-first" className="bg-background">
+      <div className="mx-auto grid w-full max-w-[1280px] gap-6 px-6 py-20 sm:px-12 md:py-32 lg:grid-cols-[0.9fr_1.1fr]">
+        <article className="flex flex-col justify-center rounded-[4px] bg-[#0a0a0a] p-8 sm:p-12">
+          <p className="mb-5 font-mono text-xs font-medium uppercase tracking-[0.08em] text-accent">
+            More renders, lower price per render
+          </p>
+          <h2 className="mb-5 text-pretty text-3xl font-medium leading-[1.1] tracking-[-0.02em] text-white md:text-[40px]">
+            We build the model once. Everything after it costs less.
+          </h2>
+          <p className="text-[15px] leading-relaxed text-white/65">
+            Once we build the 3D model of your property, it becomes your
+            digital asset. Every further output from that model — extra
+            angles, animation, site plans — is priced at a fraction of the
+            first one. You always see how the price is formed before you
+            order.
+          </p>
+        </article>
 
-          <div className="grid gap-4 md:grid-cols-2">
-            {ORDERING_STEPS.map((step) => (
-              <article
-                key={step.step}
-                className="rounded-2xl border border-border/70 bg-card/85 p-6 shadow-[0_20px_55px_rgba(28,26,25,0.05)]"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-secondary/70 text-sm font-semibold text-foreground">
-                    {step.step}
-                  </div>
-                  <h3 className="text-lg text-foreground">{step.title}</h3>
-                </div>
-                <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                  {step.description}
-                </p>
-              </article>
-            ))}
-          </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {ORDERING_STEPS.map((step) => (
+            <article
+              key={step.step}
+              className="rounded-[4px] border border-border bg-card p-8 transition-[border-color,box-shadow] duration-200 hover:border-[#d4d4d4] hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
+            >
+              <p className="mb-2.5 font-mono text-xs tracking-[0.08em] text-muted-foreground">
+                {step.step}
+              </p>
+              <h3 className="mb-2.5 text-lg font-medium text-foreground">
+                {step.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-muted-foreground tabular-nums">
+                {formatPublicPriceText(
+                  step.description,
+                  displayCurrency,
+                  pricingCatalog.settings,
+                )}
+              </p>
+            </article>
+          ))}
         </div>
       </div>
     </section>

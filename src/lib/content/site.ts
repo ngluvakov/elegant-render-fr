@@ -2,7 +2,11 @@
  * site.ts — Site-wide content constants (branding, navigation, copy).
  *
  * Exports SITE, NAV_MAIN, NAV_LEGAL, TRUST_SIGNALS, PLATFORM_PRINCIPLES,
- * ORDERING_STEPS, FAQ_ITEMS — all static Serbian-language content.
+ * ORDERING_STEPS, FAQ_ITEMS — all static English-language content for the
+ * international (elegantrender.com) deployment.
+ *
+ * Copy source of truth: docs/design-handoff/README.md (final English copy,
+ * verbatim) and docs/copy-glossary.md for everything else.
  *
  * Used by: layout.tsx, site-header, site-footer, marketing pages,
  *          legal pages, robots.ts, sitemap.ts
@@ -15,7 +19,7 @@ import { SITE_FEATURES } from "@/lib/site-features";
 // if NEXT_PUBLIC_SITE_URL isn't set. Setting the env var explicitly
 // is useful for non-prod environments (preview branches that should
 // look at a different host) without touching code.
-const DEFAULT_SITE_URL = "https://elegantrender.rs";
+const DEFAULT_SITE_URL = "https://elegantrender.com";
 
 function normalizeSiteUrl(value: string): string {
   try {
@@ -37,48 +41,48 @@ export const SITE = {
   name: "Elegant Render",
   longName: "Elegant Render Platform",
   parentCompany: "White Rook DOO",
-  tagline: "Lep prikaz. Jasna cena. Lakša odluka.",
+  tagline: "A beautiful image, a clear price, an easier decision.",
   description:
-    "Ručno izrađeni renderi, virtuelno opremanje i vizuelne adaptacije prostora. Izaberite uslugu, odmah vidite osnovnu cenu iz cenovnika i kako se cena formira za dodatne zahteve — bez skrivenih troškova i izmišljenih paketa.",
+    "Hand-crafted renders, virtual staging and visual makeovers for homes and properties — with prices you can see up front. A beautiful image, a clear price, an easier decision.",
   url: RESOLVED_SITE_URL,
-  email: "kontakt@elegantrender.rs",
+  email: "info@elegantrender.com",
   instagram: "https://www.instagram.com/elegantrender",
 } as const;
 
 /**
- * Pravni identitet pravnog lica — koristi se na /legal/imprint, u
- * footer-u i u JSON-LD Organization schema-u. Vrednosti dolaze iz APR
- * registra (https://pretraga.apr.gov.rs). Telefon i ime zakonskog
- * zastupnika su opcioni — Zakon o elektronskoj trgovini čl. 7 zahteva
- * naziv, sedište, registarski podaci i "podatak koji omogućava brzo i
- * direktno uspostavljanje veze" — email zadovoljava poslednji uslov.
+ * Legal identity of the operating company — used on /legal/imprint, in
+ * the footer and in the JSON-LD Organization schema. Values come from the
+ * Serbian business registry (APR, https://pretraga.apr.gov.rs). Phone and
+ * legal-representative name are optional — the e-commerce disclosure rules
+ * require the registered name, seat, registry numbers and a means of quick,
+ * direct contact — email satisfies the last requirement.
  */
 export const IMPRINT = {
   // Title case for display. APR registers in all-caps as a typesetting
   // convention; capitalization is not part of the legal identity. Use
   // shortName ("White Rook DOO") on customer-facing surfaces and reserve
   // legalName for legal pages where the formal registered identity is
-  // surfaced (impressum, privacy controller block, terms provider block).
+  // surfaced (imprint, privacy controller block, terms provider block).
   legalName:
     "Društvo za grafički dizajn, proizvodnju, trgovinu i usluge, White Rook DOO Kovačica",
   shortName: "White Rook DOO",
   street: "JNA 25",
   postalCode: "26210",
   city: "Kovačica",
-  country: "Srbija",
-  taxId: "110339214", // PIB
-  registryNumber: "21339393", // matični broj
-  activityCode: "7410", // Specijalizovane dizajnerske delatnosti
+  country: "Serbia",
+  taxId: "110339214", // PIB (tax ID)
+  registryNumber: "21339393", // MB (company registry number)
+  activityCode: "7410", // Specialized design activities
   foundedAt: "2017-11-22",
-  size: "Malo preduzeće",
-  email: "kontakt@elegantrender.rs",
-  privacyEmail: "kontakt@elegantrender.rs",
+  size: "Small enterprise",
+  email: "info@elegantrender.com",
+  privacyEmail: "info@elegantrender.com",
   euRepresentative: null as null | {
     name: string;
     address: string;
     email: string;
   },
-  // Bank account info that lands on predračun (proforma) PDFs as the
+  // Bank account info that lands on proforma invoice PDFs as the
   // payment instruction. Currently a placeholder — fill in real
   // values when wire-transfer flow goes live (you can leave any
   // single field empty and the PDF will skip its row).
@@ -86,7 +90,7 @@ export const IMPRINT = {
     name: "Banca Intesa AD Beograd",
     iban: "RS35 1600 0000 0000 0000 00", // REPLACE with real IBAN
     swift: "DBDBRSBG",
-    accountNumber: "160-0000000000-00", // domaći račun za RSD uplate
+    accountNumber: "160-0000000000-00", // domestic account for RSD payments
   },
 } as const;
 
@@ -95,10 +99,10 @@ export function formatAddress(): string {
 }
 
 export const TRUST_SIGNALS = [
-  "Bez paketa van cenovnika — svaka cena je direktno iz zvaničnog cenovnika.",
-  "Tačno znate šta plaćate i šta dobijate, bez skrivenih troškova i sitnih slova.",
-  "Tri runde revizija su uključene u svaki projekat — da finalni rezultat tačno odgovara Vašoj viziji.",
-  "Sertifikovano TÜV Rheinland — ISO 9001:2015, ISO/IEC 27001:2022, ISO 50001:2018.",
+  "No packages outside the price list — every price comes straight from the official price list.",
+  "You know exactly what you pay and what you get — no hidden costs, no fine print.",
+  "Three revision rounds are included in every project, so the final result matches your vision.",
+  "Certified by TÜV Rheinland — ISO 9001:2015, ISO/IEC 27001:2022, ISO 50001:2018.",
 ] as const;
 
 export type IsoCertification = {
@@ -112,9 +116,9 @@ export type IsoCertification = {
 
 export const CERTIFIER = {
   name: "TÜV Rheinland",
-  fullName: "TÜV Rheinland — nemačko sertifikaciono telo",
+  fullName: "TÜV Rheinland — German certification body",
   description:
-    "TÜV Rheinland je jedno od najstarijih i najuglednijih svetskih sertifikacionih tela, sa sedištem u Kelnu i prisustvom u preko 50 zemalja. Sertifikati koje izdaje smatraju se referencom u industriji i podrazumevaju redovne nezavisne audit-e — ne jednokratnu izjavu, već kontinuirano održavan sistem.",
+    "TÜV Rheinland is one of the world's oldest and most respected certification bodies, headquartered in Cologne and present in over 50 countries. Its certificates are considered an industry reference and require regular independent audits — not a one-off declaration, but a continuously maintained system.",
   // Combined Testmark badge issued for all three standards under a single ID.
   // Source: hi-res CMYK PNG/PDF from TÜV's certification package, converted
   // to sRGB WebP for web (1600px wide, ~65KB).
@@ -136,48 +140,53 @@ export const ISO_CERTIFICATIONS: IsoCertification[] = [
   {
     id: "iso-9001",
     code: "ISO 9001:2015",
-    domain: "Upravljanje kvalitetom",
+    domain: "Quality management",
     description:
-      "Standard koji definiše zahteve za sistem upravljanja kvalitetom procesa i isporuke usluga. Naš tok rada — od preuzimanja materijala, preko revizija, do isporuke finalnih rendera — usklađen je sa ovim standardom, što znači predvidiv kvalitet i dosledan rezultat na svakom projektu.",
+      "The standard that defines requirements for a quality management system across processes and service delivery. Our workflow — from receiving materials, through revisions, to delivering final renders — is aligned with this standard, which means predictable quality and a consistent result on every project.",
     certNumber: TUV_RHEINLAND_CERT_ID,
     verifyUrl: TUV_RHEINLAND_VERIFY_URL,
   },
   {
     id: "iso-27001",
     code: "ISO/IEC 27001:2022",
-    domain: "Informaciona bezbednost",
+    domain: "Information security",
     description:
-      "Standard za upravljanje informacionom bezbednošću. Vaše datoteke (osnove prostora, fotografije i lični podaci u portalu) tretiramo po sertifikovanim procedurama: kontrolisani pristup, šifrovanje u tranzitu, definisana retencija i procesi za reagovanje na incidente. Ovaj standard je i osnov naše GDPR usklađenosti.",
+      "The standard for information security management. Your files (floor plans, photos and personal data in the portal) are handled under certified procedures: controlled access, encryption in transit, defined retention and incident response processes. This standard is also the basis of our GDPR compliance.",
     certNumber: TUV_RHEINLAND_CERT_ID,
     verifyUrl: TUV_RHEINLAND_VERIFY_URL,
   },
   {
     id: "iso-50001",
     code: "ISO 50001:2018",
-    domain: "Energetski menadžment",
+    domain: "Energy management",
     description:
-      "Standard za sistemsko upravljanje energetskom efikasnošću. Naš render kapacitet i interna infrastruktura prate i optimizuju potrošnju energije, što smanjuje ekološki otisak digitalne arhitektonske produkcije.",
+      "The standard for systematic energy-efficiency management. Our render capacity and internal infrastructure track and optimize energy consumption, reducing the environmental footprint of digital architectural production.",
     certNumber: TUV_RHEINLAND_CERT_ID,
     verifyUrl: TUV_RHEINLAND_VERIFY_URL,
   },
 ];
 
+/**
+ * The four ordering-process steps — copy per the design handoff Process
+ * section (final English, verbatim). Rendered on the homepage Process
+ * section and in the HowTo JSON-LD.
+ */
 export const PLATFORM_PRINCIPLES = [
   {
-    title: "1. Izračunate okvir",
-    text: "Izaberete uslugu i tip obračuna. Odmah vidite početnu cenu i šta ona konkretno uključuje.",
+    title: "1. Get your estimate",
+    text: "Pick a service and see the starting price immediately — and exactly what it includes.",
   },
   {
-    title: "2. Pošaljete materijale",
-    text: "Forma traži samo ono što nam treba za start: osnove, fotografije, reference stila i kratak cilj projekta.",
+    title: "2. Send your materials",
+    text: "The form asks only for what we need to start: floor plans, photos, style references and a short goal.",
   },
   {
-    title: "3. Dobijete prve nacrte",
-    text: "Za standardne projekte prve nacrte šaljemo za 3-5 radnih dana, uz jasnu komunikaciju kroz portal.",
+    title: "3. Receive first drafts",
+    text: "For standard projects, first drafts arrive in 3–5 working days, with clear communication through the portal.",
   },
   {
-    title: "4. Finalizujemo kroz revizije",
-    text: "Tri runde revizija su uključene, zatim preuzimate finalne fajlove i dokumentaciju za projekat.",
+    title: "4. Finalize through revisions",
+    text: "Three revision rounds are included. Then you download the final files and project documentation.",
   },
 ] as const;
 
@@ -185,60 +194,59 @@ export type NavItem = { href: string; label: string };
 
 export const NAV_MAIN: NavItem[] = [
   { href: "/ai-studio", label: "AI Studio" },
-  { href: "/services", label: "Usluge" },
-  { href: "/pricing", label: "Cene" },
+  { href: "/services", label: "Services" },
+  { href: "/pricing", label: "Pricing" },
   ...(SITE_FEATURES.portfolio
-    ? [{ href: "/portfolio", label: "Portfolio" }]
+    ? [{ href: "/portfolio", label: "Our work" }]
     : []),
-  { href: "/about", label: "O nama" },
-  { href: "/faq", label: "Pitanja" },
-  { href: "/contact", label: "Kontakt" },
+  { href: "/about", label: "About us" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const STRUCTURED_DATA_DESCRIPTION =
-  "Profesionalna arhitektonska vizuelizacija — 3D renderi enterijera i eksterijera, virtuelno opremanje i renovacija prostora.";
+  "Professional architectural visualization — 3D interior and exterior renders, virtual staging and virtual renovation.";
 
 export const NAV_LEGAL: NavItem[] = [
-  { href: "/legal/imprint", label: "Impressum" },
+  { href: "/legal/imprint", label: "Imprint" },
   // Privacy/refunds live as anchors on the consolidated terms page until
   // Track D splits them into standalone /legal/privacy and /legal/refunds.
-  { href: "/legal/terms#privatnost", label: "Politika privatnosti" },
-  { href: "/legal/terms#uslovi", label: "Uslovi korišćenja" },
-  { href: "/legal/cookies", label: "Politika kolačića" },
-  { href: "/legal/complaints", label: "Politika reklamacija" },
-  { href: "/legal/terms#povracaj", label: "Povraćaj sredstava" },
-  { href: "/legal/delivery", label: "Dostava" },
-  { href: "/legal/certificates", label: "Sertifikati i standardi" },
+  { href: "/legal/terms#privatnost", label: "Privacy policy" },
+  { href: "/legal/terms#uslovi", label: "Terms of service" },
+  { href: "/legal/cookies", label: "Cookie policy" },
+  { href: "/legal/complaints", label: "Complaints policy" },
+  { href: "/legal/terms#povracaj", label: "Refunds" },
+  { href: "/legal/delivery", label: "Delivery" },
+  { href: "/legal/certificates", label: "Certificates & standards" },
 ];
 
-// 4 konkretna primera uštede iz model-first cene. Strukturno isto kao i
-// pre (step + title + description) — ModelFirst komponenta renderuje
-// ovu listu, samo se sadržaj pomera sa generičkih koraka na merljive
-// dolaska-uštede koje kupac može da računa.
+// Four concrete model-first savings examples — copy per the design handoff
+// "Model-first pricing" section (final English, verbatim). The ModelFirst
+// component renders this list as the 2×2 card grid next to the dark panel.
 export const ORDERING_STEPS = [
   {
     step: "01",
-    title: "Novi ugao gledanja",
+    title: "A new camera angle",
     description:
-      "Osnovni eksterijer košta 29.300 RSD. Svaki sledeći ugao gledanja iste zgrade je samo 5.626 RSD (ušteda od 81%).",
+      "Exteriors start at €249 including the full 3D model. Each additional angle of the same building costs 81% less.",
   },
   {
     step: "02",
-    title: "Više spratova",
+    title: "More floors",
     description:
-      "Prvi sprat enterijera pokriva do 10 soba. Svaki sledeći sprat u istoj zgradi dobija automatski popust od 30%.",
+      "The first interior floor covers up to 10 rooms. Every further floor in the same building gets an automatic 30% discount.",
   },
   {
     step: "03",
-    title: "Animacije",
+    title: "Animation",
     description:
-      "Ako već imamo izgrađen model iz Vašeg prethodnog projekta, cena animacije po sekundi je niža za 33%.",
+      "If we already built the model on a previous project, the per-second animation price drops by 33%.",
   },
   {
     step: "04",
-    title: "Stambene zgrade",
+    title: "Residential buildings",
     description:
-      "Za investitore: prvi tip stana plaćate po punoj ceni, a svaki sledeći tip stana dobija progresivni popust (do 44%).",
+      "For developers: the first apartment type is full price, and every further type gets a progressive discount of up to 44%.",
   },
 ] as const;
 
@@ -247,95 +255,95 @@ export const HOW_IT_WORKS = ORDERING_STEPS;
 
 export const FAQ_ITEMS = [
   {
-    question: "Koliko traje izrada jednog rendera?",
+    question: "How long does one render take?",
     answer:
-      "Za standardne projekte (npr. enterijer jedne prostorije), prve nacrte šaljemo u roku od 3 do 5 radnih dana. Za veće projekte, tačan rok dobijate odmah uz ponudu, pre početka rada.",
+      "For standard projects — say, a single-room interior — first drafts arrive within 3 to 5 working days. For larger projects you get an exact timeline with the quote, before any work starts.",
   },
   {
-    question: "Da li cena uključuje revizije?",
+    question: "Does the price include revisions?",
     answer:
-      "Apsolutno. Za razliku od industrijskog standarda (1–2 runde), mi uključujemo čak 3 runde revizija u osnovnu cenu. Želimo da budete 100% zadovoljni rezultatom.",
+      "Yes. While the industry standard is 1–2 rounds, we include 3 revision rounds in the base price. We want you fully happy with the result.",
   },
   {
-    question: "Koje materijale treba da Vam pošaljem?",
+    question: "What materials should I send you?",
     answer:
-      "Najkorisnije su osnove prostora (2D ili PDF), fotografije postojećeg stanja i reference stila ili atmosfere. Formu porudžbine smo napravili tako da možete da otpremite sve odjednom, bez komplikacija.",
+      "Floor plans (2D or PDF), photos of the current state, and style or mood references are the most useful. The order form lets you upload everything at once.",
   },
   {
-    question: "Da li izdajete fiskalni račun i radite po ugovoru?",
+    question: "Do you issue invoices and work under contract?",
     answer:
-      "Da. Elegant Render je deo White Rook DOO i posluje u skladu sa svim zakonskim obavezama u Srbiji. Za svaki projekat izdajemo odgovarajuću dokumentaciju.",
+      "Yes. Elegant Render is part of White Rook DOO and operates under EU-compatible invoicing. Every project comes with proper documentation.",
   },
   {
-    question: "Šta ako je projekat veći od uobičajenog?",
+    question: "What if my project is bigger than usual?",
     answer:
-      "Za stambene zgrade i velike investitorske projekte primenjujemo progresivne popuste (npr. popusti na ponovljene tipove stanova). Pošaljite nam upit i dobićete preciznu kalkulaciju.",
+      "For residential buildings and large development projects we apply progressive discounts — for example on repeated apartment types. Send us an inquiry and you'll get a precise calculation.",
   },
 ] as const;
 
 export const SERVICES_PAGE_FAQS = [
   {
-    question: "Kako da znam koja usluga mi je potrebna?",
+    question: "How do I know which service I need?",
     answer:
-      "Dovoljno je da pošaljete fotografije, plan ili kratko objašnjenje cilja. Na osnovu toga predlažemo najlogičniju uslugu i okvir cene.",
+      "Send us photos, a floor plan or a short description of your goal. Based on that we suggest the most logical service and a price range.",
   },
   {
-    question: "Da li su cene konačne?",
+    question: "Are the prices final?",
     answer:
-      "Na stranici su prikazane početne cene. Konačna cena zavisi od obima, broja kadrova, nivoa detalja i ulaznih materijala.",
+      "The page shows starting prices. The final price depends on scope, number of views, level of detail and input materials.",
   },
   {
-    question: "Koliko korekcija je uključeno?",
+    question: "How many revision rounds are included?",
     answer:
-      "Tri kruga korekcija su uključena u osnovnu cenu svake usluge, osim ako se radi o promeni obima projekta.",
+      "Three revision rounds are included in the base price of every service, unless the scope of the project changes.",
   },
   {
-    question: "Da li radite samo za Srbiju?",
+    question: "Do you only work locally?",
     answer:
-      "Elegant Render je primarno fokusiran na Srbiju i region, ali je struktura usluge spremna i za druga tržišta.",
+      "Elegant Render delivers across Europe and beyond. The entire process — from estimate to final files — runs online through your project portal.",
   },
 ] as const;
 
 export const AI_STUDIO_FAQS = [
   {
-    question: "Da li AI Studio pravi 3D render?",
+    question: "Does AI Studio produce a 3D render?",
     answer:
-      "Ne. AI Studio obrađuje postojeće fotografije. Ako prostor ne postoji ili treba potpuno kontrolisan arhitektonski prikaz, bolji izbor je klasičan render.",
+      "No. AI Studio edits existing photographs. If the space doesn't exist yet or you need a fully controlled architectural view, a classic render is the better choice.",
   },
   {
-    question: "Kada treba koristiti masku?",
+    question: "When should I use a mask?",
     answer:
-      "Masku koristite kada želite da se izmena desi samo na delu slike: veći predmet, određeni zid, deo poda ili zona prostorije.",
+      "Use a mask when you want the edit to affect only part of the image: a larger object, a specific wall, part of the floor or one zone of the room.",
   },
   {
-    question: "Koja je razlika između staginga, renovacije i redesign-a?",
+    question: "What is the difference between staging, renovation and redesign?",
     answer:
-      "Staging dodaje opremu u prazan prostor. Renovacija menja materijale i elemente prostora. Redesign menja stil i atmosferu postojeće sobe.",
+      "Staging adds furniture to an empty space. Renovation changes the materials and elements of the space. Redesign changes the style and atmosphere of an existing room.",
   },
   {
-    question: "Kada koristim dodavanje ili zamenu nameštaja/dekora?",
+    question: "When do I use furniture/decor insertion or replacement?",
     answer:
-      "Kada imate fotografiju prostora i posebne slike konkretnog komada nameštaja, dekora, rasvete, biljke, umetnosti ili uređaja. Možete dodati više uglova istog modela/boje/materijala, a za zamenu se maskom označava postojeći komad koji menjamo.",
+      "When you have a photo of the space and separate images of a specific piece of furniture, decor, lighting, plant, artwork or appliance. You can add several angles of the same model/color/material, and for replacement you mark the existing piece with a mask.",
   },
   {
-    question: "Da li rezultat mogu ponovo da obradim?",
+    question: "Can I process a result again?",
     answer:
-      "Da. Rezultat može da postane nova ulazna slika za malu korekciju ili nastavak dorade. Ako nastavljate isti tip obrade, sistem trenutno omogućava jedno besplatno ponavljanje.",
+      "Yes. A result can become the new input image for a small correction or further editing. If you continue the same edit type, the system currently allows one free retry.",
   },
   {
-    question: "Šta ako obrada ne uspe?",
+    question: "What if the edit fails?",
     answer:
-      "Ako sistem ne uspe da završi obradu, naplaćeni krediti se vraćaju na AI Studio balans. Ako rezultat nije dovoljno dobar, nastavite doradu iz rezultata i koristite dostupno besplatno ponavljanje za isti tip obrade.",
+      "If the system fails to complete the edit, the charged credits are returned to your AI Studio balance. If the result isn't good enough, continue editing from the result and use the available free retry for the same edit type.",
   },
   {
-    question: "Koliko dugo su fajlovi dostupni?",
+    question: "How long are files available?",
     answer:
-      "AI Studio fajlovi se čuvaju 30 dana. U tom periodu rezultat možete preuzeti iz istorije ili ga koristiti kao novu ulaznu sliku.",
+      "AI Studio files are stored for 30 days. During that period you can download the result from your history or use it as a new input image.",
   },
   {
-    question: "Da li dobijam račun za kupovinu kredita?",
+    question: "Do I get an invoice for credit purchases?",
     answer:
-      "Da. Elegant Render je deo White Rook DOO i za kupovinu kredita izdaje odgovarajuću dokumentaciju u skladu sa podacima kupca.",
+      "Yes. Elegant Render is part of White Rook DOO and issues proper documentation for credit purchases based on the buyer's details.",
   },
 ] as const;
 
@@ -368,7 +376,7 @@ export function buildOrganizationJsonLd() {
         "@type": "ContactPoint",
         contactType: "customer support",
         email: SITE.email,
-        availableLanguage: ["sr-Latn", "en"],
+        availableLanguage: ["en"],
       },
     ],
     sameAs: [SITE.instagram],
@@ -386,14 +394,14 @@ export function buildOrganizationJsonLd() {
         closes: "17:00",
       },
     ],
-    areaServed: ["RS", "EU", "Worldwide"],
+    areaServed: ["EU", "GB", "US", "Worldwide"],
     currenciesAccepted: "EUR",
     priceRange: "€€",
     serviceType: [
-      "Arhitektonska vizuelizacija",
-      "3D renderi",
-      "Virtuelno opremanje",
-      "AI obrada fotografija nekretnina",
+      "Architectural visualization",
+      "3D rendering",
+      "Virtual staging",
+      "AI real estate photo editing",
     ],
     parentOrganization: {
       "@type": "Organization",
@@ -409,4 +417,3 @@ export function buildOrganizationJsonLd() {
     })),
   };
 }
-

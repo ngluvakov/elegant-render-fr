@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { ExternalLink, Mail } from "lucide-react";
-import { SectionKicker } from "@/components/brand/section-kicker";
 import { ProjectInquiryForm } from "@/components/inquiry/project-inquiry-form";
 import { JsonLd } from "@/components/seo/json-ld";
 import { PreFooterCta } from "@/components/site/pre-footer-cta";
@@ -14,13 +13,13 @@ import {
 } from "@/lib/seo";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Kontakt",
+  title: "Contact",
   description:
-    "Javite nam se. Pošaljite kratak opis projekta i vratićemo se obično istog radnog dana.",
+    "Get in touch. Send a short project description and we usually reply the same working day.",
   path: "/contact",
 });
 
-export default async function KontaktPage() {
+export default async function ContactPage() {
   const session = await auth();
   const user = session?.user?.id
     ? await prisma.user.findUnique({
@@ -36,18 +35,18 @@ export default async function KontaktPage() {
         data={[
           buildWebPageJsonLd({
             path: "/contact",
-            name: "Kontakt",
+            name: "Contact",
             description:
-              "Kontakt forma za render enterijera, eksterijera, 3D osnove, virtuelno opremanje i AI obradu fotografija nekretnina.",
+              "Contact form for interior and exterior renders, 3D floor plans, virtual staging and AI real-estate photo editing.",
           }),
           buildBreadcrumbJsonLd([
-            { name: "Početna", path: "/" },
-            { name: "Kontakt", path: "/contact" },
+            { name: "Home", path: "/" },
+            { name: "Contact", path: "/contact" },
           ]),
           {
             "@context": "https://schema.org",
             "@type": "ContactPage",
-            name: "Kontakt - Elegant Render",
+            name: "Contact - Elegant Render",
             url: `${SITE.url}/contact`,
             mainEntity: {
               "@id": `${SITE.url}/#organization`,
@@ -56,23 +55,23 @@ export default async function KontaktPage() {
           buildOrganizationJsonLd(),
         ]}
       />
-      <SectionKicker>Kontakt</SectionKicker>
+      <p className="section-kicker">Contact</p>
       <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
-        Javite nam se
+        Get in touch
       </h1>
       <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foreground/70">
-        Opišite šta vam treba — prostor, obim i rok — i vraćamo se obično istog
-        radnog dana sa jasnom ponudom.
+        Tell us what you need — the space, the scope and the deadline — and we
+        usually reply the same working day with a clear estimate.
       </p>
 
       <div className="mt-16 grid gap-12 lg:grid-cols-[1.3fr_1fr]">
-        <div className="rounded-2xl border border-border/60 bg-card/80 p-6 shadow-[0_20px_55px_rgba(28,26,25,0.05)] md:p-8">
+        <div className="rounded-2xl border border-border/60 bg-card/80 p-6 md:p-8">
           <ProjectInquiryForm
             mode="contact"
             source={{
               source: "contact-page",
               sourcePath: "/contact",
-              sourceLabel: "Kontakt forma",
+              sourceLabel: "Contact form",
             }}
             initialContact={{
               name: user?.name ?? session?.user?.name ?? undefined,
@@ -84,13 +83,13 @@ export default async function KontaktPage() {
 
         <aside className="space-y-8 rounded-xl border border-border/60 bg-secondary/30 p-8">
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/60">
-              Direktan kontakt
+            <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              Direct contact
             </h2>
             <div className="mt-4 space-y-3">
               <a
                 href={`mailto:${SITE.email}`}
-                className="flex items-center gap-3 text-foreground transition-colors hover:text-accent"
+                className="flex items-center gap-3 text-foreground transition-colors duration-200 hover:text-accent"
               >
                 <Mail className="h-4 w-4" />
                 {SITE.email}
@@ -99,7 +98,7 @@ export default async function KontaktPage() {
                 href={SITE.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 text-foreground transition-colors hover:text-accent"
+                className="flex items-center gap-3 text-foreground transition-colors duration-200 hover:text-accent"
               >
                 <ExternalLink className="h-4 w-4" />
                 Instagram
@@ -107,32 +106,32 @@ export default async function KontaktPage() {
             </div>
           </div>
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/60">
-              Šta da pošaljete
+            <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              What to send
             </h2>
             <ul className="mt-4 space-y-2 text-sm text-foreground/75">
-              <li>Osnove prostora (2D ili PDF) ako postoje</li>
-              <li>Fotografije postojećeg stanja</li>
-              <li>Reference stila i atmosfere</li>
-              <li>Okvirni obim i rok</li>
+              <li>Floor plans (2D or PDF) if available</li>
+              <li>Photos of the current state</li>
+              <li>Style and mood references</li>
+              <li>Approximate scope and deadline</li>
             </ul>
           </div>
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/60">
-              Iza brenda
+            <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              Behind the brand
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-foreground/75">
-              {SITE.name} je deo {SITE.parentCompany} — krovnog poslovnog
-              entiteta sa iskustvom u 3D vizuelizaciji i digitalnim
-              arhitektonskim sadržajima.
+              {SITE.name} is part of {SITE.parentCompany} — the umbrella
+              business entity with experience in 3D visualization and digital
+              architectural content.
             </p>
           </div>
         </aside>
       </div>
       </div>
       <PreFooterCta
-        heading="Više voliš da odmah vidiš cenu?"
-        body="Otvori kalkulator i konfiguriši vizuelizaciju sam — cenu vidiš odmah, pre nego što pošalješ bilo kakav upit."
+        heading="Prefer to see the price right away?"
+        body="Open the calculator and configure your visualization yourself — you see the price immediately, before sending any inquiry."
       />
     </>
   );

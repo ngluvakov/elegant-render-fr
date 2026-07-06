@@ -13,9 +13,9 @@ export default async function MarketingLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Session se namerno NE čita ovde (auth() bi ceo marketing tree
-  // opt-ovao u per-request rendering zbog kolačića) — PostHog
-  // identifikacija ide klijentski kroz PostHogSessionBridge.
+  // The session is deliberately NOT read here (auth() would opt the whole
+  // marketing tree into per-request rendering because of cookies) — PostHog
+  // identification happens client-side through PostHogSessionBridge.
   const [displayCurrency, pricingCatalog] = await Promise.all([
     getPublicDisplayCurrency(),
     getPublishedPricingCatalog(),

@@ -5,11 +5,11 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Elegant Render",
     short_name: "Elegant Render",
     description:
-      "Arhitektonska vizuelizacija — renderi, virtuelno opremanje, adaptacije prostora",
+      "Architectural visualization — renders, virtual staging and visual makeovers with transparent pricing",
     start_url: "/",
     display: "standalone",
-    background_color: "#f6f1ea",
-    theme_color: "#b88363",
+    background_color: "#ffffff",
+    theme_color: "#0a0a0a",
     icons: [
       {
         src: "/favicon.ico",

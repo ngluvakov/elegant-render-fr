@@ -1,10 +1,10 @@
 /**
- * FaqCards — FAQ section with question/answer cards in a two-column grid.
+ * FaqCards — homepage FAQ per the design handoff: #fafafa section, grid
+ * 0.8fr/1.2fr — left heading "Before you ask", right five native
+ * `<details>` rows with 1px bottom borders and a mono "+" marker.
  *
  * Used on: / (home page).
  */
-import { HelpCircle } from "lucide-react";
-import { SectionKicker } from "@/components/brand/section-kicker";
 import { FAQ_ITEMS } from "@/lib/content/site";
 import { formatPublicPriceText } from "@/lib/catalog/display-currency";
 import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
@@ -18,35 +18,50 @@ export async function FaqCards() {
   const pricingSettings = pricingCatalog.settings;
 
   return (
-    <section id="faq" className="pb-16 pt-10 md:pb-20 md:pt-14 lg:pb-24 lg:pt-20">
-      <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
-        <div className="mb-10 max-w-2xl space-y-3">
-          <SectionKicker>Česta pitanja</SectionKicker>
-          <h2 className="text-4xl leading-tight text-foreground md:text-5xl">
-            Pitanja koja direktno utiču na kupovnu odluku.
+    <section id="faq" className="border-t border-border bg-secondary">
+      <div className="mx-auto grid w-full max-w-[1280px] gap-10 px-6 py-16 sm:px-12 md:py-24 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+        <div>
+          <p className="mb-4 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Frequent questions
+          </p>
+          <h2 className="mb-4 text-pretty text-3xl font-medium leading-[1.1] tracking-[-0.02em] text-foreground md:text-[40px]">
+            Before you ask
           </h2>
+          <p className="text-[15px] leading-relaxed text-muted-foreground">
+            Anything else on your mind? Write to us — we reply within one
+            working day.
+          </p>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="flex flex-col">
           {FAQ_ITEMS.map((item) => (
-            <article
+            <details
               key={item.question}
-              className="rounded-2xl border border-border/70 bg-card/80 p-6 shadow-[0_20px_55px_rgba(28,26,25,0.05)]"
+              className="group border-b border-border py-1"
             >
-              <div className="flex items-start gap-3">
-                <HelpCircle className="mt-1 h-5 w-5 flex-shrink-0 text-[color:var(--color-clay-deep)]" />
-                <div>
-                  <h3 className="text-lg text-foreground">{item.question}</h3>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                    {formatPublicPriceText(
-                      item.answer,
-                      displayCurrency,
-                      pricingSettings,
-                    )}
-                  </p>
-                </div>
-              </div>
-            </article>
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-[18px] text-[17px] font-medium text-foreground [&::-webkit-details-marker]:hidden">
+                {item.question}
+                <span
+                  aria-hidden
+                  className="font-mono font-normal text-muted-foreground group-open:hidden"
+                >
+                  +
+                </span>
+                <span
+                  aria-hidden
+                  className="hidden font-mono font-normal text-muted-foreground group-open:inline"
+                >
+                  −
+                </span>
+              </summary>
+              <p className="max-w-[640px] pb-5 text-[15px] leading-relaxed text-muted-foreground">
+                {formatPublicPriceText(
+                  item.answer,
+                  displayCurrency,
+                  pricingSettings,
+                )}
+              </p>
+            </details>
           ))}
         </div>
       </div>

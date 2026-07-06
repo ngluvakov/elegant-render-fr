@@ -6,9 +6,9 @@
  * mouse on hover (desktop) and plays a one-time demo when the card
  * scrolls into view (mobile / pointer-coarse).
  *
- * Without a complete pair, the card falls back to an icon + gradient (or
- * a single legacy `imageSrc` overlay) — same shape it had before this
- * was added, so partial roll-out works.
+ * Without a complete pair, the card falls back to an icon on a flat
+ * neutral surface (or a single legacy `imageSrc` overlay) — same shape
+ * it had before this was added, so partial roll-out works.
  *
  * Used on: /ai-studio (page.tsx -> ToolPickerSection).
  */
@@ -27,7 +27,6 @@ import {
   Wand2,
   type LucideIcon,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
 
 /**
@@ -67,10 +66,12 @@ type Props = {
   beforeSrc?: string;
   afterSrc?: string;
   iconName: ToolPickerIconName;
-  gradient: string;
   creditsLabel: string;
   startingRsdLabel: string;
 };
+
+const CARD_CLASS =
+  "group flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-[border-color,box-shadow] duration-200 hover:border-[#d4d4d4] hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)] focus-visible:border-accent/60 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export function ToolPickerCard(props: Props) {
   const hasPair = !!props.beforeSrc && !!props.afterSrc;
@@ -90,32 +91,28 @@ function BeforeAfterCard({
   beforeSrc,
   afterSrc,
   iconName,
-  gradient,
   creditsLabel,
   startingRsdLabel,
 }: Props) {
   const Icon = ICON_MAP[iconName];
 
   return (
-    <Link
-      href={href}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)] focus-visible:border-accent/60 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-    >
+    <Link href={href} className={CARD_CLASS}>
       <BeforeAfterReveal
         beforeSrc={beforeSrc!}
         afterSrc={afterSrc!}
-        alt={`Posle AI obrade: ${label}`}
-        beforeAlt={`Pre AI obrade: ${label}`}
-        afterAlt={`Posle AI obrade: ${label}`}
+        alt={`After AI editing: ${label}`}
+        beforeAlt={`Before AI editing: ${label}`}
+        afterAlt={`After AI editing: ${label}`}
         sizes="(max-width: 768px) 50vw, 25vw"
-        className={cn("aspect-[4/3] bg-gradient-to-br", gradient)}
+        className="aspect-[4/3] bg-secondary"
         fallback={
           <Icon className="h-10 w-10 text-foreground/35" strokeWidth={1.5} />
         }
       >
-        {/* "Pre / posle" hint fades out once the card is being interacted with. */}
-        <span className="pointer-events-none absolute right-2 top-2 rounded-full bg-foreground/55 px-2 py-1 text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-background/95 opacity-90 transition-opacity duration-300 group-hover:opacity-0">
-          Pre / posle
+        {/* "Before / after" hint fades out once the card is being interacted with. */}
+        <span className="pointer-events-none absolute right-2 top-2 rounded-full bg-foreground/55 px-2 py-1 font-mono text-xs font-medium uppercase tracking-[0.08em] text-background/95 opacity-90 transition-opacity duration-200 group-hover:opacity-0">
+          Before / after
         </span>
       </BeforeAfterReveal>
       <CardFooter
@@ -138,29 +135,20 @@ function FallbackCard({
   blurb,
   imageSrc,
   iconName,
-  gradient,
   creditsLabel,
   startingRsdLabel,
 }: Props) {
   const Icon = ICON_MAP[iconName];
   return (
-    <Link
-      href={href}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-all hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)] focus-visible:border-accent/60 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-    >
-      <div
-        className={cn(
-          "relative aspect-[4/3] overflow-hidden bg-gradient-to-br",
-          gradient,
-        )}
-      >
+    <Link href={href} className={CARD_CLASS}>
+      <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
         <div className="absolute inset-0 flex items-center justify-center">
           <Icon className="h-10 w-10 text-foreground/35" strokeWidth={1.5} />
         </div>
         {imageSrc && (
           <Image
             src={imageSrc}
-            alt={`${label} - primer AI Studio alata`}
+            alt={`${label} - AI Studio tool example`}
             fill
             sizes="(max-width: 768px) 50vw, 25vw"
             className="object-cover"
@@ -203,9 +191,9 @@ function CardFooter({
         {blurb}
       </p>
       <div className="mt-auto flex items-baseline justify-between gap-2 pt-1">
-        <p className="text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          od{" "}
-          <span className="text-base font-bold normal-case tracking-normal text-foreground">
+        <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          from{" "}
+          <span className="font-sans text-base font-bold normal-case tracking-normal text-foreground">
             {startingRsdLabel}
           </span>
         </p>

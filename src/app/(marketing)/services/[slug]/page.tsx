@@ -15,7 +15,6 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button-link";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
 import { JsonLd } from "@/components/seo/json-ld";
-import { SectionKicker } from "@/components/brand/section-kicker";
 import { BeforeAfterReveal } from "@/components/marketing/before-after-reveal";
 import { Panorama360 } from "@/components/marketing/panorama-360";
 import {
@@ -109,8 +108,8 @@ export default async function ServiceDetailPage({
             description: service.description,
           }),
           buildBreadcrumbJsonLd([
-            { name: "Početna", path: "/" },
-            { name: "Usluge", path: "/services" },
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
             { name: service.name, path: `/services/${service.slug}` },
           ]),
           buildServiceJsonLd(service),
@@ -173,21 +172,21 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
           className={
             service.detailAsset
               ? "absolute inset-0 bg-gradient-to-tr from-foreground/85 via-foreground/55 to-foreground/15"
-              : "absolute inset-0 bg-gradient-to-br from-foreground via-foreground to-[color:var(--color-sage-deep)]/40"
+              : "absolute inset-0 bg-[#0a0a0a]"
           }
         />
         <div className="relative mx-auto w-full max-w-[min(96vw,1320px)] px-6 pb-16 pt-32 lg:px-10 lg:pt-40">
           <Link
             href="/services"
-            className="inline-flex items-center gap-1 text-xs uppercase tracking-[0.22em] text-background/75 transition-colors hover:text-background"
+            className="inline-flex items-center gap-1 font-mono text-xs font-medium uppercase tracking-[0.08em] text-white/60 transition-colors duration-200 hover:text-white"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            Sve usluge
+            All services
           </Link>
           <div className="mt-8 max-w-2xl">
-            <SectionKicker className="[&_span:last-child]:text-background/80 [&_span:first-child]:from-[color:var(--color-clay-light)]">
+            <p className="section-kicker text-white/60">
               {CATEGORY_LABELS[service.category]}
-            </SectionKicker>
+            </p>
             <h1 className="mt-5 font-heading text-5xl leading-[1.02] text-background md:text-6xl lg:text-7xl">
               {service.name}
             </h1>
@@ -211,7 +210,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                   serviceType: service.name,
                 }}
               >
-                Pošaljite projekat
+                Send your project
               </QuickInquiryLink>
               <a
                 href={
@@ -219,13 +218,13 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                     ? "#demo"
                     : "#portfolio"
                 }
-                className="inline-flex h-12 items-center rounded-lg border border-background/40 px-6 text-sm font-medium text-background transition hover:border-background hover:bg-background/10"
+                className="inline-flex h-12 items-center rounded-[4px] border border-background/40 px-6 text-sm font-medium text-background transition duration-200 hover:border-background hover:bg-background/10"
               >
                 {service.detailVideoSrc
-                  ? "Pogledajte animaciju"
+                  ? "Watch the animation"
                   : service.detailEmbedSrc
-                    ? "Probajte uživo"
-                    : "Pogledajte portfolio"}
+                    ? "Try it live"
+                    : "See the portfolio"}
               </a>
             </div>
           </div>
@@ -237,7 +236,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         <section className="bg-background py-16 md:py-24">
           <div className="mx-auto grid max-w-6xl gap-10 px-6 md:grid-cols-[1fr_1.3fr] md:items-center lg:px-10">
             <div>
-              <SectionKicker>Problem</SectionKicker>
+              <p className="section-kicker">The problem</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
                 {service.problemHeading}
               </h2>
@@ -272,16 +271,16 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         <section className="bg-secondary py-16 md:py-24">
           <div className="mx-auto max-w-5xl px-6 lg:px-10">
             <div className="mx-auto max-w-2xl text-center">
-              <SectionKicker align="center">Zašto ova usluga</SectionKicker>
+              <p className="section-kicker">Why this service</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-                Tri razloga zašto klijenti biraju Elegant Render.
+                Three reasons clients choose Elegant Render.
               </h2>
             </div>
             <div className="mt-12 grid gap-6 md:grid-cols-3">
               {service.benefits.map((benefit) => (
                 <article
                   key={benefit.title}
-                  className="rounded-2xl border border-border/70 bg-card/85 p-8 shadow-[0_14px_40px_rgba(28,26,25,0.05)]"
+                  className="rounded-2xl border border-border/70 bg-card/85 p-8"
                 >
                   <BenefitIconBadge icon={benefit.icon} />
                   <h3 className="mt-5 font-heading text-xl text-foreground">
@@ -306,19 +305,19 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         <section id="demo" className="bg-background py-16 md:py-24">
           <div className="mx-auto max-w-5xl px-6 lg:px-10">
             <div className="mx-auto max-w-2xl text-center">
-              <SectionKicker align="center">Demo</SectionKicker>
+              <p className="section-kicker">Demo</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
                 {service.detailVideoSrc
-                  ? "Pogledajte animaciju u pokretu."
-                  : "Otvorite panoramu — kliknite i prevucite mišem."}
+                  ? "See the animation in motion."
+                  : "Open the panorama — click and drag to look around."}
               </h2>
               <p className="mt-4 text-base leading-7 text-muted-foreground">
                 {service.detailVideoSrc
-                  ? "Kamera leti kroz prostor i otkriva enterijer, eksterijer i kontekst u jednom narativu — isti format koji dobijate za prospekt i društvene mreže."
-                  : "Demo prikazuje stvarnu interakciju koju će Vaš kupac imati: rotacija po svim uglovima, prelazak između tačaka, VR mod na podržanim uređajima."}
+                  ? "The camera moves through the space and reveals the interior, exterior and context in a single narrative — the same format you receive for brochures and social media."
+                  : "The demo shows the exact interaction your buyer will have: rotation in every direction, transitions between viewpoints, and VR mode on supported devices."}
               </p>
             </div>
-            <div className="mt-10 aspect-[16/9] overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+            <div className="mt-10 aspect-[16/9] overflow-hidden rounded-3xl border border-border/70 bg-secondary">
               {service.detailVideoSrc ? (
                 <video
                   src={service.detailVideoSrc}
@@ -333,7 +332,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                 />
               ) : (
                 <iframe
-                  title={`${service.name} — interaktivna demo panorama`}
+                  title={`${service.name} — interactive demo panorama`}
                   src={service.detailEmbedSrc}
                   className="h-full w-full border-0"
                   allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
@@ -342,8 +341,8 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
               )}
             </div>
             {!service.detailVideoSrc && (
-              <p className="mt-4 text-center text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                Otvara se i u VR režimu na Meta Quest uređajima
+              <p className="mt-4 text-center font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                Also opens in VR mode on Meta Quest devices
               </p>
             )}
           </div>
@@ -354,9 +353,9 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
       <section id="cene" className="bg-background py-16 md:py-24">
         <div className="mx-auto max-w-6xl px-6 lg:px-10">
           <div className="mx-auto max-w-2xl text-center">
-            <SectionKicker align="center">Cene</SectionKicker>
+            <p className="section-kicker">Pricing</p>
             <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-              {service.pricingLead?.heading ?? "Transparentne cene. Bez nagađanja."}
+              {service.pricingLead?.heading ?? "Transparent pricing. No guesswork."}
             </h2>
             <p className="mt-4 text-base leading-7 text-muted-foreground">
               {service.pricingLead
@@ -365,7 +364,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                     ctx.displayCurrency,
                     ctx.pricingSettings,
                   )
-                : "Osnovna cena pokriva izgradnju 3D modela i prvi finalni render. Svaki sledeći ugao iz istog modela je drastično jeftiniji — jer je model već tu."}
+                : "The base price covers building the 3D model and the first final render. Every additional angle from the same model is dramatically cheaper — because the model is already there."}
             </p>
           </div>
           {service.comparison && (
@@ -407,14 +406,14 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
             ))}
           </div>
           {/* Model-first explainer postcard. */}
-          <aside className="mt-10 rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10 p-6 md:p-8">
+          <aside className="mt-10 rounded-2xl border border-border bg-secondary p-6 md:p-8">
             <div className="flex flex-col gap-4 md:flex-row md:items-start md:gap-6">
-              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-[color:var(--color-sage)]/20 text-[color:var(--color-sage-deep)]">
+              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-full border border-border bg-background text-muted-foreground">
                 <Wallet className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="font-heading text-xl text-foreground">
-                  Kako se cena formira
+                  How pricing works
                 </h3>
                 <p className="mt-2 text-sm leading-7 text-foreground/85">
                   {formatPublicPriceText(
@@ -434,16 +433,16 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         <section className="bg-secondary py-16 md:py-24">
           <div className="mx-auto max-w-5xl px-6 lg:px-10">
             <div className="mx-auto max-w-2xl text-center">
-              <SectionKicker align="center">Proces</SectionKicker>
+              <p className="section-kicker">Process</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-                Od nacrta do finalnih vizuala u četiri koraka.
+                From drawings to final visuals in four steps.
               </h2>
             </div>
             <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {service.processSteps.map((step, idx) => (
                 <li
                   key={step.title}
-                  className="rounded-2xl border border-border/70 bg-card/85 p-6 shadow-[0_14px_40px_rgba(28,26,25,0.05)]"
+                  className="rounded-2xl border border-border/70 bg-card/85 p-6"
                 >
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-sm font-semibold text-accent-foreground">
                     {idx + 1}
@@ -470,9 +469,9 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         <section id="portfolio" className="bg-background py-16 md:py-24">
           <div className="mx-auto max-w-6xl px-6 lg:px-10">
             <div className="mx-auto max-w-2xl text-center">
-              <SectionKicker align="center">Portfolio</SectionKicker>
+              <p className="section-kicker">Portfolio</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-                Primeri iz nedavno isporučenih projekata.
+                Examples from recently delivered projects.
               </h2>
             </div>
             <div className="mt-12 grid gap-6 sm:grid-cols-2">
@@ -488,21 +487,21 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                     sizes="(max-width: 768px) 100vw, 50vw"
                     className="aspect-[16/9] w-full rounded-2xl border border-border/70 bg-secondary"
                   >
-                    <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-background/95">
-                      Pre / posle
+                    <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 font-mono text-[0.65rem] font-medium uppercase tracking-[0.08em] text-background/95">
+                      Before / after
                     </span>
                   </BeforeAfterReveal>
                 ) : (
                   <figure
                     key={img.src}
-                    className="group relative aspect-[16/9] overflow-hidden rounded-2xl border border-border/70 bg-secondary"
+                    className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-border/70 bg-secondary"
                   >
                     <Image
                       src={img.src}
                       alt={img.alt}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      className="object-cover"
                     />
                   </figure>
                 ),
@@ -517,9 +516,9 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         <section id="faq" className="bg-secondary py-16 md:py-24">
           <div className="mx-auto max-w-3xl px-6 lg:px-10">
             <div className="text-center">
-              <SectionKicker align="center">Pitanja</SectionKicker>
+              <p className="section-kicker">FAQ</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-                Pitanja koja direktno utiču na kupovnu odluku.
+                The questions that directly shape a buying decision.
               </h2>
             </div>
             <div className="mt-10 divide-y divide-border/70 border-y border-border/70">
@@ -552,11 +551,11 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
       <section className="bg-foreground py-20 md:py-28">
         <div className="mx-auto max-w-3xl px-6 text-center lg:px-10">
           <h2 className="font-heading text-3xl leading-tight text-background md:text-4xl">
-            Spremni da vizuelizujete projekat?
+            Ready to visualize your project?
           </h2>
           <p className="mt-4 text-base leading-7 text-background/80">
-            Pošaljite nam svoje nacrte i preciznu ponudu šaljemo najkasnije
-            narednog radnog dana.
+            Send us your drawings and we return a precise estimate no later
+            than the next working day.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <QuickInquiryLink
@@ -568,7 +567,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                 serviceType: service.name,
               }}
             >
-              Pošaljite projekat
+              Send your project
             </QuickInquiryLink>
             <ButtonLink
               href="/pricing"
@@ -576,11 +575,11 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
               variant="outline"
               className="border-background/40 bg-transparent text-background hover:bg-background/10 hover:text-background"
             >
-              Detaljan cenovnik
+              See pricing
             </ButtonLink>
           </div>
-          <p className="mt-6 text-xs uppercase tracking-[0.22em] text-background/55">
-            Bez obaveza · Tri runde revizije uključene
+          <p className="mt-6 font-mono text-xs font-medium uppercase tracking-[0.08em] text-white/60">
+            No obligation · Three revision rounds included
           </p>
         </div>
       </section>
@@ -592,7 +591,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
   const { service } = ctx;
   if (service.problemVideoSrc) {
     return (
-      <figure className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+      <figure className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary">
         <video
           src={service.problemVideoSrc}
           poster={service.problemVideoPoster}
@@ -609,12 +608,12 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
   }
   if (service.problemPanoramaSrc) {
     return (
-      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary">
         <Panorama360
           src={service.problemPanoramaSrc}
           title={buildServiceImageAlt(service, "problem")}
         />
-        <span className="pointer-events-none absolute right-3 top-3 z-10 rounded-full bg-foreground/55 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-background/95">
+        <span className="pointer-events-none absolute right-3 top-3 z-10 rounded-full bg-foreground/55 px-2.5 py-1 font-mono text-[0.65rem] font-medium uppercase tracking-[0.08em] text-background/95">
           360°
         </span>
       </figure>
@@ -622,9 +621,9 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
   }
   if (service.problemEmbedSrc) {
     return (
-      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary">
         <iframe
-          title={`${service.name} — interaktivna 360 tura`}
+          title={`${service.name} — interactive 360° tour`}
           src={service.problemEmbedSrc}
           className="h-full w-full border-0"
           allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
@@ -635,7 +634,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
   }
   if (service.problemAsset) {
     return (
-      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary">
         <Image
           src={service.problemAsset}
           alt={buildServiceImageAlt(service, "problem")}
@@ -656,10 +655,10 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
         afterAlt={service.detailAfterAlt ?? buildServiceImageAlt(service, "after")}
         sizes="(max-width: 768px) 100vw, 640px"
         autoDemoIntervalMs={SERVICE_BEFORE_AFTER_DEMO_INTERVAL_MS}
-        className="aspect-[4/3] w-full rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]"
+        className="aspect-[4/3] w-full rounded-3xl border border-border/70 bg-secondary"
       >
-        <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-background/95">
-          Pre / posle
+        <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 font-mono text-[0.65rem] font-medium uppercase tracking-[0.08em] text-background/95">
+          Before / after
         </span>
       </BeforeAfterReveal>
     );
@@ -667,7 +666,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
   if (service.portfolioImages && service.portfolioImages.length > 0) {
     const first = service.portfolioImages[0];
     return (
-      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary">
         <Image
           src={first.src}
           alt={first.alt}
@@ -680,7 +679,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
   }
   if (service.detailAsset) {
     return (
-      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary shadow-[0_20px_55px_rgba(28,26,25,0.08)]">
+      <figure className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary">
         <Image
           src={service.detailAsset}
           alt={buildServiceImageAlt(service, "detail")}
@@ -700,15 +699,15 @@ function PricingComparison({
   comparison: NonNullable<Service["comparison"]>;
 }) {
   return (
-    <div className="mx-auto mt-10 max-w-3xl overflow-hidden rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/10">
-      <div className="grid grid-cols-3 border-b border-[color:var(--color-sage)]/25 bg-[color:var(--color-sage)]/15 text-[0.68rem] font-semibold uppercase tracking-[0.12em]">
-        <div className="px-3 py-3 text-muted-foreground sm:px-4">Metod</div>
+    <div className="mx-auto mt-10 max-w-3xl overflow-hidden rounded-2xl border border-border bg-card">
+      <div className="grid grid-cols-3 border-b border-border bg-secondary font-mono text-xs font-medium uppercase tracking-[0.08em]">
+        <div className="px-3 py-3 text-muted-foreground sm:px-4">Method</div>
         <div className="px-3 py-3 text-foreground sm:px-4">{comparison.aLabel}</div>
         <div className="px-3 py-3 text-muted-foreground sm:px-4">
           {comparison.bLabel}
         </div>
       </div>
-      <div className="divide-y divide-[color:var(--color-sage)]/15">
+      <div className="divide-y divide-border">
         {comparison.rows.map((row) => (
           <div
             key={row.label}
@@ -740,17 +739,17 @@ function PricingCard({
   return (
     <article
       className={[
-        "relative flex flex-col rounded-2xl border bg-card/90 p-6 shadow-[0_14px_40px_rgba(28,26,25,0.05)] md:p-7",
+        "relative flex flex-col rounded-2xl border bg-card/90 p-6 md:p-7",
         featured ? "border-accent" : "border-border/70",
       ].join(" ")}
     >
       {featured && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-accent-foreground">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 font-mono text-[0.65rem] font-medium uppercase tracking-[0.08em] text-accent-foreground">
           {ctx.service.variants.length +
             (ctx.service.crossSellVariants?.length ?? 0) >
           1
-            ? "Naš izbor"
-            : "Kompletna usluga"}
+            ? "Our pick"
+            : "Complete service"}
         </span>
       )}
       <h3 className="font-heading text-xl text-foreground">{variant.title}</h3>
@@ -786,8 +785,8 @@ function PricingCard({
           </p>
         )}
       </div>
-      <p className="mt-6 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-        U ceni
+      <p className="mt-6 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+        Included in the price
       </p>
       <p className="mt-2 text-sm leading-6 text-foreground/85">
         {formatPublicPriceText(
@@ -798,8 +797,8 @@ function PricingCard({
       </p>
       {variant.addOns.length > 0 && (
         <>
-          <p className="mt-5 text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            Doplate iz cenovnika
+          <p className="mt-5 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Add-ons from the price list
           </p>
           <ul className="mt-2 space-y-2">
             {variant.addOns.map((addOn) => (
@@ -807,7 +806,7 @@ function PricingCard({
                 key={addOn}
                 className="flex gap-2 text-sm leading-6 text-muted-foreground"
               >
-                <Check className="mt-1 h-3.5 w-3.5 flex-none text-[color:var(--color-sage-deep)]" />
+                <Check className="mt-1 h-3.5 w-3.5 flex-none text-accent" />
                 <span>
                   {formatPublicPriceText(
                     addOn,
@@ -841,7 +840,7 @@ function PricingCard({
             variant={featured ? "accent" : "outline"}
             className="w-full justify-center"
           >
-            Izračunajte cenu i naručite
+            Get your estimate and order
           </ButtonLink>
         ) : (
           <QuickInquiryLink
@@ -854,7 +853,7 @@ function PricingCard({
               serviceType: ctx.service.name,
             }}
           >
-            Zatražite ponudu
+            Request an estimate
           </QuickInquiryLink>
         )}
       </div>
@@ -872,7 +871,7 @@ const BENEFIT_ICONS: Record<BenefitIcon, React.ComponentType<{ className?: strin
 function BenefitIconBadge({ icon }: { icon?: BenefitIcon }) {
   const Icon = icon ? BENEFIT_ICONS[icon] : BadgeCheck;
   return (
-    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--color-sage)]/15 text-[color:var(--color-sage-deep)]">
+    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border bg-secondary text-muted-foreground">
       <Icon className="h-5 w-5" />
     </div>
   );
@@ -890,10 +889,10 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
     <article className="mx-auto w-full max-w-4xl px-6 pb-24 pt-20 md:pt-28">
       <Link
         href="/services"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        Sve usluge
+        All services
       </Link>
 
       {service.detailBeforeAsset && service.detailAfterAsset ? (
@@ -905,16 +904,16 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
           afterAlt={service.detailAfterAlt ?? buildServiceImageAlt(service, "after")}
           sizes="(max-width: 768px) 100vw, 896px"
           autoDemoIntervalMs={SERVICE_BEFORE_AFTER_DEMO_INTERVAL_MS}
-          className="mt-10 aspect-[16/9] w-full rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]"
+          className="mt-10 aspect-[16/9] w-full rounded-3xl border border-border bg-secondary"
         >
-          <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-background/95">
-            Pre / posle
+          <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 font-mono text-[0.65rem] font-medium uppercase tracking-[0.08em] text-background/95">
+            Before / after
           </span>
         </BeforeAfterReveal>
       ) : service.detailEmbedSrc ? (
-        <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]">
+        <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary">
           <iframe
-            title={`${service.name} — 360 pregled`}
+            title={`${service.name} — 360° preview`}
             src={service.detailEmbedSrc}
             className="h-full w-full border-0"
             allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
@@ -922,7 +921,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
           />
         </div>
       ) : service.detailAsset ? (
-        <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary shadow-[0_30px_60px_rgba(28,26,25,0.12)]">
+        <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary">
           <Image
             src={service.detailAsset}
             alt={buildServiceImageAlt(service, "detail")}
@@ -936,7 +935,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
 
       <div className="mt-10 flex flex-wrap items-center gap-3">
         <Badge variant="secondary">{CATEGORY_LABELS[service.category]}</Badge>
-        {service.outsourced && <Badge variant="outline">Partner mreža</Badge>}
+        {service.outsourced && <Badge variant="outline">Partner network</Badge>}
       </div>
 
       <h1 className="mt-6 text-5xl leading-tight text-foreground md:text-6xl">
@@ -948,8 +947,8 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
 
       {service.forSegments && service.forSegments.length > 0 && (
         <div className="mt-6 flex flex-wrap items-center gap-2">
-          <span className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-            Idealno za:
+          <span className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            Ideal for:
           </span>
           {service.forSegments.map((segment) => (
             <span
@@ -971,8 +970,8 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
       </p>
 
       <div className="mt-10 rounded-2xl border border-border/70 bg-secondary/40 p-6 md:p-8">
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-          Kako se cena formira
+        <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          How pricing works
         </p>
         <p className="mt-3 text-sm leading-7 text-foreground/85">
           {formatPublicPriceText(
@@ -985,7 +984,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
 
       <section className="mt-10 grid gap-4 md:grid-cols-3">
         <InfoBlock
-          title="Kada koristiti"
+          title="When to use it"
           text={formatPublicPriceText(
             service.highlight,
             ctx.displayCurrency,
@@ -993,7 +992,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
           )}
         />
         <InfoBlock
-          title="Šta poslati"
+          title="What to send"
           text={formatPublicPriceText(
             service.materials,
             ctx.displayCurrency,
@@ -1001,9 +1000,9 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
           )}
         />
         <InfoBlock
-          title="Šta dobijate"
+          title="What you receive"
           text={formatPublicPriceText(
-            `${service.variants[0].included} Dodatni obim se računa kroz javne doplate iz cenovnika.`,
+            `${service.variants[0].included} Additional scope is priced through the public add-ons from the price list.`,
             ctx.displayCurrency,
             ctx.pricingSettings,
           )}
@@ -1012,14 +1011,14 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
 
       <section className="mt-14 space-y-6">
         <h2 className="text-2xl text-foreground md:text-3xl">
-          Dostupne varijante i cene
+          Available variants and pricing
         </h2>
 
         <div className="space-y-4">
           {service.variants.map((variant) => (
             <div
               key={variant.id}
-              className="rounded-2xl border border-border/70 bg-card/85 p-6 shadow-[0_14px_40px_rgba(28,26,25,0.05)] md:p-8"
+              className="rounded-2xl border border-border/70 bg-card/85 p-6 md:p-8"
             >
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div className="flex-1">
@@ -1035,8 +1034,8 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
                   </p>
                 </div>
                 <div className="md:text-right">
-                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Početna cena
+                  <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                    Starting price
                   </p>
                   <p className="mt-1 text-3xl text-foreground md:text-4xl">
                     {formatPublicPriceText(
@@ -1057,8 +1056,8 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
 
               <div className="mt-6 space-y-4">
                 <div>
-                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Šta dobijate u ovoj ceni
+                  <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                    What this price includes
                   </p>
                   <p className="mt-2 text-sm leading-6 text-foreground/85">
                     {formatPublicPriceText(
@@ -1070,8 +1069,8 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
                 </div>
 
                 <div>
-                  <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                    Doplate iz cenovnika
+                  <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                    Add-ons from the price list
                   </p>
                   <ul className="mt-2 space-y-2">
                     {variant.addOns.map((addOn) => (
@@ -1115,16 +1114,16 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
             serviceType: service.name,
           }}
         >
-          Pošaljite projekat
+          Send your project
         </QuickInquiryLink>
         <ButtonLink href="/pricing" size="xl" variant="outline">
-          Detaljan cenovnik
+          See pricing
         </ButtonLink>
       </div>
     </article>
       <PreFooterCta
-        heading={`Spreman za narudžbinu — ${service.name.toLowerCase()}?`}
-        body="Otvori kalkulator, podesi parametre svoje vizuelizacije i odmah vidi tačnu cenu."
+        heading={`Ready to order — ${service.name.toLowerCase()}?`}
+        body="Open the calculator, set the parameters of your visualization and see the exact price right away."
       />
     </>
   );
@@ -1133,7 +1132,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
 function InfoBlock({ title, text }: { title: string; text: string }) {
   return (
     <div className="rounded-xl border border-border/70 bg-card/75 p-5">
-      <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+      <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
         {title}
       </h2>
       <p className="mt-3 text-sm leading-7 text-foreground/80">{text}</p>

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { QuickInquiryLink } from "@/components/inquiry/quick-inquiry-link";
-import { SectionKicker } from "@/components/brand/section-kicker";
 import { JsonLd } from "@/components/seo/json-ld";
 import { ConfiguratorBody } from "@/components/configurator/pricing-configurator";
 import { PricingAssistantGuideContext } from "@/components/chat/pricing-guide-context";
@@ -22,23 +21,23 @@ import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Cene",
+  title: "Pricing",
   description:
-    "Transparentan cenovnik usluga arhitektonske vizuelizacije. Prva isporuka iz modela nosi pun iznos, svaki sledeći prikaz iz istog modela je znatno povoljniji.",
+    "A transparent price list for architectural visualization services. The first delivery from a model carries the full price; every subsequent view from the same model costs significantly less.",
   path: "/pricing",
   image: "/artwork/pricing-card-interior.webp",
   imageAlt:
-    "Cenovnik arhitektonske vizuelizacije - primer enterijera i usluga renderovanja",
+    "Architectural visualization pricing - an interior render example and rendering services",
   keywords: [
-    "cene 3D rendera",
-    "cenovnik arhitektonske vizuelizacije",
-    "cena virtuelnog opremanja",
+    "3D render prices",
+    "architectural visualization price list",
+    "virtual staging price",
   ],
 });
 
 export const dynamic = "force-dynamic";
 
-export default async function CenePage() {
+export default async function PricingPage() {
   const [displayCurrency, pricingCatalog] = await Promise.all([
     getPublicDisplayCurrency(),
     getPublishedPricingCatalog(),
@@ -51,26 +50,27 @@ export default async function CenePage() {
         data={[
           buildWebPageJsonLd({
             path: "/pricing",
-            name: "Cene arhitektonske vizuelizacije",
+            name: "Architectural visualization pricing",
             description:
-              "Transparentan cenovnik rendera, 3D osnova, virtuelnog opremanja, 360 tura i AI kredita.",
+              "A transparent price list for renders, 3D floor plans, virtual staging, 360° virtual tours and AI credits.",
           }),
           buildBreadcrumbJsonLd([
-            { name: "Početna", path: "/" },
-            { name: "Cene", path: "/pricing" },
+            { name: "Home", path: "/" },
+            { name: "Pricing", path: "/pricing" },
           ]),
           buildOfferCatalogJsonLd(pricingCatalog.categories),
         ]}
       />
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
-        <SectionKicker>Cene</SectionKicker>
+        <p className="section-kicker">Pricing</p>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
-          Cena bez nagađanja
+          A price without guesswork
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-          Gradimo model jednom — koristite ga više puta. Prva isporuka iz modela
-          nosi pun iznos, a svaki sledeći prikaz košta manje jer je osnovni rad
-          već urađen. Izaberite usluge i odmah vidite cenu.
+          We build the model once — you use it many times. The first delivery
+          from a model carries the full price, and every subsequent view costs
+          less because the core work is already done. Pick your services and
+          see the price immediately.
         </p>
       </div>
 
@@ -86,8 +86,8 @@ export default async function CenePage() {
         <StandaloneAiCredits />
 
         {/* Service matrix — left sidebar of categories + right table of services
-            with hover-preview pricing and an info drawer. The black "Vaša
-            ponuda" QuoteSummary card lives in the matrix as a sticky 3rd
+            with hover-preview pricing and an info drawer. The black "Your
+            estimate" QuoteSummary card lives in the matrix as a sticky 3rd
             column on xl+, so the cart is visible while browsing. */}
         <Suspense
           fallback={
@@ -130,7 +130,7 @@ export default async function CenePage() {
 
       <section className="pb-24">
         <div className="mx-auto w-full max-w-3xl px-6">
-          <div className="rounded-2xl border border-[color:var(--color-border-warm)] bg-secondary/40 p-6 md:p-8">
+          <div className="rounded-2xl border border-border bg-secondary/40 p-6 md:p-8">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h3 className="text-lg text-foreground">
@@ -140,7 +140,7 @@ export default async function CenePage() {
                   {pricingTerms.lead}
                 </p>
               </div>
-              <span className="inline-flex w-fit flex-shrink-0 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-accent">
+              <span className="inline-flex w-fit flex-shrink-0 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 font-mono text-xs font-medium uppercase tracking-[0.08em] text-accent">
                 {pricingTerms.badge}
               </span>
             </div>
@@ -155,7 +155,7 @@ export default async function CenePage() {
                 variant="accent"
                 inquiry={{
                   source: "pricing-notes",
-                  sourceLabel: `Cene - ${pricingTerms.ctaLabel}`,
+                  sourceLabel: `Pricing - ${pricingTerms.ctaLabel}`,
                 }}
               >
                 {pricingTerms.ctaLabel}
@@ -166,11 +166,11 @@ export default async function CenePage() {
       </section>
 
       <PreFooterCta
-        heading="Treba dogovor pre nego što kreneš?"
-        body="Ako želiš jasan razgovor o većem projektu ili specifičnom obimu, pošalji kratak opis i vraćamo se obično istog radnog dana."
-        ctaLabel="Otvori formu za projekat"
+        heading="Need to talk it through first?"
+        body="If you want a clear conversation about a larger project or a specific scope, send a short description and we usually reply the same working day."
+        ctaLabel="Open the project form"
         ctaHref="/contact"
-        inquirySource={{ source: "cene-pre-footer", sourceLabel: "Cene PreFooter brzi upit" }}
+        inquirySource={{ source: "cene-pre-footer", sourceLabel: "Pricing pre-footer quick inquiry" }}
       />
     </>
   );

@@ -15,32 +15,32 @@ import {
 } from "@/lib/content/site";
 
 const DEFAULT_OG_IMAGE = "/og-image.jpg";
-const DEFAULT_META_TITLE = `${SITE.name} — Arhitektonska vizuelizacija`;
+const DEFAULT_META_TITLE = `${SITE.name} — Architectural visualization`;
 const DEFAULT_META_DESCRIPTION =
-  "Profesionalni 3D renderi enterijera i eksterijera, virtuelno opremanje i renovacija prostora. Brzo, kvalitetno i po pristupačnoj ceni.";
+  "Hand-crafted 3D interior and exterior renders, virtual staging and visual makeovers for homes and properties — with prices you can see up front.";
 const DEFAULT_TWITTER_DESCRIPTION =
-  "Profesionalni 3D renderi enterijera i eksterijera, virtuelno opremanje i renovacija prostora.";
+  "Photorealistic 3D renders, virtual staging and visual makeovers — with transparent pricing.";
 const OG_IMAGE_SIZE = { width: 1200, height: 630 };
 const SOCIAL_TITLE_MAX_LENGTH = 60;
 const SOCIAL_DESCRIPTION_MAX_LENGTH = 155;
 const DISCOVERY_KEYWORDS = [
-  "arhitektonska vizuelizacija",
-  "3D renderi",
-  "renderi enterijera",
-  "renderi eksterijera",
-  "virtuelno opremanje",
-  "virtuelna renovacija",
-  "AI obrada fotografija nekretnina",
-  "3D osnove",
-  "360 ture",
-  "arhitektonska animacija",
-  "renderi Srbija",
+  "architectural visualization studio",
+  "3D rendering services",
+  "photorealistic interior renders",
+  "exterior renders",
+  "virtual staging",
+  "virtual renovation",
+  "real estate renders Europe",
+  "floor plan rendering",
+  "360 virtual tour",
+  "architectural animation",
+  "day-to-dusk editing",
+  "AI real estate photo editing",
 ];
 
 export const SEO = {
-  htmlLang: "sr-Latn",
-  alternateLanguage: "sr-Latn-RS",
-  locale: "sr_RS",
+  htmlLang: "en",
+  locale: "en_US",
   defaultTitle: DEFAULT_META_TITLE,
   defaultDescription: DEFAULT_META_DESCRIPTION,
   twitterDescription: DEFAULT_TWITTER_DESCRIPTION,
@@ -131,9 +131,10 @@ export function canonicalUrl(path = "/"): string {
 
 export function buildLanguageAlternates(path = "/"): Record<string, string> {
   const canonical = canonicalUrl(path);
+  // Cross-domain sr link to elegantrender.rs is intentionally omitted for
+  // now — flagged separately; add it here once the pairing is signed off.
   return {
-    [SEO.alternateLanguage]: canonical,
-    "sr-RS": canonical,
+    en: canonical,
     "x-default": canonical,
   };
 }
@@ -161,7 +162,7 @@ export function createPublicMetadata({
   description,
   path = "/",
   image = DEFAULT_OG_IMAGE,
-  imageAlt = `${SITE.name} arhitektonska vizuelizacija`,
+  imageAlt = `${SITE.name} architectural visualization`,
   keywords,
   twitterDescription,
   noIndex = false,
@@ -236,16 +237,16 @@ export function buildWebSiteJsonLd() {
       "@id": SEO.organizationId,
     },
     about: [
-      "Arhitektonska vizuelizacija",
-      "3D renderi",
-      "Virtuelno opremanje",
-      "AI obrada fotografija nekretnina",
+      "Architectural visualization",
+      "3D rendering",
+      "Virtual staging",
+      "AI real estate photo editing",
     ],
     audience: [
       {
         "@type": "Audience",
         audienceType:
-          "Vlasnici nekretnina, agenti, arhitekte, dizajneri i investitori",
+          "Property owners, real estate agents, architects, designers and developers",
       },
     ],
     hasPart: [
@@ -256,7 +257,7 @@ export function buildWebSiteJsonLd() {
         url: `${SITE.url}/llms.txt`,
         encodingFormat: "text/plain",
         description:
-          "Sažet AI-readable pregled javnih stranica, usluga i pravila za citiranje.",
+          "Concise AI-readable overview of public pages, services and citation rules.",
       },
       {
         "@type": "CreativeWork",
@@ -265,7 +266,7 @@ export function buildWebSiteJsonLd() {
         url: `${SITE.url}/llms-full.txt`,
         encodingFormat: "text/plain",
         description:
-          "Detaljan AI-readable profil sa uslugama, cenama, FAQ odgovorima i pravilima za AI sisteme.",
+          "Detailed AI-readable profile with services, prices, FAQ answers and rules for AI systems.",
       },
     ],
   };
@@ -361,12 +362,16 @@ export function buildServiceJsonLd(service: Service) {
     },
     areaServed: [
       {
-        "@type": "Country",
-        name: "Serbia",
+        "@type": "AdministrativeArea",
+        name: "Europe",
       },
       {
-        "@type": "AdministrativeArea",
-        name: "Regional markets",
+        "@type": "Country",
+        name: "United Kingdom",
+      },
+      {
+        "@type": "Country",
+        name: "United States",
       },
       {
         "@type": "Place",
@@ -390,7 +395,7 @@ export function buildServiceJsonLd(service: Service) {
     offers: {
       "@type": "OfferCatalog",
       "@id": `${serviceUrl}#offers`,
-      name: `${service.name} - varijante`,
+      name: `${service.name} — variants`,
       itemListElement: service.variants.map((variant) => ({
         "@type": "Offer",
         name: variant.title,
@@ -418,7 +423,7 @@ export function buildServicesItemListJsonLd(services: Service[] = SERVICES) {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Elegant Render usluge",
+    name: "Elegant Render services",
     url: absoluteUrl("/services"),
     itemListElement: services.map((service, index) => ({
       "@type": "ListItem",
@@ -437,9 +442,9 @@ export function buildOfferCatalogJsonLd(
     "@context": "https://schema.org",
     "@type": "OfferCatalog",
     "@id": `${absoluteUrl("/pricing")}#offer-catalog`,
-    name: "Elegant Render cenovnik",
+    name: "Elegant Render price list",
     description:
-      "Osnovne cene arhitektonske vizuelizacije su u EUR.",
+      "Base prices for architectural visualization are in EUR.",
     url: absoluteUrl("/pricing"),
     provider: {
       "@id": SEO.organizationId,
@@ -482,9 +487,9 @@ export function buildOrderingHowToJsonLd() {
     "@context": "https://schema.org",
     "@type": "HowTo",
     "@id": `${SITE.url}/#ordering-howto`,
-    name: "Kako naručiti arhitektonsku vizuelizaciju",
+    name: "How to order architectural visualization",
     description:
-      "Elegant Render proces: izračunavanje okvira, slanje materijala, prvi nacrti i finalizacija kroz revizije.",
+      "The Elegant Render process: get your estimate, send your materials, receive first drafts and finalize through revisions.",
     inLanguage: SEO.htmlLang,
     provider: {
       "@id": SEO.organizationId,
@@ -506,7 +511,7 @@ export function buildHomeJsonLd(
     buildWebSiteJsonLd(),
     buildWebPageJsonLd({
       path: "/",
-      name: `${SITE.name} - arhitektonska vizuelizacija`,
+      name: `${SITE.name} — architectural visualization`,
       description: SEO.defaultDescription,
     }),
     buildServicesItemListJsonLd(SERVICES.filter((service) => service.featured)),

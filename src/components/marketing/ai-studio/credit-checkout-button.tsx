@@ -15,7 +15,7 @@ type CreditCheckoutButtonProps = {
 
 export function CreditCheckoutButton({
   credits = 10,
-  label = "Kupi kredite",
+  label = "Buy credits",
   variant = "accent",
   size = "lg",
   className,

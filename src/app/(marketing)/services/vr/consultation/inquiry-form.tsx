@@ -121,17 +121,17 @@ export function VrInquiryForm({
 
   if (result.kind === "success") {
     return (
-      <div className="rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/[0.06] p-8 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--color-sage)] text-white">
+      <div className="rounded-2xl border border-border bg-secondary p-8 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-foreground">
           <Check className="h-5 w-5" />
         </div>
         <h2 className="mt-4 text-2xl font-semibold text-foreground">
-          Upit primljen
+          Inquiry received
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Hvala — proverite email za potvrdu. Tim se javlja u roku od{" "}
-          <strong className="text-foreground">1 radnog dana</strong> da
-          dogovorimo termin za konsultaciju.
+          Thank you — check your email for a confirmation. The team replies
+          within <strong className="text-foreground">1 working day</strong> to
+          schedule the consultation.
         </p>
       </div>
     );
@@ -141,8 +141,8 @@ export function VrInquiryForm({
     <form onSubmit={submit} className="space-y-8">
       {/* Product picker */}
       <section className="space-y-3">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          1. Izaberite tip VR projekta
+        <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          1. Choose the VR project type
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
           {products.map((p) => {
@@ -153,10 +153,10 @@ export function VrInquiryForm({
                 type="button"
                 onClick={() => setProductId(p.id)}
                 className={cn(
-                  "flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-colors",
+                  "flex flex-col items-start gap-2 rounded-xl border p-4 text-left transition-colors duration-200",
                   isActive
                     ? "border-accent bg-accent/[0.06]"
-                    : "border-border/60 bg-card/60 hover:border-accent/40",
+                    : "border-border/60 bg-card/60 hover:border-[#d4d4d4]",
                 )}
               >
                 <div className="flex w-full items-center justify-between gap-2">
@@ -167,14 +167,14 @@ export function VrInquiryForm({
                   {isActive && <Check className="h-4 w-4 text-accent" />}
                 </div>
                 <span className="text-[0.78rem] text-muted-foreground">
-                  Od{" "}
+                  From{" "}
                   {formatPublicPrice(
                     p.basePriceEur,
                     displayCurrency,
                     pricingSettings,
                   )}{" "}
                   —
-                  konsultacija pre izrade
+                  consultation before production
                 </span>
               </button>
             );
@@ -184,14 +184,14 @@ export function VrInquiryForm({
 
       {/* Contact */}
       <section className="space-y-4">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          2. Kontakt
+        <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          2. Contact
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="vri-name">
               <Pencil className="h-3 w-3 text-accent/60" />
-              Ime i prezime
+              Full name
             </Label>
             <Input
               id="vri-name"
@@ -221,7 +221,7 @@ export function VrInquiryForm({
         <div className="space-y-2">
           <Label htmlFor="vri-phone">
             <Pencil className="h-3 w-3 text-accent/60" />
-            Telefon (opciono)
+            Phone (optional)
           </Label>
           <Input
             id="vri-phone"
@@ -236,13 +236,13 @@ export function VrInquiryForm({
 
       {/* Project basics */}
       <section className="space-y-4">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          3. Osnovno o projektu
+        <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+          3. Project basics
         </h2>
         <div className="space-y-2">
           <Label htmlFor="vri-pname">
             <Pencil className="h-3 w-3 text-accent/60" />
-            Naziv projekta
+            Project name
           </Label>
           <Input
             id="vri-pname"
@@ -253,7 +253,7 @@ export function VrInquiryForm({
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="vri-etype">Tip VR iskustva</Label>
+            <Label htmlFor="vri-etype">VR experience type</Label>
             <select
               id="vri-etype"
               value={config.experienceType}
@@ -262,7 +262,7 @@ export function VrInquiryForm({
                   experienceType: e.target.value as VrExperienceTypeId,
                 })
               }
-              className="w-full rounded-md bg-secondary/40 px-2.5 py-2 text-sm text-foreground outline-none focus:ring-1 focus:ring-accent/50"
+              className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               {VR_EXPERIENCE_TYPES.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -272,14 +272,14 @@ export function VrInquiryForm({
             </select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="vri-device">Target uređaj</Label>
+            <Label htmlFor="vri-device">Target device</Label>
             <select
               id="vri-device"
               value={config.targetDevice}
               onChange={(e) =>
                 patch({ targetDevice: e.target.value as VrTargetDeviceId })
               }
-              className="w-full rounded-md bg-secondary/40 px-2.5 py-2 text-sm text-foreground outline-none focus:ring-1 focus:ring-accent/50"
+              className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             >
               {VR_TARGET_DEVICES.map((d) => (
                 <option key={d.id} value={d.id}>
@@ -292,14 +292,14 @@ export function VrInquiryForm({
         <div className="space-y-2">
           <Label htmlFor="vri-desc">
             <Pencil className="h-3 w-3 text-accent/60" />
-            Opis projekta
+            Project description
           </Label>
           <Textarea
             id="vri-desc"
             value={config.description ?? ""}
             onChange={(e) => patch({ description: e.target.value })}
             rows={5}
-            placeholder="Tip prostora, broj prostorija/etaža, namena (prezentacija / prodaja / treninzi), poseban zahtevi…"
+            placeholder="Type of space, number of rooms/floors, purpose (presentation / sales / training), special requirements…"
             maxLength={2000}
           />
         </div>
@@ -309,14 +309,14 @@ export function VrInquiryForm({
       <section className="space-y-2">
         <Label htmlFor="vri-msg">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Dodatna poruka timu (opciono)
+          Additional message for the team (optional)
         </Label>
         <Textarea
           id="vri-msg"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={3}
-          placeholder="Rok, budžet, šta vam je najvažnije, fajlovi koje možete poslati posle…"
+          placeholder="Timeline, budget, what matters most to you, files you can send later…"
           maxLength={4000}
         />
       </section>
@@ -326,14 +326,16 @@ export function VrInquiryForm({
         <button
           type="button"
           onClick={() => setAdvancedOpen((v) => !v)}
-          className="flex w-full items-center justify-between rounded-xl border border-border/40 bg-secondary/30 px-4 py-3 text-left transition-colors hover:bg-secondary/50"
+          className="flex w-full items-center justify-between rounded-xl border border-border/40 bg-secondary/30 px-4 py-3 text-left transition-colors duration-200 hover:bg-secondary/50"
         >
           <div>
             <p className="text-sm font-semibold text-foreground">
-              Tehničke želje (opciono)
+              Technical preferences (optional)
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              Locomotion, interakcije, day/night, brending — ako već znate, popunite. Nema problema ako preskočite, dogovaramo na razgovoru.
+              Locomotion, interactions, day/night, branding — fill these in if
+              you already know. No problem if you skip them; we settle the
+              details on the call.
             </p>
           </div>
           <ChevronDown
@@ -347,7 +349,7 @@ export function VrInquiryForm({
           <div className="mt-3 space-y-4 rounded-xl border border-border/40 bg-card/60 p-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="vri-loco">Locomotion (kretanje)</Label>
+                <Label htmlFor="vri-loco">Locomotion (movement)</Label>
                 <select
                   id="vri-loco"
                   value={config.locomotion ?? ""}
@@ -359,9 +361,9 @@ export function VrInquiryForm({
                           | undefined,
                     })
                   }
-                  className="w-full rounded-md bg-secondary/40 px-2.5 py-2 text-sm text-foreground outline-none focus:ring-1 focus:ring-accent/50"
+                  className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
-                  <option value="">— ne znam još —</option>
+                  <option value="">— not sure yet —</option>
                   {VR_LOCOMOTION.map((l) => (
                     <option key={l.id} value={l.id}>
                       {l.label}
@@ -370,7 +372,7 @@ export function VrInquiryForm({
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="vri-dn">Dan / noć</Label>
+                <Label htmlFor="vri-dn">Day / night</Label>
                 <select
                   id="vri-dn"
                   value={config.dayNightMode ?? ""}
@@ -382,9 +384,9 @@ export function VrInquiryForm({
                           | undefined,
                     })
                   }
-                  className="w-full rounded-md bg-secondary/40 px-2.5 py-2 text-sm text-foreground outline-none focus:ring-1 focus:ring-accent/50"
+                  className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
-                  <option value="">— ne znam još —</option>
+                  <option value="">— not sure yet —</option>
                   {VR_DAY_NIGHT_MODES.map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.label}
@@ -395,20 +397,20 @@ export function VrInquiryForm({
             </div>
 
             <div className="space-y-2">
-              <p className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
-                Interakcije
+              <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                Interactions
               </p>
               <div className="grid gap-2 sm:grid-cols-3">
                 {(
                   [
-                    { key: "doorInteraction", label: "Vrata se otvaraju" },
+                    { key: "doorInteraction", label: "Doors open" },
                     {
                       key: "lightsInteraction",
-                      label: "Korisnik pali svetla",
+                      label: "User turns lights on",
                     },
                     {
                       key: "materialsInteraction",
-                      label: "Promena materijala",
+                      label: "Material switching",
                     },
                   ] as const
                 ).map((opt) => {
@@ -440,7 +442,7 @@ export function VrInquiryForm({
               className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-secondary/30 px-3 py-2"
             >
               <span className="text-[0.78rem] font-medium text-foreground">
-                White-label brending (vaš logo + boje)
+                White-label branding (your logo + colors)
               </span>
               <Switch
                 id="vri-brand"
@@ -461,11 +463,11 @@ export function VrInquiryForm({
       <div className="flex items-center justify-between gap-4 border-t border-border/40 pt-6">
         <p className="text-xs text-muted-foreground">
           {selectedProduct
-            ? `Šaljete upit za ${selectedProduct.label}`
-            : "Šaljete VR upit"}
+            ? `You are sending an inquiry for ${selectedProduct.label}`
+            : "You are sending a VR inquiry"}
         </p>
         <Button type="submit" size="xl" variant="accent" disabled={pending}>
-          {pending ? "Šaljemo…" : "Pošalji upit"}
+          {pending ? "Sending…" : "Send an inquiry"}
         </Button>
       </div>
     </form>

@@ -16,21 +16,21 @@ import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Usluge",
+  title: "Services",
   description:
-    "Kompletna ponuda arhitektonske vizuelizacije — renderi, animacije, 360 ture, virtuelno opremanje i adaptacije prostora.",
+    "The full range of architectural visualization — renders, animations, 360° tours, virtual staging, and virtual renovation.",
   path: "/services",
   image: "/artwork/elegant-render-services-triptych-1.webp",
   imageAlt:
-    "Elegant Render usluge - arhitektonska vizuelizacija, renderi, 360 ture i virtuelno opremanje",
+    "Elegant Render services - architectural visualization, renders, 360° tours, and virtual staging",
   keywords: [
-    "usluge arhitektonske vizuelizacije",
-    "renderi enterijera i eksterijera",
-    "virtuelna renovacija",
+    "architectural visualization services",
+    "interior and exterior renders",
+    "virtual renovation",
   ],
 });
 
-export default async function UslugePage() {
+export default async function ServicesPage() {
   const [displayCurrency, pricingCatalog] = await Promise.all([
     getPublicDisplayCurrency(),
     getPublishedPricingCatalog(),
@@ -51,13 +51,13 @@ export default async function UslugePage() {
         data={[
           buildWebPageJsonLd({
             path: "/services",
-            name: "Usluge arhitektonske vizuelizacije",
+            name: "Architectural visualization services",
             description:
-              "Renderi enterijera i eksterijera, 3D osnove, 360 ture, animacije, virtuelno opremanje i AI obrada fotografija.",
+              "Interior and exterior renders, 3D floor plans, 360° tours, animations, virtual staging, and AI photo editing.",
           }),
           buildBreadcrumbJsonLd([
-            { name: "Početna", path: "/" },
-            { name: "Usluge", path: "/services" },
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
           ]),
           buildServicesItemListJsonLd(),
           buildOfferCatalogJsonLd(),
@@ -68,8 +68,8 @@ export default async function UslugePage() {
         <ServicesShowcase />
       </div>
       <PreFooterCta
-        heading="Spreman si — otvori kalkulator i složi narudžbinu."
-        body="Izaberi tip vizuelizacije iz ponude, podesi parametre i odmah vidi tačnu cenu — bez paketa i sitnih slova."
+        heading="Ready to go — open the calculator and build your order."
+        body="Pick a visualization type, set the parameters, and see the exact price right away — no bundles, no fine print."
       />
     </>
   );

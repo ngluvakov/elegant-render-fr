@@ -67,7 +67,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
         data={[
           buildBlogPostingJsonLd(post),
           buildBreadcrumbJsonLd([
-            { name: "Početna", path: "/" },
+            { name: "Home", path: "/" },
             { name: "Blog", path: "/blog" },
             { name: post.title, path: `/blog/${post.slug}` },
           ]),
@@ -77,10 +77,10 @@ export default async function BlogPostPage({ params }: { params: Params }) {
       <article className="mx-auto w-full max-w-3xl px-6 pt-16 md:pt-24">
         <Link
           href="/blog"
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          Nazad na blog
+          Back to blog
         </Link>
 
         <div className="mt-6 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -91,7 +91,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
           )}
           <time dateTime={post.date}>{formatBlogDate(post.date)}</time>
           <span aria-hidden>·</span>
-          <span>{estimateReadingMinutes(post)} min čitanja</span>
+          <span>{estimateReadingMinutes(post)} min read</span>
         </div>
 
         <h1 className="mt-4 text-4xl font-semibold leading-[1.1] text-foreground md:text-5xl">
@@ -102,7 +102,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
         </p>
 
         <div className="mt-8 border-y border-border/60 py-4 text-sm text-muted-foreground">
-          Autor: <span className="text-foreground/80">{post.author}</span>
+          Author: <span className="text-foreground/80">{post.author}</span>
         </div>
 
         <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border/70 bg-secondary">
@@ -137,7 +137,7 @@ export default async function BlogPostPage({ params }: { params: Params }) {
       {related.length > 0 && (
         <section className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 py-16">
           <h2 className="text-2xl font-semibold text-foreground">
-            Nastavite sa čitanjem
+            Keep reading
           </h2>
           <div className="mt-8 grid gap-8 sm:grid-cols-2">
             {related.map((item) => (

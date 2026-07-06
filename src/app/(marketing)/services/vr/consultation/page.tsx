@@ -11,7 +11,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { SectionKicker } from "@/components/brand/section-kicker";
 import { JsonLd } from "@/components/seo/json-ld";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -27,10 +26,10 @@ import {
 import { VrInquiryForm } from "./inquiry-form";
 
 const VR_CONSULTATION_DESCRIPTION =
-  "Zatražite konsultaciju za VR walkthrough. Tim se javlja u roku od 1 radnog dana sa predlogom opsega i tehničkih detalja.";
+  "Request a consultation for a VR walkthrough. The team replies within 1 working day with a proposed scope and technical details.";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "VR konsultacija",
+  title: "VR consultation",
   description: VR_CONSULTATION_DESCRIPTION,
   path: "/services/vr/consultation",
 });
@@ -86,19 +85,19 @@ export default async function VrConsultationPage({
         data={[
           buildWebPageJsonLd({
             path: "/services/vr/consultation",
-            name: "VR konsultacija",
+            name: "VR consultation",
             description: VR_CONSULTATION_DESCRIPTION,
           }),
           buildBreadcrumbJsonLd([
-            { name: "Početna", path: "/" },
-            { name: "Usluge", path: "/services" },
-            { name: "VR konsultacija", path: "/services/vr/consultation" },
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+            { name: "VR consultation", path: "/services/vr/consultation" },
           ]),
           {
             "@context": "https://schema.org",
             "@type": "Service",
             "@id": `${absoluteUrl("/services/vr/consultation")}#service`,
-            name: "VR Walkthrough konsultacija",
+            name: "VR walkthrough consultation",
             serviceType: "VR walkthrough",
             description: VR_CONSULTATION_DESCRIPTION,
             url: absoluteUrl("/services/vr/consultation"),
@@ -108,7 +107,7 @@ export default async function VrConsultationPage({
             areaServed: ["RS", "EU", "Worldwide"],
             offers: {
               "@type": "OfferCatalog",
-              name: "VR walkthrough opcije",
+              name: "VR walkthrough options",
               itemListElement: products.map((product) => ({
                 "@type": "Offer",
                 name: product.label,
@@ -127,17 +126,17 @@ export default async function VrConsultationPage({
           className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-3 w-3" />
-          Nazad na cene
+          Back to pricing
         </Link>
-        <SectionKicker className="mt-4">VR Walkthrough</SectionKicker>
+        <p className="section-kicker mt-4">VR walkthrough</p>
         <h1 className="mt-4 max-w-3xl text-4xl leading-[1.1] text-foreground md:text-5xl">
-          Zatražite VR konsultaciju
+          Request a VR consultation
         </h1>
         <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-          VR projekti zahtevaju razgovor o opsegu, target uređajima i tehničkim
-          detaljima pre nego što počnemo izradu. Popunite šta već znate —
-          javljamo se u roku od{" "}
-          <strong className="text-foreground">1 radnog dana</strong>.
+          VR projects call for a conversation about scope, target devices and
+          technical details before production begins. Fill in what you already
+          know — we reply within{" "}
+          <strong className="text-foreground">1 working day</strong>.
         </p>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[1.5fr_1fr]">
@@ -151,25 +150,25 @@ export default async function VrConsultationPage({
 
           <aside className="space-y-6 self-start rounded-xl border border-border/60 bg-secondary/30 p-6">
             <div>
-              <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/60">
-                Šta uključuje konsultacija
+              <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                What the consultation includes
               </h2>
               <ul className="mt-4 space-y-2 text-sm text-foreground/80">
-                <li>Razgovor 30-45 min sa tehničkim timom</li>
-                <li>Procena opsega i target uređaja</li>
-                <li>Predlog interaktivnih elemenata</li>
-                <li>Konkretna ponuda i rok</li>
+                <li>A 30–45 minute call with the technical team</li>
+                <li>An assessment of scope and target devices</li>
+                <li>A proposal for interactive elements</li>
+                <li>A concrete estimate and timeline</li>
               </ul>
             </div>
             <div>
-              <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/60">
-                Pre razgovora dobro je da imate
+              <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                Useful to have before the call
               </h2>
               <ul className="mt-4 space-y-2 text-sm text-foreground/80">
-                <li>Osnovne informacije o objektu (broj prostorija, m²)</li>
-                <li>Reference VR iskustava koja vam se sviđaju</li>
-                <li>Okvirni rok i namenu (prezentacija, prodaja, treninzi)</li>
-                <li>Postojeći 3D model ako ga imate</li>
+                <li>Basic information about the property (number of rooms, m²)</li>
+                <li>References of VR experiences you like</li>
+                <li>A rough timeline and purpose (presentation, sales, training)</li>
+                <li>An existing 3D model if you have one</li>
               </ul>
             </div>
           </aside>

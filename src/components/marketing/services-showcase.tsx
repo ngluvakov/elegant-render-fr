@@ -83,7 +83,7 @@ type Service = {
    *  Replaces the old is360Embed boolean — each card carries its own URL
    *  now so different 360 cards can point at different collections. */
   embedSrc?: string;
-  /** Surface the "Pre / posle" pill in the corner. Used for the 6 pair
+  /** Surface the "Before / after" pill in the corner. Used for the 6 pair
    *  cards (matches beforeSrc/afterSrc) but also leaves room for static
    *  cards that want the pill without the reveal. */
   isCompare?: boolean;
@@ -102,86 +102,86 @@ const ICON_MAP: Record<string, React.ElementType> = {
 };
 
 const FILTERS: { key: FilterKey; label: string }[] = [
-  { key: "sve", label: "Sve usluge" },
-  { key: "renderi", label: "Renderi" },
-  { key: "osnove", label: "Osnove prostora" },
-  { key: "360", label: "360 i animacije" },
-  { key: "nekretnine", label: "Za prodaju nekretnine" },
+  { key: "sve", label: "All services" },
+  { key: "renderi", label: "Renders" },
+  { key: "osnove", label: "Floor plans" },
+  { key: "360", label: "360° and animations" },
+  { key: "nekretnine", label: "For property sales" },
 ];
 
 const SERVICES: Service[] = [
   {
-    name: "Unutrašnji renderi",
+    name: "Interior renders",
     slug: "interior-render",
     priceEur: 19924,
     category: "renderi",
-    short: "Vizuelizacija enterijera pre opremanja, renovacije ili prodaje prostora.",
-    audience: "Za vlasnike stanova, arhitekte, dizajnere i manje investitore.",
-    includes: ["10 statičkih rendera + tlocrt", "3D osnova uključena", "3 kruga korekcija"],
+    short: "Interior visualization before furnishing, renovation, or sale.",
+    audience: "For apartment owners, architects, designers, and smaller investors.",
+    includes: ["10 static renders + floor plan", "3D floor plan included", "3 revision rounds"],
     icon: "home",
-    badge: "Najtraženije",
+    badge: "Most requested",
     imageSrc: "/artwork/listing-interior-static.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "360 enterijeri",
+    name: "360° interiors",
     slug: "interior-360-tour",
     priceEur: 34574,
     category: "360",
-    short: "Interaktivna 360 tura kroz prostor sa dodatnim statičnim uglovima kamere.",
-    audience: "Za prezentacije stanova, vila, salona i ugostiteljskih prostora.",
+    short: "An interactive 360° tour of the space with additional static camera angles.",
+    audience: "For presenting apartments, villas, showrooms, and hospitality spaces.",
     includes: [
-      "10 interaktivnih soba u 360 turi",
-      "10 statičnih uglova kamere",
-      "tlocrt sprata uključen",
+      "10 interactive rooms in a 360° tour",
+      "10 static camera angles",
+      "Floor plan included",
     ],
     icon: "video",
-    badge: "Interaktivno",
+    badge: "Interactive",
     imageSrc: "",
     imagePosition: "50% 50%",
     embedSrc: KUULA_EMBED,
   },
   {
-    name: "Spoljašnji renderi",
+    name: "Exterior renders",
     slug: "exterior-renders",
     priceEur: 29300,
     category: "renderi",
-    short: "Realističan prikaz kuće, zgrade ili fasade sa materijalima i okruženjem.",
-    audience: "Za privatne kuće, manje stambene projekte i arhitektonske prezentacije.",
-    includes: ["Prvi kadar uključen", "Model i scena osvetljenja", "Dodatni uglovi po nižoj ceni"],
+    short: "A realistic view of a house, building, or facade with materials and surroundings.",
+    audience: "For private houses, smaller residential projects, and architectural presentations.",
+    includes: ["First view included", "Model and lighting scene", "Additional angles at a lower price"],
     icon: "building",
-    badge: "Eksterijer",
+    badge: "Exterior",
     imageSrc: "/artwork/listing-exterior-static.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "360 eksterijeri",
+    name: "360° exteriors",
     slug: "exterior-360",
     priceEur: 39262,
     category: "360",
-    short: "VR-spreman prikaz eksterijera sa interaktivnim tačkama gledanja.",
-    audience: "Za marketing prodaje kuća, vila i manjih razvojnih projekata.",
+    short: "A VR-ready exterior view with interactive viewpoints.",
+    audience: "For marketing the sale of houses, villas, and smaller developments.",
     includes: [
-      "1 interaktivna tačka uključena",
-      "Pun 3D model objekta",
-      "Dodatne tačke gledanja po projektu",
+      "1 interactive viewpoint included",
+      "Full 3D model of the building",
+      "Additional viewpoints per project",
     ],
     icon: "video",
-    badge: "VR spremno",
+    badge: "VR ready",
     imageSrc: "/artwork/listing-exterior-360.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "3D prikaz ulice (streetscape)",
+    name: "3D streetscape",
     slug: "3d-streetscape",
     priceEur: 49224,
     category: "renderi",
-    short: "Objekat sa susednim kućama, modelovan u 3D — prikaz iz ulice (a po potrebi i iz vazduha).",
-    audience: "Za objekte kod kojih je važan kontekst ulice, susedstva i parcele.",
+    short: "Your building with the neighboring houses, modeled in 3D — viewed from the street (and from the air if needed).",
+    audience: "For buildings where the street, neighborhood, and plot context matters.",
     includes: [
-      "Pun 3D model objekta + okruženja",
-      "Prvi prikaz uključen",
-      "Bilo koji ugao (ulica ili iz vazduha)",
+      "Full 3D model of the building + surroundings",
+      "First view included",
+      "Any angle (street or aerial)",
     ],
     icon: "scan",
     badge: "Streetscape",
@@ -189,15 +189,15 @@ const SERVICES: Service[] = [
     imagePosition: "50% 50%",
   },
   {
-    name: "Uređenje pejzaža",
+    name: "Landscape design",
     slug: "landscape-design",
     priceEur: 25784,
     category: "renderi",
-    short: "Prikaz dvorišta, vrta, parkovskog ili spoljnog uređenja sa vegetacijom i terenom.",
-    audience: "Za privatne kuće, vile i projekte gde je važan spoljašnji ambijent.",
-    includes: ["Model terena", "Vegetacija i sadnja", "Prvi kadar uključen"],
+    short: "A view of a yard, garden, park, or outdoor design with vegetation and terrain.",
+    audience: "For private houses, villas, and projects where the outdoor setting matters.",
+    includes: ["Terrain model", "Vegetation and planting", "First view included"],
     icon: "image",
-    badge: "Spoljni ambijent",
+    badge: "Outdoor setting",
     imageSrc: "/artwork/listing-landscape-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-landscape-before.webp",
@@ -205,15 +205,15 @@ const SERVICES: Service[] = [
     isCompare: true,
   },
   {
-    name: "Render u stvarnoj fotografiji lokacije",
+    name: "Photomontage",
     slug: "photomontage",
     priceEur: 35160,
     category: "renderi",
-    short: "Vaš budući objekat uklopljen u stvarnu fotografiju lokacije — sa pravim okruženjem i svetlom.",
-    audience: "Za dozvole, javne rasprave i prezentacije gde je važna verodostojnost lokacije.",
-    includes: ["Analiza lokacije", "Usklađivanje perspektive", "Kompozit finalnog prikaza"],
+    short: "Your future building blended into a real photo of the site — with the true surroundings and light.",
+    audience: "For permits, public hearings, and presentations where site accuracy matters.",
+    includes: ["Site analysis", "Perspective matching", "Final composite"],
     icon: "image",
-    badge: "Realna lokacija",
+    badge: "Real location",
     imageSrc: "/artwork/listing-photomontage-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-photomontage-before.webp",
@@ -221,83 +221,83 @@ const SERVICES: Service[] = [
     isCompare: true,
   },
   {
-    name: "3D osnove prostora",
+    name: "3D floor plans",
     slug: "3d-floor-plans",
     priceEur: 3399,
     category: "osnove",
-    short: "Top-down 3D prikaz rasporeda prostorija, nameštaja i funkcionalne organizacije.",
-    audience: "Za oglase, prezentacije stanova i lakše razumevanje rasporeda.",
-    includes: ["Kompletan raspored", "Oznake prostorija", "Opcija nameštene verzije"],
+    short: "A top-down 3D view of the room layout, furniture, and functional organization.",
+    audience: "For listings, apartment presentations, and easier understanding of the layout.",
+    includes: ["Complete layout", "Room labels", "Furnished version available"],
     icon: "plans",
-    badge: "Jasan raspored",
+    badge: "Clear layout",
     imageSrc: "/artwork/listing-3d-floor-plans.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "2D osnove prostora",
+    name: "2D floor plans",
     slug: "2d-floor-plans",
     priceEur: 2344,
     category: "osnove",
-    short: "Čiste i pregledne 2D osnove za marketing materijale, sajtove i oglase.",
-    audience: "Za agente, vlasnike stanova i prodajne prezentacije nekretnina.",
-    includes: ["Kolorisana osnova", "Nazivi prostorija", "Varijante stila i nameštaja"],
+    short: "Clean, easy-to-read 2D floor plans for marketing materials, websites, and listings.",
+    audience: "For agents, apartment owners, and property sales presentations.",
+    includes: ["Colored floor plan", "Room names", "Style and furniture variants"],
     icon: "plans",
-    badge: "2D prikaz",
+    badge: "2D view",
     imageSrc: "/artwork/listing-floorplan-2d.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "3D site planovi",
+    name: "3D site plans",
     slug: "site-plans",
     priceEur: 41020,
     category: "osnove",
-    short: "Pregled cele parcele sa objektima, pristupima, zelenilom i širim odnosom prostora.",
-    audience: "Za kuće, vile, manje komplekse i prodajne brošure projekata.",
-    includes: ["Parcela i objekti", "Pristupne površine", "Opcije sezonskih varijanti"],
+    short: "An overview of the entire plot with buildings, access routes, greenery, and the wider spatial context.",
+    audience: "For houses, villas, smaller complexes, and project sales brochures.",
+    includes: ["Plot and buildings", "Access areas", "Seasonal variants available"],
     icon: "plans",
-    badge: "Parcela i kontekst",
+    badge: "Plot and context",
     imageSrc: "/artwork/listing-siteplan.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "Arhitektonska animacija",
+    name: "Architectural animation",
     slug: "architectural-animation",
     priceEur: 26370,
     category: "360",
-    short: "Video walkthrough i flythrough prikaz za snažniji prodajni utisak.",
-    audience: "Za projekte kojima statični kadar nije dovoljan da pokaže prostor.",
-    includes: ["Minimum 15 sekundi", "Cenovnik po sekundi", "Popusti za duže trajanje"],
+    short: "Walkthrough and flythrough video for a stronger sales impression.",
+    audience: "For projects where a static view is not enough to show the space.",
+    includes: ["15 seconds minimum", "Priced per second", "Discounts for longer durations"],
     icon: "video",
-    badge: "Video prikaz",
+    badge: "Video",
     imageSrc: "",
     imagePosition: "50% 50%",
     videoSrc: "/artwork/listing-animation.mp4",
   },
   {
-    name: "VR tura",
+    name: "VR tour",
     slug: "vr-tour",
     priceEur: 2344,
     category: "360",
-    short: "Web bazirane ture koje povezuju 360 kadrove u interaktivno iskustvo.",
-    audience: "Za oglašavanje, prezentacije nekretnina i prodaju na daljinu.",
-    includes: ["Sastavljanje ture", "Navigacija kroz prostor", "Brendirana verzija po potrebi"],
+    short: "Web-based tours that link 360° views into an interactive experience.",
+    audience: "For advertising, property presentations, and remote sales.",
+    includes: ["Tour assembly", "Navigation through the space", "Branded version on request"],
     icon: "video",
-    badge: "Web iskustvo",
+    badge: "Web experience",
     imageSrc: "",
     imagePosition: "50% 50%",
     embedSrc:
       "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
   },
   {
-    name: "Virtuelno opremanje prostora",
+    name: "Virtual staging",
     slug: "virtual-staging",
     priceEur: 2110,
     category: "nekretnine",
-    short: "Digitalno opremanje prazne prostorije na osnovu postojeće fotografije.",
-    audience: "Za vlasnike nekretnina, agente i investitore koji žele bolji oglas.",
-    includes: ["Prva stilizovana slika", "Dodatni uglovi po sobi", "Više soba uz povoljniji raspon"],
+    short: "Digital furnishing of an empty room based on an existing photo.",
+    audience: "For property owners, agents, and investors who want a better listing.",
+    includes: ["First styled image", "Additional angles per room", "Better rates for multiple rooms"],
     icon: "sparkles",
-    badge: "Pre i posle",
+    badge: "Before and after",
     imageSrc: "/artwork/listing-staging-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-staging-before.webp",
@@ -305,15 +305,15 @@ const SERVICES: Service[] = [
     isCompare: true,
   },
   {
-    name: "Virtuelna renovacija prostora",
+    name: "Virtual renovation",
     slug: "virtual-renovation",
     priceEur: 7735,
     category: "nekretnine",
-    short: "Prikaz kako bi prostor izgledao nakon adaptacije i promene materijala.",
-    audience: "Za kupce nekretnina, vlasnike i dizajnere koji žele jasan pre-posle scenario.",
-    includes: ["Predlog novog izgleda", "Materijali i završne obrade", "Više uglova ili soba"],
+    short: "A view of how the space would look after renovation and new materials.",
+    audience: "For property buyers, owners, and designers who want a clear before-and-after scenario.",
+    includes: ["New look proposal", "Materials and finishes", "Multiple angles or rooms"],
     icon: "sparkles",
-    badge: "Pre i posle",
+    badge: "Before and after",
     imageSrc: "/artwork/listing-renovation-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-renovation-before.webp",
@@ -321,15 +321,15 @@ const SERVICES: Service[] = [
     isCompare: true,
   },
   {
-    name: "Dnevni u noćni prikaz",
+    name: "Day-to-dusk",
     slug: "day-to-dusk",
     priceEur: 1172,
     category: "nekretnine",
-    short: "Pretvaranje dnevne fotografije eksterijera u atraktivniji sumrak.",
-    audience: "Za oglase kojima treba jači prvi utisak.",
-    includes: ["Zamena neba", "Kolor i svetlosna obrada", "Volumenski popust za više slika"],
+    short: "Turning a daytime exterior photo into a more striking dusk scene.",
+    audience: "For listings that need a stronger first impression.",
+    includes: ["Sky replacement", "Color and light grading", "Volume discount for multiple images"],
     icon: "image",
-    badge: "Pre i posle",
+    badge: "Before and after",
     imageSrc: "/artwork/listing-day-to-dusk-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-day-to-dusk-before.webp",
@@ -337,15 +337,15 @@ const SERVICES: Service[] = [
     isCompare: true,
   },
   {
-    name: "Uklanjanje elemenata",
+    name: "Item removal",
     slug: "item-removal",
     priceEur: 1406,
     category: "nekretnine",
-    short: "Digitalno uklanjanje nereda i neželjenih objekata sa fotografije prostora.",
-    audience: "Za pripremu nekretnine za oglas, izdavanje ili prezentaciju.",
-    includes: ["Čišćenje kadra", "Rekonstrukcija pozadine", "Jednostavne i kompleksne izmene"],
+    short: "Digital removal of clutter and unwanted objects from a photo of the space.",
+    audience: "For preparing a property for listing, rental, or presentation.",
+    includes: ["Frame cleanup", "Background reconstruction", "Simple and complex edits"],
     icon: "scan",
-    badge: "Pre i posle",
+    badge: "Before and after",
     imageSrc: "/artwork/listing-item-removal-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-item-removal-before.webp",
@@ -356,20 +356,20 @@ const SERVICES: Service[] = [
 
 const SCENARIOS = [
   {
-    title: "Želim da prikažem prostor koji još ne postoji",
-    answer: "Najbolji izbor su unutrašnji ili spoljašnji renderi, a po potrebi i prikaz iz vazduha.",
+    title: "I want to show a space that does not exist yet",
+    answer: "Interior or exterior renders are the best choice, with an aerial view if needed.",
   },
   {
-    title: "Imam prazan stan i želim bolji oglas",
-    answer: "Virtuelno opremanje je najbrži način da prostor izgleda toplije bez fizičkog troška.",
+    title: "I have an empty apartment and want a better listing",
+    answer: "Virtual staging is the fastest way to make the space feel warmer without physical costs.",
   },
   {
-    title: "Kupac ne razume raspored stana ili kuće",
-    answer: "2D i 3D osnove daju najjasniju sliku organizacije prostora na prvi pogled.",
+    title: "Buyers cannot picture the layout of the apartment or house",
+    answer: "2D and 3D floor plans give the clearest picture of the layout at a glance.",
   },
   {
-    title: "Treba mi interaktivnija prezentacija",
-    answer: "360 ture, 360 renderi i animacije daju bolji osećaj kretanja i prostora.",
+    title: "I need a more interactive presentation",
+    answer: "360° tours, 360° renders, and animations give a better sense of movement and space.",
   },
 ];
 
@@ -378,11 +378,11 @@ function serviceCardImageAlt(service: Service): string {
 }
 
 function serviceCardBeforeAlt(service: Service): string {
-  return `${service.name} - prikaz pre vizuelne obrade`;
+  return `${service.name} - view before visual editing`;
 }
 
 function serviceCardAfterAlt(service: Service): string {
-  return `${service.name} - rezultat posle vizuelne obrade`;
+  return `${service.name} - result after visual editing`;
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -407,18 +407,18 @@ export function ServicesShowcase() {
         <div className="relative h-[420px] md:h-[500px]">
           <Image
             src={ARTWORK.hero}
-            alt="Elegant Render enterijer - fotorealističan primer arhitektonske vizuelizacije"
+            alt="Elegant Render interior - a photorealistic example of architectural visualization"
             fill
             className="object-cover"
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-accent">
-              Kompletna ponuda
+            <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              Complete offering
             </p>
             <h1 className="mt-3 max-w-2xl font-heading text-4xl leading-tight text-foreground md:text-5xl">
-              Arhitektonska vizuelizacija za svaki projekat i budžet
+              Architectural visualization for every project and budget
             </h1>
           </div>
         </div>
@@ -432,10 +432,10 @@ export function ServicesShowcase() {
             type="button"
             onClick={() => setActiveFilter(f.key)}
             className={cn(
-              "rounded-full border px-4 py-2 text-sm font-medium transition-all",
+              "rounded-[4px] border px-4 py-2 text-sm font-medium transition-colors duration-200",
               activeFilter === f.key
                 ? "border-accent bg-accent/10 text-foreground"
-                : "border-border/60 text-muted-foreground hover:border-accent/40 hover:text-foreground",
+                : "border-border/60 text-muted-foreground hover:border-[#d4d4d4] hover:text-foreground",
             )}
           >
             {f.label}
@@ -450,7 +450,7 @@ export function ServicesShowcase() {
           return (
             <article
               key={service.name}
-              className="group relative overflow-hidden rounded-2xl border border-border/40 bg-card/80 shadow-[0_8px_30px_rgba(28,26,25,0.04)] transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40 hover:shadow-[0_18px_44px_rgba(28,26,25,0.08)]"
+              className="group relative overflow-hidden rounded-2xl border border-border/40 bg-card/80 transition-[border-color,box-shadow] duration-200 hover:border-[#d4d4d4] hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
             >
               {/* Card media — priority chain: iframe > video > before/after pair > image.
                   Interactive media (iframe/video/before-after reveal) is bumped to
@@ -458,7 +458,7 @@ export function ServicesShowcase() {
               {service.embedSrc ? (
                 <div className="relative z-10 h-48 overflow-hidden bg-secondary/40">
                   <iframe
-                    title={`${service.name} — 360 pregled`}
+                    title={`${service.name} — 360° preview`}
                     className="h-full w-full border-0"
                     src={service.embedSrc}
                     allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
@@ -498,10 +498,10 @@ export function ServicesShowcase() {
                   </div>
                   <div className="pointer-events-none absolute bottom-3 left-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
                     <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">
-                      Pre
+                      Before
                     </span>
                     <span className="bg-accent/12 px-2.5 py-1 text-accent">
-                      Posle
+                      After
                     </span>
                   </div>
                 </BeforeAfterReveal>
@@ -512,7 +512,7 @@ export function ServicesShowcase() {
                     alt={serviceCardImageAlt(service)}
                     fill
                     sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    className="object-cover"
                     style={{ objectPosition: service.imagePosition }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10" />
@@ -521,8 +521,8 @@ export function ServicesShowcase() {
                   </div>
                   {service.isCompare && (
                     <div className="absolute bottom-3 left-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
-                      <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">Pre</span>
-                      <span className="bg-accent/12 px-2.5 py-1 text-accent">Posle</span>
+                      <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">Before</span>
+                      <span className="bg-accent/12 px-2.5 py-1 text-accent">After</span>
                     </div>
                   )}
                 </div>
@@ -531,7 +531,7 @@ export function ServicesShowcase() {
               {/* Price bar */}
               <div className="flex items-center justify-between border-b border-border/30 bg-secondary/30 px-5 py-3">
                 <span className="text-xl font-bold text-foreground">
-                  Od{" "}
+                  From{" "}
                   {formatPublicPrice(
                     service.priceEur,
                     displayCurrency,
@@ -539,7 +539,7 @@ export function ServicesShowcase() {
                   )}
                 </span>
                 <span className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
-                  Transparentna cena
+                  Transparent pricing
                 </span>
               </div>
 
@@ -550,7 +550,7 @@ export function ServicesShowcase() {
                     <Icon className="h-4 w-4 text-muted-foreground" />
                   </div>
                   <div>
-                    <h3 className="text-base font-semibold text-foreground transition-colors group-hover:text-accent">
+                    <h3 className="text-base font-semibold text-foreground transition-colors duration-200 group-hover:text-accent">
                       {/* Stretched link: covers the entire card via ::after so the
                           whole surface opens the service detail page. The inquiry
                           CTA below sits on z-10 to escape this overlay. */}
@@ -574,7 +574,7 @@ export function ServicesShowcase() {
                 <div className="space-y-1.5">
                   {service.includes.map((inc) => (
                     <div key={inc} className="flex items-center gap-2">
-                      <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-[color:var(--color-sage)]" />
+                      <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
                       <span className="text-xs text-foreground/80">{inc}</span>
                     </div>
                   ))}
@@ -587,9 +587,9 @@ export function ServicesShowcase() {
                       sourceLabel: service.name,
                       serviceType: service.name,
                     }}
-                    className="relative z-10 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground transition-colors hover:text-accent"
+                    className="relative z-10 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground transition-colors duration-200 hover:text-accent"
                   >
-                    Zatraži ponudu
+                    Request an estimate
                     <ChevronRight className="h-4 w-4" />
                   </QuickInquiryLink>
                 </div>
@@ -602,14 +602,14 @@ export function ServicesShowcase() {
       {/* ─── Scenario Guide ────────────────────────────── */}
       <section className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <div className="rounded-2xl border border-border/40 bg-card/80 p-8">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-accent">
-            Kako da izaberete
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            How to choose
           </p>
           <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-            Niste sigurni koja usluga vam treba?
+            Not sure which service you need?
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Dovoljno je da znate cilj — mi predlažemo najpraktičniju uslugu.
+            Just tell us your goal — we suggest the most practical service.
           </p>
         </div>
         <div className="space-y-3">
@@ -642,27 +642,27 @@ export function ServicesShowcase() {
           <div className="relative h-full min-h-[320px]">
             <Image
               src={ARTWORK.floorplan}
-              alt="3D osnova prostora - pregledan plan stana za marketing nekretnine"
+              alt="3D floor plan - a clear apartment plan for property marketing"
               fill
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6">
-              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-accent">
-                Jednostavan proces
+              <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                A simple process
               </p>
               <h2 className="mt-3 font-heading text-3xl leading-tight text-foreground">
-                Lak za pokretanje
+                Easy to get started
               </h2>
             </div>
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {[
-            { icon: Send, title: "1. Pošaljete materijale", text: "Fotografije, plan, skicu ili samo kratak opis." },
-            { icon: BadgeDollarSign, title: "2. Dobijete predlog", text: "Preporuka usluge, cena i obim koji ima smisla." },
-            { icon: Clock3, title: "3. Prikaz i korekcije", text: "Vizuelni predlog, zatim fino podešavanje." },
-            { icon: CheckCircle2, title: "4. Final za oglas", text: "Isporuka spremna za prodaju ili prezentaciju." },
+            { icon: Send, title: "1. Send your materials", text: "Photos, a plan, a sketch, or just a short description." },
+            { icon: BadgeDollarSign, title: "2. Receive a proposal", text: "A service recommendation, price, and scope that makes sense." },
+            { icon: Clock3, title: "3. Preview and revisions", text: "A visual draft, then fine-tuning." },
+            { icon: CheckCircle2, title: "4. Final for your listing", text: "Delivery ready for sale or presentation." },
           ].map((step) => {
             const StepIcon = step.icon;
             return (
@@ -681,11 +681,11 @@ export function ServicesShowcase() {
       {/* ─── FAQ ───────────────────────────────────────── */}
       <section className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
         <div className="space-y-4">
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-accent">
+          <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
             FAQ
           </p>
           <h2 className="font-heading text-3xl leading-tight text-foreground md:text-4xl">
-            Najčešća pitanja
+            Frequently asked questions
           </h2>
         </div>
         <div className="space-y-3">
@@ -716,49 +716,50 @@ export function ServicesShowcase() {
       </section>
 
       {/* ─── CTA ───────────────────────────────────────── */}
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-foreground via-foreground/95 to-accent/80 p-8 text-background shadow-[0_24px_70px_rgba(28,26,25,0.15)] md:p-12">
+      <section className="overflow-hidden rounded-3xl bg-[#0a0a0a] p-8 text-white md:p-12">
         <div className="grid gap-8 lg:grid-cols-2">
           <div className="space-y-5">
             <h2 className="font-heading text-3xl leading-tight md:text-4xl">
-              Niste sigurni šta vam tačno treba?
+              Not sure exactly what you need?
             </h2>
-            <p className="max-w-lg text-base leading-relaxed text-background/70">
-              Pošaljite kratak opis projekta i dobićete preporuku usluge sa
-              okvirnom cenom — besplatno i bez obaveza.
+            <p className="max-w-lg text-base leading-relaxed text-white/70">
+              Send a short project description and you will receive a service
+              recommendation with an estimated price — free and with no
+              obligation.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <QuickInquiryLink
                 size="lg"
-                className="rounded-full bg-background text-foreground hover:bg-background/90"
+                className="rounded-[4px] bg-white text-[#0a0a0a] hover:bg-white/90"
                 inquiry={{
                   source: "services-final-cta",
-                  sourceLabel: "Usluge final CTA",
+                  sourceLabel: "Services final CTA",
                 }}
               >
-                Zatražite ponudu
+                Request an estimate
                 <ArrowRight className="ml-2 h-4 w-4" />
               </QuickInquiryLink>
               <ButtonLink
                 href="/pricing"
                 variant="outline"
                 size="lg"
-                className="rounded-full border-background/20 text-background hover:bg-background/10"
+                className="rounded-[4px] border-white/20 text-white hover:bg-white/10"
               >
-                Pogledajte cenovnik
+                See pricing
               </ButtonLink>
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-background/10 bg-background/8 p-5">
-              <span className="font-semibold text-background/85">Brz izbor usluge</span>
-              <p className="mt-2 text-sm leading-relaxed text-background/60">
-                Dovoljno je da objasnite cilj — predlažemo najlogičniju uslugu.
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <span className="font-semibold text-white/85">Quick service selection</span>
+              <p className="mt-2 text-sm leading-relaxed text-white/60">
+                Just explain your goal — we suggest the most logical service.
               </p>
             </div>
-            <div className="rounded-2xl border border-background/10 bg-background/8 p-5">
-              <span className="font-semibold text-background/85">Transparentna cena</span>
-              <p className="mt-2 text-sm leading-relaxed text-background/60">
-                Već na ovoj stranici vidite budžetski nivo svake usluge.
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <span className="font-semibold text-white/85">Transparent pricing</span>
+              <p className="mt-2 text-sm leading-relaxed text-white/60">
+                You can see the budget level of every service right on this page.
               </p>
             </div>
           </div>

@@ -5,125 +5,125 @@ import { FinalCta } from "@/components/marketing/final-cta";
 import { IMPRINT, SITE } from "@/lib/content/site";
 import { createPublicMetadata } from "@/lib/seo";
 
+const LAST_UPDATED = "2026-07-06";
+
 export const metadata: Metadata = createPublicMetadata({
-  title: "Politika reklamacija",
-  description: `Politika reklamacija ${SITE.name} — kako prijaviti reklamaciju, rokovi za odgovor, šta sve obuhvata.`,
+  title: "Complaints procedure",
+  description: `How to submit a complaint about a ${SITE.name} digital service, what to include, and when to expect a response.`,
   path: "/legal/complaints",
 });
 
-const LAST_UPDATED = "2026-05-29";
-
-export default function ReklamacijePage() {
+export default function ComplaintsPage() {
   return (
     <>
       <article className="mx-auto w-full max-w-3xl px-6 pb-24 pt-20 md:pt-28">
-        <SectionKicker>Pravno</SectionKicker>
+        <SectionKicker>Legal</SectionKicker>
         <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">
-          Politika reklamacija
+          Complaints procedure
         </h1>
         <p className="mt-6 text-base text-foreground/60">
-          Poslednje ažuriranje:{" "}
-          {new Date(LAST_UPDATED).toLocaleDateString("sr-Latn-RS", {
+          Last updated:{" "}
+          {new Date(LAST_UPDATED).toLocaleDateString("en-GB", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
           })}
         </p>
 
-        <Section title="1. Pravo na reklamaciju">
+        <Section title="1. When to use this procedure">
           <p>
-            U skladu sa Zakonom o zaštiti potrošača (čl. 55–58), ako naša
-            usluga ne odgovara opisu, ima nedostatak u izvedbi koji nije bio
-            predviđen specifikacijom, ili je isporučena nakon ugovorenog roka,
-            imate pravo da podnesete reklamaciju.
+            Use this procedure if you believe a delivered render, virtual
+            staging image, animation, AI Studio output, or other digital
+            deliverable does not match the agreed brief, has a production
+            defect, or was delivered materially later than the confirmed
+            timeline for reasons within our control.
           </p>
           <p>
-            Reklamacija se podnosi u roku od <strong>dva (2) meseca</strong>{" "}
-            od trenutka isporuke. Za usaglašene digitalne sadržaje (renderi,
-            animacije, AI obrade) prihvatamo reklamacije i izvan tog roka u
-            okviru tri runde revizija koje su uključene u svaku porudžbinu.
+            Normal revision requests should be made through the project portal.
+            A complaint is for issues that cannot be solved through the included
+            revision rounds or normal support conversation.
           </p>
         </Section>
 
-        <Section title="2. Kako podnosite reklamaciju">
+        <Section title="2. How to submit a complaint">
           <ol className="list-inside list-decimal space-y-2">
             <li>
-              Pošaljite email na{" "}
+              Email{" "}
               <a
                 href={`mailto:${IMPRINT.email}`}
                 className="text-foreground underline-offset-4 hover:underline"
               >
                 {IMPRINT.email}
               </a>{" "}
-              sa brojem porudžbine (vidljiv u portalu i potvrdama plaćanja) i
-              jasnim opisom problema.
+              with your order number and the subject line &quot;Complaint&quot;.
             </li>
             <li>
-              Priložite snimke ekrana ili reference koje pomažu da razumemo
-              šta nije u redu — što jasniji opis, brža reakcija.
+              Describe the issue clearly and identify the affected file,
+              service, or revision round.
             </li>
             <li>
-              Ako se reklamacija odnosi na transakciju plaćenu karticom,
-              navedite identifikator transakcije (TransId) sa potvrde o
-              plaćanju koju ste primili emailom.
+              Attach screenshots, marked-up references, or links that show what
+              is wrong and what outcome you are asking for.
+            </li>
+            <li>
+              If the issue relates to a PayPal payment, include the PayPal order
+              ID or capture ID shown in your receipt if available.
             </li>
           </ol>
         </Section>
 
-        <Section title="3. Naš odgovor i rok">
+        <Section title="3. Response time">
           <p>
-            Pisani odgovor sa odlukom o reklamaciji dostavljamo u roku od{" "}
-            <strong>osam (8) dana</strong> od prijema reklamacije, u skladu sa
-            članom 56. stavom 8. Zakona o zaštiti potrošača.
+            We aim to acknowledge complaints promptly and provide a written
+            response within 14 days. If the issue requires technical review,
+            supplier information, or a file audit, we may need more time; if so,
+            we will explain the reason and give a realistic update.
           </p>
+        </Section>
+
+        <Section title="4. Possible outcomes">
           <p>
-            Ako se reklamacija prihvati: o našem trošku ćemo izvršiti potrebnu
-            ispravku, ili — ako ispravka nije moguća — vratiti uplaćeni iznos
-            prema{" "}
+            If we accept the complaint, we may correct the deliverable, provide
+            an additional revision round, offer a partial refund, or refund the
+            relevant amount where correction is not reasonable. Refund handling
+            follows our{" "}
             <Link
-              href="/legal/povracaj-sredstava"
+              href="/legal/refunds"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              Politici povraćaja sredstava
+              refunds policy
             </Link>
             .
           </p>
-        </Section>
-
-        <Section title="4. Vansudsko rešavanje">
           <p>
-            Ako naš odgovor ne zadovoljava vaše očekivanje, imate pravo da se
-            obratite Ministarstvu nadležnom za zaštitu potrošača Republike
-            Srbije ili (za rezidente EU) EU ODR platformi:{" "}
-            <a
-              href="https://ec.europa.eu/consumers/odr"
-              target="_blank"
-              rel="noreferrer"
-              className="text-foreground underline-offset-4 hover:underline"
-            >
-              ec.europa.eu/consumers/odr
-            </a>
-            .
+            If we do not accept the complaint, we will explain our reasoning and
+            identify any remaining practical options.
           </p>
         </Section>
 
-        <p className="mt-12 text-sm text-foreground/60">
-          Za detaljne uslove ugovora pogledajte{" "}
-          <Link
-            href="/legal/uslovi"
-            className="text-foreground underline-offset-4 hover:underline"
-          >
-            Uslove korišćenja
-          </Link>
-          .
-        </p>
+        <Section title="5. Escalation">
+          <p>
+            We prefer to resolve disputes directly. If you are an EU consumer
+            and remain dissatisfied, you may contact a consumer authority or
+            alternative dispute resolution body in your country of residence.
+            We are not generally obliged to participate in a particular
+            alternative dispute resolution process unless mandatory law requires
+            it or we agree in writing.
+          </p>
+        </Section>
       </article>
       <FinalCta />
     </>
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className="mt-12">
       <h2 className="text-2xl text-foreground">{title}</h2>

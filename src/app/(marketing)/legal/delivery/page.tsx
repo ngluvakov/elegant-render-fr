@@ -5,99 +5,93 @@ import { FinalCta } from "@/components/marketing/final-cta";
 import { IMPRINT, SITE } from "@/lib/content/site";
 import { createPublicMetadata } from "@/lib/seo";
 
+const LAST_UPDATED = "2026-07-06";
+
 export const metadata: Metadata = createPublicMetadata({
-  title: "Dostava digitalnih isporuka",
-  description: `Kako i kada se isporučuju arhitektonske renderije, animacije i AI obrade — ${SITE.name}.`,
+  title: "Digital delivery",
+  description: `How ${SITE.name} delivers renders, animations, AI Studio files, and other digital project outputs.`,
   path: "/legal/delivery",
 });
 
-const LAST_UPDATED = "2026-05-29";
-
-export default function DostavaPage() {
+export default function DeliveryPage() {
   return (
     <>
       <article className="mx-auto w-full max-w-3xl px-6 pb-24 pt-20 md:pt-28">
-        <SectionKicker>Pravno</SectionKicker>
+        <SectionKicker>Legal</SectionKicker>
         <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">
-          Dostava
+          Digital delivery
         </h1>
         <p className="mt-6 text-base text-foreground/60">
-          Poslednje ažuriranje:{" "}
-          {new Date(LAST_UPDATED).toLocaleDateString("sr-Latn-RS", {
+          Last updated:{" "}
+          {new Date(LAST_UPDATED).toLocaleDateString("en-GB", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
           })}
         </p>
 
-        <Section title="1. Priroda isporuke">
+        <Section title="1. Delivery format">
           <p>
-            {SITE.name} isporučuje isključivo <strong>digitalne sadržaje</strong>{" "}
-            (statične i 360° renderije, animacije, AI obrade slika, virtuelne
-            ture). Nema fizičke dostave robe — sve datoteke se preuzimaju iz
-            portala u kojem pratite vašu porudžbinu.
+            {SITE.name} delivers digital content only. There is no physical
+            shipping. Deliverables may include static renders, 360 virtual tour
+            assets, animations, AI Studio outputs, floor plans, site plans, and
+            related project files.
           </p>
         </Section>
 
-        <Section title="2. Rokovi">
+        <Section title="2. Where files are delivered">
           <p>
-            Standardni rokovi izrade i isporuke su definisani u opisu svake
-            usluge u našem{" "}
-            <Link
-              href="/pricing"
-              className="text-foreground underline-offset-4 hover:underline"
-            >
-              cenovniku
-            </Link>
-            . Za većinu projekata izrada počinje prvog radnog dana nakon
-            kompletirane uplate i potvrđene specifikacije.
+            Finished files are normally delivered through the customer portal
+            under the relevant order number. We may also send download links or
+            attachments by email when that is more practical for the project.
           </p>
           <p>
-            Ako rok ne može biti ispoštovan zbog dodatnih informacija od vas
-            (npr. dopuna materijala) ili više sile, obavestićemo vas pisanim
-            putem sa novim, realističnim rokom.
-          </p>
-        </Section>
-
-        <Section title="3. Format i način preuzimanja">
-          <p>
-            Svi gotovi materijali biće dostupni u portalu na linku{" "}
+            Portal access is available at{" "}
             <Link
               href="/portal"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              portal
-            </Link>{" "}
-            pod brojem vaše porudžbine. Email obaveštenje šaljemo na adresu
-            navedenu u procesu plaćanja kada nova verzija bude spremna.
-          </p>
-          <p>
-            Standardni formati su .jpg / .png u rezoluciji do 4K za statične
-            renderije; .mp4 ili .mov za animacije; .obj/.fbx model po dogovoru.
-            Posebni zahtevi za format mogu se naznačiti u napomenama
-            porudžbine.
-          </p>
-        </Section>
-
-        <Section title="4. Ograničenja">
-          <p>
-            Dostavljamo svuda u svetu — isporuka je digitalna i nije vezana za
-            geografsku oblast. Cene i naplata su uvek prikazane u dinarima
-            (RSD); za dodatnu napomenu o karticama vezanim za drugu valutu
-            pogledajte{" "}
-            <Link
-              href="/legal/povracaj-sredstava"
-              className="text-foreground underline-offset-4 hover:underline"
-            >
-              Izjavu o konverziji
+              /portal
             </Link>
             .
           </p>
         </Section>
 
-        <Section title="5. Kontakt">
+        <Section title="3. Delivery timing">
           <p>
-            Pitanja u vezi sa isporukom šaljite na{" "}
+            Standard timelines are shown on service pages or confirmed in your
+            estimate. Production usually starts after payment is complete and we
+            have a usable brief, source files, references, and any required
+            clarifications.
+          </p>
+          <p>
+            If delivery is delayed because required information is missing, the
+            brief changes, a third-party service is unavailable, or a force
+            majeure event occurs, we will provide a written update and a
+            realistic revised timeline.
+          </p>
+        </Section>
+
+        <Section title="4. Standard file types">
+          <p>
+            Static renders are usually supplied as JPG or PNG files, commonly up
+            to 4K unless a different output is confirmed. Animations are usually
+            supplied as MP4 or MOV. Other formats can be agreed in the order
+            notes or estimate where technically available.
+          </p>
+        </Section>
+
+        <Section title="5. Worldwide access">
+          <p>
+            Digital delivery is available worldwide, subject to platform,
+            payment, sanctions, and export-control restrictions that may apply
+            to either party or the payment provider.
+          </p>
+        </Section>
+
+        <Section title="6. Delivery questions">
+          <p>
+            Questions about delivery can be sent to{" "}
             <a
               href={`mailto:${IMPRINT.email}`}
               className="text-foreground underline-offset-4 hover:underline"
@@ -113,7 +107,13 @@ export default function DostavaPage() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className="mt-12">
       <h2 className="text-2xl text-foreground">{title}</h2>

@@ -2,71 +2,46 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { SectionKicker } from "@/components/brand/section-kicker";
-import { JsonLd } from "@/components/seo/json-ld";
 import {
   CERTIFIER,
   ISO_CERTIFICATIONS,
   SITE,
-  buildOrganizationJsonLd,
 } from "@/lib/content/site";
-import {
-  absoluteUrl,
-  buildBreadcrumbJsonLd,
-  buildWebPageJsonLd,
-  createPublicMetadata,
-} from "@/lib/seo";
+import { createPublicMetadata } from "@/lib/seo";
 
-const CERTIFICATES_DESCRIPTION = `${SITE.name} posluje po sertifikovanim ISO standardima 9001:2015, 27001 i 50001 — sertifikovano od strane ${CERTIFIER.name}.`;
+const CERTIFICATES_DESCRIPTION = `${SITE.name} works under ISO 9001:2015, ISO/IEC 27001:2022, and ISO 50001:2018 standards certified by ${CERTIFIER.name}.`;
+
+const CERTIFICATE_COPY: Record<string, { domain: string; description: string }> = {
+  "iso-9001": {
+    domain: "Quality management",
+    description:
+      "ISO 9001:2015 covers quality management for service delivery. It supports a consistent workflow from receiving project files to revision rounds and final render delivery.",
+  },
+  "iso-27001": {
+    domain: "Information security",
+    description:
+      "ISO/IEC 27001:2022 covers information security management. It supports controlled access, incident handling, retention procedures, and secure treatment of customer files.",
+  },
+  "iso-50001": {
+    domain: "Energy management",
+    description:
+      "ISO 50001:2018 covers energy management. It supports measured, documented improvements in energy use across production and operations.",
+  },
+};
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Sertifikati i standardi",
+  title: "Certificates and standards",
   description: CERTIFICATES_DESCRIPTION,
   path: "/legal/certificates",
 });
 
-export default function SertifikatiPage() {
+export default function CertificatesPage() {
   return (
     <>
-      <JsonLd
-        data={[
-          buildWebPageJsonLd({
-            path: "/legal/certificates",
-            name: "Sertifikati i standardi",
-            description: CERTIFICATES_DESCRIPTION,
-          }),
-          buildBreadcrumbJsonLd([
-            { name: "Početna", path: "/" },
-            { name: "Sertifikati i standardi", path: "/legal/certificates" },
-          ]),
-          buildOrganizationJsonLd(),
-          {
-            "@context": "https://schema.org",
-            "@type": "ItemList",
-            "@id": `${absoluteUrl("/legal/certificates")}#certificates`,
-            name: "Elegant Render ISO sertifikati",
-            itemListElement: ISO_CERTIFICATIONS.map((cert, index) => ({
-              "@type": "ListItem",
-              position: index + 1,
-              item: {
-                "@type": "EducationalOccupationalCredential",
-                name: cert.code,
-                credentialCategory: cert.domain,
-                description: cert.description,
-                identifier: cert.certNumber,
-                url: cert.verifyUrl,
-                recognizedBy: {
-                  "@type": "Organization",
-                  name: CERTIFIER.name,
-                },
-              },
-            })),
-          },
-        ]}
-      />
       <article className="mx-auto w-full max-w-3xl px-6 pb-20 pt-20 md:pt-28">
-        <SectionKicker>Pravno</SectionKicker>
+        <SectionKicker>Legal</SectionKicker>
         <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">
-          Sertifikati i standardi
+          Certificates and standards
         </h1>
 
         <div className="mt-10 flex justify-center rounded-2xl border border-border/60 bg-card/60 p-6 md:p-10">
@@ -83,73 +58,82 @@ export default function SertifikatiPage() {
 
         <div className="mt-10 space-y-6 text-base leading-relaxed text-foreground/75">
           <p>
-            {SITE.name} posluje po tri međunarodna ISO standarda, sertifikovana od
-            strane <strong>{CERTIFIER.name}</strong>. Standardi pokrivaju kvalitet
-            isporuke, bezbednost vaših podataka i energetsku efikasnost
-            produkcije — tri ose poverenja koje su nam važne i koje znače
-            konkretne procedure, ne samo izjave.
+            {SITE.name} works under three international ISO standards certified
+            by <strong>{CERTIFIER.name}</strong>. They cover delivery quality,
+            information security, and energy management.
           </p>
           <p className="text-sm text-foreground/65">
-            Sertifikat pokriva sva tri standarda pod istim ID-em (
-            <strong className="text-foreground/85">9000025319</strong>) i izdat je
-            od strane {CERTIFIER.name}. Originalni dokument možete preuzeti{" "}
+            The combined certificate uses ID{" "}
+            <strong className="text-foreground/85">9000025319</strong>. The
+            original document is available{" "}
             <a
               href={CERTIFIER.badgeAsset.pdfSrc}
               target="_blank"
               rel="noreferrer"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              ovde (PDF)
+              as a PDF
             </a>
             .
           </p>
         </div>
 
         <div className="mt-12 space-y-6">
-          {ISO_CERTIFICATIONS.map((cert) => (
-            <div
-              key={cert.id}
-              className="rounded-xl border border-border/60 bg-secondary/30 p-8"
-            >
-              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-                {cert.domain}
-              </p>
-              <h2 className="mt-3 text-2xl text-foreground md:text-3xl">
-                {cert.code}
-              </h2>
-              <p className="mt-4 text-base leading-relaxed text-foreground/75">
-                {cert.description}
-              </p>
-              <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-foreground/60">
-                <span>
-                  Sertifikat izdao:{" "}
-                  <strong className="text-foreground/80">{CERTIFIER.name}</strong>
-                </span>
-                {cert.certNumber && (
-                  <span className="text-foreground/55">
-                    Broj sertifikata: {cert.certNumber}
+          {ISO_CERTIFICATIONS.map((cert) => {
+            const copy = CERTIFICATE_COPY[cert.id];
+            return (
+              <div
+                key={cert.id}
+                className="rounded-xl border border-border/60 bg-secondary/30 p-8"
+              >
+                <p className="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {copy.domain}
+                </p>
+                <h2 className="mt-3 text-2xl text-foreground md:text-3xl">
+                  {cert.code}
+                </h2>
+                <p className="mt-4 text-base leading-relaxed text-foreground/75">
+                  {copy.description}
+                </p>
+                <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-foreground/60">
+                  <span>
+                    Issued by:{" "}
+                    <strong className="text-foreground/80">
+                      {CERTIFIER.name}
+                    </strong>
                   </span>
-                )}
-                {cert.verifyUrl && (
-                  <a
-                    href={cert.verifyUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-foreground underline-offset-4 hover:underline"
-                  >
-                    Verifikuj sertifikat →
-                  </a>
-                )}
+                  {cert.certNumber && (
+                    <span className="text-foreground/55">
+                      Certificate number: {cert.certNumber}
+                    </span>
+                  )}
+                  {cert.verifyUrl && (
+                    <a
+                      href={cert.verifyUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-foreground underline-offset-4 hover:underline"
+                    >
+                      Verify certificate
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="mt-16 rounded-xl border border-border/60 bg-secondary/30 p-8">
-          <h2 className="text-2xl text-foreground">O sertifikacionom telu</h2>
-          <p className="mt-2 text-sm text-foreground/55">{CERTIFIER.fullName}</p>
+          <h2 className="text-2xl text-foreground">
+            About the certification body
+          </h2>
+          <p className="mt-2 text-sm text-foreground/55">
+            International certification and audit body
+          </p>
           <p className="mt-4 text-base leading-relaxed text-foreground/75">
-            {CERTIFIER.description}
+            {CERTIFIER.name} is an international certification body. Its
+            certificates rely on independent audits and ongoing management
+            systems rather than a one-time declaration.
           </p>
         </div>
       </article>

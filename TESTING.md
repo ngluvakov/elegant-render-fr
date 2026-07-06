@@ -1,330 +1,115 @@
-# Elegant Render — Test scenariji
-
-Kompletna checklist za end-to-end testiranje cele platforme.
-
----
-
-## 1. Marketing sajt
-
-### 1.1 Navigacija
-- [ ] Početna stranica (`/`) se učitava sa hero sekcijom i cenovnikom
-- [ ] Header prikazuje sve linkove: Usluge, Cene, Portfolio, O nama, Kontakt
-- [ ] "Prijavite se" dugme vodi na `/prijava` (kada nisi ulogovan)
-- [ ] "Portal" dugme vodi na `/portal` (kada si ulogovan)
-- [ ] "Powered by White Rook" badge vodi na thewhiterook.com
-- [ ] Mobile hamburger meni radi i prikazuje sve linkove
-- [ ] Footer prikazuje sve sekcije i pravne linkove
-
-### 1.2 Stranice
-- [ ] `/usluge` — prikazuje sve kategorije usluga
-- [ ] `/usluge/[slug]` — prikazuje detalj usluge sa cenama i varijantama
-- [ ] `/cene` — interaktivni konfigurator radi (dodavanje usluga, stepper, total)
-- [ ] `/portfolio` — prikazuje placeholder kartice (čeka prave slike)
-- [ ] `/o-nama` — prikazuje tekst o brendu
-- [ ] `/kontakt` — forma prikazuje sva polja (forma je disabled pending Bitrix24)
-- [ ] `/pravno/privatnost` — prikazuje stub tekst
-- [ ] `/pravno/uslovi` — prikazuje stub tekst
-- [ ] `/pravno/kolacici` — prikazuje stub tekst
-
-### 1.3 SEO
-- [ ] Svaka stranica ima `<title>` tag
-- [ ] Svaka stranica ima `<meta description>`
-- [ ] OpenGraph tagovi postoje na svim stranicama
-- [ ] `sitemap.xml` se generiše ispravno
-- [ ] `robots.txt` se generiše ispravno
-
----
-
-## 2. Autentikacija
-
-### 2.1 Registracija email/lozinka
-- [ ] Otvori `/registracija`
-- [ ] Popuni ime, email, lozinku (min 8 karaktera)
-- [ ] Klikni "Napravite nalog"
-- [ ] Preusmeri na `/portal`
-- [ ] Proveri inbox — stigao verifikacioni email sa `noreply@elegantrender.rs`
-- [ ] Klikni link u emailu → email verified
-
-### 2.2 Registracija sa postojećim emailom
-- [ ] Pokušaj registraciju sa već postojećim emailom
-- [ ] Prikazuje grešku "Nalog sa ovom email adresom već postoji"
-
-### 2.3 Prijava email/lozinka
-- [ ] Otvori `/prijava`
-- [ ] Unesi email i lozinku
-- [ ] Klikni "Prijavite se"
-- [ ] Preusmeri na `/portal`
-
-### 2.4 Pogrešna lozinka
-- [ ] Unesi pogrešnu lozinku
-- [ ] Prikazuje "Pogrešan email ili lozinka"
-
-### 2.5 Google OAuth
-- [ ] Klikni "Nastavite sa Google" na `/prijava`
-- [ ] Google consent screen se otvara
-- [ ] Izaberi nalog → preusmeri na `/portal`
-- [ ] Isto radi sa `/registracija`
-
-### 2.6 Zaboravljena lozinka
-- [ ] Otvori `/zaboravljena-lozinka`
-- [ ] Unesi email
-- [ ] Klikni "Pošaljite link"
-- [ ] Prikazuje poruku o poslatom emailu
-- [ ] Proveri inbox — stigao reset email
-- [ ] Klikni link → otvara `/nova-lozinka?token=...`
-- [ ] Unesi novu lozinku → preusmeri na `/prijava`
-- [ ] Prijavi se sa novom lozinkom
-
-### 2.7 Odjava
-- [ ] Iz portala klikni sign-out u sidebar-u
-- [ ] Preusmeri na početnu stranicu
-- [ ] `/portal` sada preusmeri na `/prijava`
-
-### 2.8 Route protection
-- [ ] Pokušaj direktan pristup `/portal` bez logina → redirect na `/prijava`
-- [ ] Pokušaj direktan pristup `/portal/porudzbine` bez logina → redirect
-
----
-
-## 3. Pricing konfigurator
-
-### 3.1 Dodavanje usluga
-- [ ] Otvori `/cene`
-- [ ] Klikni na kategoriju (npr. "Unutrašnji renderi")
-- [ ] Prikazuju se produkti za tu kategoriju
-- [ ] Klikni "Dodaj" → usluga se dodaje u ponudu
-- [ ] Sidebar prikazuje stavku i total
-
-### 3.2 Konfiguracija add-on-a
-- [ ] Dodaj uslugu sa included quantities (npr. Render enterijera (statički) — 10 prostorija)
-- [ ] Stepper počinje na 10, badge prikazuje "Uključeno"
-- [ ] Povećaj na 12 → prikazuje "+2 extra" i cenu za 2 dodatne
-- [ ] Smanji nazad na 10 → cena se vraća na baznu
-
-### 3.3 Animacija (trajanje)
-- [ ] Dodaj animaciju (od nule)
-- [ ] Slider za trajanje radi (15-180 sekundi)
-- [ ] Popust za trajanje se prikazuje (10%, 20%, 25%)
-- [ ] Total se ažurira u realnom vremenu
-
-### 3.4 Naruči
-- [ ] Dodaj bar jednu uslugu
-- [ ] Klikni "Naruči" → preusmeri na `/poruci`
-- [ ] Quote je sačuvan i prikazan na checkout stranici
-
----
-
-## 4. Checkout flow
-
-### 4.1 Guest checkout
-- [ ] Na `/poruci` prikazuje se korak "Vaši podaci" (jer nisi ulogovan)
-- [ ] Unesi ime i email
-- [ ] Klikni "Nastavi" → kreira guest nalog
-- [ ] Proveri inbox — stigao email za postavljanje lozinke
-
-### 4.2 Logged-in checkout
-- [ ] Prijavi se pre checkout-a
-- [ ] Na `/poruci` preskače se korak "Vaši podaci" → ide direktno na upload
-
-### 4.3 Upload fajlova
-- [ ] Drag-and-drop zona prihvata fajlove
-- [ ] Klik na zonu otvara file picker
-- [ ] Upload progress se prikazuje
-- [ ] Uploadovani fajl se prikazuje u listi sa veličinom
-- [ ] Moguće je obrisati uploadovani fajl
-- [ ] Napomena polje prihvata tekst
-
-### 4.4 Pregled porudžbine
-- [ ] Prikazuje sve stavke sa cenama
-- [ ] Prikazuje uploadovane fajlove
-- [ ] Prikazuje napomenu
-- [ ] Prikazuje tačan total
-- [ ] "Nastavi na plaćanje" kreira porudžbinu u bazi
-
-### 4.5 Mock kartica (samo test mode)
-- [ ] Sa `NEXT_PUBLIC_NESTPAY_MODE=test`, izaberi mock karticu
-- [ ] Polja su pre-popunjena (4111... / 12/28 / 123)
-- [ ] Klikni "Plati" → simulacija uspešna
-- [ ] Prikazuje potvrdu "Porudžbina primljena!"
-- [ ] Proveri inbox — stigao confirmation email
-
-### 4.6 NestPay kartično plaćanje
-- [ ] Izaberi "Kartica (Banca Intesa)" metod
-- [ ] Turnstile se prikazuje kada su ključevi podešeni
-- [ ] Klikni "Nastavi na plaćanje" → generiše se NestPay redirect forma
-- [ ] HPP payload šalje `currency=941` i RSD amount u minor-unit formatu
-- [ ] Uspešan bank return vodi na `/poruci/uspeh`
-- [ ] Proveri inbox — stigao confirmation email
-
-### 4.7 Direktan pristup bez quote-a
-- [ ] Otvori `/poruci` direktno (bez prethodnog dodavanja usluga)
-- [ ] Preusmeri nazad na `/cene`
-
----
-
-## 5. Client portal
-
-### 5.1 Dashboard
-- [ ] `/portal` prikazuje sidebar navigaciju
-- [ ] Stat kartice prikazuju ispravne brojeve
-- [ ] Aktivni projekti prikazuju kartice sa statusom
-- [ ] Nedavna aktivnost prikazuje poslednje promene
-- [ ] Bez porudžbina prikazuje empty state sa linkom na cene
-
-### 5.2 Lista porudžbina
-- [ ] `/portal/porudzbine` prikazuje sve porudžbine korisnika
-- [ ] Pretraga po broju porudžbine radi
-- [ ] Filter po statusu radi
-- [ ] Klik na porudžbinu vodi na detalj
-
-### 5.3 Detalj porudžbine
-- [ ] Status tracker prikazuje ispravnu fazu
-- [ ] Stavke se prikazuju sa cenama
-- [ ] Fajlovi se prikazuju
-- [ ] Empty state za komentare ("Nema poruka")
-- [ ] Empty state za deliverables ("Još nema gotovih fajlova")
-
-### 5.4 Komentari
-- [ ] Napiši poruku u composer → klikni "Pošalji"
-- [ ] Poruka se pojavljuje u thread-u sa "[Klijent]" oznakom
-- [ ] Polling osvežava komentare svakih 30 sekundi
-
-### 5.5 Revision upload
-- [ ] "Pošaljite izmene" kartica prihvata fajlove
-- [ ] Upload radi i fajl se pojavljuje u order files
-
-### 5.6 Rework request
-- [ ] Kada je status "in_review" → prikazuje se "Zatražite izmene" kartica
-- [ ] Klikni dugme → status se menja na "revision_requested"
-- [ ] Tracker se ažurira
-
-### 5.7 Pending payment
-- [ ] Neplaćena porudžbina prikazuje "Čeka uplatu" karticu
-- [ ] NestPay kartica je dostupna; mock kartica samo u test modu
-- [ ] Plaćanje uspeva → status se ažurira
-
-### 5.8 Profil
-- [ ] `/portal/profil` prikazuje ime, email, telefon
-- [ ] Izmeni ime i telefon → sačuvaj → prikazuje uspeh
-- [ ] Promeni lozinku → sačuvaj → nova lozinka radi pri sledećoj prijavi
-
-### 5.9 Mobile
-- [ ] Sidebar se pretvara u drawer na mobilnom
-- [ ] Hamburger meni otvara drawer
-- [ ] Sve stranice su čitljive na malom ekranu
-- [ ] Two-column layout na order detail se stekuje vertikalno
-
-### 5.10 AI Studio
-- [ ] Postojećih 7 alata rade bez reference panela i šalju samo osnovnu sliku
-- [ ] "Dodavanje ili zamena objekta" prikazuje upload enterijera i manji panel "Objekat / uglovi" u istom redu na desktopu
-- [ ] Generate je blokiran dok ne postoje osnovna slika i bar jedna referentna slika objekta
-- [ ] Dodavanje objekta radi sa 1 referencom bez maske, prikazuje upozorenje o manje predvidljivom rezultatu i čuva rezultat, istoriju i download linkove
-- [ ] Multi-angle flow prihvata do 5 slika istog objekta i prikazuje ih u detalju obrade
-- [ ] "Zameni postojeći" automatski koristi Advanced mode i blokira Generate dok maska nije nacrtana
-- [ ] Obrada sa Advanced maskom koristi masku kao soft smernicu i čuva ostatak originalne slike
-- [ ] Drag-and-drop radi za osnovnu sliku i panel "Objekat / uglovi"
-- [ ] Engine picker prikazuje samo Nano Banana Pro i GPT Image 2
-- [ ] "Ponovi sa istim podešavanjima" vraća sve referentne slike objekta i režim dodavanja/zamene
-
----
-
-## 6. Admin panel
-
-### 6.1 Pristup
-- [ ] Prijavi se kao `admin@elegantrender.rs` / `Admin2026!`
-- [ ] Sidebar prikazuje samo "Admin" i "Profil" (bez klijentskih linkova)
-- [ ] Klijentski nalog NE vidi "Admin" u sidebar-u
-
-### 6.2 Dashboard
-- [ ] Stat kartice: ukupan prihod, porudžbine, aktivni, završeni, klijenti
-- [ ] Pretraga po klijentu, emailu, broju porudžbine radi
-- [ ] Filter po statusu radi
-- [ ] Filter po vrsti usluge radi
-- [ ] Tabela prikazuje sve porudžbine svih klijenata
-
-### 6.3 Admin order detail
-- [ ] Prikazuje klijentove podatke (ime, email, telefon)
-- [ ] Status tracker prikazuje ispravnu fazu
-- [ ] "Promeni status" dugmad prikazuju samo validne tranzicije
-- [ ] Klikni na status → status se menja → tracker se ažurira
-- [ ] Konverzacija prikazuje sve komentare (klijentske i timske)
-- [ ] "Odgovor tima" composer šalje poruku sa oznakom "Tim"
-- [ ] Klijent vidi timsku poruku u svom portalu
-
-### 6.4 Deliverable upload
-- [ ] "Otpremi deliverable" kartica prima fajlove
-- [ ] Upload uspeva → fajl se pojavljuje u "Isporučeni fajlovi"
-- [ ] Klijent vidi fajl u "Spremno za preuzimanje" panelu
-- [ ] Download link radi (signed URL)
-
----
-
-## 7. Bitrix24 sinhronizacija
-
-### 7.1 Outbound: Nova porudžbina
-- [ ] Kreiraj porudžbinu i plati
-- [ ] U Bitrix24 → CRM → Dealovi → "Elegant Render" pipeline
-- [ ] Deal je kreiran sa ispravnim nazivom, iznosom, kontaktom
-- [ ] Stage odgovara statusu porudžbine
-
-### 7.2 Outbound: Promena statusa
-- [ ] Promeni status u admin panelu (npr. paid → in_progress)
-- [ ] U Bitrix24: Deal stage se ažurirao
-
-### 7.3 Outbound: Komentar
-- [ ] Pošalji klijentski komentar iz portala
-- [ ] U Bitrix24: komentar se pojavio u Deal timeline-u sa "[Klijent]" prefiksom
-- [ ] Pošalji timski komentar iz admin panela
-- [ ] U Bitrix24: komentar se pojavio sa "[Tim]" prefiksom
-
-### 7.4 Outbound: Fajl
-- [ ] Upload fajl (source, revision, ili deliverable)
-- [ ] U Bitrix24: timeline komentar sa linkom na fajl
-
-### 7.5 Inbound: Promena stage-a
-- [ ] U Bitrix24: prevuci Deal na drugi stage (npr. "U izradi" → "Na pregledu")
-- [ ] U portalu: status porudžbine se promenio
-- [ ] Nema infinite loop (status se ne vraća nazad)
-
-### 7.6 Reconciliation
-- [ ] Ručno pozovi: `GET /api/cron/bitrix-reconcile?secret=CRON_SECRET` (sa Authorization header)
-- [ ] Proveri logove — nema drift-a za sinhronizovane porudžbine
-- [ ] Ako postoji porudžbina bez Deal-a, pokušava ponovo
-
----
-
-## 8. Email notifikacije
-
-- [ ] Registracija → verifikacioni email
-- [ ] Zaboravljena lozinka → reset email
-- [ ] Guest checkout → email za postavljanje lozinke
-- [ ] Uspešno plaćanje → confirmation email sa brojem porudžbine i iznosom
-- [ ] Svi emailovi dolaze sa `noreply@elegantrender.rs`
-- [ ] Emailovi imaju Elegant Render branding (clay dugme, warm boje)
-
----
-
-## 9. Error handling
-
-- [ ] Pogrešan URL → prikazuje 404 stranicu sa "Nazad na početnu" linkom
-- [ ] Nevalidni checkout podaci → prikazuje grešku (ne puca)
-- [ ] NestPay greška ili odbijen return → prikazuje poruku o grešci
-- [ ] Upload prevelikog fajla (>50MB) → prikazuje poruku
-- [ ] Nepostojeci orderId u portalu → 404
-
----
-
-## 10. Pre-launch checklist
-
-Kada sadržaj bude spreman:
-
-- [ ] Zameni portfolio placeholder slike pravim renderima
-- [ ] Zameni pravne stub tekstove pravim tekstovima
-- [ ] Poveži elegantrender.rs domen sa Vercel
-- [ ] Ažuriraj `AUTH_URL` na `https://elegantrender.rs`
-- [ ] Dodaj `https://elegantrender.rs/api/auth/callback/google` u Google OAuth redirect URIs
-- [ ] Promeni `NEXT_PUBLIC_NESTPAY_MODE=live` i postavi produkcione NestPay kredencijale
-- [ ] Ukloni `robots: { index: false }` iz root layout-a
-- [ ] Uključi Supabase point-in-time recovery
-- [ ] Proveri Sentry monitoring (kada se instalira)
-- [ ] Uradi kompletni smoke test sa pravim podacima
+# Elegant Render launch QA runbook
+
+Use this checklist before merging release branches, before the sandbox freeze, and again before launch. The target product is the English elegantrender.com platform with EUR accounting, local display prices, PayPal checkout, English routes, and post-payment file upload.
+
+## 1. Environment readiness
+
+- [ ] `npm install` has completed and `npx prisma generate` runs without errors.
+- [ ] `npx tsc --noEmit` is green on the branch under test.
+- [ ] `npm run lint` is green on the branch under test.
+- [ ] Required local env values are present for auth, Supabase, Resend, PayPal sandbox, Redis, PostHog, Sentry, Bitrix24, and cron secrets.
+- [ ] `NEXT_PUBLIC_SITE_URL` and `AUTH_URL` point to the tested host.
+- [ ] PayPal is in sandbox mode until the launch gate.
+
+## 2. Marketing and SEO smoke
+
+- [ ] `/` loads the international homepage with the White Rook design system.
+- [ ] `/services`, `/pricing`, `/portfolio`, `/about`, `/contact`, `/faq`, and service detail pages load without console errors.
+- [ ] Header, footer, legal links, and mobile navigation use English labels.
+- [ ] Pricing copy shows EUR as the invoice currency and local display prices where enabled.
+- [ ] Legal pages under `/legal/*` load and do not reference old Serbian routes.
+- [ ] `sitemap.xml`, `robots.txt`, canonical URLs, and OpenGraph metadata use elegantrender.com routes.
+- [ ] GA4 and GTM stay disabled locally unless explicitly testing analytics.
+
+## 3. Authentication
+
+- [ ] `/login` accepts a valid email and password and redirects to `/portal`.
+- [ ] Invalid credentials show a clear English error.
+- [ ] `/register` creates a user with name, email, and password.
+- [ ] Registration sends a verification email from the configured Elegant Render sender.
+- [ ] Google OAuth redirects back to `/portal` on success.
+- [ ] `/forgot-password` sends a reset email.
+- [ ] `/reset-password?token=...` accepts a new password and the new password works.
+- [ ] `/portal` and nested portal routes redirect unauthenticated visitors to `/login`.
+- [ ] Sign out returns the user to the public site.
+
+## 4. Pricing configurator
+
+- [ ] `/pricing` loads the configurator without hydration errors.
+- [ ] Category tabs and service selection use English labels.
+- [ ] Adding a service updates the estimate summary and total.
+- [ ] Included quantities start at the included minimum and extra quantities price correctly.
+- [ ] Animation duration controls update the estimate in real time.
+- [ ] The checkout CTA preserves the selected estimate and opens `/checkout`.
+- [ ] No machine-readable IDs, slugs, or enum values are changed by translation work.
+
+## 5. Checkout and PayPal sandbox
+
+- [ ] Guest checkout starts with the details step and captures name, email, country, and optional company details.
+- [ ] Logged-in checkout skips redundant account fields where expected.
+- [ ] Required legal checkboxes are visible and block payment until accepted.
+- [ ] Step 2 shows the same amount and currency that the buyer saw in the estimate.
+- [ ] PayPal buttons render with the sandbox client ID.
+- [ ] Sandbox approval creates a PayPal order, captures it, and lands on the success page.
+- [ ] The order is saved with payment provider `paypal`, the charged currency, and the capture reference.
+- [ ] The success screen invites the buyer to upload source files after payment.
+- [ ] Direct access to `/checkout` without an estimate redirects back to `/pricing` or shows the expected empty state.
+- [ ] A declined or cancelled PayPal attempt lands on the failure path with a plain English recovery message.
+
+## 6. Post-payment upload
+
+- [ ] The success screen and portal order page both expose source-file upload after payment.
+- [ ] Drag and drop accepts allowed file types and rejects oversized files with an English message.
+- [ ] Upload progress is visible.
+- [ ] Uploaded files appear in the order file list with name and size.
+- [ ] Removing an uploaded file works where the UI offers removal.
+- [ ] Source-file reminder emails are scheduled only when files are still missing.
+
+## 7. Client portal
+
+- [ ] `/portal` dashboard cards and empty states are in English.
+- [ ] `/portal/orders` lists only the signed-in user's orders.
+- [ ] Search and status filters work on the orders list.
+- [ ] Order detail shows status, line items, files, comments, deliverables, and payment state.
+- [ ] Client comments post with the client label and appear without a full reload.
+- [ ] Revision request and revision upload flows work on eligible orders.
+- [ ] Profile updates save name, phone, and password changes.
+- [ ] Mobile portal navigation collapses into a drawer and all order detail panels stack cleanly.
+
+## 8. Admin and operations
+
+- [ ] Admin users see admin navigation; client users do not.
+- [ ] Admin dashboard totals and order filters load.
+- [ ] Admin order detail shows buyer data, status controls, files, comments, and deliverables.
+- [ ] Valid status transitions update the order and the tracker.
+- [ ] Team comments are visible to the client in the portal.
+- [ ] Deliverable upload creates signed download links.
+- [ ] Bitrix24 outbound sync creates or updates the matching deal in the English pipeline.
+- [ ] Bitrix24 inbound stage changes update the portal without creating a sync loop.
+- [ ] Cron reconciliation endpoints require the configured secret.
+
+## 9. Email notifications
+
+- [ ] Verification, password reset, guest access, payment confirmation, source-file reminder, comment, revision, deliverable, refund, and admin notification emails render in English.
+- [ ] Email amounts match the charged currency and EUR accounting rules.
+- [ ] All links use English routes on the tested host.
+- [ ] Sender identity uses the configured elegantrender.com mailbox.
+
+## 10. Error handling
+
+- [ ] Unknown public routes render the English 404 state.
+- [ ] Invalid checkout data returns field-level English errors.
+- [ ] Payment errors do not complete the order.
+- [ ] Unknown order IDs in the portal return a protected 404 or redirect.
+- [ ] Oversized files and unsupported formats return English errors.
+- [ ] API failures are logged without leaking secrets to the browser.
+
+## 11. Launch gate
+
+- [ ] PayPal live webhook is configured and signature verification is green.
+- [ ] A low-value live purchase and refund have been tested end to end.
+- [ ] Resend domain records are verified and `info@elegantrender.com` receives mail.
+- [ ] Search Console and Bing properties are verified.
+- [ ] GTM consent mode and GA4 purchase events are validated with EUR values.
+- [ ] Sitemap is submitted after the production deploy.
+- [ ] Legal pages name the appointed EU representative before public launch.

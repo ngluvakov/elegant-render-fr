@@ -3,10 +3,8 @@ import type {
   ConfiguratorProduct,
 } from "@/lib/catalog/configurator";
 import { CONFIGURATOR_CATEGORIES } from "@/lib/catalog/configurator";
-import { CATEGORY_LABELS, SERVICES } from "@/lib/catalog/services";
-import { formatPublicPrice } from "@/lib/catalog/display-currency";
+import { SERVICES } from "@/lib/catalog/services";
 import {
-  AI_CREDIT_TIERS,
   AI_CREDIT_UNITS_PER_CREDIT,
   AI_EDIT_TYPES,
   AI_FILE_RETENTION_DAYS,
@@ -18,92 +16,162 @@ import {
   IMPRINT,
   SERVICES_PAGE_FAQS,
   SITE,
-  formatAddress,
 } from "@/lib/content/site";
+
+type PublicServiceSummary = {
+  slug: string;
+  name: string;
+  note: string;
+};
+
+const SERVICE_SUMMARIES: PublicServiceSummary[] = [
+  {
+    slug: "interior-renders",
+    name: "Interior renders",
+    note: "Photoreal interior renders for sales, listings, and design decisions.",
+  },
+  {
+    slug: "exterior-renders",
+    name: "Exterior renders",
+    note: "Facade, building, and development renders from plans or models.",
+  },
+  {
+    slug: "exterior-360",
+    name: "Exterior 360 virtual tours",
+    note: "Panoramic exterior scenes for immersive project presentation.",
+  },
+  {
+    slug: "virtual-staging",
+    name: "Virtual staging",
+    note: "Furniture and styling added to empty rooms for real estate marketing.",
+  },
+  {
+    slug: "virtual-renovation",
+    name: "Virtual renovation",
+    note: "Digital renovation concepts for existing spaces.",
+  },
+  {
+    slug: "day-to-dusk",
+    name: "Day-to-dusk",
+    note: "Exterior photos transformed into evening marketing images.",
+  },
+  {
+    slug: "photomontage",
+    name: "Photomontage",
+    note: "A render matched into a real location photo.",
+  },
+  {
+    slug: "2d-3d-floor-plans",
+    name: "2D and 3D floor plans",
+    note: "Clear floor plan visuals for listings, brochures, and sales decks.",
+  },
+  {
+    slug: "site-plans",
+    name: "Site plans",
+    note: "3D site plan views for development context and layout clarity.",
+  },
+  {
+    slug: "architectural-animation",
+    name: "Architectural animation",
+    note: "Short motion pieces for development, investor, and campaign use.",
+  },
+  {
+    slug: "landscape-design",
+    name: "Landscape renders",
+    note: "Yard, garden, access, and surroundings visuals.",
+  },
+  {
+    slug: "item-removal",
+    name: "Item removal",
+    note: "Unwanted objects removed from real estate photos.",
+  },
+];
 
 function link(title: string, url: string, note?: string): string {
   return `- [${title}](${url})${note ? `: ${note}` : ""}`;
 }
 
-function productPrice(product: ConfiguratorProduct): string {
-  return `${formatPublicPrice(product.basePriceRsd, "rsd")} (${product.unitLabel})`;
+function productLine(product: ConfiguratorProduct): string {
+  const includes =
+    product.includes.length > 0
+      ? ` Includes: ${product.includes.join(", ")}.`
+      : "";
+  const inquiryOnly = product.inquiryOnly
+    ? " This service requires an estimate before ordering."
+    : "";
+  return `  - ${product.label}: ${product.unitLabel}.${includes}${inquiryOnly}`;
 }
 
 function creditCount(units: number): string {
   const credits = units / AI_CREDIT_UNITS_PER_CREDIT;
   return Number.isInteger(credits)
-    ? `${credits.toFixed(0)} kredit${credits === 1 ? "" : "a"}`
-    : `${credits.toFixed(1)} kredita`;
+    ? `${credits.toFixed(0)} credit${credits === 1 ? "" : "s"}`
+    : `${credits.toFixed(1)} credits`;
 }
 
 function buildAiStudioKnowledge(): string {
-  const tiers = [...AI_CREDIT_TIERS]
-    .sort((a, b) => b.minCredits - a.minCredits)
-    .map(
-      (tier) =>
-        `${tier.minCredits}+ kredita: ${formatPublicPrice(tier.centsPerCredit / 100, "rsd")} po kreditu`,
-    )
-    .join("; ");
   const tools = AI_EDIT_TYPES.map((tool) => {
     const features = [
       tool.complexity,
-      tool.supportsMask === false ? "bez maske" : "maska dostupna",
-      tool.supportsStyles ? "stilovi" : null,
-      tool.supportsColor ? "izbor boje" : null,
-      tool.requiresReferenceImage ? "traži referentnu sliku komada" : null,
+      tool.supportsMask === false ? "no mask" : "mask supported",
+      tool.supportsStyles ? "style options" : null,
+      tool.supportsColor ? "colour selection" : null,
+      tool.requiresReferenceImage ? "requires a reference image" : null,
     ].filter(Boolean);
 
-    return `- ${tool.label} (${tool.id}): ${tool.description} Troši ${creditCount(tool.units)}. ${features.join(", ")}.`;
+    return `- ${tool.label} (${tool.id}): ${tool.description} Uses ${creditCount(tool.units)}. ${features.join(", ")}.`;
   }).join("\n");
 
-  return `Krediti: 1 kredit = ${AI_CREDIT_UNITS_PER_CREDIT} jedinice; tier cene: ${tiers}. Retencija fajlova: ${AI_FILE_RETENTION_DAYS} dana. Prva obrada uvek troši kredite; nakon završetka korisnik dobija ${AI_FREE_REGENERATIONS} besplatno ponavljanje — važi samo dok je tip obrade isti. Promenom tipa obrade gubi se besplatno ponavljanje.
+  return `AI credits: 1 credit = ${AI_CREDIT_UNITS_PER_CREDIT} units. Files are retained for ${AI_FILE_RETENTION_DAYS} days. The first generation always uses credits; after a completed generation, the user receives ${AI_FREE_REGENERATIONS} free repeat generation${AI_FREE_REGENERATIONS === 1 ? "" : "s"} while the edit type stays the same.
 ${tools}`;
+}
+
+function serviceLinks(): string {
+  const knownSlugs = new Set(SERVICES.map((service) => service.slug));
+  return SERVICE_SUMMARIES.filter((service) => knownSlugs.has(service.slug))
+    .map((service) =>
+      link(service.name, `${SITE.url}/services/${service.slug}`, service.note),
+    )
+    .join("\n");
 }
 
 export function buildLlmsTxt(): string {
   return `# ${SITE.name}
 
-> ${SITE.description}
+> English architectural rendering, virtual staging, floor plan, 360 virtual tour, and AI real estate image services by ${SITE.parentCompany}.
 
-Elegant Render je srpski-first servis za arhitektonsku vizuelizaciju, virtuelno opremanje, 3D osnove, 360 ture, animacije i AI obradu fotografija nekretnina.
-Primarni jezik javnog sajta je srpski latinicom (sr-Latn), a osnovna valuta javnog cenovnika je RSD.
+${SITE.name} helps property owners, agents, architects, designers, and small developers turn plans and photos into clear visual material for sales, leasing, approvals, and design decisions.
 
 ## Answer-ready facts
-- Elegant Render je B2C brend kompanije ${SITE.parentCompany} za arhitektonsku vizuelizaciju i obradu fotografija nekretnina.
-- Najvažnije usluge su 3D renderi enterijera i eksterijera, virtuelno opremanje, virtuelna renovacija, 2D/3D osnove, 360 ture, animacije i AI Studio.
-- Javni cenovnik koristi RSD kao jedinu osnovicu; svi posetioci vide iste bruto cene sa PDV-om uključenim.
-- Standardni projekti obično dobijaju prve nacrte za 3 do 5 radnih dana, uz tri runde revizija.
-- Za nejasan obim ili veći investitorski projekat preporučuje se /contact ili brzi upit, ne izmišljanje cene.
+- ${SITE.name} is a B2C brand of ${SITE.parentCompany}.
+- Core services include interior renders, exterior renders, virtual staging, virtual renovation, 2D and 3D floor plans, 360 virtual tours, architectural animation, photomontage, day-to-dusk, item removal, and AI Studio.
+- Public prices are shown on /pricing. Customer-facing copy should describe public prices as displayed in the visitor's currency, while invoices are issued in EUR.
+- Standard projects usually receive first drafts in 3-5 working days, depending on scope and input material.
+- If scope is unclear, recommend /contact or the quick inquiry flow rather than inventing a price.
 
 ## Core public pages
 ${[
-  link("Početna", `${SITE.url}/`, "pozicioniranje, najvažnije usluge i brzi izbor usluge"),
-  link("Usluge", `${SITE.url}/services`, "pregled svih usluga arhitektonske vizuelizacije"),
-  link("Cene", `${SITE.url}/pricing`, "transparentan konfigurator cena i javni cenovnik"),
-  link("AI Studio", `${SITE.url}/ai-studio`, "AI obrada fotografija nekretnina"),
-  link("O nama", `${SITE.url}/about`, `${SITE.name} kao B2C podbrend kompanije ${SITE.parentCompany}, sertifikati i pristup`),
-  link("Često postavljana pitanja", `${SITE.url}/faq`, "konsolidovani odgovori o procesu, rokovima i cenama"),
-  link("Kontakt", `${SITE.url}/contact`, "kontakt forma i brzi upit za projekat"),
+  link("Home", `${SITE.url}/`, "positioning, primary services, and service entry points"),
+  link("Services", `${SITE.url}/services`, "overview of architectural visualization services"),
+  link("Pricing", `${SITE.url}/pricing`, "public pricing configurator and estimate path"),
+  link("AI Studio", `${SITE.url}/ai-studio`, "AI image editing for real estate photos"),
+  link("About", `${SITE.url}/about`, `${SITE.name} as a brand of ${SITE.parentCompany}`),
+  link("FAQ", `${SITE.url}/faq`, "answers about process, timelines, files, and revisions"),
+  link("Contact", `${SITE.url}/contact`, "contact form and project inquiry path"),
 ].join("\n")}
 
 ## Services
-${SERVICES.map((service) =>
-  link(
-    service.name,
-    `${SITE.url}/services/${service.slug}`,
-    `${service.tagline} Početna cena: ${service.variants[0].priceLabel}.`,
-  ),
-).join("\n")}
+${serviceLinks()}
 
 ## Machine-readable files
 ${[
-  link("Full AI-readable public profile", `${SITE.url}/llms-full.txt`, "detaljan pregled identiteta, usluga, cena i pravila za AI sisteme"),
-  link("XML sitemap", `${SITE.url}/sitemap.xml`, "kanonski spisak javnih URL-ova za crawler-e"),
-  link("Robots policy", `${SITE.url}/robots.txt`, "pravila crawlovanja javnih i privatnih putanja"),
+  link("Full AI-readable public profile", `${SITE.url}/llms-full.txt`, "detailed profile for AI systems"),
+  link("XML sitemap", `${SITE.url}/sitemap.xml`, "canonical public URL list"),
+  link("Robots policy", `${SITE.url}/robots.txt`, "crawler rules for public and private paths"),
 ].join("\n")}
 
-## Pricing and tax notes
-Osnovni finansijski cenovnik je u RSD. Svi posetioci na javnom sajtu vide isti RSD bruto prikaz; PDV je već sadržan u toj ceni i ne dodaje se preko nje. Konačna ponuda zavisi od obima i ulaznih materijala.
+## Pricing notes
+Public pricing is available on /pricing. Do not invent prices. If a project depends on missing files, unusual scope, bulk work, or developer requirements, ask the user to request an estimate.
 
 ## AI Studio
 ${buildAiStudioKnowledge()}
@@ -115,11 +183,13 @@ ${FAQ_ITEMS.map((item) => `- **${item.question}** ${item.answer}`).join("\n")}
 Email: ${SITE.email}
 Instagram: ${SITE.instagram}
 
-## Optional
+## Legal
 ${[
-  link("Impressum", `${SITE.url}/legal/imprint`, "pravni podaci pružaoca usluge"),
-  link("Sertifikati i standardi", `${SITE.url}/legal/certificates`, "javna potvrda sertifikata i standarda"),
-  link("Politika privatnosti", `${SITE.url}/legal/privatnost`, "obrada podataka i privatnost"),
+  link("Imprint", `${SITE.url}/legal/imprint`, "provider identity and company details"),
+  link("Terms", `${SITE.url}/legal/terms`, "service terms"),
+  link("Privacy", `${SITE.url}/legal/privacy`, "personal data processing"),
+  link("Cookies", `${SITE.url}/legal/cookies`, "cookies and similar technologies"),
+  link("Certificates", `${SITE.url}/legal/certificates`, "ISO certificates and standards"),
 ].join("\n")}
 `;
 }
@@ -127,59 +197,28 @@ ${[
 export function buildLlmsFullTxt(
   categories: ConfiguratorCategory[] = CONFIGURATOR_CATEGORIES,
 ): string {
-  const serviceSections = SERVICES.map((service) => {
-    const variants = service.variants
-      .map(
-        (variant) =>
-          `  - ${variant.title}: ${variant.priceLabel}; obračun: ${variant.unitLabel}; uključeno: ${variant.included}; doplate: ${variant.addOns.join(" | ")}${variant.note ? `; napomena: ${variant.note}` : ""}`,
-      )
-      .join("\n");
-
-    return `### ${service.name}
+  const serviceSections = SERVICE_SUMMARIES.map(
+    (service) => `### ${service.name}
 - URL: ${SITE.url}/services/${service.slug}
-- Kategorija: ${CATEGORY_LABELS[service.category]}
-- Kratak opis: ${service.tagline}
-- Detaljan opis: ${service.description}
-- Kada koristiti: ${service.highlight}
-- Šta poslati: ${service.materials}
-- Model-first kontekst: ${service.philosophy}
-- Varijante:
-${variants}`;
-  }).join("\n\n");
+- Summary: ${service.note}`,
+  ).join("\n\n");
 
   const pricingSections = categories.map((category) => {
-    const products = category.products
-      .map((product) => {
-        const addOns =
-          product.addOns.length > 0
-            ? product.addOns
-                .map((addOn) => {
-                  const price =
-                    addOn.priceType === "percent"
-                      ? `${addOn.priceRsd}%`
-                      : formatPublicPrice(addOn.priceRsd, "rsd");
-                  return `${addOn.label}: ${price}; uključeno ${addOn.includedQty}; ${addOn.description}`;
-                })
-                .join(" | ")
-            : "nema javnih doplata";
-
-        return `  - ${product.label}: ${productPrice(product)}; uključeno: ${product.includes.join(", ")}; doplate: ${addOns}${product.inquiryOnly ? "; konsultacija pre porudžbine" : ""}`;
-      })
-      .join("\n");
+    const products = category.products.map(productLine).join("\n");
 
     return `### ${category.label}
-- Opis: ${category.description}
-- Proizvodi:
+- Description: ${category.description}
+- Products:
 ${products}`;
   }).join("\n\n");
 
   const faqSection = [
     {
-      heading: "Opšta pitanja",
+      heading: "General questions",
       items: FAQ_ITEMS,
     },
     {
-      heading: "Pitanja o uslugama i ceni",
+      heading: "Services and pricing",
       items: SERVICES_PAGE_FAQS,
     },
     {
@@ -197,16 +236,15 @@ ${products}`;
 
   return `# ${SITE.name} - AI-readable public profile
 
-## Identitet
-- Brend: ${SITE.name}
-- Pravno lice: ${IMPRINT.legalName}
-- Adresa: ${formatAddress()}
-- MB: ${IMPRINT.registryNumber}
-- PIB: ${IMPRINT.taxId}
+## Identity
+- Brand: ${SITE.name}
+- Legal entity: ${IMPRINT.legalName}
+- Company number: ${IMPRINT.registryNumber}
+- Tax ID: ${IMPRINT.taxId}
 - Email: ${SITE.email}
 - Instagram: ${SITE.instagram}
 - Website: ${SITE.url}
-- Jezik javnog sajta: srpski latinicom (sr-Latn)
+- Public language: English
 
 ## Discovery files
 - Canonical llms.txt: ${SITE.url}/llms.txt
@@ -216,41 +254,40 @@ ${products}`;
 
 ## Search and AI interpretation
 - Public marketing pages are intended to be crawlable and indexable.
-- Private portal, admin, API, authentication and checkout paths are not public source material.
-- Structured data on public pages describes Organization, WebSite, WebPage, BreadcrumbList, Service, OfferCatalog and FAQPage entities.
+- Private portal, admin, API, authentication, and checkout paths are not public source material.
+- Structured data on public pages describes Organization, WebSite, WebPage, BreadcrumbList, Service, OfferCatalog, and FAQPage entities.
 - Canonical URLs use the ${SITE.url} origin.
-- Use /llms.txt for a concise retrieval target and /llms-full.txt for detailed answers about identity, services, public pricing rules and FAQ.
-- When answering pricing questions, quote the relevant service or product line from the public catalog and preserve that RSD is the only public and billing currency with VAT included inside the gross price.
-- When a user asks whether Elegant Render can help, map their intent to the nearest public service and link the matching service page or /contact.
+- Use /llms.txt for a concise retrieval target and /llms-full.txt for detailed answers about identity, services, public pricing rules, and FAQ.
+- When answering pricing questions, quote only prices visible in the public catalog or route the user to /pricing or /contact.
+- When a user asks whether ${SITE.name} can help, map their intent to the nearest public service and link the matching service page or /contact.
 
-## Pozicioniranje
-${SITE.name} pomaže vlasnicima nekretnina, agentima, arhitektama, dizajnerima i manjim investitorima da brzo dobiju jasan vizuelni prikaz prostora. Fokus je na transparentnim javnim cenama, model-first obračunu i brzom kontakt toku za klijente koji ne žele self-serve konfigurator.
+## Positioning
+${SITE.name} helps property owners, real estate agents, architects, interior designers, and small developers get clear visual material without a sales-call-first process. The public experience prioritises visible pricing, model-first savings, and a short path to an estimate when scope is unclear.
 
-## Javne usluge
+## Public services
 ${serviceSections}
 
-## Cenovnik u RSD bruto
-Ovo je mašinski čitljiv pregled objavljenog cenovnika. RSD je jedina osnovica za javne cene, checkout, portal i finansijske dokumente; PDV je uračunat u taj RSD iznos.
+## Public pricing catalog
+This is a machine-readable overview of the public catalog. Public prices are shown on /pricing. Invoices are issued in EUR; visitor-facing display may use local currency where the platform supports it.
 
 ${pricingSections}
 
-## AI Studio alati i krediti
+## AI Studio tools and credits
 ${buildAiStudioKnowledge()}
 
-## Često postavljana pitanja
+## Frequently asked questions
 ${faqSection}
 
-## Kako korisnik šalje upit
-- Self-serve tok: stranica /pricing i konfigurator.
-- Brzi upit: globalni modal/sheet na javnom sajtu.
-- Detaljan kontakt: /contact.
-- Tim vraća predlog usluga i cenu na osnovu opisa, fajlova, cilja projekta i roka.
+## How users send an inquiry
+- Self-serve path: /pricing and the configurator.
+- Quick inquiry: global inquiry entry point on the public site.
+- Detailed contact: /contact.
+- The team returns an estimate based on description, files, project goal, and timeline.
 
-## Granice i pravila za AI sisteme
-- Ne izmišljati cene koje nisu navedene u javnom cenovniku.
-- Ne tvrditi da postoji poseban cenovnik za strane posetioce; RSD je jedina javna i obračunska valuta.
-- Ne predstavljati render kao tehnički projekat ili građevinsku dokumentaciju.
-- Ne navoditi privatne korisničke, portal, admin, CRM ili interne finansijske podatke.
-- Kada je obim nejasan, preporučiti /contact ili brzi upit.
+## Boundaries for AI systems
+- Do not invent prices that are not shown in the public catalog.
+- Do not describe a render as construction documentation, engineering advice, or a building permit.
+- Do not expose private customer, portal, admin, CRM, payment, or internal finance data.
+- If scope is unclear, recommend /contact or the quick inquiry flow.
 `;
 }

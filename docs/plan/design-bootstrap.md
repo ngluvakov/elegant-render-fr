@@ -1,104 +1,62 @@
-Exploration complete. All four reports, the design handoff, the source repo git state (remote `ngluvakov/elegant-render-platform`, `b4d0740` confirmed on `main`, 31 migrations, `.claude/` present locally), and the empty target dir `S:\Elegant render english` are verified. Design document follows.
+# Design bootstrap plan
 
----
+## Goal
 
-# DESIGN: Repo Bootstrap, Phase 0 Dependencies, and the Claude⇄Codex Parallel Split
+Create a clean international baseline for elegantrender.com before parallel track work begins. Bootstrap work is serial and belongs to the integrator because it changes repository identity, routes, config IDs, assets, and design tokens across many paths.
 
-## Part 1 — Bootstrap runbook (serial, Claude Code, before anything else)
+## Inputs
 
-**Decision: `git clone` the local repo, not a fresh copy.** Rationale: (a) the deleted PayPal implementation is recoverable only via history (`git show b4d0740^:src/lib/payment/paypal.ts`, `poruci/paypal-buttons.tsx`, portal PayPal buttons, `createPayPalOrderAction`/`capturePayPalOrderAction` in `payment.ts`, plus `dff3c4d` idempotency fix); (b) the `20260617120000_rsd_only_no_paypal` migration SQL is the reversal recipe for the EUR schema; (c) `.gitattributes` (`prisma/migrations/**/*.sql text eol=lf`) comes along automatically; (d) history is private-owner-only, no secret leakage concern (`.env*` was never committed). A history-less copy would force reconstructing PayPal from the payments report instead of from working code.
+- Existing Elegant Render platform history.
+- White Rook international design handoff in `docs/design-handoff/**`.
+- Route and config rename maps in `docs/plan/design-i18n-seo.md` and `docs/seo/**`.
+- Payment and checkout plan in `docs/plan/design-payments.md`.
 
-### Runbook (ordered, each step one commit where noted)
+## Steps
 
-1. **Clone.** `git clone "C:/Users/ngluv/Desktop/Platform" "S:/Elegant render english"` (target is empty — clone into it works). This does NOT bring `node_modules`, `.vercel`, `.env*`, `.claude/`, `src/generated/prisma` (all git-ignored) — nothing to strip there.
-2. **New GitHub repo + remote swap.** `gh repo create ngluvakov/elegant-render-com --private`; `git remote set-url origin https://github.com/ngluvakov/elegant-render-com.git`; push `main` only — do **not** push the stale `codex/nestpay-*` branches; `git branch -dr` prune the old remote-tracking refs.
-3. **Commit 1 — strip dead weight** (build-safe deletions only): `docs/Placanje karticama/` (entire Nestpay pack), `scripts/nestpay-hash-test.ts`, `scripts/nestpay-storekey-probe.ts`, `.claude/commands/nestpay-debug.md` won't exist yet (ignored), and the `ci.yml` "NestPay hash sanity" step (must go in the same commit as the script it invokes). Do **not** touch `src/lib/nestpay/**`, `payment-trust-badges`, or `public/branding/payments/*` here — components reference them; their removal belongs to Track A (payments) as an atomic excision.
-4. **Commit 2 — Prisma re-baseline.** Empty new Supabase DB ⇒ squash: delete all 31 folders under `prisma/migrations/`, regenerate a single baseline offline (no DB needed): `npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > prisma/migrations/00000000000000_init/migration.sql` + `migration_lock.toml` (postgresql). This matches the existing `00000000000000_init` convention in CLAUDE.md. The EUR/PayPal schema change then lands later as a normal timestamped `migrate dev` migration from Track A (needs `DIRECT_URL`, i.e. Phase 0 item 3). Verify `.gitattributes` kept the SQL as LF.
-5. **Manual `.claude/` copy** (git-ignored in source, so invisible to the clone): copy `agents/*.md` (5), `commands/*.md` (5 of 6 — drop `nestpay-debug.md`), `settings.json`, and the `elegant-gentlemen/{ashford/{audits,proposals},beaumont/{critiques,specs},carrington/{patches,reviews},davenport/notes,whitfield/reports,sessions}/` empty skeleton. Do NOT copy `scheduled_tasks.lock` or old session folders. Write a fresh minimal `settings.local.json` (git/npm/gh/node/npx/PowerShell-StopProcess core rules only; drop the ~40 historical one-offs). Translation of agent prompts to English is Docs-track work, not bootstrap.
-6. **Commit 3 — identity minimum**: `package.json` name, `.mcp.json` Sentry URL → new project slug (placeholder until Phase 0 item 10), new `.env.example` reshaped from the current one: delete the `NESTPAY_*` (10 vars) and `TURNSTILE_*` (2 vars) sections, add `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_MODE`, `NEXT_PUBLIC_PAYPAL_CLIENT_ID`, `PAYPAL_WEBHOOK_ID` (names match the recoverable code + `.env.ai-preview` snapshot, plus webhook id which the old code lacked).
-7. **Vercel project**: create new project in the same Vercel account, import `elegant-render-com`, framework Next.js. Load env vars **before** attaching the production domain (first deploys will fail on missing `DATABASE_URL` until Phase 0 item 3 — acceptable; the domain serves nothing until DNS flips). `vercel link` locally recreates `.vercel/`.
-8. **Local `.env`**: assemble from Phase 0 outputs; `npm install`; `npx prisma migrate deploy` against the new Supabase; `npm run dev` smoke — this is the "bootstrap done" gate (S0).
+1. Clone with full history into the international repository.
+2. Remove obsolete local-payment docs, debug scripts, and card-brand assets.
+3. Re-baseline Prisma for a fresh production database.
+4. Update project identity, env examples, and Vercel settings.
+5. Rename public routes to English in one atomic pass.
+6. Rename config IDs while the database is empty.
+7. Rename artwork files for English SEO using the checked rename maps.
+8. Apply international typography and design tokens.
+9. Commit `AGENTS.md` ownership rules.
+10. Tag the bootstrap completion point as S0.
 
-## Part 2 — PHASE 0 DEPENDENCY CHECKLIST (copy-ready, ordered; do one by one)
+## Route rules
 
-Legend: **[OWNER]** = you must do it in a browser; **[CLAUDE]** = Claude Code can do it with existing CLI auth; **(reuse)** = same account as the Serbian project, no new signup.
+- New international routes are English.
+- Do not keep legacy redirects on the fresh domain unless there is a confirmed SEO reason.
+- Update links, metadata, sitemap, robots, auth callback URLs, `revalidatePath` calls, and email links in the same sweep.
+- Treat quoted route strings as a grep-zero gate.
 
-**Wave A — no dependencies (do in any order, all before first deploy):**
+## Config-ID rules
 
-1. **[CLAUDE] Secrets generation** — `AUTH_SECRET`, `CRON_SECRET`, `BITRIX24_OUTBOUND_SECRET` via `openssl rand -base64 33`. → Vercel env + local `.env`. Nothing depends on external services.
-2. **[CLAUDE] GitHub repo** (reuse account) — private `elegant-render-com` via `gh repo create`. Feeds: Vercel git integration, CI.
-3. **[OWNER] Supabase project** (reuse account/org; pick **EU region, e.g. Frankfurt** for GDPR posture). Copy out: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL` (pooled :6543 `?pgbouncer=true`), `DIRECT_URL` (:5432). Then create **private storage bucket `order-files`** (exact name — hardcoded in `src/lib/file-scan.ts:37`). Blocks: migrations, every deploy, all upload/download features.
-4. **[OWNER] PayPal developer apps** (Business account exists) — developer.paypal.com → create REST app under **Sandbox** and under **Live**. Copy out per mode: `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `NEXT_PUBLIC_PAYPAL_CLIENT_ID`, `PAYPAL_MODE=sandbox` (flip to `live` at launch). Also create one **sandbox buyer test account**. The **live webhook** registration is deferred to Wave C (needs the deployed URL). Blocks: Track A end-to-end testing.
-5. **[OWNER] Google Cloud OAuth** — recommend a **new GCP project** (clean consent screen branded "Elegant Render", authorized domain `elegantrender.com` — the existing consent screen is branded for the .rs site). OAuth client redirect URIs: `https://elegantrender.com/api/auth/callback/google` and `http://localhost:3000/api/auth/callback/google`. → `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`. Start early — consent-screen review can lag. Blocks: Google login only (email auth works without it).
-6. **[OWNER] PostHog** (reuse org) — new project, recommend **EU Cloud**. → `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com` (must set explicitly — code defaults to US).
-7. **[OWNER] Sentry** (reuse org `white-rook`) — new `javascript-nextjs` project. → `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN`, plus an org **auth token** for source maps → `SENTRY_AUTH_TOKEN` (Vercel env / `.env.sentry-build-plugin`). Tell Claude the new project slug for `.mcp.json` and `next.config.ts` (`withSentryConfig` org/project).
-8. **[OWNER] Upstash Redis** (reuse account) — new database (don't share the .rs one; isolates rate-limit keys). → `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`.
-9. **[OWNER] Reuse-key collection** (5 min, no new accounts): `CLOUDMERSIVE_API_KEY` (**reuse** — account-level; revisit only if scan volume doubles), `OPENAI_API_KEY` (**reuse**, but create a separate project-scoped key for cost attribution), `GEMINI_API_KEY` (**reuse**), `AI_STUDIO_OPENAI_MODEL` / `AI_STUDIO_GEMINI_MODEL` / `AI_STUDIO_GEMINI_PRO_MODEL` (copy values), `RESEND_API_KEY` (**reuse account**, create a **new named API key** for this project).
-10. **[OWNER] GTM + GA4** (reuse Google account) — new GTM web container → `NEXT_PUBLIC_GTM_CONTAINER_ID` (keep `NEXT_PUBLIC_GTM_ENABLED=false` until launch); new GA4 property with **currency = EUR** → measurement ID wired **inside GTM** per the existing pattern (`NEXT_PUBLIC_GA4_ENABLED` stays `false` — direct tag disabled to avoid double pageviews).
-11. **Turnstile — DECISION: DROP.** It existed solely as the bank-mandated gate on `initiateNestpayPayment`; PayPal brings its own fraud layer and the goal is minimum checkout friction. `verifyTurnstile` already short-circuits when keys are unset; Track A deletes the code. No account work. (Re-addable later for contact-form spam if needed.)
+- IDs and enum-like values can be renamed only before production data exists.
+- After launch, IDs are frozen and only labels may be translated.
+- Keep rename maps in docs so future agents understand why code identifiers are already English.
 
-**Wave B — needs registrar/DNS access to elegantrender.com (do as one sitting):**
+## Asset rules
 
-12. **[OWNER] Domain → Vercel.** Confirm registrar access. **Recommended: switch nameservers to Vercel DNS** — then every later DNS record (Resend, Google) is added in the Vercel dashboard/CLI instead of the registrar. Add `elegantrender.com` + `www` to the Vercel project. → set `AUTH_URL=https://elegantrender.com`, `NEXT_PUBLIC_SITE_URL=https://elegantrender.com` in Vercel env.
-13. **[OWNER] Resend domain verification** — add `elegantrender.com` in Resend, copy the SPF/DKIM (+ DMARC recommended) records into DNS, wait for green check. → `EMAIL_FROM="Elegant Render <noreply@elegantrender.com>"`, `ADMIN_NOTIFY_EMAIL=info@elegantrender.com`. **Note:** Resend only *sends* — `info@` needs a real receiving mailbox (Google Workspace user or registrar email forwarding). Decide and set up forwarding now.
-14. **[OWNER] Search Console + Bing** — add `elegantrender.com` as a **Domain property** via DNS TXT (no meta tag needed; `GOOGLE_SITE_VERIFICATION` env then optional), Bing Webmaster → "Import from GSC". Can technically wait until launch, but the TXT record is 2 minutes while you're in DNS.
+- Use `git mv` when renaming tracked artwork.
+- Replace references in content, metadata, structured data, and tests.
+- Verify every referenced asset exists.
+- Remove obsolete payment logos and default scaffold assets.
 
-**Wave C — needs the first successful production deploy (end of Track A):**
+## Design token rules
 
-15. **[CLAUDE] First deploy gate** — Supabase migrated, all Wave A/B envs in Vercel, push → green build at `https://elegantrender.com`.
-16. **[OWNER→CLAUDE] Bitrix24 new pipeline** (same portal, reuse) — create a **new inbound webhook** credential in Bitrix24 (scope `crm`) → `BITRIX24_WEBHOOK_URL`; Claude runs the adapted `scripts/bitrix-setup.ts` to provision the "Elegant Render EN" pipeline + stages, which outputs `BITRIX24_PIPELINE_ID` + the 10 `BITRIX24_STAGE_*` values → Vercel env. Then **[OWNER]** create the Bitrix **outbound webhook** on `ONCRMDEALUPDATE` pointing to `https://elegantrender.com/api/webhooks/bitrix24?secret=<BITRIX24_OUTBOUND_SECRET>`.
-17. **[OWNER] PayPal live webhook** — in the Live REST app add webhook URL `https://elegantrender.com/api/paypal/webhook`, events `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.DENIED`, `PAYMENT.CAPTURE.REFUNDED`, `CHECKOUT.ORDER.APPROVED` → `PAYPAL_WEBHOOK_ID` env. Flip `PAYPAL_MODE=live` only at launch after a sandbox E2E pass.
-18. **[OWNER] GTM publish + `NEXT_PUBLIC_GTM_ENABLED=true`** at launch; submit sitemap in GSC. **Non-env legal dependency to start now:** appoint the **GDPR art. 27 EU representative** (legal pages currently say "in progress") — Docs/legal track needs the name for the imprint.
+- Use the handoff CSS as the source for global tokens.
+- Use Inter Tight for interface typography and JetBrains Mono for compact technical text.
+- Keep compatibility aliases only as temporary scaffolding until Track C completes the component pass.
 
-## Part 3 — Claude⇄Codex parallel track split
+## Verification
 
-### Sequencing gate: Phase 1 is SERIAL (Claude only) — nothing parallel starts before S0
+```powershell
+npx tsc --noEmit
+npm run lint
+rg -n 'old-route-token' src docs
+rg -n 'old-artwork-token' src public docs
+```
 
-Phase 1 moves are repo-wide and would conflict with everything: **(P1.1)** bootstrap runbook above; **(P1.2)** English route renames in one atomic commit — all `src/app/` folder renames per the i18n report §7 table, plus every link-bearing constant: `src/lib/content/site.ts` (`NAV_MAIN`/`NAV_LEGAL`), `src/proxy.ts` (`/prijava`→`/login`), `next.config.ts` redirects (drop old Serbian 301s; add none — new domain has no legacy URLs), `src/app/robots.ts` `PRIVATE_PATHS`, `src/app/sitemap.ts`, and a `grep -r "/(cene|poruci|usluge|prijava|pravno|porudzbine)"` sweep of href literals; **(P1.3)** design-token swap — `globals-international.css` → `src/app/globals.css`, `layout.tsx` font swap (Inter Tight + JetBrains Mono), removal of usages of the deleted classes (`sidebar-attention-pulse|orbit-glow|grain-soft`); **(P1.4)** the ownership table committed into `AGENTS.md` (see Part 5) so Codex reads its own boundaries. Push, tag `phase-1-done` = **sync point S0**.
-
-### Track split table (strict path ownership — the other agent never edits these paths)
-
-| Track | Agent | Owns (exclusive write) | Contents |
-|---|---|---|---|
-| **A — Money & platform core** | **Claude Code** | `prisma/**` · `src/lib/payment/**` + new `src/lib/paypal/**`, `src/lib/currency/**` · `src/app/api/**` (all routes: paypal, cron, checkout, webhooks) · `src/server/**` (actions, bitrix, finance, order, pricing, analytics) · `src/lib/{billing,buyer-validation,invoice-*,proforma-*,outbox,turnstile*}.{ts,tsx}` · `src/lib/catalog/**` (prices; copy strings hand off at S2) · `src/app/(marketing)/order/**` (checkout wizard + steps + success/failure) · `src/components/portal/{pending-payment-card,charge-payment-card}.tsx` · `src/lib/analytics/**`, `src/lib/posthog-events.ts` · `vercel.json`, `.github/**`, `next.config.ts`, `scripts/**`, `.env.example` | Nestpay excision; restore PayPal from `b4d0740^` + webhook + reconcile cron; EUR schema migration (reverse `rsd_only_no_paypal`: `*Rsd`→`*Eur` cents, `paypal` provider, multi-value `BillingCurrency`); catalog re-derivation from `docs/pricing/pillar-1-extracted.md`; `display-currency.ts` geo→PayPal-currency + round-UP-to-marketable logic; `billing.ts` EU VAT; shortened checkout; invoice/PDF EUR; dataLayer/PostHog currency props; Bitrix `sync-deal.ts` `CURRENCY_ID:"EUR"` |
-| **B — Portal/auth/comms translation** | **Codex** | `src/app/portal/**` · `src/app/(auth)/**` · `src/components/portal/**` (minus the 2 payment cards) · `src/components/chat/**`, `src/lib/chat/**` · `src/lib/email.ts` (after S1) · `src/components/configurator/**` (labels) · `TESTING.md` | Full EN translation of portal/admin/auth UI, `status-utils.ts` labels, email templates, chatbot system prompt (flip language rule, `:::predlog`→`:::proposal` in prompt **and** `chat-messages.tsx` parser), error strings; TESTING.md EN rewrite (PayPal §4 stub from Claude) |
-| **C — Marketing redesign + brand** | **Claude Code** (after A's critical path; Davenport + `frontend-design`) | `src/app/(marketing)/**` (minus `order/**`) · `src/components/marketing/**`, `src/components/site/**` · `src/lib/content/site.ts` · `public/**` (image renames) · `src/app/{layout,sitemap,robots,manifest}.tsx\|ts` | Homepage per `Homepage.dc.html` (final copy in handoff), header/footer rebuild (White Rook attribution, drop payment badges strip), grep-list sweeps (shadows, radii, eyebrows), image EN-SEO renames + reference updates, consent-banner copy |
-| **D — SEO/legal/docs** | **Codex** | `src/app/(marketing)/legal/**` · `src/lib/{seo,llms}.ts`, `src/lib/content/blog.ts` · `docs/**` · `.claude/agents/**`, `.claude/commands/**` (translation only) | EU legal pages rewrite (GDPR/CRD, PayPal refund policy, imprint w/ EU rep), `seo.ts` en hreflang/keywords/JSON-LD-EUR, llms.txt, docs port + agent prompt translation. **May read but not edit `site.ts`** — requests `IMPRINT`/JSON-LD changes via a note file; Claude applies in Track C. |
-
-**Collision-hotspot resolutions built into the split:** `src/lib/catalog/*` files hold both prices and labels → Claude finishes EUR constants first, then hands label translation to Codex at S2 and stops touching those files. `email.ts` holds payment + non-payment templates → Claude replaces the two Nestpay receipt emails with plain PayPal-neutral versions inside the excision commit (S1), then the whole file is Codex's. `site.ts` and `seo.ts` are single-owner (C and D respectively) despite both being "SEO".
-
-**Sync points:** **S0** Phase 1 pushed. **S1** Claude lands "Nestpay excision + PayPal restore + EUR migration" → unblocks Codex on `email.ts` and anything that imported nestpay. **S2** catalog copy handoff. **S3** mid-point integration: both pause, Claude rebases/merges everything, `tsc --noEmit` + `vitest` + sandbox checkout E2E, Whitfield gate. **S4** launch gate: live PayPal webhook, Bitrix outbound webhook, DNS/GTM flips.
-
-**Branch/PR strategy:** Claude is the **integrator** and works **direct-to-main** (Phase 1 and Track A/C; `/ship` discipline, CI on push). Codex works exclusively on `codex/<package>` branches with PRs sized to one work package; Claude reviews (`/review`) and merges at each sync point, rebasing Codex branches onto main first. Rule: a PR touching any path outside the author's track column is rejected without reading further. Main must always pass `tsc --noEmit` — the site serves no traffic until S4, so a red preview deploy is tolerable, a red typecheck is not.
-
-## Part 4 — Model/effort spend
-
-| Work | Agent + model | Effort | Why |
-|---|---|---|---|
-| Phase 1 bootstrap, renames, token swap | Claude **Fable 5** | medium | Repo-wide structural correctness; cheap in tokens but unforgiving of misses; not worth Sonnet's error rate |
-| Track A payments/currency/schema/EU-VAT | Claude **Fable 5** | **high** | Real money, idempotency, webhook signature verification, rounding rules, migration irreversibility — the one place to overspend |
-| Track C homepage/marketing rebuild | Claude **Fable 5** orchestrating, **Sonnet** subagents (Elegant Gentlemen stay `model: sonnet`) for per-component restyle sweeps | medium | Handoff is pixel-specified; judgment at the top, mechanics delegated |
-| Any Claude-side bulk string sweeps | **Sonnet** subagents, Fable spot-review | low | Pure translation is Sonnet-safe when the glossary is fixed |
-| Codex Track B portal/email translation | `gpt-5-codex` | **medium** | Mechanical but large; low-effort tiers drop diacritics/context; medium is the sweet spot |
-| Codex chat prompt + `:::proposal` parser | `gpt-5-codex` | high | Prompt+parser must change in lockstep; behavioral, not textual |
-| Codex Track D legal EU rewrite | `gpt-5` (non-codex reasoning) or `gpt-5-codex` | **high** | Legal nuance (GDPR art. 27, CRD art. 16(m), PayPal refund mechanics) — errors here are liability, not bugs |
-| Codex docs/agent-prompt translation | `gpt-5-codex` | low/medium | Low stakes, reviewable |
-
-Never assign to Codex at any tier: `prisma/**`, anything under `src/lib/{billing,catalog/calculate,paypal}`, `src/server/actions/payment*` — the cost asymmetry (a silent rounding bug vs. a translation typo) dominates.
-
-## Part 5 — Docs & agent scaffolding for the new repo
-
-- **`AGENTS.md`** (English, ported): keep the nextjs-agent-rules block; translate the two directives; **add the Part 3 track-ownership table verbatim** — this file is what Codex reads, making the split self-enforcing.
-- **`CLAUDE.md`**: keep `@AGENTS.md` import; flip pricing statement to "prices stored as integer EUR cents, VAT per EU rules, displayed in buyer's PayPal-supported currency via `display-currency.ts`"; routes English; payments = PayPal (link the seam: `finishSuccessfulPayment`/`transitionOrder`); keep Prisma7 client path, base-ui, `proxy.ts`, dotenv+PrismaPg bootstrap, `migrate dev` never `db push`, mutation pattern, status gates, Elegant Gentlemen table.
-- **`docs/platform-decisions.md`**: fresh file, same template translated (Area / What changed / Why / Impact on / Related files / References); entry #1 = "EN/EUR/PayPal fork from elegant-render-platform @ 641d34c".
-- **Elegant Gentlemen** translated to English with rule updates: Beaumont's bible becomes a rewritten `docs/brand-book.md` = the White Rook design system (source: handoff `README.md` + `Brand Guidelines.dc.html`: white canvas, `#00D98A` accent, Inter Tight/JetBrains Mono, 4px radius, motion table); Carrington's 14 house rules: drop "Serbian routes", swap integer-RSD→EUR-cents, Nestpay→PayPal; Whitfield's greps: drop nestpay/float-RSD checks, add `PAYPAL_MODE`/webhook-verify checks. Commands: keep `eg/ship/artwork/sentry-triage/test-user`; new `paypal-debug.md` (parse webhook event, verify transmission signature, cross-check capture vs. order) replacing `nestpay-debug.md`.
-- **CI**: `ci.yml` — translate comments, nestpay step already stripped in bootstrap; add `npx tsx scripts/paypal-webhook-verify-test.ts` (env/DB-free signature-verification unit) once Track A creates it. `verify-pricing.yml` unchanged in shape, pointing at the EUR-ported `scripts/verify-pricing.ts`.
-- **`.mcp.json`**: `https://mcp.sentry.dev/mcp/white-rook/<new-project-slug>`.
-- **`README.md`/`TESTING.md`**: full EN rewrites (Codex Track B/D); TESTING §4.5/4.6 → PayPal sandbox script; README payments row + Bitrix map updated.
-
-### Critical Files for Implementation
-- C:/Users/ngluv/Desktop/Platform/prisma/migrations/20260617120000_rsd_only_no_paypal/migration.sql (the reversal recipe for the EUR/PayPal schema; also the anchor for `git show b4d0740^` recovery)
-- C:/Users/ngluv/Desktop/Platform/src/lib/catalog/display-currency.ts (the currency-display seam every track depends on)
-- C:/Users/ngluv/Desktop/Platform/.env.example (authoritative env-var catalog the Phase 0 checklist maps onto)
-- C:/Users/ngluv/Desktop/Platform/AGENTS.md (carries the track-ownership table that enforces the parallel split)
-- C:/Users/ngluv/Desktop/Platform/scripts/bitrix-setup.ts (provisions the new EN pipeline; the only Bitrix change besides currency/strings)
+The exact token list belongs to the active launch brief and should be run before merging bootstrap work.

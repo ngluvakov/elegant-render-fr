@@ -1,110 +1,42 @@
-# Codex Agent Team Charter
+# Agent team charter
 
-Ovaj dokument definiše kako Codex koristi on-demand agent tim za Elegant Render platformu. Jezik rada je srpski Latin, uz prirodno zadržavanje tehničkih EN termina kao što su `Next.js`, `server action`, `QA`, `review`, `deployment` i `conversion`.
+This repository is worked on by Claude Code and Codex in parallel. The split is by file path, not by topic. A pull request that edits another track's path should be rejected even when the intent is related to the task.
 
-## Osnovno pravilo
+## Operating model
 
-Lead Orchestrator je uvek aktivan u razgovoru sa korisnikom. Specijalizovani agenti nisu always-on i ne rade u pozadini. Aktiviraju se samo kada korisnik eksplicitno zatraži agent/team/delegation/parallel work.
+- Main must always pass `npx tsc --noEmit`.
+- Claude Code is the integrator and may commit directly to `main` at sync points.
+- Codex works on `codex/<package>` branches, one package per pull request.
+- Use the smallest team that can complete the task. Do not delegate just because a task is broad.
+- When a change affects conversion flow, pricing, brand/design rules, order lifecycle, auth, payments, CRM sync, or architecture, update `docs/platform-decisions.md`.
 
-Maksimalan tim ima 5 ukupnih uloga, uključujući Lead Orchestrator. Za male izmene koristi se najmanji mogući sastav, često samo Lead.
+## Track ownership
 
-## Uloge
+| Track | Owner | Write paths |
+| --- | --- | --- |
+| A - Money and platform core | Claude Code | Prisma, payment, currency, billing, buyer validation, invoices, server actions, API routes, checkout, payment components, analytics, platform config, scripts, CI, env examples |
+| B - Portal/auth/comms translation | Codex | Portal app routes, auth routes, portal components except payment cards, chat, configurator labels, chat library, email after S1, `TESTING.md` |
+| C - Marketing redesign and brand | Claude Code | Marketing app routes except checkout, marketing/site components, site content, public assets, root layout, sitemap, robots, manifest, SEO helpers |
+| D - SEO/legal/docs | Codex | Legal pages, `src/lib/llms.ts`, blog content, `docs/**`, translated Claude agents and commands when they are tracked |
 
-| Uloga | Kada se koristi | Primarni output |
-|---|---|---|
-| Lead Orchestrator | Uvek; vodi razgovor, scope, redosled rada i finalnu integraciju | Kratak plan rada, odluke, finalni summary |
-| Conversion Agent | Kada promena utiče na prodaju, checkout, pricing, CTA, trust ili funnel | Lista friction points, predlog najkraćeg puta do sale |
-| UX / Design Agent | Kada promena utiče na UI, layout, brand feel, mobile, accessibility ili visual hierarchy | Design review sa prioritetima i konkretnim preporukama |
-| Platform Engineer | Kada treba menjati code, testove, Next.js behavior, data flow ili integrations | Scoped implementation po pravilima projekta |
-| QA / Documentation Steward | Kada treba review, regression check, test plan ili dokumentovanje platform characteristics | Findings, test notes, decision/change log update |
+## Sync points
 
-## Aktivacija
+| Sync | Meaning |
+| --- | --- |
+| S0 | Phase 1 bootstrap is pushed and tagged. |
+| S1 | Legacy card gateway removal, PayPal restore, and EUR schema are on main. |
+| S2 | EUR catalog constants are finished and catalog copy can hand over. |
+| S3 | Integration freeze with typecheck, tests, sandbox checkout, and deploy gate. |
+| S4 | Launch gate with live PayPal webhook, CRM webhook, DNS, and GTM flips. |
 
-Korisnik može da pokrene tim jasnim komandama kao:
+## Translation rules
 
-```text
-Koristi agent tim za ovo.
-```
+- Translate human-visible labels, messages, headings, emails, prompts, and prose.
+- Do not translate IDs, slugs, enum values, object keys, route constants, env vars, commands, or code identifiers.
+- Follow `docs/copy-glossary.md`.
+- Use sentence case, calm wording, and no exclamation marks.
+- Use `render`, `virtual staging`, `day-to-dusk`, `photomontage`, and `estimate` in user-facing copy.
 
-```text
-Aktiviraj Conversion i UX agenta da pregledaju ovu stranicu.
-```
+## Escalation
 
-```text
-Pokreni paralelni review: Conversion, UX i QA.
-```
-
-```text
-Koristi ceo tim za checkout flow.
-```
-
-Ako korisnik ne navede agente, Lead Orchestrator bira najmanji potreban sastav za zadatak.
-
-## Pauziranje i zaustavljanje
-
-Korisnik može da pauzira ili zaustavi tim komandama kao:
-
-```text
-Pauziraj sve agente i daj mi status.
-```
-
-```text
-Zaustavi agent tim.
-```
-
-```text
-Nastavi samo ti kao Lead Orchestrator.
-```
-
-```text
-Nemoj više koristiti subagente za ovaj zadatak.
-```
-
-Kada je tim zaustavljen, Lead Orchestrator prestaje sa delegiranjem. Ako su subagenti već pokrenuti u toj sesiji, njihovi rezultati se zatvaraju ili ignorišu ako više nisu relevantni za najnoviji zahtev.
-
-## Operating rules
-
-- Agenti se aktiviraju samo na eksplicitan zahtev korisnika.
-- Svaki agent dobija bounded mission, jasan ownership i expected output.
-- Ne delegira se posao koji je immediate blocker za Lead Orchestrator, osim ako korisnik izričito traži paralelni agent work.
-- Ne duplirati isti zadatak između Lead-a i subagenta.
-- Ako više agenata menja code, svako mora imati disjoint write scope.
-- Review agenti ne implementiraju izmene osim ako im je to eksplicitno dodeljeno.
-- Nijedan agent ne sme da revertuje unrelated changes niti da pregazi korisničke izmene.
-- Za Elegant Render, svaka tehnička implementacija mora poštovati `AGENTS.md`, `CLAUDE.md` i lokalne project rules.
-
-## Project rules za tehničke agente
-
-Platform Engineer i svi agenti koji komentarišu code moraju posebno voditi računa o ovim pravilima:
-
-- Next.js verzija je specifična; pre pisanja code-a pročitati relevantan guide u `node_modules/next/dist/docs/`.
-- Prisma 7 client se importuje iz `@/generated/prisma/client`, ne iz `@prisma/client`.
-- shadcn/ui koristi Base UI, ne Radix.
-- Next.js route protection koristi `proxy.ts`, ne `middleware.ts`.
-- Server actions žive u `src/server/actions/`.
-- Posle write operacija koristiti server-side `revalidatePath` i client-side `router.refresh()` kada je potrebno.
-- Pricing math uvek ide kroz `calculateQuote`; ne duplirati formule.
-- Serbian route/domain vocabulary je nameran i ne prevoditi ga proizvoljno.
-- Structural order edits su dozvoljeni samo kada je order u `draft` statusu.
-
-## Preporučeni sastavi
-
-| Tip zadatka | Preporučeni sastav |
-|---|---|
-| Mali copy tweak | Lead Orchestrator |
-| Homepage ili landing review | Lead + Conversion + UX |
-| Checkout/pricing change | Lead + Conversion + UX + Platform Engineer + QA/Docs |
-| Pricing logic change | Lead + Platform Engineer + QA/Docs |
-| Production/debug issue | Lead + Platform Engineer + QA/Docs |
-| Launch readiness review | Lead + Conversion + UX + QA/Docs |
-
-## Output format
-
-Kada agenti rade review, rezultat treba da bude kratak i odlučiv:
-
-- `Findings`: prioritetni problemi ili rizici.
-- `Recommendations`: konkretne izmene koje treba uraditi.
-- `Acceptance criteria`: kako znamo da je zadatak završen.
-- `Docs impact`: da li treba ažurirati `docs/platform-decisions.md` ili druge docs.
-
-Kada agent implementira, rezultat treba da navede šta je promenjeno, koje fajlove je dirao i kako je provereno.
+If a required edit is outside your track, write a note in the relevant plan or pull request body instead of editing the file. For example, Track D may request legal navigation, sitemap, or footer updates from Track C but must not apply them directly.

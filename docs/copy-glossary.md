@@ -1,50 +1,44 @@
-# Copy glossary — Elegant Render International
+# Copy glossary - Elegant Render International
 
-Binding terminology and tone rules for every agent translating or writing
-user-facing copy. Source of truth for tone: `docs/design-handoff/README.md`
-(Brand Guidelines §08). Homepage/hero/model-first/services/process/FAQ/CTA/
-footer copy in the handoff is **final — use verbatim, do not re-translate**.
+Binding terminology and tone rules for every agent translating or writing user-facing copy. Source of truth for final homepage and brand copy is `docs/design-handoff/README.md`; that copy is canonical and should not be re-translated.
 
 ## Tone
 
 - Sentence case everywhere: headings, buttons, navigation, labels.
-- No exclamation marks. No sales-speak. The register is "a price — not a
-  sales call": calm, precise, confident.
-- Numbers stay numeric: "€169", "3–5 working days", "4K", "3 revision rounds".
-- Second person ("you"), active voice, short sentences.
+- No exclamation marks. No sales-speak.
+- Calm, precise, confident. The feeling is a price, not a sales call.
+- Numbers stay numeric: `€169`, `3-5 working days`, `4K`, `3 revision rounds`.
+- Use second person where helpful, active voice, and short sentences.
 
 ## Canonical terms
 
-| Term | Use | Never |
+| Term | Use | Avoid |
 | --- | --- | --- |
-| render (n.) | the deliverable image | visualization (as deliverable), picture |
-| architectural visualization | the category/discipline | archviz (in copy) |
-| virtual staging | opremanje | furnishing, staging alone when ambiguous |
-| virtual renovation | renovacija | remodel |
-| day-to-dusk | dnevni u noćni | day to night |
-| photomontage | render u stvarnoj fotografiji | photo montage, composite |
-| floor plan (2D/3D) | osnova | floorplan (one word) in prose |
-| site plan | situacioni plan | situation plan |
-| 360° virtual tour | 360 tura | panorama tour |
-| item removal | uklanjanje predmeta | object removal |
-| revision round | revizija | iteration, edit round |
-| first drafts | prvi nacrti | previews |
-| estimate | ponuda/procena in UI copy | quote (in UI copy; "quote" stays in code identifiers) |
-| working days | radni dani | business days |
+| render | The deliverable image. | visualization as a deliverable, picture |
+| architectural visualization | The discipline or service category. | archviz in public copy |
+| virtual staging | Furnishing an empty room digitally. | furnishing when ambiguous |
+| virtual renovation | Showing a renovated state before work starts. | remodel in core service labels |
+| day-to-dusk | Turning a daylight image into an evening image. | day to night |
+| photomontage | Placing a render into a real photograph. | photo montage, composite |
+| floor plan | 2D or 3D plan view. | floorplan in prose |
+| site plan | Wider plot or development plan. | situation plan |
+| 360 virtual tour | Interactive panoramic tour. | panorama tour |
+| item removal | Removing objects from an image. | object removal in public labels |
+| revision round | A structured review cycle. | iteration, edit round |
+| first drafts | Early review images. | previews as the primary term |
+| estimate | Public buying flow and UI wording. | quote, except in frozen code identifiers |
+| working days | Delivery timing. | business days |
 
-## Currency & pricing copy
+## Currency and pricing copy
 
-- Public prices display in the visitor's currency; invoices are issued in EUR.
-- Price mentions in copy follow the design handoff price points (€169
-  interiors, €249 exteriors, €294 360° tours) until the final price table is
-  signed off.
-- VAT wording on invoices/legal pages is owned by Track A (payments) — do not
-  invent VAT copy in marketing surfaces.
+- Public prices can display in the visitor's local currency when that feature is enabled.
+- Invoices are issued in EUR.
+- Current public anchor prices use the signed-off x9 set: `€169` interiors, `€249` exteriors, and `€294` 360 virtual tours.
+- Tax and invoice wording is owned by Track A for payment surfaces and by Track D for legal pages.
 
 ## Brand
 
-- "Elegant Render" is the product brand; "White Rook DOO" appears once per
-  page — footer attribution only ("Elegant Render is part of White Rook DOO —
-  3D visualization & digital assets.").
-- The Elegant Render serif logo mark is kept as-is (the one deliberate
-  contrast); never recolor the White Rook badge.
+- Elegant Render is the product brand.
+- White Rook DOO is the seller and parent company.
+- Footer wording should say: `Elegant Render is part of White Rook DOO - 3D visualization and digital assets.`
+- Keep the Elegant Render logo mark as provided and never recolor the White Rook badge.

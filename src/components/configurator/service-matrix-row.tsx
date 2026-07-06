@@ -68,6 +68,13 @@ export function ServiceMatrixRow({
   const discountedPerUnit = discount
     ? Math.round(originalPerUnit * (1 - discount.pct / 100))
     : null;
+  // Per-unit teaser prices are meaningless without their unit ("from €17"
+  // next to a per-floor label reads as the floor price) — always qualify
+  // them, same pattern as RelatedServicesPostcard.
+  const perUnitSuffix =
+    product.displayPerUnitEur != null && product.displayUnitLabel
+      ? ` / ${product.displayUnitLabel}`
+      : "";
 
   const handleAdd = () => {
     addProduct(product.id, category.id);
@@ -136,11 +143,21 @@ export function ServiceMatrixRow({
             </span>
             <span className="text-sm sm:text-base font-semibold text-foreground">
               {formatPublicPrice(discountedPerUnit!, displayCurrency, pricingSettings)}
+              {perUnitSuffix && (
+                <span className="text-xs font-normal text-muted-foreground">
+                  {perUnitSuffix}
+                </span>
+              )}
             </span>
           </div>
         ) : (
           <span className="text-sm sm:text-base font-semibold text-foreground">
             from {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
+            {perUnitSuffix && (
+              <span className="text-xs font-normal text-muted-foreground">
+                {perUnitSuffix}
+              </span>
+            )}
           </span>
         )}
         {/* The discount badge line is ALWAYS in flow (invisible when there is

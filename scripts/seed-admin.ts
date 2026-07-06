@@ -9,14 +9,14 @@ const adapter = new PrismaPg(process.env.DIRECT_URL!);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const hash = await bcrypt.hash("Admin2026!", 12);
+  const hash = await bcrypt.hash(process.env.SEED_ADMIN_PASSWORD ?? "ChangeMe-2026", 12);
 
   const admin = await prisma.user.upsert({
-    where: { email: "admin@elegantrender.rs" },
+    where: { email: "admin@elegantrender.com" },
     update: { isAdmin: true, canManageFinance: true, passwordHash: hash },
     create: {
       name: "Admin",
-      email: "admin@elegantrender.rs",
+      email: "admin@elegantrender.com",
       passwordHash: hash,
       isAdmin: true,
       canManageFinance: true,

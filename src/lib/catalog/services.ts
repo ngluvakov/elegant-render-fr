@@ -15,11 +15,11 @@
 */
 
 export type ServiceCategory =
-  | "eksterijer"
-  | "enterijer"
-  | "planovi"
-  | "animacije"
-  | "transformacija";
+  | "exterior"
+  | "interior"
+  | "plans"
+  | "animations"
+  | "transformation";
 
 export type PricingVariant = {
   id: string;
@@ -44,7 +44,7 @@ export type PricingVariant = {
   decomposition?: string;
   /** Override the category used to build the configurator deep-link. Set on
    *  cross-sell cards whose product lives in a different category than the
-   *  host service (e.g. a "transformacija" reno card on an "eksterijer" page),
+   *  host service (e.g. a "transformation" reno card on an "exterior" page),
    *  so the deep-link resolves the correct configurator group. */
   configuratorCategory?: ServiceCategory;
 };
@@ -175,7 +175,7 @@ export type Service = {
   /** Hide from primary navigation dropdown menu. The service is still in
    *  the catalog, still has a /services/<slug> page, and still appears in
    *  the sitemap — but the header dropdown skips it. Used for multi-variant
-   *  master pages (e.g. unutrasnji-renderi) where dedicated split services
+   *  master pages (e.g. interior-renders) where dedicated split services
    *  exist and the master would duplicate them in the dropdown. */
   hideFromMenu?: boolean;
 
@@ -219,32 +219,32 @@ export type Service = {
 };
 
 export const CATEGORY_LABELS: Record<ServiceCategory, string> = {
-  eksterijer: "Eksterijer",
-  enterijer: "Enterijer",
-  planovi: "Planovi",
-  animacije: "Animacije i ture",
-  transformacija: "Transformacija prostora",
+  exterior: "Eksterijer",
+  interior: "Enterijer",
+  plans: "Planovi",
+  animations: "Animacije i ture",
+  transformation: "Transformacija prostora",
 };
 
 export const CATEGORY_DESCRIPTIONS: Record<ServiceCategory, string> = {
-  eksterijer:
+  exterior:
     "Prikazi objekata, okruženja i spoljnih ambijenata — za kuće, zgrade i veće projekte.",
-  enterijer:
+  interior:
     "Vizuelizacija unutrašnjih prostora po prostorijama ili celim spratovima.",
-  planovi:
+  plans:
     "Pregledni 2D i 3D prikazi rasporeda prostora i situacionih celina.",
-  animacije:
+  animations:
     "Arhitektonske animacije i interaktivne 360 ture za bogatu prezentaciju.",
-  transformacija:
+  transformation:
     "Unapređenje postojećeg prostora — opremanje, renovacija i korekcije fotografija.",
 };
 
 export const CATEGORY_ORDER: ServiceCategory[] = [
-  "enterijer",
-  "eksterijer",
-  "planovi",
-  "animacije",
-  "transformacija",
+  "interior",
+  "exterior",
+  "plans",
+  "animations",
+  "transformation",
 ];
 
 // Cloudfront fallback used only by the 360 tour service for SEO/OG
@@ -256,11 +256,11 @@ const PORTFOLIO_ASSET =
 
 export const SERVICES: Service[] = [
   {
-    slug: "unutrasnji-renderi",
+    slug: "interior-renders",
     code: "interior-rendering",
     name: "Unutrašnji renderi",
     shortName: "Unutrašnji renderi",
-    category: "enterijer",
+    category: "interior",
     icon: "home",
     hideFromMenu: true,
     tagline: "Pokažite kupcima dom još pre nego što izvođači stignu na lokaciju.",
@@ -319,11 +319,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "render-enterijera",
+    slug: "interior-render",
     code: "interior-static-dedicated",
     name: "Render enterijera",
     shortName: "Render enterijera",
-    category: "enterijer",
+    category: "interior",
     icon: "home",
     tagline: "Pokažite kupcima dom još pre nego što počnu radovi.",
     description:
@@ -451,11 +451,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "360-tura-enterijera",
+    slug: "interior-360-tour",
     code: "interior-360-tour-dedicated",
     name: "360 tura enterijera",
     shortName: "360 tura enterijera",
-    category: "enterijer",
+    category: "interior",
     icon: "home",
     tagline: "Kupac obilazi stan iz fotelje — pre nego što je sagrađen.",
     description:
@@ -587,11 +587,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "spoljasnji-renderi",
+    slug: "exterior-renders",
     code: "exterior-rendering",
     name: "Spoljašnji renderi",
     shortName: "Spoljašnji renderi",
-    category: "eksterijer",
+    category: "exterior",
     icon: "grid",
     hideFromMenu: true,
     tagline: "Prodajte zgradu pre nego što počnu radovi.",
@@ -744,11 +744,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "360-eksterijer",
+    slug: "exterior-360",
     code: "exterior-360-tour",
     name: "360 eksterijer",
     shortName: "360 eksterijer",
-    category: "eksterijer",
+    category: "exterior",
     icon: "images",
     tagline: "Klijent obilazi Vašu zgradu kao u igri — pre gradnje.",
     description:
@@ -876,11 +876,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "3d-prikaz-ulice",
+    slug: "3d-streetscape",
     code: "exterior-aerial-dedicated",
     name: "3D prikaz ulice (streetscape)",
     shortName: "3D prikaz ulice",
-    category: "eksterijer",
+    category: "exterior",
     icon: "camera",
     tagline: "Vaš objekat na ulici, iz svakog ugla koji Vam treba.",
     description:
@@ -1044,11 +1044,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "virtuelno-opremanje",
+    slug: "virtual-staging",
     code: "virtual-staging",
     name: "Virtuelno opremanje",
     shortName: "Virtuelno opremanje",
-    category: "transformacija",
+    category: "transformation",
     icon: "sparkles",
     tagline: "Prazne sobe se sporo prodaju — opremljene prodaju brže.",
     description:
@@ -1199,11 +1199,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "virtuelna-renovacija",
+    slug: "virtual-renovation",
     code: "virtual-renovation",
     name: "Virtuelna renovacija",
     shortName: "Virtuelna renovacija",
-    category: "transformacija",
+    category: "transformation",
     icon: "refresh",
     tagline: "Vidite renoviran prostor pre nego što potrošite na radove.",
     description:
@@ -1337,11 +1337,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "2d-i-3d-osnove",
+    slug: "2d-3d-floor-plans",
     code: "floor-plans",
     name: "2D i 3D osnove",
     shortName: "2D i 3D osnove",
-    category: "planovi",
+    category: "plans",
     icon: "file-image",
     hideFromMenu: true,
     tagline: "Pregled prostora koji kupac razume na prvi pogled.",
@@ -1486,11 +1486,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "2d-osnove",
+    slug: "2d-floor-plans",
     code: "floor-plan-2d-dedicated",
     name: "2D osnove",
     shortName: "2D osnove",
-    category: "planovi",
+    category: "plans",
     icon: "file-image",
     tagline: "Čist 2D tlocrt — brz materijal za oglas i dokumentaciju.",
     description:
@@ -1632,11 +1632,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "3d-osnove",
+    slug: "3d-floor-plans",
     code: "floor-plan-3d-dedicated",
     name: "3D osnove",
     shortName: "3D osnove",
-    category: "planovi",
+    category: "plans",
     icon: "layers",
     tagline: "Prostorni 3D tlocrt koji kupac razume na prvi pogled.",
     description:
@@ -1769,11 +1769,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "vr-tura",
+    slug: "vr-tour",
     code: "vr-tour-assembly",
     name: "VR tura",
     shortName: "VR tura",
-    category: "animacije",
+    category: "animations",
     icon: "images",
     tagline: "Spojite panorame u jedinstvenu turu koju kupac obiđe iz fotelje.",
     description:
@@ -1882,11 +1882,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "arhitektonska-animacija",
+    slug: "architectural-animation",
     code: "architectural-animation",
     name: "Arhitektonska animacija",
     shortName: "Arhitektonska animacija",
-    category: "animacije",
+    category: "animations",
     icon: "layers",
     tagline: "Marketinški film u kome kamera leti kroz objekat.",
     description:
@@ -1994,11 +1994,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "uredjenje-pejzaza",
+    slug: "landscape-design",
     code: "landscape-rendering",
     name: "Uređenje pejzaža",
     shortName: "Uređenje pejzaža",
-    category: "eksterijer",
+    category: "exterior",
     icon: "tree",
     tagline:
       "3D pejzaž iz plana ili nova slika Vašeg dvorišta — bez čekanja da biljke porastu.",
@@ -2155,16 +2155,16 @@ export const SERVICES: Service[] = [
           "Drugo dvorište iste nekretnine: 6.563 RSD (15% jeftiniji)",
         ],
         note: "Počinjete od fotografije postojećeg stanja i referenci za nove materijale i biljke. Ova opcija je vezana za ugao fotografije — za slobodan izbor kamere koristite Pejzažni render (3D).",
-        configuratorCategory: "transformacija",
+        configuratorCategory: "transformation",
       },
     ],
   },
   {
-    slug: "render-u-stvarnoj-fotografiji",
+    slug: "photomontage",
     code: "photomontage",
     name: "Render u stvarnoj fotografiji lokacije",
     shortName: "Render u fotografiji",
-    category: "eksterijer",
+    category: "exterior",
     icon: "camera",
     tagline:
       "Render eksterijera u fotografiji Vaše lokacije — za 5.860 RSD više od standardnog rendera.",
@@ -2335,11 +2335,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "situacioni-planovi",
+    slug: "site-plans",
     code: "3d-site-plans",
     name: "Situacioni planovi",
     shortName: "Situacioni planovi",
-    category: "planovi",
+    category: "plans",
     icon: "layers",
     tagline: "Cela parcela iz vazduha — investitorska ponuda na jednoj slici.",
     description:
@@ -2469,11 +2469,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "dnevni-u-nocni-prikaz",
+    slug: "day-to-dusk",
     code: "day-to-dusk",
     name: "Dnevni u noćni prikaz",
     shortName: "Dnevni u noćni prikaz",
-    category: "transformacija",
+    category: "transformation",
     icon: "sun",
     tagline: "Dnevni kadar dobija topao večernji utisak.",
     description:
@@ -2604,11 +2604,11 @@ export const SERVICES: Service[] = [
     ],
   },
   {
-    slug: "uklanjanje-predmeta",
+    slug: "item-removal",
     code: "item-removal",
     name: "Uklanjanje predmeta",
     shortName: "Uklanjanje predmeta",
-    category: "transformacija",
+    category: "transformation",
     icon: "eraser",
     tagline: "Čista fotografija prodaje brže od fotografije sa neredom.",
     description:

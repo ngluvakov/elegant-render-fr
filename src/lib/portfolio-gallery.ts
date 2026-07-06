@@ -34,18 +34,18 @@ const KEPT: PortfolioTile[] = [
   ...keptGroup("Renderi enterijera", "portfolio-interior-static"),
   ...keptGroup("Renderi iz vazduha", "portfolio-aerial"),
   ...keptGroup("3D prikaz ulice", "portfolio-streetscape"),
-  ...keptGroup("Uređenje pejzaža", "portfolio-prikazi-dvorista"),
-  ...keptGroup("Render u fotografiji lokacije", "portfolio-fotomontaza"),
-  ...keptGroup("Dnevni u noćni prikaz", "portfolio-dan-u-noc"),
-  ...keptGroup("3D situacioni plan", "portfolio-3d-situacioni"),
+  ...keptGroup("Uređenje pejzaža", "portfolio-landscape-design"),
+  ...keptGroup("Render u fotografiji lokacije", "portfolio-photomontage"),
+  ...keptGroup("Dnevni u noćni prikaz", "portfolio-day-to-dusk"),
+  ...keptGroup("3D situacioni plan", "portfolio-3d-site-plan"),
   { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-apartment.webp`, alt: "3D osnova jednosobnog stana, Elegant Render", label: "3D osnove" },
   { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-open-concept.webp`, alt: "3D osnova jednosobnog stana otvorenog koncepta, Elegant Render", label: "3D osnove" },
   { kind: "image", src: `${A}/portfolio-3d-floor-plans-duplex-two-levels.webp`, alt: "3D osnova dupleksa na dva nivoa, Elegant Render", label: "3D osnove" },
   { kind: "image", src: `${A}/portfolio-3d-floor-plans-house-with-garage.webp`, alt: "3D osnova kuće sa garažom, Elegant Render", label: "3D osnove" },
 ];
 
-/** New interior renders (enterijer-01..19.webp). */
-const ENTERIJER_ALT = [
+/** New interior renders (interior-01..19.webp). */
+const INTERIOR_ALT = [
   "Kupatilo — render enterijera, Elegant Render",
   "Dnevna soba — render enterijera, Elegant Render",
   "Kuhinja — render enterijera, Elegant Render",
@@ -66,15 +66,15 @@ const ENTERIJER_ALT = [
   "Spavaća soba — render enterijera, Elegant Render",
   "Hodnik i dnevni boravak — render enterijera, Elegant Render",
 ];
-const NEW_ENTERIJER: PortfolioTile[] = ENTERIJER_ALT.map((alt, i) => ({
+const NEW_INTERIOR: PortfolioTile[] = INTERIOR_ALT.map((alt, i) => ({
   kind: "image",
-  src: `${P}/enterijer-${nn(i)}.webp`,
+  src: `${P}/interior-${nn(i)}.webp`,
   alt,
   label: "Renderi enterijera",
 }));
 
-/** New exterior renders (eksterijer-*.webp; 07 intentionally omitted). */
-const EKSTERIJER: { n: string; alt: string }[] = [
+/** New exterior renders (exterior-*.webp; 07 intentionally omitted). */
+const EXTERIOR: { n: string; alt: string }[] = [
   { n: "01", alt: "Prednja fasada — render eksterijera, Elegant Render" },
   { n: "02", alt: "Noćni prikaz A-frame kuće — render eksterijera, Elegant Render" },
   { n: "03", alt: "Bočni prikaz objekta — render eksterijera, Elegant Render" },
@@ -89,22 +89,22 @@ const EKSTERIJER: { n: string; alt: string }[] = [
   { n: "13", alt: "Stambeni objekat — render eksterijera, Elegant Render" },
   { n: "14", alt: "Zadnja fasada — render eksterijera, Elegant Render" },
 ];
-const NEW_EKSTERIJER: PortfolioTile[] = EKSTERIJER.map(({ n, alt }) => ({
+const NEW_EXTERIOR: PortfolioTile[] = EXTERIOR.map(({ n, alt }) => ({
   kind: "image",
-  src: `${P}/eksterijer-${n}.webp`,
+  src: `${P}/exterior-${n}.webp`,
   alt,
   label: "Renderi eksterijera",
 }));
 
 /** 3D floor plans — original "3D osnove" set (osnova-01..04.webp). */
 const OSNOVA: { file: string; alt: string }[] = [
-  { file: "osnova-01", alt: "3D osnova iz ptičje perspektive, Elegant Render" },
-  { file: "osnova-02", alt: "3D osnova stana, Elegant Render" },
-  { file: "osnova-03", alt: "3D osnova A-frame kuće, Elegant Render" },
+  { file: "3d-floor-plan-01", alt: "3D osnova iz ptičje perspektive, Elegant Render" },
+  { file: "3d-floor-plan-02", alt: "3D osnova stana, Elegant Render" },
+  { file: "3d-floor-plan-03", alt: "3D osnova A-frame kuće, Elegant Render" },
   // osnova-04 replaced by the "Levi stan" duplex 3D floor plan (fresh,
   // cache-safe filename so the CDN serves the new bytes).
   {
-    file: "osnova-dupleks-levi-stan",
+    file: "3d-floor-plan-duplex-left-unit",
     alt: "3D osnova dupleks stana — levi stan, Elegant Render",
   },
 ];
@@ -115,7 +115,7 @@ const NEW_OSNOVA: PortfolioTile[] = OSNOVA.map(({ file, alt }) => ({
   label: "3D osnove",
 }));
 
-/** More 3D floor plans (osnova-prostora-01..04.webp), shown under "3D osnove". */
+/** More 3D floor plans (3d-floor-plan-space-01..04.webp), shown under "3D osnove". */
 const OSNOVA_PROSTORA_ALT = [
   "3D osnova iz ptičje perspektive, Elegant Render",
   "3D osnova prizemlja, Elegant Render",
@@ -124,7 +124,7 @@ const OSNOVA_PROSTORA_ALT = [
 ];
 const NEW_OSNOVA_PROSTORA: PortfolioTile[] = OSNOVA_PROSTORA_ALT.map((alt, i) => ({
   kind: "image",
-  src: `${P}/osnova-prostora-${nn(i)}.webp`,
+  src: `${P}/3d-floor-plan-space-${nn(i)}.webp`,
   alt,
   label: "3D osnove",
 }));
@@ -202,8 +202,8 @@ function interleave(tiles: PortfolioTile[]): PortfolioTile[] {
 
 export const PORTFOLIO_TILES: PortfolioTile[] = interleave([
   ...KEPT,
-  ...NEW_ENTERIJER,
-  ...NEW_EKSTERIJER,
+  ...NEW_INTERIOR,
+  ...NEW_EXTERIOR,
   ...NEW_OSNOVA,
   ...NEW_OSNOVA_PROSTORA,
   ...PANORAMAS,

@@ -412,7 +412,7 @@ export function Ext360ConfigSection({
             </option>
           ))}
         </select>
-        {config.renderingMode === "fotomontaza" && (
+        {config.renderingMode === "photomontage" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
             + Fotomontaža: {formatPrice(50)} (uklapanje 3D modela u 360° panoramsku
             fotografiju lokacije)
@@ -420,7 +420,7 @@ export function Ext360ConfigSection({
         )}
       </div>
 
-      <Collapsible open={config.renderingMode === "fotomontaza"}>
+      <Collapsible open={config.renderingMode === "photomontage"}>
         <div className="space-y-1.5 rounded-md border border-border/30 bg-secondary/20 p-3">
           <Label className="text-xs">360° fotografija lokacije</Label>
           {renderUploadZone(

@@ -12,9 +12,9 @@
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const FP2D_DISPLAY_STYLES = [
-  { id: "crno-beli", label: "Crno-beli (tehnički)" },
-  { id: "kolorizovani", label: "Kolorizovani (svaka soba druga boja)" },
-  { id: "teksturirani", label: "Teksturirani (realistični podovi — drvo, pločice)" },
+  { id: "black-white", label: "Crno-beli (tehnički)" },
+  { id: "colorized", label: "Kolorizovani (svaka soba druga boja)" },
+  { id: "textured", label: "Teksturirani (realistični podovi — drvo, pločice)" },
 ] as const;
 export type Fp2dDisplayStyleId =
   (typeof FP2D_DISPLAY_STYLES)[number]["id"];
@@ -23,8 +23,8 @@ export const FP2D_DISPLAY_STYLE_IDS = FP2D_DISPLAY_STYLES.map(
 ) as Fp2dDisplayStyleId[];
 
 export const FP2D_DISPLAY_TYPES = [
-  { id: "prazna", label: "Prazna osnova (samo zidovi i sanitarije)" },
-  { id: "namestena", label: "Nameštena (sa 2D ikonama nameštaja)" },
+  { id: "unfurnished", label: "Prazna osnova (samo zidovi i sanitarije)" },
+  { id: "furnished", label: "Nameštena (sa 2D ikonama nameštaja)" },
 ] as const;
 export type Fp2dDisplayTypeId =
   (typeof FP2D_DISPLAY_TYPES)[number]["id"];
@@ -33,10 +33,10 @@ export const FP2D_DISPLAY_TYPE_IDS = FP2D_DISPLAY_TYPES.map(
 ) as Fp2dDisplayTypeId[];
 
 export const FP2D_LABEL_LANGUAGES = [
-  { id: "srpski", label: "Srpski" },
-  { id: "engleski", label: "Engleski" },
-  { id: "nemacki", label: "Nemački" },
-  { id: "dvojezicno", label: "Dvojezično (Srpski / Engleski)" },
+  { id: "serbian", label: "Srpski" },
+  { id: "english", label: "Engleski" },
+  { id: "german", label: "Nemački" },
+  { id: "bilingual", label: "Dvojezično (Srpski / Engleski)" },
 ] as const;
 export type Fp2dLabelLanguageId =
   (typeof FP2D_LABEL_LANGUAGES)[number]["id"];
@@ -62,8 +62,8 @@ export type Fp2dDeliveryFormats = {
 export type Floorplan2dConfig = {
   projectName: string;
   levels: number;                       // min 1; drives fp2d-double + fp2d-extra
-  displayStyle: Fp2dDisplayStyleId;     // crno-beli | kolorizovani | teksturirani
-  displayType: Fp2dDisplayTypeId;       // prazna | namestena
+  displayStyle: Fp2dDisplayStyleId;     // black-white | colorized | textured
+  displayType: Fp2dDisplayTypeId;       // unfurnished | furnished
   description?: string;
   // advanced — labels & technical
   showRoomLabels: boolean;
@@ -89,8 +89,8 @@ export function defaultFloorplan2dConfig(): Floorplan2dConfig {
   return {
     projectName: "Osnova 1",
     levels: 1,
-    displayStyle: "kolorizovani",
-    displayType: "prazna",
+    displayStyle: "colorized",
+    displayType: "unfurnished",
     showRoomLabels: false,
     showDimensions: false,
     showCompass: false,
@@ -161,10 +161,10 @@ export function sanitizeFloorplan2dConfig(
     pickFromAllowlist<Fp2dDisplayStyleId>(
       c.displayStyle,
       FP2D_DISPLAY_STYLE_IDS,
-    ) ?? "kolorizovani";
+    ) ?? "colorized";
   const displayType =
     pickFromAllowlist<Fp2dDisplayTypeId>(c.displayType, FP2D_DISPLAY_TYPE_IDS) ??
-    "prazna";
+    "unfurnished";
   const labelLanguage = pickFromAllowlist<Fp2dLabelLanguageId>(
     c.labelLanguage,
     FP2D_LABEL_LANGUAGE_IDS,
@@ -210,7 +210,7 @@ export function addOnQuantitiesFor(
   const q: Record<string, number> = {};
   if (config.levels >= 2) q["fp2d-double"] = 1;
   if (config.levels >= 3) q["fp2d-extra"] = config.levels - 2;
-  if (config.displayType === "namestena") q["fp2d-furnished"] = 1;
+  if (config.displayType === "furnished") q["fp2d-furnished"] = 1;
   if (config.variantEnabled) q["fp2d-variant"] = 1;
   if (config.duplicateEnabled) q["fp2d-duplicate"] = 1;
   return q;

@@ -100,8 +100,12 @@ if (dupes.length) {
   console.error("COLLISIONS:", dupes);
   process.exit(1);
 }
-mkdirSync(path.dirname(MANIFEST), { recursive: true });
-writeFileSync(MANIFEST, JSON.stringify(map.map(({ old, new: n }) => ({ old, new: n })), null, 2) + "\n");
+if (map.length > 0) {
+  // Never clobber the committed audit record on verify-only re-runs
+  // (0 pending renames means the manifest already reflects history).
+  mkdirSync(path.dirname(MANIFEST), { recursive: true });
+  writeFileSync(MANIFEST, JSON.stringify(map.map(({ old, new: n }) => ({ old, new: n })), null, 2) + "\n");
+}
 console.log(`manifest: ${map.length} renames (${map.filter((m) => m.tracked).length} tracked)`);
 
 if (process.argv.includes("--dry-run")) {

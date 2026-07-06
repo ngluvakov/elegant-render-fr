@@ -382,7 +382,7 @@ export function ExtStaticConfigSection({
             </option>
           ))}
         </select>
-        {config.renderingMode === "fotomontaza" && (
+        {config.renderingMode === "photomontage" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
             + Fotomontaža: {formatPrice(50)} (uključuje analizu perspektive, uklapanje
             kamere i osvetljenja, kompoziting)
@@ -391,7 +391,7 @@ export function ExtStaticConfigSection({
       </div>
 
       {/* Conditional location-photo upload (only for fotomontaža mode) */}
-      <Collapsible open={config.renderingMode === "fotomontaza"}>
+      <Collapsible open={config.renderingMode === "photomontage"}>
         <div className="space-y-1.5 rounded-md border border-border/30 bg-secondary/20 p-3">
           <Label className="text-xs">Fotografija lokacije</Label>
           {renderUploadZone(

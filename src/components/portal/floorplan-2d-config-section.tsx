@@ -3,7 +3,7 @@
  * product (2D osnove prostora). Single-level; the levels stepper drives
  * progressive add-on pricing (fp2d-double + fp2d-extra). Display style
  * (color/texture) and display type (empty/furnished) live in configJson;
- * "namestena" toggles fp2d-furnished. Branding section (logo + brand
+ * "furnished" toggles fp2d-furnished. Branding section (logo + brand
  * color + delivery format checkboxes). Bottom upsell card toggles
  * design variant + identical duplicate add-ons.
  */
@@ -270,7 +270,7 @@ export function Floorplan2dConfigSection({
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
               {config.levels} nivo{config.levels === 1 ? "" : "a"} ·{" "}
-              {config.displayType === "namestena" ? "nameštena" : "prazna"} ·{" "}
+              {config.displayType === "furnished" ? "nameštena" : "prazna"} ·{" "}
               {FP2D_DISPLAY_STYLES.find((s) => s.id === config.displayStyle)
                 ?.label ?? config.displayStyle}
             </p>
@@ -391,7 +391,7 @@ export function Floorplan2dConfigSection({
             </option>
           ))}
         </select>
-        {config.displayType === "namestena" && (
+        {config.displayType === "furnished" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
             + Overlay nameštaja: {formatPrice(6)}
           </p>

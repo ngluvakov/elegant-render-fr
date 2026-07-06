@@ -15,12 +15,12 @@ import {
 } from "./configurator";
 
 export type CustomerGroupId =
-  | "renderi-eksterijera"
-  | "enterijer"
-  | "planovi"
-  | "animacija"
-  | "opremanje-renovacija"
-  | "vr-iskustvo";
+  | "exterior-renders"
+  | "interior"
+  | "plans"
+  | "animation"
+  | "staging-renovation"
+  | "vr-experience";
 
 export type CustomerGroup = {
   id: CustomerGroupId;
@@ -30,14 +30,14 @@ export type CustomerGroup = {
   catIds: string[];
   imageSrc: string;
   // Optional MP4 video to render in place of imageSrc on the preview card.
-  // The animacija group uses this so the card actually animates — matches
+  // The animation group uses this so the card actually animates — matches
   // what the customer is buying. Other groups stay as still images.
   videoSrc?: string;
 };
 
 export const CUSTOMER_GROUPS: CustomerGroup[] = [
   {
-    id: "renderi-eksterijera",
+    id: "exterior-renders",
     label: "Renderi eksterijera",
     shortLabel: "Eksterijer",
     blurb: "Fasade, kuće, zgrade, dvorišta i okruženje",
@@ -45,7 +45,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     imageSrc: "/artwork/pricing-card-exterior.webp",
   },
   {
-    id: "enterijer",
+    id: "interior",
     label: "Enterijer",
     shortLabel: "Enterijer",
     blurb: "Opremljene sobe i stanovi po spratu",
@@ -53,7 +53,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     imageSrc: "/artwork/pricing-card-interior.webp",
   },
   {
-    id: "planovi",
+    id: "plans",
     label: "Planovi & situacioni prikazi",
     shortLabel: "Planovi",
     blurb: "2D osnove, 3D planovi i situacioni prikazi",
@@ -61,7 +61,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     imageSrc: "/artwork/pricing-card-plans.webp",
   },
   {
-    id: "animacija",
+    id: "animation",
     label: "360 i Animacija",
     shortLabel: "Animacija",
     blurb: "3D animacije i 360° ture",
@@ -70,7 +70,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     videoSrc: "/artwork/pricing-card-animation.mp4",
   },
   {
-    id: "opremanje-renovacija",
+    id: "staging-renovation",
     label: "Virtuelno opremanje i renovacija",
     shortLabel: "Opremanje",
     blurb: "Staging, renovacija, dan u noć, uklanjanje elemenata",
@@ -78,7 +78,7 @@ export const CUSTOMER_GROUPS: CustomerGroup[] = [
     imageSrc: "/artwork/pricing-card-staging-renovation.webp",
   },
   {
-    id: "vr-iskustvo",
+    id: "vr-experience",
     label: "VR iskustvo",
     shortLabel: "VR",
     blurb: "Imerzivni VR walkthrough — konsultacija pre izrade",

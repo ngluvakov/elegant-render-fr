@@ -7,11 +7,11 @@
 
 /** Service category → configurator group (left sidebar filter on /pricing). */
 export const SERVICE_CATEGORY_TO_GROUP: Record<string, string> = {
-  eksterijer: "renderi-eksterijera",
-  enterijer: "enterijer",
-  planovi: "planovi",
-  animacije: "animacija",
-  transformacija: "opremanje-renovacija",
+  exterior: "exterior-renders",
+  interior: "interior",
+  plans: "plans",
+  animations: "animation",
+  transformation: "staging-renovation",
 };
 
 type ConfiguratorTarget = { productId?: string; sourceMode?: string };
@@ -30,7 +30,7 @@ export const VARIANT_TO_CONFIGURATOR: Record<string, ConfiguratorTarget> = {
   "floorplan-2d": { productId: "fp2d-single" },
   "floorplan-3d": { productId: "fp3d-single" },
   "landscape-main": { productId: "land-static" },
-  "photomontage-main": { productId: "ext-static", sourceMode: "fotomontaza" },
+  "photomontage-main": { productId: "ext-static", sourceMode: "photomontage" },
   "site-plan-main": { productId: "sp-first" },
   "day-to-dusk-main": { productId: "dtd-image" },
   "item-removal-main": { productId: "ir-simple" },
@@ -47,7 +47,7 @@ export function buildConfiguratorHref(
   from = "home-hero",
 ) {
   const group =
-    SERVICE_CATEGORY_TO_GROUP[serviceCategory] ?? "renderi-eksterijera";
+    SERVICE_CATEGORY_TO_GROUP[serviceCategory] ?? "exterior-renders";
   const target = VARIANT_TO_CONFIGURATOR[variantId];
   const params = new URLSearchParams({ group });
   if (target?.productId) {

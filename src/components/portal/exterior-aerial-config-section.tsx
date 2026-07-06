@@ -141,7 +141,7 @@ export function ExtAerialConfigSection({
     (f) => f.kind !== "drone-photo" && f.kind !== "logo",
   );
   const droneFiles = files.filter((f) => f.kind === "drone-photo");
-  const showDroneUpload = config.environmentRepresentation === "fotomontaza";
+  const showDroneUpload = config.environmentRepresentation === "photomontage";
 
   const uploadFile = useCallback(
     async (file: File, kind: FileKind) => {

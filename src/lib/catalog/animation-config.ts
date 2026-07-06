@@ -92,18 +92,18 @@ export function animTierDiscountPct(seconds: number): number {
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const ANIM_TYPES = [
-  { id: "eksterijer", label: "Eksterijer (Flythrough)" },
-  { id: "enterijer", label: "Enterijer (Walkthrough)" },
-  { id: "kombinovano", label: "Kombinovano (Eksterijer + Enterijer)" },
+  { id: "exterior", label: "Eksterijer (Flythrough)" },
+  { id: "interior", label: "Enterijer (Walkthrough)" },
+  { id: "combined", label: "Kombinovano (Eksterijer + Enterijer)" },
 ] as const;
 export type AnimTypeId = (typeof ANIM_TYPES)[number]["id"];
 export const ANIM_TYPE_IDS = ANIM_TYPES.map((t) => t.id) as AnimTypeId[];
 
 export const ANIM_TIMES_OF_DAY = [
-  { id: "dnevno", label: "Dnevno svetlo (sunčano)" },
-  { id: "zlatni-sat", label: "Zlatni sat (zalazak)" },
-  { id: "sumrak-noc", label: "Sumrak / Noć (upaljena svetla)" },
-  { id: "oblacno", label: "Oblačno / Moody" },
+  { id: "daylight", label: "Dnevno svetlo (sunčano)" },
+  { id: "golden-hour", label: "Zlatni sat (zalazak)" },
+  { id: "dusk-night", label: "Sumrak / Noć (upaljena svetla)" },
+  { id: "overcast", label: "Oblačno / Moody" },
 ] as const;
 export type AnimTimeOfDayId = (typeof ANIM_TIMES_OF_DAY)[number]["id"];
 export const ANIM_TIME_OF_DAY_IDS = ANIM_TIMES_OF_DAY.map(
@@ -111,17 +111,17 @@ export const ANIM_TIME_OF_DAY_IDS = ANIM_TIMES_OF_DAY.map(
 ) as AnimTimeOfDayId[];
 
 export const ANIM_SEASONS = [
-  { id: "leto-prolece", label: "Leto / Proleće (zeleno)" },
-  { id: "jesen", label: "Jesen (žuto lišće)" },
-  { id: "zima", label: "Zima (sneg)" },
+  { id: "summer-spring", label: "Leto / Proleće (zeleno)" },
+  { id: "autumn", label: "Jesen (žuto lišće)" },
+  { id: "winter", label: "Zima (sneg)" },
 ] as const;
 export type AnimSeasonId = (typeof ANIM_SEASONS)[number]["id"];
 export const ANIM_SEASON_IDS = ANIM_SEASONS.map((s) => s.id) as AnimSeasonId[];
 
 export const ANIM_CAMERA_SPEEDS = [
-  { id: "spora", label: "Spora / cinematska (fokus na detalje)" },
-  { id: "srednja", label: "Srednja (standardni walkthrough)" },
-  { id: "brza", label: "Brza / dinamična (pregled celog prostora)" },
+  { id: "slow", label: "Spora / cinematska (fokus na detalje)" },
+  { id: "medium", label: "Srednja (standardni walkthrough)" },
+  { id: "fast", label: "Brza / dinamična (pregled celog prostora)" },
 ] as const;
 export type AnimCameraSpeedId =
   (typeof ANIM_CAMERA_SPEEDS)[number]["id"];
@@ -130,10 +130,10 @@ export const ANIM_CAMERA_SPEED_IDS = ANIM_CAMERA_SPEEDS.map(
 ) as AnimCameraSpeedId[];
 
 export const ANIM_MUSIC_MOODS = [
-  { id: "bez-muzike", label: "Bez muzike" },
-  { id: "opustajuca", label: "Opuštajuća / Ambijentalna" },
-  { id: "dinamicna", label: "Dinamična / Moderna" },
-  { id: "korporativna", label: "Korporativna / Prezentaciona" },
+  { id: "no-music", label: "Bez muzike" },
+  { id: "relaxing", label: "Opuštajuća / Ambijentalna" },
+  { id: "dynamic", label: "Dinamična / Moderna" },
+  { id: "corporate", label: "Korporativna / Prezentaciona" },
 ] as const;
 export type AnimMusicMoodId = (typeof ANIM_MUSIC_MOODS)[number]["id"];
 export const ANIM_MUSIC_MOOD_IDS = ANIM_MUSIC_MOODS.map(
@@ -143,27 +143,27 @@ export const ANIM_MUSIC_MOOD_IDS = ANIM_MUSIC_MOODS.map(
 // ─── Checkbox groups ──────────────────────────────────────────────────
 
 export const ANIM_FOCUS_AREA_OPTIONS = [
-  { key: "arhitektura", label: "Arhitektura / Fasada" },
-  { key: "enterijer", label: "Dizajn enterijera" },
-  { key: "pejzaz", label: "Pejzaž / Dvorište" },
-  { key: "sadrzaji", label: "Sadržaji kompleksa (bazeni, parkovi)" },
+  { key: "architecture", label: "Arhitektura / Fasada" },
+  { key: "interior", label: "Dizajn enterijera" },
+  { key: "landscape", label: "Pejzaž / Dvorište" },
+  { key: "amenities", label: "Sadržaji kompleksa (bazeni, parkovi)" },
 ] as const;
 export type AnimFocusAreas = {
-  arhitektura: boolean;
-  enterijer: boolean;
-  pejzaz: boolean;
-  sadrzaji: boolean;
+  architecture: boolean;
+  interior: boolean;
+  landscape: boolean;
+  amenities: boolean;
 };
 
 export const ANIM_SCENE_ELEMENT_OPTIONS = [
-  { key: "ljudi", label: "Ljudi u pokretu (3D siluete)" },
-  { key: "automobili", label: "Automobili u pokretu" },
-  { key: "vodaDrvece", label: "Animacija vode / drveća na vetru" },
+  { key: "people", label: "Ljudi u pokretu (3D siluete)" },
+  { key: "cars", label: "Automobili u pokretu" },
+  { key: "waterTrees", label: "Animacija vode / drveća na vetru" },
 ] as const;
 export type AnimSceneElements = {
-  ljudi: boolean;
-  automobili: boolean;
-  vodaDrvece: boolean;
+  people: boolean;
+  cars: boolean;
+  waterTrees: boolean;
 };
 
 // ─── Main config ──────────────────────────────────────────────────────
@@ -190,14 +190,14 @@ export type AnimationConfig = {
 
 export function defaultFocusAreas(): AnimFocusAreas {
   return {
-    arhitektura: false,
-    enterijer: false,
-    pejzaz: false,
-    sadrzaji: false,
+    architecture: false,
+    interior: false,
+    landscape: false,
+    amenities: false,
   };
 }
 export function defaultSceneElements(): AnimSceneElements {
-  return { ljudi: false, automobili: false, vodaDrvece: false };
+  return { people: false, cars: false, waterTrees: false };
 }
 
 export function defaultAnimationConfig(
@@ -206,7 +206,7 @@ export function defaultAnimationConfig(
   return {
     sourceMode,
     animationName: "Animacija 1",
-    animationType: "eksterijer",
+    animationType: "exterior",
     durationSeconds: ANIM_DURATION_MIN,
     focusAreas: defaultFocusAreas(),
     sceneElements: defaultSceneElements(),
@@ -265,7 +265,7 @@ export function sanitizeAnimationConfig(
     "scratch";
   const animationType =
     pickFromAllowlist<AnimTypeId>(c.animationType, ANIM_TYPE_IDS) ??
-    "eksterijer";
+    "exterior";
   // Force-clear add-on flags that aren't supported by the chosen mode so
   // saved configs can't keep stale toggles after a mode switch.
   const dayNightVariant =

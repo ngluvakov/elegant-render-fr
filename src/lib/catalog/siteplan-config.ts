@@ -12,8 +12,8 @@ import { TIME_OF_DAY_IDS, SEASON_IDS } from "./interior-config";
 
 export const SP_ANGLE_TYPES = [
   { id: "top-down", label: "Strogi pogled odozgo (Top-down / 2D osećaj)" },
-  { id: "izometrija", label: "Izometrija (45°)" },
-  { id: "pticja", label: "Ptičja perspektiva (aerial pod uglom)" },
+  { id: "isometric", label: "Izometrija (45°)" },
+  { id: "birds-eye", label: "Ptičja perspektiva (aerial pod uglom)" },
 ] as const;
 export type SpAngleTypeId = (typeof SP_ANGLE_TYPES)[number]["id"];
 export const SP_ANGLE_TYPE_IDS = SP_ANGLE_TYPES.map(
@@ -21,19 +21,19 @@ export const SP_ANGLE_TYPE_IDS = SP_ANGLE_TYPES.map(
 ) as SpAngleTypeId[];
 
 export const SP_ENV_REPS = [
-  { id: "samo-parcela", label: "Samo parcela (bez okruženja)" },
-  { id: "apstraktno", label: "Apstraktno okruženje (bele blok zgrade okolo)" },
+  { id: "parcel-only", label: "Samo parcela (bez okruženja)" },
+  { id: "abstract", label: "Apstraktno okruženje (bele blok zgrade okolo)" },
   { id: "3d", label: "3D modelovano okruženje (realistično)" },
-  { id: "fotomontaza", label: "Uklapanje u dron fotografiju" },
+  { id: "photomontage", label: "Uklapanje u dron fotografiju" },
 ] as const;
 export type SpEnvRepId = (typeof SP_ENV_REPS)[number]["id"];
 export const SP_ENV_REP_IDS = SP_ENV_REPS.map((e) => e.id) as SpEnvRepId[];
 
 export const SP_LANDSCAPE_STYLES = [
-  { id: "minimalisticko", label: "Minimalističko (samo trava i osnovno drveće)" },
-  { id: "bujno", label: "Bujno / Šumovito" },
-  { id: "urbano", label: "Urbano (više betona / trgova)" },
-  { id: "prema-planu", label: "Prema priloženom pejzažnom planu" },
+  { id: "minimalist", label: "Minimalističko (samo trava i osnovno drveće)" },
+  { id: "lush", label: "Bujno / Šumovito" },
+  { id: "urban", label: "Urbano (više betona / trgova)" },
+  { id: "per-plan", label: "Prema priloženom pejzažnom planu" },
 ] as const;
 export type SpLandscapeStyleId =
   (typeof SP_LANDSCAPE_STYLES)[number]["id"];
@@ -108,7 +108,7 @@ export function defaultSiteplanConfig(): SiteplanConfig {
     projectName: "Situacija 1",
     buildingCount: 1,
     angleCount: 1,
-    angleType: "izometrija",
+    angleType: "isometric",
     traffic: defaultTraffic(),
     amenities: defaultAmenities(),
     showLabels: false,
@@ -152,7 +152,7 @@ function sanitizeBooleans<T extends Record<string, boolean>>(
 export function sanitizeSiteplanConfig(c: SiteplanConfig): SiteplanConfig {
   const angleType =
     pickFromAllowlist<SpAngleTypeId>(c.angleType, SP_ANGLE_TYPE_IDS) ??
-    "izometrija";
+    "isometric";
   const seasonVariantEnabled = Boolean(c.seasonVariantEnabled);
   const phaseVariantEnabled = Boolean(c.phaseVariantEnabled);
   const seasonVariantTimeOfDay = pickFromAllowlist<TimeOfDayId>(

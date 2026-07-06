@@ -1,6 +1,6 @@
 /**
  * optimize-3d-osnove-portfolio.mjs — Replace the four portfolio tiles on
- * /usluge/3d-osnove with the new landscape 3D floor-plan renders.
+ * /services/3d-floor-plans with the new landscape 3D floor-plan renders.
  *
  * These masters are already 16:9 (≈5334×3000), so NO rotation — just a
  * center cover-crop to 1600×900 and WebP encode (q82 / effort 6).
@@ -16,10 +16,10 @@ const SRC = "J:/Marketing dept/2026/Jun 2026/2 Web page content/3D Floorplans/No
 const OUT = join(process.cwd(), "public", "artwork");
 
 const jobs = [
-  { src: "The Ridgedale - 5.jpg", out: "portfolio-3d-osnove-jednosoban-stan.webp" },
-  { src: "2512-FP8_E_7-1x1 G.0000.jpg", out: "portfolio-3d-osnove-jednosoban-otvoreni-koncept.webp" },
-  { src: "3_LW04_823sqft .jpg", out: "portfolio-3d-osnove-dupleks-dva-nivoa.webp" },
-  { src: "9710 Table Mountain - 1.jpg", out: "portfolio-3d-osnove-kuca-sa-garazom.webp" },
+  { src: "The Ridgedale - 5.jpg", out: "portfolio-3d-floor-plans-one-bedroom-apartment.webp" },
+  { src: "2512-FP8_E_7-1x1 G.0000.jpg", out: "portfolio-3d-floor-plans-one-bedroom-open-concept.webp" },
+  { src: "3_LW04_823sqft .jpg", out: "portfolio-3d-floor-plans-duplex-two-levels.webp" },
+  { src: "9710 Table Mountain - 1.jpg", out: "portfolio-3d-floor-plans-house-with-garage.webp" },
 ];
 
 const kb = (b) => `${(b / 1024).toFixed(0)} KB`;

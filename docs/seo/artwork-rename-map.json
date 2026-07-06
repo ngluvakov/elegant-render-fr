@@ -1,1 +1,694 @@
-[]
+[
+  {
+    "old": "artwork/360-eksterijer-panorama-vr.jpg",
+    "new": "artwork/exterior-360-panorama-vr.jpg"
+  },
+  {
+    "old": "artwork/arhitektonska-animacija-demo-poster.webp",
+    "new": "artwork/architectural-animation-demo-poster.webp"
+  },
+  {
+    "old": "artwork/arhitektonska-animacija-demo.mp4",
+    "new": "artwork/architectural-animation-demo.mp4"
+  },
+  {
+    "old": "artwork/blog-3d-vizuelizacija-duplex.webp",
+    "new": "artwork/blog-3d-visualization-duplex.webp"
+  },
+  {
+    "old": "artwork/cene-card-animacija.mp4",
+    "new": "artwork/pricing-card-animation.mp4"
+  },
+  {
+    "old": "artwork/cene-card-eksterijer.webp",
+    "new": "artwork/pricing-card-exterior.webp"
+  },
+  {
+    "old": "artwork/cene-card-enterijer.webp",
+    "new": "artwork/pricing-card-interior.webp"
+  },
+  {
+    "old": "artwork/cene-card-opremanje-renovacija.webp",
+    "new": "artwork/pricing-card-staging-renovation.webp"
+  },
+  {
+    "old": "artwork/cene-card-planovi.webp",
+    "new": "artwork/pricing-card-plans.webp"
+  },
+  {
+    "old": "artwork/detail-2d-osnove-2c.webp",
+    "new": "artwork/detail-2d-floor-plans-2c.webp"
+  },
+  {
+    "old": "artwork/detail-360-eksterijer.webp",
+    "new": "artwork/detail-exterior-360.webp"
+  },
+  {
+    "old": "artwork/detail-3d-osnove.webp",
+    "new": "artwork/detail-3d-floor-plans.webp"
+  },
+  {
+    "old": "artwork/detail-3d-situacioni.webp",
+    "new": "artwork/detail-3d-site-plan.webp"
+  },
+  {
+    "old": "artwork/detail-dan-u-noc-after.webp",
+    "new": "artwork/detail-day-to-dusk-after.webp"
+  },
+  {
+    "old": "artwork/detail-dan-u-noc-before.webp",
+    "new": "artwork/detail-day-to-dusk-before.webp"
+  },
+  {
+    "old": "artwork/detail-dan-u-noc.webp",
+    "new": "artwork/detail-day-to-dusk.webp"
+  },
+  {
+    "old": "artwork/detail-fotomontaza-after.webp",
+    "new": "artwork/detail-photomontage-after.webp"
+  },
+  {
+    "old": "artwork/detail-fotomontaza-before.webp",
+    "new": "artwork/detail-photomontage-before.webp"
+  },
+  {
+    "old": "artwork/detail-fotomontaza.webp",
+    "new": "artwork/detail-photomontage.webp"
+  },
+  {
+    "old": "artwork/detail-osnove.webp",
+    "new": "artwork/detail-floor-plans.webp"
+  },
+  {
+    "old": "artwork/detail-prikazi-dvorista-after.webp",
+    "new": "artwork/detail-landscape-design-after.webp"
+  },
+  {
+    "old": "artwork/detail-prikazi-dvorista-before.webp",
+    "new": "artwork/detail-landscape-design-before.webp"
+  },
+  {
+    "old": "artwork/detail-prikazi-dvorista.webp",
+    "new": "artwork/detail-landscape-design.webp"
+  },
+  {
+    "old": "artwork/detail-spoljasnji-renderi.webp",
+    "new": "artwork/detail-exterior-renders.webp"
+  },
+  {
+    "old": "artwork/detail-unutrasnji-renderi.webp",
+    "new": "artwork/detail-interior-renders.webp"
+  },
+  {
+    "old": "artwork/detail-virtuelna-renovacija-after.webp",
+    "new": "artwork/detail-virtual-renovation-after.webp"
+  },
+  {
+    "old": "artwork/detail-virtuelna-renovacija-before.webp",
+    "new": "artwork/detail-virtual-renovation-before.webp"
+  },
+  {
+    "old": "artwork/detail-virtuelna-renovacija.webp",
+    "new": "artwork/detail-virtual-renovation.webp"
+  },
+  {
+    "old": "artwork/detail-virtuelno-opremanje-after.webp",
+    "new": "artwork/detail-virtual-staging-after.webp"
+  },
+  {
+    "old": "artwork/detail-virtuelno-opremanje-before.webp",
+    "new": "artwork/detail-virtual-staging-before.webp"
+  },
+  {
+    "old": "artwork/detail-virtuelno-opremanje.webp",
+    "new": "artwork/detail-virtual-staging.webp"
+  },
+  {
+    "old": "artwork/expert-360-eksterijer-problem.webp",
+    "new": "artwork/expert-exterior-360-problem.webp"
+  },
+  {
+    "old": "artwork/expert-3d-situacioni.webp",
+    "new": "artwork/expert-3d-site-plan.webp"
+  },
+  {
+    "old": "artwork/expert-dan-u-noc-after.webp",
+    "new": "artwork/expert-day-to-dusk-after.webp"
+  },
+  {
+    "old": "artwork/expert-dan-u-noc-before.webp",
+    "new": "artwork/expert-day-to-dusk-before.webp"
+  },
+  {
+    "old": "artwork/expert-fotomontaza-after.webp",
+    "new": "artwork/expert-photomontage-after.webp"
+  },
+  {
+    "old": "artwork/expert-fotomontaza-before.webp",
+    "new": "artwork/expert-photomontage-before.webp"
+  },
+  {
+    "old": "artwork/expert-osnove.webp",
+    "new": "artwork/expert-floor-plans.webp"
+  },
+  {
+    "old": "artwork/expert-prikazi-dvorista-after.webp",
+    "new": "artwork/expert-landscape-design-after.webp"
+  },
+  {
+    "old": "artwork/expert-prikazi-dvorista-before.webp",
+    "new": "artwork/expert-landscape-design-before.webp"
+  },
+  {
+    "old": "artwork/expert-spoljasnji-renderi.webp",
+    "new": "artwork/expert-exterior-renders.webp"
+  },
+  {
+    "old": "artwork/expert-unutrasnji-renderi.webp",
+    "new": "artwork/expert-interior-renders.webp"
+  },
+  {
+    "old": "artwork/expert-virtuelna-renovacija-after.webp",
+    "new": "artwork/expert-virtual-renovation-after.webp"
+  },
+  {
+    "old": "artwork/expert-virtuelna-renovacija-before.webp",
+    "new": "artwork/expert-virtual-renovation-before.webp"
+  },
+  {
+    "old": "artwork/expert-virtuelno-opremanje-naslovna-after.webp",
+    "new": "artwork/expert-virtual-staging-hero-after.webp"
+  },
+  {
+    "old": "artwork/expert-virtuelno-opremanje-naslovna-before.webp",
+    "new": "artwork/expert-virtual-staging-hero-before.webp"
+  },
+  {
+    "old": "artwork/listing-3d-osnove.webp",
+    "new": "artwork/listing-3d-floor-plans.webp"
+  },
+  {
+    "old": "artwork/portfolio-2d-osnove-stan-01-pre-r2.webp",
+    "new": "artwork/portfolio-2d-floor-plans-apartment-01-before-r2.webp"
+  },
+  {
+    "old": "artwork/portfolio-2d-osnove-stan-01-r2.webp",
+    "new": "artwork/portfolio-2d-floor-plans-apartment-01-r2.webp"
+  },
+  {
+    "old": "artwork/portfolio-2d-osnove-stan-02-pre-r2.webp",
+    "new": "artwork/portfolio-2d-floor-plans-apartment-02-before-r2.webp"
+  },
+  {
+    "old": "artwork/portfolio-2d-osnove-stan-02-r2.webp",
+    "new": "artwork/portfolio-2d-floor-plans-apartment-02-r2.webp"
+  },
+  {
+    "old": "artwork/portfolio-2d-osnove-stan-03-pre-r2.webp",
+    "new": "artwork/portfolio-2d-floor-plans-apartment-03-before-r2.webp"
+  },
+  {
+    "old": "artwork/portfolio-2d-osnove-stan-03-r2.webp",
+    "new": "artwork/portfolio-2d-floor-plans-apartment-03-r2.webp"
+  },
+  {
+    "old": "artwork/portfolio-2d-osnove-stan-04-pre-r2.webp",
+    "new": "artwork/portfolio-2d-floor-plans-apartment-04-before-r2.webp"
+  },
+  {
+    "old": "artwork/portfolio-2d-osnove-stan-04-r2.webp",
+    "new": "artwork/portfolio-2d-floor-plans-apartment-04-r2.webp"
+  },
+  {
+    "old": "artwork/portfolio-360-eksterijer-01.webp",
+    "new": "artwork/portfolio-exterior-360-01.webp"
+  },
+  {
+    "old": "artwork/portfolio-360-eksterijer-02.webp",
+    "new": "artwork/portfolio-exterior-360-02.webp"
+  },
+  {
+    "old": "artwork/portfolio-360-eksterijer-03.webp",
+    "new": "artwork/portfolio-exterior-360-03.webp"
+  },
+  {
+    "old": "artwork/portfolio-360-eksterijer-04.webp",
+    "new": "artwork/portfolio-exterior-360-04.webp"
+  },
+  {
+    "old": "artwork/portfolio-3d-osnove-dupleks-dva-nivoa.webp",
+    "new": "artwork/portfolio-3d-floor-plans-duplex-two-levels.webp"
+  },
+  {
+    "old": "artwork/portfolio-3d-osnove-jednosoban-otvoreni-koncept.webp",
+    "new": "artwork/portfolio-3d-floor-plans-one-bedroom-open-concept.webp"
+  },
+  {
+    "old": "artwork/portfolio-3d-osnove-jednosoban-stan.webp",
+    "new": "artwork/portfolio-3d-floor-plans-one-bedroom-apartment.webp"
+  },
+  {
+    "old": "artwork/portfolio-3d-osnove-kuca-sa-garazom.webp",
+    "new": "artwork/portfolio-3d-floor-plans-house-with-garage.webp"
+  },
+  {
+    "old": "artwork/portfolio-3d-situacioni-01.webp",
+    "new": "artwork/portfolio-3d-site-plan-01.webp"
+  },
+  {
+    "old": "artwork/portfolio-3d-situacioni-02.webp",
+    "new": "artwork/portfolio-3d-site-plan-02.webp"
+  },
+  {
+    "old": "artwork/portfolio-3d-situacioni-03.webp",
+    "new": "artwork/portfolio-3d-site-plan-03.webp"
+  },
+  {
+    "old": "artwork/portfolio-3d-situacioni-04.webp",
+    "new": "artwork/portfolio-3d-site-plan-04.webp"
+  },
+  {
+    "old": "artwork/portfolio-dan-u-noc-01.webp",
+    "new": "artwork/portfolio-day-to-dusk-01.webp"
+  },
+  {
+    "old": "artwork/portfolio-dan-u-noc-02.webp",
+    "new": "artwork/portfolio-day-to-dusk-02.webp"
+  },
+  {
+    "old": "artwork/portfolio-dan-u-noc-03.webp",
+    "new": "artwork/portfolio-day-to-dusk-03.webp"
+  },
+  {
+    "old": "artwork/portfolio-dan-u-noc-04.webp",
+    "new": "artwork/portfolio-day-to-dusk-04.webp"
+  },
+  {
+    "old": "artwork/portfolio-fotomontaza-01.webp",
+    "new": "artwork/portfolio-photomontage-01.webp"
+  },
+  {
+    "old": "artwork/portfolio-fotomontaza-02.webp",
+    "new": "artwork/portfolio-photomontage-02.webp"
+  },
+  {
+    "old": "artwork/portfolio-fotomontaza-03.webp",
+    "new": "artwork/portfolio-photomontage-03.webp"
+  },
+  {
+    "old": "artwork/portfolio-fotomontaza-04.webp",
+    "new": "artwork/portfolio-photomontage-04.webp"
+  },
+  {
+    "old": "artwork/portfolio-osnove-01.webp",
+    "new": "artwork/portfolio-floor-plans-01.webp"
+  },
+  {
+    "old": "artwork/portfolio-osnove-02.webp",
+    "new": "artwork/portfolio-floor-plans-02.webp"
+  },
+  {
+    "old": "artwork/portfolio-osnove-03.webp",
+    "new": "artwork/portfolio-floor-plans-03.webp"
+  },
+  {
+    "old": "artwork/portfolio-osnove-04.webp",
+    "new": "artwork/portfolio-floor-plans-04.webp"
+  },
+  {
+    "old": "artwork/portfolio-prikazi-dvorista-01.webp",
+    "new": "artwork/portfolio-landscape-design-01.webp"
+  },
+  {
+    "old": "artwork/portfolio-prikazi-dvorista-02.webp",
+    "new": "artwork/portfolio-landscape-design-02.webp"
+  },
+  {
+    "old": "artwork/portfolio-prikazi-dvorista-03.webp",
+    "new": "artwork/portfolio-landscape-design-03.webp"
+  },
+  {
+    "old": "artwork/portfolio-prikazi-dvorista-04.webp",
+    "new": "artwork/portfolio-landscape-design-04.webp"
+  },
+  {
+    "old": "artwork/portfolio-virtuelna-renovacija-01.webp",
+    "new": "artwork/portfolio-virtual-renovation-01.webp"
+  },
+  {
+    "old": "artwork/portfolio-virtuelna-renovacija-02.webp",
+    "new": "artwork/portfolio-virtual-renovation-02.webp"
+  },
+  {
+    "old": "artwork/portfolio-virtuelna-renovacija-03.webp",
+    "new": "artwork/portfolio-virtual-renovation-03.webp"
+  },
+  {
+    "old": "artwork/portfolio-virtuelna-renovacija-04.webp",
+    "new": "artwork/portfolio-virtual-renovation-04.webp"
+  },
+  {
+    "old": "artwork/portfolio-virtuelno-opremanje-01.webp",
+    "new": "artwork/portfolio-virtual-staging-01.webp"
+  },
+  {
+    "old": "artwork/portfolio-virtuelno-opremanje-02.webp",
+    "new": "artwork/portfolio-virtual-staging-02.webp"
+  },
+  {
+    "old": "artwork/portfolio-virtuelno-opremanje-03.webp",
+    "new": "artwork/portfolio-virtual-staging-03.webp"
+  },
+  {
+    "old": "artwork/portfolio-virtuelno-opremanje-04.webp",
+    "new": "artwork/portfolio-virtual-staging-04.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-01.webp",
+    "new": "artwork/portfolio/exterior-01.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-02.webp",
+    "new": "artwork/portfolio/exterior-02.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-03.webp",
+    "new": "artwork/portfolio/exterior-03.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-04.webp",
+    "new": "artwork/portfolio/exterior-04.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-05.webp",
+    "new": "artwork/portfolio/exterior-05.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-06.webp",
+    "new": "artwork/portfolio/exterior-06.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-08.webp",
+    "new": "artwork/portfolio/exterior-08.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-09.webp",
+    "new": "artwork/portfolio/exterior-09.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-10.webp",
+    "new": "artwork/portfolio/exterior-10.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-11.webp",
+    "new": "artwork/portfolio/exterior-11.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-12.webp",
+    "new": "artwork/portfolio/exterior-12.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-13.webp",
+    "new": "artwork/portfolio/exterior-13.webp"
+  },
+  {
+    "old": "artwork/portfolio/eksterijer-14.webp",
+    "new": "artwork/portfolio/exterior-14.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-01.webp",
+    "new": "artwork/portfolio/interior-01.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-02.webp",
+    "new": "artwork/portfolio/interior-02.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-03.webp",
+    "new": "artwork/portfolio/interior-03.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-04.webp",
+    "new": "artwork/portfolio/interior-04.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-05.webp",
+    "new": "artwork/portfolio/interior-05.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-06.webp",
+    "new": "artwork/portfolio/interior-06.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-07.webp",
+    "new": "artwork/portfolio/interior-07.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-08.webp",
+    "new": "artwork/portfolio/interior-08.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-09.webp",
+    "new": "artwork/portfolio/interior-09.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-10.webp",
+    "new": "artwork/portfolio/interior-10.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-11.webp",
+    "new": "artwork/portfolio/interior-11.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-12.webp",
+    "new": "artwork/portfolio/interior-12.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-13.webp",
+    "new": "artwork/portfolio/interior-13.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-14.webp",
+    "new": "artwork/portfolio/interior-14.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-15.webp",
+    "new": "artwork/portfolio/interior-15.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-16.webp",
+    "new": "artwork/portfolio/interior-16.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-17.webp",
+    "new": "artwork/portfolio/interior-17.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-18.webp",
+    "new": "artwork/portfolio/interior-18.webp"
+  },
+  {
+    "old": "artwork/portfolio/enterijer-19.webp",
+    "new": "artwork/portfolio/interior-19.webp"
+  },
+  {
+    "old": "artwork/problem-2d-osnove-crno-belo.webp",
+    "new": "artwork/problem-2d-floor-plans-black-white.webp"
+  },
+  {
+    "old": "artwork/problem-2d-osnove-kolor.webp",
+    "new": "artwork/problem-2d-floor-plans-color.webp"
+  },
+  {
+    "old": "artwork/problem-3d-osnove-after.webp",
+    "new": "artwork/problem-3d-floor-plans-after.webp"
+  },
+  {
+    "old": "artwork/problem-3d-osnove-before.webp",
+    "new": "artwork/problem-3d-floor-plans-before.webp"
+  },
+  {
+    "old": "artwork/problem-3d-situacioni-after.webp",
+    "new": "artwork/problem-3d-site-plan-after.webp"
+  },
+  {
+    "old": "artwork/problem-3d-situacioni-plan-before.webp",
+    "new": "artwork/problem-3d-site-plan-plan-before.webp"
+  },
+  {
+    "old": "artwork/problem-dan-u-noc-fasada-after.webp",
+    "new": "artwork/problem-day-to-dusk-facade-after.webp"
+  },
+  {
+    "old": "artwork/problem-dan-u-noc-fasada-before.webp",
+    "new": "artwork/problem-day-to-dusk-facade-before.webp"
+  },
+  {
+    "old": "artwork/problem-fotomontaza-ulica-after.webp",
+    "new": "artwork/problem-photomontage-street-after.webp"
+  },
+  {
+    "old": "artwork/problem-fotomontaza-ulica-before.webp",
+    "new": "artwork/problem-photomontage-street-before.webp"
+  },
+  {
+    "old": "artwork/problem-osnove-after.webp",
+    "new": "artwork/problem-floor-plans-after.webp"
+  },
+  {
+    "old": "artwork/problem-osnove-before.webp",
+    "new": "artwork/problem-floor-plans-before.webp"
+  },
+  {
+    "old": "artwork/problem-streetscape-ulica-after.webp",
+    "new": "artwork/problem-streetscape-street-after.webp"
+  },
+  {
+    "old": "artwork/problem-streetscape-ulica-before.webp",
+    "new": "artwork/problem-streetscape-street-before.webp"
+  },
+  {
+    "old": "artwork/problem-uklanjanje-predmeta-soba-after.webp",
+    "new": "artwork/problem-item-removal-room-after.webp"
+  },
+  {
+    "old": "artwork/problem-uklanjanje-predmeta-soba-before.webp",
+    "new": "artwork/problem-item-removal-room-before.webp"
+  },
+  {
+    "old": "artwork/problem-uredjenje-pejzaza-after.webp",
+    "new": "artwork/problem-landscape-design-after.webp"
+  },
+  {
+    "old": "artwork/problem-uredjenje-pejzaza-before.webp",
+    "new": "artwork/problem-landscape-design-before.webp"
+  },
+  {
+    "old": "artwork/problem-virtuelna-renovacija-kuhinja-after.webp",
+    "new": "artwork/problem-virtual-renovation-kitchen-after.webp"
+  },
+  {
+    "old": "artwork/problem-virtuelna-renovacija-kuhinja-before.webp",
+    "new": "artwork/problem-virtual-renovation-kitchen-before.webp"
+  },
+  {
+    "old": "artwork/problem-virtuelno-opremanje-dnevni-boravak-after.webp",
+    "new": "artwork/problem-virtual-staging-living-room-after.webp"
+  },
+  {
+    "old": "artwork/problem-virtuelno-opremanje-dnevni-boravak-before.webp",
+    "new": "artwork/problem-virtual-staging-living-room-before.webp"
+  },
+  {
+    "old": "artwork/tablica-anim.webp",
+    "new": "artwork/service-table-anim.webp"
+  },
+  {
+    "old": "artwork/tablica-dtd-image.webp",
+    "new": "artwork/service-table-dtd-image.webp"
+  },
+  {
+    "old": "artwork/tablica-ext-360.webp",
+    "new": "artwork/service-table-ext-360.webp"
+  },
+  {
+    "old": "artwork/tablica-ext-aerial.webp",
+    "new": "artwork/service-table-ext-aerial.webp"
+  },
+  {
+    "old": "artwork/tablica-ext-static.webp",
+    "new": "artwork/service-table-ext-static.webp"
+  },
+  {
+    "old": "artwork/tablica-fp2d-single.webp",
+    "new": "artwork/service-table-fp2d-single.webp"
+  },
+  {
+    "old": "artwork/tablica-fp3d-single.webp",
+    "new": "artwork/service-table-fp3d-single.webp"
+  },
+  {
+    "old": "artwork/tablica-int-360.webp",
+    "new": "artwork/service-table-int-360.webp"
+  },
+  {
+    "old": "artwork/tablica-int-static.webp",
+    "new": "artwork/service-table-int-static.webp"
+  },
+  {
+    "old": "artwork/tablica-ir-complex.webp",
+    "new": "artwork/service-table-ir-complex.webp"
+  },
+  {
+    "old": "artwork/tablica-ir-simple.webp",
+    "new": "artwork/service-table-ir-simple.webp"
+  },
+  {
+    "old": "artwork/tablica-land-static.webp",
+    "new": "artwork/service-table-land-static.webp"
+  },
+  {
+    "old": "artwork/tablica-reno-image.webp",
+    "new": "artwork/service-table-reno-image.webp"
+  },
+  {
+    "old": "artwork/tablica-sp-first.webp",
+    "new": "artwork/service-table-sp-first.webp"
+  },
+  {
+    "old": "artwork/tablica-vr-existing.webp",
+    "new": "artwork/service-table-vr-existing.webp"
+  },
+  {
+    "old": "artwork/tablica-vr-standalone.webp",
+    "new": "artwork/service-table-vr-standalone.webp"
+  },
+  {
+    "old": "artwork/tablica-vs-360.webp",
+    "new": "artwork/service-table-vs-360.webp"
+  },
+  {
+    "old": "artwork/tablica-vs-static.webp",
+    "new": "artwork/service-table-vs-static.webp"
+  },
+  {
+    "old": "styles/primorski.webp",
+    "new": "styles/coastal.webp"
+  },
+  {
+    "old": "artwork/portfolio/osnova-01.webp",
+    "new": "artwork/portfolio/3d-floor-plan-01.webp"
+  },
+  {
+    "old": "artwork/portfolio/osnova-02.webp",
+    "new": "artwork/portfolio/3d-floor-plan-02.webp"
+  },
+  {
+    "old": "artwork/portfolio/osnova-03.webp",
+    "new": "artwork/portfolio/3d-floor-plan-03.webp"
+  },
+  {
+    "old": "artwork/portfolio/osnova-04.webp",
+    "new": "artwork/portfolio/3d-floor-plan-04.webp"
+  },
+  {
+    "old": "artwork/portfolio/osnova-dupleks-levi-stan.webp",
+    "new": "artwork/portfolio/3d-floor-plan-duplex-left-unit.webp"
+  },
+  {
+    "old": "artwork/portfolio/osnova-prostora-01.webp",
+    "new": "artwork/portfolio/3d-floor-plan-space-01.webp"
+  },
+  {
+    "old": "artwork/portfolio/osnova-prostora-02.webp",
+    "new": "artwork/portfolio/3d-floor-plan-space-02.webp"
+  },
+  {
+    "old": "artwork/portfolio/osnova-prostora-03.webp",
+    "new": "artwork/portfolio/3d-floor-plan-space-03.webp"
+  },
+  {
+    "old": "artwork/portfolio/osnova-prostora-04.webp",
+    "new": "artwork/portfolio/3d-floor-plan-space-04.webp"
+  }
+]

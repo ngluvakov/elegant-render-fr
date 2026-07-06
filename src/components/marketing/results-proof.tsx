@@ -20,7 +20,7 @@ const PROOF_ITEMS = [
     price: "od 19.924 RSD",
     timing: "prvi nacrti 3-5 radnih dana",
     body: "Jedna porudžbina pokriva ceo sprat: 10 statičkih rendera enterijera + tlocrt sprata.",
-    href: "/pricing?group=enterijer&add=int-static&from=home-proof#configurator",
+    href: "/pricing?group=interior&add=int-static&from=home-proof#configurator",
     image: "/artwork/expert-interior-renders.webp",
     imageAlt:
       "Unutrašnji renderi - opremljen enterijer spreman za prodaju iz prospekta",
@@ -31,7 +31,7 @@ const PROOF_ITEMS = [
     price: "od 2.110 RSD",
     timing: "brz upgrade fotografije",
     body: "Fotografija praznog prostora dobija nameštaj, stil i atmosferu bez fizičkog opremanja nekretnine.",
-    href: "/pricing?group=opremanje-renovacija&add=vs-static&from=home-proof#configurator",
+    href: "/pricing?group=staging-renovation&add=vs-static&from=home-proof#configurator",
     before: "/artwork/expert-virtual-staging-hero-before.webp",
     after: "/artwork/expert-virtual-staging-hero-after.webp",
     beforeAlt:
@@ -45,7 +45,7 @@ const PROOF_ITEMS = [
     price: "od 29.300 RSD",
     timing: "sledeći ugao od 5.626 RSD",
     body: "Prvi kadar pokriva izradu 3D modela objekta, a svaka sledeća kamera iz istog modela je znatno povoljnija.",
-    href: "/pricing?group=renderi-eksterijera&add=ext-static&from=home-proof#configurator",
+    href: "/pricing?group=exterior-renders&add=ext-static&from=home-proof#configurator",
     image: "/artwork/expert-exterior-renders.webp",
     imageAlt:
       "Spoljašnji renderi - fotorealističan prikaz eksterijera objekta",

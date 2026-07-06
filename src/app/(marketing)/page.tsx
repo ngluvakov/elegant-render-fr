@@ -63,17 +63,17 @@ function SearchIntentSection() {
           {
             title: "Arhitektonska vizuelizacija",
             text: "Realistični prikazi enterijera i eksterijera. Osnovna cena pokriva izradu modela, a svaki dodatni ugao ili prostorija košta znatno manje. Idealno za investitore i arhitekte.",
-            href: "/pricing?group=enterijer#configurator",
+            href: "/pricing?group=interior#configurator",
           },
           {
             title: "Virtuelno opremanje i renovacija",
             text: "Transformišite prazne ili zastarele prostore na osnovu fotografija. Prva slika pokriva dizajn, a svaka sledeća slika iste prostorije donosi uštedu do 33%.",
-            href: "/pricing?group=opremanje-renovacija#configurator",
+            href: "/pricing?group=staging-renovation#configurator",
           },
           {
             title: "Interaktivni prikazi i osnove",
             text: "Od jasnih 2D/3D osnova do imerzivnih 360 tura. Naručite više usluga iz istog modela i ostvarite automatske popuste na celokupan projekat.",
-            href: "/pricing?group=planovi#configurator",
+            href: "/pricing?group=plans#configurator",
           },
         ].map((item) => (
           <Link

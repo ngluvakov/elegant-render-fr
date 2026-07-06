@@ -92,12 +92,12 @@ function quoteReducer(state: QuoteItem[], action: QuoteAction): QuoteItem[] {
         defaultQuantities[ao.id] = ao.includedQty;
       }
       // "Render u stvarnoj fotografiji" deep-links to ext-static with
-      // sourceMode=fotomontaza — pre-enable the 5.860 RSD Fotomontaža add-on so the
+      // sourceMode=photomontage — pre-enable the 5.860 RSD Fotomontaža add-on so the
       // cart itemizes render 29.300 RSD + Fotomontaža 5.860 RSD = 35.160 RSD (matches the
       // service page's price breakdown).
       if (
         action.productId === "ext-static" &&
-        action.sourceMode === "fotomontaza"
+        action.sourceMode === "photomontage"
       ) {
         defaultQuantities["ext-static-photo"] = 1;
       }

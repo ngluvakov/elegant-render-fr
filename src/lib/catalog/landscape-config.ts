@@ -18,12 +18,12 @@ import { TIME_OF_DAY_IDS, SEASON_IDS } from "./interior-config";
 
 export const LANDSCAPE_STYLES = [
   { id: "modern-minimalist", label: "Modern / Minimalist" },
-  { id: "mediteranski", label: "Mediteranski" },
-  { id: "engleski-vrt", label: "Engleski vrt" },
+  { id: "mediterranean", label: "Mediteranski" },
+  { id: "english-garden", label: "Engleski vrt" },
   { id: "wild", label: "Prirodni / Divlji (Wild)" },
-  { id: "tropski", label: "Tropski" },
-  { id: "japanski", label: "Japanski vrt" },
-  { id: "tradicionalni", label: "Tradicionalni" },
+  { id: "tropical", label: "Tropski" },
+  { id: "japanese-garden", label: "Japanski vrt" },
+  { id: "traditional", label: "Tradicionalni" },
 ] as const;
 export type LandscapeStyleId = (typeof LANDSCAPE_STYLES)[number]["id"];
 export const LANDSCAPE_STYLE_IDS = LANDSCAPE_STYLES.map(
@@ -31,9 +31,9 @@ export const LANDSCAPE_STYLE_IDS = LANDSCAPE_STYLES.map(
 ) as LandscapeStyleId[];
 
 export const VEGETATION_AGES = [
-  { id: "tek-posadjeno", label: "Tek posađeno (mlade sadnice)" },
-  { id: "srednji-rast", label: "Srednji rast (1–3 godine)" },
-  { id: "zrelo", label: "Zrelo (potpuno izraslo)" },
+  { id: "newly-planted", label: "Tek posađeno (mlade sadnice)" },
+  { id: "medium-growth", label: "Srednji rast (1–3 godine)" },
+  { id: "mature", label: "Zrelo (potpuno izraslo)" },
 ] as const;
 export type VegetationAgeId = (typeof VEGETATION_AGES)[number]["id"];
 export const VEGETATION_AGE_IDS = VEGETATION_AGES.map(
@@ -41,10 +41,10 @@ export const VEGETATION_AGE_IDS = VEGETATION_AGES.map(
 ) as VegetationAgeId[];
 
 export const TOPOGRAPHIES = [
-  { id: "ravan", label: "Ravan teren" },
-  { id: "blagi-nagib", label: "Blagi nagib" },
-  { id: "strmi-nagib", label: "Strmi nagib / Kaskade" },
-  { id: "terasast", label: "Terasast teren sa potpornim zidovima" },
+  { id: "flat", label: "Ravan teren" },
+  { id: "gentle-slope", label: "Blagi nagib" },
+  { id: "steep-slope", label: "Strmi nagib / Kaskade" },
+  { id: "terraced", label: "Terasast teren sa potpornim zidovima" },
 ] as const;
 export type TopographyId = (typeof TOPOGRAPHIES)[number]["id"];
 export const TOPOGRAPHY_IDS = TOPOGRAPHIES.map(
@@ -52,12 +52,12 @@ export const TOPOGRAPHY_IDS = TOPOGRAPHIES.map(
 ) as TopographyId[];
 
 export const PATH_MATERIALS = [
-  { id: "stampani-beton", label: "Štampani beton" },
-  { id: "behaton", label: "Behaton / Popločanje" },
-  { id: "prirodni-kamen", label: "Prirodni kamen" },
-  { id: "drveni-deking", label: "Drveni deking" },
-  { id: "sljunak", label: "Šljunak / Rizla" },
-  { id: "kombinovano", label: "Kombinovano" },
+  { id: "stamped-concrete", label: "Štampani beton" },
+  { id: "pavers", label: "Behaton / Popločanje" },
+  { id: "natural-stone", label: "Prirodni kamen" },
+  { id: "wood-decking", label: "Drveni deking" },
+  { id: "gravel", label: "Šljunak / Rizla" },
+  { id: "combined", label: "Kombinovano" },
 ] as const;
 export type PathMaterialId = (typeof PATH_MATERIALS)[number]["id"];
 export const PATH_MATERIAL_IDS = PATH_MATERIALS.map(
@@ -65,19 +65,19 @@ export const PATH_MATERIAL_IDS = PATH_MATERIALS.map(
 ) as PathMaterialId[];
 
 export const FENCES = [
-  { id: "zidana", label: "Zidana ograda" },
-  { id: "zicana-panelna", label: "Žičana / Panelna" },
-  { id: "drvena", label: "Drvena ograda" },
-  { id: "ziva", label: "Živa ograda" },
-  { id: "bez-ograde", label: "Bez ograde (otvoreno)" },
+  { id: "masonry", label: "Zidana ograda" },
+  { id: "wire-panel", label: "Žičana / Panelna" },
+  { id: "wooden", label: "Drvena ograda" },
+  { id: "hedge", label: "Živa ograda" },
+  { id: "no-fence", label: "Bez ograde (otvoreno)" },
 ] as const;
 export type FenceId = (typeof FENCES)[number]["id"];
 export const FENCE_IDS = FENCES.map((f) => f.id) as FenceId[];
 
 export const AERIAL_ENV_REPS = [
   { id: "3d", label: "3D modelovano okruženje" },
-  { id: "fotomontaza", label: "Uklapanje u dron fotografiju" },
-  { id: "apstraktno", label: "Apstraktno okruženje" },
+  { id: "photomontage", label: "Uklapanje u dron fotografiju" },
+  { id: "abstract", label: "Apstraktno okruženje" },
 ] as const;
 export type AerialEnvRepId = (typeof AERIAL_ENV_REPS)[number]["id"];
 export const AERIAL_ENV_REP_IDS = AERIAL_ENV_REPS.map(
@@ -87,42 +87,42 @@ export const AERIAL_ENV_REP_IDS = AERIAL_ENV_REPS.map(
 // ─── Checkbox groups ──────────────────────────────────────────────────
 
 export const WATER_FEATURE_OPTIONS = [
-  { key: "bazen", label: "Bazen" },
-  { key: "jezerce", label: "Dekorativno jezerce" },
-  { key: "fontana", label: "Fontana / Česma" },
-  { key: "potok", label: "Potok" },
+  { key: "pool", label: "Bazen" },
+  { key: "pond", label: "Dekorativno jezerce" },
+  { key: "fountain", label: "Fontana / Česma" },
+  { key: "stream", label: "Potok" },
 ] as const;
 export type WaterFeatures = {
-  bazen: boolean;
-  jezerce: boolean;
-  fontana: boolean;
-  potok: boolean;
+  pool: boolean;
+  pond: boolean;
+  fountain: boolean;
+  stream: boolean;
 };
 
 export const STRUCTURE_OPTIONS = [
   { key: "pergola", label: "Letnjikovac / Pergola" },
-  { key: "letnjaKuhinja", label: "Letnja kuhinja / Roštilj" },
+  { key: "summerKitchen", label: "Letnja kuhinja / Roštilj" },
   { key: "firePit", label: "Ognjište (Fire pit)" },
-  { key: "igraliste", label: "Dečije igralište" },
+  { key: "playground", label: "Dečije igralište" },
 ] as const;
 export type Structures = {
   pergola: boolean;
-  letnjaKuhinja: boolean;
+  summerKitchen: boolean;
   firePit: boolean;
-  igraliste: boolean;
+  playground: boolean;
 };
 
 export const EXTERIOR_LIGHTING_OPTIONS = [
-  { key: "podna", label: "Podna / Ugradna rasveta" },
-  { key: "zidna", label: "Zidne lampe" },
-  { key: "reflektori", label: "Reflektori za drveće" },
-  { key: "ambijentalne", label: "Ambijentalne (visilice / stubići)" },
+  { key: "ground", label: "Podna / Ugradna rasveta" },
+  { key: "wall", label: "Zidne lampe" },
+  { key: "spotlights", label: "Reflektori za drveće" },
+  { key: "ambient", label: "Ambijentalne (visilice / stubići)" },
 ] as const;
 export type ExteriorLighting = {
-  podna: boolean;
-  zidna: boolean;
-  reflektori: boolean;
-  ambijentalne: boolean;
+  ground: boolean;
+  wall: boolean;
+  spotlights: boolean;
+  ambient: boolean;
 };
 
 // ─── Main config ──────────────────────────────────────────────────────
@@ -150,13 +150,13 @@ export type LandscapeConfig = {
 };
 
 export function defaultWaterFeatures(): WaterFeatures {
-  return { bazen: false, jezerce: false, fontana: false, potok: false };
+  return { pool: false, pond: false, fountain: false, stream: false };
 }
 export function defaultStructures(): Structures {
-  return { pergola: false, letnjaKuhinja: false, firePit: false, igraliste: false };
+  return { pergola: false, summerKitchen: false, firePit: false, playground: false };
 }
 export function defaultExteriorLighting(): ExteriorLighting {
-  return { podna: false, zidna: false, reflektori: false, ambijentalne: false };
+  return { ground: false, wall: false, spotlights: false, ambient: false };
 }
 
 export function defaultLandscapeConfig(): LandscapeConfig {

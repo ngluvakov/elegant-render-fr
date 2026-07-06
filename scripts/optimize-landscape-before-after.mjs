@@ -27,8 +27,8 @@ const QUALITY = 82;
 const EFFORT = 6;
 
 const jobs = [
-  { src: "B.png", out: "problem-uredjenje-pejzaza-before.webp", role: "BEFORE (gola parcela)" },
-  { src: "A.png", out: "problem-uredjenje-pejzaza-after.webp", role: "AFTER (uređen pejzaž)" },
+  { src: "B.png", out: "problem-landscape-design-before.webp", role: "BEFORE (gola parcela)" },
+  { src: "A.png", out: "problem-landscape-design-after.webp", role: "AFTER (uređen pejzaž)" },
 ];
 
 const formatKB = (bytes) => `${(bytes / 1024).toFixed(0)} KB`;

@@ -8,10 +8,10 @@
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const DTD_SKY_MOODS = [
-  { id: "zlatni-sat", label: "Zlatni sat (Toplo / Zalazak)" },
-  { id: "dramaticni-sumrak", label: "Dramatičan sumrak (Ljubičasto / Plavo)" },
-  { id: "vedra-noc", label: "Vedra noć (Tamno plavo, sa zvezdama)" },
-  { id: "oblacni-sumrak", label: "Oblačan sumrak (Moody)" },
+  { id: "golden-hour", label: "Zlatni sat (Toplo / Zalazak)" },
+  { id: "dramatic-dusk", label: "Dramatičan sumrak (Ljubičasto / Plavo)" },
+  { id: "clear-night", label: "Vedra noć (Tamno plavo, sa zvezdama)" },
+  { id: "overcast-dusk", label: "Oblačan sumrak (Moody)" },
 ] as const;
 export type DtdSkyMoodId = (typeof DTD_SKY_MOODS)[number]["id"];
 export const DTD_SKY_MOOD_IDS = DTD_SKY_MOODS.map(
@@ -19,9 +19,9 @@ export const DTD_SKY_MOOD_IDS = DTD_SKY_MOODS.map(
 ) as DtdSkyMoodId[];
 
 export const DTD_INTERIOR_LIGHTS = [
-  { id: "toplo-zuto", label: "Toplo žuto svetlo (Cozy)" },
-  { id: "neutralno-belo", label: "Neutralno belo svetlo" },
-  { id: "hladno", label: "Hladno svetlo (moderno)" },
+  { id: "warm-yellow", label: "Toplo žuto svetlo (Cozy)" },
+  { id: "neutral-white", label: "Neutralno belo svetlo" },
+  { id: "cool", label: "Hladno svetlo (moderno)" },
 ] as const;
 export type DtdInteriorLightId =
   (typeof DTD_INTERIOR_LIGHTS)[number]["id"];
@@ -30,9 +30,9 @@ export const DTD_INTERIOR_LIGHT_IDS = DTD_INTERIOR_LIGHTS.map(
 ) as DtdInteriorLightId[];
 
 export const DTD_COLOR_GRADES = [
-  { id: "prirodno", label: "Prirodno (samo zamena neba)" },
-  { id: "filmski", label: "Filmski (pojačan kontrast i boje)" },
-  { id: "toplo", label: "Toplo (naglašen zalazak sunca)" },
+  { id: "natural", label: "Prirodno (samo zamena neba)" },
+  { id: "cinematic", label: "Filmski (pojačan kontrast i boje)" },
+  { id: "warm", label: "Toplo (naglašen zalazak sunca)" },
 ] as const;
 export type DtdColorGradeId = (typeof DTD_COLOR_GRADES)[number]["id"];
 export const DTD_COLOR_GRADE_IDS = DTD_COLOR_GRADES.map(
@@ -79,7 +79,7 @@ export function defaultDtdConfig(): DtdConfig {
   return {
     projectName: "Nekretnina 1",
     photoCount: 1,
-    skyMood: "zlatni-sat",
+    skyMood: "golden-hour",
     exteriorLighting: defaultExteriorLighting(),
     shadowRemoval: false,
     rushDelivery: false,
@@ -119,7 +119,7 @@ function sanitizeBooleans<T extends Record<string, boolean>>(
 export function sanitizeDtdConfig(c: DtdConfig): DtdConfig {
   const skyMood =
     pickFromAllowlist<DtdSkyMoodId>(c.skyMood, DTD_SKY_MOOD_IDS) ??
-    "zlatni-sat";
+    "golden-hour";
   return {
     projectName:
       String(c.projectName ?? "").trim().slice(0, 100) || "Nekretnina 1",

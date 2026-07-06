@@ -177,7 +177,7 @@ export function LandscapeConfigSection({
   const droneFiles = files.filter((f) => f.kind === "drone-photo");
 
   const showDroneUpload =
-    config.aerialEnabled && config.aerialEnvRepresentation === "fotomontaza";
+    config.aerialEnabled && config.aerialEnvRepresentation === "photomontage";
 
   const uploadFile = useCallback(
     async (file: File, kind: FileKind) => {

@@ -42,7 +42,7 @@ export type BlogPost = {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
-    slug: "koliko-kosta-3d-rendering-enterijera",
+    slug: "interior-3d-rendering-cost",
     title: "Koliko košta 3D rendering enterijera? Cenovnik i vodič za 2026.",
     excerpt:
       "Cena 3D renderovanja enterijera zavisi od složenosti prostora, broja uglova i roka. Kompletan vodič sa cenama i savetima.",
@@ -165,7 +165,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
   },
   {
-    slug: "virtuelna-renovacija-vs-stvarna",
+    slug: "virtual-vs-real-renovation",
     title: "Virtuelna renovacija vs stvarna renovacija: šta je isplativije?",
     excerpt:
       "Poređenje virtuelne i stvarne renovacije — cena, vreme, ishod. Kada je virtuelna renovacija bolji izbor od izvođenja radova.",
@@ -281,12 +281,12 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: "cta",
         label: "Izračunajte cenu virtuelne renovacije",
-        href: "/pricing?group=opremanje-renovacija",
+        href: "/pricing?group=staging-renovation",
       },
     ],
   },
   {
-    slug: "kako-dobiti-ponudu-za-3d-vizuelizaciju",
+    slug: "how-to-get-a-3d-visualization-quote",
     title: "Kako dobiti ponudu za 3D vizuelizaciju? Brzi vodič kroz proces",
     excerpt:
       "Sve što treba da znate pre nego što naručite 3D render — kako pripremiti brief, koje informacije su potrebne i koliko traje izrada.",
@@ -455,7 +455,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
   },
   {
-    slug: "ai-studio-obrada-fotografija-nekretnina",
+    slug: "ai-studio-real-estate-photo-editing",
     title:
       "AI Studio — kako veštačka inteligencija obrađuje fotografije nekretnina",
     excerpt:
@@ -621,7 +621,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
   },
   {
-    slug: "360-ture-u-prodaji-nekretnina",
+    slug: "360-tours-in-real-estate-sales",
     title:
       "360 ture u prodaji nekretnina: zašto kupci vole interaktivni prikaz",
     excerpt:
@@ -788,12 +788,12 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: "cta",
         label: "Izračunajte cenu 360 ture",
-        href: "/pricing?group=360-ture",
+        href: "/pricing?group=animation",
       },
     ],
   },
   {
-    slug: "kako-izabrati-firmu-za-3d-vizuelizaciju",
+    slug: "how-to-choose-a-3d-visualization-studio",
     title: "Kako izabrati pravu firmu za 3D vizuelizaciju? Vodič za klijente",
     excerpt:
       "Kako odabrati studio za arhitektonsku vizuelizaciju? Poređenje portfolija, cena, rokova i kvaliteta — sve što treba da znate pre nego što naručite 3D render.",
@@ -957,7 +957,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
   },
   {
-    slug: "najbolje-prakse-za-fotografisanje-nekretnina",
+    slug: "real-estate-photography-best-practices",
     title: "Najbolje prakse za fotografisanje nekretnina pre 3D obrade",
     excerpt:
       "Kako pripremiti fotografije nekretnina za AI obradu i 3D vizuelizaciju? Saveti za osvetljenje, kadriranje i rezoluciju koje koriste profesionalci.",
@@ -1132,7 +1132,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
   },
   {
-    slug: "zasto-developeri-koriste-3d-vizuelizaciju-pre-izgradnje",
+    slug: "why-developers-use-3d-visualization-before-construction",
     title: "Zašto developeri nekretnina koriste 3D vizuelizacije pre izgradnje?",
     excerpt:
       "Kako 3D vizuelizacije pre izgradnje pomažu developerima da prodaju projekte brže, smanje rizik i dobiju finansiranje — sa konkretnim primerima i statistikama.",
@@ -1276,7 +1276,7 @@ export const BLOG_POSTS: BlogPost[] = [
     ],
   },
   {
-    slug: "stilovi-virtuelnog-opremanja-enterijera-2026",
+    slug: "virtual-staging-styles-2026",
     title:
       "Virtuelno opremanje enterijera: stilovi koji su najtraženiji u 2026.",
     excerpt:
@@ -1477,12 +1477,12 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: "cta",
         label: "Pogledajte virtuelno opremanje",
-        href: "/services/virtuelno-opremanje",
+        href: "/services/virtual-staging",
       },
     ],
   },
   {
-    slug: "kako-pripremiti-cad-crteze-za-3d-vizuelizaciju",
+    slug: "how-to-prepare-cad-drawings-for-3d-visualization",
     title: "Kako pripremiti CAD crteže za 3D vizuelizaciju? Vodič za arhitekte",
     excerpt:
       "Kako pripremiti CAD, Revit ili SketchUp fajlove za 3D vizuelizaciju? Kompletan vodič za arhitekte — formati, saveti, nivo detalja i checklista.",

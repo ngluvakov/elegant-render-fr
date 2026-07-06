@@ -1,14 +1,14 @@
 /**
  * optimize-3d-osnove.mjs — One-shot conversion of the new "3D osnove"
- * (3D floor-plan) masters into web-ready WebP assets for /usluge/3d-osnove.
+ * (3D floor-plan) masters into web-ready WebP assets for /services/3d-floor-plans.
  *
  * Source masters are tall PORTRAIT renders (3506×4958). The page frames are
  * LANDSCAPE (16:9 hero + portfolio tiles, 4:3 before/after slider), so per the
  * brief we ROTATE each plan 90° CW → landscape, then cover-crop to the target
  * frame (crop eats mostly the white margins, keeping the rooms readable).
  *
- * New files are 3d-osnove-specific (the old osnove-* files are shared with the
- * hidden "2d-i-3d-osnove" combined service and must stay untouched).
+ * New files are 3d-floor-plans-specific (the old floor-plans-* files are shared
+ * with the hidden "2d-3d-floor-plans" combined service and must stay untouched).
  *
  * Mapping:
  *   Type 2            → hero (detail) + listing card + portfolio tile 2
@@ -35,17 +35,17 @@ const T4 = "ASA - 3D Floor Plans - 4_Type 3 No Balcony.jpg";
 
 const jobs = [
   // hero (16:9)
-  { src: T2, out: "detail-3d-osnove.webp", w: 1920, h: 1080, q: 82 },
+  { src: T2, out: "detail-3d-floor-plans.webp", w: 1920, h: 1080, q: 82 },
   // listing / card (4:3)
-  { src: T2, out: "listing-3d-osnove.webp", w: 1200, h: 900, q: 82 },
+  { src: T2, out: "listing-3d-floor-plans.webp", w: 1200, h: 900, q: 82 },
   // before/after reveal (4:3) — 2D plan → 3D render
-  { src: T1_2D, out: "problem-3d-osnove-before.webp", w: 1000, h: 750, q: 90 },
-  { src: T1_3D, out: "problem-3d-osnove-after.webp", w: 1000, h: 750, q: 82 },
+  { src: T1_2D, out: "problem-3d-floor-plans-before.webp", w: 1000, h: 750, q: 90 },
+  { src: T1_3D, out: "problem-3d-floor-plans-after.webp", w: 1000, h: 750, q: 82 },
   // portfolio (16:9) — four distinct unit types
-  { src: T1_3D, out: "portfolio-3d-osnove-tip-1.webp", w: 1600, h: 900, q: 82 },
-  { src: T2, out: "portfolio-3d-osnove-tip-2.webp", w: 1600, h: 900, q: 82 },
-  { src: T3, out: "portfolio-3d-osnove-tip-3.webp", w: 1600, h: 900, q: 82 },
-  { src: T4, out: "portfolio-3d-osnove-tip-3-bez-balkona.webp", w: 1600, h: 900, q: 82 },
+  { src: T1_3D, out: "portfolio-3d-floor-plans-type-1.webp", w: 1600, h: 900, q: 82 },
+  { src: T2, out: "portfolio-3d-floor-plans-type-2.webp", w: 1600, h: 900, q: 82 },
+  { src: T3, out: "portfolio-3d-floor-plans-type-3.webp", w: 1600, h: 900, q: 82 },
+  { src: T4, out: "portfolio-3d-floor-plans-type-3-no-balcony.webp", w: 1600, h: 900, q: 82 },
 ];
 
 const kb = (b) => `${(b / 1024).toFixed(0)} KB`;

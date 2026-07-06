@@ -37,8 +37,8 @@ export const FP_FURNITURE_STYLE_IDS = FP_FURNITURE_STYLES.map(
 
 export const FP_CAMERA_ANGLES = [
   { id: "top-down", label: "Top-down (ptičja perspektiva)" },
-  { id: "izometrija", label: "Izometrija (45°, najbolja dubina)" },
-  { id: "perspektiva", label: "Perspektiva (dramatičniji ugao)" },
+  { id: "isometric", label: "Izometrija (45°, najbolja dubina)" },
+  { id: "perspective", label: "Perspektiva (dramatičniji ugao)" },
 ] as const;
 export type FpCameraAngleId = (typeof FP_CAMERA_ANGLES)[number]["id"];
 export const FP_CAMERA_ANGLE_IDS = FP_CAMERA_ANGLES.map(
@@ -46,8 +46,8 @@ export const FP_CAMERA_ANGLE_IDS = FP_CAMERA_ANGLES.map(
 ) as FpCameraAngleId[];
 
 export const FP_WALL_DISPLAYS = [
-  { id: "puni", label: "Puni zidovi (presečeni na visini)" },
-  { id: "transparentni", label: "Transparentni / Stakleni zidovi" },
+  { id: "solid", label: "Puni zidovi (presečeni na visini)" },
+  { id: "transparent", label: "Transparentni / Stakleni zidovi" },
 ] as const;
 export type FpWallDisplayId = (typeof FP_WALL_DISPLAYS)[number]["id"];
 export const FP_WALL_DISPLAY_IDS = FP_WALL_DISPLAYS.map(
@@ -55,9 +55,9 @@ export const FP_WALL_DISPLAY_IDS = FP_WALL_DISPLAYS.map(
 ) as FpWallDisplayId[];
 
 export const FP_BACKGROUNDS = [
-  { id: "bela", label: "Bela (čisto, za štampu)" },
-  { id: "tamna", label: "Tamna / Crna (luksuzni izgled)" },
-  { id: "transparentna", label: "Transparentna (PNG bez pozadine)" },
+  { id: "white", label: "Bela (čisto, za štampu)" },
+  { id: "dark", label: "Tamna / Crna (luksuzni izgled)" },
+  { id: "transparent", label: "Transparentna (PNG bez pozadine)" },
 ] as const;
 export type FpBackgroundId = (typeof FP_BACKGROUNDS)[number]["id"];
 export const FP_BACKGROUND_IDS = FP_BACKGROUNDS.map(

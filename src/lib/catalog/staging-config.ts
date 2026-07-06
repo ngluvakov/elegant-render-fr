@@ -25,11 +25,11 @@ export const VS_FURNITURE_STYLE_IDS = VS_FURNITURE_STYLES.map(
 ) as VsFurnitureStyleId[];
 
 export const VS_ROOM_PURPOSES = [
-  { id: "dnevna", label: "Dnevna soba" },
-  { id: "spavaca", label: "Spavaća soba" },
-  { id: "decija", label: "Dečija soba" },
-  { id: "trpezarija", label: "Trpezarija" },
-  { id: "radna", label: "Radna soba / Kancelarija" },
+  { id: "living-room", label: "Dnevna soba" },
+  { id: "bedroom", label: "Spavaća soba" },
+  { id: "kids-room", label: "Dečija soba" },
+  { id: "dining-room", label: "Trpezarija" },
+  { id: "office", label: "Radna soba / Kancelarija" },
   { id: "open-space", label: "Prazan prostor (Open space)" },
 ] as const;
 export type VsRoomPurposeId =
@@ -42,16 +42,16 @@ export const VS_MOODS = [
   { id: "airy", label: "Svetlo i prozračno (Airy)" },
   { id: "cozy", label: "Toplo i ušuškano (Cozy)" },
   { id: "moody", label: "Luksuzno i tamnije (Moody)" },
-  { id: "neutralno", label: "Neutralno / Komercijalno" },
+  { id: "neutral", label: "Neutralno / Komercijalno" },
 ] as const;
 export type VsMoodId = (typeof VS_MOODS)[number]["id"];
 export const VS_MOOD_IDS = VS_MOODS.map((m) => m.id) as VsMoodId[];
 
 export const VS_TARGET_AUDIENCES = [
-  { id: "mladi-parovi", label: "Mladi parovi / Profesionalci" },
-  { id: "porodice", label: "Porodice sa decom" },
-  { id: "studenti", label: "Studenti" },
-  { id: "luksuzni", label: "Luksuzni kupci" },
+  { id: "young-couples", label: "Mladi parovi / Profesionalci" },
+  { id: "families", label: "Porodice sa decom" },
+  { id: "students", label: "Studenti" },
+  { id: "luxury", label: "Luksuzni kupci" },
 ] as const;
 export type VsTargetAudienceId =
   (typeof VS_TARGET_AUDIENCES)[number]["id"];
@@ -86,7 +86,7 @@ export function defaultStagingConfig(): StagingConfig {
   return {
     roomName: "Dnevna soba",
     furnitureStyle: "modern",
-    roomPurpose: "dnevna",
+    roomPurpose: "living-room",
     lightingCorrection: false,
     artificialLight: false,
     itemRemovalEnabled: false,
@@ -120,7 +120,7 @@ export function sanitizeStagingConfig(c: StagingConfig): StagingConfig {
     ) ?? "modern";
   const roomPurpose =
     pickFromAllowlist<VsRoomPurposeId>(c.roomPurpose, VS_ROOM_PURPOSE_IDS) ??
-    "dnevna";
+    "living-room";
   const itemRemovalEnabled = Boolean(c.itemRemovalEnabled);
   const restyleEnabled = Boolean(c.restyleEnabled);
   const restyleStyle = pickFromAllowlist<VsFurnitureStyleId>(

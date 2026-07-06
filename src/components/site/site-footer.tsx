@@ -34,12 +34,12 @@ import {
  * column signals breadth and primary offerings.
  */
 const FOOTER_SERVICES: NavItem[] = [
-  { href: "/services/unutrasnji-renderi", label: "Unutrašnji renderi" },
-  { href: "/services/spoljasnji-renderi", label: "Spoljašnji renderi" },
-  { href: "/services/virtuelno-opremanje", label: "Virtuelno opremanje" },
-  { href: "/services/vr-tura", label: "VR tura" },
-  { href: "/services/arhitektonska-animacija", label: "Arhitektonska animacija" },
-  { href: "/services/situacioni-planovi", label: "3D situacioni planovi" },
+  { href: "/services/interior-renders", label: "Unutrašnji renderi" },
+  { href: "/services/exterior-renders", label: "Spoljašnji renderi" },
+  { href: "/services/virtual-staging", label: "Virtuelno opremanje" },
+  { href: "/services/vr-tour", label: "VR tura" },
+  { href: "/services/architectural-animation", label: "Arhitektonska animacija" },
+  { href: "/services/site-plans", label: "3D situacioni planovi" },
 ];
 
 const KOMPANIJA_LINKS: NavItem[] = [

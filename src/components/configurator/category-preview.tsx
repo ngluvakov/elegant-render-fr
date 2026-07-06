@@ -4,7 +4,7 @@
  * price (derived live from the catalog), and links into the configurator with
  * the matching tab pre-selected.
  *
- * Visual: still WebP for four of the groups; the animacija card renders a
+ * Visual: still WebP for four of the groups; the animation card renders a
  * looping muted MP4 so the card itself shows what the customer is buying.
  * All cards fall back to a lucide icon + gradient when the asset hasn't
  * loaded yet.
@@ -68,27 +68,27 @@ const GROUP_VISUALS: Record<
   CustomerGroupId,
   { icon: LucideIcon; gradient: string }
 > = {
-  "renderi-eksterijera": {
+  "exterior-renders": {
     icon: Building2,
     gradient: "from-[color:var(--color-sage)]/15 to-[color:var(--color-sage-deep)]/25",
   },
-  enterijer: {
+  interior: {
     icon: Sofa,
     gradient: "from-accent/15 to-accent/25",
   },
-  planovi: {
+  plans: {
     icon: Layers,
     gradient: "from-foreground/10 to-foreground/20",
   },
-  animacija: {
+  animation: {
     icon: Camera,
     gradient: "from-accent/20 to-[color:var(--color-sage-deep)]/20",
   },
-  "opremanje-renovacija": {
+  "staging-renovation": {
     icon: Sparkles,
     gradient: "from-[color:var(--color-sage)]/20 to-accent/15",
   },
-  "vr-iskustvo": {
+  "vr-experience": {
     icon: Glasses,
     gradient: "from-foreground/15 to-[color:var(--color-sage-deep)]/20",
   },

@@ -28,20 +28,20 @@ export type ArchStyleId = (typeof ARCH_STYLES)[number]["id"];
 export const ARCH_STYLE_IDS = ARCH_STYLES.map((s) => s.id) as ArchStyleId[];
 
 export const WEATHER = [
-  { id: "suncano", label: "Sunčano" },
-  { id: "oblacno", label: "Oblačno" },
-  { id: "kisa", label: "Kiša" },
-  { id: "magla", label: "Magla" },
-  { id: "sneg", label: "Sneg" },
+  { id: "sunny", label: "Sunčano" },
+  { id: "overcast", label: "Oblačno" },
+  { id: "rain", label: "Kiša" },
+  { id: "fog", label: "Magla" },
+  { id: "snow", label: "Sneg" },
 ] as const;
 export type WeatherId = (typeof WEATHER)[number]["id"];
 export const WEATHER_IDS = WEATHER.map((w) => w.id) as WeatherId[];
 
 export const ENVIRONMENTS = [
-  { id: "urbano", label: "Urbano (grad)" },
-  { id: "prigradsko", label: "Prigradsko (naselje)" },
-  { id: "priroda", label: "Priroda (šuma / planina)" },
-  { id: "obala", label: "Obala (voda)" },
+  { id: "urban", label: "Urbano (grad)" },
+  { id: "suburban", label: "Prigradsko (naselje)" },
+  { id: "nature", label: "Priroda (šuma / planina)" },
+  { id: "coast", label: "Obala (voda)" },
 ] as const;
 export type EnvironmentId = (typeof ENVIRONMENTS)[number]["id"];
 export const ENVIRONMENT_IDS = ENVIRONMENTS.map((e) => e.id) as EnvironmentId[];
@@ -51,7 +51,7 @@ export const ENVIRONMENT_IDS = ENVIRONMENTS.map((e) => e.id) as EnvironmentId[];
 export const RENDERING_MODES = [
   { id: "standard", label: "Standardni render (sintetičko okruženje)" },
   {
-    id: "fotomontaza",
+    id: "photomontage",
     label: "Fotomontaža (uklapanje u fotografiju lokacije)",
   },
 ] as const;
@@ -63,17 +63,17 @@ export const RENDERING_MODE_IDS = RENDERING_MODES.map(
 // ─── Aerial-specific vocabularies ─────────────────────────────────────
 
 export const AERIAL_VIEWS = [
-  { id: "ptica", label: "Ptičja perspektiva (visoko)" },
-  { id: "polu-aerial", label: "Polu-aerial (srednja visina)" },
-  { id: "dron", label: "Dron pogled (nisko)" },
+  { id: "birds-eye", label: "Ptičja perspektiva (visoko)" },
+  { id: "semi-aerial", label: "Polu-aerial (srednja visina)" },
+  { id: "drone", label: "Dron pogled (nisko)" },
 ] as const;
 export type AerialViewId = (typeof AERIAL_VIEWS)[number]["id"];
 export const AERIAL_VIEW_IDS = AERIAL_VIEWS.map((a) => a.id) as AerialViewId[];
 
 export const ENV_REPRESENTATIONS = [
   { id: "3d", label: "3D modelovano okruženje" },
-  { id: "fotomontaza", label: "Uklapanje u dron fotografiju" },
-  { id: "apstraktno", label: "Apstraktno (bele mase)" },
+  { id: "photomontage", label: "Uklapanje u dron fotografiju" },
+  { id: "abstract", label: "Apstraktno (bele mase)" },
 ] as const;
 export type EnvRepId = (typeof ENV_REPRESENTATIONS)[number]["id"];
 export const ENV_REP_IDS = ENV_REPRESENTATIONS.map((e) => e.id) as EnvRepId[];
@@ -100,7 +100,7 @@ function pickFromAllowlist<T extends string>(
 export type ExtStaticConfig = {
   modelName: string;
   cameraCount: number;            // min 1; quantity for ext-static-cam = count - 1
-  renderingMode: RenderingModeId; // standard | fotomontaza (drives ext-static-photo)
+  renderingMode: RenderingModeId; // standard | photomontage (drives ext-static-photo)
   styleId?: ArchStyleId;
   description?: string;
   timeOfDay?: TimeOfDayId;
@@ -167,7 +167,7 @@ export function readExtStaticConfig(cj: unknown): ExtStaticConfig {
 export type Ext360Config = {
   modelName: string;
   hotspotCount: number;           // min 1; quantity for ext-360-hotspot = count - 1
-  renderingMode: RenderingModeId; // standard | fotomontaza (drives ext-360-photo)
+  renderingMode: RenderingModeId; // standard | photomontage (drives ext-360-photo)
   styleId?: ArchStyleId;
   description?: string;
   timeOfDay?: TimeOfDayId;
@@ -247,7 +247,7 @@ export function defaultExtAerialConfig(): ExtAerialConfig {
   return {
     complexName: "Kompleks 1",
     cameraCount: 1,
-    aerialView: "polu-aerial",
+    aerialView: "semi-aerial",
     showParcelBoundaries: false,
   };
 }
@@ -256,7 +256,7 @@ export function sanitizeExtAerialConfig(
   c: ExtAerialConfig,
 ): ExtAerialConfig {
   const aerialView =
-    pickFromAllowlist<AerialViewId>(c.aerialView, AERIAL_VIEW_IDS) ?? "ptica";
+    pickFromAllowlist<AerialViewId>(c.aerialView, AERIAL_VIEW_IDS) ?? "birds-eye";
   return {
     complexName:
       String(c.complexName ?? "").trim().slice(0, 80) || "Kompleks 1",
@@ -298,7 +298,7 @@ export function extStaticAddOnQuantitiesFor(
   const q: Record<string, number> = {};
   if (config.cameraCount > 1)
     q["ext-static-cam"] = config.cameraCount - 1;
-  if (config.renderingMode === "fotomontaza") q["ext-static-photo"] = 1;
+  if (config.renderingMode === "photomontage") q["ext-static-photo"] = 1;
   return q;
 }
 
@@ -308,7 +308,7 @@ export function ext360AddOnQuantitiesFor(
   const q: Record<string, number> = {};
   if (config.hotspotCount > 1)
     q["ext-360-hotspot"] = config.hotspotCount - 1;
-  if (config.renderingMode === "fotomontaza") q["ext-360-photo"] = 1;
+  if (config.renderingMode === "photomontage") q["ext-360-photo"] = 1;
   return q;
 }
 

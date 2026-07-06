@@ -112,7 +112,7 @@ const FILTERS: { key: FilterKey; label: string }[] = [
 const SERVICES: Service[] = [
   {
     name: "Unutrašnji renderi",
-    slug: "render-enterijera",
+    slug: "interior-render",
     priceRsd: 19924,
     category: "renderi",
     short: "Vizuelizacija enterijera pre opremanja, renovacije ili prodaje prostora.",
@@ -125,7 +125,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "360 enterijeri",
-    slug: "360-tura-enterijera",
+    slug: "interior-360-tour",
     priceRsd: 34574,
     category: "360",
     short: "Interaktivna 360 tura kroz prostor sa dodatnim statičnim uglovima kamere.",
@@ -143,7 +143,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Spoljašnji renderi",
-    slug: "spoljasnji-renderi",
+    slug: "exterior-renders",
     priceRsd: 29300,
     category: "renderi",
     short: "Realističan prikaz kuće, zgrade ili fasade sa materijalima i okruženjem.",
@@ -156,7 +156,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "360 eksterijeri",
-    slug: "360-eksterijer",
+    slug: "exterior-360",
     priceRsd: 39262,
     category: "360",
     short: "VR-spreman prikaz eksterijera sa interaktivnim tačkama gledanja.",
@@ -173,7 +173,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "3D prikaz ulice (streetscape)",
-    slug: "3d-prikaz-ulice",
+    slug: "3d-streetscape",
     priceRsd: 49224,
     category: "renderi",
     short: "Objekat sa susednim kućama, modelovan u 3D — prikaz iz ulice (a po potrebi i iz vazduha).",
@@ -190,7 +190,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Uređenje pejzaža",
-    slug: "uredjenje-pejzaza",
+    slug: "landscape-design",
     priceRsd: 25784,
     category: "renderi",
     short: "Prikaz dvorišta, vrta, parkovskog ili spoljnog uređenja sa vegetacijom i terenom.",
@@ -206,7 +206,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Render u stvarnoj fotografiji lokacije",
-    slug: "render-u-stvarnoj-fotografiji",
+    slug: "photomontage",
     priceRsd: 35160,
     category: "renderi",
     short: "Vaš budući objekat uklopljen u stvarnu fotografiju lokacije — sa pravim okruženjem i svetlom.",
@@ -222,7 +222,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "3D osnove prostora",
-    slug: "3d-osnove",
+    slug: "3d-floor-plans",
     priceRsd: 3399,
     category: "osnove",
     short: "Top-down 3D prikaz rasporeda prostorija, nameštaja i funkcionalne organizacije.",
@@ -235,7 +235,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "2D osnove prostora",
-    slug: "2d-osnove",
+    slug: "2d-floor-plans",
     priceRsd: 2344,
     category: "osnove",
     short: "Čiste i pregledne 2D osnove za marketing materijale, sajtove i oglase.",
@@ -248,7 +248,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "3D site planovi",
-    slug: "situacioni-planovi",
+    slug: "site-plans",
     priceRsd: 41020,
     category: "osnove",
     short: "Pregled cele parcele sa objektima, pristupima, zelenilom i širim odnosom prostora.",
@@ -261,7 +261,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Arhitektonska animacija",
-    slug: "arhitektonska-animacija",
+    slug: "architectural-animation",
     priceRsd: 26370,
     category: "360",
     short: "Video walkthrough i flythrough prikaz za snažniji prodajni utisak.",
@@ -275,7 +275,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "VR tura",
-    slug: "vr-tura",
+    slug: "vr-tour",
     priceRsd: 2344,
     category: "360",
     short: "Web bazirane ture koje povezuju 360 kadrove u interaktivno iskustvo.",
@@ -290,7 +290,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Virtuelno opremanje prostora",
-    slug: "virtuelno-opremanje",
+    slug: "virtual-staging",
     priceRsd: 2110,
     category: "nekretnine",
     short: "Digitalno opremanje prazne prostorije na osnovu postojeće fotografije.",
@@ -306,7 +306,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Virtuelna renovacija prostora",
-    slug: "virtuelna-renovacija",
+    slug: "virtual-renovation",
     priceRsd: 7735,
     category: "nekretnine",
     short: "Prikaz kako bi prostor izgledao nakon adaptacije i promene materijala.",
@@ -322,7 +322,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Dnevni u noćni prikaz",
-    slug: "dnevni-u-nocni-prikaz",
+    slug: "day-to-dusk",
     priceRsd: 1172,
     category: "nekretnine",
     short: "Pretvaranje dnevne fotografije eksterijera u atraktivniji sumrak.",
@@ -338,7 +338,7 @@ const SERVICES: Service[] = [
   },
   {
     name: "Uklanjanje elemenata",
-    slug: "uklanjanje-predmeta",
+    slug: "item-removal",
     priceRsd: 1406,
     category: "nekretnine",
     short: "Digitalno uklanjanje nereda i neželjenih objekata sa fotografije prostora.",

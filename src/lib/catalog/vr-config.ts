@@ -43,9 +43,9 @@ export const VR_INTERACTIVE_RSD = 23440;
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const VR_EXPERIENCE_TYPES = [
-  { id: "eksterijer", label: "Eksterijer (slobodno kretanje oko objekta)" },
-  { id: "enterijer", label: "Enterijer (kretanje kroz prostorije)" },
-  { id: "kompleks", label: "Kompleks (eksterijer + enterijer)" },
+  { id: "exterior", label: "Eksterijer (slobodno kretanje oko objekta)" },
+  { id: "interior", label: "Enterijer (kretanje kroz prostorije)" },
+  { id: "complex", label: "Kompleks (eksterijer + enterijer)" },
 ] as const;
 export type VrExperienceTypeId =
   (typeof VR_EXPERIENCE_TYPES)[number]["id"];
@@ -67,7 +67,7 @@ export const VR_TARGET_DEVICE_IDS = VR_TARGET_DEVICES.map(
 export const VR_LOCOMOTION = [
   { id: "teleport", label: "Teleportacija (najbolje protiv mučnine)" },
   { id: "smooth", label: "Slobodno hodanje (smooth locomotion)" },
-  { id: "vodjena", label: "Vođena tura (po šinama)" },
+  { id: "guided", label: "Vođena tura (po šinama)" },
 ] as const;
 export type VrLocomotionId = (typeof VR_LOCOMOTION)[number]["id"];
 export const VR_LOCOMOTION_IDS = VR_LOCOMOTION.map(
@@ -75,9 +75,9 @@ export const VR_LOCOMOTION_IDS = VR_LOCOMOTION.map(
 ) as VrLocomotionId[];
 
 export const VR_DAY_NIGHT_MODES = [
-  { id: "dnevno", label: "Dnevno svetlo" },
-  { id: "nocno", label: "Noćno svetlo" },
-  { id: "dinamicno", label: "Dinamično (korisnik menja dan / noć)" },
+  { id: "daylight", label: "Dnevno svetlo" },
+  { id: "night", label: "Noćno svetlo" },
+  { id: "dynamic", label: "Dinamično (korisnik menja dan / noć)" },
 ] as const;
 export type VrDayNightModeId =
   (typeof VR_DAY_NIGHT_MODES)[number]["id"];
@@ -111,7 +111,7 @@ export type VrConfig = {
 export function defaultVrConfig(): VrConfig {
   return {
     projectName: "VR Prezentacija 1",
-    experienceType: "enterijer",
+    experienceType: "interior",
     targetDevice: "meta-quest",
     movementRestrictions: false,
     doorInteraction: false,
@@ -145,7 +145,7 @@ export function sanitizeVrConfig(c: VrConfig): VrConfig {
     pickFromAllowlist<VrExperienceTypeId>(
       c.experienceType,
       VR_EXPERIENCE_TYPE_IDS,
-    ) ?? "enterijer";
+    ) ?? "interior";
   const targetDevice =
     pickFromAllowlist<VrTargetDeviceId>(
       c.targetDevice,

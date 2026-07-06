@@ -10,12 +10,12 @@
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const RENO_ROOM_TYPES = [
-  { id: "kupatilo", label: "Kupatilo" },
-  { id: "kuhinja", label: "Kuhinja" },
-  { id: "dnevna", label: "Dnevna soba" },
-  { id: "spavaca", label: "Spavaća soba" },
-  { id: "fasada", label: "Eksterijer / Fasada" },
-  { id: "komercijalni", label: "Komercijalni prostor" },
+  { id: "bathroom", label: "Kupatilo" },
+  { id: "kitchen", label: "Kuhinja" },
+  { id: "living-room", label: "Dnevna soba" },
+  { id: "bedroom", label: "Spavaća soba" },
+  { id: "facade", label: "Eksterijer / Fasada" },
+  { id: "commercial", label: "Komercijalni prostor" },
 ] as const;
 export type RenoRoomTypeId = (typeof RENO_ROOM_TYPES)[number]["id"];
 export const RENO_ROOM_TYPE_IDS = RENO_ROOM_TYPES.map(
@@ -23,10 +23,10 @@ export const RENO_ROOM_TYPE_IDS = RENO_ROOM_TYPES.map(
 ) as RenoRoomTypeId[];
 
 export const RENO_SCOPES = [
-  { id: "kozmeticka", label: "Kozmetička (samo boje i nameštaj)" },
-  { id: "delimicna", label: "Delimična (zamena podova / pločica)" },
+  { id: "cosmetic", label: "Kozmetička (samo boje i nameštaj)" },
+  { id: "partial", label: "Delimična (zamena podova / pločica)" },
   {
-    id: "kompletna",
+    id: "complete",
     label: "Kompletna (rušenje zidova, nove instalacije)",
   },
 ] as const;
@@ -34,12 +34,12 @@ export type RenoScopeId = (typeof RENO_SCOPES)[number]["id"];
 export const RENO_SCOPE_IDS = RENO_SCOPES.map((s) => s.id) as RenoScopeId[];
 
 export const RENO_FLOOR_MATERIALS = [
-  { id: "zadrzi", label: "Zadrži postojeće" },
-  { id: "parket-svetlo", label: "Parket / Laminat (svetlo drvo)" },
-  { id: "parket-tamno", label: "Parket / Laminat (tamno drvo)" },
-  { id: "plocice-mermer", label: "Pločice (mermer / kamen)" },
-  { id: "plocice-beton", label: "Pločice (beton / industrijski)" },
-  { id: "tepison", label: "Tepison" },
+  { id: "keep-existing", label: "Zadrži postojeće" },
+  { id: "parquet-light", label: "Parket / Laminat (svetlo drvo)" },
+  { id: "parquet-dark", label: "Parket / Laminat (tamno drvo)" },
+  { id: "tiles-marble", label: "Pločice (mermer / kamen)" },
+  { id: "tiles-concrete", label: "Pločice (beton / industrijski)" },
+  { id: "carpet", label: "Tepison" },
 ] as const;
 export type RenoFloorMaterialId =
   (typeof RENO_FLOOR_MATERIALS)[number]["id"];
@@ -48,12 +48,12 @@ export const RENO_FLOOR_MATERIAL_IDS = RENO_FLOOR_MATERIALS.map(
 ) as RenoFloorMaterialId[];
 
 export const RENO_WALL_MATERIALS = [
-  { id: "zadrzi", label: "Zadrži postojeće" },
-  { id: "krecenje-belo", label: "Krečenje (belo / neutralno)" },
-  { id: "krecenje-tamno", label: "Krečenje (tamno / akcentno)" },
-  { id: "tapete", label: "Tapete" },
-  { id: "drvene-obloge", label: "Drvene obloge" },
-  { id: "kamen-cigla", label: "Dekorativni kamen / cigla" },
+  { id: "keep-existing", label: "Zadrži postojeće" },
+  { id: "paint-white", label: "Krečenje (belo / neutralno)" },
+  { id: "paint-dark", label: "Krečenje (tamno / akcentno)" },
+  { id: "wallpaper", label: "Tapete" },
+  { id: "wood-paneling", label: "Drvene obloge" },
+  { id: "stone-brick", label: "Dekorativni kamen / cigla" },
 ] as const;
 export type RenoWallMaterialId =
   (typeof RENO_WALL_MATERIALS)[number]["id"];
@@ -67,7 +67,7 @@ export const RENO_FURNITURE_STYLES = [
   { id: "minimalist", label: "Minimalist" },
   { id: "industrial", label: "Industrial" },
   { id: "classic", label: "Classic / Traditional" },
-  { id: "zadrzi", label: "Zadrži postojeći nameštaj" },
+  { id: "keep-existing", label: "Zadrži postojeći nameštaj" },
 ] as const;
 export type RenoFurnitureStyleId =
   (typeof RENO_FURNITURE_STYLES)[number]["id"];
@@ -103,8 +103,8 @@ export type RenovationConfig = {
 export function defaultRenovationConfig(): RenovationConfig {
   return {
     roomName: "Kupatilo 1",
-    roomType: "kupatilo",
-    scope: "kompletna",
+    roomType: "bathroom",
+    scope: "complete",
     wallChangesEnabled: false,
     windowDoorChanges: false,
     extraAnglesCount: 0,
@@ -134,9 +134,9 @@ export function sanitizeRenovationConfig(
 ): RenovationConfig {
   const roomType =
     pickFromAllowlist<RenoRoomTypeId>(c.roomType, RENO_ROOM_TYPE_IDS) ??
-    "kupatilo";
+    "bathroom";
   const scope =
-    pickFromAllowlist<RenoScopeId>(c.scope, RENO_SCOPE_IDS) ?? "kompletna";
+    pickFromAllowlist<RenoScopeId>(c.scope, RENO_SCOPE_IDS) ?? "complete";
   const wallChangesEnabled = Boolean(c.wallChangesEnabled);
   const variantEnabled = Boolean(c.variantEnabled);
   return {

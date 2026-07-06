@@ -171,7 +171,7 @@ export function SiteplanConfigSection({
   const archFiles = files.filter((f) => f.kind === "architecture");
   const droneFiles = files.filter((f) => f.kind === "drone-photo");
 
-  const showDroneUpload = config.envRepresentation === "fotomontaza";
+  const showDroneUpload = config.envRepresentation === "photomontage";
 
   const uploadFile = useCallback(
     async (file: File, kind: FileKind) => {

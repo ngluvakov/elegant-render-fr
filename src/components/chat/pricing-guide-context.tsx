@@ -1,5 +1,5 @@
 /**
- * PricingAssistantGuideContext — injects the live cenovnik cart into the
+ * PricingAssistantGuideContext — injects the live pricing cart into the
  * assistant guide store so both the contextual tip bubble and the AI can
  * recognize what the user is configuring on /pricing and advise on the purchase.
  *

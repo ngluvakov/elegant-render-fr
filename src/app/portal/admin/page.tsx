@@ -15,7 +15,7 @@ import { AdminFilterBar } from "./admin-filter-bar";
 import { adminHas, requireAnyAdminPermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "Admin — Upravljanje platformom",
+  title: "Admin — Platform management",
   description:
     "Operational admin overview of orders, users, statuses, and platform management tasks.",
   robots: { index: false, follow: false },
@@ -116,7 +116,7 @@ export default async function AdminPage({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="font-heading text-3xl text-foreground">
-            Upravljanje platformom
+            Platform management
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             All orders, clients, and stats in one place.
@@ -129,12 +129,12 @@ export default async function AdminPage({
               Inquiries
             </AdminNavLink>
           )}
-          {canManageInquiries && <AdminNavLink href="/portal/admin/vr-inquiries">VR upiti</AdminNavLink>}
+          {canManageInquiries && <AdminNavLink href="/portal/admin/vr-inquiries">VR inquiries</AdminNavLink>}
           {adminHas(admin, "USAGE_VIEW") && (
             <AdminNavLink href="/portal/admin/ai-studio">AI Studio</AdminNavLink>
           )}
           {canViewAnalytics && <AdminNavLink href="/portal/admin/analytics">Analytics</AdminNavLink>}
-          {canManagePricing && <AdminNavLink href="/portal/admin/finance/pricebook">Finansije</AdminNavLink>}
+          {canManagePricing && <AdminNavLink href="/portal/admin/finance/pricebook">Finance</AdminNavLink>}
           {canViewFinance && <AdminNavLink href="/portal/admin/finance/export">Invoice export</AdminNavLink>}
           {canViewAudit && <AdminNavLink href="/portal/admin/revisions">Audit log</AdminNavLink>}
           {canManageSystem && (
@@ -161,7 +161,7 @@ export default async function AdminPage({
                 <p className="text-xl font-bold text-foreground">
                   {formatEur(totalRevenue)}
                 </p>
-                <p className="text-[0.72rem] text-muted-foreground">Ukupan prihod</p>
+                <p className="text-[0.72rem] text-muted-foreground">Total revenue</p>
               </div>
             </div>
           </div>
@@ -184,7 +184,7 @@ export default async function AdminPage({
             </div>
             <div>
               <p className="text-xl font-bold text-foreground">{activeCount}</p>
-              <p className="text-[0.72rem] text-muted-foreground">Aktivni projekti</p>
+              <p className="text-[0.72rem] text-muted-foreground">Active projects</p>
             </div>
           </div>
         </div>
@@ -206,7 +206,7 @@ export default async function AdminPage({
             </div>
             <div>
               <p className="text-xl font-bold text-foreground">{uniqueUsers}</p>
-              <p className="text-[0.72rem] text-muted-foreground">Klijenata</p>
+              <p className="text-[0.72rem] text-muted-foreground">Clients</p>
             </div>
           </div>
         </div>

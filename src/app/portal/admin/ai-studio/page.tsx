@@ -8,7 +8,7 @@ import {
 import { requirePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "AI Studio generacije",
+  title: "AI Studio generations",
   description:
     "Admin overview of AI Studio generations, users, statuses, and credit usage.",
   robots: { index: false, follow: false },
@@ -100,11 +100,11 @@ export default async function AdminAiStudioPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-3xl text-foreground md:text-4xl">
-          AI Studio generacije
+          AI Studio generations
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Admin overview of all AI generations, prompts, engines, errors, and files while
-          nisu istekli.
+          Admin overview of all AI generations, prompts, engines, errors, and files before
+          they expire.
         </p>
       </div>
 
@@ -149,7 +149,7 @@ export default async function AdminAiStudioPage() {
                       {getAiEditType(generation.editType).label}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {generation.createdAt.toLocaleDateString("sr-RS")}
+                      {generation.createdAt.toLocaleDateString("en-GB")}
                     </p>
                   </td>
                   <td className="px-4 py-3">
@@ -220,7 +220,7 @@ export default async function AdminAiStudioPage() {
                           rel="noreferrer"
                           className="text-xs font-medium text-accent hover:underline"
                         >
-                          Maska
+                          Mask
                         </a>
                       )}
                       {referenceUrls.length > 0 && (
@@ -232,7 +232,7 @@ export default async function AdminAiStudioPage() {
                         >
                           {referenceUrls.length > 1
                             ? `Reference (${referenceUrls.length})`
-                            : "Referenca"}
+                            : "Reference"}
                         </a>
                       )}
                       {!inputUrl &&
@@ -240,16 +240,16 @@ export default async function AdminAiStudioPage() {
                         !providerOutputUrl &&
                         referenceUrls.length === 0 && (
                         <span className="text-xs text-muted-foreground">
-                          Isteklo
+                          Expired
                         </span>
                       )}
                     </div>
                     {(inputUrl || referenceUrls[0] || maskUrl || providerOutputUrl || resultUrl) && (
                       <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-6">
                         <DiagnosticThumb label="Original" url={inputUrl} />
-                        <DiagnosticThumb label="Referenca" url={referenceUrls[0] ?? null} />
-                        <DiagnosticThumb label="Maska" url={maskUrl} />
-                        <DiagnosticThumb label="Work zona" url={workZoneOverlayUrl} />
+                        <DiagnosticThumb label="Reference" url={referenceUrls[0] ?? null} />
+                        <DiagnosticThumb label="Mask" url={maskUrl} />
+                        <DiagnosticThumb label="Work zone" url={workZoneOverlayUrl} />
                         <DiagnosticThumb label="Raw AI" url={providerOutputUrl} />
                         <DiagnosticThumb label="Final" url={resultUrl} />
                       </div>

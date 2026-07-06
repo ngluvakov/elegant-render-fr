@@ -2,19 +2,19 @@ import { describe, expect, it } from "vitest";
 import { validateBuyerInfo } from "@/lib/buyer-validation";
 
 describe("validateBuyerInfo", () => {
-  it("prihvata fizičko lice sa državom", () => {
+  it("accepts an individual with a country", () => {
     expect(
       validateBuyerInfo({ buyerType: "individual", buyerCountryCode: "RS" }),
     ).toBeNull();
   });
 
-  it("odbija fizičko lice bez države", () => {
+  it("rejects an individual without a country", () => {
     expect(
       validateBuyerInfo({ buyerType: "individual", buyerCountryCode: null }),
     ).toMatch(/country/i);
   });
 
-  it("normalizuje mala slova u kodu države", () => {
+  it("normalizes lowercase letters in the country code", () => {
     expect(
       validateBuyerInfo({ buyerType: "individual", buyerCountryCode: " de " }),
     ).toBeNull();
@@ -28,55 +28,55 @@ describe("validateBuyerInfo", () => {
       buyerCountryCode: "DE",
     };
 
-    it("prihvata firmu bez VAT ID-a (opcion)", () => {
+    it("accepts a business without a VAT ID (optional)", () => {
       expect(validateBuyerInfo(base)).toBeNull();
     });
 
-    it("odbija firmu bez naziva ili adrese", () => {
+    it("rejects a business without a name or address", () => {
       expect(
         validateBuyerInfo({
           buyerType: "business",
           buyerCountryCode: "DE",
-          companyAddress: "Adresa 1",
+          companyAddress: "Address 1",
         }),
       ).toMatch(/Company name/);
       expect(
         validateBuyerInfo({
           buyerType: "business",
           buyerCountryCode: "DE",
-          companyName: "Firma",
+          companyName: "Firm",
         }),
       ).toMatch(/address/i);
     });
 
-    it("odbija firmu bez države", () => {
+    it("rejects a business without a country", () => {
       expect(
         validateBuyerInfo({
           buyerType: "business",
-          companyName: "Firma",
-          companyAddress: "Adresa 1",
+          companyName: "Firm",
+          companyAddress: "Address 1",
         }),
       ).toMatch(/country/i);
     });
 
-    it("koristi companyCountryCode kao rezervu za državu", () => {
+    it("uses companyCountryCode as the country fallback", () => {
       expect(
         validateBuyerInfo({
           buyerType: "business",
-          companyName: "Firma",
-          companyAddress: "Adresa 1",
+          companyName: "Firm",
+          companyAddress: "Address 1",
           companyCountryCode: "fr",
         }),
       ).toBeNull();
     });
 
-    it("prihvata validan EU VAT ID", () => {
+    it("accepts a valid EU VAT ID", () => {
       expect(
         validateBuyerInfo({ ...base, companyTaxId: "DE123456789" }),
       ).toBeNull();
     });
 
-    it("odbija EU VAT ID pogrešnog formata (VIES prefiks)", () => {
+    it("rejects an EU VAT ID with a bad format (VIES prefix)", () => {
       expect(validateBuyerInfo({ ...base, companyTaxId: "DE123" })).toMatch(
         /VAT ID/,
       );
@@ -85,7 +85,7 @@ describe("validateBuyerInfo", () => {
       ).toMatch(/VAT ID/);
     });
 
-    it("prihvata ne-EU poreski broj u slobodnom formatu", () => {
+    it("accepts a non-EU tax number in free format", () => {
       expect(
         validateBuyerInfo({
           ...base,

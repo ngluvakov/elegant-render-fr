@@ -47,7 +47,7 @@ export async function AdminActivityTimeline({
   if (entries.length === 0) {
     return (
       <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
-        <h3 className="text-sm font-semibold text-foreground">Hronologija</h3>
+        <h3 className="text-sm font-semibold text-foreground">Timeline</h3>
         <p className="mt-2 text-xs text-muted-foreground">
           There are no recorded events for this order yet.
         </p>
@@ -58,7 +58,7 @@ export async function AdminActivityTimeline({
   return (
     <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
       <h3 className="text-sm font-semibold text-foreground">
-        Hronologija ({entries.length})
+        Timeline ({entries.length})
       </h3>
       <ol className="mt-4 space-y-3">
         {entries.map((entry, idx) => {

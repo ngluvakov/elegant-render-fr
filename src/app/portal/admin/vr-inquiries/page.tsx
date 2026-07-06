@@ -98,11 +98,11 @@ export default async function VrInquiriesPage({
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="font-heading text-3xl text-foreground">VR upiti</h1>
+        <h1 className="font-heading text-3xl text-foreground">VR inquiries</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Consultation intake for VR projects. The client fills out the form at
-          /services/vr/consultation; the team reviews it and manually creates an order at
-          dogovoru.
+          /services/vr/consultation; the team reviews it and manually creates an order
+          once terms are agreed.
         </p>
       </div>
 
@@ -161,7 +161,7 @@ export default async function VrInquiriesPage({
                         {STATUS_LABELS[inq.status] ?? inq.status}
                       </Badge>
                       <span className="text-[0.72rem] text-muted-foreground">
-                        pre {formatRelative(inq.createdAt)}
+                        {formatRelative(inq.createdAt)} ago
                       </span>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
@@ -202,7 +202,7 @@ export default async function VrInquiriesPage({
 
                   <div className="space-y-1.5">
                     <p className="font-semibold uppercase tracking-wider text-muted-foreground">
-                      Konfiguracija
+                      Configuration
                     </p>
                     <p className="text-foreground">
                       <strong>Name:</strong> {cfg.projectName}

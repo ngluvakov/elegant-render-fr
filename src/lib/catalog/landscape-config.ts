@@ -1,6 +1,6 @@
 /**
  * landscape-config.ts — Per-item config shape + vocabularies for the
- * land-static product (Pejzažni render). Single-level config (no
+ * land-static product (landscape render). Single-level config (no
  * floors). Drives the engine's add-on quantities for `land-cam` (extra
  * cameras over 1) and `land-aerial` (binary upsell, €380).
  *
@@ -18,12 +18,12 @@ import { TIME_OF_DAY_IDS, SEASON_IDS } from "./interior-config";
 
 export const LANDSCAPE_STYLES = [
   { id: "modern-minimalist", label: "Modern / Minimalist" },
-  { id: "mediterranean", label: "Mediteranski" },
-  { id: "english-garden", label: "Engleski vrt" },
-  { id: "wild", label: "Prirodni / Divlji (Wild)" },
-  { id: "tropical", label: "Tropski" },
-  { id: "japanese-garden", label: "Japanski vrt" },
-  { id: "traditional", label: "Tradicionalni" },
+  { id: "mediterranean", label: "Mediterranean" },
+  { id: "english-garden", label: "English garden" },
+  { id: "wild", label: "Natural / Wild" },
+  { id: "tropical", label: "Tropical" },
+  { id: "japanese-garden", label: "Japanese garden" },
+  { id: "traditional", label: "Traditional" },
 ] as const;
 export type LandscapeStyleId = (typeof LANDSCAPE_STYLES)[number]["id"];
 export const LANDSCAPE_STYLE_IDS = LANDSCAPE_STYLES.map(
@@ -31,9 +31,9 @@ export const LANDSCAPE_STYLE_IDS = LANDSCAPE_STYLES.map(
 ) as LandscapeStyleId[];
 
 export const VEGETATION_AGES = [
-  { id: "newly-planted", label: "Tek posađeno (mlade sadnice)" },
-  { id: "medium-growth", label: "Srednji rast (1–3 godine)" },
-  { id: "mature", label: "Zrelo (potpuno izraslo)" },
+  { id: "newly-planted", label: "Newly planted (young saplings)" },
+  { id: "medium-growth", label: "Medium growth (1-3 years)" },
+  { id: "mature", label: "Mature (fully grown)" },
 ] as const;
 export type VegetationAgeId = (typeof VEGETATION_AGES)[number]["id"];
 export const VEGETATION_AGE_IDS = VEGETATION_AGES.map(
@@ -41,10 +41,10 @@ export const VEGETATION_AGE_IDS = VEGETATION_AGES.map(
 ) as VegetationAgeId[];
 
 export const TOPOGRAPHIES = [
-  { id: "flat", label: "Ravan teren" },
-  { id: "gentle-slope", label: "Blagi nagib" },
-  { id: "steep-slope", label: "Strmi nagib / Kaskade" },
-  { id: "terraced", label: "Terasast teren sa potpornim zidovima" },
+  { id: "flat", label: "Flat terrain" },
+  { id: "gentle-slope", label: "Gentle slope" },
+  { id: "steep-slope", label: "Steep slope / Cascades" },
+  { id: "terraced", label: "Terraced terrain with retaining walls" },
 ] as const;
 export type TopographyId = (typeof TOPOGRAPHIES)[number]["id"];
 export const TOPOGRAPHY_IDS = TOPOGRAPHIES.map(
@@ -52,12 +52,12 @@ export const TOPOGRAPHY_IDS = TOPOGRAPHIES.map(
 ) as TopographyId[];
 
 export const PATH_MATERIALS = [
-  { id: "stamped-concrete", label: "Štampani beton" },
-  { id: "pavers", label: "Behaton / Popločanje" },
-  { id: "natural-stone", label: "Prirodni kamen" },
-  { id: "wood-decking", label: "Drveni deking" },
-  { id: "gravel", label: "Šljunak / Rizla" },
-  { id: "combined", label: "Kombinovano" },
+  { id: "stamped-concrete", label: "Stamped concrete" },
+  { id: "pavers", label: "Pavers / Paving" },
+  { id: "natural-stone", label: "Natural stone" },
+  { id: "wood-decking", label: "Wood decking" },
+  { id: "gravel", label: "Gravel" },
+  { id: "combined", label: "Combined" },
 ] as const;
 export type PathMaterialId = (typeof PATH_MATERIALS)[number]["id"];
 export const PATH_MATERIAL_IDS = PATH_MATERIALS.map(
@@ -65,19 +65,19 @@ export const PATH_MATERIAL_IDS = PATH_MATERIALS.map(
 ) as PathMaterialId[];
 
 export const FENCES = [
-  { id: "masonry", label: "Zidana ograda" },
-  { id: "wire-panel", label: "Žičana / Panelna" },
-  { id: "wooden", label: "Drvena ograda" },
-  { id: "hedge", label: "Živa ograda" },
-  { id: "no-fence", label: "Bez ograde (otvoreno)" },
+  { id: "masonry", label: "Masonry fence" },
+  { id: "wire-panel", label: "Wire / Panel fence" },
+  { id: "wooden", label: "Wooden fence" },
+  { id: "hedge", label: "Hedge" },
+  { id: "no-fence", label: "No fence (open)" },
 ] as const;
 export type FenceId = (typeof FENCES)[number]["id"];
 export const FENCE_IDS = FENCES.map((f) => f.id) as FenceId[];
 
 export const AERIAL_ENV_REPS = [
-  { id: "3d", label: "3D modelovano okruženje" },
-  { id: "photomontage", label: "Uklapanje u dron fotografiju" },
-  { id: "abstract", label: "Apstraktno okruženje" },
+  { id: "3d", label: "3D modeled surroundings" },
+  { id: "photomontage", label: "Integration into a drone photograph" },
+  { id: "abstract", label: "Abstract surroundings" },
 ] as const;
 export type AerialEnvRepId = (typeof AERIAL_ENV_REPS)[number]["id"];
 export const AERIAL_ENV_REP_IDS = AERIAL_ENV_REPS.map(
@@ -87,10 +87,10 @@ export const AERIAL_ENV_REP_IDS = AERIAL_ENV_REPS.map(
 // ─── Checkbox groups ──────────────────────────────────────────────────
 
 export const WATER_FEATURE_OPTIONS = [
-  { key: "pool", label: "Bazen" },
-  { key: "pond", label: "Dekorativno jezerce" },
-  { key: "fountain", label: "Fontana / Česma" },
-  { key: "stream", label: "Potok" },
+  { key: "pool", label: "Pool" },
+  { key: "pond", label: "Decorative pond" },
+  { key: "fountain", label: "Fountain" },
+  { key: "stream", label: "Stream" },
 ] as const;
 export type WaterFeatures = {
   pool: boolean;
@@ -100,10 +100,10 @@ export type WaterFeatures = {
 };
 
 export const STRUCTURE_OPTIONS = [
-  { key: "pergola", label: "Letnjikovac / Pergola" },
-  { key: "summerKitchen", label: "Letnja kuhinja / Roštilj" },
-  { key: "firePit", label: "Ognjište (Fire pit)" },
-  { key: "playground", label: "Dečije igralište" },
+  { key: "pergola", label: "Gazebo / Pergola" },
+  { key: "summerKitchen", label: "Outdoor kitchen / Barbecue" },
+  { key: "firePit", label: "Fire pit" },
+  { key: "playground", label: "Children's playground" },
 ] as const;
 export type Structures = {
   pergola: boolean;
@@ -113,10 +113,10 @@ export type Structures = {
 };
 
 export const EXTERIOR_LIGHTING_OPTIONS = [
-  { key: "ground", label: "Podna / Ugradna rasveta" },
-  { key: "wall", label: "Zidne lampe" },
-  { key: "spotlights", label: "Reflektori za drveće" },
-  { key: "ambient", label: "Ambijentalne (visilice / stubići)" },
+  { key: "ground", label: "Ground / Recessed lighting" },
+  { key: "wall", label: "Wall lamps" },
+  { key: "spotlights", label: "Tree spotlights" },
+  { key: "ambient", label: "Ambient (string lights / bollards)" },
 ] as const;
 export type ExteriorLighting = {
   ground: boolean;
@@ -161,7 +161,7 @@ export function defaultExteriorLighting(): ExteriorLighting {
 
 export function defaultLandscapeConfig(): LandscapeConfig {
   return {
-    projectName: "Pejzaž 1",
+    projectName: "Landscape 1",
     cameraCount: 1,
     waterFeatures: defaultWaterFeatures(),
     structures: defaultStructures(),
@@ -203,7 +203,7 @@ function sanitizeBooleans<T extends Record<string, boolean>>(
 export function sanitizeLandscapeConfig(c: LandscapeConfig): LandscapeConfig {
   return {
     projectName:
-      String(c.projectName ?? "").trim().slice(0, 100) || "Pejzaž 1",
+      String(c.projectName ?? "").trim().slice(0, 100) || "Landscape 1",
     cameraCount: clampCount(c.cameraCount, 1, 30),
     ...((s) => (s ? { styleId: s } : {}))(
       pickFromAllowlist<LandscapeStyleId>(c.styleId, LANDSCAPE_STYLE_IDS),

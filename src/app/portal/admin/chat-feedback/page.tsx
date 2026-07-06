@@ -114,10 +114,10 @@ export default async function AdminChatFeedbackPage() {
 
             <div className="mt-3 border-t border-border/40 pt-3 text-xs text-muted-foreground">
               <span className="font-medium text-foreground">
-                {item.user?.name ?? "Anonimni posetilac"}
+                {item.user?.name ?? "Anonymous visitor"}
               </span>
               {item.user?.email && <span> · {item.user.email}</span>}
-              {item.sessionId && <span> · sesija {item.sessionId.slice(0, 8)}</span>}
+              {item.sessionId && <span> · session {item.sessionId.slice(0, 8)}</span>}
             </div>
           </article>
         ))}

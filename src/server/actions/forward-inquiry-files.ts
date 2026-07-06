@@ -8,7 +8,7 @@
  *
  * Best-effort: a failure to forward a single file logs to Sentry but
  * doesn't unwind the conversion. Admin can still re-fetch attachments
- * via the "Iz upita" link added in #105 if needed.
+ * via the "From inquiry" link added in #105 if needed.
  *
  * Why a separate file copy and not a shared storagePath: the bucket
  * has a global delete-by-path API and there's no cross-table

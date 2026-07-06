@@ -266,15 +266,15 @@ export function FloorplanConfigSection({
           <Grid2x2 className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.projectName || "Osnova"}
+              {config.projectName || "Floor plan"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {config.levels} nivo{config.levels === 1 ? "" : "a"} ·{" "}
+              {config.levels} level{config.levels === 1 ? "" : "s"} ·{" "}
               {config.displayType === "unfurnished"
                 ? "empty"
                 : config.displayType === "furnished"
                   ? "furnished"
-                  : "obe varijante"}
+                  : "both variants"}
             </p>
           </div>
         </div>
@@ -323,7 +323,7 @@ export function FloorplanConfigSection({
               type="button"
               disabled={!editable || config.levels <= 1}
               onClick={decLevels}
-              aria-label="Decrease number of nivoa"
+              aria-label="Decrease number of levels"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -335,7 +335,7 @@ export function FloorplanConfigSection({
               type="button"
               disabled={!editable || config.levels >= 30}
               onClick={incLevels}
-              aria-label="Increase number of nivoa"
+              aria-label="Increase number of levels"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -351,7 +351,7 @@ export function FloorplanConfigSection({
             htmlFor={`display-${itemId}`}
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
-            Tip prikaza (furniture)
+            Display type (furniture)
           </Label>
           <select
             id={`display-${itemId}`}
@@ -705,7 +705,7 @@ export function FloorplanConfigSection({
               htmlFor={`vstyle-${itemId}`}
               className="text-[0.7rem]"
             >
-              Style za drugu varijantu
+              Style for the second variant
             </Label>
             <select
               id={`vstyle-${itemId}`}

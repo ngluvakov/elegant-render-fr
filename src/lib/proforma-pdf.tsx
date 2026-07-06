@@ -4,12 +4,12 @@
  * Single English export layout (EUR) shared by both buyer types
  * ({individual, business}), mirroring invoice-pdf.tsx but with key
  * legal differences:
- *   - Header reads PREDRAČUN / PROFORMA INVOICE
+ *   - Header reads PROFORMA INVOICE
  *   - Explicit note that the document is NOT a tax invoice — it's a
- *     payment instruction. The legal faktura comes after the funds
+ *     payment instruction. The legal invoice comes after the funds
  *     land (issued via the existing invoice pipeline).
- *   - Bank instructions block (IBAN, SWIFT, recipient, "poziv na broj"
- *     using the order/proforma number).
+ *   - Bank instructions block (IBAN, SWIFT, recipient, payment
+ *     reference using the order/proforma number).
  *
  * Sharing PDF code between invoice-pdf and proforma-pdf would be
  * nice — held off for v1 because subtle layout divergences
@@ -250,7 +250,7 @@ const ENGLISH_STRINGS = {
   bankBankName: "Bank",
   bankReference: "Reference",
   legal:
-    "This is a proforma invoice — not a tax document. The final invoice will be issued upon receipt of payment. Reverse charge — VAT is not charged on this document (Place of supply outside the Republic of Serbia, čl. 24/25 ZPDV).",
+    "This is a proforma invoice — not a tax document. The final invoice will be issued upon receipt of payment. Reverse charge — VAT is not charged on this document (Place of supply outside the Republic of Serbia, Art. 24/25 of the Serbian VAT Act, ZPDV).",
   draft:
     "PROFORMA INVOICE — please remit payment as instructed below. The final invoice is issued upon receipt of funds.",
 } as const;

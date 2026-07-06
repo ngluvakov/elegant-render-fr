@@ -1,5 +1,5 @@
 /**
- * issue-proforma.ts — Generates a predračun (proforma) for an order
+ * issue-proforma.ts — Generates a proforma invoice for an order
  * the customer is expected to pay by wire transfer.
  *
  * Pipeline (best-effort, idempotent):
@@ -14,9 +14,9 @@
  *
  * Difference from issueInvoice (A.2):
  *   - Different counter (ProformaCounter, "P-" prefix)
- *   - Different PDF (PREDRAČUN header + bank instructions block)
+ *   - Different PDF (PROFORMA INVOICE header + bank instructions block)
  *   - Different Supabase prefix (proformas/ instead of invoices/)
- *   - NOT a tax document — final faktura is issued separately when
+ *   - NOT a tax document — the final invoice is issued separately when
  *     funds land via the existing finishSuccessfulPayment hook
  */
 "use server";
@@ -107,7 +107,7 @@ export async function issueProforma(orderId: string): Promise<IssueProformaResul
         proformaIssuedAt: now,
         proformaPdfPath: storagePath,
         // Implicitly mark this as a wire-transfer order if it wasn't
-        // already — the predračun action only makes sense for that
+        // already — the proforma action only makes sense for that
         // payment method.
         paymentMethod: "wire_transfer",
       },

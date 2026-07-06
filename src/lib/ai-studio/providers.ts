@@ -65,7 +65,7 @@ let openAiClient: OpenAI | null = null;
 
 function getOpenAiClient() {
   if (!process.env.OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY nije konfigurisan.");
+    throw new Error("OPENAI_API_KEY is not configured.");
   }
   if (!openAiClient) {
     openAiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -114,7 +114,7 @@ async function generateWithGemini(
   provider: Exclude<AiImageProvider, "openai">,
 ): Promise<AiEditProviderOutput> {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY nije konfigurisan.");
+  if (!apiKey) throw new Error("GEMINI_API_KEY is not configured.");
 
   const model = input.model;
   const imageRoleText = input.imageRoleText ?? "Image 1: interior scene to edit.";
@@ -302,7 +302,7 @@ async function generateWithOpenAi(
         status: imageRes.status,
         message: `OpenAI result URL was not accessible: ${imageRes.status}`,
         publicMessage:
-          "AI provider nije uspeo da vrati sliku. Probajte sa čistijom referencom, širom maskom ili drugim engine-om.",
+          "The AI provider could not return an image. Try a cleaner reference, a wider mask, or another engine.",
         fallbackAllowed: false,
       });
     }
@@ -370,7 +370,7 @@ function isFallbackStatus(status: number): boolean {
 function toPublicError(err: unknown): Error {
   if (err instanceof AiProviderError) return new Error(err.publicMessage);
   if (err instanceof Error) return err;
-  return new Error("AI obrada trenutno nije uspela.");
+  return new Error("The AI generation failed. Please try again.");
 }
 
 function getPublicProviderMessage(
@@ -386,22 +386,22 @@ function getPublicProviderMessage(
     lowerBody.includes("resource_exhausted")
   ) {
     return provider === "gemini"
-      ? "Google AI engine trenutno nema raspoloživ quota za ovu obradu. Pokušajte ponovo malo kasnije ili izaberite drugi engine."
-      : "OpenAI engine trenutno nema raspoloživ quota za ovu obradu. Pokušajte ponovo malo kasnije ili izaberite drugi engine.";
+      ? "The Google AI engine has no available quota for this generation right now. Try again a little later or choose another engine."
+      : "The OpenAI engine has no available quota for this generation right now. Try again a little later or choose another engine.";
   }
   if (status === 401 || status === 403) {
-    return "AI engine nije autorizovan ili nema uključen billing za izabrani model.";
+    return "The AI engine is not authorized or has no billing enabled for the selected model.";
   }
   if (status === 404) {
-    return "Izabrani AI model trenutno nije dostupan.";
+    return "The selected AI model is currently unavailable.";
   }
   if (status === 400 && lowerBody.includes("input_fidelity")) {
-    return "Izabrani OpenAI model ne podržava režim visoke vernosti reference. Izaberite GPT Image 1.5 ili Nano Banana Pro za ovu obradu.";
+    return "The selected OpenAI model does not support high-fidelity reference mode. Choose GPT Image 1.5 or Nano Banana Pro for this generation.";
   }
   if (status >= 500) {
-    return "AI provider trenutno ne odgovara stabilno. Pokušajte ponovo za nekoliko minuta.";
+    return "The AI provider is not responding reliably right now. Try again in a few minutes.";
   }
-  return "AI obrada nije uspela. Proverite sliku i prompt, pa pokušajte ponovo.";
+  return "The AI generation failed. Check the image and the prompt, then try again.";
 }
 
 function noImageReturnedError(
@@ -414,7 +414,7 @@ function noImageReturnedError(
     status: 502,
     message: `${provider} did not return an image payload.`,
     publicMessage:
-      "AI provider nije vratio sliku ni posle ponovnog pokušaja. Probajte sa čistijom referencom, širom maskom ili drugim engine-om.",
+      "The AI provider did not return an image even after a retry. Try a cleaner reference, a wider mask, or another engine.",
     fallbackAllowed: false,
   });
 }
@@ -441,7 +441,7 @@ async function fetchWithTimeout(
         status: 408,
         message: `${context.provider} image request timed out after ${AI_PROVIDER_TIMEOUT_MS}ms`,
         publicMessage:
-          "AI provider nije odgovorio na vreme. Pokušajte ponovo ili izaberite drugi engine.",
+          "The AI provider did not respond in time. Try again or choose another engine.",
         fallbackAllowed: true,
       });
     }

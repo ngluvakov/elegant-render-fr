@@ -1,7 +1,7 @@
 /**
  * sync-comment.ts — Pushes order comments to the Bitrix24 Deal timeline.
  *
- * Exports syncCommentToDeal() which posts a [Tim]/[Klijent]-prefixed
+ * Exports syncCommentToDeal() which posts a [Team]/[Client]-prefixed
  * timeline comment via crm.timeline.comment.add and caches the ID.
  *
  * Used by: server/actions/comment, server/actions/admin
@@ -21,8 +21,8 @@ export async function syncCommentToDeal(commentId: string) {
   if (!comment.order.bitrix24DealId) return;
   if (comment.bitrix24CommentId) return; // Already synced
 
-  const prefix = comment.role === "team" ? "[Tim]" : "[Klijent]";
-  const authorName = comment.author?.name ?? "Korisnik";
+  const prefix = comment.role === "team" ? "[Team]" : "[Client]";
+  const authorName = comment.author?.name ?? "User";
 
   const resultId = await bitrixCall<number>("crm.timeline.comment.add", {
     fields: {

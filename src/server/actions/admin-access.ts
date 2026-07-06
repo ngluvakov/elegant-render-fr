@@ -17,7 +17,7 @@ import {
 export async function saveUserAdminAccess(formData: FormData) {
   const actor = await requirePermission("ADMIN_MANAGE");
   const userId = text(formData, "userId");
-  if (!userId) throw new Error("Korisnik nije pronađen.");
+  if (!userId) throw new Error("User not found.");
 
   const preset = normalizePreset(text(formData, "preset"));
   const permissions =
@@ -29,7 +29,7 @@ export async function saveUserAdminAccess(formData: FormData) {
     actor.id === userId &&
     !hasAdminPermission(permissions, "ADMIN_MANAGE")
   ) {
-    throw new Error("Ne možete sebi ukloniti dozvolu za admin pristupe.");
+    throw new Error("You cannot remove your own admin access permission.");
   }
 
   const before = await prisma.user.findUnique({

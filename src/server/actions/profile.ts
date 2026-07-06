@@ -7,7 +7,7 @@
  *   - cancelAccountDeletion()       — undo the request
  *
  * Account deletion is request-based (not auto-delete) because the
- * Zakon o računovodstvu requires keeping invoice/order rows for 10
+ * Serbian Accounting Act requires keeping invoice/order rows for 10
  * years. Admin processes the request by anonymizing PII while
  * preserving the accounting-required rows. Until processed the user
  * sees a "deletion pending" banner and can cancel.
@@ -37,7 +37,7 @@ export async function updateProfileAction(
   formData: FormData,
 ): Promise<ProfileState> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const name = formData.get("name") as string;
   const phone = (formData.get("phone") as string) || null;
@@ -58,7 +58,7 @@ export async function updateProfileAction(
   const companyAddress = ((formData.get("billingCompanyAddress") as string) || "")
     .trim();
 
-  if (!name) return { error: "Ime je obavezno." };
+  if (!name) return { error: "Name is required." };
 
   const buyerError = validateBuyerInfo({
     buyerType: billingBuyerType,
@@ -84,7 +84,7 @@ export async function updateProfileAction(
 
   if (newPassword) {
     if (newPassword.length < 8) {
-      return { error: "Nova lozinka mora imati najmanje 8 karaktera." };
+      return { error: "The new password must be at least 8 characters long." };
     }
     data.passwordHash = await bcrypt.hash(newPassword, 12);
   }
@@ -126,17 +126,17 @@ export type DeletionState = {
  */
 export async function requestAccountDeletion(): Promise<DeletionState> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { email: true, name: true, deletionRequestedAt: true },
   });
-  if (!user) return { error: "Korisnik nije pronađen." };
+  if (!user) return { error: "User not found." };
   if (user.deletionRequestedAt) {
     return {
       error:
-        "Zahtev za brisanje je već registrovan. Pratite status na stranici profila.",
+        "A deletion request is already registered. Track its status on your profile page.",
     };
   }
 
@@ -162,14 +162,14 @@ export async function requestAccountDeletion(): Promise<DeletionState> {
 
 export async function cancelAccountDeletion(): Promise<DeletionState> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { deletionRequestedAt: true, email: true },
   });
   if (!user?.deletionRequestedAt) {
-    return { error: "Nema aktivnog zahteva za brisanje." };
+    return { error: "There is no active deletion request." };
   }
 
   await prisma.user.update({

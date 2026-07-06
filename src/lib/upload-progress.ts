@@ -1,9 +1,9 @@
 /**
- * upload-progress.ts — PUT upload sa progress callback-om.
+ * upload-progress.ts — PUT upload with a progress callback.
  *
- * fetch() ne izlaže upload progress, pa direktni upload ka Supabase
- * Storage signed URL-u ide kroz XMLHttpRequest. Koriste ga checkout
- * OrderFileUpload and portal RevisionUploadCard.
+ * fetch() does not expose upload progress, so the direct upload to a
+ * Supabase Storage signed URL goes through XMLHttpRequest. Used by the
+ * checkout OrderFileUpload and the portal RevisionUploadCard.
  */
 export function putFileWithProgress(
   url: string,

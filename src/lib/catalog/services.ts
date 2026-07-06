@@ -24,11 +24,11 @@ export type ServiceCategory =
 export type PricingVariant = {
   id: string;
   title: string;
-  /** Whole-dinar amount, used for comparisons and starting-from displays. */
+  /** Whole-euro amount, used for comparisons and starting-from displays. */
   basePrice: number;
   /** Human price label — may include unit suffix (e.g. "€15/sec"). */
   priceLabel: string;
-  /** Per-unit basis (e.g. "osnovni paket po spratu", "prvi kadar"). */
+  /** Per-unit basis (e.g. "base package per floor", "first shot"). */
   unitLabel: string;
   /** One-line explanation of the variant. */
   description: string;
@@ -39,7 +39,7 @@ export type PricingVariant = {
   /** Optional caveat or rule the customer should see. */
   note?: string;
   /** Optional price breakdown shown right under the price headline (e.g.
-   *  "Render eksterijera €250 + Fotomontaža €50"). Renders as a muted
+   *  "Exterior render €250 + Photomontage €50"). Renders as a muted
    *  annotation, currency-aware via formatPublicPriceText. */
   decomposition?: string;
   /** Override the category used to build the configurator deep-link. Set on
@@ -106,7 +106,7 @@ export type Service = {
   materials: string;
   /** Optional hero image URL (may be cloudfront, local, or empty). */
   asset?: string;
-  /** When both are set, the home-page "Minimalni ulaz" preview renders a
+  /** When both are set, the home-page "Minimal input" preview renders a
    *  diagonal before/after reveal (BeforeAfterReveal) instead of a static
    *  image. Useful for transformation services where the value is the diff. */
   beforeAsset?: string;
@@ -140,12 +140,12 @@ export type Service = {
    *  on /services — distinct from home (3:2 thumbnail) and detail (16:9
    *  hero) so each surface has its own visual identity. */
   listingAsset?: string;
-  /** Plain-language line that shows next to "od €X" everywhere a price
+  /** Plain-language line that shows next to "from €X" everywhere a price
    *  is displayed (picker, services grid, hero chip). Anchors the price
    *  to the quantity it covers so customers don't read €170 as "one
    *  render" when it's actually "whole floor + unlimited renders". */
   priceContext?: string;
-  /** Optional list of target customer segments shown as "Idealno za:"
+  /** Optional list of target customer segments shown as "Ideal for:"
    *  chips on the service detail page. Set only on investor-grade
    *  services where segmentation actually clarifies the value prop. */
   forSegments?: readonly string[];
@@ -154,11 +154,11 @@ export type Service = {
   variants: PricingVariant[];
   /** Extra pricing cards rendered after `variants` on the detail page only —
    *  cross-sell options whose product lives in another service/category (e.g.
-   *  the cheaper "virtuelna renovacija iz fotografije" on the landscape page).
+   *  the cheaper "virtual renovation from a photo" on the landscape page).
    *  Display-only: NOT consumed by the home quick-order hero or the quote. */
   crossSellVariants?: PricingVariant[];
   /** Optional heading/body shown above the pricing cards. Use to frame a
-   *  multi-option choice (e.g. "Dva načina…"). Falls back to the generic
+   *  multi-option choice (e.g. "Two methods…"). Falls back to the generic
    *  pricing header when unset. */
   pricingLead?: { heading: string; body: string };
   /** Optional scannable two-method comparison shown above the pricing cards.
@@ -208,7 +208,7 @@ export type Service = {
   /** Three reason-to-buy cards rendered as a 3-up grid. */
   benefits?: ServiceBenefit[];
 
-  /** Four-step "kako radimo" timeline. */
+  /** Four-step "how we work" timeline. */
   processSteps?: ProcessStep[];
 
   /** Portfolio gallery (recommended 4 images, 16:9). */
@@ -219,24 +219,24 @@ export type Service = {
 };
 
 export const CATEGORY_LABELS: Record<ServiceCategory, string> = {
-  exterior: "Eksterijer",
-  interior: "Enterijer",
-  plans: "Planovi",
-  animations: "Animacije i ture",
-  transformation: "Transformacija prostora",
+  exterior: "Exterior",
+  interior: "Interior",
+  plans: "Plans",
+  animations: "Animations and tours",
+  transformation: "Space transformation",
 };
 
 export const CATEGORY_DESCRIPTIONS: Record<ServiceCategory, string> = {
   exterior:
-    "Prikazi objekata, okruženja i spoljnih ambijenata — za kuće, zgrade i veće projekte.",
+    "Views of buildings, their surroundings and outdoor settings — for houses, apartment buildings and larger projects.",
   interior:
-    "Vizuelizacija unutrašnjih prostora po prostorijama ili celim spratovima.",
+    "Visualization of interior spaces by room or by whole floor.",
   plans:
-    "Pregledni 2D i 3D prikazi rasporeda prostora i situacionih celina.",
+    "Clear 2D and 3D views of room layouts and whole sites.",
   animations:
-    "Arhitektonske animacije i interaktivne 360 ture za bogatu prezentaciju.",
+    "Architectural animations and interactive 360 tours for rich presentations.",
   transformation:
-    "Unapređenje postojećeg prostora — opremanje, renovacija i korekcije fotografija.",
+    "Upgrading existing spaces — staging, renovation and photo corrections.",
 };
 
 export const CATEGORY_ORDER: ServiceCategory[] = [
@@ -258,62 +258,62 @@ export const SERVICES: Service[] = [
   {
     slug: "interior-renders",
     code: "interior-rendering",
-    name: "Unutrašnji renderi",
-    shortName: "Unutrašnji renderi",
+    name: "Interior renders",
+    shortName: "Interior renders",
     category: "interior",
     icon: "home",
     hideFromMenu: true,
-    tagline: "Pokažite kupcima dom još pre nego što izvođači stignu na lokaciju.",
+    tagline: "Show buyers the home before contractors ever reach the site.",
     description:
-      "Pokažite kupcima ili klijentima kako će izgledati svaka prostorija budućeg doma — još pre nego što počnu radovi. Jedna porudžbina pokriva ceo sprat — 10 statičkih rendera enterijera + tlocrt sprata. Prodajte stan iz prospekta, dogovorite klijenta na izboru materijala, ili predstavite enterijer pre nego što ga izgradite.",
+      "Show buyers or clients what every room of their future home will look like — before the work starts. One order covers a whole floor — 10 static interior renders + a floor plan. Sell an apartment from the brochure, align with your client on material choices, or present an interior before it is built.",
     highlight:
-      "Za stanove u izgradnji, kuće pred renoviranje i investitorske jedinice — jedna investicija pokriva ceo sprat, ne pojedinačnu sobu.",
+      "For apartments under construction, houses about to be renovated and developer units — one investment covers the whole floor, not a single room.",
     materials:
-      "Pošaljite nam osnovu (2D ili PDF), reference stila i spisak prostorija. Što jasniji ulaz, brže šaljemo prve nacrte — standardno 3–5 radnih dana.",
+      "Send us the floor plan (2D or PDF), style references and a list of rooms. The clearer the input, the faster we send first drafts — typically 3-5 working days.",
     asset: "/artwork/expert-interior-renders.webp",
     detailAsset: "/artwork/detail-interior-renders.webp",
     philosophy:
-      "Najveći deo posla je izrada 3D modela — gradimo ga jednom i naplaćujemo jednom. Nakon toga svaki novi ugao, promena nameštaja ili doba dana kreće od €10, ne od pune cene rendera. Tako planirate marketing budžet u sezoni pre-prodaje bez neprijatnih iznenađenja.",
+      "Most of the work is building the 3D model — we build it once and charge for it once. After that, every new angle, furniture change or time of day starts from €10, not from the full render price. That lets you plan your marketing budget for the pre-sale season without unpleasant surprises.",
     priceContext:
-      "Ceo sprat — 10 statičkih rendera enterijera + tlocrt sprata.",
+      "Whole floor — 10 static interior renders + a floor plan.",
     forSegments: [
-      "Investitori (multi-unit)",
-      "Arhitekte enterijera",
-      "Privatni klijenti pred renoviranje",
+      "Developers (multi-unit)",
+      "Interior architects",
+      "Private clients planning a renovation",
     ],
     featured: true,
     variants: [
       {
         id: "interior-static",
-        title: "Klasični prikaz — po spratu",
+        title: "Static renders — per floor",
         basePrice: 170,
         priceLabel: "€170",
-        unitLabel: "ceo sprat — 10 statičkih rendera",
+        unitLabel: "whole floor — 10 static renders",
         description:
-          "Najjača kombinacija za prospekt i prezentaciju investitorskih jedinica — jedna investicija pokriva ceo sprat: 10 statičkih rendera + tlocrt.",
+          "The strongest combination for brochures and presenting developer units — one investment covers the whole floor: 10 static renders + a floor plan.",
         included:
-          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje 10 statičkih rendera enterijera i tlocrt sprata. Svaki sledeći sprat: €120 (30% jeftiniji).",
+          "Complete 3D model built for one floor. Includes 10 static interior renders and a floor plan. Each additional floor: €120 (30% cheaper).",
         addOns: [
-          "11. i svaka sledeća opremljena soba: €28",
-          "Dodatni ugao kamere u postojećoj sobi: €10",
-          "Dodatni sprat: €120 (30% popust)",
+          "11th and each additional furnished room: €28",
+          "Additional camera angle in an existing room: €10",
+          "Additional floor: €120 (30% discount)",
         ],
       },
       {
         id: "interior-360",
-        title: "Interaktivna 360 tura — po spratu",
+        title: "Interactive 360 tour — per floor",
         basePrice: 295,
         priceLabel: "€295",
-        unitLabel: "ceo sprat u 360 turi",
+        unitLabel: "whole floor as a 360 tour",
         description:
-          "Kupac obilazi prostor mišem kao u igri — savršeno za online prezentaciju nekretnine i remote pre-prodaju.",
+          "Buyers walk through the space with their mouse, like in a game — perfect for online property presentations and remote pre-sales.",
         included:
-          "Do 10 interaktivnih soba u 360 turi (klijent ulazi i obilazi prostor) + 10 dodatnih statičkih uglova kamere + tlocrt sprata.",
+          "Up to 10 interactive rooms in a 360 tour (the client enters and walks through the space) + 10 additional static camera angles + a floor plan.",
         addOns: [
-          "11. i svaka sledeća interaktivna soba: €45",
-          "Dodatna interaktivna tačka u postojećoj sobi: €27",
-          "Dodatni statički ugao kamere: €10",
-          "Dodatni sprat (360 tura): €205 (30% popust)",
+          "11th and each additional interactive room: €45",
+          "Additional interactive point in an existing room: €27",
+          "Additional static camera angle: €10",
+          "Additional floor (360 tour): €205 (30% discount)",
         ],
       },
     ],
@@ -321,17 +321,17 @@ export const SERVICES: Service[] = [
   {
     slug: "interior-render",
     code: "interior-static-dedicated",
-    name: "Render enterijera",
-    shortName: "Render enterijera",
+    name: "Interior render",
+    shortName: "Interior render",
     category: "interior",
     icon: "home",
-    tagline: "Pokažite kupcima dom još pre nego što počnu radovi.",
+    tagline: "Show buyers the home before the work starts.",
     description:
-      "Fotorealistični prikaz svake prostorije budućeg stana ili kuće — sa tačnim materijalima, rasporedom nameštaja i prirodnim svetlom. €170 pokriva ceo sprat — 10 statičkih rendera enterijera + tlocrt sprata. Prodajte off-plan jedinicu kupcu koji vidi tačno šta dobija.",
+      "A photorealistic view of every room in a future apartment or house — with accurate materials, furniture layout and natural light. €170 covers a whole floor — 10 static interior renders + a floor plan. Sell an off-plan unit to a buyer who sees exactly what they are getting.",
     highlight:
-      "Pravi izbor za prospekt off-plan jedinica, klijentske prezentacije izbora materijala i marketing pred otvaranje prodaje.",
+      "The right choice for off-plan brochures, client presentations of material options and marketing before sales open.",
     materials:
-      "Pošaljite osnovu (2D ili PDF), reference stila i spisak prostorija. Prvi nacrt 3–5 radnih dana.",
+      "Send the floor plan (2D or PDF), style references and a list of rooms. First draft in 3-5 working days.",
     asset: "/artwork/expert-interior-renders.webp",
     listingAsset: "/artwork/listing-interior-static.webp",
     detailAsset: "/artwork/detail-interior-static.webp",
@@ -339,113 +339,113 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-interior-static-before.webp",
     detailAfterAsset: "/artwork/problem-interior-static-after.webp",
     philosophy:
-      "Najveći deo posla je izrada 3D modela sprata — gradimo ga jednom i naplaćujemo jednom. Posle toga svaki novi ugao iste sobe je €10, dodatna soba na istom spratu €28, drugi sprat €120 (30% jeftinije). Tako planirate marketing budžet u sezoni pre-prodaje bez iznenađenja.",
+      "Most of the work is building the 3D model of the floor — we build it once and charge for it once. After that, every new angle of the same room is €10, an additional room on the same floor €28, a second floor €120 (30% cheaper). That lets you plan your marketing budget for the pre-sale season without surprises.",
     priceContext:
-      "€170 — ceo sprat: 10 statičkih rendera enterijera + tlocrt sprata.",
+      "€170 — whole floor: 10 static interior renders + a floor plan.",
     forSegments: [
-      "Investitori (multi-unit pre-prodaja)",
-      "Arhitekte enterijera (klijentske prezentacije)",
-      "Privatni klijenti pred renoviranje",
+      "Developers (multi-unit pre-sales)",
+      "Interior architects (client presentations)",
+      "Private clients planning a renovation",
     ],
-    problemHeading: "Kupac ne kupuje tlocrt. Kupuje dom u kome se vidi.",
+    problemHeading: "Buyers don't buy a floor plan. They buy a home they can see themselves in.",
     problemBody:
-      "Investitor pokazuje nacrt stana, kupac broji metre i odlazi. Linije i oznake ne govore o materijalima, svetlu i atmosferi prostorije. Odluka se odlaže do trenutka kada se prostor može videti uživo — a tada se gradnja često već završila.",
+      "The developer shows an apartment drawing, the buyer counts square meters and walks away. Lines and labels say nothing about the materials, light and atmosphere of a room. The decision gets postponed until the space can be seen in person — and by then construction is often already finished.",
     problemResolution:
-      "Render enterijera pretvara osnovu u prepoznatljiv prostor — sa tačnim materijalima, izborom nameštaja i prirodnim svetlom. Kupac otvara prospekt, prepozna sobu u kojoj će živeti i donosi odluku.",
+      "An interior render turns the floor plan into a recognizable space — with accurate materials, furniture choices and natural light. The buyer opens the brochure, recognizes the room they will live in and makes a decision.",
     benefits: [
       {
         icon: "speed",
-        title: "Prodaja pre gradnje",
-        body: "Off-plan jedinice idu brže kada kupac vidi tačnu sobu — sa stvarnim materijalima, ne crtežom. Razlika u brzini prodaje opravdava investiciju u prvih nekoliko jedinica.",
+        title: "Sales before construction",
+        body: "Off-plan units move faster when the buyer sees the actual room — with real materials, not a drawing. The difference in sales speed pays for the investment within the first few units.",
       },
       {
         icon: "trust",
-        title: "Izbor materijala bez nesporazuma",
-        body: "Klijent bira između varijanti renderom — vidi pod, zid i nameštaj zajedno, ne zamišlja. Konflikt na primopredaji se smanjuje.",
+        title: "Material choices without misunderstandings",
+        body: "The client chooses between options using renders — seeing the floor, walls and furniture together instead of imagining them. Handover disputes shrink.",
       },
       {
         icon: "value",
-        title: "Jedan paket pokriva ceo sprat",
-        body: "€170 obuhvata 10 statičkih rendera enterijera + tlocrt sprata. Po renderu to izlazi €17 — kategorijski jeftinije od pojedinačnog naručivanja.",
+        title: "One package covers the whole floor",
+        body: "€170 covers 10 static interior renders + a floor plan. That works out to €17 per render — categorically cheaper than ordering one by one.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite osnovu",
-        body: "PDF ili DWG tlocrt sprata, reference stila i spisak prostorija. Opciono: specifikacija materijala, fotografije inspiracije.",
+        title: "Send the floor plan",
+        body: "A PDF or DWG floor plan, style references and a list of rooms. Optional: material specification, inspiration photos.",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok u roku od jednog radnog dana, bez skrivenih stavki.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline within one working day, with no hidden items.",
       },
       {
-        title: "Izrada i nacrte",
-        body: "Tim gradi 3D model sprata, postavlja materijale, nameštaj i osvetljenje. Prve nacrte šaljemo za 3–5 radnih dana.",
+        title: "Production and drafts",
+        body: "The team builds the 3D model of the floor and sets materials, furniture and lighting. First drafts in 3-5 working days.",
       },
       {
-        title: "Isporuka i revizije",
-        body: "Dobijate finalne vizuale visoke rezolucije. Tri runde revizije su uključene u cenu — bez doplate.",
+        title: "Delivery and revisions",
+        body: "You receive final high-resolution visuals. Three revision rounds are included in the price — no extra charge.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-interior-static-01.webp",
-        alt: "Dnevna soba sa kuhinjskim ostrvom — Elegant Render",
+        alt: "Living room with a kitchen island — Elegant Render",
       },
       {
         src: "/artwork/portfolio-interior-static-02.webp",
-        alt: "Kuhinja sa pendant svetlima i materijalom kamene radne ploče — Elegant Render",
+        alt: "Kitchen with pendant lights and a stone countertop — Elegant Render",
       },
       {
         src: "/artwork/portfolio-interior-static-03.webp",
-        alt: "Glavna spavaća soba sa indirektnim svetlom i toplom paletom — Elegant Render",
+        alt: "Main bedroom with indirect lighting and a warm palette — Elegant Render",
       },
       {
         src: "/artwork/portfolio-interior-static-04.webp",
-        alt: "Kupatilo sa prirodnim svetlom i mermernim materijalom — Elegant Render",
+        alt: "Bathroom with natural light and marble finishes — Elegant Render",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €170?",
-        a: "Kompletan 3D model jednog sprata sa 10 statičkih rendera enterijera i tlocrtom sprata. Svaki sledeći sprat: €120 (30% jeftinije). 11. soba na istom spratu: €28.",
+        q: "What exactly do I get for €170?",
+        a: "A complete 3D model of one floor with 10 static interior renders and a floor plan. Each additional floor: €120 (30% cheaper). 11th room on the same floor: €28.",
       },
       {
-        q: "Razlika u odnosu na pojedinačnu sobu kod konkurencije?",
-        a: "Standardno tržište naplaćuje po sobi. Mi naplaćujemo po spratu — €170 za 10 statičkih rendera. Po renderu to izlazi €17. Logika je da je model već izgrađen kad pređemo iz sobe u sobu — naplata jednom umesto deset puta.",
+        q: "How is this different from per-room pricing elsewhere?",
+        a: "The market standard is to charge per room. We charge per floor — €170 for 10 static renders. That works out to €17 per render. The logic: the model is already built when we move from room to room — so we charge once instead of ten times.",
       },
       {
-        q: "Mogu li kasnije da menjam materijale ili nameštaj?",
-        a: "Tri runde revizije su uključene u cenu. Posle prve isporuke menjamo podove, zidove, nameštaj ili osvetljenje dok rezultat ne bude tačan. Dodatna varijanta dizajna (drugi nameštaj na istom rasporedu) je opciono dostupna.",
+        q: "Can I change materials or furniture later?",
+        a: "Three revision rounds are included in the price. After the first delivery we change floors, walls, furniture or lighting until the result is right. An additional design option (different furniture on the same layout) is available as an add-on.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema osnova. Završna isporuka zavisi od broja revizija — sve tri runde su uključene.",
+        q: "How long does it take?",
+        a: "We send first drafts in 3-5 working days from estimate confirmation and receipt of the plans. Final delivery depends on the number of revisions — all three rounds are included.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Osnovu (PDF ili DWG) sa rasporedom prostorija, spisak prostorija za render i reference stila. Po želji: specifikacija materijala (podovi, fasade, vrata), fotografije inspiracije, primere atmosfere.",
+        q: "What do I need to send to get started?",
+        a: "The floor plan (PDF or DWG) with the room layout, a list of rooms to render and style references. Optional: material specification (floors, facades, doors), inspiration photos, mood examples.",
       },
       {
-        q: "Da li radite i jednu sobu odvojeno?",
-        a: "Standardni paket je po spratu jer je 3D model najveći deo posla. Pojedinačna soba je dostupna na poseban dogovor, ali po sobi nije ekonomski isplativija od paketa — preporučujemo barem ceo sprat.",
+        q: "Do you render a single room separately?",
+        a: "The standard package is per floor because the 3D model is the biggest part of the work. A single room is available by special arrangement, but per room it is not more economical than the package — we recommend at least a whole floor.",
       },
     ],
     variants: [
       {
         id: "interior-static",
-        title: "Klasični prikaz — po spratu",
+        title: "Static renders — per floor",
         basePrice: 170,
         priceLabel: "€170",
-        unitLabel: "ceo sprat — 10 statičkih rendera",
+        unitLabel: "whole floor — 10 static renders",
         description:
-          "Jedna porudžbina pokriva ceo sprat: 10 statičkih rendera + tlocrt. Svaki sledeći sprat 30% jeftiniji.",
+          "One order covers a whole floor: 10 static renders + a floor plan. Each additional floor 30% cheaper.",
         included:
-          "Kompletna izgradnja 3D modela za jedan sprat. Uključuje 10 statičkih rendera enterijera i tlocrt sprata. Svaki sledeći sprat: €120 (30% jeftiniji).",
+          "Complete 3D model built for one floor. Includes 10 static interior renders and a floor plan. Each additional floor: €120 (30% cheaper).",
         addOns: [
-          "11. i svaka sledeća opremljena soba: €28",
-          "Dodatni ugao kamere u postojećoj sobi: €10",
-          "Dodatni sprat: €120 (30% popust)",
+          "11th and each additional furnished room: €28",
+          "Additional camera angle in an existing room: €10",
+          "Additional floor: €120 (30% discount)",
         ],
       },
     ],
@@ -453,17 +453,17 @@ export const SERVICES: Service[] = [
   {
     slug: "interior-360-tour",
     code: "interior-360-tour-dedicated",
-    name: "360 tura enterijera",
-    shortName: "360 tura enterijera",
+    name: "Interior 360 tour",
+    shortName: "Interior 360 tour",
     category: "interior",
     icon: "home",
-    tagline: "Kupac obilazi stan iz fotelje — pre nego što je sagrađen.",
+    tagline: "Buyers tour the apartment from their armchair — before it is built.",
     description:
-      "Interaktivna 360 tura kroz ceo sprat. Klijent otvara link u pretraživaču ili VR uređaju, prelazi iz sobe u sobu, sam istražuje raspored i materijale. €295 pokriva do 10 interaktivnih soba + 10 dodatnih statičkih uglova kamere + tlocrt sprata.",
+      "An interactive 360 tour through a whole floor. The client opens a link in a browser or VR headset, moves from room to room and explores the layout and materials on their own. €295 covers up to 10 interactive rooms + 10 additional static camera angles + a floor plan.",
     highlight:
-      "Prezentacija za udaljenog kupca i odluku bez termina za pokazivanje uživo — investitori za off-plan, agencije za remote kupovinu.",
+      "A presentation for remote buyers and decisions without an in-person viewing — developers use it for off-plan sales, agencies for remote purchases.",
     materials:
-      "Pošaljite osnovu (2D ili PDF), reference stila i spisak prostorija za interaktivnu turu. Prvi nacrt 3–5 radnih dana.",
+      "Send the floor plan (2D or PDF), style references and a list of rooms for the interactive tour. First draft in 3-5 working days.",
     asset: "/artwork/listing-interior-static.webp",
     listingAsset: "/artwork/listing-interior-static.webp",
     detailAsset: "/artwork/detail-interior-360.webp",
@@ -474,114 +474,114 @@ export const SERVICES: Service[] = [
     detailEmbedSrc:
       "https://kuula.co/share/collection/71kZD?logo=1&info=0&logosize=40&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=2",
     philosophy:
-      "Najveći deo posla je izrada 3D modela sprata — gradimo ga jednom i naplaćujemo jednom. Posle toga svaka dodatna interaktivna tačka u istoj sobi je €27, dodatna soba €45, dodatni statički ugao €10, drugi sprat €205 (30% jeftinije). Tako kompletan obilazak ulazi u realan investitorski budžet.",
+      "Most of the work is building the 3D model of the floor — we build it once and charge for it once. After that, each additional interactive point in the same room is €27, an additional room €45, an additional static angle €10, a second floor €205 (30% cheaper). That puts a complete walkthrough within a realistic developer budget.",
     priceContext:
-      "€295 — ceo sprat u 360 turi sa do 10 interaktivnih soba + 10 statičkih uglova + tlocrt.",
+      "€295 — a whole floor as a 360 tour with up to 10 interactive rooms + 10 static angles + a floor plan.",
     forSegments: [
-      "Investitori (off-plan pre-prodaja)",
-      "Agencije nekretnina (remote demo)",
-      "Arhitekte enterijera (klijentske prezentacije)",
+      "Developers (off-plan pre-sales)",
+      "Real estate agencies (remote demos)",
+      "Interior architects (client presentations)",
     ],
-    problemHeading: "Tlocrt zatvara raspored u dve dimenzije. Tura ga otvara.",
+    problemHeading: "A floor plan locks the layout into two dimensions. A tour opens it up.",
     problemBody:
-      "Statična slika daje jedan ugao iz jedne sobe. Kupac ne može da oseti odnose između prostorija, vidljivost iz kuhinje ka dnevnoj, prolaz iz hodnika ka spavaćoj. Pita za drugu sliku — i još jednu — i odluku odlaže.",
+      "A static image gives one angle from one room. The buyer can't feel the relationships between rooms — the sightline from the kitchen to the living room, the passage from the hallway to the bedroom. They ask for another image — and another — and postpone the decision.",
     problemResolution:
-      "360 tura povezuje sve sobe u jedinstven prolaz. Kupac sam ulazi u stan, prelazi iz prostorije u prostoriju mišem ili VR uređajem, sam ispituje raspored i materijale — i donosi odluku iz fotelje.",
+      "A 360 tour connects all the rooms into a single walkthrough. Buyers enter the apartment themselves, move from room to room with a mouse or a VR headset, examine the layout and materials on their own — and make the decision from their armchair.",
     benefits: [
       {
         icon: "trust",
-        title: "Stan u pretraživaču",
-        body: "Kupac otvara link sa telefona, računara ili VR headset-a — bez instalacije i bez naloga. Ulazi u prostor u istom trenutku.",
+        title: "An apartment in the browser",
+        body: "The buyer opens a link on a phone, computer or VR headset — no installation, no account. They step into the space instantly.",
       },
       {
         icon: "speed",
-        title: "Prodaja bez termina",
-        body: "Kupac iz dijaspore ili druge zemlje vidi celu jedinicu u vreme koje njemu odgovara. Investitor ne čeka da kupac dođe na lokaciju.",
+        title: "Sales without viewings",
+        body: "A buyer living abroad sees the whole unit at a time that suits them. The developer doesn't wait for the buyer to visit the site.",
       },
       {
         icon: "value",
-        title: "Jedan paket pokriva ceo sprat",
-        body: "€295 obuhvata do 10 interaktivnih soba i 10 statičkih uglova. Po sobi to izlazi ispod €30 — manje od pojedinačnog 360 rendera kod konkurencije.",
+        title: "One package covers the whole floor",
+        body: "€295 covers up to 10 interactive rooms and 10 static angles. Per room that comes to under €30 — less than a single 360 render elsewhere.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite osnovu",
-        body: "PDF ili DWG tlocrt sprata, reference stila, spisak prostorija za turu i raspored interaktivnih tačaka po želji.",
+        title: "Send the floor plan",
+        body: "A PDF or DWG floor plan, style references, a list of rooms for the tour and, if you like, the placement of interactive points.",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok u roku od jednog radnog dana, bez skrivenih stavki.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline within one working day, with no hidden items.",
       },
       {
-        title: "Izrada i tura",
-        body: "Tim gradi 3D model, postavlja materijale, osvetljenje i interaktivne tačke. Prvi nacrt ture šaljemo za 3–5 radnih dana.",
+        title: "Production and tour",
+        body: "The team builds the 3D model and sets materials, lighting and interactive points. We send the first draft of the tour in 3-5 working days.",
       },
       {
-        title: "Isporuka linka i embed koda",
-        body: "Dobijate link za deljenje i embed kod za sajt. Tri runde revizije su uključene u cenu — bez doplate.",
+        title: "Link and embed code delivery",
+        body: "You receive a shareable link and an embed code for your site. Three revision rounds are included in the price — no extra charge.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-interior-360-01.webp",
-        alt: "Frame iz 360 ture — open-concept dnevna i kuhinja, prelaz između prostorija",
+        alt: "Frame from a 360 tour — open-concept living room and kitchen, transition between rooms",
       },
       {
         src: "/artwork/portfolio-interior-360-02.webp",
-        alt: "Frame iz 360 ture — glavna spavaća soba sa indirektnim svetlom",
+        alt: "Frame from a 360 tour — main bedroom with indirect lighting",
       },
       {
         src: "/artwork/portfolio-interior-360-03.webp",
-        alt: "Frame iz 360 ture — ulazna zona i pogled kroz stan",
+        alt: "Frame from a 360 tour — entrance area and view through the apartment",
       },
       {
         src: "/artwork/portfolio-interior-360-04.webp",
-        alt: "Frame iz 360 ture — terasa i prelaz ka enterijernom prostoru",
+        alt: "Frame from a 360 tour — terrace and transition to the interior",
       },
     ],
     faqs: [
       {
-        q: "Kako klijent otvara turu?",
-        a: "Šaljemo link i embed kod. Klijent otvara kroz pretraživač — bez instalacije i bez naloga. Radi na telefonu, računaru i Meta Quest VR uređaju (VR mod je ugrađen u turu).",
+        q: "How does the client open the tour?",
+        a: "We send a link and an embed code. The client opens it in a browser — no installation, no account. It works on phones, computers and Meta Quest VR headsets (VR mode is built into the tour).",
       },
       {
-        q: "Šta tačno dobijam za €295?",
-        a: "Kompletan 3D model jednog sprata sa do 10 interaktivnih soba u 360 turi, dodatnih 10 statičkih uglova kamere i tlocrt sprata. 11. i svaka sledeća interaktivna soba: €45. Dodatna interaktivna tačka: €27. Dodatni statički ugao: €10. Sledeći sprat: €205 (30% popust).",
+        q: "What exactly do I get for €295?",
+        a: "A complete 3D model of one floor with up to 10 interactive rooms in a 360 tour, 10 additional static camera angles and a floor plan. 11th and each additional interactive room: €45. Additional interactive point: €27. Additional static angle: €10. Next floor: €205 (30% discount).",
       },
       {
-        q: "Razlika u odnosu na statički render enterijera (€170)?",
-        a: "Statički render daje fiksne uglove kamere — kupac vidi sliku iz jedne pozicije. 360 tura povezuje sve sobe u prolaz — kupac sam ulazi u prostor, rotira pogled, prelazi između tačaka. Različita namena, ne alternative.",
+        q: "How is it different from the static interior render (€170)?",
+        a: "A static render gives fixed camera angles — the buyer sees an image from one position. A 360 tour connects all the rooms into a walkthrough — buyers enter the space themselves, rotate the view and move between points. Different purposes, not alternatives.",
       },
       {
-        q: "Da li radi u VR headset-u?",
-        a: "Da. Tura je standardno VR-ready — Meta Quest i kompatibilni uređaji otvaraju je direktno iz pretraživača, bez dodatne aplikacije.",
+        q: "Does it work in a VR headset?",
+        a: "Yes. The tour is VR-ready as standard — Meta Quest and compatible headsets open it straight from the browser, with no extra app.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prvi nacrt ture šaljemo za 3–5 radnih dana od potvrde ponude i prijema osnova. Tri runde revizije su uključene — bez doplate.",
+        q: "How long does it take?",
+        a: "We send the first draft of the tour in 3-5 working days from estimate confirmation and receipt of the plans. Three revision rounds are included — no extra charge.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Osnovu (PDF ili DWG) sa rasporedom prostorija, spisak prostorija za interaktivnu turu i reference stila. Opciono: specifikacija materijala (podovi, fasade, vrata), fotografije inspiracije.",
+        q: "What do I need to send to get started?",
+        a: "The floor plan (PDF or DWG) with the room layout, a list of rooms for the interactive tour and style references. Optional: material specification (floors, facades, doors), inspiration photos.",
       },
     ],
     variants: [
       {
         id: "interior-360",
-        title: "Interaktivna 360 tura — po spratu",
+        title: "Interactive 360 tour — per floor",
         basePrice: 295,
         priceLabel: "€295",
-        unitLabel: "ceo sprat u 360 turi",
+        unitLabel: "whole floor as a 360 tour",
         description:
-          "Kupac obilazi prostor mišem kao u igri — savršeno za online prezentaciju nekretnine i remote pre-prodaju.",
+          "Buyers walk through the space with their mouse, like in a game — perfect for online property presentations and remote pre-sales.",
         included:
-          "Do 10 interaktivnih soba u 360 turi (klijent ulazi i obilazi prostor) + 10 dodatnih statičkih uglova kamere + tlocrt sprata.",
+          "Up to 10 interactive rooms in a 360 tour (the client enters and walks through the space) + 10 additional static camera angles + a floor plan.",
         addOns: [
-          "11. i svaka sledeća interaktivna soba: €45",
-          "Dodatna interaktivna tačka u postojećoj sobi: €27",
-          "Dodatni statički ugao kamere: €10",
-          "Dodatni sprat (360 tura): €205 (30% popust)",
+          "11th and each additional interactive room: €45",
+          "Additional interactive point in an existing room: €27",
+          "Additional static camera angle: €10",
+          "Additional floor (360 tour): €205 (30% discount)",
         ],
       },
     ],
@@ -589,288 +589,288 @@ export const SERVICES: Service[] = [
   {
     slug: "exterior-renders",
     code: "exterior-rendering",
-    name: "Spoljašnji renderi",
-    shortName: "Spoljašnji renderi",
+    name: "Exterior renders",
+    shortName: "Exterior renders",
     category: "exterior",
     icon: "grid",
     hideFromMenu: true,
-    tagline: "Prodajte zgradu pre nego što počnu radovi.",
+    tagline: "Sell the building before the work starts.",
     description:
-      "Realistični prikazi fasada, kuća i poslovnih objekata — za prospekt, dozvolu, oglas ili klijentsku prezentaciju. Cena pokriva izradu kompletnog 3D modela objekta i prvi render. Pošto je model već izgrađen, svaki sledeći ugao kamere koji koristi istu stranu zgrade košta samo €48 — 80% jeftinije.",
+      "Realistic views of facades, houses and commercial buildings — for brochures, permits, listings or client presentations. The price covers building a complete 3D model of the building and the first render. Since the model is already built, each additional camera angle using the same side of the building costs only €48 — 80% cheaper.",
     highlight:
-      "Najpogodnije za investitore koji rade pre-prodaju, arhitekte koji predstavljaju projekat klijentu i kuće u izgradnji koje treba reklamirati.",
+      "Best suited to developers running pre-sales, architects presenting a project to a client and houses under construction that need marketing.",
     materials:
-      "Pošaljite nam arhitektonske crteže (osnove, preseke, fasade) i specifikaciju materijala. Što precizniji ulaz, brže nacrti — standardno 3–5 radnih dana.",
+      "Send us the architectural drawings (plans, sections, elevations) and a material specification. The more precise the input, the faster the drafts — typically 3-5 working days.",
     asset: "/artwork/expert-exterior-renders.webp",
     detailAsset: "/artwork/detail-exterior-renders.webp",
     philosophy:
-      "Najveći trošak je izrada 3D modela zgrade — gradimo ga jednom, a svaki sledeći ugao iz iste strane modela je €48 (80% jeftiniji). Doplata postoji samo ako kadar zahteva geometriju neviđene strane objekta. Tako pakovanje od 4-5 rendera ulazi u realan investicioni budžet, a ne traži novu porudžbinu po svakom kadru.",
+      "The biggest cost is building the 3D model of the building — we build it once, and each additional angle from the same side of the model is €48 (80% cheaper). A surcharge applies only when a shot requires the geometry of a previously unseen side of the building. That puts a package of 4-5 renders within a realistic investment budget instead of requiring a new order for every shot.",
     priceContext:
-      "Pun 3D model objekta + prvi render. Sledeći ugao iste strane: €48 (80% jeftiniji).",
+      "A full 3D model of the building + the first render. Next angle of the same side: €48 (80% cheaper).",
     forSegments: [
-      "Investitori (pre-prodaja jedinica)",
-      "Arhitekte (prezentacije klijentu)",
-      "Vlasnici objekta (marketing pred izgradnju)",
+      "Developers (unit pre-sales)",
+      "Architects (client presentations)",
+      "Building owners (marketing before construction)",
     ],
     featured: true,
-    problemHeading: "Kupci ne kupuju nacrte. Kupuju dom.",
+    problemHeading: "Buyers don't buy drawings. They buy a home.",
     problemBody:
-      "Većina investitora gubi nedelje pokušavajući da objasni kupcima kako će objekat izgledati na osnovu tehničkih crteža ili grubih skica. Kupcima je teško da zamisle prostor, materijale i okolinu — i zato odlažu odluku.",
+      "Most developers lose weeks trying to explain to buyers what a building will look like based on technical drawings or rough sketches. Buyers struggle to imagine the space, materials and surroundings — so they postpone the decision.",
     problemResolution:
-      "Spoljašnji renderi prevode arhitektonske nacrte u stvarnost. Prikazujemo tačne materijale, pravilno osvetljenje i realno okruženje, na osnovu Vaših DWG/PDF crteža — što znači da prodajete nekretnine brzo i sa potpunim poverenjem.",
+      "Exterior renders translate architectural drawings into reality. We show accurate materials, correct lighting and a realistic setting, based on your DWG/PDF drawings — which means you sell properties quickly and with full confidence.",
     benefits: [
       {
-        title: "Prodaja pre gradnje",
-        body: "Omogućite kupcima da vide tačno šta kupuju. Off-plan jedinice idu brže kada slika ulijeva poverenje.",
+        title: "Sales before construction",
+        body: "Let buyers see exactly what they are buying. Off-plan units move faster when the image inspires confidence.",
         icon: "speed",
       },
       {
-        title: "Ušteda u odnosu na maketu",
-        body: "Fizička maketa košta višestruko više i ne može da se menja. Render prilagođavamo, koristite ga na svim kanalima.",
+        title: "Cheaper than a physical model",
+        body: "A physical scale model costs many times more and cannot be changed. A render can be adjusted, and you can use it across every channel.",
         icon: "value",
       },
       {
-        title: "Profesionalna prezentacija",
-        body: "Objekat izgleda završeno i postavljeno u realan kontekst — vegetacija, osvetljenje, tačni materijali fasade.",
+        title: "A professional presentation",
+        body: "The building looks finished and placed in a real context — vegetation, lighting, accurate facade materials.",
         icon: "trust",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite materijal",
-        body: "Dostavite arhitektonske nacrte (PDF/DWG) i, po želji, reference stila i specifikaciju materijala.",
+        title: "Send your materials",
+        body: "Send the architectural drawings (PDF/DWG) and, if you like, style references and a material specification.",
       },
       {
-        title: "Dobijate ponudu",
-        body: "Preciznu ponudu šaljemo najkasnije narednog radnog dana, bez skrivenih stavki.",
+        title: "You receive an estimate",
+        body: "We send a precise estimate no later than the next working day, with no hidden items.",
       },
       {
-        title: "Mi gradimo model",
-        body: "Tim postavlja 3D model, osvetljenje i vegetaciju. Vi pratite napredak; intervencija nije potrebna.",
+        title: "We build the model",
+        body: "The team sets up the 3D model, lighting and vegetation. You follow the progress; no intervention needed.",
       },
       {
-        title: "Isporuka i revizije",
-        body: "Dobijate finalne vizuale. Tri runde revizije su uključene u cenu — bez doplate.",
+        title: "Delivery and revisions",
+        body: "You receive the final visuals. Three revision rounds are included in the price — no extra charge.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/listing-exterior-static.webp",
-        alt: "Spoljašnji render — klasični prikaz fasade",
+        alt: "Exterior render — classic facade view",
       },
       {
         src: "/artwork/elegant-render-feature-exterior.webp",
-        alt: "Spoljašnji render — moderna porodična kuća, ulična perspektiva",
+        alt: "Exterior render — modern family house, street perspective",
       },
       {
         src: "/artwork/elegant-render-services-triptych-1.webp",
-        alt: "Spoljašnji render — fasada u dnevnom svetlu",
+        alt: "Exterior render — facade in daylight",
       },
       {
         src: "/artwork/expert-exterior-renders.webp",
-        alt: "Spoljašnji render — primer iz portfolija",
+        alt: "Exterior render — portfolio example",
       },
     ],
     faqs: [
       {
-        q: "Koliko traje izrada spoljašnjih rendera?",
-        a: "Prve nacrte šaljemo najčešće za 3–5 radnih dana od potvrde ponude i prijema svih materijala. Završna isporuka zavisi od broja revizija — tri runde su uključene u cenu.",
+        q: "How long do exterior renders take?",
+        a: "We usually send first drafts in 3-5 working days from estimate confirmation and receipt of all materials. Final delivery depends on the number of revisions — three rounds are included in the price.",
       },
       {
-        q: "Šta ako mi se ne svidi neki detalj?",
-        a: "Svaka porudžbina uključuje tri kruga revizije bez doplate. Prilagođavamo materijale, boje, osvetljenje i uglove kamere dok rezultat ne bude tačan.",
+        q: "What if I don't like a detail?",
+        a: "Every order includes three revision rounds at no extra charge. We adjust materials, colors, lighting and camera angles until the result is right.",
       },
       {
-        q: "Da li mogu da koristim AI alate umesto ovoga?",
-        a: "AI alati su dobri za inspiraciju, ali ne mogu da naprave precizan prikaz Vašeg specifičnog objekta na osnovu DWG/PDF nacrta. Naši renderi su tehnički tačni — svaki prozor, materijal i proporcija odgovaraju realnoj građevini, što je presudno kada prodajete nekretninu.",
+        q: "Can't I just use AI tools instead?",
+        a: "AI tools are good for inspiration, but they cannot produce a precise view of your specific building from DWG/PDF drawings. Our renders are technically accurate — every window, material and proportion matches the real structure, which is critical when you are selling property.",
       },
       {
-        q: "Da li je €250 cena za jednu sliku?",
-        a: "€250 pokriva izgradnju kompletnog 3D modela Vaše zgrade i prvi finalni render. Pošto je model već napravljen, svaki sledeći ugao iste strane objekta košta samo €48 — 80% jeftiniji. Na primer, četiri ugla istog objekta su €394 ukupno (€250 + 3 × €48).",
+        q: "Is €250 the price for one image?",
+        a: "€250 covers building a complete 3D model of your building and the first final render. Since the model is already built, each additional angle of the same side of the building costs only €48 — 80% cheaper. For example, four angles of the same building come to €394 in total (€250 + 3 × €48).",
       },
       {
-        q: "Šta treba da dostavim da biste počeli?",
-        a: "Arhitektonske nacrte (osnove, preseci, fasade) u PDF ili DWG formatu. Opciono ali korisno: referentne fotografije stila, specifikacija materijala fasade i fotografija lokacije za kontekst okoline.",
+        q: "What do I need to send to get started?",
+        a: "Architectural drawings (plans, sections, elevations) in PDF or DWG format. Optional but useful: style reference photos, a facade material specification and a photo of the site for context.",
       },
       {
-        q: "Da li radite i porodične kuće, ili samo velike projekte?",
-        a: "Radimo projekte svih veličina — od porodičnih kuća do stambenih kompleksa i poslovnih objekata. Cena modela i prvog ugla je ista: €250.",
+        q: "Do you also render family houses, or only large projects?",
+        a: "We work on projects of every size — from family houses to residential complexes and commercial buildings. The price of the model and the first angle is the same: €250.",
       },
     ],
     variants: [
       {
         id: "exterior-static",
-        title: "Klasični prikaz fasade",
+        title: "Classic facade render",
         basePrice: 250,
         priceLabel: "€250",
-        unitLabel: "3D model + prvi render",
+        unitLabel: "3D model + first render",
         description:
-          "Ulazna tačka za prospekt: pun 3D model zgrade i prvi finalni render. Svaki sledeći ugao 80% jeftiniji.",
+          "The entry point for a brochure: a full 3D model of the building and the first final render. Each additional angle 80% cheaper.",
         included:
-          "Izgradnja punog 3D modela objekta, postavljanje scene, osvetljenja, materijala i 1 finalni render (ugao kamere). Sledeći ugao iste strane: samo €48.",
+          "Building a full 3D model of the building, setting up the scene, lighting and materials, and 1 final render (camera angle). Next angle of the same side: only €48.",
         addOns: [
-          "Dodatni ugao kamere iste strane objekta: €48 (80% popust)",
-          "Doplata za neviđenu stranu objekta: +25% jednom po modelu",
+          "Additional camera angle of the same side of the building: €48 (80% discount)",
+          "Surcharge for an unseen side of the building: +25% once per model",
         ],
-        note: "Doplata za neviđenu stranu naplaćuje se jednom; nakon nje svi naredni uglovi ulaze u standardnu dodatnu cenu.",
+        note: "The surcharge for an unseen side is charged once; after that, all further angles are charged at the standard add-on price.",
       },
       {
         id: "exterior-360",
-        title: "Interaktivna 360 panorama",
+        title: "Interactive 360 panorama",
         basePrice: 335,
         priceLabel: "€335",
-        unitLabel: "3D model + prva 360 panorama",
+        unitLabel: "3D model + first 360 panorama",
         description:
-          "Klijent se okreće oko zgrade mišem ili VR uređajem. Idealno za remote prezentacije i online prospekt.",
+          "The client turns around the building with a mouse or a VR headset. Ideal for remote presentations and online brochures.",
         included:
-          "Pun 3D model objekta + prva interaktivna 360 panorama spremna za VR uređaje (Meta Quest itd.).",
+          "A full 3D model of the building + the first interactive 360 panorama ready for VR headsets (Meta Quest etc.).",
         addOns: [
-          "Dodatna interaktivna tačka, ista strana modela: €48",
-          "Dodatna tačka koja zahteva neviđenu stranu: €60",
-          "Za 5+ dodatnih tačaka: €53 po tački (popust na količinu)",
+          "Additional interactive point, same side of the model: €48",
+          "Additional point requiring an unseen side: €60",
+          "For 5+ additional points: €53 per point (volume discount)",
         ],
       },
       {
         id: "exterior-aerial",
-        title: "3D prikaz ulice (streetscape)",
+        title: "3D streetscape",
         basePrice: 420,
         priceLabel: "€420",
-        unitLabel: "objekat + okruženje, ulična ili vazdušna perspektiva",
+        unitLabel: "building + surroundings, street-level or aerial perspective",
         description:
-          "Objekat sa susednim kućama modelovan u 3D — ulična perspektiva ili pogled iz vazduha. Za kontekst ulice, parcele i investitorske prezentacije.",
-        included: "Pun 3D model objekta + okruženje + prvi prikaz (ulična ili vazdušna perspektiva).",
-        addOns: ["Doplata za prikaz zadnje strane objekta: +25% jednom"],
+          "The building with neighboring houses modeled in 3D — street-level perspective or aerial view. For street context, plots and investor presentations.",
+        included: "A full 3D model of the building + surroundings + the first view (street-level or aerial perspective).",
+        addOns: ["Surcharge for showing the rear side of the building: +25% once"],
       },
     ],
   },
   {
     slug: "exterior-360",
     code: "exterior-360-tour",
-    name: "360 eksterijer",
-    shortName: "360 eksterijer",
+    name: "Exterior 360",
+    shortName: "Exterior 360",
     category: "exterior",
     icon: "images",
-    tagline: "Klijent obilazi Vašu zgradu kao u igri — pre gradnje.",
+    tagline: "Clients walk around your building like in a game — before it is built.",
     description:
-      "Interaktivna 360 panorama oko Vašeg objekta. Kupac otvara link u pretraživaču, mišem rotira pogled iz svih uglova, prebacuje između tačaka — i u VR režimu na Meta Quest uređajima. Idealno za off-plan pre-prodaju jedinica, remote demo i online prospekt.",
+      "An interactive 360 panorama around your building. The buyer opens a link in a browser, rotates the view from every angle with the mouse, switches between points — and uses VR mode on Meta Quest headsets. Ideal for off-plan pre-sales, remote demos and online brochures.",
     highlight:
-      "Prava prezentacija za udaljenog kupca — kada statični render ne daje osećaj prostora. Investitori za pre-prodaju iz dijaspore i agencije za remote pokazivanje.",
+      "The right presentation for a remote buyer — when a static render doesn't convey the space. Developers selling off-plan to buyers abroad and agencies doing remote viewings.",
     materials:
-      "Pošaljite arhitektonske nacrte (PDF/DWG), reference stila i raspored željenih tačaka gledanja. Prvi nacrt 3–5 radnih dana.",
+      "Send the architectural drawings (PDF/DWG), style references and the placement of the viewing points you want. First draft in 3-5 working days.",
     asset: "/artwork/listing-exterior-360.webp",
     detailAsset: "/artwork/detail-exterior-360.webp",
     detailEmbedSrc:
       "https://kuula.co/share/collection/7Tm7X?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     philosophy:
-      "Najveći trošak je izgradnja 3D modela. Cena €335 pokriva pun model i prvu interaktivnu 360 panoramu. Svaka sledeća tačka iz iste strane modela: €48 (80% jeftinije). Tačka koja zahteva neviđenu stranu: €60 jednokratno. Za 5+ tačaka popust pada na €53 po tački — kompletan obilazak objekta ulazi u realan investitorski budžet.",
+      "The biggest cost is building the 3D model. The €335 price covers a full model and the first interactive 360 panorama. Each subsequent point from the same side of the model: €48 (80% cheaper). A point requiring an unseen side: €60 one-off. For 5+ points the price drops to €53 per point — a complete walkaround of the building fits a realistic developer budget.",
     priceContext:
-      "€335 — pun 3D model + prva 360 panorama spremna za VR. Sledeća tačka iste strane: €48.",
+      "€335 — a full 3D model + the first VR-ready 360 panorama. Next point on the same side: €48.",
     forSegments: [
-      "Investitori (off-plan pre-prodaja)",
-      "Agencije nekretnina (remote demo)",
-      "Arhitekte (klijentske prezentacije)",
+      "Developers (off-plan pre-sales)",
+      "Real estate agencies (remote demos)",
+      "Architects (client presentations)",
     ],
-    problemHeading: "Nacrti ne otvaraju vrata. Šetnja kroz objekat — otvara.",
+    problemHeading: "Drawings don't open doors. A walk around the building does.",
     problemAsset: "/artwork/expert-exterior-360-problem.webp",
     problemPanoramaSrc: "/artwork/exterior-360-panorama-vr.jpg",
     problemBody:
-      "Investitor pokazuje fasadu, kupac klimne glavom i odlazi da razmisli. Statična slika ne daje osećaj prostora iz svih uglova, ne pokazuje materijale u svetlu, ne dozvoljava kupcu da sam istraži. Odluka se odlaže.",
+      "The developer shows the facade, the buyer nods and leaves to think it over. A static image doesn't convey the space from every angle, doesn't show the materials in the light, doesn't let the buyer explore on their own. The decision is postponed.",
     problemResolution:
-      "Interaktivna 360 panorama pretvara fasadu u prostor kroz koji klijent prolazi mišem ili VR uređajem. Kupac sam istražuje objekat iz svih uglova, sa istim materijalima i okolinom koje će videti uživo — i donosi odluku.",
+      "An interactive 360 panorama turns the facade into a space the client moves through with a mouse or a VR headset. Buyers explore the building from every angle, with the same materials and surroundings they will see in person — and make a decision.",
     benefits: [
       {
         icon: "trust",
-        title: "Poverenje kroz iskustvo",
-        body: "Kupac ulazi u prostor mišem i sam ispituje materijale, dimenzije i osvetljenje. Niko ne mora da mu objašnjava perspektivu.",
+        title: "Confidence through experience",
+        body: "The buyer steps into the space with a mouse and examines materials, dimensions and lighting on their own. Nobody has to explain the perspective to them.",
       },
       {
         icon: "speed",
-        title: "Prezentacija na daljinu",
-        body: "Pošaljete link, kupac otvara panoramu sa telefona ili VR headset-a, bez instalacije i bez naloga.",
+        title: "Remote presentations",
+        body: "You send a link, the buyer opens the panorama on a phone or a VR headset — no installation, no account.",
       },
       {
         icon: "value",
-        title: "Niža cena od fizičke makete",
-        body: "Pun 3D model i interaktivna panorama za €335. Fizička maketa istog objekta košta višestruko više i ne može da se menja kad arhitekta promeni materijal.",
+        title: "Cheaper than a physical model",
+        body: "A full 3D model and an interactive panorama for €335. A physical scale model of the same building costs many times more and cannot be changed when the architect changes a material.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite materijal",
-        body: "Dostavite arhitektonske nacrte (PDF/DWG) i, po želji, reference stila i raspored željenih tačaka gledanja.",
+        title: "Send your materials",
+        body: "Send the architectural drawings (PDF/DWG) and, if you like, style references and the placement of the viewing points you want.",
       },
       {
-        title: "Dobijate ponudu",
-        body: "Preciznu ponudu šaljemo najkasnije narednog radnog dana, bez skrivenih stavki.",
+        title: "You receive an estimate",
+        body: "We send a precise estimate no later than the next working day, with no hidden items.",
       },
       {
-        title: "Mi gradimo panoramu",
-        body: "Tim gradi 3D model, postavlja osvetljenje i materijale, renderuje 360 panoramu. Vi pratite napredak.",
+        title: "We build the panorama",
+        body: "The team builds the 3D model, sets lighting and materials, and renders the 360 panorama. You follow the progress.",
       },
       {
-        title: "Isporuka linka i embed koda",
-        body: "Dobijate link za deljenje i embed kod za sajt. Tri runde revizije su uključene u cenu — bez doplate.",
+        title: "Link and embed code delivery",
+        body: "You receive a shareable link and an embed code for your site. Three revision rounds are included in the price — no extra charge.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-exterior-360-01.webp",
-        alt: "Frame iz 360 panorame stambene zgrade — ulična perspektiva",
+        alt: "Frame from a 360 panorama of a residential building — street perspective",
       },
       {
         src: "/artwork/portfolio-exterior-360-02.webp",
-        alt: "Frame iz 360 panorame porodične kuće — dnevna scena",
+        alt: "Frame from a 360 panorama of a family house — daytime scene",
       },
       {
         src: "/artwork/portfolio-exterior-360-03.webp",
-        alt: "Frame iz 360 panorame poslovnog objekta — ulazna fasada",
+        alt: "Frame from a 360 panorama of a commercial building — entrance facade",
       },
       {
         src: "/artwork/portfolio-exterior-360-04.webp",
-        alt: "Frame iz 360 panorame stambenog kompleksa — okolni objekti i pristupna zona",
+        alt: "Frame from a 360 panorama of a residential complex — surrounding buildings and access area",
       },
     ],
     faqs: [
       {
-        q: "Kako klijent otvara panoramu?",
-        a: "Šaljemo link i embed kod. Klijent otvara kroz pretraživač — bez instalacije i bez naloga. Radi na telefonu, računaru i Meta Quest VR uređaju (VR mod je ugrađen u panoramu).",
+        q: "How does the client open the panorama?",
+        a: "We send a link and an embed code. The client opens it in a browser — no installation, no account. It works on phones, computers and Meta Quest VR headsets (VR mode is built into the panorama).",
       },
       {
-        q: "Šta tačno uključuje cena od €335?",
-        a: "Pun 3D model objekta i prva interaktivna 360 panorama spremna za VR. Svaka dodatna tačka gledanja iz iste strane modela: €48. Tačka koja zahteva neviđenu stranu: €60 (jednokratno). Za 5+ dodatnih tačaka: €53 po tački.",
+        q: "What exactly does the €335 price include?",
+        a: "A full 3D model of the building and the first interactive, VR-ready 360 panorama. Each additional viewing point from the same side of the model: €48. A point requiring an unseen side: €60 (one-off). For 5+ additional points: €53 per point.",
       },
       {
-        q: "Razlika u odnosu na klasični render?",
-        a: "Klasični spoljašnji render (€250) je jedna slika iz jednog ugla. 360 panorama (€335) je interaktivan prikaz kroz koji klijent sam prolazi — 360° pogled iz tačke, sa mogućnošću dodavanja više tačaka po objektu.",
+        q: "How is it different from a classic render?",
+        a: "A classic exterior render (€250) is one image from one angle. A 360 panorama (€335) is an interactive view the client moves through on their own — a 360° view from a point, with the option of adding more points per building.",
       },
       {
-        q: "Da li radi u VR headset-u?",
-        a: "Da. Panorama je standardno VR-ready — Meta Quest i kompatibilni uređaji otvaraju je direktno iz pretraživača, bez dodatne aplikacije.",
+        q: "Does it work in a VR headset?",
+        a: "Yes. The panorama is VR-ready as standard — Meta Quest and compatible headsets open it straight from the browser, with no extra app.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prvi nacrt panorame šaljemo za 3–5 radnih dana od potvrde ponude i prijema arhitektonskih nacrta. Tri runde revizije su uključene.",
+        q: "How long does it take?",
+        a: "We send the first draft of the panorama in 3-5 working days from estimate confirmation and receipt of the architectural drawings. Three revision rounds are included.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Arhitektonske nacrte (osnove, preseci, fasade) u PDF ili DWG formatu. Po želji: specifikacija materijala fasade, fotografije lokacije za kontekst okoline.",
+        q: "What do I need to send to get started?",
+        a: "Architectural drawings (plans, sections, elevations) in PDF or DWG format. Optional: a facade material specification, photos of the location for context.",
       },
     ],
     variants: [
       {
         id: "exterior-360",
-        title: "Interaktivna 360 panorama",
+        title: "Interactive 360 panorama",
         basePrice: 335,
         priceLabel: "€335",
-        unitLabel: "3D model + prva 360 panorama",
+        unitLabel: "3D model + first 360 panorama",
         description:
-          "Klijent se okreće oko zgrade mišem ili VR uređajem. Idealno za remote prezentacije i online prospekt.",
+          "The client turns around the building with a mouse or a VR headset. Ideal for remote presentations and online brochures.",
         included:
-          "Pun 3D model objekta + prva interaktivna 360 panorama spremna za VR uređaje (Meta Quest itd.).",
+          "A full 3D model of the building + the first interactive 360 panorama ready for VR headsets (Meta Quest etc.).",
         addOns: [
-          "Dodatna interaktivna tačka, ista strana modela: €48",
-          "Dodatna tačka koja zahteva neviđenu stranu: €60",
-          "Za 5+ dodatnih tačaka: €53 po tački (popust na količinu)",
+          "Additional interactive point, same side of the model: €48",
+          "Additional point requiring an unseen side: €60",
+          "For 5+ additional points: €53 per point (volume discount)",
         ],
       },
     ],
@@ -878,185 +878,185 @@ export const SERVICES: Service[] = [
   {
     slug: "3d-streetscape",
     code: "exterior-aerial-dedicated",
-    name: "3D prikaz ulice (streetscape)",
-    shortName: "3D prikaz ulice",
+    name: "3D streetscape",
+    shortName: "3D streetscape",
     category: "exterior",
     icon: "camera",
-    tagline: "Vaš objekat na ulici, iz svakog ugla koji Vam treba.",
+    tagline: "Your building on its street, from every angle you need.",
     description:
-      "3D prikaz ulice (streetscape) (€420) modeluje celo okruženje — susedne kuće, ulicu i parcelu — i prikazuje Vaš objekat primarno iz ulične perspektive, a po potrebi i iz vazduha. Pravi izbor kada lokacija još ne postoji, teško je dostupna ili trebate slobodan izbor ugla. Za lokacije koje postoje i mogu se fotografisati postoji jeftiniji metod — render u stvarnoj fotografiji od €300.",
+      "A 3D streetscape (€420) models the whole setting — neighboring houses, the street and the plot — and shows your building primarily from a street-level perspective, with aerial views when needed. The right choice when the location doesn't exist yet, is hard to access, or you need a free choice of angle. For locations that exist and can be photographed there is a cheaper method — a render in a real photo from €300.",
     highlight:
-      "Prava prezentacija lokacije i konteksta — za urbanističku dozvolu, board prezentacije i investitorske ponude.",
+      "The right presentation of location and context — for planning permission, board presentations and investor offers.",
     materials:
-      "Pošaljite arhitektonske nacrte (PDF/DWG), situacioni plan sa katastarskom podlogom, opciono fotografije lokacije. Prvi nacrt 3–5 radnih dana.",
+      "Send the architectural drawings (PDF/DWG), a site plan with the cadastral base, and optionally photos of the location. First draft in 3-5 working days.",
     asset: "/artwork/listing-streetscape.webp",
     listingAsset: "/artwork/listing-streetscape.webp",
     detailAsset: "/artwork/detail-streetscape.webp",
     detailBeforeAsset: "/artwork/problem-streetscape-street-before.webp",
     detailAfterAsset: "/artwork/problem-streetscape-street-after.webp",
     detailBeforeAlt:
-      "2D situacioni plan niza objekata uz ulicu — raspored kuća, parkinga, zelenila i sadržaja",
+      "2D site plan of a row of buildings along a street — layout of houses, parking, greenery and amenities",
     detailAfterAlt:
-      "3D prikaz ulice — niz modernih objekata sa drvoredom, parkingom i uličnim kontekstom",
+      "3D streetscape — a row of modern buildings with a tree line, parking and street context",
     philosophy:
-      "Cena od €420 pokriva izgradnju punog 3D modela objekta i modelovanog okruženja, sa dva ugla uključena. Pošto je model već izgrađen, svaki sledeći ugao košta €48 — 80% jeftinije. Neviđena ili zadnja strana objekta dodaje se jednom (+25%, €105). Nema naknadnih iznenađenja — sve je javno u cenovniku.",
+      "The €420 price covers building a full 3D model of the building and its modeled surroundings, with two angles included. Since the model is already built, each additional angle costs €48 — 80% cheaper. An unseen or rear side of the building is added once (+25%, €105). No surprises later — everything is public in the price list.",
     priceContext:
-      "€420 — pun 3D model objekta + okruženja + prvi prikaz. Sledeći ugao: €48.",
+      "€420 — a full 3D model of the building + surroundings + the first view. Next angle: €48.",
     forSegments: [
-      "Developeri (masterplani)",
-      "Investitori (parcele i kompleksi)",
-      "Arhitekte (regulatorne prezentacije)",
+      "Developers (master plans)",
+      "Investors (plots and complexes)",
+      "Architects (regulatory presentations)",
     ],
-    problemHeading: "Lokacija ne postoji. Kupac ne može da čeka da se sagradi.",
+    problemHeading: "The location doesn't exist yet. The buyer can't wait for it to be built.",
     problemBody:
-      "Investitor prodaje stanove u izgradnji. Lokacija je prazan plac ili tek započeta gradnja. Fotografija okruženja ne postoji, dron nema šta da snimi, a kupac traži vizuelni dokaz da će zgrada zaista biti na toj ulici, između tih suseda, na toj parceli. Bez toga — kupac odlazi kod nekog ko ima sliku.",
+      "A developer is selling apartments under construction. The location is an empty plot or construction has barely started. There is no photo of the surroundings, a drone has nothing to film, and the buyer wants visual proof that the building really will stand on that street, between those neighbors, on that plot. Without it — the buyer goes to someone who has a picture.",
     problemResolution:
-      "3D prikaz ulice gradi celo okruženje iz nacrta i katastarskih podataka. Susedne kuće, ulica, zelenilo i objekat — sve na istoj slici. Kupac vidi buduću ulicu pre nego što je asfaltirana.",
+      "A 3D streetscape builds the whole setting from drawings and cadastral data. Neighboring houses, the street, greenery and the building — all in one image. The buyer sees the future street before it is paved.",
     benefits: [
       {
         icon: "context",
-        title: "Slobodan izbor ugla",
-        body: "Okruženje je u 3D — možete tražiti uličnu perspektivu, pogled iz dvorišta, vazdušni ugao ili svaki drugi. Nema ograničenja fotografije.",
+        title: "A free choice of angle",
+        body: "The surroundings are in 3D — you can ask for a street-level perspective, a view from the courtyard, an aerial angle or anything else. No photography constraints.",
       },
       {
         icon: "speed",
-        title: "Bez čekanja na pristup lokaciji",
-        body: "Gradimo iz nacrta i katastarskih podataka. Nema potrebe za fotografisanjem, dronom ili obilaskom lokacije — radi se odmah čim dostavite crteže.",
+        title: "No waiting for site access",
+        body: "We build from drawings and cadastral data. No photography, drone or site visit needed — work starts as soon as you send the drawings.",
       },
       {
         icon: "value",
-        title: "Kompletna prezentacija u jednoj porudžbini",
-        body: "Ulična perspektiva za prospekt, vazdušni ugao za board prezentaciju, zadnja strana za regulatorni materijal — sve iz istog modela. Svaki sledeći ugao €48.",
+        title: "A complete presentation in one order",
+        body: "A street-level perspective for the brochure, an aerial angle for the board presentation, the rear side for regulatory materials — all from the same model. Each additional angle €48.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite nacrte",
-        body: "PDF ili DWG osnove, fasade i situacioni plan sa katastarskom podlogom. Opciono: specifikacija materijala, fotografije lokacije.",
+        title: "Send the drawings",
+        body: "PDF or DWG plans, elevations and a site plan with the cadastral base. Optional: material specification, photos of the location.",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok u roku od jednog radnog dana. Plaćanje avansne rate otključava izradu.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline within one working day. Paying the deposit starts production.",
       },
       {
-        title: "Izrada i nacrte",
-        body: "Prve nacrte šaljemo za 3–5 radnih dana. Uključene su 3 runde revizije — bez doplate.",
+        title: "Production and drafts",
+        body: "We send first drafts in 3-5 working days. 3 revision rounds are included — no extra charge.",
       },
       {
-        title: "Finalni fajlovi",
-        body: "Visoka rezolucija, PNG i TIFF, uz fakturu. Odmah upotrebljivo za štampu, prezentacije i web.",
+        title: "Final files",
+        body: "High resolution, PNG and TIFF, with an invoice. Ready to use for print, presentations and the web.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-streetscape-01.webp",
-        alt: "3D prikaz ulice — niz savremenih kuća u nizu, ulična perspektiva sa susedima — Elegant Render",
+        alt: "3D streetscape — row of contemporary terraced houses, street perspective with neighbors — Elegant Render",
       },
       {
         src: "/artwork/portfolio-streetscape-02.webp",
-        alt: "3D prikaz ulice — ugaona stambena zgrada sa lokalom u prizemlju u urbanom okruženju — Elegant Render",
+        alt: "3D streetscape — corner residential building with ground-floor retail in an urban setting — Elegant Render",
       },
       {
         src: "/artwork/portfolio-streetscape-03.webp",
-        alt: "3D prikaz ulice — poslovni objekat sa lokalima na bulevaru, ulična perspektiva — Elegant Render",
+        alt: "3D streetscape — commercial building with retail units on a boulevard, street perspective — Elegant Render",
       },
       {
         src: "/artwork/portfolio-streetscape-04.webp",
-        alt: "3D prikaz ulice — klasična vila u nizu susednih objekata — Elegant Render",
+        alt: "3D streetscape — classic villa in a row of neighboring buildings — Elegant Render",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €420?",
-        a: "Pun 3D model Vašeg objekta i modelovanog okruženja (susedne kuće, ulica, parcela), primarno iz ulične perspektive — sa 2 ugla uključena. Svaki sledeći ugao: €48. Neviđena/zadnja strana objekta: +25% (€105), jednokratno. Tri runde revizije su uključene.",
+        q: "What exactly do I get for €420?",
+        a: "A full 3D model of your building and its modeled surroundings (neighboring houses, the street, the plot), primarily from a street-level perspective — with 2 angles included. Each additional angle: €48. Unseen/rear side of the building: +25% (€105), one-off. Three revision rounds are included.",
       },
       {
-        q: "Da li je okruženje tačno ili aproksimacija?",
-        a: "Okruženje je modelovana aproksimacija — susedne kuće se grade na osnovu katastarskih podataka i referentnih fotografija, ali nisu piksel-tačna kopija stvarnog stanja. Ako Vam je potrebno piksel-realno okruženje (npr. za urbanističku komisiju koja traži stvarni kontekst), razmotrite render u stvarnoj fotografiji lokacije (€300).",
+        q: "Are the surroundings accurate or an approximation?",
+        a: "The surroundings are a modeled approximation — neighboring houses are built from cadastral data and reference photos, but they are not a pixel-perfect copy of the real state. If you need pixel-real surroundings (e.g. for a planning committee that requires the real context), consider the render in a real photo of the location (€300).",
       },
       {
-        q: "Razlika u odnosu na render u stvarnoj fotografiji (€300)?",
-        a: "Render u fotografiji lokacije koristi stvarnu fotografiju kao pozadinu — okruženje je piksel-realno, ali ste vezani za ugao snimljene fotografije. 3D prikaz ulice modeluje celo okruženje u 3D — možete birati bilo koji ugao, ali okruženje je aproksimacija. Ako lokacija postoji i može se fotografisati, render u fotografiji je jeftiniji i verodostojniji. Ako lokacija ne postoji ili trebate više uglova, 3D prikaz ulice je jedina opcija.",
+        q: "How is it different from the render in a real photo (€300)?",
+        a: "The render in a photo uses a real photograph of the location as the background — the surroundings are pixel-real, but you are tied to the angle of the photo. The 3D streetscape models the whole setting in 3D — you can choose any angle, but the surroundings are an approximation. If the location exists and can be photographed, the render in a photo is cheaper and more credible. If the location doesn't exist or you need several angles, the 3D streetscape is the only option.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Arhitektonske nacrte (osnove, preseke, fasade) u PDF ili DWG formatu i situacioni plan sa katastarskom podlogom. Po želji: specifikacija materijala fasade i fotografije lokacije ili okruženja za referencu.",
+        q: "What do I need to send to get started?",
+        a: "Architectural drawings (plans, sections, elevations) in PDF or DWG format and a site plan with the cadastral base. Optional: a facade material specification and photos of the location or surroundings for reference.",
       },
       {
-        q: "Da li usluga uključuje aerial (ptičju perspektivu) ili samo uličnu?",
-        a: "Primarni format je ulična perspektiva (eye-level) — objekat na ulici, kao što ga vidi prolaznik. Aerial pogled (iz vazduha) je dostupan kao dodatni ugao iz istog modela za €48. Oba izlaze iz istog modelovanog okruženja.",
+        q: "Does the service include an aerial (bird's-eye) view or only street level?",
+        a: "The primary format is the street-level (eye-level) perspective — the building on its street, as a passer-by sees it. An aerial view is available as an additional angle from the same model for €48. Both come from the same modeled setting.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema nacrta. Tri runde revizije su uključene — bez doplate.",
+        q: "How long does it take?",
+        a: "We send first drafts in 3-5 working days from estimate confirmation and receipt of the drawings. Three revision rounds are included — no extra charge.",
       },
     ],
     pricingLead: {
-      heading: "Dva metoda, isti cilj — jedan pravi izbor za Vašu lokaciju.",
-      body: "3D prikaz ulice (€420) je pravi izbor kada lokacija ne postoji ili zahtevate slobodan izbor ugla kamere — okruženje se modeluje u 3D. Render u stvarnoj fotografiji (€300) je pravi izbor kada lokacija postoji i može se fotografisati — okruženje je piksel-realno jer dolazi iz stvarne fotografije. Odaberite prema tome šta imate u rukama.",
+      heading: "Two methods, one goal — one right choice for your location.",
+      body: "A 3D streetscape (€420) is the right choice when the location doesn't exist yet or you need a free choice of camera angle — the surroundings are modeled in 3D. A render in a real photo (€300) is the right choice when the location exists and can be photographed — the surroundings are pixel-real because they come from an actual photograph. Choose based on what you have in hand.",
     },
     comparison: {
-      aLabel: "3D prikaz ulice — €420",
-      bLabel: "Render u fotografiji — €300",
+      aLabel: "3D streetscape — €420",
+      bLabel: "Render in a photo — €300",
       rows: [
-        { label: "Ulazni materijal", a: "Arhitektonski nacrti", b: "Stvarna fotografija lokacije" },
-        { label: "Okruženje", a: "Modelovano u 3D (aproksimacija)", b: "Piksel-realno (prava fotografija)" },
-        { label: "Izbor ugla", a: "Bilo koji ugao (ulica ili iz vazduha)", b: "Vezan za ugao fotografije" },
-        { label: "Kada izabrati", a: "Lokacija ne postoji ili treba više uglova", b: "Lokacija postoji i može se fotografisati" },
+        { label: "Input material", a: "Architectural drawings", b: "A real photo of the location" },
+        { label: "Surroundings", a: "Modeled in 3D (approximation)", b: "Pixel-real (actual photograph)" },
+        { label: "Choice of angle", a: "Any angle (street or aerial)", b: "Tied to the photo's angle" },
+        { label: "When to choose it", a: "The location doesn't exist or you need several angles", b: "The location exists and can be photographed" },
       ],
     },
     variants: [
       {
         id: "exterior-aerial",
-        title: "3D prikaz ulice (streetscape)",
+        title: "3D streetscape",
         basePrice: 420,
         priceLabel: "€420",
-        unitLabel: "pun 3D model objekta + okruženja, ulična perspektiva",
+        unitLabel: "full 3D model of the building + surroundings, street perspective",
         description:
-          "Celo okruženje se modeluje u 3D — susedne kuće, ulica, parcela. Primarni prikaz je ulična perspektiva; aerial i drugi uglovi dostupni kao doplate iz istog modela.",
+          "The whole setting is modeled in 3D — neighboring houses, the street, the plot. The primary view is a street-level perspective; aerial and other angles are available as add-ons from the same model.",
         included:
-          "Pun 3D model objekta i okruženja, 2 ugla uključena (primarno ulična perspektiva). Tri runde revizije uključene.",
+          "A full 3D model of the building and surroundings, 2 angles included (primarily street-level perspective). Three revision rounds included.",
         addOns: [
-          "Dodatni ugao (ulični ili aerial): €48 (80% jeftinije)",
-          "Neviđena/zadnja strana objekta: +25% (€105 jednokratno)",
+          "Additional angle (street or aerial): €48 (80% cheaper)",
+          "Unseen/rear side of the building: +25% (€105 one-off)",
         ],
-        note: "Doplata za zadnju stranu naplaćuje se jednom po modelu — nakon toga svi uglovi ulaze u standardnu dopunu.",
+        note: "The rear-side surcharge is charged once per model — after that, all angles are charged at the standard add-on price.",
       },
     ],
     crossSellVariants: [
       {
         id: "photomontage-main",
-        title: "Render u stvarnoj fotografiji lokacije",
+        title: "Render in a real photo of the location",
         basePrice: 300,
         priceLabel: "€300",
-        unitLabel: "3D model + uklapanje u fotografiju lokacije",
+        unitLabel: "3D model + blending into a photo of the location",
         description:
-          "Kada lokacija postoji i može se fotografisati — 3D model se uklapa u stvarnu fotografiju. Piksel-realno okruženje, niža cena.",
+          "When the location exists and can be photographed — the 3D model is blended into an actual photograph. Pixel-real surroundings, lower price.",
         included:
-          "Kompletan 3D model objekta, uklapanje u jednu fotografiju lokacije, usklađeno svetlo i senke. Jedan finalni render.",
+          "A complete 3D model of the building, blending into one photo of the location, matched light and shadows. One final render.",
         addOns: [
-          "Dodatni ugao iz iste fotografije: €55 (82% jeftinije)",
-          "Druga fotografija iste lokacije: €85",
-          "Neviđena strana objekta: +25% jednokratno",
+          "Additional angle from the same photo: €55 (82% cheaper)",
+          "A second photo of the same location: €85",
+          "Unseen side of the building: +25% one-off",
         ],
-        note: "Render eksterijera €250 + Fotomontaža +€50. Pravi izbor kada lokacija postoji i može se fotografisati — maksimalna verodostojnost za komisije i javne rasprave.",
+        note: "Exterior render €250 + photomontage +€50. The right choice when the location exists and can be photographed — maximum credibility for committees and public consultations.",
       },
     ],
   },
   {
     slug: "virtual-staging",
     code: "virtual-staging",
-    name: "Virtuelno opremanje",
-    shortName: "Virtuelno opremanje",
+    name: "Virtual staging",
+    shortName: "Virtual staging",
     category: "transformation",
     icon: "sparkles",
-    tagline: "Prazne sobe se sporo prodaju — opremljene prodaju brže.",
+    tagline: "Empty rooms sell slowly — staged rooms sell faster.",
     description:
-      "Praznu ili slabo uređenu fotografiju prostora pretvaramo u opremljenu scenu koja prodaje. Idealno za agente nekretnina i vlasnike — opremanje fotografije košta 100× manje od pravog opremanja stana, a značajno povećava klikove na oglas. Druga soba iz iste nekretnine: 17% jeftinije. Pakovanje od 10 slika: 28% jeftinije po slici.",
+      "We turn a photo of an empty or poorly furnished space into a staged scene that sells. Ideal for real estate agents and owners — staging a photo costs 100× less than physically furnishing the apartment, and significantly increases clicks on the listing. A second room from the same property: 17% cheaper. A 10-image package: 28% cheaper per image.",
     highlight:
-      "Praktičan način da prazna nekretnina deluje useljivo i poveća broj poziva sa oglasa.",
+      "A practical way to make an empty property feel move-in ready and increase calls from the listing.",
     materials:
-      "Pošaljite nam fotografije praznih prostorija visoke rezolucije i željeni stil nameštaja.",
+      "Send us high-resolution photos of the empty rooms and the furniture style you want.",
     asset: "/artwork/expert-virtual-staging-hero-after.webp",
     beforeAsset: "/artwork/expert-virtual-staging-hero-before.webp",
     afterAsset: "/artwork/expert-virtual-staging-hero-after.webp",
@@ -1064,136 +1064,136 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-virtual-staging-living-room-before.webp",
     detailAfterAsset: "/artwork/problem-virtual-staging-living-room-after.webp",
     detailBeforeAlt:
-      "Prazan dnevni boravak pre virtuelnog opremanja — gola soba sa parketom i velikim prozorima",
+      "Empty living room before virtual staging — bare room with parquet flooring and large windows",
     detailAfterAlt:
-      "Isti dnevni boravak posle virtuelnog opremanja — sofa, fotelja, stočić, tepih i umetnička slika",
+      "The same living room after virtual staging — sofa, armchair, coffee table, rug and wall art",
     philosophy:
-      "Prva slika pokriva izbor nameštaja, stila i osvetljenja. Kad je stil definisan, svaki dodatni ugao iste sobe je 33% jeftiniji, druga soba 17% jeftinija, a od 10+ slika cena pada na €13/sliku. Tako celokupna nekretnina dobija kompletan oglasni paket za delić cene fizičkog opremanja.",
+      "The first image covers the choice of furniture, style and lighting. Once the style is set, each additional angle of the same room is 33% cheaper, a second room 17% cheaper, and from 10+ images the price drops to €13/image. The whole property gets a complete listing package for a fraction of the cost of physical staging.",
     priceContext:
-      "€18 prva slika · €15 druga soba · od €13/sliku za pakovanje 10+ slika.",
+      "€18 first image · €15 second room · from €13/image for 10+ image packages.",
     forSegments: [
-      "Agencije nekretnina",
-      "Vlasnici praznih jedinica",
-      "Fotografi nekretnina (post-produkcija)",
+      "Real estate agencies",
+      "Owners of empty units",
+      "Real estate photographers (post-production)",
     ],
     featured: true,
-    problemHeading: "Prazna soba deluje hladno. Opremljena prodaje.",
+    problemHeading: "An empty room feels cold. A staged one sells.",
     problemBody:
-      "Kupac otvori oglas, vidi prazan stan i nastavi dalje. Bez nameštaja nema osećaja razmere, bez stila nema emocionalne reakcije. Većina agenata zna ovo — ali fizičko opremanje stana košta hiljade evra i traje danima.",
+      "A buyer opens the listing, sees an empty apartment and moves on. Without furniture there is no sense of scale; without style there is no emotional response. Most agents know this — but physically staging an apartment costs thousands of euros and takes days.",
     problemResolution:
-      "Virtuelno opremanje pretvara fotografiju prazne sobe u atraktivnu scenu za jedan dan i jedan klik više po oglasu. Nameštaj, ćilim, lampa, biljka — sve u stilu koji odgovara nekretnini.",
+      "Virtual staging turns a photo of an empty room into an attractive scene in a single day — and into an extra click on the listing. Furniture, a rug, a lamp, a plant — everything in a style that suits the property.",
     benefits: [
       {
         icon: "speed",
-        title: "Brz rezultat",
-        body: "Sliku šaljete danas, opremljen prikaz dobijate za nekoliko radnih dana. Ne čekate dostavu nameštaja, ne organizujete fotograf-termin.",
+        title: "Fast results",
+        body: "Send the image today, receive the staged view within a few working days. No waiting for furniture delivery, no photographer appointments to organize.",
       },
       {
         icon: "value",
-        title: "100× jeftinije od fizičkog opremanja",
-        body: "Pravi nameštaj za prezentaciju stana košta hiljade evra i traje danima. Virtuelno €18 po slici, €13 za pakovanje 10+ slika.",
+        title: "100× cheaper than physical staging",
+        body: "Real furniture for presenting an apartment costs thousands of euros and takes days. Virtually it is €18 per image, €13 for 10+ image packages.",
       },
       {
         icon: "trust",
-        title: "Stil koji odgovara kupcu",
-        body: "Birate iz nekoliko pravaca — moderni minimalist, warm Scandinavian, klasičan. Promena stila iste sobe: €12.",
+        title: "A style that suits the buyer",
+        body: "Choose from several directions — modern minimalist, warm Scandinavian, classic. Restyling the same room: €12.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite fotografije",
-        body: "Fotografije praznih prostorija visoke rezolucije i 1–2 reference stila nameštaja koji želite.",
+        title: "Send the photos",
+        body: "High-resolution photos of the empty rooms and 1-2 references for the furniture style you want.",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline no later than the next working day, with no hidden items.",
       },
       {
-        title: "Opremanje",
-        body: "Postavljamo nameštaj, materijale i osvetljenje na Vaše fotografije. Prve nacrte šaljemo za 3–5 radnih dana.",
+        title: "Staging",
+        body: "We place furniture, materials and lighting into your photos. First drafts in 3-5 working days.",
       },
       {
-        title: "Isporuka i revizije",
-        body: "Dobijate gotove slike spremne za oglas. Tri runde revizije su uključene u cenu — bez doplate.",
+        title: "Delivery and revisions",
+        body: "You receive finished images ready for the listing. Three revision rounds are included in the price — no extra charge.",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €18?",
-        a: "Fotorealistično opremanje jedne prazne prostorije na osnovu Vaše fotografije — uključen izbor nameštaja, postavljanje i usklađivanje osvetljenja. Dodatni ugao iste sobe: €12 (33% popust). Druga soba iste nekretnine: €15 (17% popust). Pakovanje 10+ slika: €13 po slici (28% popust).",
+        q: "What exactly do I get for €18?",
+        a: "Photorealistic staging of one empty room based on your photo — furniture selection, placement and lighting matching included. Additional angle of the same room: €12 (33% discount). Second room of the same property: €15 (17% discount). 10+ image package: €13 per image (28% discount).",
       },
       {
-        q: "Da li deluje stvarno?",
-        a: "Naša verzija je fotorealistična — kupac obično ne primeti razliku između naše opremljene slike i fotografije stvarno opremljenog stana. Transparentno označavamo da je upotrebljen virtual staging, ali to ne smanjuje efikasnost oglasa.",
+        q: "Does it look real?",
+        a: "Our staging is photorealistic — buyers usually can't tell the difference between our staged image and a photo of a genuinely furnished apartment. We transparently label that virtual staging was used, but that doesn't reduce the listing's effectiveness.",
       },
       {
-        q: "Mogu li da promenim stil ako mi se ne dopadne?",
-        a: "Da. Promena stila opremanja iste sobe: €12. Pre toga su uključene tri runde revizije bez doplate — u njima menjamo nameštaj, materijale i osvetljenje dok rezultat ne bude tačan.",
+        q: "Can I change the style if I don't like it?",
+        a: "Yes. Restyling the same room: €12. Before that, three revision rounds are included at no extra charge — in them we change furniture, materials and lighting until the result is right.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude. Pakovanja 10+ slika idu fazno — prve slike za nedelju dana, ostatak po dogovoru sa Vama.",
+        q: "How long does it take?",
+        a: "We send first drafts in 3-5 working days from estimate confirmation. 10+ image packages are delivered in stages — the first images within a week, the rest as agreed with you.",
       },
       {
-        q: "Da li radite za agencije sa puno listinga?",
-        a: "Da. Pakovanje 10+ slika je €13 po slici (28% popust). Stalni agenti mogu da dogovore prioritet izrade i konzistentnu stilsku liniju kroz sve listinge.",
+        q: "Do you work with agencies with many listings?",
+        a: "Yes. The 10+ image package is €13 per image (28% discount). Regular agents can arrange production priority and a consistent style line across all listings.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Fotografije praznih prostorija u dobroj rezoluciji (najmanje 1920px na dužoj strani, ne snimak telefonom pod uglom) i 1–2 reference stila nameštaja.",
+        q: "What do I need to send to get started?",
+        a: "Photos of the empty rooms in good resolution (at least 1920px on the longer side, not an angled phone snapshot) and 1-2 furniture style references.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-virtual-staging-01.webp",
-        alt: "Virtuelno opremanje — moderna dnevna soba sa minimalističkim nameštajem",
+        alt: "Virtual staging — modern living room with minimalist furniture",
       },
       {
         src: "/artwork/portfolio-virtual-staging-02.webp",
-        alt: "Virtuelno opremanje — spavaća soba sa toplim materijalima",
+        alt: "Virtual staging — bedroom with warm materials",
       },
       {
         src: "/artwork/portfolio-virtual-staging-03.webp",
-        alt: "Virtuelno opremanje — kuhinja sa trpezarijom i prirodnim svetlom",
+        alt: "Virtual staging — kitchen with a dining area and natural light",
       },
       {
         src: "/artwork/portfolio-virtual-staging-04.webp",
-        alt: "Virtuelno opremanje — kućna kancelarija sa policama i prirodnim svetlom",
+        alt: "Virtual staging — home office with shelving and natural light",
       },
     ],
     variants: [
       {
         id: "staging-static",
-        title: "Klasično opremanje fotografije",
+        title: "Classic photo staging",
         basePrice: 18,
         priceLabel: "€18",
-        unitLabel: "prva opremljena slika",
+        unitLabel: "first staged image",
         description:
-          "Brz upgrade oglasa: prazna soba postaje atraktivna scena za €18. Svaka sledeća soba 17% jeftinija.",
+          "A fast listing upgrade: an empty room becomes an attractive scene for €18. Each additional room 17% cheaper.",
         included:
-          "Fotorealistično opremanje jedne prazne prostorije na osnovu Vaše fotografije. Uključuje izbor nameštaja, postavljanje i usklađivanje osvetljenja.",
+          "Photorealistic staging of one empty room based on your photo. Includes furniture selection, placement and lighting matching.",
         addOns: [
-          "Dodatni ugao iste sobe: €12 (33% popust)",
-          "Druga soba iste nekretnine: €15 (17% popust)",
-          "Pakovanje 10+ slika: €13 po slici (28% popust)",
-          "Promena stila opremanja iste sobe: €12",
+          "Additional angle of the same room: €12 (33% discount)",
+          "Second room of the same property: €15 (17% discount)",
+          "10+ image package: €13 per image (28% discount)",
+          "Restyling the same room: €12",
         ],
       },
       {
         id: "staging-360",
-        title: "Interaktivno 360 opremanje",
+        title: "Interactive 360 staging",
         basePrice: 34,
         priceLabel: "€34",
-        unitLabel: "prva opremljena 360 panorama",
+        unitLabel: "first staged 360 panorama",
         description:
-          "Kupac obilazi opremljenu sobu mišem — savršeno za online oglas ili remote prikaz potencijalnom kupcu.",
+          "Buyers walk through the staged room with their mouse — perfect for online listings or remote presentations to a potential buyer.",
         included:
-          "Kompletno opremanje prve prostorije u 360 panorami koja se pregledava na sajtu ili VR uređaju.",
+          "Complete staging of the first room as a 360 panorama viewable on your site or a VR headset.",
         addOns: [
-          "Dodatna interaktivna tačka iste sobe: €24 (30% popust)",
-          "Druga soba iste nekretnine: €28 (18% popust)",
-          "Pakovanje 6+ tačaka: €24 po tački",
-          "Promena stila opremanja iste sobe: €22",
+          "Additional interactive point in the same room: €24 (30% discount)",
+          "Second room of the same property: €28 (18% discount)",
+          "6+ point package: €24 per point",
+          "Restyling the same room: €22",
         ],
       },
     ],
@@ -1201,17 +1201,17 @@ export const SERVICES: Service[] = [
   {
     slug: "virtual-renovation",
     code: "virtual-renovation",
-    name: "Virtuelna renovacija",
-    shortName: "Virtuelna renovacija",
+    name: "Virtual renovation",
+    shortName: "Virtual renovation",
     category: "transformation",
     icon: "refresh",
-    tagline: "Vidite renoviran prostor pre nego što potrošite na radove.",
+    tagline: "See the renovated space before you spend on the work.",
     description:
-      "Pre nego što potrošite hiljade evra na podove, kuhinju ili kupatilo, vidite kako će prostor izgledati. Sprečavate skupe greške u izboru materijala i ubrzavate dogovor sa izvođačima. Prva slika pokriva kompletan dizajn; svaki sledeći ugao iste sobe je 10% jeftiniji (a od 4. ugla 20% jeftiniji).",
+      "Before you spend thousands of euros on floors, a kitchen or a bathroom, see what the space will look like. You avoid expensive material mistakes and speed up agreements with contractors. The first image covers the complete design; each additional angle of the same room is 10% cheaper (and from the 4th angle 20% cheaper).",
     highlight:
-      "Za vlasnike koji planiraju renovaciju, agente koji prodaju nekretnine pred adaptaciju i arhitekte enterijera koji predstavljaju klijentu konkretne opcije.",
+      "For owners planning a renovation, agents selling properties due for refurbishment and interior architects presenting concrete options to a client.",
     materials:
-      "Pošaljite nam fotografije postojećeg stanja i reference za nove materijale (podove, zidove, nameštaj).",
+      "Send us photos of the current state and references for the new materials (floors, walls, furniture).",
     asset: "/artwork/expert-virtual-renovation-after.webp",
     beforeAsset: "/artwork/expert-virtual-renovation-before.webp",
     afterAsset: "/artwork/expert-virtual-renovation-after.webp",
@@ -1219,119 +1219,119 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-virtual-renovation-kitchen-before.webp",
     detailAfterAsset: "/artwork/problem-virtual-renovation-kitchen-after.webp",
     detailBeforeAlt:
-      "Zastarela kuhinja sa starim drvenim ormarićima i pločicama pre virtuelne renovacije",
+      "Dated kitchen with old wooden cabinets and tiles before virtual renovation",
     detailAfterAlt:
-      "Ista kuhinja posle virtuelne renovacije — moderni svetli ormarići, mermerni zid, beli pult i nova tehnika",
+      "The same kitchen after virtual renovation — modern light cabinets, a marble wall, a white counter and new appliances",
     philosophy:
-      "Prva slika pokriva kompletan dizajn renovacije i izbor materijala. Kad je vizuelni pravac postavljen, svaki dodatni ugao iste prostorije je 10% jeftiniji, a od 4. ugla 20% jeftiniji. Druga soba iste nekretnine: 15% popust. Tako kompletna nekretnina ulazi u realan budžet pre nego što krenu zidari.",
+      "The first image covers the complete renovation design and material selection. Once the visual direction is set, each additional angle of the same room is 10% cheaper, and from the 4th angle 20% cheaper. Second room of the same property: 15% discount. A whole property fits a realistic budget before the builders arrive.",
     priceContext:
-      "€66 prvi prikaz · od €53 dodatni ugao · €56 druga soba (15% popust).",
+      "€66 first view · from €53 additional angle · €56 second room (15% discount).",
     forSegments: [
-      "Vlasnici nekretnina pred renoviranje",
-      "Arhitekte enterijera",
-      "Agencije za nekretnine",
+      "Property owners planning a renovation",
+      "Interior architects",
+      "Real estate agencies",
     ],
     featured: true,
-    problemHeading: "Renovacija je skupa. Greška u materijalu — još skuplja.",
+    problemHeading: "Renovation is expensive. A material mistake — even more so.",
     problemBody:
-      "Vlasnik bira pločice po katalogu, podove po uzorku, kuhinjske elemente po showroom-u — i sve zajedno tek vidi posle radova. Tada je kasno za ispravku. Izvođači prave izmene sa naknadnim računom.",
+      "The owner picks tiles from a catalog, floors from a sample, kitchen units from a showroom — and only sees them all together after the work is done. By then it is too late to fix. Contractors make changes with a follow-up bill.",
     problemResolution:
-      "Virtuelna renovacija prikazuje finalni izgled prostorije pre nego što kupite materijal i pre nego što stignu majstori. Vidite sve zajedno, isprobate varijante, donosite odluku bez rizika.",
+      "Virtual renovation shows the room's final look before you buy materials and before the builders arrive. You see everything together, try options and decide without risk.",
     benefits: [
       {
         icon: "value",
-        title: "Manje grešaka, niži troškovi",
-        body: "Skupa izmena materijala posle radova proizvodi nove troškove kod izvođača. Render ih sprečava — vidite finalni izgled pre nego što potrošite na zidare.",
+        title: "Fewer mistakes, lower costs",
+        body: "An expensive material change after the work is done means new contractor costs. A render prevents them — you see the final look before you spend on builders.",
       },
       {
         icon: "speed",
-        title: "Brži dogovor sa majstorima",
-        body: "Majstor zna tačno šta gradi kada ima rendere — manje pitanja, kraći vremenski okvir, manje izmena u toku rada.",
+        title: "Faster agreement with contractors",
+        body: "A contractor knows exactly what they are building when they have renders — fewer questions, a shorter timeline, fewer mid-project changes.",
       },
       {
         icon: "trust",
-        title: "Više varijanti za malo",
-        body: "€66 prvi prikaz. Dodatni ugao iste sobe €59 (10% popust), od 4. ugla €53 (20% popust). Druga soba 15% jeftinija. Kompletna nekretnina ulazi u realan budžet.",
+        title: "Several options for little money",
+        body: "€66 first view. Additional angle of the same room €59 (10% discount), from the 4th angle €53 (20% discount). Second room 15% cheaper. A whole property fits a realistic budget.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite materijal",
-        body: "Fotografije postojećeg stanja sobe i reference za nove podove, zidove i nameštaj. Što jasniji ulaz, brže nacrti.",
+        title: "Send your materials",
+        body: "Photos of the room's current state and references for the new floors, walls and furniture. The clearer the input, the faster the drafts.",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline no later than the next working day, with no hidden items.",
       },
       {
-        title: "Render renovacije",
-        body: "Postavljamo nove materijale, fiksirane elemente, nameštaj i osvetljenje. Prve nacrte šaljemo za 3–5 radnih dana.",
+        title: "Renovation render",
+        body: "We place the new materials, fixed elements, furniture and lighting. First drafts in 3-5 working days.",
       },
       {
-        title: "Isporuka i revizije",
-        body: "Dobijate finalne slike. Tri runde revizije su uključene u cenu — menjamo materijale, boje i layout dok ne bude tačno.",
+        title: "Delivery and revisions",
+        body: "You receive the final images. Three revision rounds are included in the price — we change materials, colors and layout until it is right.",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €66?",
-        a: "Kompletna vizuelna transformacija jedne prostorije na osnovu Vaše fotografije — uključuje promenu podova, zidova, fiksiranih elemenata i nameštaja. Dodatni ugao iste sobe: €59 (10% popust). 4. i svaki sledeći ugao: €53 (20% popust). Druga soba: €56 (15% popust).",
+        q: "What exactly do I get for €66?",
+        a: "A complete visual transformation of one room based on your photo — including new floors, walls, fixed elements and furniture. Additional angle of the same room: €59 (10% discount). 4th and each subsequent angle: €53 (20% discount). Second room: €56 (15% discount).",
       },
       {
-        q: "Razlika u odnosu na virtuelno opremanje (€18)?",
-        a: "Virtuelno opremanje (€18) menja samo nameštaj — zidovi, podovi i fiksirani elementi ostaju isti. Virtuelna renovacija (€66) menja sve — pločice, podove, ormare, kuhinju. Različite namene.",
+        q: "How is it different from virtual staging (€18)?",
+        a: "Virtual staging (€18) changes only the furniture — walls, floors and fixed elements stay the same. Virtual renovation (€66) changes everything — tiles, floors, cabinets, the kitchen. Different purposes.",
       },
       {
-        q: "Koliko stvarno štedim?",
-        a: "Skupa greška u izboru materijala posle radova obično košta 5–10× više od jednog rendera. Ako sprečimo jedan pogrešan izbor pločica ili podova, render se vraća kroz uštedu.",
+        q: "How much do I actually save?",
+        a: "An expensive material mistake discovered after the work usually costs 5-10× more than a single render. If we prevent one wrong choice of tiles or flooring, the render pays for itself.",
       },
       {
-        q: "Mogu li da probam različite varijante?",
-        a: "Da. U tri runde revizije menjamo materijale i layout dok ne bude tačno. Dodatna varijanta na istom rasporedu (drugi materijali) računa se kao novi prvi prikaz.",
+        q: "Can I try different options?",
+        a: "Yes. Across three revision rounds we change materials and layout until it is right. An additional option on the same layout (different materials) counts as a new first view.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema fotografija i referenci. Završna isporuka zavisi od broja revizija.",
+        q: "How long does it take?",
+        a: "We send first drafts in 3-5 working days from estimate confirmation and receipt of the photos and references. Final delivery depends on the number of revisions.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Fotografije postojećeg stanja u dobroj rezoluciji, plan rasporeda (osnova ako postoji) i reference materijala koje želite (podovi, zidovi, ormari, nameštaj).",
+        q: "What do I need to send to get started?",
+        a: "Photos of the current state in good resolution, a layout plan (a floor plan if you have one) and references for the materials you want (floors, walls, cabinets, furniture).",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-virtual-renovation-01.webp",
-        alt: "Virtuelna renovacija — moderna kuhinja sa ostrvom i kamenom radnom pločom",
+        alt: "Virtual renovation — modern kitchen with an island and a stone countertop",
       },
       {
         src: "/artwork/portfolio-virtual-renovation-02.webp",
-        alt: "Virtuelna renovacija — kupatilo sa staklenom tuš-kabinom i kamenim materijalima",
+        alt: "Virtual renovation — bathroom with a glass shower and stone finishes",
       },
       {
         src: "/artwork/portfolio-virtual-renovation-03.webp",
-        alt: "Virtuelna renovacija — dnevna soba sa novim podovima i toplim materijalima",
+        alt: "Virtual renovation — living room with new floors and warm materials",
       },
       {
         src: "/artwork/portfolio-virtual-renovation-04.webp",
-        alt: "Virtuelna renovacija — radni prostor sa policama i prirodnim svetlom",
+        alt: "Virtual renovation — workspace with shelving and natural light",
       },
     ],
     variants: [
       {
         id: "renovation-main",
-        title: "Vizuelna renovacija prostorije",
+        title: "Visual renovation of a room",
         basePrice: 66,
         priceLabel: "€66",
-        unitLabel: "prvi prikaz renovirane sobe",
+        unitLabel: "first view of the renovated room",
         description:
-          "Prvi prikaz pokriva kompletan dizajn — izbor podova, zidova, fiksiranih elemenata i nameštaja. Dodatni uglovi 10–20% jeftiniji.",
+          "The first view covers the complete design — the choice of floors, walls, fixed elements and furniture. Additional angles 10-20% cheaper.",
         included:
-          "Kompletna vizuelna transformacija jedne prostorije na osnovu Vaše fotografije. Uključuje promenu podova, zidova, fiksiranih elemenata i nameštaja.",
+          "A complete visual transformation of one room based on your photo. Includes new floors, walls, fixed elements and furniture.",
         addOns: [
-          "Dodatni ugao iste sobe: €59 (10% popust)",
-          "4. i svaki sledeći ugao iste sobe: €53 (20% popust)",
-          "Druga soba iste nekretnine: €56 (15% popust)",
-          "6. i svaka sledeća soba iste nekretnine: €50 (24% popust)",
+          "Additional angle of the same room: €59 (10% discount)",
+          "4th and each subsequent angle of the same room: €53 (20% discount)",
+          "Second room of the same property: €56 (15% discount)",
+          "6th and each subsequent room of the same property: €50 (24% discount)",
         ],
       },
     ],
@@ -1339,148 +1339,148 @@ export const SERVICES: Service[] = [
   {
     slug: "2d-3d-floor-plans",
     code: "floor-plans",
-    name: "2D i 3D osnove",
-    shortName: "2D i 3D osnove",
+    name: "2D and 3D floor plans",
+    shortName: "2D and 3D floor plans",
     category: "plans",
     icon: "file-image",
     hideFromMenu: true,
-    tagline: "Pregled prostora koji kupac razume na prvi pogled.",
+    tagline: "A view of the space buyers understand at first glance.",
     description:
-      "Pregledni 2D ili 3D tlocrti — za oglas, prodaju, dozvolu ili planiranje uređenja. 2D daje čist tehnički prikaz; 3D daje atraktivniji prostorni prikaz koji kupac razume bez znanja arhitekture. Cena pokriva jedan nivo (sprat); dupliranje istog sprata košta samo trećinu cene.",
+      "Clear 2D or 3D floor plans — for listings, sales, permits or interior planning. 2D gives a clean technical view; 3D gives a more attractive spatial view that buyers understand without an architecture background. The price covers one level (floor); duplicating an identical floor costs just a third of the price.",
     highlight:
-      "Prikladno za agencije nekretnina koje žele da oglas izgleda profesionalno i investitore koji predstavljaju tipove stanova u zgradi.",
+      "Suited to real estate agencies that want listings to look professional and developers presenting the unit types in a building.",
     materials:
-      "Pošaljite nam tehničke crteže, skice sa merama ili postojeće PDF osnove.",
+      "Send us technical drawings, dimensioned sketches or existing PDF plans.",
     asset: "/artwork/expert-floor-plans.webp",
     detailAsset: "/artwork/detail-floor-plans.webp",
     detailBeforeAsset: "/artwork/problem-floor-plans-before.webp",
     detailAfterAsset: "/artwork/problem-floor-plans-after.webp",
     philosophy:
-      "Cena pokriva izradu osnove za jedan nivo. Svaki sledeći nivo iste zgrade je 50–66% jeftiniji jer je stilski predložak već postavljen. Identičan sprat (dupliranje sa promenom oznaka) košta samo trećinu osnovne cene. Tako celokupna zgrada dobija pregledne osnove za delić cene CAD studija.",
+      "The price covers producing the plan for one level. Each additional level of the same building is 50-66% cheaper because the style template is already set. An identical floor (duplicated with label changes) costs just a third of the base price. The whole building gets clear floor plans for a fraction of the price of a CAD studio.",
     priceContext:
-      "€20 jedan nivo (2D čist plan) / €29 jedan nivo (3D plan). Dodatni nivo: €10–15.",
+      "€20 one level (clean 2D plan) / €29 one level (3D plan). Additional level: €10-15.",
     forSegments: [
-      "Agencije nekretnina (listing materijali)",
-      "Investitori (tipovi stanova u zgradi)",
-      "Vlasnici (planiranje uređenja)",
+      "Real estate agencies (listing materials)",
+      "Developers (unit types in a building)",
+      "Owners (interior planning)",
     ],
     featured: true,
-    problemHeading: "Tehnički crtež plaši kupca. Pregledna osnova — privlači.",
+    problemHeading: "A technical drawing scares buyers. A clear floor plan attracts them.",
     problemBody:
-      "Agent oglasi stan sa CAD tlocrtom — debele linije, oznake dimenzija, scale bars. Kupac otvori, zatvori, ne pita. Tlocrt govori jezik koji laik ne razume — i listing gubi poziv koji bi inače dobio.",
+      "An agent lists an apartment with a CAD floor plan — heavy lines, dimension labels, scale bars. The buyer opens it, closes it, doesn't ask. The plan speaks a language a layperson doesn't understand — and the listing loses a call it would otherwise get.",
     problemResolution:
-      "Pregledna 2D ili 3D osnova prikazuje raspored prostorija sa bojama, oznakama u srpskom i nameštajem na pravim mestima. Kupac razume šta kupuje na prvi pogled — listing postaje razgovor.",
+      "A clear 2D or 3D floor plan shows the room layout with colors, readable labels and furniture in the right places. Buyers understand what they are buying at first glance — the listing becomes a conversation.",
     benefits: [
       {
         icon: "trust",
-        title: "Kupac razume na prvi pogled",
-        body: "Bez tehničkog predznanja, kupac vidi raspored, dimenzije i namenu prostorija. Oglas filtrira neozbiljne pozive.",
+        title: "Buyers understand at first glance",
+        body: "With no technical background, buyers see the layout, dimensions and purpose of each room. The listing filters out casual calls.",
       },
       {
         icon: "speed",
-        title: "Brz materijal za listing",
-        body: "€20 za 2D, €29 za 3D — jedan dan rada, dobijate fajl za oglas, prospekt i prezentaciju.",
+        title: "Fast listing material",
+        body: "€20 for 2D, €29 for 3D — a day's work, and you get a file for the listing, brochure and presentation.",
       },
       {
         icon: "value",
-        title: "Više nivoa za istu zgradu jeftinije",
-        body: "Identičan sprat (dupliranje sa promenom oznaka): trećina cene. Svaki sledeći nivo iste zgrade: 50–66% jeftiniji.",
+        title: "More levels of the same building for less",
+        body: "An identical floor (duplicated with label changes): a third of the price. Each additional level of the same building: 50-66% cheaper.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite tlocrte",
-        body: "Tehničke crteže, skice sa merama ili postojeće PDF osnove (PDF/DWG/skica).",
+        title: "Send the floor plans",
+        body: "Technical drawings, dimensioned sketches or existing PDF plans (PDF/DWG/sketch).",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline no later than the next working day, with no hidden items.",
       },
       {
-        title: "Izrada osnove",
-        body: "Tim crta 2D ili 3D verziju sa oznakama i dimenzijama. Prvi nacrt 1–3 radna dana.",
+        title: "Plan production",
+        body: "The team draws the 2D or 3D version with labels and dimensions. First draft in 1-3 working days.",
       },
       {
-        title: "Isporuka i revizije",
-        body: "Dobijate finalnu osnovu u željenom formatu. Tri runde revizije su uključene u cenu.",
+        title: "Delivery and revisions",
+        body: "You receive the final plan in your preferred format. Three revision rounds are included in the price.",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €20 / €29?",
-        a: "€20 daje jedan nivo u čistom 2D vektorskom prikazu sa rasporedom prostorija, oznakama i dimenzijama. €29 daje 3D verziju istog nivoa — prostorni prikaz koji kupac razume bez znanja arhitekture. Identičan sprat (dupliranje): €6 (2D) / €10 (3D).",
+        q: "What exactly do I get for €20 / €29?",
+        a: "€20 gives one level as a clean 2D vector plan with the room layout, labels and dimensions. €29 gives a 3D version of the same level — a spatial view buyers understand without an architecture background. An identical floor (duplicate): €6 (2D) / €10 (3D).",
       },
       {
-        q: "2D ili 3D — šta da biram?",
-        a: "Za agencijski listing: 3D, jer kupac razume na prvi pogled. Za regulatornu proceduru ili tehničku dokumentaciju: 2D, jer prati tehnički standard. Za dupleks na oglasu: oba (svaki sprat ima drugačiju namenu).",
+        q: "2D or 3D — which should I choose?",
+        a: "For an agency listing: 3D, because buyers understand it at first glance. For regulatory procedures or technical documentation: 2D, because it follows the technical standard. For a duplex listing: both (each floor serves a different purpose).",
       },
       {
-        q: "Da li se može dodati nameštaj?",
-        a: "Da. Verzija sa nameštajem: €6 (2D) ili €8 (3D). Varijanta dizajna (isti raspored, drugi nameštaj): €6.",
+        q: "Can furniture be added?",
+        a: "Yes. A furnished version: €6 (2D) or €8 (3D). A design option (same layout, different furniture): €6.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prve nacrte šaljemo za 1–3 radna dana od potvrde ponude i prijema tehničkih crteža. Tri runde revizije su uključene.",
+        q: "How long does it take?",
+        a: "We send first drafts in 1-3 working days from estimate confirmation and receipt of the technical drawings. Three revision rounds are included.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Tehničke crteže, skice sa merama ili postojeće PDF osnove. Što jasniji ulaz (CAD), brže izrada.",
+        q: "What do I need to send to get started?",
+        a: "Technical drawings, dimensioned sketches or existing PDF plans. The clearer the input (CAD), the faster the production.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-floor-plans-01.webp",
-        alt: "3D osnova — porodična kuća sa rasporedom prostorija i nameštajem",
+        alt: "3D floor plan — family house with the room layout and furniture",
       },
       {
         src: "/artwork/portfolio-floor-plans-02.webp",
-        alt: "3D osnova — stan u zgradi sa kompaktnim rasporedom",
+        alt: "3D floor plan — apartment with a compact layout",
       },
       {
         src: "/artwork/portfolio-floor-plans-03.webp",
-        alt: "2D osnova — čist tehnički plan sa oznakama i dimenzijama",
+        alt: "2D floor plan — clean technical plan with labels and dimensions",
       },
       {
         src: "/artwork/portfolio-floor-plans-04.webp",
-        alt: "3D osnova — dupleks sa rasporedom oba sprata",
+        alt: "3D floor plan — duplex with the layout of both floors",
       },
     ],
     variants: [
       {
         id: "floorplan-2d",
-        title: "2D tlocrt (čist tehnički plan)",
+        title: "2D floor plan (clean technical plan)",
         basePrice: 20,
         priceLabel: "€20",
-        unitLabel: "jedan sprat (2D plan)",
+        unitLabel: "one floor (2D plan)",
         description:
-          "Brz ulaz za oglas — jasan tehnički tlocrt sa rasporedom i merama. Identičan sprat: €6.",
+          "A fast entry point for a listing — a clear technical floor plan with the layout and dimensions. Identical floor: €6.",
         included:
-          "Jedan nivo u čistom 2D vektorskom prikazu. Uključuje raspored prostorija, oznake i dimenzije.",
+          "One level as a clean 2D vector plan. Includes the room layout, labels and dimensions.",
         addOns: [
-          "Dva nivoa (dupleks): €32",
-          "Svaki dodatni nivo: €10",
-          "Identičan sprat (dupliranje): €6 (70% popust)",
-          "Verzija sa nameštajem: €6",
-          "Promena boje / stila plana: €4",
+          "Two levels (duplex): €32",
+          "Each additional level: €10",
+          "Identical floor (duplicate): €6 (70% discount)",
+          "Furnished version: €6",
+          "Color / plan style change: €4",
         ],
-        note: "2D osnove isporučujemo kroz White Rook partnersku mrežu.",
+        note: "2D floor plans are delivered through the White Rook partner network.",
       },
       {
         id: "floorplan-3d",
-        title: "3D tlocrt (prostorni prikaz)",
+        title: "3D floor plan (spatial view)",
         basePrice: 29,
         priceLabel: "€29",
-        unitLabel: "jedan sprat (3D plan)",
+        unitLabel: "one floor (3D plan)",
         description:
-          "Kupac razume raspored na prvi pogled — bez čitanja simbola. Idealno za listing fotografiju.",
+          "Buyers understand the layout at first glance — no symbol reading. Ideal as the listing photo.",
         included:
-          "Jedan nivo u atraktivnom 3D prikazu sa rasporedom prostorija, oznakama i dimenzijama.",
+          "One level as an attractive 3D view with the room layout, labels and dimensions.",
         addOns: [
-          "Dva nivoa (dupleks): €46",
-          "Svaki dodatni nivo: €15",
-          "Identičan sprat (dupliranje): €10 (66% popust)",
-          "Dodavanje nameštaja: €8",
-          "Varijanta dizajna (isti raspored, drugi nameštaj): €6",
+          "Two levels (duplex): €46",
+          "Each additional level: €15",
+          "Identical floor (duplicate): €10 (66% discount)",
+          "Adding furniture: €8",
+          "Design option (same layout, different furniture): €6",
         ],
       },
     ],
@@ -1488,282 +1488,282 @@ export const SERVICES: Service[] = [
   {
     slug: "2d-floor-plans",
     code: "floor-plan-2d-dedicated",
-    name: "2D osnove",
-    shortName: "2D osnove",
+    name: "2D floor plans",
+    shortName: "2D floor plans",
     category: "plans",
     icon: "file-image",
-    tagline: "Čist 2D tlocrt — brz materijal za oglas i dokumentaciju.",
+    tagline: "A clean 2D floor plan — fast material for listings and documentation.",
     description:
-      "Pregledan vektorski 2D tlocrt sa rasporedom prostorija, oznakama na srpskom i dimenzijama u metrima. Standardni format za oglas nekretnine, regulatornu proceduru i klijentsku prezentaciju. €20 pokriva jedan nivo; identičan sprat (dupliranje sa promenom oznaka) košta samo €6 — 70% jeftinije.",
+      "A clear vector 2D floor plan with the room layout, room labels and dimensions in meters. The standard format for property listings, regulatory procedures and client presentations. €20 covers one level; an identical floor (duplicated with label changes) costs only €6 — 70% cheaper.",
     highlight:
-      "Najjeftiniji ulaz u profesionalan tlocrt za listing — bez 3D budžeta, sa formatom koji prati dokumentaciju i ugovor.",
+      "The cheapest entry into a professional floor plan for a listing — no 3D budget, in a format that matches documentation and contracts.",
     materials:
-      "Pošaljite tehničke crteže (PDF/DWG), skice sa merama ili postojeću PDF osnovu. Prvi nacrt 1–3 radna dana.",
+      "Send technical drawings (PDF/DWG), dimensioned sketches or an existing PDF plan. First draft in 1-3 working days.",
     asset: "/artwork/listing-floorplan-2d.webp",
     listingAsset: "/artwork/listing-floorplan-2d.webp",
     detailAsset: "/artwork/detail-2d-floor-plans-2c.webp",
     detailBeforeAsset: "/artwork/problem-2d-floor-plans-black-white.webp",
     detailAfterAsset: "/artwork/problem-2d-floor-plans-color.webp",
     detailBeforeAlt:
-      "Pregledan crno-beli 2D tlocrt jednosobnog stana sa nazivima prostorija i dimenzijama u metrima",
+      "Clean black-and-white 2D floor plan of a one-bedroom apartment with room names and dimensions in meters",
     detailAfterAlt:
-      "Kolorisan 2D tlocrt istog stana sa nameštajem — dnevna soba, spavaća, kuhinja i kupatilo",
+      "Colored 2D floor plan of the same apartment with furniture — living room, bedroom, kitchen and bathroom",
     philosophy:
-      "2D plan je format koji prati dokumentaciju, oglas i ugovor. Cena pokriva jedan nivo u čistom vektorskom prikazu sa oznakama i dimenzijama. Identičan sprat (dupliranje sa promenom oznaka) košta samo €6 — 70% jeftinije. Tako zgrada sa više tipova stanova dobija celokupnu listing seriju za delić cene CAD studija. Isporuka kroz White Rook partnersku mrežu obezbeđuje konzistentan kvalitet i kratak rok.",
+      "A 2D plan is the format that follows documentation, listings and contracts. The price covers one level as a clean vector plan with labels and dimensions. An identical floor (duplicated with label changes) costs only €6 — 70% cheaper. A building with several unit types gets its full listing series for a fraction of the price of a CAD studio. Delivery through the White Rook partner network ensures consistent quality and a short turnaround.",
     priceContext:
-      "€20 — jedan nivo (čist 2D vektorski plan). Identičan sprat (dupliranje): €6.",
+      "€20 — one level (clean 2D vector plan). Identical floor (duplicate): €6.",
     forSegments: [
-      "Agencije nekretnina (listing materijali)",
-      "Investitori (tipovi stanova u zgradi)",
-      "Arhitekte (dokumentacija i prilozi)",
+      "Real estate agencies (listing materials)",
+      "Developers (unit types in a building)",
+      "Architects (documentation and annexes)",
     ],
-    problemHeading: "CAD eksport ne prodaje. Pregledan 2D plan — prodaje.",
+    problemHeading: "A CAD export doesn't sell. A clear 2D plan does.",
     problemBody:
-      "Agent oglasi stan sa direktnim CAD-eksportom — debele linije, oznake u milimetrima, scale bars i tehnički simboli za prozore i vrata. Kupac otvori, vidi crtež koji ne razume i zatvori oglas. Tehnička dokumentacija nije isto što i marketing materijal.",
+      "An agent lists an apartment with a raw CAD export — heavy lines, millimeter labels, scale bars and technical symbols for windows and doors. The buyer opens it, sees a drawing they don't understand and closes the listing. Technical documentation is not the same as marketing material.",
     problemResolution:
-      "Pregledan 2D plan zadržava preciznost CAD-a — tačne dimenzije, raspored, opise prostorija — ali u formatu koji laik razume: kolorisan, sa nazivima soba na srpskom, dimenzijama u metrima i opcijom nameštaja. Isti tlocrt, dva publikuma.",
+      "A clear 2D plan keeps the precision of CAD — accurate dimensions, layout, room descriptions — but in a format a layperson understands: colored, with room names, dimensions in meters and an optional furniture layer. The same floor plan, two audiences.",
     benefits: [
       {
         icon: "speed",
-        title: "Najbrži ulaz u listing",
-        body: "€20, prvi nacrt za 1–3 radna dana. Najniža ulazna cena za profesionalan tlocrt koji se direktno koristi u oglasu.",
+        title: "The fastest entry into a listing",
+        body: "€20, first draft in 1-3 working days. The lowest entry price for a professional floor plan you can use directly in a listing.",
       },
       {
         icon: "value",
-        title: "Trećina cene po dodatnom spratu",
-        body: "Identičan sprat (dupliranje sa promenom oznaka): samo €6 — 70% popust. Zgrada sa 5 tipova stanova dobija celu seriju za €44.",
+        title: "A third of the price per additional floor",
+        body: "An identical floor (duplicated with label changes): only €6 — a 70% discount. A building with 5 unit types gets the whole series for €44.",
       },
       {
         icon: "trust",
-        title: "Standard koji prati dokumentaciju",
-        body: "2D tlocrt je format koji ugovori, banke i regulatorna procedura očekuju. Isti fajl koristite u prospektu i u sudskom prilogu.",
+        title: "A standard that follows documentation",
+        body: "The 2D floor plan is the format contracts, banks and regulatory procedures expect. Use the same file in a brochure and in a court annex.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite tehničku osnovu",
-        body: "PDF, DWG, skica sa merama ili fotografija postojećeg plana. Što jasniji ulaz (CAD), brže izrada.",
+        title: "Send the technical plan",
+        body: "PDF, DWG, a dimensioned sketch or a photo of the existing plan. The clearer the input (CAD), the faster the production.",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline no later than the next working day, with no hidden items.",
       },
       {
-        title: "Izrada 2D plana",
-        body: "Tim crta čist vektorski plan sa oznakama, dimenzijama i nameštajem po želji. Prvi nacrt 1–3 radna dana.",
+        title: "2D plan production",
+        body: "The team draws a clean vector plan with labels, dimensions and optional furniture. First draft in 1-3 working days.",
       },
       {
-        title: "Isporuka i revizije",
-        body: "Dobijate finalan PDF i vektorski fajl. Tri runde revizije su uključene u cenu — bez doplate.",
+        title: "Delivery and revisions",
+        body: "You receive the final PDF and vector file. Three revision rounds are included in the price — no extra charge.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-2d-floor-plans-apartment-01-r2.webp",
-        alt: "Kolorisan 2D tlocrt prizemlja — dnevni boravak, trpezarija i kuhinja, Elegant Render",
+        alt: "Colored 2D floor plan of a ground floor — living room, dining room and kitchen, Elegant Render",
         beforeSrc: "/artwork/portfolio-2d-floor-plans-apartment-01-before-r2.webp",
-        beforeAlt: "Crno-beli tehnički 2D tlocrt prizemlja pre kolorizacije, Elegant Render",
+        beforeAlt: "Black-and-white technical 2D floor plan of the ground floor before coloring, Elegant Render",
       },
       {
         src: "/artwork/portfolio-2d-floor-plans-apartment-02-r2.webp",
-        alt: "Kolorisan 2D tlocrt sprata sa garažom — spavaća soba, kupatilo i garaža, Elegant Render",
+        alt: "Colored 2D floor plan of a floor with a garage — bedroom, bathroom and garage, Elegant Render",
         beforeSrc: "/artwork/portfolio-2d-floor-plans-apartment-02-before-r2.webp",
-        beforeAlt: "Crno-beli tehnički 2D tlocrt sprata sa garažom pre kolorizacije, Elegant Render",
+        beforeAlt: "Black-and-white technical 2D floor plan of the floor with a garage before coloring, Elegant Render",
       },
       {
         src: "/artwork/portfolio-2d-floor-plans-apartment-03-r2.webp",
-        alt: "Kolorisan 2D tlocrt nivoa sa duplom garažom — spavaća soba, kupatilo i dva parking mesta, Elegant Render",
+        alt: "Colored 2D floor plan of a level with a double garage — bedroom, bathroom and two parking spaces, Elegant Render",
         beforeSrc: "/artwork/portfolio-2d-floor-plans-apartment-03-before-r2.webp",
-        beforeAlt: "Crno-beli tehnički 2D tlocrt nivoa sa duplom garažom pre kolorizacije, Elegant Render",
+        beforeAlt: "Black-and-white technical 2D floor plan of the level with a double garage before coloring, Elegant Render",
       },
       {
         src: "/artwork/portfolio-2d-floor-plans-apartment-04-r2.webp",
-        alt: "Kolorisan 2D tlocrt stana — spavaća soba, kupatilo, kuhinja i dnevni boravak, Elegant Render",
+        alt: "Colored 2D floor plan of an apartment — bedroom, bathroom, kitchen and living room, Elegant Render",
         beforeSrc: "/artwork/portfolio-2d-floor-plans-apartment-04-before-r2.webp",
-        beforeAlt: "Crno-beli tehnički 2D tlocrt stana pre kolorizacije, Elegant Render",
+        beforeAlt: "Black-and-white technical 2D floor plan of the apartment before coloring, Elegant Render",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €20?",
-        a: "Jedan nivo u čistom 2D vektorskom prikazu sa rasporedom prostorija, oznakama na srpskom i dimenzijama u metrima. Identičan sprat (dupliranje sa promenom oznaka): €6 (70% popust). Verzija sa nameštajem: +€6. Promena boje/stila: +€4.",
+        q: "What exactly do I get for €20?",
+        a: "One level as a clean 2D vector plan with the room layout, room labels and dimensions in meters. An identical floor (duplicated with label changes): €6 (70% discount). Furnished version: +€6. Color/style change: +€4.",
       },
       {
-        q: "Razlika u odnosu na CAD eksport iz mog projekta?",
-        a: "CAD eksport prati tehnički standard projekta — debele linije, oznake u milimetrima, scale bars. Naš 2D plan je marketinški format: kolorisan, sa nameštajem ili bez, dimenzije čitljive laiku. Različita namena, ne alternative.",
+        q: "How is it different from a CAD export from my project?",
+        a: "A CAD export follows the project's technical standard — heavy lines, millimeter labels, scale bars. Our 2D plan is a marketing format: colored, with or without furniture, with dimensions a layperson can read. Different purposes, not alternatives.",
       },
       {
-        q: "Kada birati 2D umesto 3D?",
-        a: "Za regulatornu proceduru, ugovor, tehničku dokumentaciju ili kad oglas prati tehnički standard branše. Za agencijski oglas i laičku prezentaciju 3D verzija (€29) daje bolji efekat — kupac brže razume raspored.",
+        q: "When should I choose 2D over 3D?",
+        a: "For regulatory procedures, contracts, technical documentation, or when the listing follows the industry's technical standard. For agency listings and lay presentations the 3D version (€29) performs better — buyers grasp the layout faster.",
       },
       {
-        q: "Da li radite više spratova zgrade?",
-        a: "Da. Dva nivoa (dupleks): €32. Svaki dodatni nivo: €10. Identičan sprat (dupliranje sa promenom oznaka): samo €6 — 70% popust.",
+        q: "Do you do multiple floors of a building?",
+        a: "Yes. Two levels (duplex): €32. Each additional level: €10. An identical floor (duplicated with label changes): only €6 — 70% discount.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prve nacrte šaljemo 1–3 radna dana od potvrde ponude i prijema tehničkih crteža. Tri runde revizije su uključene.",
+        q: "How long does it take?",
+        a: "We send first drafts in 1-3 working days from estimate confirmation and receipt of the technical drawings. Three revision rounds are included.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Tehničke crteže (PDF/DWG), skice sa merama ili fotografiju postojeće osnove. Što jasniji ulaz (CAD), brže izrada.",
+        q: "What do I need to send to get started?",
+        a: "Technical drawings (PDF/DWG), dimensioned sketches or a photo of the existing plan. The clearer the input (CAD), the faster the production.",
       },
     ],
     variants: [
       {
         id: "floorplan-2d",
-        title: "2D tlocrt (čist tehnički plan)",
+        title: "2D floor plan (clean technical plan)",
         basePrice: 20,
         priceLabel: "€20",
-        unitLabel: "jedan sprat (2D plan)",
+        unitLabel: "one floor (2D plan)",
         description:
-          "Brz ulaz za oglas — jasan tehnički tlocrt sa rasporedom i merama. Identičan sprat: €6.",
+          "A fast entry point for a listing — a clear technical floor plan with the layout and dimensions. Identical floor: €6.",
         included:
-          "Jedan nivo u čistom 2D vektorskom prikazu. Uključuje raspored prostorija, oznake i dimenzije.",
+          "One level as a clean 2D vector plan. Includes the room layout, labels and dimensions.",
         addOns: [
-          "Dva nivoa (dupleks): €32",
-          "Svaki dodatni nivo: €10",
-          "Identičan sprat (dupliranje): €6 (70% popust)",
-          "Verzija sa nameštajem: €6",
-          "Promena boje / stila plana: €4",
+          "Two levels (duplex): €32",
+          "Each additional level: €10",
+          "Identical floor (duplicate): €6 (70% discount)",
+          "Furnished version: €6",
+          "Color / plan style change: €4",
         ],
-        note: "2D osnove isporučujemo kroz White Rook partnersku mrežu.",
+        note: "2D floor plans are delivered through the White Rook partner network.",
       },
     ],
   },
   {
     slug: "3d-floor-plans",
     code: "floor-plan-3d-dedicated",
-    name: "3D osnove",
-    shortName: "3D osnove",
+    name: "3D floor plans",
+    shortName: "3D floor plans",
     category: "plans",
     icon: "layers",
-    tagline: "Prostorni 3D tlocrt koji kupac razume na prvi pogled.",
+    tagline: "A spatial 3D floor plan buyers understand at first glance.",
     description:
-      "Atraktivan 3D prostorni prikaz tlocrta sa nameštajem, oznakama i bojama. Najjači format za agencijski oglas — kupac vidi raspored i namene bez čitanja tehničkih simbola. €29 pokriva jedan nivo; identičan sprat (dupliranje sa promenom oznaka) košta samo €10 — 66% jeftinije.",
+      "An attractive 3D spatial view of the floor plan with furniture, labels and colors. The strongest format for agency listings — buyers see the layout and each room's purpose without reading technical symbols. €29 covers one level; an identical floor (duplicated with label changes) costs only €10 — 66% cheaper.",
     highlight:
-      "Pravi izbor za listing fotografiju i prospekt — kupac na prvi pogled razume šta dobija.",
+      "The right choice for the listing photo and brochure — buyers understand what they are getting at first glance.",
     materials:
-      "Pošaljite tehničke crteže (PDF/DWG), skice sa merama ili postojeću PDF osnovu. Prvi nacrt 1–3 radna dana.",
+      "Send technical drawings (PDF/DWG), dimensioned sketches or an existing PDF plan. First draft in 1-3 working days.",
     asset: "/artwork/listing-3d-floor-plans.webp",
     listingAsset: "/artwork/listing-3d-floor-plans.webp",
     detailAsset: "/artwork/detail-3d-floor-plans.webp",
     detailBeforeAsset: "/artwork/problem-3d-floor-plans-before.webp",
     detailAfterAsset: "/artwork/problem-3d-floor-plans-after.webp",
     detailBeforeAlt:
-      "2D tehnički tlocrt stana pre 3D obrade — linije, oznake i raspored prostorija",
+      "2D technical floor plan of an apartment before 3D treatment — lines, labels and the room layout",
     detailAfterAlt:
-      "3D prostorni tlocrt istog stana posle obrade — nameštaj, materijali i boje iz ptičje perspektive",
+      "3D spatial floor plan of the same apartment after treatment — furniture, materials and colors from a bird's-eye perspective",
     philosophy:
-      "3D prostorni prikaz je marketinški format — kupac vidi raspored sa nameštajem i bojom, bez čitanja oznaka. Cena €29 pokriva jedan nivo. Identičan sprat (dupliranje sa promenom oznaka) košta samo €10 — 66% jeftinije. Tako dupleks i zgrada sa više tipova stanova ulaze u realan listing budžet — bez ponovnog modelovanja po nivou.",
+      "The 3D spatial view is a marketing format — buyers see the layout with furniture and color, without reading labels. The €29 price covers one level. An identical floor (duplicated with label changes) costs only €10 — 66% cheaper. Duplexes and buildings with several unit types fit a realistic listing budget — without remodeling each level.",
     priceContext:
-      "€29 — jedan nivo (3D prostorni prikaz). Identičan sprat (dupliranje): €10.",
+      "€29 — one level (3D spatial view). Identical floor (duplicate): €10.",
     forSegments: [
-      "Agencije nekretnina (listing fotografija)",
-      "Investitori (tipovi stanova u zgradi)",
-      "Vlasnici (oglas i prodaja)",
+      "Real estate agencies (listing photo)",
+      "Developers (unit types in a building)",
+      "Owners (listing and sale)",
     ],
-    problemHeading: "Tehnički tlocrt plaši kupca. 3D prikaz — privlači.",
+    problemHeading: "A technical floor plan scares buyers. A 3D view attracts them.",
     problemBody:
-      "Kupac otvori oglas sa 2D tehničkim tlocrtom — linije, oznake, simboli za prozore i vrata. Mora da uloži minut samo da razume gde je kuhinja. Sledeći oglas ima 3D prikaz sa nameštajem — i kupac klikne na poziv.",
+      "A buyer opens a listing with a 2D technical floor plan — lines, labels, symbols for windows and doors. They have to spend a minute just working out where the kitchen is. The next listing has a 3D view with furniture — and the buyer clicks to call.",
     problemResolution:
-      "3D prostorni prikaz pokazuje raspored kao ptičju perspektivu sa nameštajem na pravim mestima, materijalima podova i bojama zidova. Kupac vidi dom, ne shemu — i odluka kreće iz prvog kontakta.",
+      "The 3D spatial view shows the layout from a bird's-eye perspective with furniture in the right places, floor materials and wall colors. Buyers see a home, not a diagram — and the decision starts from first contact.",
     benefits: [
       {
         icon: "trust",
-        title: "Kupac razume bez tehničkog predznanja",
-        body: "Bez čitanja simbola — kupac vidi sobe, nameštaj i prolaz. Oglas filtrira ozbiljne pozive, neozbiljni otpadaju.",
+        title: "Buyers understand without technical background",
+        body: "No symbol reading — buyers see the rooms, furniture and flow. The listing attracts serious calls; casual ones drop off.",
       },
       {
         icon: "speed",
-        title: "Brz materijal za listing",
-        body: "€29, prvi nacrt 1–3 radna dana. Direktno upotrebljivo u oglasima, prospektima i prezentacijama.",
+        title: "Fast listing material",
+        body: "€29, first draft in 1-3 working days. Directly usable in listings, brochures and presentations.",
       },
       {
         icon: "value",
-        title: "Više tipova stanova jeftinije",
-        body: "Identičan sprat (dupliranje): samo €10 — 66% popust. Zgrada sa 4 tipa stana dobija kompletnu listing seriju za €59.",
+        title: "Several unit types for less",
+        body: "An identical floor (duplicate): only €10 — a 66% discount. A building with 4 unit types gets a complete listing series for €59.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite tehničku osnovu",
-        body: "PDF, DWG, skica sa merama ili fotografija postojećeg plana. Što jasniji ulaz (CAD), brže izrada.",
+        title: "Send the technical plan",
+        body: "PDF, DWG, a dimensioned sketch or a photo of the existing plan. The clearer the input (CAD), the faster the production.",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline no later than the next working day, with no hidden items.",
       },
       {
-        title: "Izrada 3D plana",
-        body: "Tim modeluje prostor u 3D, postavlja nameštaj, materijale i osvetljenje. Prvi nacrt 1–3 radna dana.",
+        title: "3D plan production",
+        body: "The team models the space in 3D and places furniture, materials and lighting. First draft in 1-3 working days.",
       },
       {
-        title: "Isporuka i revizije",
-        body: "Dobijate finalnu sliku visoke rezolucije. Tri runde revizije su uključene u cenu — bez doplate.",
+        title: "Delivery and revisions",
+        body: "You receive the final high-resolution image. Three revision rounds are included in the price — no extra charge.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-3d-floor-plans-one-bedroom-apartment.webp",
-        alt: "3D osnova jednosobnog stana — dnevni boravak, trpezarija, kuhinja, spavaća soba i kupatilo iz ptičje perspektive",
+        alt: "3D floor plan of a one-bedroom apartment — living room, dining room, kitchen, bedroom and bathroom from a bird's-eye perspective",
       },
       {
         src: "/artwork/portfolio-3d-floor-plans-one-bedroom-open-concept.webp",
-        alt: "3D osnova jednosobnog stana otvorenog koncepta — povezan dnevni boravak, kuhinja i trpezarija sa spavaćom sobom i kupatilom",
+        alt: "3D floor plan of an open-concept one-bedroom apartment — connected living room, kitchen and dining room with a bedroom and bathroom",
       },
       {
         src: "/artwork/portfolio-3d-floor-plans-duplex-two-levels.webp",
-        alt: "3D osnova dupleksa na dva nivoa — prizemlje sa dnevnim boravkom i kuhinjom i gornji nivo sa spavaćom sobom",
+        alt: "3D floor plan of a two-level duplex — ground floor with the living room and kitchen and an upper level with the bedroom",
       },
       {
         src: "/artwork/portfolio-3d-floor-plans-house-with-garage.webp",
-        alt: "3D osnova porodične kuće sa garažom — tri spavaće sobe, dnevni boravak, trpezarija, kuhinja i garaža za dva automobila",
+        alt: "3D floor plan of a family house with a garage — three bedrooms, living room, dining room, kitchen and a two-car garage",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €29?",
-        a: "Jedan nivo u atraktivnom 3D prostornom prikazu sa rasporedom prostorija, oznakama, nameštajem i materijalima. Identičan sprat (dupliranje sa promenom oznaka): €10 (66% popust). Dodavanje nameštaja: +€8. Varijanta dizajna (isti raspored, drugi nameštaj): +€6.",
+        q: "What exactly do I get for €29?",
+        a: "One level as an attractive 3D spatial view with the room layout, labels, furniture and materials. An identical floor (duplicated with label changes): €10 (66% discount). Adding furniture: +€8. Design option (same layout, different furniture): +€6.",
       },
       {
-        q: "Razlika u odnosu na render enterijera?",
-        a: "Render enterijera (€170 za sprat) prikazuje sobu iz nivoa očiju — kao da stojite unutra. 3D osnova je ptičja perspektiva celog sprata sa skinutim krovom — vidite raspored, ne sobu. Različita namena, često se naručuju zajedno za prospekt.",
+        q: "How is it different from an interior render?",
+        a: "An interior render (€170 per floor) shows a room at eye level — as if you were standing inside. A 3D floor plan is a bird's-eye view of the whole floor with the roof removed — you see the layout, not the room. Different purposes; they are often ordered together for a brochure.",
       },
       {
-        q: "Kada birati 3D umesto 2D?",
-        a: "Za agencijski oglas, prospekt i klijentske prezentacije gde kupac nije arhitekta — 3D pobeđuje. Za regulatornu proceduru, ugovor ili tehnički prilog 2D verzija (€20) prati standard branše.",
+        q: "When should I choose 3D over 2D?",
+        a: "For agency listings, brochures and client presentations where the buyer is not an architect — 3D wins. For regulatory procedures, contracts or technical annexes the 2D version (€20) follows the industry standard.",
       },
       {
-        q: "Da li mogu da naručim sa nameštajem ili bez?",
-        a: "Oba. Bez nameštaja je standardna opcija. Sa nameštajem: +€8. Varijanta dizajna (isti raspored, drugi nameštaj — korisno za A/B testove kupaca): +€6.",
+        q: "Can I order it with or without furniture?",
+        a: "Both. Without furniture is the standard option. With furniture: +€8. A design option (same layout, different furniture — useful for buyer A/B tests): +€6.",
       },
       {
-        q: "Da li radite više spratova zgrade?",
-        a: "Da. Dva nivoa (dupleks): €46. Svaki dodatni nivo: €15. Identičan sprat (dupliranje sa promenom oznaka): samo €10 — 66% popust.",
+        q: "Do you do multiple floors of a building?",
+        a: "Yes. Two levels (duplex): €46. Each additional level: €15. An identical floor (duplicated with label changes): only €10 — 66% discount.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prve nacrte šaljemo 1–3 radna dana od potvrde ponude i prijema tehničkih crteža. Tri runde revizije su uključene.",
+        q: "How long does it take?",
+        a: "We send first drafts in 1-3 working days from estimate confirmation and receipt of the technical drawings. Three revision rounds are included.",
       },
     ],
     variants: [
       {
         id: "floorplan-3d",
-        title: "3D tlocrt (prostorni prikaz)",
+        title: "3D floor plan (spatial view)",
         basePrice: 29,
         priceLabel: "€29",
-        unitLabel: "jedan sprat (3D plan)",
+        unitLabel: "one floor (3D plan)",
         description:
-          "Kupac razume raspored na prvi pogled — bez čitanja simbola. Idealno za listing fotografiju.",
+          "Buyers understand the layout at first glance — no symbol reading. Ideal as the listing photo.",
         included:
-          "Jedan nivo u atraktivnom 3D prikazu sa rasporedom prostorija, oznakama i dimenzijama.",
+          "One level as an attractive 3D view with the room layout, labels and dimensions.",
         addOns: [
-          "Dva nivoa (dupleks): €46",
-          "Svaki dodatni nivo: €15",
-          "Identičan sprat (dupliranje): €10 (66% popust)",
-          "Dodavanje nameštaja: €8",
-          "Varijanta dizajna (isti raspored, drugi nameštaj): €6",
+          "Two levels (duplex): €46",
+          "Each additional level: €15",
+          "Identical floor (duplicate): €10 (66% discount)",
+          "Adding furniture: €8",
+          "Design option (same layout, different furniture): €6",
         ],
       },
     ],
@@ -1771,17 +1771,17 @@ export const SERVICES: Service[] = [
   {
     slug: "vr-tour",
     code: "vr-tour-assembly",
-    name: "VR tura",
-    shortName: "VR tura",
+    name: "VR tour",
+    shortName: "VR tour",
     category: "animations",
     icon: "images",
-    tagline: "Spojite panorame u jedinstvenu turu koju kupac obiđe iz fotelje.",
+    tagline: "Join your panoramas into a single tour buyers explore from an armchair.",
     description:
-      "Već naručene 360 panorame (eksterijer, enterijer, opremanje) spajamo u jedinstvenu VR turu sa interaktivnim navigacijama, hosting-om i embed kodom za sajt. Kupac otvara link u pretraživaču ili VR uređaju, prelazi između tačaka, sam istražuje prostor.",
+      "We join 360 panoramas you have already ordered (exterior, interior, staging) into a single VR tour with interactive navigation, hosting and an embed code for your site. Buyers open a link in a browser or a VR headset, move between points and explore the space on their own.",
     highlight:
-      "Prirodan dodatak na već naručene 360 panorame — niska cena, brza isporuka, spreman za VR uređaje.",
+      "A natural add-on to 360 panoramas you have already ordered — low price, fast delivery, ready for VR headsets.",
     materials:
-      "Pošaljite 360 panorame koje već imate (od nas ili drugog izvora) i raspored za navigaciju između tačaka. Hosting podešavamo za 1–2 radna dana.",
+      "Send the 360 panoramas you already have (from us or another source) and the navigation layout between points. We set up hosting in 1-2 working days.",
     asset: PORTFOLIO_ASSET,
     detailAsset: "/artwork/detail-interior-360.webp",
     embedSrc:
@@ -1789,206 +1789,206 @@ export const SERVICES: Service[] = [
     detailEmbedSrc:
       "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
     philosophy:
-      "Sami 360 paketi (Eksterijer €335, Enterijer €295) već uključuju jednu ili više interaktivnih tačaka i embed kod. VR tura postaje korisna kada povezujete više panorama iz različitih projekata ili dodajete navigaciju po tlocrtu — tada je sklapanje i hosting zaseban posao.",
+      "The 360 packages themselves (exterior €335, interior €295) already include one or more interactive points and an embed code. A VR tour becomes useful when you are connecting several panoramas from different projects or adding floor-plan navigation — then the assembly and hosting are a separate job.",
     priceContext:
-      "€20 — sklapanje + hosting + embed kod. Navigacija po tlocrtu: €15. Branding ture: €35.",
+      "€20 — assembly + hosting + embed code. Floor-plan navigation: €15. Tour branding: €35.",
     forSegments: [
-      "Investitori (kompletna prezentacija projekta)",
-      "Agencije nekretnina (više stanova u istoj turi)",
-      "Arhitekte (klijentska prezentacija sa više soba)",
+      "Developers (complete project presentations)",
+      "Real estate agencies (several apartments in one tour)",
+      "Architects (client presentations with several rooms)",
     ],
     featured: true,
     problemEmbedSrc:
       "https://kuula.co/share/collection/714Xg?logo=0&info=0&fs=1&vr=1&sd=1&initload=0&thumbs=1",
-    problemHeading: "Lepe panorame, slabo povezane — kupac se gubi.",
+    problemHeading: "Beautiful panoramas, poorly connected — buyers get lost.",
     problemBody:
-      "Imate 5 360 panorama enterijera i 3 eksterijera, ali ih šaljete kao posebne linkove. Kupac otvori jednu, vidi sobu, mora da klikne nazad na email, otvori sledeću. Gubi pažnju pre nego što obiđe pola stana.",
+      "You have 5 interior and 3 exterior 360 panoramas, but you send them as separate links. The buyer opens one, sees a room, has to click back to the email and open the next. They lose attention before touring half the apartment.",
     problemResolution:
-      "VR tura spaja sve Vaše panorame u jedinstven prolaz sa interaktivnim hotspot-ovima i navigacijom po tlocrtu. Kupac otvara jedan link i obilazi ceo projekat — bez gubljenja konteksta.",
+      "A VR tour joins all your panoramas into a single walkthrough with interactive hotspots and floor-plan navigation. The buyer opens one link and tours the whole project — without losing context.",
     benefits: [
       {
         icon: "trust",
-        title: "Jedan link, ceo projekat",
-        body: "Sve panorame u jednom kontinualnom prolazu. Kupac vidi vezu između prostorija, ne fragmente.",
+        title: "One link, the whole project",
+        body: "All panoramas in one continuous walkthrough. Buyers see how the rooms connect, not fragments.",
       },
       {
         icon: "speed",
-        title: "Brza isporuka",
-        body: "Sklapamo za 1–2 radna dana. Hosting i embed kod isporučujemo isti dan kada finalizujemo strukturu.",
+        title: "Fast delivery",
+        body: "We assemble it in 1-2 working days. Hosting and the embed code are delivered the same day we finalize the structure.",
       },
       {
         icon: "value",
-        title: "Pristupačan dodatak na već naručene panorame",
-        body: "€20 osnovno sklapanje. Navigacija po tlocrtu: €15. Branding ture sa Vašim logoom: €35.",
+        title: "An affordable add-on to panoramas you already ordered",
+        body: "€20 basic assembly. Floor-plan navigation: €15. Tour branding with your logo: €35.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite panorame",
-        body: "Već izrađene 360 panorame (linkove ili fajlove) i raspored za navigaciju između tačaka.",
+        title: "Send the panoramas",
+        body: "The 360 panoramas you already have (links or files) and the navigation layout between points.",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok najkasnije narednog radnog dana.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline no later than the next working day.",
       },
       {
-        title: "Sklapanje i hosting",
-        body: "Spajamo panorame, dodajemo hotspot navigaciju i postavljamo na host. Prvi nacrt 1–2 radna dana.",
+        title: "Assembly and hosting",
+        body: "We join the panoramas, add hotspot navigation and put the tour on our host. First draft in 1-2 working days.",
       },
       {
-        title: "Isporuka linka i embed koda",
-        body: "Dobijate link za deljenje i embed kod za sajt. Tri runde revizije za navigaciju i raspored su uključene.",
+        title: "Link and embed code delivery",
+        body: "You receive a shareable link and an embed code for your site. Three revision rounds for navigation and layout are included.",
       },
     ],
     faqs: [
       {
-        q: "Da li VR tura uključuje izradu panorame?",
-        a: "Ne. VR tura je dodatak na već izrađene panorame. Ako prvo treba da izradimo panorame, naručite 360 eksterijer (€335) ili 360 turu enterijera (€295) — ti paketi već uključuju jednu interaktivnu tačku i embed kod za pojedinačnu panoramu.",
+        q: "Does the VR tour include producing the panoramas?",
+        a: "No. The VR tour is an add-on to panoramas that already exist. If we need to produce the panoramas first, order the exterior 360 (€335) or the interior 360 tour (€295) — those packages already include one interactive point and an embed code for the individual panorama.",
       },
       {
-        q: "Šta ako moje panorame nisu od vas?",
-        a: "Nije problem. Sklapamo bilo koje 360 panorame standardnih formata (equirectangular ili stitched cube maps). Hosting je naš; link je deljiv i embed-friendly.",
+        q: "What if my panoramas aren't from you?",
+        a: "Not a problem. We assemble any 360 panoramas in standard formats (equirectangular or stitched cube maps). Hosting is ours; the link is shareable and embed-friendly.",
       },
       {
-        q: "Da li radi u VR headset-u?",
-        a: "Da. Tura je standardno VR-ready — Meta Quest i kompatibilni uređaji otvaraju je direktno iz pretraživača, bez dodatne aplikacije.",
+        q: "Does it work in a VR headset?",
+        a: "Yes. The tour is VR-ready as standard — Meta Quest and compatible headsets open it straight from the browser, with no extra app.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "1–2 radna dana od potvrde ponude i prijema panorama.",
+        q: "How long does it take?",
+        a: "1-2 working days from estimate confirmation and receipt of the panoramas.",
       },
       {
-        q: "Šta dostavljam?",
-        a: "Panorame koje već imate (linkove ili fajlove), raspored navigacije između tačaka i opciono brand asset-e (logo, boje).",
+        q: "What do I need to send?",
+        a: "The panoramas you already have (links or files), the navigation layout between points and, optionally, brand assets (logo, colors).",
       },
     ],
     variants: [
       {
         id: "tour-assembly",
-        title: "VR tura — sklapanje i hosting",
+        title: "VR tour — assembly and hosting",
         basePrice: 20,
         priceLabel: "€20",
-        unitLabel: "sklapanje i hosting interaktivne ture",
+        unitLabel: "assembly and hosting of the interactive tour",
         description:
-          "Kada već postoji set 360 panorama, ovaj korak ih spaja u jedinstvenu interaktivnu turu na sajtu.",
+          "When a set of 360 panoramas already exists, this step joins them into a single interactive tour on your site.",
         included:
-          "Sklapanje virtuelne 360 ture iz postojećih panorama, hosting i deljenje preko linka ili embed-a na sajtu.",
+          "Assembly of a virtual 360 tour from existing panoramas, hosting and sharing via a link or an embed on your site.",
         addOns: [
-          "Interaktivna navigacija po tlocrtu: €15",
-          "Tura sa Vašim brendom (logo, boje): €35",
+          "Interactive floor-plan navigation: €15",
+          "A tour with your brand (logo, colors): €35",
         ],
-        note: "Ovo je dodatak na već izrađene 360 panorame, ne cena za samu izradu 360 sadržaja.",
+        note: "This is an add-on to already produced 360 panoramas, not the price of producing the 360 content itself.",
       },
     ],
   },
   {
     slug: "architectural-animation",
     code: "architectural-animation",
-    name: "Arhitektonska animacija",
-    shortName: "Arhitektonska animacija",
+    name: "Architectural animation",
+    shortName: "Architectural animation",
     category: "animations",
     icon: "layers",
-    tagline: "Marketinški film u kome kamera leti kroz objekat.",
+    tagline: "A marketing film where the camera flies through the building.",
     description:
-      "Arhitektonska animacija pretvara Vaš 3D model u 30-sekundni film u kojem kamera leti kroz objekat, otkrivajući prostor scenom po scenom. Marketinški alat za prospekt, investitorske prezentacije i kampanje na društvenim mrežama. Minimum 15 sekundi (€225).",
+      "An architectural animation turns your 3D model into a 30-second film where the camera flies through the building, revealing the space scene by scene. A marketing tool for brochures, investor presentations and social media campaigns. Minimum 15 seconds (€225).",
     highlight:
-      "Za investitore koji žele dramatičnu prezentaciju kompleksa i agencije koje žele da listing bude više od galerije slika.",
+      "For developers who want a dramatic presentation of a complex and agencies that want the listing to be more than an image gallery.",
     materials:
-      "Pošaljite osnove, fasade i, ako postoji, već izrađen 3D model. Definišite željenu putanju kamere i ključne momente.",
+      "Send the floor plans, elevations and, if you have one, an existing 3D model. Define the camera path and key moments you want.",
     asset: PORTFOLIO_ASSET,
     detailAsset: "/artwork/detail-exterior-aerial.webp",
     problemVideoSrc: "/artwork/architectural-animation-demo.mp4",
     problemVideoPoster: "/artwork/architectural-animation-demo-poster.webp",
     philosophy:
-      "Najveći trošak je izgradnja 3D modela. Animacija od nule: €15/sek. Iz postojećeg modela: €10/sek (33% jeftinije). Aktivan projekat (model još uvek u radu): €8/sek (47% jeftinije). Duže animacije dobijaju automatski popust: preko 60 sek −20%, preko 2 minuta −25%.",
+      "The biggest cost is building the 3D model. Animation from scratch: €15/sec. From an existing model: €10/sec (33% cheaper). An active project (model still in progress): €8/sec (47% cheaper). Longer animations get an automatic discount: over 60 sec −20%, over 2 minutes −25%.",
     priceContext:
-      "€15/sek od nule · €10/sek iz postojećeg modela · minimum 15 sek (€225).",
+      "€15/sec from scratch · €10/sec from an existing model · minimum 15 sec (€225).",
     forSegments: [
-      "Investitori (marketing kampanje)",
-      "Agencije nekretnina (premium listing)",
-      "Razvojni projekti (masterplan prezentacije)",
+      "Developers (marketing campaigns)",
+      "Real estate agencies (premium listings)",
+      "Development projects (master plan presentations)",
     ],
     featured: true,
-    problemHeading: "Statična slika ne pokreće. Film — pokreće.",
+    problemHeading: "A static image doesn't move people. A film does.",
     problemBody:
-      "Prospekt sa 10 slika ima ograničenu pažnju. Klijent skroluje, zatvori, ne pamti. Marketing kampanja na društvenim mrežama traži pokret, ne statičke kadrove.",
+      "A brochure with 10 images gets limited attention. The client scrolls, closes, doesn't remember. A social media campaign needs motion, not static frames.",
     problemResolution:
-      "Arhitektonska animacija daje 30 sekundi prostora kroz koji kamera leti, otkrivajući enterijer, eksterijer i kontekst u jedinstvenom narativu. Listing dobija kvalitet filmskog trejlera.",
+      "An architectural animation gives you 30 seconds of space the camera flies through, revealing the interior, exterior and context in a single narrative. The listing gets film-trailer quality.",
     benefits: [
       {
         icon: "speed",
-        title: "Brže prebacuje na ozbiljnu fazu",
-        body: "Klijent koji vidi animaciju razume projekat za 30 sekundi. Konsultacije počinju sa pitanjima o detaljima, ne o gabaritu.",
+        title: "Moves clients to the serious stage faster",
+        body: "A client who sees the animation understands the project in 30 seconds. Consultations start with questions about details, not about the basic footprint.",
       },
       {
         icon: "value",
-        title: "Niža cena iz postojećeg modela",
-        body: "Ako smo Vam već izradili spoljašnji ili unutrašnji render, model je tu — animacija je €10/sek umesto €15/sek (33% popust). Aktivan projekat: €8/sek (47% popust).",
+        title: "Lower price from an existing model",
+        body: "If we have already produced your exterior or interior render, the model is there — the animation is €10/sec instead of €15/sec (33% discount). An active project: €8/sec (47% discount).",
       },
       {
         icon: "trust",
-        title: "Materijal za sve kanale",
-        body: "Jedna animacija postaje YouTube prikaz, Instagram reel, prospekt embed i prezentacija na sastanku. Multi-channel sa jednim ulaganjem.",
+        title: "Material for every channel",
+        body: "One animation becomes a YouTube video, an Instagram reel, a brochure embed and a meeting presentation. Multi-channel from a single investment.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite materijal",
-        body: "Osnove, fasade, postojeći 3D model (ako postoji) i opis željene putanje kamere.",
+        title: "Send your materials",
+        body: "Floor plans, elevations, an existing 3D model (if you have one) and a description of the camera path you want.",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu po sekundi i ukupan budžet u roku od jednog radnog dana.",
+        title: "Estimate confirmation",
+        body: "We send the per-second price and the total budget within one working day.",
       },
       {
-        title: "Animacija",
-        body: "Postavljamo kameru, materijale i osvetljenje, renderujemo sve frejmove. Prvi nacrt 5–7 radnih dana (zavisi od dužine).",
+        title: "Animation",
+        body: "We set the camera, materials and lighting, and render all the frames. First draft in 5-7 working days (depending on length).",
       },
       {
-        title: "Isporuka",
-        body: "Dobijate finalni film (MP4, 4K rezolucija). Tri runde revizije za putanju kamere su uključene.",
+        title: "Delivery",
+        body: "You receive the final film (MP4, 4K resolution). Three revision rounds for the camera path are included.",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €225?",
-        a: "15 sekundi animacije iz novog 3D modela. Cena po sekundi: €15. Ako već imamo Vaš model: €10/sek (€150 za 15 sek). Aktivan projekat (model u izradi): €8/sek (€120 za 15 sek).",
+        q: "What exactly do I get for €225?",
+        a: "15 seconds of animation from a new 3D model. Price per second: €15. If we already have your model: €10/sec (€150 for 15 sec). An active project (model in progress): €8/sec (€120 for 15 sec).",
       },
       {
-        q: "Razlika od video walkthrough-a?",
-        a: "Video walkthrough snima postojeći prostor. Arhitektonska animacija gradi nepostojeći prostor iz nacrta — možete da snimite objekat koji još nije izgrađen, sa tačnim materijalima fasade i okolinom.",
+        q: "How is it different from a video walkthrough?",
+        a: "A video walkthrough films an existing space. An architectural animation builds a space that doesn't exist yet from drawings — you can film a building that hasn't been built, with accurate facade materials and surroundings.",
       },
       {
-        q: "Koliko brzo dobijam animaciju?",
-        a: "Standardni rok 5–7 radnih dana za 15–30 sekundi. Duže animacije idu fazno po dogovoru. Tri runde revizije za putanju kamere uključene.",
+        q: "How fast do I get the animation?",
+        a: "The standard timeline is 5-7 working days for 15-30 seconds. Longer animations are delivered in stages by agreement. Three revision rounds for the camera path are included.",
       },
       {
-        q: "Mogu li da menjam putanju kamere posle prvog nacrta?",
-        a: "Da. U tri runde revizije menjamo putanju, brzinu, prelaze i ključne momente. Materijali, osvetljenje i geometrija fiksiraju se posle prve revizije.",
+        q: "Can I change the camera path after the first draft?",
+        a: "Yes. Across three revision rounds we change the path, speed, transitions and key moments. Materials, lighting and geometry are locked after the first revision.",
       },
       {
-        q: "Šta dostavljam?",
-        a: "Arhitektonske nacrte (PDF/DWG), postojeći 3D model ako postoji (FBX, OBJ, SKP), opis željene putanje i ključnih momenata. Opciono: muzika ili sound brief.",
+        q: "What do I need to send?",
+        a: "Architectural drawings (PDF/DWG), an existing 3D model if you have one (FBX, OBJ, SKP), a description of the camera path and key moments. Optional: music or a sound brief.",
       },
     ],
     variants: [
       {
         id: "animation-from-scratch",
-        title: "Arhitektonska animacija (od nule)",
+        title: "Architectural animation (from scratch)",
         basePrice: 15,
-        priceLabel: "€15/sek",
-        unitLabel: "po sekundi (minimum 15 sek = €225)",
+        priceLabel: "€15/sec",
+        unitLabel: "per second (minimum 15 sec = €225)",
         description:
-          "Marketinški film u kome kamera leti kroz objekat. Minimum 15 sekundi. Ako već imamo Vaš model: 33% popust.",
+          "A marketing film where the camera flies through the building. Minimum 15 seconds. If we already have your model: 33% discount.",
         included:
-          "Kompletna izgradnja 3D modela + dizajn putanje kamere + renderovanje animacije (minimum 15 sek).",
+          "Complete 3D model build + camera path design + animation rendering (minimum 15 sec).",
         addOns: [
-          "Ako već imamo Vaš 3D model: €10/sek (33% popust)",
-          "Aktivan projekat renderovanja: €8/sek (47% popust)",
-          "Dodatna putanja kamere kroz isti model: €5/sek",
-          "Verzija sa noćnim osvetljenjem: +30%",
-          "Sezonska varijanta (zima/leto): +40%",
-          "Popust na dužinu: 31–60s −10%, 61–120s −20%, 120s+ −25%",
+          "If we already have your 3D model: €10/sec (33% discount)",
+          "Active render project: €8/sec (47% discount)",
+          "Additional camera path through the same model: €5/sec",
+          "Night lighting version: +30%",
+          "Seasonal variant (winter/summer): +40%",
+          "Length discount: 31-60s −10%, 61-120s −20%, 120s+ −25%",
         ],
       },
     ],
@@ -1996,18 +1996,18 @@ export const SERVICES: Service[] = [
   {
     slug: "landscape-design",
     code: "landscape-rendering",
-    name: "Uređenje pejzaža",
-    shortName: "Uređenje pejzaža",
+    name: "Landscape design",
+    shortName: "Landscape design",
     category: "exterior",
     icon: "tree",
     tagline:
-      "3D pejzaž iz plana ili nova slika Vašeg dvorišta — bez čekanja da biljke porastu.",
+      "A 3D landscape from your plan, or a new image of your yard — without waiting for plants to grow.",
     description:
-      "Dve opcije — jedan rezultat: vidite uređen spoljni prostor pre nego što počnu radovi ili pre nego što potrošite na sadnju. Pejzažni render (3D) iz plana kreće od €220. Virtuelna renovacija iz fotografije postojećeg dvorišta kreće od €66.",
+      "Two options — one result: see the finished outdoor space before the work starts or before you spend on planting. A landscape render (3D) from a plan starts at €220. A virtual renovation from a photo of your existing yard starts at €66.",
     highlight:
-      "Prikladno za pejzažne arhitekte koji predstavljaju projekat klijentu i investitore za zajedničke prostore u kompleksima.",
+      "Suited to landscape architects presenting a project to a client and developers designing shared spaces in complexes.",
     materials:
-      "Pošaljite nam situacioni plan, visinske kote i specifikaciju biljaka i materijala.",
+      "Send us the site plan, elevation data and a specification of plants and materials.",
     asset: "/artwork/expert-landscape-design-after.webp",
     beforeAsset: "/artwork/expert-landscape-design-before.webp",
     afterAsset: "/artwork/expert-landscape-design-after.webp",
@@ -2015,146 +2015,146 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-landscape-design-before.webp",
     detailAfterAsset: "/artwork/problem-landscape-design-after.webp",
     detailBeforeAlt:
-      "Moderna porodična kuća sa neuređenom, golom parcelom pre uređenja pejzaža",
+      "Modern family house with a bare, unlandscaped plot before landscape design",
     detailAfterAlt:
-      "Moderna porodična kuća sa uređenim dvorištem — negovan travnjak, sadnice i popločana staza posle uređenja pejzaža",
+      "Modern family house with a finished yard — a well-kept lawn, young plants and a paved path after landscape design",
     philosophy:
-      "Cena pejzažnog rendera (€220) pokriva modelovanje terena, vegetaciju u zrelom stanju i prvi prikaz. Svaki sledeći ugao iste lokacije je €45 — 80% jeftiniji, jer je teren već izgrađen. Virtuelna renovacija (€66) radi drugačije: nema 3D modela — postavljamo nove materijale i biljke direktno na Vašu fotografiju. Brže, povoljnije, ali vezano za ugao koji ste snimili. Doplate za renovaciju: drugi ugao €59, 4. i svaki sledeći €53, drugo dvorište €56. Sve cene su u EUR.",
+      "The landscape render price (€220) covers terrain modeling, vegetation in its mature state and the first view. Each additional angle of the same location is €45 — 80% cheaper, because the terrain is already built. Virtual renovation (€66) works differently: there is no 3D model — we place new materials and plants directly onto your photo. Faster and cheaper, but tied to the angle you photographed. Renovation add-ons: second angle €59, 4th and each subsequent €53, second yard €56. All prices are in EUR.",
     priceContext:
-      "€220 — kompletan teren + vegetacija + prvi prikaz. Sledeći ugao: €45 (80% jeftiniji).",
+      "€220 — complete terrain + vegetation + the first view. Next angle: €45 (80% cheaper).",
     forSegments: [
-      "Pejzažne arhitekte (klijentske prezentacije)",
-      "Investitori (zajednički prostori u kompleksima)",
-      "Vlasnici parcela pred uređenje",
+      "Landscape architects (client presentations)",
+      "Developers (shared spaces in complexes)",
+      "Plot owners planning landscaping",
     ],
-    problemHeading: "Gola parcela ne pokazuje vrednost. Uređen pejzaž — pokazuje.",
+    problemHeading: "A bare plot doesn't show value. A finished landscape does.",
     problemBody:
-      "Klijent gleda crtež pejzaža sa simbolima i ne vidi kako će dvorište zaista izgledati. Bez vizuelnog pejzaža, prodavac ne može da odbrani cenu uređenja, investitor ne dobija odobrenje, kupac parcele ne vidi potencijal.",
+      "The client looks at a landscape drawing full of symbols and can't see what the yard will actually look like. Without a visual, the designer can't defend the price of the landscaping, the developer doesn't get approval, and the plot buyer doesn't see the potential.",
     problemResolution:
-      "Pejzažni render (€220) gradi kompletan 3D model terena i vegetacije iz plana — svaki sledeći ugao iste lokacije je €45. Virtuelna renovacija (€66) preuređuje Vaše postojeće dvorište direktno na fotografiji — bez 3D modela, brže i povoljnije.",
+      "A landscape render (€220) builds a complete 3D model of the terrain and vegetation from your plan — each additional angle of the same location is €45. A virtual renovation (€66) redesigns your existing yard directly on the photo — no 3D model, faster and cheaper.",
     benefits: [
       {
         icon: "trust",
-        title: "Klijent vidi finalni rezultat",
-        body: "Pejzažni arhitekta predstavlja projekat sa vizuelizacijom koja zamenjuje desetine objašnjenja. Klijent potpisuje brže.",
+        title: "The client sees the final result",
+        body: "A landscape architect presents the project with a visualization that replaces dozens of explanations. The client signs faster.",
       },
       {
         icon: "context",
-        title: "Dokaz vrednosti za investitora",
-        body: "Zajednički prostori u kompleksu prodaju jedinice. Render ih čini opipljivim pred prodajni tim, fond i kupce.",
+        title: "Proof of value for developers",
+        body: "Shared spaces in a complex sell units. A render makes them tangible for the sales team, the fund and buyers.",
       },
       {
         icon: "value",
-        title: "Više uglova jednom modelovan teren",
-        body: "€220 pokriva kompletan teren i prvi prikaz. Svaki sledeći ugao iste lokacije: €45 (80% jeftiniji).",
+        title: "Several angles from one modeled terrain",
+        body: "€220 covers the complete terrain and the first view. Each additional angle of the same location: €45 (80% cheaper).",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite plan",
-        body: "Situacioni plan, visinske kote i specifikaciju biljaka i materijala (kamenje, popločavanje, vodeni elementi).",
+        title: "Send the plan",
+        body: "The site plan, elevation data and a specification of plants and materials (stone, paving, water features).",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline no later than the next working day, with no hidden items.",
       },
       {
-        title: "Modelovanje i render",
-        body: "Tim modeluje teren, postavlja vegetaciju, staze i materijale. Prve nacrte šaljemo za 3–5 radnih dana.",
+        title: "Modeling and rendering",
+        body: "The team models the terrain and places vegetation, paths and materials. We send first drafts in 3-5 working days.",
       },
       {
-        title: "Isporuka i revizije",
-        body: "Dobijate finalne vizuale. Tri runde revizije su uključene u cenu — bez doplate.",
+        title: "Delivery and revisions",
+        body: "You receive the final visuals. Three revision rounds are included in the price — no extra charge.",
       },
     ],
     faqs: [
       {
-        q: "Zašto je virtuelna renovacija jeftinija od 3D rendera?",
-        a: "Pejzažni render (€220) gradi kompletan 3D model terena i vegetacije iz osnove — to je dugotrajan proces koji omogućava slobodan izbor ugla kamere i prikaz iz vazduha. Virtuelna renovacija (€66) ne gradi 3D model — nove materijale i biljke postavljamo direktno na Vašu fotografiju. Brži je i povoljniji postupak, ali je vezan za ugao i perspektivu snimljene fotografije. Ako prostora još nema ili trebate više uglova, 3D render je jedina opcija.",
+        q: "Why is virtual renovation cheaper than the 3D render?",
+        a: "A landscape render (€220) builds a complete 3D model of the terrain and vegetation from the plan — a longer process that allows a free choice of camera angle and aerial views. A virtual renovation (€66) doesn't build a 3D model — we place new materials and plants directly onto your photo. It is faster and cheaper, but tied to the angle and perspective of the photo. If the space doesn't exist yet or you need several angles, the 3D render is the only option.",
       },
       {
-        q: "Šta tačno dobijam za €220?",
-        a: "Kompletno modelovanje terena, postavljanje vegetacije i staza i prvi finalni render. Svaki sledeći ugao iste lokacije: €45 (80% popust). Doplata za neviđenu stranu terena: +25% jednom po modelu. Pogled iz vazduha na celu lokaciju: €380.",
+        q: "What exactly do I get for €220?",
+        a: "Complete terrain modeling, vegetation and path placement, and the first final render. Each additional angle of the same location: €45 (80% discount). Surcharge for an unseen side of the terrain: +25% once per model. An aerial view of the whole location: €380.",
       },
       {
-        q: "Razlika u odnosu na klasičan render eksterijera?",
-        a: "Render eksterijera pokazuje objekat sa fasade i okolinom. Pejzažni render fokus stavlja na uređenje — popločane staze, biljke u zrelom stanju, akcent kamenje, vodene elemente. Različite namene.",
+        q: "How is it different from a classic exterior render?",
+        a: "An exterior render shows the building's facade and its surroundings. A landscape render focuses on the landscaping — paved paths, plants in their mature state, accent stone, water features. Different purposes.",
       },
       {
-        q: "Koliko detaljno modelujete biljke?",
-        a: "Vegetacija je u realnoj zrelosti — ne kao da je sadno juče, već u stanju u kojem će biti za 2–3 godine. Birate listopadno/zimzeleno, akcent stabla i ukrasno bilje iz našeg kataloga ili po referencama.",
+        q: "How detailed is the vegetation?",
+        a: "Vegetation is shown at realistic maturity — not as if planted yesterday, but as it will look in 2-3 years. You choose deciduous/evergreen, accent trees and ornamental plants from our catalog or from references.",
       },
       {
-        q: "Da li radite i za stambene komplekse, ne samo privatna dvorišta?",
-        a: "Da. Zajednički prostori u stambenim kompleksima su jednako uobičajen scenario. Razlika je samo u veličini terena — cena ostaje €220 za prvi prikaz, dodatni uglovi €45.",
+        q: "Do you also work on residential complexes, not just private yards?",
+        a: "Yes. Shared spaces in residential complexes are an equally common scenario. The only difference is the size of the terrain — the price stays €220 for the first view, additional angles €45.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema situacionog plana. Tri runde revizije su uključene.",
+        q: "How long does it take?",
+        a: "We send first drafts in 3-5 working days from estimate confirmation and receipt of the site plan. Three revision rounds are included.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Situacioni plan u PDF ili DWG formatu, visinske kote terena i specifikaciju ili reference biljaka i materijala (kamenje, popločavanje, vodeni elementi).",
+        q: "What do I need to send to get started?",
+        a: "The site plan in PDF or DWG format, terrain elevation data and a specification or references for plants and materials (stone, paving, water features).",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-landscape-design-01.webp",
-        alt: "Uređenje pejzaža — privatno dvorište porodične kuće sa terasom i travnjakom",
+        alt: "Landscape design — private yard of a family house with a terrace and lawn",
       },
       {
         src: "/artwork/portfolio-landscape-design-02.webp",
-        alt: "Uređenje pejzaža — zajednički prostor stambenog kompleksa sa pešačkim stazama",
+        alt: "Landscape design — shared space of a residential complex with walking paths",
       },
       {
         src: "/artwork/portfolio-landscape-design-03.webp",
-        alt: "Uređenje pejzaža — dvorište vile sa bazenom i terasom",
+        alt: "Landscape design — villa yard with a pool and terrace",
       },
       {
         src: "/artwork/portfolio-landscape-design-04.webp",
-        alt: "Uređenje pejzaža — javni prostor sa popločanom stazom i zrelim sadnicama",
+        alt: "Landscape design — public space with a paved path and mature planting",
       },
     ],
     pricingLead: {
-      heading: "Kako odabrati pravu opciju?",
-      body: "Prostora još nema — gradite iz plana, trebaju Vam različiti uglovi ili pogled iz vazduha? Izaberite Pejzažni render (3D). Dvorište već postoji — želite da vidite kako će izgledati posle uređenja, brzo i bez 3D modela? Izaberite Virtuelnu renovaciju.",
+      heading: "How do you choose the right option?",
+      body: "The space doesn't exist yet — you are building from a plan and need different angles or an aerial view? Choose the landscape render (3D). The yard already exists — you want to see how it will look after landscaping, quickly and without a 3D model? Choose the virtual renovation.",
     },
     variants: [
       {
         id: "landscape-main",
-        title: "Pejzažni render (3D)",
+        title: "Landscape render (3D)",
         basePrice: 220,
         priceLabel: "€220",
-        unitLabel: "teren + vegetacija + prvi prikaz",
+        unitLabel: "terrain + vegetation + first view",
         description:
-          "Kompletan 3D model terena i vegetacije iz plana. Pravi izbor kada prostor još ne postoji — gradnja, projektovanje ili prezentacija investitoru. Svaki sledeći ugao iste lokacije 80% jeftiniji.",
+          "A complete 3D model of the terrain and vegetation from your plan. The right choice when the space doesn't exist yet — construction, design or an investor presentation. Each additional angle of the same location 80% cheaper.",
         included:
-          "Kompletno modelovanje terena, postavljanje vegetacije u zrelom stanju, staza i materijala, i 1 finalni render. Tri runde revizije uključene.",
+          "Complete terrain modeling, vegetation placed in its mature state, paths and materials, and 1 final render. Three revision rounds included.",
         addOns: [
-          "Sledeći ugao iste lokacije: €45 (80% jeftiniji)",
-          "Doplata za neviđenu stranu terena: +25% jednom po modelu",
-          "Pogled iz vazduha na celu lokaciju: €380",
+          "Next angle of the same location: €45 (80% cheaper)",
+          "Surcharge for an unseen side of the terrain: +25% once per model",
+          "Aerial view of the whole location: €380",
         ],
-        note: "Počinjete od situacionog plana, visinskih kota i specifikacije biljaka. Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude.",
+        note: "You start from a site plan, elevation data and a plant specification. We send first drafts in 3-5 working days from estimate confirmation.",
       },
     ],
     crossSellVariants: [
       {
         id: "landscape-reno",
-        title: "Virtuelna renovacija iz fotografije",
+        title: "Virtual renovation from a photo",
         basePrice: 66,
         priceLabel: "€66",
-        unitLabel: "prvi prikaz renoviranog dvorišta",
+        unitLabel: "first view of the renovated yard",
         description:
-          "Pošaljite fotografiju postojećeg dvorišta — mi preuređujemo prostor direktno na slici, bez 3D modela. Brže i povoljnije od pejzažnog rendera. Pravi izbor kada imate fotografiju i samo želite videti kako bi izgledalo uređeno.",
+          "Send a photo of your existing yard — we redesign the space directly on the image, with no 3D model. Faster and cheaper than a landscape render. The right choice when you have a photo and just want to see how it would look landscaped.",
         included:
-          "Kompletna vizuelna transformacija dvorišta na osnovu Vaše fotografije — novi pod, vegetacija, staze, fiksirani elementi i nameštaj terasa.",
+          "A complete visual transformation of the yard based on your photo — new surfaces, vegetation, paths, fixed elements and terrace furniture.",
         addOns: [
-          "Drugi ugao iste lokacije: €59 (10% jeftiniji)",
-          "4. i svaki sledeći ugao: €53 (20% jeftiniji)",
-          "Drugo dvorište iste nekretnine: €56 (15% jeftiniji)",
+          "Second angle of the same location: €59 (10% cheaper)",
+          "4th and each subsequent angle: €53 (20% cheaper)",
+          "A second yard of the same property: €56 (15% cheaper)",
         ],
-        note: "Počinjete od fotografije postojećeg stanja i referenci za nove materijale i biljke. Ova opcija je vezana za ugao fotografije — za slobodan izbor kamere koristite Pejzažni render (3D).",
+        note: "You start from a photo of the current state and references for the new materials and plants. This option is tied to the photo's angle — for a free choice of camera use the landscape render (3D).",
         configuratorCategory: "transformation",
       },
     ],
@@ -2162,18 +2162,18 @@ export const SERVICES: Service[] = [
   {
     slug: "photomontage",
     code: "photomontage",
-    name: "Render u stvarnoj fotografiji lokacije",
-    shortName: "Render u fotografiji",
+    name: "Render in a real photo of the location",
+    shortName: "Render in a photo",
     category: "exterior",
     icon: "camera",
     tagline:
-      "Render eksterijera u fotografiji Vaše lokacije — za €50 više od standardnog rendera.",
+      "An exterior render in a photo of your location — for €50 more than the standard render.",
     description:
-      "Ovo je standardni render eksterijera (€250) sa uključenom opcijom Fotomontaža (+€50 = ukupno €300). Tih €50 znači da 3D model objekta ne smeštamo u sintetičko okruženje — već ga uklapamo direktno u fotografiju lokacije koju Vi dostavite, sa usklađenim svetlom, senkama i perspektivom. Rezultat izgleda kao da je zgrada već tu. Idealno za urbanističku komisiju, javnu raspravu i investitorske prezentacije gde komisija mora videti Vaš objekat u stvarnom kontekstu ulice. Render eksterijera možete naručiti i bez ove opcije — samo €250, sa sintetičkim okruženjem. Drugi metod (3D prikaz ulice, €420) modeluje celo okruženje u 3D — pravi izbor kada lokacija nije dostupna za fotografisanje ili trebate slobodan izbor ugla.",
+      "This is the standard exterior render (€250) with the photomontage option included (+€50 = €300 total). That €50 means we don't place the 3D model of the building into synthetic surroundings — we blend it directly into a photo of the location you provide, with matched light, shadows and perspective. The result looks like the building is already there. Ideal for planning committees, public consultations and investor presentations where the committee has to see your building in the real context of the street. You can also order the exterior render without this option — just €250, with synthetic surroundings. The other method (3D streetscape, €420) models the whole setting in 3D — the right choice when the location can't be photographed or you need a free choice of angle.",
     highlight:
-      "Za projekte u kojima realističnost i autentičnost lokacije presudno menjaju doživljaj projekta — dozvole, javne rasprave, investitorske prezentacije.",
+      "For projects where realism and the authenticity of the location decisively change how the project is perceived — permits, public consultations, investor presentations.",
     materials:
-      "Pošaljite nam fotografiju lokacije visoke rezolucije i 3D model ili arhitektonske crteže objekta.",
+      "Send us a high-resolution photo of the location and a 3D model or the architectural drawings of the building.",
     asset: "/artwork/expert-photomontage-after.webp",
     beforeAsset: "/artwork/expert-photomontage-before.webp",
     afterAsset: "/artwork/expert-photomontage-after.webp",
@@ -2181,289 +2181,289 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-photomontage-street-before.webp",
     detailAfterAsset: "/artwork/problem-photomontage-street-after.webp",
     detailBeforeAlt:
-      "Prazna parcela u ulici između postojećih zgrada — stvarna fotografija lokacije pre montaže objekta",
+      "Empty plot on a street between existing buildings — a real photo of the location before the building is blended in",
     detailAfterAlt:
-      "Isti ulični kadar sa uklopljenim 3D renderom novog objekta — render u stvarnoj fotografiji lokacije",
+      "The same street shot with the 3D render of the new building blended in — a render in a real photo of the location",
     philosophy:
-      "Cena se sastoji od dva dela. Render eksterijera (€250) pokriva izgradnju kompletnog 3D modela Vašeg objekta i prvi finalni render. To je isti model, isti posao — bez obzira da li iza njega stoji sintetičko okruženje ili fotografija lokacije. Fotomontaža (+€50) je opcija koja menja samo pozadinu: umesto modelovanog okruženja, 3D model se uklapa u stvarnu fotografiju — usklađujemo perspektivu, svetlo i senke sa momentom snimanja. Taj doplatak je opravdan jer analiza fotografije i usklađivanje perspektive zahtevaju poseban rad koji standardni render nema. Render eksterijera je dostupan i samostalno za €250 — kada Vam sintetičko okruženje odgovara. Ako trebate više uglova: sledeći ugao iz iste fotografije je €55 (82% jeftinije), druga fotografija iste lokacije €85, neviđena strana objekta +25% jednom po modelu.",
+      "The price has two parts. The exterior render (€250) covers building a complete 3D model of your building and the first final render. It is the same model and the same work — whether it stands in synthetic surroundings or in a photo of the location. The photomontage (+€50) is an option that changes only the background: instead of modeled surroundings, the 3D model is blended into an actual photograph — we match the perspective, light and shadows to the moment the photo was taken. The surcharge is justified because analyzing the photo and matching the perspective take extra work the standard render doesn't include. The exterior render is also available on its own for €250 — when synthetic surroundings suit you. If you need more angles: the next angle from the same photo is €55 (82% cheaper), a second photo of the same location €85, an unseen side of the building +25% once per model.",
     priceContext:
-      "€300 — uklapanje + prvi prikaz. Sledeći ugao iste fotografije: €55 (82% jeftiniji).",
+      "€300 — blending + the first view. Next angle from the same photo: €55 (82% cheaper).",
     forSegments: [
-      "Investitori (urbanistička dozvola, javna rasprava)",
-      "Arhitekte (klijentske prezentacije)",
-      "Studija za masterplan i razvojne projekte",
+      "Developers (planning permission, public consultations)",
+      "Architects (client presentations)",
+      "Master plan and development studios",
     ],
-    problemHeading: "Komisija ne zamišlja. Komisija vidi fotografiju.",
+    problemHeading: "The committee doesn't imagine. The committee sees a photograph.",
     problemBody:
-      "Arhitektonski nacrt kaže koliko je zgrada visoka i gde stoji. Ne kaže kako izgleda u dvorištu između susednih kuća, u popodnevnom svetlu, sa zelenilom koje već postoji na toj ulici. Urbanistička komisija ili kupac parcele traže upravo to — i bez toga donose odluku na osnovu pretpostavke.",
+      "An architectural drawing says how tall the building is and where it stands. It doesn't say how it looks in the yard between the neighboring houses, in afternoon light, with the greenery already on that street. A planning committee or a plot buyer wants exactly that — and without it they decide based on assumption.",
     problemResolution:
-      "Fotografišete lokaciju, šaljete nam nacrte — mi uklapamo 3D model u Vašu fotografiju. Perspektiva, senke i osvetljenje su usklađeni sa stvarnim trenutkom snimanja. Komisija vidi tačno šta će stajati na tom mestu.",
+      "You photograph the location and send us the drawings — we blend the 3D model into your photo. The perspective, shadows and lighting are matched to the actual moment the photo was taken. The committee sees exactly what will stand on that spot.",
     benefits: [
       {
         icon: "trust",
-        title: "Piksel-realno okruženje",
-        body: "Susedne kuće, drveće, ograda, senke — sve je stvarno jer dolazi iz Vaše fotografije. Niko ne može da tvrdi da je okruženje 'ulepšano' ili izmišljeno.",
+        title: "Pixel-real surroundings",
+        body: "The neighboring houses, trees, fence, shadows — all real, because they come from your photo. Nobody can claim the surroundings are 'beautified' or invented.",
       },
       {
         icon: "context",
-        title: "Idealno za regulatorne procedure",
-        body: "Urbanistička komisija i javna rasprava traže prikaz u stvarnom kontekstu. Render u fotografiji lokacije ispunjava taj uslov direktno — bez dodatnih objašnjenja.",
+        title: "Ideal for regulatory procedures",
+        body: "Planning committees and public consultations require a view in the real context. A render in a photo of the location meets that requirement directly — no extra explanations.",
       },
       {
         icon: "value",
-        title: "Ekonomično za više uglova",
-        body: "Prva fotografija je €300 — svaki sledeći ugao iz iste fotografije je €55 (82% jeftinije). Tri kadra iste lokacije ukupno izlaze €410.",
+        title: "Economical for several angles",
+        body: "The first photo is €300 — each additional angle from the same photo is €55 (82% cheaper). Three shots of the same location come to €410 in total.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite materijal",
-        body: "Fotografiju lokacije visoke rezolucije i 3D model ili arhitektonske crteže objekta.",
+        title: "Send your materials",
+        body: "A high-resolution photo of the location and a 3D model or the architectural drawings of the building.",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline no later than the next working day, with no hidden items.",
       },
       {
-        title: "Analiza i uklapanje",
-        body: "Analiziramo perspektivu, svetla i senke fotografije, pa uklapamo 3D model objekta. Prvi nacrt 3–5 radnih dana.",
+        title: "Analysis and blending",
+        body: "We analyze the photo's perspective, light and shadows, then blend in the 3D model of the building. First draft in 3-5 working days.",
       },
       {
-        title: "Isporuka i revizije",
-        body: "Dobijate fotorealističan prikaz spreman za dozvole, prezentacije i marketing. Tri runde revizije uključene.",
+        title: "Delivery and revisions",
+        body: "You receive a photorealistic view ready for permits, presentations and marketing. Three revision rounds included.",
       },
     ],
     faqs: [
       {
-        q: "Od čega se sastoji cena od €300? Mogu li naručiti samo render eksterijera?",
-        a: "€300 su dva zasebna dela: render eksterijera (€250) + opcija Fotomontaža (+€50). Render eksterijera uključuje izgradnju kompletnog 3D modela objekta i jedan finalni render — to je osnova. Fotomontaža (+€50) znači da taj 3D model umesto u sintetičko okruženje uklapamo u stvarnu fotografiju lokacije koju Vi dostavite, sa usklađenim svetlom, senkama i perspektivom. Ako Vam sintetičko okruženje odgovara (npr. za prodajni prospekt bez regulatorne svrhe), možete naručiti samo render eksterijera za €250 — opcija Fotomontaža nije obavezna.",
+        q: "What makes up the €300 price? Can I order just the exterior render?",
+        a: "€300 is two separate parts: the exterior render (€250) + the photomontage option (+€50). The exterior render includes building a complete 3D model of the building and one final render — that is the base. The photomontage (+€50) means we blend that 3D model into a real photo of the location you provide instead of synthetic surroundings, with matched light, shadows and perspective. If synthetic surroundings suit you (e.g. for a sales brochure with no regulatory purpose), you can order just the exterior render for €250 — the photomontage option is not mandatory.",
       },
       {
-        q: "Šta tačno dobijam za €300?",
-        a: "Kompletan 3D model Vašeg objekta i jedan finalni render — 3D model uklapa se u fotografiju lokacije koju Vi dostavite, sa usklađenim svetlom, senkama i perspektivom. Uključene su tri runde revizije.",
+        q: "What exactly do I get for €300?",
+        a: "A complete 3D model of your building and one final render — the 3D model is blended into a photo of the location you provide, with matched light, shadows and perspective. Three revision rounds are included.",
       },
       {
-        q: "Ko snima fotografiju lokacije?",
-        a: "Vi — ili neko koga angažujete. Dovoljan je i telefon sa dobrom kamerom, pod uslovom da je fotografija oštra i snimljena iz visine oka (ne iz auto-sedišta). Šaljemo Vam kratko uputstvo za snimanje kad potvrdite porudžbinu.",
+        q: "Who takes the photo of the location?",
+        a: "You do — or someone you hire. A phone with a good camera is enough, as long as the photo is sharp and taken at eye level (not from a car seat). We send you short shooting instructions when you confirm the order.",
       },
       {
-        q: "Razlika u odnosu na 3D prikaz ulice (€420)?",
-        a: "Render u fotografiji koristi stvarnu fotografiju lokacije kao pozadinu — okruženje je piksel-realno, ali ste vezani za ugao snimljene fotografije. 3D prikaz ulice modeluje celo okruženje u 3D — možete birati bilo koji ugao, ali okruženje je aproksimacija, ne stvarna fotografija. Ako lokacija postoji i može se fotografisati, render u fotografiji daje verodostojniji rezultat za manje novca.",
+        q: "How is it different from the 3D streetscape (€420)?",
+        a: "The render in a photo uses a real photograph of the location as the background — the surroundings are pixel-real, but you are tied to the photo's angle. The 3D streetscape models the whole setting in 3D — you can choose any angle, but the surroundings are an approximation, not a real photo. If the location exists and can be photographed, the render in a photo gives a more credible result for less money.",
       },
       {
-        q: "Da li ova usluga važi i za kuće, ne samo zgrade?",
-        a: "Da. Metod ne zavisi od tipa objekta — važi za porodične kuće, stambene zgrade, poslovne objekte i svaki drugi tip čije nacrte možete dostaviti.",
+        q: "Does this work for houses too, not just larger buildings?",
+        a: "Yes. The method doesn't depend on the building type — it works for family houses, residential buildings, commercial buildings and any other type whose drawings you can provide.",
       },
       {
-        q: "Šta ako lokacija nije fotografisana iz pravog ugla?",
-        a: "Pre početka rada proveravamo fotografiju i javljamo se ako ugao ne funkcioniše za predviđeni kadar. U tom slučaju možete dostaviti novu fotografiju ili preći na 3D prikaz ulice — koji ne zavisi od fotografije.",
+        q: "What if the location wasn't photographed from the right angle?",
+        a: "Before starting we check the photo and let you know if the angle doesn't work for the planned shot. In that case you can provide a new photo or switch to the 3D streetscape — which doesn't depend on a photograph.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema nacrta i fotografije. Tri runde revizije su uključene — bez doplate.",
+        q: "How long does it take?",
+        a: "We send first drafts in 3-5 working days from estimate confirmation and receipt of the drawings and the photo. Three revision rounds are included — no extra charge.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-photomontage-01.webp",
-        alt: "Fotomontaža — porodična kuća uklopljena u stvarnu uličnu fotografiju",
+        alt: "Photomontage — family house blended into a real street photo",
       },
       {
         src: "/artwork/portfolio-photomontage-02.webp",
-        alt: "Fotomontaža — stambena zgrada u urbanom kontekstu",
+        alt: "Photomontage — residential building in an urban context",
       },
       {
         src: "/artwork/portfolio-photomontage-03.webp",
-        alt: "Fotomontaža — poslovni objekat uklopljen u fotografiju lokacije",
+        alt: "Photomontage — commercial building blended into a photo of the location",
       },
       {
         src: "/artwork/portfolio-photomontage-04.webp",
-        alt: "Fotomontaža — vila uklopljena u prirodno okruženje",
+        alt: "Photomontage — villa blended into a natural setting",
       },
     ],
     pricingLead: {
-      heading: "Dva metoda, isti cilj — jedan pravi izbor za Vašu lokaciju.",
-      body: "Render u stvarnoj fotografiji (€300) je pravi izbor kada lokacija postoji i može se fotografisati — daje maksimalnu verodostojnost jer koristi stvarno okruženje. 3D prikaz ulice (€420) je pravi izbor kada lokacija još ne postoji, teško je dostupna ili trebate više uglova bez ograničenja fotografije. Odaberite prema tome šta imate u rukama.",
+      heading: "Two methods, one goal — one right choice for your location.",
+      body: "A render in a real photo (€300) is the right choice when the location exists and can be photographed — it gives maximum credibility because it uses the real surroundings. A 3D streetscape (€420) is the right choice when the location doesn't exist yet, is hard to access, or you need several angles without photography constraints. Choose based on what you have in hand.",
     },
     comparison: {
-      aLabel: "Render u fotografiji — €300",
-      bLabel: "3D prikaz ulice — €420",
+      aLabel: "Render in a photo — €300",
+      bLabel: "3D streetscape — €420",
       rows: [
-        { label: "Ulazni materijal", a: "Stvarna fotografija lokacije", b: "Arhitektonski nacrti" },
-        { label: "Okruženje", a: "Piksel-realno (prava fotografija)", b: "Modelovano u 3D (aproksimacija)" },
-        { label: "Izbor ugla", a: "Vezan za ugao fotografije", b: "Bilo koji ugao (ulica ili iz vazduha)" },
-        { label: "Kada izabrati", a: "Lokacija postoji i može se fotografisati", b: "Lokacija ne postoji ili treba više uglova" },
+        { label: "Input material", a: "A real photo of the location", b: "Architectural drawings" },
+        { label: "Surroundings", a: "Pixel-real (actual photograph)", b: "Modeled in 3D (approximation)" },
+        { label: "Choice of angle", a: "Tied to the photo's angle", b: "Any angle (street or aerial)" },
+        { label: "When to choose it", a: "The location exists and can be photographed", b: "The location doesn't exist or you need several angles" },
       ],
     },
     variants: [
       {
         id: "photomontage-main",
-        title: "Render u stvarnoj fotografiji lokacije",
+        title: "Render in a real photo of the location",
         basePrice: 300,
         priceLabel: "€300",
-        unitLabel: "render eksterijera €250 + Fotomontaža +€50",
-        decomposition: "Render eksterijera €250 + Fotomontaža €50",
+        unitLabel: "exterior render €250 + photomontage +€50",
+        decomposition: "Exterior render €250 + photomontage €50",
         description:
-          "3D model objekta se uklapa u fotografiju lokacije koju Vi dostavite — usklađeno svetlo, senke i perspektiva. Maksimalna verodostojnost za komisije, javne rasprave i prezentacije kupcu.",
+          "The 3D model of the building is blended into a photo of the location you provide — matched light, shadows and perspective. Maximum credibility for committees, public consultations and buyer presentations.",
         included:
-          "Kompletan 3D model objekta (isto što i standardni render eksterijera), postavljanje scene i osvetljenja usklađenih sa fotografijom lokacije, jedno uklapanje u jednu fotografiju koju Vi dostavite — jedan finalni render. Tri runde revizije uključene. Fotomontaža opcija je pre-uključena u konfiguratoru — korpa prikazuje stavku po stavku: render eksterijera €250 + Fotomontaža €50 = €300.",
+          "A complete 3D model of the building (the same as the standard exterior render), scene and lighting set to match the photo of the location, one blend into one photo you provide — one final render. Three revision rounds included. The photomontage option is pre-selected in the configurator — the cart shows it line by line: exterior render €250 + photomontage €50 = €300.",
         addOns: [
-          "Dodatni ugao iz iste fotografije: €55 (82% jeftinije)",
-          "Druga fotografija iste lokacije (drugi ugao snimanja): €85",
-          "Neviđena strana objekta: +25% jednokratno",
+          "Additional angle from the same photo: €55 (82% cheaper)",
+          "A second photo of the same location (a different shooting angle): €85",
+          "Unseen side of the building: +25% one-off",
         ],
-        note: "Cena: render eksterijera €250 + Fotomontaža +€50 = €300. Render eksterijera možete naručiti i bez Fotomontaže — samo €250 sa sintetičkim okruženjem. Fotomontaža opcija dodaje uklapanje u stvarnu fotografiju lokacije.",
+        note: "Price: exterior render €250 + photomontage +€50 = €300. You can also order the exterior render without the photomontage — just €250 with synthetic surroundings. The photomontage option adds blending into a real photo of the location.",
       },
     ],
     crossSellVariants: [
       {
         id: "exterior-aerial",
-        title: "3D prikaz ulice (streetscape)",
+        title: "3D streetscape",
         basePrice: 420,
         priceLabel: "€420",
-        unitLabel: "pun 3D model objekta + okruženja",
+        unitLabel: "full 3D model of the building + surroundings",
         description:
-          "Kada lokacija ne postoji ili trebate više uglova bez ograničenja fotografije — celo okruženje se modeluje u 3D, primarno iz ulične perspektive.",
+          "When the location doesn't exist or you need several angles without photography constraints — the whole setting is modeled in 3D, primarily from a street-level perspective.",
         included:
-          "Pun 3D model objekta i okruženja (susedne kuće, ulica, parcela), ulična perspektiva i 2 ugla uključena.",
+          "A full 3D model of the building and surroundings (neighboring houses, the street, the plot), street-level perspective and 2 angles included.",
         addOns: [
-          "Dodatni ugao: €48 (80% jeftinije)",
-          "Neviđena/zadnja strana objekta: +25% (€105 jednokratno)",
+          "Additional angle: €48 (80% cheaper)",
+          "Unseen/rear side of the building: +25% (€105 one-off)",
         ],
-        note: "Pravi izbor kada lokacija još nije dostupna za fotografisanje ili trebate slobodan izbor ugla kamere.",
+        note: "The right choice when the location isn't available to photograph yet or you need a free choice of camera angle.",
       },
     ],
   },
   {
     slug: "site-plans",
     code: "3d-site-plans",
-    name: "Situacioni planovi",
-    shortName: "Situacioni planovi",
+    name: "Site plans",
+    shortName: "Site plans",
     category: "plans",
     icon: "layers",
-    tagline: "Cela parcela iz vazduha — investitorska ponuda na jednoj slici.",
+    tagline: "The whole plot from the air — an investor offer in a single image.",
     description:
-      "Kompletan prikaz parcele iz vazduha: teren, sve objekte, puteve, parking, vegetaciju i uređenje. Investitorski materijal za ponudu, urbanističku dozvolu i prodaju većih kompleksa. Sledeći ugao iste parcele: 81% jeftiniji. Faze izgradnje i sezonske varijante naručujete kroz istu scenu.",
+      "A complete aerial view of the plot: terrain, all buildings, roads, parking, vegetation and landscaping. Investor material for offers, planning permission and selling larger complexes. Next angle of the same plot: 81% cheaper. Construction phases and seasonal variants are ordered from the same scene.",
     highlight:
-      "Za masterplane, stambene komplekse, poslovne zone i razvojne projekte gde se prodaje lokacija, a ne samo objekat.",
+      "For master plans, residential complexes, business zones and development projects where you are selling the location, not just a building.",
     materials:
-      "Pošaljite nam CAD crteže cele parcele, pozicije objekata i plan uređenja.",
+      "Send us CAD drawings of the whole plot, building positions and the landscaping plan.",
     asset: "/artwork/expert-3d-site-plan.webp",
     detailAsset: "/artwork/detail-3d-site-plan.webp",
     detailBeforeAsset: "/artwork/problem-3d-site-plan-plan-before.webp",
     detailAfterAsset: "/artwork/problem-3d-site-plan-after.webp",
     detailBeforeAlt:
-      "2D situacioni plan stambenog kompleksa — raspored objekata, parkinga, zelenila i sadržaja",
+      "2D site plan of a residential complex — layout of buildings, parking, greenery and amenities",
     detailAfterAlt:
-      "3D situacioni prikaz stambenog kompleksa iz vazduha — objekti, parking i uređenje parcele",
+      "3D aerial site plan of the residential complex — buildings, parking and plot landscaping",
     philosophy:
-      "Cena pokriva izradu kompletnog terena, postavljanje objekata, puteva i pejzaža. Pošto je scena izgrađena, svaki sledeći ugao košta €65 (81% jeftinije), sezonska varijanta (zima/leto) €85, a prikaz po fazama izgradnje €95. Tako investitor ima vizuelni materijal za sve faze kampanje — fazu pre prodaje, fazu otvaranja prvog objekta itd. — iz jednog modela.",
+      "The price covers building the complete terrain and placing the buildings, roads and landscape. Once the scene is built, each additional angle costs €65 (81% cheaper), a seasonal variant (winter/summer) €85, and a construction-phase view €95. The developer gets visual material for every stage of the campaign — the pre-sale phase, the opening of the first building and so on — from a single model.",
     priceContext:
-      "€350 — cela parcela: teren + objekti + pejzaž + prvi prikaz iz vazduha.",
+      "€350 — the whole plot: terrain + buildings + landscape + the first aerial view.",
     forSegments: [
-      "Investitori i developeri",
-      "Urbanisti i studija za masterplan",
-      "Arhitekte (investitorske prezentacije)",
+      "Investors and developers",
+      "Urban planners and master plan studios",
+      "Architects (investor presentations)",
     ],
-    problemHeading: "2D situacioni plan deluje kao karta. 3D — pokazuje projekat.",
+    problemHeading: "A 2D site plan looks like a map. A 3D one shows the project.",
     problemBody:
-      "Fond, partner ili regulator otvori situacioni plan i vidi linije. Nije jasno gde je ulaz, kako se prilazi, šta je zajednički prostor a šta privatno. Razgovor staje na „mogu li da vidim render“.",
+      "A fund, partner or regulator opens the site plan and sees lines. It isn't clear where the entrance is, how the site is accessed, what is shared space and what is private. The conversation stalls at 'can I see a render'.",
     problemResolution:
-      "3D situacioni prikaz pokazuje istu parcelu sa svim objektima, pristupima, vegetacijom i kontekstom — investitor odgovara na pitanje pre nego što stigne. Materijal je istovremeno za regulatornu proceduru i za prodajnu kampanju.",
+      "A 3D site plan shows the same plot with all its buildings, access routes, vegetation and context — the developer answers the question before it is asked. The material serves the regulatory procedure and the sales campaign at the same time.",
     benefits: [
       {
         icon: "context",
-        title: "Cela parcela na jednoj slici",
-        body: "Investitor odgovara fondu sa jednim vizualom umesto sa fasciklom crteža. Konkurentska prednost kod investitorskih ponuda.",
+        title: "The whole plot in a single image",
+        body: "The developer answers the fund with one visual instead of a folder of drawings. A competitive advantage in investor offers.",
       },
       {
         icon: "trust",
-        title: "Materijal za dozvolu i marketing",
-        body: "Isti model služi i regulatornoj proceduri i prodajnim kampanjama — bez ponovnog modelovanja.",
+        title: "Material for permits and marketing",
+        body: "The same model serves both regulatory procedures and sales campaigns — no remodeling.",
       },
       {
         icon: "value",
-        title: "Više vizuala iz iste scene",
-        body: "€350 pokriva kompletan teren. Dodatni ugao €65, sezonska varijanta €85, prikaz po fazama izgradnje €95 — bez ponovnog modelovanja.",
+        title: "More visuals from the same scene",
+        body: "€350 covers the complete terrain. Additional angle €65, seasonal variant €85, construction-phase view €95 — no remodeling.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite CAD plan",
-        body: "CAD crteže cele parcele, pozicije i tipologije objekata, plan uređenja i kontekst okruženja (PDF/DWG).",
+        title: "Send the CAD plan",
+        body: "CAD drawings of the whole plot, building positions and typologies, the landscaping plan and the surrounding context (PDF/DWG).",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok najkasnije narednog radnog dana, bez skrivenih stavki.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline no later than the next working day, with no hidden items.",
       },
       {
-        title: "Modelovanje scene",
-        body: "Tim modeluje teren, objekte, puteve, parking i pejzaž. Prve nacrte šaljemo za 3–5 radnih dana.",
+        title: "Scene modeling",
+        body: "The team models the terrain, buildings, roads, parking and landscape. We send first drafts in 3-5 working days.",
       },
       {
-        title: "Isporuka i revizije",
-        body: "Dobijate finalni prikaz iz vazduha. Tri runde revizije su uključene u cenu — bez doplate.",
+        title: "Delivery and revisions",
+        body: "You receive the final aerial view. Three revision rounds are included in the price — no extra charge.",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €350?",
-        a: "Modelovanje cele parcele (teren, objekti, putevi, parking, vegetacija, pejzaž) i prvi finalni prikaz iz vazduha. Dodatni ugao iste parcele: €65 (81% popust). Sezonska varijanta (zima/leto): €85. Prikaz po fazama izgradnje: €95.",
+        q: "What exactly do I get for €350?",
+        a: "Modeling of the whole plot (terrain, buildings, roads, parking, vegetation, landscape) and the first final aerial view. Additional angle of the same plot: €65 (81% discount). Seasonal variant (winter/summer): €85. Construction-phase view: €95.",
       },
       {
-        q: "Razlika u odnosu na 3D prikaz ulice (€420)?",
-        a: "3D prikaz ulice (€420) je fokusiran na jedan objekat sa okruženjem (susedne kuće, ulica). Situacioni plan (€350) prikazuje celu parcelu sa svim objektima i razvojem — masterplan nivo, iz vazduha. Prvi je za pojedinačan objekat u kontekstu ulice, drugi za ceo kompleks odozgo.",
+        q: "How is it different from the 3D streetscape (€420)?",
+        a: "The 3D streetscape (€420) focuses on a single building with its surroundings (neighboring houses, the street). The site plan (€350) shows the whole plot with all its buildings and development — master plan level, from the air. The first is for an individual building in its street context, the second for a whole complex from above.",
       },
       {
-        q: "Da li se može koristiti za urbanističku dozvolu?",
-        a: "Da. Situacioni plan je standardni prilog u urbanističkim procedurama. 3D prikaz povećava razumljivost pred komisijom u odnosu na klasičan tehnički crtež.",
+        q: "Can it be used for planning permission?",
+        a: "Yes. A site plan is a standard annex in planning procedures. The 3D view is far easier for a committee to understand than a classic technical drawing.",
       },
       {
-        q: "Mogu li da naručim faze izgradnje?",
-        a: "Da. Prikaz po fazama izgradnje (€95) prikazuje istu parcelu u različitim fazama razvoja — pre, prva faza završena, druga faza u nazaku itd. Investitorska kampanja dobija vizuelni materijal za svaku fazu.",
+        q: "Can I order construction phases?",
+        a: "Yes. The construction-phase view (€95) shows the same plot at different stages of development — before construction, first phase complete, second phase underway and so on. The investor campaign gets visual material for every phase.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Prve nacrte šaljemo za 3–5 radnih dana od potvrde ponude i prijema CAD plana. Tri runde revizije su uključene.",
+        q: "How long does it take?",
+        a: "We send first drafts in 3-5 working days from estimate confirmation and receipt of the CAD plan. Three revision rounds are included.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "CAD crteže cele parcele (DWG), pozicije i tipologije objekata, plan uređenja i kontekst okruženja. Opciono: reference materijala fasade i pejzaža.",
+        q: "What do I need to send to get started?",
+        a: "CAD drawings of the whole plot (DWG), building positions and typologies, the landscaping plan and the surrounding context. Optional: facade material and landscape references.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-3d-site-plan-01.webp",
-        alt: "3D situacioni plan — stambeni kompleks sa 3 zgrade, zajedničkim prostorom i parking zonama",
+        alt: "3D site plan — residential complex with 3 buildings, a shared space and parking zones",
       },
       {
         src: "/artwork/portfolio-3d-site-plan-02.webp",
-        alt: "3D situacioni plan — mixed-use razvoj sa stambenim i poslovnim objektima",
+        alt: "3D site plan — mixed-use development with residential and commercial buildings",
       },
       {
         src: "/artwork/portfolio-3d-site-plan-03.webp",
-        alt: "3D situacioni plan — parcele sa porodičnim kućama i individualnim dvorištima",
+        alt: "3D site plan — plots with family houses and individual yards",
       },
       {
         src: "/artwork/portfolio-3d-site-plan-04.webp",
-        alt: "3D situacioni plan — prva faza izgradnje vidljiva, kasnije faze nagovešten kontekst",
+        alt: "3D site plan — first construction phase visible, later phases hinted as context",
       },
     ],
     variants: [
       {
         id: "site-plan-main",
-        title: "3D situacioni prikaz",
+        title: "3D site plan",
         basePrice: 350,
         priceLabel: "€350",
-        unitLabel: "kompletna parcela + prvi prikaz iz vazduha",
+        unitLabel: "complete plot + the first aerial view",
         description:
-          "Pun teren, svi objekti, putevi i pejzaž — investitorski materijal. Sledeći ugao iste parcele: €65.",
+          "Full terrain, all buildings, roads and landscape — investor material. Next angle of the same plot: €65.",
         included:
-          "Modelovanje cele parcele: teren, objekti, putevi, parking, vegetacija i pejzaž. Uključuje 1 finalni prikaz iz vazduha.",
+          "Modeling of the whole plot: terrain, buildings, roads, parking, vegetation and landscape. Includes 1 final aerial view.",
         addOns: [
-          "Dodatni ugao iste parcele: €65 (81% popust)",
-          "Sezonska varijanta (zima/leto): €85",
-          "Prikaz po fazama izgradnje (vidljivost po fazi): €95",
+          "Additional angle of the same plot: €65 (81% discount)",
+          "Seasonal variant (winter/summer): €85",
+          "Construction-phase view (visibility per phase): €95",
         ],
       },
     ],
@@ -2471,16 +2471,16 @@ export const SERVICES: Service[] = [
   {
     slug: "day-to-dusk",
     code: "day-to-dusk",
-    name: "Dnevni u noćni prikaz",
-    shortName: "Dnevni u noćni prikaz",
+    name: "Day-to-dusk",
+    shortName: "Day-to-dusk",
     category: "transformation",
     icon: "sun",
-    tagline: "Dnevni kadar dobija topao večernji utisak.",
+    tagline: "A daytime shot gets a warm evening feel.",
     description:
-      "Zamena neba, korekcija osvetljenja i topla atmosfera prozora — dnevna fotografija eksterijera postaje atraktivan večernji oglas. Za 10+ slika cena pada na €8/slika (20% popust).",
+      "Sky replacement, lighting correction and a warm glow in the windows — a daytime exterior photo becomes an attractive evening listing. For 10+ images the price drops to €8/image (20% discount).",
     highlight:
-      "Za agente nekretnina i investitore kada ista scena treba i u dnevnoj i u večernjoj verziji za marketing kampanju.",
-    materials: "Pošaljite nam dnevne fotografije eksterijera visoke rezolucije.",
+      "For real estate agents and developers when the same scene is needed in both a daytime and an evening version for a marketing campaign.",
+    materials: "Send us high-resolution daytime exterior photos.",
     asset: "/artwork/expert-day-to-dusk-after.webp",
     beforeAsset: "/artwork/expert-day-to-dusk-before.webp",
     afterAsset: "/artwork/expert-day-to-dusk-after.webp",
@@ -2488,117 +2488,117 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-day-to-dusk-facade-before.webp",
     detailAfterAsset: "/artwork/problem-day-to-dusk-facade-after.webp",
     detailBeforeAlt:
-      "Moderna kuća sa fasadom snimljena u suton pre prelaza u noćni prikaz",
+      "Modern house facade photographed in daylight before the day-to-dusk conversion",
     detailAfterAlt:
-      "Ista moderna kuća u noćnom prikazu — osvetljena fasada, topli enterijer i okolno osvetljenje pod zvezdanim nebom",
+      "The same modern house in the evening view — a lit facade, warm interiors and ambient lighting under a starry sky",
     outsourced: true,
     philosophy:
-      "Brza post-produkcija sa jasnom cenom po slici. Pakovanje 10+ slika: €8/slika (20% popust). Hitna isporuka u roku od 24h: +50%.",
-    priceContext: "€10 po slici · €8 po slici za pakovanje 10+.",
+      "Fast post-production with a clear per-image price. 10+ image package: €8/image (20% discount). Rush delivery within 24h: +50%.",
+    priceContext: "€10 per image · €8 per image for 10+ packages.",
     forSegments: [
-      "Agencije nekretnina (dramatic listing photo)",
-      "Investitori (kampanje sa dnevno/večernjim varijantama)",
-      "Fotografi nekretnina (post-produkcija)",
+      "Real estate agencies (dramatic listing photos)",
+      "Developers (campaigns with day/evening variants)",
+      "Real estate photographers (post-production)",
     ],
-    problemHeading: "Dnevna fotografija ne prodaje. Topla večernja — prodaje.",
+    problemHeading: "A daytime photo doesn't sell. A warm evening one does.",
     problemBody:
-      "Agent snimi objekat usred dana sa ravnim svetlom i plavim nebom — funkcionalna slika, ali bez emocije. Iste te fotografije izgledaju kao stotine drugih listinga. Klijent skroluje dalje.",
+      "An agent shoots the building in the middle of the day with flat light and a blue sky — a functional image, but without emotion. Those photos look like hundreds of other listings. The client scrolls on.",
     problemResolution:
-      "Zamena neba, dodavanje toplog osvetljenja prozora i fasadnog akcenta pretvara dnevnu sliku u dramatičan večernji prikaz. Listing dobija emotional pull bez ponovne fotografije ili filmskog termina.",
+      "Replacing the sky and adding warm window lighting and facade accents turns a daytime image into a dramatic evening view. The listing gets emotional pull without a reshoot or an evening appointment.",
     benefits: [
       {
         icon: "speed",
-        title: "Bez ponovne fotografije",
-        body: "Šaljete dnevnu fotografiju koju već imate. Bez čekanja na dusk-termin, bez fotografa-honorara po izlasku.",
+        title: "No reshoot",
+        body: "You send the daytime photo you already have. No waiting for a dusk slot, no photographer fees per outing.",
       },
       {
         icon: "value",
-        title: "€10 po slici, €8 za pakovanje",
-        body: "Jedna slika €10, pakovanje 10+ slika pada na €8 po slici (20% popust). Kompletna kampanja stana ili kuće za delić cene novog snimanja.",
+        title: "€10 per image, €8 in packages",
+        body: "One image €10; 10+ image packages drop to €8 per image (20% discount). A complete apartment or house campaign for a fraction of the cost of a new shoot.",
       },
       {
         icon: "trust",
-        title: "Listing koji se izdvaja",
-        body: "Dramatic dusk look u real-estate galeriji izdvaja oglas od ostalih i povećava broj klikova na listing.",
+        title: "A listing that stands out",
+        body: "A dramatic dusk look in a real estate gallery sets the listing apart from the rest and increases clicks.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite fotografije",
-        body: "Dnevne fotografije eksterijera visoke rezolucije (DSLR/mirrorless idealno, ne snimak telefonom pod uglom).",
+        title: "Send the photos",
+        body: "High-resolution daytime exterior photos (DSLR/mirrorless ideally, not an angled phone snapshot).",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu i rok najkasnije narednog radnog dana. Hitna isporuka u 24h dostupna uz +50% doplate.",
+        title: "Estimate confirmation",
+        body: "We send the price and timeline no later than the next working day. Rush 24h delivery is available for +50%.",
       },
       {
-        title: "Transformacija",
-        body: "Tim menja nebo, kolor-grejda osvetljenje i dodaje akcent svetla na prozorima i fasadi. Standardni rok 3–5 radnih dana.",
+        title: "Transformation",
+        body: "The team replaces the sky, color-grades the lighting and adds accent lights to windows and the facade. Standard timeline 3-5 working days.",
       },
       {
-        title: "Isporuka",
-        body: "Dobijate finalne slike spremne za listing i kampanje. Po želji uz uklanjanje neželjenih senki za €5 po slici.",
+        title: "Delivery",
+        body: "You receive final images ready for listings and campaigns. Optional removal of unwanted shadows for €5 per image.",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €10?",
-        a: "Transformacija jedne dnevne fotografije eksterijera u dramatičan večernji prikaz — uključuje zamenu neba i podešavanje osvetljenja. Uklanjanje neželjenih senki: €5 po slici. Pakovanje 10+ slika: €8 po slici (20% popust). Hitna isporuka u 24h: +50%.",
+        q: "What exactly do I get for €10?",
+        a: "Transformation of one daytime exterior photo into a dramatic evening view — including sky replacement and lighting adjustment. Unwanted shadow removal: €5 per image. 10+ image package: €8 per image (20% discount). Rush 24h delivery: +50%.",
       },
       {
-        q: "Da li deluje stvarno ili kao filter?",
-        a: "Naša verzija je fotorealistična — osvetljenje prozora, fasadne lampe i refleksije u staklu se uklapaju u realnu geometriju objekta. Nije Instagram filter; svaki light source se pažljivo postavi po fotografiji.",
+        q: "Does it look real or like a filter?",
+        a: "Our version is photorealistic — window lighting, facade lamps and glass reflections follow the building's real geometry. It is not an Instagram filter; every light source is placed carefully for each photo.",
       },
       {
-        q: "Mogu li da dobijem i dnevnu i večernju verziju iste fotografije?",
-        a: "Da. Originalna dnevna verzija ostaje neizmenjena, mi šaljemo dodatnu večernju. Pakovanja agencija često uključuju oba seta — dnevni za listing, večernji za društvene mreže i marketing kampanje.",
+        q: "Can I get both the daytime and the evening version of the same photo?",
+        a: "Yes. The original daytime version stays untouched; we deliver the evening one in addition. Agency packages often include both sets — daytime for the listing, evening for social media and marketing campaigns.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Standardni rok 3–5 radnih dana po slici. Hitna isporuka u 24h dostupna uz doplatu +50%. Pakovanja 10+ slika idu fazno po dogovoru.",
+        q: "How long does it take?",
+        a: "The standard timeline is 3-5 working days per image. Rush 24h delivery is available for +50%. 10+ image packages are delivered in stages by agreement.",
       },
       {
-        q: "Da li radite za agencije sa puno listinga?",
-        a: "Da. Pakovanje 10+ slika je €8 po slici (20% popust). Stalni agenti mogu da dogovore prioritet izrade i konzistentnu light-grading liniju kroz sve listinge.",
+        q: "Do you work with agencies with many listings?",
+        a: "Yes. The 10+ image package is €8 per image (20% discount). Regular agents can arrange production priority and a consistent light-grading line across all listings.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Dnevne fotografije eksterijera u dobroj rezoluciji (DSLR ili mirrorless, najmanje 3000px na dužoj strani). Telefonske fotografije pod uglom ne preporučujemo.",
+        q: "What do I need to send to get started?",
+        a: "Daytime exterior photos in good resolution (DSLR or mirrorless, at least 3000px on the longer side). We don't recommend angled phone photos.",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-day-to-dusk-01.webp",
-        alt: "Dnevni u noćni — porodična kuća sa osvetljenim prozorima i fasadnim svetlom",
+        alt: "Day-to-dusk — family house with lit windows and facade lighting",
       },
       {
         src: "/artwork/portfolio-day-to-dusk-02.webp",
-        alt: "Dnevni u noćni — stambena zgrada sa osvetljenim terasama u večernjem režimu",
+        alt: "Day-to-dusk — residential building with lit terraces in evening mode",
       },
       {
         src: "/artwork/portfolio-day-to-dusk-03.webp",
-        alt: "Dnevni u noćni — vila sa osvetljenim bazenom i terasom",
+        alt: "Day-to-dusk — villa with a lit pool and terrace",
       },
       {
         src: "/artwork/portfolio-day-to-dusk-04.webp",
-        alt: "Dnevni u noćni — poslovni objekat sa fasadnim osvetljenjem i osvetljenim ulazom",
+        alt: "Day-to-dusk — commercial building with facade lighting and a lit entrance",
       },
     ],
     variants: [
       {
         id: "day-to-dusk-main",
-        title: "Dnevni u noćni prikaz",
+        title: "Day-to-dusk",
         basePrice: 10,
         priceLabel: "€10",
-        unitLabel: "po slici",
+        unitLabel: "per image",
         description:
-          "Zamena neba, lighting i kolor grejding za jednu sliku. Pakovanje 10+: €8/sliku.",
+          "Sky replacement, lighting and color grading for one image. 10+ package: €8/image.",
         included:
-          "Transformacija jedne dnevne fotografije eksterijera u dramatičan večernji prikaz. Uključuje zamenu neba i podešavanje osvetljenja.",
+          "Transformation of one daytime exterior photo into a dramatic evening view. Includes sky replacement and lighting adjustment.",
         addOns: [
-          "Uklanjanje neželjenih senki: €5",
-          "Pakovanje 10+ slika: €8 po slici (20% popust)",
-          "Hitna isporuka u 24h: +50%",
+          "Unwanted shadow removal: €5",
+          "10+ image package: €8 per image (20% discount)",
+          "Rush delivery within 24h: +50%",
         ],
       },
     ],
@@ -2606,17 +2606,17 @@ export const SERVICES: Service[] = [
   {
     slug: "item-removal",
     code: "item-removal",
-    name: "Uklanjanje predmeta",
-    shortName: "Uklanjanje predmeta",
+    name: "Item removal",
+    shortName: "Item removal",
     category: "transformation",
     icon: "eraser",
-    tagline: "Čista fotografija prodaje brže od fotografije sa neredom.",
+    tagline: "A clean photo sells faster than a cluttered one.",
     description:
-      "Digitalno uklanjanje neželjenih predmeta sa fotografije: lične stvari, vozila, kablovi, nered, ili veći objekti uz rekonstrukciju pozadine. Brz upgrade oglasa bez fizičkog čišćenja prostora. Pakovanje 10+ slika: popust na količinu.",
+      "Digital removal of unwanted items from a photo: personal belongings, vehicles, cables, clutter, or larger objects with background reconstruction. A fast listing upgrade without physically clearing the space. 10+ image package: volume discount.",
     highlight:
-      "Za agente nekretnina i fotografe kada se prostor mora prikazati čist, a fizičko sređivanje nije isplativo ili izvodljivo.",
+      "For real estate agents and photographers when a space has to be shown clean and physical tidying isn't cost-effective or feasible.",
     materials:
-      "Pošaljite nam fotografije i jasno označite predmete koje želite da uklonimo.",
+      "Send us the photos and clearly mark the items you want removed.",
     asset: "/artwork/expert-uklanjanje-elemenata-after.webp",
     beforeAsset: "/artwork/expert-uklanjanje-elemenata-before.webp",
     afterAsset: "/artwork/expert-uklanjanje-elemenata-after.webp",
@@ -2624,115 +2624,115 @@ export const SERVICES: Service[] = [
     detailBeforeAsset: "/artwork/problem-item-removal-room-before.webp",
     detailAfterAsset: "/artwork/problem-item-removal-room-after.webp",
     detailBeforeAlt:
-      "Soba sa lusterom, stolicama i predmetima pre digitalnog uklanjanja predmeta",
+      "Room with a chandelier, chairs and belongings before digital item removal",
     detailAfterAlt:
-      "Ista soba posle uklanjanja predmeta — ispražnjen prostor bez nameštaja i dekoracije",
+      "The same room after item removal — an emptied space without furniture or decoration",
     outsourced: true,
     philosophy:
-      "Jednostavno uklanjanje (sitnice, lične stvari): €12. Kompleksno (veliki objekat sa rekonstrukcijom pozadine): €25. Pakovanje 10+ slika: €10 jednostavno / €20 kompleksno po slici.",
+      "Simple removal (small items, personal belongings): €12. Complex (a large object with background reconstruction): €25. 10+ image package: €10 simple / €20 complex per image.",
     priceContext:
-      "€12 jednostavno / €25 kompleksno · pakovanje 10+: €10 / €20.",
+      "€12 simple / €25 complex · 10+ package: €10 / €20.",
     forSegments: [
-      "Agencije nekretnina (čist listing photo)",
-      "Fotografi (post-produkcija praznih jedinica)",
-      "Investitori (marketing materijali bez nereda)",
+      "Real estate agencies (clean listing photos)",
+      "Photographers (post-production of empty units)",
+      "Developers (clutter-free marketing materials)",
     ],
-    problemHeading: "Nered na fotografiji odvodi pažnju. Čist kadar — zadržava.",
+    problemHeading: "Clutter in a photo steals attention. A clean frame keeps it.",
     problemBody:
-      "Klijent ne sređuje stan pre fotograf-termina. Lične stvari, kablovi, kutije, parkirani autobusi pred fasadom — sve to ulazi u listing i odvlači pažnju kupca sa prostora. Fizičko sređivanje nije isplativo, fotograf nema vremena da čeka.",
+      "The client doesn't tidy the apartment before the photo shoot. Personal belongings, cables, boxes, vehicles parked in front of the facade — it all ends up in the listing and pulls the buyer's attention away from the space. Physical tidying isn't cost-effective, and the photographer has no time to wait.",
     problemResolution:
-      "Digitalno uklanjamo nered i nepotrebne objekte sa fotografije, sa rekonstrukcijom pozadine gde je potrebno. Listing izgleda čist bez ijednog sata fizičkog rada na lokaciji.",
+      "We digitally remove clutter and unwanted objects from the photo, reconstructing the background where needed. The listing looks clean without a single hour of physical work on site.",
     benefits: [
       {
         icon: "speed",
-        title: "Bez fizičkog sređivanja",
-        body: "Fotograf snima šta zatekne, vi šaljete sliku — mi uklanjamo nered. Ne čekate da neko isprazni stan, ne organizujete dodatni termin.",
+        title: "No physical tidying",
+        body: "The photographer shoots what they find, you send the image — we remove the clutter. No waiting for someone to empty the apartment, no extra appointment to organize.",
       },
       {
         icon: "value",
-        title: "Dva tier-a po složenosti",
-        body: "Sitnice i lične stvari: €12. Veliki objekat sa rekonstrukcijom pozadine: €25. Pakovanje 10+ slika spušta na €10 / €20 po slici.",
+        title: "Two tiers by complexity",
+        body: "Small items and personal belongings: €12. A large object with background reconstruction: €25. 10+ image packages drop to €10 / €20 per image.",
       },
       {
         icon: "trust",
-        title: "Pozadina koja izgleda stvarno",
-        body: "Kod kompleksnog uklanjanja rekonstruišemo pozadinu (zid, pločice, parket) tako da rezultat deluje kao da predmet nikad nije bio tu.",
+        title: "A background that looks real",
+        body: "For complex removal we reconstruct the background (wall, tiles, parquet) so the result looks like the item was never there.",
       },
     ],
     processSteps: [
       {
-        title: "Pošaljite fotografije",
-        body: "Fotografije sa jasno označenim predmetima koje želite da uklonimo (komentar u email-u ili screenshot sa crtežom).",
+        title: "Send the photos",
+        body: "Photos with the items you want removed clearly marked (a comment in the email or a screenshot with markings).",
       },
       {
-        title: "Potvrda ponude",
-        body: "Šaljemo cenu (jednostavno €12 ili kompleksno €25) i rok najkasnije narednog radnog dana.",
+        title: "Estimate confirmation",
+        body: "We send the price (simple €12 or complex €25) and the timeline no later than the next working day.",
       },
       {
-        title: "Uklanjanje",
-        body: "Tim uklanja označene predmete i rekonstruiše pozadinu gde je potrebno. Standardni rok 3–5 radnih dana.",
+        title: "Removal",
+        body: "The team removes the marked items and reconstructs the background where needed. Standard timeline 3-5 working days.",
       },
       {
-        title: "Isporuka",
-        body: "Dobijate finalne slike spremne za listing. Tri runde revizije su uključene.",
+        title: "Delivery",
+        body: "You receive final images ready for the listing. Three revision rounds are included.",
       },
     ],
     faqs: [
       {
-        q: "Šta tačno dobijam za €12?",
-        a: "Digitalno uklanjanje sitnica i ličnih stvari sa jedne fotografije. Kompleksno uklanjanje (veliki objekat sa rekonstrukcijom pozadine): €25. Dodatna slika — jednostavno: €8 (33% popust). Dodatna slika — kompleksno: €18 (28% popust). Pakovanje 10+: €10 / €20 po slici.",
+        q: "What exactly do I get for €12?",
+        a: "Digital removal of small items and personal belongings from one photo. Complex removal (a large object with background reconstruction): €25. Additional image — simple: €8 (33% discount). Additional image — complex: €18 (28% discount). 10+ package: €10 / €20 per image.",
       },
       {
-        q: "Kako da znam da li je moj slučaj jednostavan ili kompleksan?",
-        a: "Jednostavno: lične stvari, magazini, kablovi, šolje — predmeti gde pozadina (zid, sto, pod) ostaje vidljiva i lako se zameni. Kompleksno: veliki aparati, parkirana vozila, kuhinjski elementi — gde se pozadina rekonstruiše iz nule. Pošaljite fotografiju i mi potvrdimo tier u ponudi.",
+        q: "How do I know if my case is simple or complex?",
+        a: "Simple: personal belongings, magazines, cables, mugs — items where the background (wall, table, floor) stays visible and is easy to patch. Complex: large appliances, parked vehicles, kitchen units — where the background is reconstructed from scratch. Send the photo and we confirm the tier in the estimate.",
       },
       {
-        q: "Da li rekonstrukcija pozadine deluje stvarno?",
-        a: "Da. Kombinujemo kontekst iz iste fotografije (svetlo, perspektiva) sa rekonstrukcijom materijala (pločice, parket, zid) tako da rezultat nema 'pečate' uklanjanja. Tri runde revizije su uključene ako neki detalj nije tačan.",
+        q: "Does the background reconstruction look real?",
+        a: "Yes. We combine context from the same photo (light, perspective) with material reconstruction (tiles, parquet, wall) so the result carries no removal 'stamps'. Three revision rounds are included if any detail isn't right.",
       },
       {
-        q: "Koliko traje izrada?",
-        a: "Standardni rok 3–5 radnih dana po slici. Pakovanja 10+ slika idu fazno po dogovoru — prve slike pre, ostatak po terminu.",
+        q: "How long does it take?",
+        a: "The standard timeline is 3-5 working days per image. 10+ image packages are delivered in stages by agreement — the first images earlier, the rest on schedule.",
       },
       {
-        q: "Šta dostavljam da biste počeli?",
-        a: "Fotografije u dobroj rezoluciji i jasno označavanje predmeta koje želite da uklonimo (komentar u email-u, screenshot sa crtežom, ili lista u tekstu).",
+        q: "What do I need to send to get started?",
+        a: "Photos in good resolution and clear marking of the items you want removed (a comment in the email, a screenshot with markings, or a list in text).",
       },
     ],
     portfolioImages: [
       {
         src: "/artwork/portfolio-uklanjanje-elemenata-01.webp",
-        alt: "Uklanjanje predmeta — dnevna soba sređena za listing fotografiju",
+        alt: "Item removal — living room tidied for the listing photo",
       },
       {
         src: "/artwork/portfolio-uklanjanje-elemenata-02.webp",
-        alt: "Uklanjanje predmeta — kuhinja sa rekonstruisanom pozadinom posle uklanjanja aparata",
+        alt: "Item removal — kitchen with a reconstructed background after appliance removal",
       },
       {
         src: "/artwork/portfolio-uklanjanje-elemenata-03.webp",
-        alt: "Uklanjanje predmeta — kupatilo sa praznim policama spremno za fotografiju",
+        alt: "Item removal — bathroom with empty shelves ready for the photo",
       },
       {
         src: "/artwork/portfolio-uklanjanje-elemenata-04.webp",
-        alt: "Uklanjanje predmeta — spoljna fasada bez parkiranog vozila i vidljivih kablova",
+        alt: "Item removal — exterior facade without the parked vehicle and visible cables",
       },
     ],
     variants: [
       {
         id: "item-removal-main",
-        title: "Uklanjanje predmeta",
+        title: "Item removal",
         basePrice: 12,
         priceLabel: "€12",
-        unitLabel: "po slici (jednostavno)",
+        unitLabel: "per image (simple)",
         description:
-          "€12 jednostavno (sitnice, lične stvari) / €25 kompleksno (veliki objekti). Pakovanje 10+: popust na količinu.",
+          "€12 simple (small items, personal belongings) / €25 complex (large objects). 10+ package: volume discount.",
         included:
-          "Digitalno uklanjanje predmeta, nereda ili ličnih stvari sa jedne fotografije, uz rekonstrukciju pozadine.",
+          "Digital removal of items, clutter or personal belongings from one photo, with background reconstruction.",
         addOns: [
-          "Kompleksno uklanjanje (rekonstrukcija pozadine): €25",
-          "Dodatna slika — jednostavno: €8 (33% popust)",
-          "Dodatna slika — kompleksno: €18 (28% popust)",
-          "Pakovanje 10+ slika: €10 jednostavno / €20 kompleksno",
+          "Complex removal (background reconstruction): €25",
+          "Additional image — simple: €8 (33% discount)",
+          "Additional image — complex: €18 (28% discount)",
+          "10+ image package: €10 simple / €20 complex",
         ],
       },
     ],
@@ -2784,22 +2784,22 @@ export function buildServiceImageAlt(
 
   switch (role) {
     case "before":
-      return `${service.name} - ulazni kadar pre vizuelne obrade`;
+      return `${service.name} - source image before visual editing`;
     case "after":
-      return `${service.name} - finalni vizual posle obrade`;
+      return `${service.name} - final visual after editing`;
     case "problem":
-      return `${service.name} - primer problema i rešenja za ${category}`;
+      return `${service.name} - problem and solution example for ${category}`;
     case "listing":
-      return `${service.name} - primer usluge iz kategorije ${category}`;
+      return `${service.name} - service example from the ${category} category`;
     case "portfolio":
-      return `${service.name} - portfolio primer realizovanog vizuala`;
+      return `${service.name} - portfolio example of a delivered visual`;
     case "hero":
       return `${service.name} - ${service.tagline}`;
     case "og":
       return `${service.name} - Elegant Render ${category}`;
     case "detail":
     default:
-      return `${service.name} - primer arhitektonske vizuelizacije Elegant Render`;
+      return `${service.name} - architectural visualization example by Elegant Render`;
   }
 }
 

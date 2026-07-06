@@ -16,7 +16,7 @@ function getBaseUrl(): string {
 function splitName(name: string) {
   const parts = name.trim().split(/\s+/);
   return {
-    firstName: parts[0] || "Klijent",
+    firstName: parts[0] || "Client",
     lastName: parts.slice(1).join(" "),
   };
 }
@@ -67,24 +67,24 @@ export async function syncProjectInquiryLead(
               )} MB)`,
           )
           .join("\n")
-      : "Nema priloženih fajlova.";
+      : "No files attached.";
 
   const comments = [
     `Admin: ${adminUrl}`,
-    `Upit ID: ${inquiry.id}`,
-    inquiry.source ? `Izvor: ${inquiry.source}` : null,
-    inquiry.sourcePath ? `Putanja: ${inquiry.sourcePath}` : null,
+    `Inquiry ID: ${inquiry.id}`,
+    inquiry.source ? `Source: ${inquiry.source}` : null,
+    inquiry.sourcePath ? `Path: ${inquiry.sourcePath}` : null,
     inquiry.sourceLabel ? `CTA: ${inquiry.sourceLabel}` : null,
-    inquiry.serviceType ? `Tip usluge: ${inquiry.serviceType}` : null,
-    inquiry.budget ? `Budžet: ${inquiry.budget}` : null,
-    inquiry.deadline ? `Rok: ${inquiry.deadline}` : null,
+    inquiry.serviceType ? `Service type: ${inquiry.serviceType}` : null,
+    inquiry.budget ? `Budget: ${inquiry.budget}` : null,
+    inquiry.deadline ? `Deadline: ${inquiry.deadline}` : null,
     "",
-    "Opis:",
+    "Description:",
     inquiry.message,
     "",
-    "Fajlovi:",
+    "Files:",
     fileLines,
-    quoteSnapshot ? `\nSnapshot ponude:\n${quoteSnapshot}` : null,
+    quoteSnapshot ? `\nEstimate snapshot:\n${quoteSnapshot}` : null,
   ]
     .filter((line): line is string => line !== null)
     .join("\n");
@@ -94,7 +94,7 @@ export async function syncProjectInquiryLead(
       "crm.lead.add",
       {
         fields: {
-          TITLE: `Elegant Render upit — ${inquiry.contactName}`,
+          TITLE: `Elegant Render inquiry — ${inquiry.contactName}`,
           NAME: firstName,
           LAST_NAME: lastName,
           COMPANY_TITLE: inquiry.company ?? undefined,

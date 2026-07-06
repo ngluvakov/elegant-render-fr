@@ -4,7 +4,7 @@
  * a list of seed `OrderItem` rows.
  *
  * The snapshot is a frozen view of what the customer saw on the
- * "Preuzmite moju ponudu" surface (configurator → quote-summary). It
+ * "Prepare my estimate" surface (configurator → quote-summary). It
  * carries productId + productLabel + totalEur per line — enough for
  * us to recreate the cart shape on the order side. Addon details
  * (categoryLabel-level extras, durationDiscount, configJson) are
@@ -15,7 +15,7 @@
  * today's catalog (the snapshot doesn't carry it). If catalog
  * prices have moved, totalEur and basePriceEur can disagree —
  * that's intentional, admin can re-price by re-adding via the
- * configurator before issuing the predračun.
+ * configurator before issuing the proforma.
  */
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 

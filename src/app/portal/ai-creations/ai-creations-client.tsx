@@ -200,7 +200,7 @@ export function AiCreationsClient({ initialState }: Props) {
             }
             className="mt-1 h-9 w-full rounded-lg border border-border/40 bg-background px-3 text-sm font-medium text-foreground outline-none focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-ring/50"
           >
-            <option value="all">All obrade</option>
+            <option value="all">All edit types</option>
             {AI_EDIT_TYPES.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.label}

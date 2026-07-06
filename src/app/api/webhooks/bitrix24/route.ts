@@ -4,10 +4,10 @@ import { timingSafeEquals } from "@/lib/cron-auth";
 import { handleDealUpdate } from "@/server/bitrix/inbound";
 
 export async function POST(request: Request) {
-  // Verify auth token. Secret stiže kroz query string jer Bitrix24
-  // outbound webhook ne šalje custom headere — prelazak na header
-  // zahteva izmenu na Bitrix strani (backlog). Fail-closed kad env
-  // var nije podešen.
+  // Verify auth token. The secret arrives through the query string because
+  // Bitrix24 outbound webhooks cannot send custom headers — moving to a
+  // header requires a change on the Bitrix side (backlog). Fail-closed when
+  // the env var is not set.
   const expectedSecret = process.env.BITRIX24_OUTBOUND_SECRET;
   const { searchParams } = new URL(request.url);
   const secret = searchParams.get("secret");
@@ -32,8 +32,8 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    // 200 i dalje (Bitrix bi inače beskonačno ponavljao), ali greška
-    // mora biti vidljiva ljudima — ranije je išla samo u console.
+    // Still return 200 (Bitrix would otherwise retry forever), but the error
+    // must be visible to humans — it used to go only to the console.
     Sentry.captureException(err, {
       tags: { integration: "bitrix24", surface: "webhook" },
     });

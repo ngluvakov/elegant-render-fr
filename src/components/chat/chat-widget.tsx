@@ -32,7 +32,7 @@ const STORAGE_KEY_SESSION_ID = "er-chat-session-id";
 const WELCOME_MESSAGE: ChatMessage = {
   role: "assistant",
   content:
-    "Zdravo! Ja sam Elegant Render asistent. Opišite mi vaš projekat ili pitajte šta vas zanima — pomoći ću vam da izaberete pravu uslugu.",
+    "Hi, I'm the Elegant Render assistant. Describe your project or ask me anything — I'll help you choose the right service.",
 };
 
 function loadMessages(): ChatMessage[] {
@@ -112,7 +112,7 @@ export function ChatWidget() {
 
   // Lift the FAB + tip bubble above page-level fixed mobile bars so they don't
   // overlap: the AI Studio credit dock (lg:hidden, always present) and the
-  // cenovnik MobileQuoteBar (xl:hidden, only when the cart has items). Driven
+  // pricing MobileQuoteBar (xl:hidden, only when the cart has items). Driven
   // by the injected guide context, not pathname, so it stays route-agnostic.
   const liftForDock = guideContext?.page === "ai_studio";
   const liftForQuoteBar =
@@ -218,7 +218,7 @@ export function ChatWidget() {
         });
 
         if (!res.ok || !res.body) {
-          throw new Error("Greška u komunikaciji");
+          throw new Error("Communication error");
         }
 
         const reader = res.body.getReader();
@@ -245,7 +245,7 @@ export function ChatWidget() {
             updated[updated.length - 1] = {
               role: "assistant",
               content:
-                "Izvinite, došlo je do greške. Pokušajte ponovo ili nas kontaktirajte na [Kontakt](/contact) stranici.",
+                "Sorry, something went wrong. Please try again or reach us via the [Contact](/contact) page.",
             };
             return updated;
           });
@@ -272,7 +272,7 @@ export function ChatWidget() {
             ? "bg-foreground text-background"
             : "bg-accent text-white",
         )}
-        aria-label={open ? "Zatvori asistenta" : "Otvori asistenta"}
+        aria-label={open ? "Close assistant" : "Open assistant"}
       >
         {open ? (
           <X className="h-5 w-5" />
@@ -302,7 +302,7 @@ export function ChatWidget() {
             )}
           >
             {missingItems.length > 0
-              ? "Nedostaje za obradu"
+              ? "Needed before processing"
               : activeTip?.label ?? "AI Studio"}
           </p>
           {activeTip && (
@@ -332,7 +332,7 @@ export function ChatWidget() {
               type="button"
               onClick={dismissGuide}
               className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-              aria-label="Sakrij savete asistenta"
+              aria-label="Hide assistant tips"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -350,10 +350,10 @@ export function ChatWidget() {
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">
-                Elegant Render asistent
+                Elegant Render assistant
               </p>
               <p className="text-[0.72rem] text-muted-foreground">
-                Pomoć pri izboru usluge
+                Help choosing a service
               </p>
             </div>
           </div>

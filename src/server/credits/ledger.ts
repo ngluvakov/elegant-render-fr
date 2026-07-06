@@ -1,12 +1,13 @@
 /**
- * ledger.ts — interni AI-kredit ledger (expire/spend/refund).
+ * ledger.ts — internal AI-credit ledger (expire/spend/refund).
  *
- * Namerno OBIČAN server modul, ne "use server": ove funkcije primaju
- * proizvoljan userId/units i nemaju sopstvenu auth proveru, pa ne smeju
- * biti registrovane kao javno pozivljivi server-action endpointi.
- * Pozivaju ih isključivo autorizovane akcije (ai-studio.ts) i server
- * hook-ovi. Kupovinu kredita (applyPurchasedAiCreditsForOrder) i dalje
- * drži actions/ai-credits.ts jer je deo platnog toka.
+ * Deliberately a PLAIN server module, not "use server": these functions
+ * accept an arbitrary userId/units and have no auth check of their own,
+ * so they must not be registered as publicly callable server-action
+ * endpoints. They are called exclusively by authorized actions
+ * (ai-studio.ts) and server hooks. Credit purchase
+ * (applyPurchasedAiCreditsForOrder) stays in actions/ai-credits.ts
+ * because it is part of the payment flow.
  */
 import { prisma } from "@/lib/db";
 import { recordUserActivity } from "@/lib/user-activity";
@@ -45,7 +46,7 @@ export async function expireAiCreditsIfNeeded(userId: string) {
         type: "expiry",
         units: -user.aiCreditBalanceUnits,
         balanceAfterUnits: 0,
-        note: "AI Studio krediti istekli",
+        note: "AI Studio credits expired",
       },
     }),
   ]);
@@ -86,9 +87,9 @@ export async function spendAiCreditUnits({
         where: { id: userId },
         select: { aiCreditBalanceUnits: true },
       });
-      if (!user) return { error: "Korisnik nije pronađen." };
+      if (!user) return { error: "User not found." };
       return {
-        error: "Nemate dovoljno AI kredita.",
+        error: "You do not have enough AI credits.",
         balanceAfterUnits: user.aiCreditBalanceUnits,
       };
     }
@@ -97,7 +98,7 @@ export async function spendAiCreditUnits({
       where: { id: userId },
       select: { aiCreditBalanceUnits: true },
     });
-    if (!updated) return { error: "Korisnik nije pronađen." };
+    if (!updated) return { error: "User not found." };
 
     await tx.aiCreditTransaction.create({
       data: {
@@ -106,7 +107,7 @@ export async function spendAiCreditUnits({
         type: "spend",
         units: -units,
         balanceAfterUnits: updated.aiCreditBalanceUnits,
-        note: note ?? "AI Studio obrada",
+        note: note ?? "AI Studio generation",
       },
     });
 
@@ -153,7 +154,7 @@ export async function refundAiCreditUnits({
         type: "refund",
         units,
         balanceAfterUnits: user.aiCreditBalanceUnits,
-        note: note ?? "AI Studio refund za neuspelu obradu",
+        note: note ?? "AI Studio refund for a failed generation",
       },
     });
 

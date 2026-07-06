@@ -1,6 +1,6 @@
 /**
  * dtd-config.ts — Per-item config + vocabularies for the dtd-image
- * product (Dan u noć / Day-to-Dusk). Drives engine add-on quantities
+ * product (Day-to-Dusk). Drives engine add-on quantities
  * for `dtd-volume` (photos beyond the first), `dtd-shadow` (one-time
  * shadow removal toggle), and `dtd-rush` (50% rush surcharge).
  */
@@ -8,10 +8,10 @@
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const DTD_SKY_MOODS = [
-  { id: "golden-hour", label: "Zlatni sat (Toplo / Zalazak)" },
-  { id: "dramatic-dusk", label: "Dramatičan sumrak (Ljubičasto / Plavo)" },
-  { id: "clear-night", label: "Vedra noć (Tamno plavo, sa zvezdama)" },
-  { id: "overcast-dusk", label: "Oblačan sumrak (Moody)" },
+  { id: "golden-hour", label: "Golden hour (warm / sunset)" },
+  { id: "dramatic-dusk", label: "Dramatic dusk (purple / blue)" },
+  { id: "clear-night", label: "Clear night (dark blue, with stars)" },
+  { id: "overcast-dusk", label: "Overcast dusk (moody)" },
 ] as const;
 export type DtdSkyMoodId = (typeof DTD_SKY_MOODS)[number]["id"];
 export const DTD_SKY_MOOD_IDS = DTD_SKY_MOODS.map(
@@ -19,9 +19,9 @@ export const DTD_SKY_MOOD_IDS = DTD_SKY_MOODS.map(
 ) as DtdSkyMoodId[];
 
 export const DTD_INTERIOR_LIGHTS = [
-  { id: "warm-yellow", label: "Toplo žuto svetlo (Cozy)" },
-  { id: "neutral-white", label: "Neutralno belo svetlo" },
-  { id: "cool", label: "Hladno svetlo (moderno)" },
+  { id: "warm-yellow", label: "Warm yellow light (cozy)" },
+  { id: "neutral-white", label: "Neutral white light" },
+  { id: "cool", label: "Cool light (modern)" },
 ] as const;
 export type DtdInteriorLightId =
   (typeof DTD_INTERIOR_LIGHTS)[number]["id"];
@@ -30,9 +30,9 @@ export const DTD_INTERIOR_LIGHT_IDS = DTD_INTERIOR_LIGHTS.map(
 ) as DtdInteriorLightId[];
 
 export const DTD_COLOR_GRADES = [
-  { id: "natural", label: "Prirodno (samo zamena neba)" },
-  { id: "cinematic", label: "Filmski (pojačan kontrast i boje)" },
-  { id: "warm", label: "Toplo (naglašen zalazak sunca)" },
+  { id: "natural", label: "Natural (sky replacement only)" },
+  { id: "cinematic", label: "Cinematic (boosted contrast and colors)" },
+  { id: "warm", label: "Warm (emphasized sunset)" },
 ] as const;
 export type DtdColorGradeId = (typeof DTD_COLOR_GRADES)[number]["id"];
 export const DTD_COLOR_GRADE_IDS = DTD_COLOR_GRADES.map(
@@ -42,10 +42,10 @@ export const DTD_COLOR_GRADE_IDS = DTD_COLOR_GRADES.map(
 // ─── Boolean group ────────────────────────────────────────────────────
 
 export const DTD_EXTERIOR_LIGHTING_OPTIONS = [
-  { key: "street", label: "Upali uličnu rasvetu" },
-  { key: "facade", label: "Upali svetla na fasadi" },
-  { key: "pool", label: "Upali svetla u bazenu / dvorištu" },
-  { key: "carHeadlights", label: "Upali farove na automobilima" },
+  { key: "street", label: "Turn on street lighting" },
+  { key: "facade", label: "Turn on facade lights" },
+  { key: "pool", label: "Turn on pool / yard lights" },
+  { key: "carHeadlights", label: "Turn on car headlights" },
 ] as const;
 export type DtdExteriorLighting = {
   street: boolean;
@@ -77,7 +77,7 @@ export function defaultExteriorLighting(): DtdExteriorLighting {
 
 export function defaultDtdConfig(): DtdConfig {
   return {
-    projectName: "Nekretnina 1",
+    projectName: "Property 1",
     photoCount: 1,
     skyMood: "golden-hour",
     exteriorLighting: defaultExteriorLighting(),
@@ -122,7 +122,7 @@ export function sanitizeDtdConfig(c: DtdConfig): DtdConfig {
     "golden-hour";
   return {
     projectName:
-      String(c.projectName ?? "").trim().slice(0, 100) || "Nekretnina 1",
+      String(c.projectName ?? "").trim().slice(0, 100) || "Property 1",
     photoCount: clampCount(c.photoCount, 1, 200),
     skyMood,
     ...((d) => (d ? { description: d } : {}))(

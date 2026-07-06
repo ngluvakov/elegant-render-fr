@@ -44,13 +44,13 @@ function sanitizeInteriorFloors(input: unknown): InteriorFloor[] | undefined {
     if (!f || typeof f !== "object") continue;
     const ro = f as Record<string, unknown>;
     const id = typeof ro.id === "string" ? ro.id : makeFloorId();
-    const name = typeof ro.name === "string" ? ro.name : `Sprat ${out.length + 1}`;
+    const name = typeof ro.name === "string" ? ro.name : `Floor ${out.length + 1}`;
     const roomsInput = Array.isArray(ro.rooms) ? ro.rooms : [];
     const rooms: InteriorRoom[] = [];
     for (const r of roomsInput) {
       if (!r || typeof r !== "object") continue;
       const rr = r as Record<string, unknown>;
-      const roomName = typeof rr.name === "string" ? rr.name : "Prostorija";
+      const roomName = typeof rr.name === "string" ? rr.name : "Room";
       const cameras =
         typeof rr.cameras === "number" && Number.isFinite(rr.cameras)
           ? Math.max(1, Math.floor(rr.cameras))
@@ -71,13 +71,13 @@ function sanitizeTour360Config(input: unknown): Tour360Config | undefined {
     if (!f || typeof f !== "object") continue;
     const fo = f as Record<string, unknown>;
     const id = typeof fo.id === "string" ? fo.id : makeFloorId();
-    const name = typeof fo.name === "string" ? fo.name : `Sprat ${floors.length + 1}`;
+    const name = typeof fo.name === "string" ? fo.name : `Floor ${floors.length + 1}`;
     const roomsInput = Array.isArray(fo.rooms) ? fo.rooms : [];
     const rooms: Tour360Room[] = [];
     for (const r of roomsInput) {
       if (!r || typeof r !== "object") continue;
       const rr = r as Record<string, unknown>;
-      const roomName = typeof rr.name === "string" ? rr.name : "Prostorija";
+      const roomName = typeof rr.name === "string" ? rr.name : "Room";
       const hotspots =
         typeof rr.hotspots === "number" && Number.isFinite(rr.hotspots)
           ? Math.max(0, Math.floor(rr.hotspots))
@@ -125,9 +125,9 @@ function migrateLegacyInterior(item: QuoteItem): QuoteItem {
   );
   const firstFloor: InteriorFloor = {
     id: makeFloorId(),
-    name: "Sprat 1",
+    name: "Floor 1",
     rooms: Array.from({ length: Math.max(0, Math.floor(roomQty)) }, (_, i) => ({
-      name: `Prostorija ${i + 1}`,
+      name: `Room ${i + 1}`,
       cameras: camerasPerRoom,
     })),
   };
@@ -154,9 +154,9 @@ function migrateLegacyTour360(item: QuoteItem): QuoteItem {
   );
   const firstFloor: Tour360Floor = {
     id: makeFloorId(),
-    name: "Sprat 1",
+    name: "Floor 1",
     rooms: Array.from({ length: Math.max(0, Math.floor(roomQty)) }, (_, i) => ({
-      name: `Prostorija ${i + 1}`,
+      name: `Room ${i + 1}`,
       hotspots: hotspotsPerRoom,
       staticCameras: staticPerRoom,
     })),
@@ -233,7 +233,7 @@ function sanitizeItems(input: unknown): QuoteItem[] | null {
 export async function saveQuote(items: unknown): Promise<SaveQuoteResult> {
   const sanitized = sanitizeItems(items);
   if (!sanitized) {
-    return { error: "Ponuda je prazna ili neispravna." };
+    return { error: "The estimate is empty or invalid." };
   }
 
   const session = await auth();
@@ -253,7 +253,7 @@ export async function saveQuote(items: unknown): Promise<SaveQuoteResult> {
 
 export async function loadQuote(token: unknown): Promise<LoadQuoteResult> {
   if (typeof token !== "string" || !token) {
-    return { error: "Nevažeći token." };
+    return { error: "Invalid token." };
   }
 
   const quote = await prisma.quote.findUnique({
@@ -262,15 +262,15 @@ export async function loadQuote(token: unknown): Promise<LoadQuoteResult> {
   });
 
   if (!quote) {
-    return { error: "Ponuda ne postoji ili je istekla." };
+    return { error: "The estimate does not exist or has expired." };
   }
   if (quote.expiresAt < new Date()) {
-    return { error: "Ova ponuda je istekla." };
+    return { error: "This estimate has expired." };
   }
 
   const items = sanitizeItems(quote.itemsJson);
   if (!items) {
-    return { error: "Sadržaj ponude je oštećen." };
+    return { error: "The estimate content is corrupted." };
   }
 
   // Stamp openedAt (best-effort; ignore failures)

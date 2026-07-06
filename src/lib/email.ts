@@ -3,7 +3,7 @@
  *
  * Exports sendVerificationEmail, sendPasswordResetEmail,
  * sendOrderConfirmationEmail, sendPortalAccessEmail, and the VR
- * inquiry pair — all branded HTML templates in Serbian.
+ * inquiry pair — all branded HTML templates in English.
  *
  * Used by: server/actions/auth, server/actions/checkout,
  *          server/actions/payment, server/actions/vr-inquiry
@@ -89,21 +89,21 @@ export async function sendVerificationEmail(
 
   await send({
     to,
-    subject: "Potvrdite vašu email adresu — Elegant Render",
+    subject: "Confirm your email address — Elegant Render",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Dobrodošli u Elegant Render</h2>
+        <h2 style="color: #1C1A19;">Welcome to Elegant Render</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Kliknite na dugme ispod da potvrdite vašu email adresu i aktivirate nalog.
+          Click the button below to confirm your email address and activate your account.
         </p>
         <a href="${url}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Potvrdite email
+          Confirm email
         </a>
         <p style="color: #9ca3af; font-size: 13px;">
-          Ako niste vi kreirali nalog, ignorišite ovaj email.
+          If you did not create an account, you can ignore this email.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -117,23 +117,23 @@ export async function sendPasswordResetEmail(
 
   await send({
     to,
-    subject: "Resetovanje lozinke — Elegant Render",
+    subject: "Reset your password — Elegant Render",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Resetovanje lozinke</h2>
+        <h2 style="color: #1C1A19;">Reset your password</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Primili smo zahtev za promenu lozinke. Kliknite na dugme ispod da
-          postavite novu lozinku.
+          We received a request to change your password. Click the button
+          below to set a new one.
         </p>
         <a href="${url}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Postavite novu lozinku
+          Set a new password
         </a>
         <p style="color: #9ca3af; font-size: 13px;">
-          Link važi 1 sat. Ako niste vi zatražili promenu lozinke, ignorišite
-          ovaj email.
+          The link is valid for 1 hour. If you did not request a password
+          change, you can ignore this email.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -151,24 +151,24 @@ export async function sendPortalAccessEmail(
 
   await send({
     to,
-    subject: `Pristup vašoj porudžbini ${orderNumber} — Elegant Render`,
+    subject: `Access your order ${orderNumber} — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Hvala vam na poverenju</h2>
+        <h2 style="color: #1C1A19;">Thank you for your order</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Vaša porudžbina <strong>${orderNumber}</strong> je primljena.
-          Kliknite na dugme ispod da pristupite portalu i pratite napredak —
-          nije potrebna lozinka.
+          Your order <strong>${orderNumber}</strong> has been received.
+          Click the button below to open the portal and follow progress —
+          no password needed.
         </p>
         <a href="${url}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Pristupi porudžbini
+          Open your order
         </a>
         <p style="color: #9ca3af; font-size: 13px;">
-          Link važi 7 dana. Možete ga koristiti samo jednom — nakon toga
-          ćete biti prijavljeni i možete postaviti lozinku u portalu.
+          The link is valid for 7 days and can be used only once — after
+          that you will be signed in and can set a password in the portal.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -185,27 +185,27 @@ export async function sendOrderConfirmationEmail(
 
   await send({
     to,
-    subject: `Potvrda porudžbine ${orderNumber} — Elegant Render`,
+    subject: `Order confirmation ${orderNumber} — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Porudžbina primljena</h2>
+        <h2 style="color: #1C1A19;">Order received</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Vaša porudžbina <strong>${orderNumber}</strong> je uspešno primljena i plaćena.
+          Your order <strong>${orderNumber}</strong> has been received and paid.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; font-size: 14px;">
-            <strong>Broj porudžbine:</strong> ${orderNumber}<br/>
-            <strong>Ukupno:</strong> ${escapeHtml(totalLabel)}
+            <strong>Order number:</strong> ${orderNumber}<br/>
+            <strong>Total:</strong> ${escapeHtml(totalLabel)}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
-          Možete pratiti status vaše porudžbine u portalu.
+          You can follow the status of your order in the portal.
         </p>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Otvorite portal
+          Open the portal
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -225,32 +225,32 @@ export async function sendInvoiceIssuedEmail(args: {
   pdfBuffer: Buffer;
 }) {
   const portalUrl = `${getAuthUrl()}/portal`;
-  const filename = `racun-${args.invoiceNumber}.pdf`;
+  const filename = `invoice-${args.invoiceNumber}.pdf`;
   const amountLabel = args.amountLabel ?? formatEmailEur(args.totalEur);
 
   await send({
     to: args.to,
-    subject: `Račun ${args.invoiceNumber} — Elegant Render`,
+    subject: `Invoice ${args.invoiceNumber} — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Vaš račun</h2>
+        <h2 style="color: #1C1A19;">Your invoice</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          U prilogu je račun broj <strong>${escapeHtml(args.invoiceNumber)}</strong> za porudžbinu koju ste upravo platili.
+          Attached is invoice <strong>${escapeHtml(args.invoiceNumber)}</strong> for the order you just paid.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; font-size: 14px;">
-            <strong>Broj računa:</strong> ${escapeHtml(args.invoiceNumber)}<br/>
-            <strong>Iznos:</strong> ${escapeHtml(amountLabel)}
+            <strong>Invoice number:</strong> ${escapeHtml(args.invoiceNumber)}<br/>
+            <strong>Amount:</strong> ${escapeHtml(amountLabel)}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
-          Status porudžbine i preuzete materijale pratite u portalu.
+          You can follow the order status and download your files in the portal.
         </p>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Otvorite portal
+          Open the portal
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
     attachments: [{ filename, content: args.pdfBuffer }],
@@ -258,7 +258,7 @@ export async function sendInvoiceIssuedEmail(args: {
 }
 
 /**
- * Predračun (proforma) notification with the rendered PDF as an
+ * Proforma invoice notification with the rendered PDF as an
  * attachment + bank instructions in the body. Triggered from the
  * proforma_issued_email outbox handler after issueProforma() finishes.
  */
@@ -270,8 +270,8 @@ export async function sendProformaIssuedEmail(args: {
   dueDate: Date;
   pdfBuffer: Buffer;
 }) {
-  const filename = `predracun-${args.proformaNumber}.pdf`;
-  const dueDateLabel = args.dueDate.toLocaleDateString("sr-Latn-RS", {
+  const filename = `proforma-${args.proformaNumber}.pdf`;
+  const dueDateLabel = args.dueDate.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -280,26 +280,26 @@ export async function sendProformaIssuedEmail(args: {
 
   await send({
     to: args.to,
-    subject: `Predračun ${args.proformaNumber} — Elegant Render`,
+    subject: `Proforma invoice ${args.proformaNumber} — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Predračun za uplatu</h2>
+        <h2 style="color: #1C1A19;">Proforma invoice for payment</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          U prilogu je predračun broj <strong>${escapeHtml(args.proformaNumber)}</strong>.
-          Po prijemu uplate izdaćemo konačni račun (faktura) i započeti rad.
+          Attached is proforma invoice <strong>${escapeHtml(args.proformaNumber)}</strong>.
+          Once your payment arrives we will issue the final invoice and start the work.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; font-size: 14px;">
-            <strong>Broj predračuna:</strong> ${escapeHtml(args.proformaNumber)}<br/>
-            <strong>Iznos:</strong> ${escapeHtml(amountLabel)}<br/>
-            <strong>Rok plaćanja:</strong> ${dueDateLabel}
+            <strong>Proforma number:</strong> ${escapeHtml(args.proformaNumber)}<br/>
+            <strong>Amount:</strong> ${escapeHtml(amountLabel)}<br/>
+            <strong>Payment due:</strong> ${dueDateLabel}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
-          Detaljne instrukcije za uplatu (IBAN, poziv na broj) nalaze se u priloženom PDF dokumentu.
+          Detailed payment instructions (IBAN, payment reference) are in the attached PDF.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
     attachments: [{ filename, content: args.pdfBuffer }],
@@ -311,32 +311,33 @@ export async function sendInquiryConvertedEmail(args: {
   contactName: string;
   inquirySubject: string | null;
 }) {
-  const greeting = args.contactName ? `, ${args.contactName}` : "";
+  const greeting = args.contactName ? ` ${args.contactName}` : "";
   const subjectLine = args.inquirySubject
-    ? `o vašem upitu „${args.inquirySubject}”`
-    : "o vašem upitu";
+    ? `your inquiry "${args.inquirySubject}"`
+    : "your inquiry";
 
   await send({
     to: args.to,
-    subject: "Pregledali smo vaš upit — uskoro stiže predračun",
+    subject: "We reviewed your inquiry — proforma invoice on its way",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Pozdrav${escapeHtml(greeting)},</h2>
+        <h2 style="color: #1C1A19;">Hello${escapeHtml(greeting)},</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Hvala vam što ste se javili. Pregledali smo poruku ${escapeHtml(subjectLine)}
-          i pripremamo predračun (proforma) sa instrukcijama za uplatu na žiro-račun.
+          Thank you for getting in touch. We reviewed ${escapeHtml(subjectLine)}
+          and are preparing a proforma invoice with bank transfer instructions.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Predračun ćete dobiti zasebnim e-mailom u toku narednog radnog dana, sa
-          PDF dokumentom i tačnim podacima za uplatu (IBAN, poziv na broj).
-          Po prijemu uplate izdajemo konačnu fakturu i započinjemo rad.
+          You will receive the proforma invoice in a separate email within the
+          next working day, with a PDF document and exact payment details
+          (IBAN, payment reference). Once your payment arrives we issue the
+          final invoice and start the work.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Ukoliko imate dodatna pitanja u međuvremenu, slobodno odgovorite na
-          ovaj e-mail — javljamo se isti dan.
+          If you have any questions in the meantime, simply reply to this
+          email — we respond the same day.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -359,26 +360,26 @@ export async function sendAiCreditsExpiryReminderEmail(args: {
   daysLeft: 30 | 7;
 }) {
   const portalUrl = `${getAuthUrl()}/portal/ai-studio/credits`;
-  const dateLabel = args.expiresAt.toLocaleDateString("sr-RS");
+  const dateLabel = args.expiresAt.toLocaleDateString("en-GB");
 
   await send({
     to: args.to,
-    subject: `AI krediti ističu za ${args.daysLeft} dana — Elegant Render`,
+    subject: `AI credits expire in ${args.daysLeft} days — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">AI krediti ističu uskoro</h2>
+        <h2 style="color: #1C1A19;">AI credits expire soon</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Vaš aktivni AI Studio balans je <strong>${escapeHtml(args.creditsLabel)}</strong>
-          i važi do <strong>${escapeHtml(dateLabel)}</strong>.
+          Your active AI Studio balance is <strong>${escapeHtml(args.creditsLabel)}</strong>
+          and is valid until <strong>${escapeHtml(dateLabel)}</strong>.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Nova dopuna produžava rok važenja celog aktivnog balansa na narednih 12 meseci.
+          A new top-up extends the validity of your entire active balance for another 12 months.
         </p>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Dopuni kredite
+          Top up credits
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -386,35 +387,35 @@ export async function sendAiCreditsExpiryReminderEmail(args: {
 
 function configToBullets(config: VrConfig): string {
   const items: string[] = [];
-  items.push(`<strong>Projekat:</strong> ${escapeHtml(config.projectName)}`);
-  items.push(`<strong>Tip iskustva:</strong> ${config.experienceType}`);
-  items.push(`<strong>Target uređaj:</strong> ${config.targetDevice}`);
+  items.push(`<strong>Project:</strong> ${escapeHtml(config.projectName)}`);
+  items.push(`<strong>Experience type:</strong> ${config.experienceType}`);
+  items.push(`<strong>Target device:</strong> ${config.targetDevice}`);
   if (config.locomotion)
     items.push(`<strong>Locomotion:</strong> ${config.locomotion}`);
   if (config.dayNightMode)
     items.push(`<strong>Day/Night:</strong> ${config.dayNightMode}`);
   const interactions: string[] = [];
-  if (config.doorInteraction) interactions.push("vrata");
-  if (config.lightsInteraction) interactions.push("svetla");
-  if (config.materialsInteraction) interactions.push("materijali");
+  if (config.doorInteraction) interactions.push("doors");
+  if (config.lightsInteraction) interactions.push("lights");
+  if (config.materialsInteraction) interactions.push("materials");
   if (interactions.length > 0) {
-    items.push(`<strong>Interakcije:</strong> ${interactions.join(", ")}`);
+    items.push(`<strong>Interactions:</strong> ${interactions.join(", ")}`);
   }
   if (config.extraFloorsCount > 0)
-    items.push(`<strong>Dodatni spratovi:</strong> ${config.extraFloorsCount}`);
+    items.push(`<strong>Extra floors:</strong> ${config.extraFloorsCount}`);
   if (config.interactiveTypeCount > 0)
     items.push(
-      `<strong>Interaktivni tipovi (broj):</strong> ${config.interactiveTypeCount}`,
+      `<strong>Interactive types (count):</strong> ${config.interactiveTypeCount}`,
     );
-  if (config.brandingEnabled) items.push(`<strong>Brending:</strong> da`);
+  if (config.brandingEnabled) items.push(`<strong>Branding:</strong> yes`);
   if (config.description) {
     items.push(
-      `<strong>Opis:</strong><br/>${escapeHtml(config.description).replace(/\n/g, "<br/>")}`,
+      `<strong>Description:</strong><br/>${escapeHtml(config.description).replace(/\n/g, "<br/>")}`,
     );
   }
   if (config.customInteractionDescription) {
     items.push(
-      `<strong>Custom interakcije:</strong><br/>${escapeHtml(config.customInteractionDescription).replace(/\n/g, "<br/>")}`,
+      `<strong>Custom interactions:</strong><br/>${escapeHtml(config.customInteractionDescription).replace(/\n/g, "<br/>")}`,
     );
   }
   return items.map((i) => `<li>${i}</li>`).join("\n");
@@ -433,8 +434,8 @@ export async function sendProjectInquiryAdminEmail(args: {
   message: string;
   sourceLabel?: string;
   fileCount: number;
-  // Broj fajlova koji NIJE skeniran (skener bio nedostupan). > 0 znači
-  // da fajlove treba proveriti ručno pre otvaranja.
+  // Number of files that were NOT scanned (scanner unavailable). > 0 means
+  // the files must be checked manually before opening.
   unscannedFileCount?: number;
 }) {
   const unscanned = args.unscannedFileCount ?? 0;
@@ -442,27 +443,27 @@ export async function sendProjectInquiryAdminEmail(args: {
     to: ADMIN_NOTIFY_EMAIL,
     subject:
       unscanned > 0
-        ? `⚠ Novi upit (fajlovi neskenirani) — ${args.contactName}`
-        : `Novi upit za procenu — ${args.contactName}`,
+        ? `⚠ New inquiry (files not scanned) — ${args.contactName}`
+        : `New estimate inquiry — ${args.contactName}`,
     html: `
       <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Novi upit za procenu</h2>
+        <h2 style="color: #1C1A19;">New estimate inquiry</h2>
         ${
           unscanned > 0
             ? `<div style="background: #fdecea; border: 1px solid #e5b3ab; border-radius: 8px; padding: 12px 16px; margin: 16px 0; color: #8a2c1c; line-height: 1.6;">
-          <strong>⚠ ${unscanned} fajl(ova) nije skenirano</strong> jer antivirus servis
-          nije bio dostupan. Fajlovi su zadržani u karantinu — proverite ih ručno
-          (ili preuzmite u sigurnom okruženju) pre otvaranja. Upit je ipak sačuvan
-          da se lead ne bi izgubio.
+          <strong>⚠ ${unscanned} file(s) were not scanned</strong> because the antivirus
+          service was unavailable. The files are held in quarantine — check them manually
+          (or download them in a safe environment) before opening. The inquiry was still
+          saved so the lead is not lost.
         </div>`
             : ""
         }
         <p style="color: #6e665d; line-height: 1.6;">
-          ${escapeHtml(args.contactName)} je poslao/la kratak brief i očekuje
-          predlog usluga sa cenom.
+          ${escapeHtml(args.contactName)} sent a short brief and expects
+          a service proposal with pricing.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Kontakt:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Contact:</strong></p>
           <ul style="margin: 0; padding-left: 18px; color: #1C1A19; line-height: 1.6;">
             <li>${escapeHtml(args.contactName)}</li>
             <li><a href="mailto:${escapeHtml(args.email)}">${escapeHtml(args.email)}</a></li>
@@ -473,21 +474,21 @@ export async function sendProjectInquiryAdminEmail(args: {
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0 0 8px 0;"><strong>Brief:</strong></p>
           <p style="margin: 0; color: #1C1A19; line-height: 1.7;">
-            ${args.serviceType ? `<strong>Usluga:</strong> ${escapeHtml(args.serviceType)}<br/>` : ""}
-            ${args.budget ? `<strong>Budžet:</strong> ${escapeHtml(args.budget)}<br/>` : ""}
-            ${args.deadline ? `<strong>Rok:</strong> ${escapeHtml(args.deadline)}<br/>` : ""}
-            ${args.sourceLabel ? `<strong>Izvor:</strong> ${escapeHtml(args.sourceLabel)}<br/>` : ""}
-            <strong>Fajlovi:</strong> ${args.fileCount}
+            ${args.serviceType ? `<strong>Service:</strong> ${escapeHtml(args.serviceType)}<br/>` : ""}
+            ${args.budget ? `<strong>Budget:</strong> ${escapeHtml(args.budget)}<br/>` : ""}
+            ${args.deadline ? `<strong>Deadline:</strong> ${escapeHtml(args.deadline)}<br/>` : ""}
+            ${args.sourceLabel ? `<strong>Source:</strong> ${escapeHtml(args.sourceLabel)}<br/>` : ""}
+            <strong>Files:</strong> ${args.fileCount}
           </p>
         </div>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Poruka klijenta:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Client message:</strong></p>
           <p style="margin: 0; color: #1C1A19; white-space: pre-wrap;">${escapeHtml(args.message)}</p>
         </div>
         <a href="${args.adminUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Otvori upit u admin panelu
+          Open inquiry in the admin panel
         </a>
-        <p style="color: #9ca3af; font-size: 12px;">Upit ID: ${escapeHtml(args.inquiryId)}</p>
+        <p style="color: #9ca3af; font-size: 12px;">Inquiry ID: ${escapeHtml(args.inquiryId)}</p>
       </div>
     `,
   });
@@ -499,24 +500,24 @@ export async function sendProjectInquiryCustomerEmail(args: {
 }) {
   await send({
     to: args.to,
-    subject: "Vaš upit je primljen — Elegant Render",
+    subject: "Your inquiry has been received — Elegant Render",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Hvala na upitu</h2>
+        <h2 style="color: #1C1A19;">Thank you for your inquiry</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Zdravo ${escapeHtml(args.contactName)},
+          Hello ${escapeHtml(args.contactName)},
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Primili smo vaš opis projekta. Pregledaćemo materijale i javiti se
-          sa predlogom usluga i okvirnom cenom, obično u roku od
-          <strong>1 radnog dana</strong>.
+          We received your project description. We will review the materials
+          and get back to you with a service proposal and an estimate,
+          usually within <strong>1 working day</strong>.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Ako želite da dodate još referenci, možete odgovoriti direktno na
-          ovaj email.
+          If you would like to add more references, you can reply directly
+          to this email.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -530,18 +531,18 @@ export async function sendAiCreditsGrantedEmail(args: {
   expiresAt: Date;
 }) {
   const portalUrl = `${getAuthUrl()}/portal/ai-studio`;
-  const dateLabel = args.expiresAt.toLocaleDateString("sr-RS");
+  const dateLabel = args.expiresAt.toLocaleDateString("en-GB");
 
   await send({
     to: args.to,
-    subject: `Dobili ste ${args.grantedLabel} AI kredita — Elegant Render`,
+    subject: `You received ${args.grantedLabel} AI credits — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Dodali smo vam AI kredite</h2>
+        <h2 style="color: #1C1A19;">We added AI credits to your account</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Naš tim vam je dodelio <strong>${escapeHtml(args.grantedLabel)}</strong>.
-          Vaš novi aktivni balans je <strong>${escapeHtml(args.balanceLabel)}</strong>
-          i važi do <strong>${escapeHtml(dateLabel)}</strong>.
+          Our team granted you <strong>${escapeHtml(args.grantedLabel)}</strong>.
+          Your new active balance is <strong>${escapeHtml(args.balanceLabel)}</strong>
+          and is valid until <strong>${escapeHtml(dateLabel)}</strong>.
         </p>
         ${
           args.note
@@ -551,10 +552,10 @@ export async function sendAiCreditsGrantedEmail(args: {
             : ""
         }
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Otvori AI Studio
+          Open AI Studio
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -570,23 +571,23 @@ export async function sendFreeRevisionGrantedEmail(args: {
 
   await send({
     to: args.to,
-    subject: `Odobrena besplatna izmena — porudžbina ${args.orderNumber}`,
+    subject: `Free revision approved — order ${args.orderNumber}`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Vaša izmena je odobrena</h2>
+        <h2 style="color: #1C1A19;">Your revision has been approved</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Naš tim je odobrio besplatnu izmenu na porudžbini
+          Our team approved a free revision on order
           <strong>${escapeHtml(args.orderNumber)}</strong>.
-          Krećemo sa radom — bićete obavešteni kada bude spremno za pregled.
+          We are starting the work — you will be notified when it is ready for review.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; line-height: 1.6;"><em>${escapeHtml(args.note)}</em></p>
         </div>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Otvori porudžbinu
+          Open order
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -630,13 +631,14 @@ export async function sendAdditionalChargeRequestedEmail(args: {
 
   await send({
     to: args.to,
-    subject: `Dodatna naplata na porudžbini ${args.orderNumber} — ${totalLabel}`,
+    subject: `Additional charge on order ${args.orderNumber} — ${totalLabel}`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Dodatna naplata</h2>
+        <h2 style="color: #1C1A19;">Additional charge</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Na porudžbini <strong>${escapeHtml(args.orderNumber)}</strong> je
-          formirana dodatna naplata za stavke van prvobitnog dogovora.
+          An additional charge has been created on order
+          <strong>${escapeHtml(args.orderNumber)}</strong> for items outside
+          the original scope.
         </p>
         ${
           args.reason
@@ -649,17 +651,17 @@ export async function sendAdditionalChargeRequestedEmail(args: {
           ${linesHtml}
         </ul>
         <p style="color: #1C1A19; font-size: 16px; margin: 16px 0;">
-          <strong>Ukupno za naplatu: ${escapeHtml(totalLabel)}</strong>
+          <strong>Total due: ${escapeHtml(totalLabel)}</strong>
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Otvorite porudžbinu u portalu da pregledate stavke i izvršite plaćanje.
-          Dostupne su sve opcije plaćanja kao i kod prvobitne porudžbine.
+          Open the order in the portal to review the items and complete the
+          payment. All payment options from your original order are available.
         </p>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Otvori porudžbinu i plati
+          Open order and pay
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -682,24 +684,24 @@ export async function sendAdditionalChargePaidEmail(args: {
 
   await send({
     to: args.to,
-    subject: `Dodatna naplata plaćena — porudžbina ${args.orderNumber}`,
+    subject: `Additional charge paid — order ${args.orderNumber}`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Plaćanje primljeno</h2>
+        <h2 style="color: #1C1A19;">Payment received</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Hvala. Vaše plaćanje za dodatnu naplatu na porudžbini
-          <strong>${escapeHtml(args.orderNumber)}</strong> je uspešno primljeno.
+          Thank you. Your payment for the additional charge on order
+          <strong>${escapeHtml(args.orderNumber)}</strong> has been received.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19;">
-            <strong>Iznos:</strong> ${escapeHtml(totalLabel)}
+            <strong>Amount:</strong> ${escapeHtml(totalLabel)}
           </p>
         </div>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Otvori porudžbinu
+          Open order
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -717,16 +719,16 @@ export async function sendVrInquiryAdminEmail(args: {
   const adminUrl = `${getAuthUrl()}/portal/admin/vr-inquiries`;
   await send({
     to: ADMIN_NOTIFY_EMAIL,
-    subject: `Novi VR upit — ${args.contactName} (${args.productLabel})`,
+    subject: `New VR inquiry — ${args.contactName} (${args.productLabel})`,
     html: `
       <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Novi VR upit</h2>
+        <h2 style="color: #1C1A19;">New VR inquiry</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          ${escapeHtml(args.contactName)} je popunio konsultacioni intake za
+          ${escapeHtml(args.contactName)} completed the consultation intake for
           <strong>${escapeHtml(args.productLabel)}</strong>.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Kontakt:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Contact:</strong></p>
           <ul style="margin: 0; padding-left: 18px; color: #1C1A19;">
             <li>${escapeHtml(args.contactName)}</li>
             <li><a href="mailto:${escapeHtml(args.email)}">${escapeHtml(args.email)}</a></li>
@@ -737,19 +739,19 @@ export async function sendVrInquiryAdminEmail(args: {
           args.message
             ? `
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Poruka klijenta:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Client message:</strong></p>
           <p style="margin: 0; color: #1C1A19; white-space: pre-wrap;">${escapeHtml(args.message)}</p>
         </div>`
             : ""
         }
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Konfiguracija:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Configuration:</strong></p>
           <ul style="margin: 0; padding-left: 18px; color: #1C1A19; line-height: 1.6;">
             ${configToBullets(args.config)}
           </ul>
         </div>
         <a href="${adminUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Otvori upit u admin panelu
+          Open inquiry in the admin panel
         </a>
       </div>
     `,
@@ -771,38 +773,38 @@ export async function sendVrProjectReadyEmail(args: {
   )}`;
   await send({
     to: args.to,
-    subject: `Vaš VR projekat je spreman za plaćanje — ${args.orderNumber}`,
+    subject: `Your VR project is ready for payment — ${args.orderNumber}`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Dogovor zaključen</h2>
+        <h2 style="color: #1C1A19;">Scope agreed</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Zdravo ${escapeHtml(args.contactName)},
+          Hello ${escapeHtml(args.contactName)},
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Hvala na razgovoru — definisali smo opseg projekta i pripremili
-          porudžbinu za plaćanje.
+          Thank you for the conversation — we defined the project scope and
+          prepared your order for payment.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; line-height: 1.7;">
-            <strong>Projekat:</strong> ${escapeHtml(args.projectName)}<br/>
-            <strong>Usluga:</strong> ${escapeHtml(args.productLabel)}<br/>
-            <strong>Broj porudžbine:</strong> ${escapeHtml(args.orderNumber)}<br/>
-            <strong>Iznos:</strong> ${formatEmailEur(args.priceEur)}
+            <strong>Project:</strong> ${escapeHtml(args.projectName)}<br/>
+            <strong>Service:</strong> ${escapeHtml(args.productLabel)}<br/>
+            <strong>Order number:</strong> ${escapeHtml(args.orderNumber)}<br/>
+            <strong>Amount:</strong> ${formatEmailEur(args.priceEur)}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
-          Kliknite na dugme ispod da otvorite porudžbinu i dovršite plaćanje.
-          Link vas direktno prijavljuje u portal — nije potrebna lozinka.
+          Click the button below to open the order and complete the payment.
+          The link signs you straight into the portal — no password needed.
         </p>
         <a href="${url}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Otvori i plati
+          Open and pay
         </a>
         <p style="color: #9ca3af; font-size: 13px;">
-          Link važi 7 dana. Možete ga koristiti samo jednom — nakon toga
-          ćete biti prijavljeni i možete postaviti lozinku u portalu.
+          The link is valid for 7 days and can be used only once — after
+          that you will be signed in and can set a password in the portal.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });
@@ -964,25 +966,25 @@ export async function sendVrInquiryCustomerEmail(args: {
 }) {
   await send({
     to: args.to,
-    subject: `Vaš VR upit je primljen — ${args.productLabel}`,
+    subject: `Your VR inquiry has been received — ${args.productLabel}`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Hvala na upitu</h2>
+        <h2 style="color: #1C1A19;">Thank you for your inquiry</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Zdravo ${escapeHtml(args.contactName)},
+          Hello ${escapeHtml(args.contactName)},
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Primili smo vaš upit za <strong>${escapeHtml(args.productLabel)}</strong>.
-          VR projekti zahtevaju razgovor o opsegu, target uređajima i
-          tehničkim detaljima — javićemo vam se u roku od <strong>1 radnog dana</strong>
-          da dogovorimo termin za konsultaciju.
+          We received your inquiry for <strong>${escapeHtml(args.productLabel)}</strong>.
+          VR projects call for a conversation about scope, target devices and
+          technical details — we will get back to you within <strong>1 working day</strong>
+          to arrange a consultation.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Ako imate dodatne fajlove ili reference koje biste odmah da podelite,
-          slobodno odgovorite na ovaj email.
+          If you have additional files or references you would like to share
+          right away, simply reply to this email.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — deo White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
       </div>
     `,
   });

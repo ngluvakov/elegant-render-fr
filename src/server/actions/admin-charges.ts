@@ -44,7 +44,7 @@ export async function adminCreateCharge(args: {
   await requirePermission("FINANCE_MANAGE");
 
   if (!args.items.length) {
-    return { error: "Mora postojati barem jedna stavka." };
+    return { error: "There must be at least one item." };
   }
 
   const normalized = args.items.map((item) => {
@@ -60,13 +60,13 @@ export async function adminCreateCharge(args: {
   });
 
   for (const item of normalized) {
-    if (!item.label) return { error: "Svaka stavka mora imati naziv." };
-    if (!item.kind) return { error: "Tip stavke je obavezan." };
+    if (!item.label) return { error: "Every item must have a name." };
+    if (!item.kind) return { error: "The item type is required." };
     if (item.amountCents <= 0) {
-      return { error: `Cena stavke "${item.label}" mora biti veća od nule.` };
+      return { error: `The price of item "${item.label}" must be greater than zero.` };
     }
     if (item.quantity < 1) {
-      return { error: `Količina za "${item.label}" mora biti najmanje 1.` };
+      return { error: `The quantity for "${item.label}" must be at least 1.` };
     }
   }
 
@@ -103,7 +103,7 @@ export async function adminCreateCharge(args: {
     }),
     getPublishedPricingCatalog(),
   ]);
-  if (!order) return { error: "Porudžbina nije pronađena." };
+  if (!order) return { error: "Order not found." };
 
   const reason = args.reason?.trim() || null;
   const userHasBillingProfile = Boolean(order.user.billingCountryCode);
@@ -247,9 +247,9 @@ export async function adminCancelCharge(args: {
     where: { id: args.chargeId },
     select: { id: true, status: true, orderId: true },
   });
-  if (!charge) return { error: "Naplata nije pronađena." };
+  if (!charge) return { error: "Charge not found." };
   if (charge.status !== "pending") {
-    return { error: "Mogu se otkazati samo naplate u statusu 'pending'." };
+    return { error: "Only charges in 'pending' status can be cancelled." };
   }
 
   await prisma.orderCharge.update({

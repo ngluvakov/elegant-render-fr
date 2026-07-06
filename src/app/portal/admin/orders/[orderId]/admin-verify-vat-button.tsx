@@ -5,10 +5,10 @@
  * above; this button is the trigger.
  *
  * Returns four kinds of feedback:
- *   valid     — green badge in parent ("Verifikovan…") via revalidate
+ *   valid     — green badge in parent ("Verified…") via revalidate
  *   invalid   — destructive inline message
  *   error     — neutral inline (often a VIES outage, retry-able)
- *   unsupported_country — neutral inline ("nije EU zemlja")
+ *   unsupported_country — neutral inline ("not an EU country")
  */
 "use client";
 
@@ -59,7 +59,7 @@ export function AdminVerifyVatButton({ orderId }: Props) {
         case "unsupported_country":
           setFeedback({
             kind: "neutral",
-            text: "Zemlja nije u EU — VIES verifikacija nije primenljiva.",
+            text: "Country is not in the EU — VIES verification does not apply.",
           });
           break;
       }
@@ -74,7 +74,7 @@ export function AdminVerifyVatButton({ orderId }: Props) {
         disabled={pending}
         className="inline-flex items-center gap-1.5 rounded-md border border-foreground bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-foreground hover:text-background disabled:opacity-50"
       >
-        {pending ? "Proveravam…" : "Proveri VAT (VIES)"}
+        {pending ? "Checking…" : "Verify VAT (VIES)"}
       </button>
       {feedback && (
         <p
@@ -92,13 +92,13 @@ export function AdminVerifyVatButton({ orderId }: Props) {
 }
 
 function humanReason(reason: string): string {
-  if (reason === "not_admin") return "Niste admin.";
+  if (reason === "not_admin") return "You are not an admin.";
   if (reason === "order_not_found") return "Order was not found.";
   if (reason === "not_foreign_company")
-    return "Verifikacija je samo za strane firme.";
+    return "Verification is only for foreign companies.";
   if (reason === "missing_vat_data")
     return "VAT ID or country is missing from the order.";
   if (reason === "non_eu_country")
-    return "Zemlja nije u EU — VIES nije primenljiv.";
+    return "Country is not in the EU — VIES does not apply.";
   return `Error: ${reason}`;
 }

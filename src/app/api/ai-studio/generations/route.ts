@@ -9,7 +9,7 @@ import {
 } from "@/server/actions/ai-studio";
 import type { AiEditType } from "@/lib/ai-studio/catalog";
 
-// Šema prati AiStudioGenerateInput — telo je ranije bilo golo `as` kastovano.
+// Schema mirrors AiStudioGenerateInput — the body used to be a bare `as` cast.
 const generateInputSchema = z.object({
   editType: z.enum([
     "item_removal",
@@ -75,7 +75,7 @@ export async function GET(request: Request) {
 
   return NextResponse.json(result, {
     status: result.error
-      ? result.error === "Niste prijavljeni."
+      ? result.error === "You are not signed in."
         ? 401
         : 400
       : 200,
@@ -87,11 +87,11 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Neispravan zahtev." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
   const parsed = generateInputSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Neispravan zahtev." }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
   const result = await startAiStudioGeneration(parsed.data);
 
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json(result, {
     status: result.error
-      ? result.error === "Niste prijavljeni."
+      ? result.error === "You are not signed in."
         ? 401
         : 400
       : 202,

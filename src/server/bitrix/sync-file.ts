@@ -18,7 +18,7 @@ export async function syncFileToDeal(fileId: string) {
   if (!file.order.bitrix24DealId) return;
   if (file.bitrix24FileId) return; // Already synced
 
-  const kindLabel = file.kind === "deliverable" ? "Isporuka" : file.kind === "revision" ? "Revizija" : "Materijal";
+  const kindLabel = file.kind === "deliverable" ? "Deliverable" : file.kind === "revision" ? "Revision" : "Source file";
   const portalUrl = `${process.env.AUTH_URL}/api/portal/download?path=${encodeURIComponent(file.storagePath)}&orderId=${file.order.id}`;
 
   const resultId = await bitrixCall<number>("crm.timeline.comment.add", {

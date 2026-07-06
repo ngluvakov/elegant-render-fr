@@ -309,7 +309,7 @@ export function SiteplanConfigSection({
           <MapPin className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.projectName || "Situacija"}
+              {config.projectName || "Site plan"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
               {config.buildingCount} objek{config.buildingCount === 1 ? "at" : "ata"} ·{" "}
@@ -395,7 +395,7 @@ export function SiteplanConfigSection({
               type="button"
               disabled={!editable || config.angleCount <= 1}
               onClick={decAngles}
-              aria-label="Decrease number of uglova"
+              aria-label="Decrease number of angles"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -407,7 +407,7 @@ export function SiteplanConfigSection({
               type="button"
               disabled={!editable || config.angleCount >= 30}
               onClick={incAngles}
-              aria-label="Increase number of uglova"
+              aria-label="Increase number of angles"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -425,7 +425,7 @@ export function SiteplanConfigSection({
           htmlFor={`angle-type-${itemId}`}
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
-          Tip prikaza (ugao)
+          View type (angle)
         </Label>
         <select
           id={`angle-type-${itemId}`}
@@ -748,11 +748,11 @@ export function SiteplanConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Dodatne opcije
+            Additional options
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
             Seasonal and phasing variants of the same view for urban planning
-            prezentacije.
+            presentations.
           </p>
         </div>
 
@@ -765,7 +765,7 @@ export function SiteplanConfigSection({
             <CalendarClock className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
-                Sezonska varijanta
+                Season variant
                 <HelpTip>
                   The same rendering generated again with different
                   weather conditions (for example, winter day + summer night).
@@ -810,7 +810,7 @@ export function SiteplanConfigSection({
                 htmlFor={`svar-tod-${itemId}`}
                 className="text-[0.7rem]"
               >
-                Time of day za varijantu
+                Time of day for the variant
               </Label>
               <select
                 id={`svar-tod-${itemId}`}
@@ -825,7 +825,7 @@ export function SiteplanConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— bez promene —</option>
+                <option value="">— no change —</option>
                 {TIMES_OF_DAY.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.label}
@@ -838,7 +838,7 @@ export function SiteplanConfigSection({
                 htmlFor={`svar-season-${itemId}`}
                 className="text-[0.7rem]"
               >
-                Season za varijantu
+                Season for the variant
               </Label>
               <select
                 id={`svar-season-${itemId}`}
@@ -853,7 +853,7 @@ export function SiteplanConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— bez promene —</option>
+                <option value="">— no change —</option>
                 {SEASONS.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.label}
@@ -873,11 +873,11 @@ export function SiteplanConfigSection({
             <Layers className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
-                Fazna varijanta (Phasing)
+                Phase variant (phasing)
                 <HelpTip>
-                  <strong>Phasing</strong> prikazuje gradnju u etapama —
+                  <strong>Phasing</strong> shows construction in stages —
                   currently built structures are solid, the planned phase is
-                  prikazuje providnim ili konturnim blokovima. Standard u
+                  shown as transparent or outlined blocks. Standard in
                   urban-planning presentations for large complexes.
                 </HelpTip>
               </span>

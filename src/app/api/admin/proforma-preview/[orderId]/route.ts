@@ -1,10 +1,10 @@
 /**
  * GET /api/admin/proforma-preview/[orderId] — admin-only PDF preview
- * of what the predračun would look like for an order, WITHOUT
+ * of what the proforma would look like for an order, WITHOUT
  * burning a proforma counter slot or persisting anything.
  *
  * Lets admin sanity-check buyer info, total, and bank instructions
- * before actually clicking "Izdaj predračun" (which sends the email
+ * before actually clicking "Issue proforma" (which sends the email
  * to the customer). Especially valuable around launch when bank
  * details in IMPRINT.bank still have placeholders.
  *
@@ -69,7 +69,7 @@ export async function GET(
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="predracun-pregled-${order.orderNumber}.pdf"`,
+      "Content-Disposition": `inline; filename="proforma-preview-${order.orderNumber}.pdf"`,
       "Cache-Control": "no-store",
     },
   });

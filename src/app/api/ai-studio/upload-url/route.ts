@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) {
-    return NextResponse.json({ error: "Niste prijavljeni." }, { status: 401 });
+    return NextResponse.json({ error: "You are not signed in." }, { status: 401 });
   }
 
   const { fileName, mimeType, fileSize, purpose } = await request.json();
@@ -21,14 +21,14 @@ export async function POST(request: Request) {
 
   if (fileSize > MAX_FILE_SIZE) {
     return NextResponse.json(
-      { error: "Fajl je prevelik (max 50MB)" },
+      { error: "File is too large (max 50MB)" },
       { status: 400 },
     );
   }
 
   if (!ALLOWED_TYPES.includes(mimeType)) {
     return NextResponse.json(
-      { error: "Dozvoljeni su JPG, PNG i WebP fajlovi." },
+      { error: "Allowed file types are JPG, PNG, and WebP." },
       { status: 400 },
     );
   }

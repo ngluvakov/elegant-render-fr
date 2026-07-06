@@ -84,24 +84,25 @@ export async function createOrder(
   withdrawalWaivedAt?: Date | null,
   buyerInfo?: BuyerInfoInput,
 ): Promise<OrderResult> {
-  if (!userId) return { error: "Korisnik nije identifikovan." };
-  // Guest checkout prolazi bez sesije (userId dolazi iz ensureCheckoutUser),
-  // ali kada sesija postoji, klijentski userId mora biti baš taj korisnik —
-  // inače bi ulogovan korisnik mogao da otvara nacrte pod tuđim nalogom.
+  if (!userId) return { error: "User could not be identified." };
+  // Guest checkout passes without a session (userId comes from
+  // ensureCheckoutUser), but when a session exists, the client-supplied
+  // userId must be exactly that user — otherwise a signed-in user could
+  // open drafts under someone else's account.
   const session = await auth();
   if (session?.user?.id && session.user.id !== userId) {
-    return { error: "Korisnik nije identifikovan." };
+    return { error: "User could not be identified." };
   }
-  if (!quoteItems.length) return { error: "Ponuda je prazna." };
+  if (!quoteItems.length) return { error: "Your estimate is empty." };
   if (!withdrawalWaivedAt) {
-    // EU CRD čl. 16(m) / Zakon o zaštiti potrošača čl. 28: digital
+    // EU CRD Art. 16(m) / Serbian Consumer Protection Act Art. 28: digital
     // services started before the 14-day window expires require an
     // explicit waiver. The checkout review step gates the submit
     // button on this checkbox, so this branch should only fire on a
     // tampered client.
     return {
       error:
-        "Pre potvrde porudžbine morate prihvatiti da izrada počinje odmah i da time gubite pravo na povlačenje od 14 dana.",
+        "Before confirming your order you must accept that production starts immediately, which waives your 14-day right of withdrawal.",
     };
   }
 
@@ -128,11 +129,11 @@ export async function createOrder(
   for (const qi of quoteItems) {
     if (isAiCreditProduct(qi.productId)) continue;
     const lookup = getConfiguratorProduct(qi.productId, pricingCatalog.categories);
-    if (!lookup) return { error: "Nepoznata stavka u ponudi." };
+    if (!lookup) return { error: "Unknown item in the estimate." };
     if (lookup?.product.inquiryOnly) {
       return {
         error:
-          "VR usluge se ne mogu plaćati direktno — zatražite konsultaciju.",
+          "VR services cannot be paid for directly — request a consultation.",
       };
     }
   }
@@ -144,7 +145,7 @@ export async function createOrder(
   const calculation = priceItems(quoteItems, [], pricingCatalog);
 
   if (calculation.total <= 0) {
-    return { error: "Ukupna cena mora biti veća od 0." };
+    return { error: "The total price must be greater than 0." };
   }
 
   const billingSnapshot = buildBillingSnapshot(
@@ -243,7 +244,7 @@ export async function createOrder(
       statusEvents: {
         create: {
           toStatus: "draft",
-          note: "Porudžbina kreirana",
+          note: "Order created",
         },
       },
     },
@@ -284,7 +285,7 @@ export async function createOrder(
 
 export async function createEmptyDraft(): Promise<OrderResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   // Snapshot the user's billing identity onto the draft from the moment
   // the draft is created — matching createOrder.
@@ -338,7 +339,7 @@ export async function createEmptyDraft(): Promise<OrderResult> {
       chargedFxAsOf: chargeSnapshot.chargedFxAsOf,
       items: { create: [] },
       statusEvents: {
-        create: { toStatus: "draft", note: "Nacrt kreiran iz portala" },
+        create: { toStatus: "draft", note: "Draft created from the portal" },
       },
     },
   });
@@ -354,17 +355,17 @@ export async function deleteDraftOrder(
   orderId: string,
 ): Promise<{ error?: string; success?: boolean }> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     select: { userId: true, status: true },
   });
-  if (!order) return { error: "Porudžbina ne postoji." };
+  if (!order) return { error: "Order not found." };
   if (order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (order.status !== "draft" && order.status !== "cancelled")
-    return { error: "Samo nacrti i otkazane porudžbine se mogu obrisati." };
+    return { error: "Only drafts and cancelled orders can be deleted." };
 
   await prisma.order.delete({ where: { id: orderId } });
   revalidatePath("/portal/orders");
@@ -382,29 +383,29 @@ export async function setOrderReference(
   referencedOrderId: string | null,
 ): Promise<{ error?: string; success?: boolean }> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
     select: { userId: true, status: true },
   });
-  if (!order) return { error: "Porudžbina ne postoji." };
-  if (order.userId !== session.user.id) return { error: "Nemate pristup." };
+  if (!order) return { error: "Order not found." };
+  if (order.userId !== session.user.id) return { error: "You do not have access." };
   if (order.status !== "draft")
-    return { error: "Referenca se postavlja samo u nacrtu." };
+    return { error: "A reference can only be set on a draft." };
 
   if (referencedOrderId) {
     if (referencedOrderId === orderId)
-      return { error: "Porudžbina ne može da referencira samu sebe." };
+      return { error: "An order cannot reference itself." };
     const ref = await prisma.order.findUnique({
       where: { id: referencedOrderId },
       select: { userId: true, status: true },
     });
-    if (!ref) return { error: "Referencirana porudžbina ne postoji." };
+    if (!ref) return { error: "The referenced order does not exist." };
     if (ref.userId !== session.user.id)
-      return { error: "Nemate pristup referenciranoj porudžbini." };
+      return { error: "You do not have access to the referenced order." };
     if (ref.status === "draft" || ref.status === "awaiting_payment")
-      return { error: "Referenca mora da bude plaćena porudžbina." };
+      return { error: "The reference must be a paid order." };
   }
 
   await prisma.order.update({
@@ -423,7 +424,7 @@ export async function updateProjectName(
   name: string,
 ): Promise<{ error?: string; success?: boolean }> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const trimmed = name.trim().slice(0, 100);
 
@@ -431,9 +432,9 @@ export async function updateProjectName(
     where: { id: orderId },
     select: { userId: true },
   });
-  if (!order) return { error: "Porudžbina ne postoji." };
+  if (!order) return { error: "Order not found." };
   if (order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
 
   await prisma.order.update({
     where: { id: orderId },

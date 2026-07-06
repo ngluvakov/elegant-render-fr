@@ -118,7 +118,7 @@ export function StagingConfigSection({
   const is360 = productId === "vs-360";
 
   // Per-product copy
-  const angleAddOnLabel = is360 ? "hotspot" : "ugao";
+  const angleAddOnLabel = is360 ? "hotspot" : "angle";
   const angleStepperLabel = is360
     ? "Additional hotspot of the same room"
     : "Additional angle of the same room";
@@ -321,14 +321,19 @@ export function StagingConfigSection({
                   className="ml-2 inline-flex items-center gap-1 text-[0.62rem] font-medium text-muted-foreground/80 underline-offset-2 hover:text-foreground hover:underline disabled:pointer-events-none disabled:opacity-60"
                 >
                   <ArrowLeftRight className="h-3 w-3" />
-                  Promeni tip
+                  Change type
                 </button>
               )}
               {config.extraAnglesCount > 0 && (
                 <span className="ml-2">
-                  +{config.extraAnglesCount} extra
-                  {config.extraAnglesCount === 1 ? "i" : "ih"}{" "}
-                  {angleNoun(productId, config.extraAnglesCount)}
+                  +{config.extraAnglesCount} extra{" "}
+                  {is360
+                    ? config.extraAnglesCount === 1
+                      ? "hotspot"
+                      : "hotspots"
+                    : config.extraAnglesCount === 1
+                      ? "angle"
+                      : "angles"}
                 </span>
               )}
             </p>
@@ -351,7 +356,7 @@ export function StagingConfigSection({
       {swapState.kind === "confirm" && (
         <div className="flex flex-col gap-2 rounded-lg border border-destructive/30 bg-destructive/[0.06] p-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[0.78rem] leading-relaxed text-foreground">
-            Prebacujem na{" "}
+            Switch to{" "}
             <strong>
               {is360 ? "Static staging" : "360 staging"}
             </strong>
@@ -372,7 +377,7 @@ export function StagingConfigSection({
               className="inline-flex items-center justify-center gap-1 rounded-lg bg-destructive px-3 py-1.5 text-xs font-semibold text-white hover:bg-destructive/90"
             >
               <ArrowLeftRight className="h-3 w-3" />
-              Prebaci
+              Switch
             </button>
           </div>
         </div>
@@ -670,7 +675,7 @@ export function StagingConfigSection({
             </p>
 
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Reference za style</Label>
+              <Label className="text-[0.7rem]">Style references</Label>
               {renderUploadZone(
                 refInputRef,
                 "Pinterest, magazines, images of desired furniture",
@@ -686,7 +691,7 @@ export function StagingConfigSection({
                 className="text-[0.7rem]"
               >
                 <Users className="h-3 w-3 text-accent/60" />
-                Ciljna grupa kupaca
+                Target buyer group
               </Label>
               <select
                 id={`audience-${itemId}`}
@@ -717,7 +722,7 @@ export function StagingConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Dodatne opcije
+            Additional options
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
             {is360
@@ -833,7 +838,7 @@ export function StagingConfigSection({
               htmlFor={`restyle-style-${itemId}`}
               className="text-[0.7rem]"
             >
-              Style za re-style varijantu
+              Style for the restyle variant
             </Label>
             <select
               id={`restyle-style-${itemId}`}

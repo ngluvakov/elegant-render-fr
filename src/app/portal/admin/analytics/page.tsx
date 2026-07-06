@@ -77,7 +77,7 @@ const dashboardLinks: DashboardLink[] = [
     envName: "VERCEL_PROJECT_DASHBOARD_URL",
     href: dashboardUrl("VERCEL_PROJECT_DASHBOARD_URL"),
     icon: Server,
-    note: "Za proveru deploy-a i runtime logova.",
+    note: "For checking deploys and runtime logs.",
   },
   {
     title: "Google Analytics 4",
@@ -234,7 +234,7 @@ export default async function AdminAnalyticsPage() {
             {ga4Enabled
               ? "Direct GA4 enabled"
               : gtmEnabled
-                ? "GA4 preko GTM-a"
+                ? "GA4 via GTM"
                 : "GA4 direct disabled"}
           </Badge>
         </div>
@@ -245,7 +245,7 @@ export default async function AdminAnalyticsPage() {
             detail={
               ga4MeasurementReady
                 ? "NEXT_PUBLIC_GA4_MEASUREMENT_ID is set."
-                : "Dodati GA4 Web Data Stream ID, format G-XXXXXXXXXX."
+                : "Add the GA4 web data stream ID, format G-XXXXXXXXXX."
             }
           />
           <ReadinessItem
@@ -254,7 +254,7 @@ export default async function AdminAnalyticsPage() {
             detail={
               ga4DashboardReady
                 ? "GOOGLE_ANALYTICS_DASHBOARD_URL is set."
-                : "Dodati GA4 dashboard URL za brzi admin pristup."
+                : "Add the GA4 dashboard URL for quick admin access."
             }
           />
           <ReadinessItem
@@ -278,7 +278,7 @@ export default async function AdminAnalyticsPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">
-              GTM priprema za live
+              GTM launch readiness
             </h2>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
               Google Tag Manager is ready in code. The container loads only
@@ -302,7 +302,7 @@ export default async function AdminAnalyticsPage() {
             detail={
               gtmContainerReady
                 ? "NEXT_PUBLIC_GTM_CONTAINER_ID is set."
-                : "Dodati GTM Web Container ID, format GTM-XXXXXXX."
+                : "Add the GTM web container ID, format GTM-XXXXXXX."
             }
           />
           <ReadinessItem
@@ -311,7 +311,7 @@ export default async function AdminAnalyticsPage() {
             detail={
               gtmDashboardReady
                 ? "GOOGLE_TAG_MANAGER_DASHBOARD_URL is set."
-                : "Dodati GTM dashboard URL za brzi admin pristup."
+                : "Add the GTM dashboard URL for quick admin access."
             }
           />
           <ReadinessItem
@@ -388,7 +388,7 @@ function DashboardCard({ item }: { item: DashboardLink }) {
               : "bg-secondary text-muted-foreground"
           }
         >
-          {item.href ? "Configured" : `Nedostaje ${item.envName}`}
+          {item.href ? "Configured" : `Missing ${item.envName}`}
         </Badge>
         <span className="text-xs text-muted-foreground">{item.note}</span>
       </div>

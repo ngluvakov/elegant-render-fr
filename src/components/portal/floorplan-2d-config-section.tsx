@@ -266,10 +266,10 @@ export function Floorplan2dConfigSection({
           <FileImage className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.projectName || "Osnova"}
+              {config.projectName || "Floor plan"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {config.levels} nivo{config.levels === 1 ? "" : "a"} ·{" "}
+              {config.levels} level{config.levels === 1 ? "" : "s"} ·{" "}
               {config.displayType === "furnished" ? "furnished" : "empty"} ·{" "}
               {FP2D_DISPLAY_STYLES.find((s) => s.id === config.displayStyle)
                 ?.label ?? config.displayStyle}
@@ -321,7 +321,7 @@ export function Floorplan2dConfigSection({
               type="button"
               disabled={!editable || config.levels <= 1}
               onClick={decLevels}
-              aria-label="Decrease number of nivoa"
+              aria-label="Decrease number of levels"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -333,7 +333,7 @@ export function Floorplan2dConfigSection({
               type="button"
               disabled={!editable || config.levels >= 30}
               onClick={incLevels}
-              aria-label="Increase number of nivoa"
+              aria-label="Increase number of levels"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -641,7 +641,7 @@ export function Floorplan2dConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Dodatne varijante
+            Additional variants
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
             Order the same layout with another style or an identical floor plan with
@@ -688,7 +688,7 @@ export function Floorplan2dConfigSection({
         <Collapsible open={config.variantEnabled}>
           <div className="space-y-1 rounded-md border border-border/30 bg-background/40 p-3">
             <Label htmlFor={`vstyle-${itemId}`} className="text-[0.7rem]">
-              Style za drugu varijantu
+              Style for the second variant
             </Label>
             <select
               id={`vstyle-${itemId}`}

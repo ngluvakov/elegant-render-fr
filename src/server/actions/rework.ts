@@ -14,18 +14,18 @@ import { transitionOrder } from "@/lib/order/status-machine";
 
 export async function requestReworkAction(orderId: string) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const order = await prisma.order.findUnique({ where: { id: orderId } });
   if (!order || order.userId !== session.user.id) {
-    return { error: "Porudžbina nije pronađena." };
+    return { error: "Order not found." };
   }
 
   if (order.status !== "in_review") {
-    return { error: "Revizija se može zatražiti samo kada je projekat na pregledu." };
+    return { error: "A revision can only be requested while the project is in review." };
   }
 
-  await transitionOrder(orderId, "revision_requested", session.user.id, "Klijent zatražio izmene");
+  await transitionOrder(orderId, "revision_requested", session.user.id, "Client requested changes");
 
   return { success: true };
 }

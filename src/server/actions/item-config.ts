@@ -19,9 +19,9 @@ import {
   calculateQuote,
   type QuoteItem,
 } from "@/lib/catalog/calculate";
-// repriceOrder živi u @/server/order/reprice.ts (običan modul) da ne bi
-// bio izložen kao javni server-action endpoint — pozivamo ga tek posle
-// ownership/status provera u akcijama ispod.
+// repriceOrder lives in @/server/order/reprice.ts (a plain module) so it is
+// not exposed as a public server-action endpoint — we call it only after the
+// ownership/status checks in the actions below.
 import { repriceOrder } from "@/server/order/reprice";
 import { getConfiguratorProduct } from "@/lib/catalog/configurator";
 import { enforceCleanScan } from "@/lib/file-scan";
@@ -134,7 +134,7 @@ export async function updateItemConfig(
   },
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
@@ -142,14 +142,14 @@ export async function updateItemConfig(
   });
 
   if (!item || item.order.userId !== session.user.id) {
-    return { error: "Stavka nije pronađena." };
+    return { error: "Item not found." };
   }
 
-  // Isti gate kao canEditItems na detalju porudžbine: podaci stavke se
-  // popunjavaju do početka izrade, posle toga je sve zaključano.
+  // Same gate as canEditItems on the order detail: item data is filled in
+  // until production starts; after that everything is locked.
   const EDITABLE_STATUSES = ["draft", "awaiting_payment", "paid"];
   if (!EDITABLE_STATUSES.includes(item.order.status)) {
-    return { error: "Porudžbina je u izradi — stavke se više ne mogu menjati." };
+    return { error: "The order is in production — items can no longer be changed." };
   }
 
   const updateData: Record<string, unknown> = {};
@@ -176,7 +176,7 @@ export async function confirmItemFileUpload(
   floorId?: string,
 ) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   // ISO 27001 A.8.7. Sync AV scan before any DB row is created — an
   // infected upload never enters our system. enforceCleanScan handles
@@ -214,17 +214,17 @@ export async function deleteOrderFile(
   fileId: string,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const file = await prisma.orderFile.findUnique({
     where: { id: fileId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!file) return { error: "Fajl nije pronađen." };
+  if (!file) return { error: "File not found." };
   if (file.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (file.order.status !== "draft")
-    return { error: "Fajlovi se mogu brisati samo u nacrtu." };
+    return { error: "Files can only be deleted on a draft." };
 
   await prisma.orderFile.delete({ where: { id: fileId } });
   revalidatePath(`/portal/orders/${file.order.id}`);
@@ -235,17 +235,17 @@ export async function deleteOrderItem(
   itemId: string,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.order.status !== "draft")
-    return { error: "Stavke se mogu brisati samo u nacrtu." };
+    return { error: "Items can only be deleted on a draft." };
 
   const orderId = item.order.id;
 
@@ -262,7 +262,7 @@ export async function addOrderItem(
   sourceMode?: string,
 ): Promise<ItemConfigResult & { newItemId?: string }> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
@@ -272,19 +272,19 @@ export async function addOrderItem(
       items: { select: { productId: true } },
     },
   });
-  if (!order) return { error: "Porudžbina nije pronađena." };
+  if (!order) return { error: "Order not found." };
   if (order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (order.status !== "draft")
-    return { error: "Stavke se mogu dodavati samo u nacrtu." };
+    return { error: "Items can only be added on a draft." };
   if (order.items.some((i) => i.productId === productId))
-    return { error: "Ova usluga je već u porudžbini." };
+    return { error: "This service is already in the order." };
 
   const pricingCatalog = await getPublishedPricingCatalog();
   const lookup = getConfiguratorProduct(productId, pricingCatalog.categories);
-  if (!lookup) return { error: "Nepoznata usluga." };
+  if (!lookup) return { error: "Unknown service." };
   if (lookup.product.inquiryOnly)
-    return { error: "Ova usluga zahteva konsultaciju, ne može se dodati u korpu." };
+    return { error: "This service requires a consultation and cannot be added to the cart." };
 
   const quoteItem: QuoteItem = {
     instanceId: `new-${Date.now()}`,
@@ -299,10 +299,11 @@ export async function addOrderItem(
 
   const calc = calculateQuote([quoteItem], [], pricingCatalog);
   const breakdown = calc.items[0];
-  if (!breakdown) return { error: "Greška u izračunu." };
+  if (!breakdown) return { error: "Calculation error." };
 
   // int-static and int-360 always start with one default floor so the
-  // price is stable (19.924 RSD / 34.574 RSD) and the UI has something to show.
+  // price is stable (first-floor EUR anchors from specialPricing) and the
+  // UI has something to show.
   // land-static seeds its default landscape config so the configurator
   // opens with name/stepper pre-filled.
   const initialConfigJson: Prisma.InputJsonValue | undefined =
@@ -379,7 +380,7 @@ function sanitizeRoom(r: InteriorRoom): InteriorRoom {
     : undefined;
   const notes = String(r.notes ?? "").slice(0, 2000);
   return {
-    name: String(r.name ?? "").trim().slice(0, 80) || "Prostorija",
+    name: String(r.name ?? "").trim().slice(0, 80) || "Room",
     cameras: Math.max(1, Math.min(20, Number(r.cameras) || 1)),
     ...(validStyle ? { styleId: validStyle } : {}),
     ...(notes ? { notes } : {}),
@@ -407,7 +408,7 @@ function sanitizeFloor(f: InteriorFloor, idx: number): InteriorFloor {
     : undefined;
   return {
     id: String(f.id || makeFloorId()),
-    name: String(f.name || `Sprat ${idx + 1}`).trim().slice(0, 80),
+    name: String(f.name || `Floor ${idx + 1}`).trim().slice(0, 80),
     rooms: (f.rooms ?? []).map(sanitizeRoom).slice(0, 40),
     description: String(f.description ?? "").slice(0, 2000),
     ...(validTime ? { timeOfDay: validTime } : {}),
@@ -426,7 +427,7 @@ function sanitizeTour360Room(r: Tour360Room): Tour360Room {
     : undefined;
   const notes = String(r.notes ?? "").slice(0, 2000);
   return {
-    name: String(r.name ?? "").trim().slice(0, 80) || "Prostorija",
+    name: String(r.name ?? "").trim().slice(0, 80) || "Room",
     hotspots: Math.max(0, Math.min(20, Number(r.hotspots) || 0)),
     staticCameras: Math.max(0, Math.min(20, Number(r.staticCameras) || 0)),
     ...(validStyle ? { styleId: validStyle } : {}),
@@ -455,7 +456,7 @@ function sanitizeTour360Floor(f: Tour360Floor, idx: number): Tour360Floor {
     : undefined;
   return {
     id: String(f.id || makeFloorId()),
-    name: String(f.name || `Sprat ${idx + 1}`).trim().slice(0, 80),
+    name: String(f.name || `Floor ${idx + 1}`).trim().slice(0, 80),
     rooms: (f.rooms ?? []).map(sanitizeTour360Room).slice(0, 40),
     description: String(f.description ?? "").slice(0, 2000),
     ...(validTime ? { timeOfDay: validTime } : {}),
@@ -471,19 +472,19 @@ export async function updateTour360Config(
   config: Tour360Config,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== "int-360")
-    return { error: "Samo za 360 virtuelnu turu." };
+    return { error: "Only for the 360 virtual tour." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const sanitizedFloors = (config.floors ?? [])
     .slice(0, 20)
@@ -514,19 +515,19 @@ export async function updateLandscapeConfig(
   config: LandscapeConfig,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== "land-static")
-    return { error: "Samo za pejzažni render." };
+    return { error: "Only for the landscape render." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const sanitized = sanitizeLandscapeConfig(config);
 
@@ -569,19 +570,19 @@ export async function updateFloorplanConfig(
   config: FloorplanConfig,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== "fp3d-single")
-    return { error: "Samo za 3D osnove prostora." };
+    return { error: "Only for 3D floor plans." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const sanitized = sanitizeFloorplanConfig(config);
   const qi: QuoteItem = {
@@ -613,19 +614,19 @@ export async function updateFloorplan2dConfig(
   config: Floorplan2dConfig,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== "fp2d-single")
-    return { error: "Samo za 2D osnove prostora." };
+    return { error: "Only for 2D floor plans." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const sanitized = sanitizeFloorplan2dConfig(config);
   const qi: QuoteItem = {
@@ -657,19 +658,19 @@ export async function updateSiteplanConfig(
   config: SiteplanConfig,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== "sp-first")
-    return { error: "Samo za 3D situacioni prikaz." };
+    return { error: "Only for the 3D site plan." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const sanitized = sanitizeSiteplanConfig(config);
   const qi: QuoteItem = {
@@ -701,19 +702,19 @@ export async function updateStagingConfig(
   config: StagingConfig,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== "vs-static" && item.productId !== "vs-360")
-    return { error: "Samo za virtuelno opremanje." };
+    return { error: "Only for virtual staging." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const productId = item.productId as StagingProductId;
   const sanitized = sanitizeStagingConfig(config);
@@ -751,7 +752,7 @@ export async function swapStagingType(
   itemId: string,
 ): Promise<ItemConfigResult & { newItemId?: string }> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
@@ -766,13 +767,13 @@ export async function swapStagingType(
       },
     },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== "vs-static" && item.productId !== "vs-360")
-    return { error: "Samo za virtuelno opremanje." };
+    return { error: "Only for virtual staging." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const targetProductId =
     item.productId === "vs-static" ? "vs-360" : "vs-static";
@@ -783,17 +784,17 @@ export async function swapStagingType(
   ) {
     return {
       error:
-        "Drugi tip staging-a već postoji u ovoj porudžbini. Obrišite ga prvo.",
+        "The other staging type already exists in this order. Delete it first.",
     };
   }
 
   const lookup = getConfiguratorProduct(targetProductId);
-  if (!lookup) return { error: "Nepoznata usluga." };
+  if (!lookup) return { error: "Unknown service." };
 
   const sanitized = sanitizeStagingConfig({
     ...defaultStagingConfig(),
     // Carry over the room name so the customer doesn't lose context
-    roomName: (item.configJson as { roomName?: string } | null)?.roomName ?? "Soba",
+    roomName: (item.configJson as { roomName?: string } | null)?.roomName ?? "Room",
   });
   const qi: QuoteItem = {
     instanceId: `swap-${Date.now()}`,
@@ -803,7 +804,7 @@ export async function swapStagingType(
   };
   const calc = calculateQuote([qi]);
   const breakdown = calc.items[0];
-  if (!breakdown) return { error: "Greška u izračunu." };
+  if (!breakdown) return { error: "Calculation error." };
 
   // Order is critical: OrderFile.orderItemId has no onDelete cascade, so
   // deleting the old item before re-pointing files would fail with an FK
@@ -844,19 +845,19 @@ export async function updateRenovationConfig(
   config: RenovationConfig,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== "reno-image")
-    return { error: "Samo za virtuelnu renovaciju." };
+    return { error: "Only for virtual renovation." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const sanitized = sanitizeRenovationConfig(config);
   const qi: QuoteItem = {
@@ -888,19 +889,19 @@ export async function updateDtdConfig(
   config: DtdConfig,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== "dtd-image")
-    return { error: "Samo za Dan u noć konverziju." };
+    return { error: "Only for the day-to-dusk conversion." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const sanitized = sanitizeDtdConfig(config);
   const qi: QuoteItem = {
@@ -932,19 +933,19 @@ export async function updateItemRemovalConfig(
   config: ItemRemovalConfig,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== "ir-simple" && item.productId !== "ir-complex")
-    return { error: "Samo za uklanjanje elemenata." };
+    return { error: "Only for item removal." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const productId = item.productId as ItemRemovalProductId;
   const sanitized = sanitizeItemRemovalConfig(config);
@@ -977,19 +978,19 @@ export async function updateAnimationConfig(
   config: AnimationConfig,
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== ANIM_PRODUCT_ID)
-    return { error: "Samo za 3D animaciju." };
+    return { error: "Only for 3D animation." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const sanitized = sanitizeAnimationConfig(config);
   const qi: QuoteItem = {
@@ -1023,18 +1024,18 @@ export async function updateAnimationConfig(
 
 async function authorizeExteriorEdit(itemId: string, productId: string) {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." } as const;
+  if (!session?.user?.id) return { error: "You are not signed in." } as const;
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." } as const;
+  if (!item) return { error: "Item not found." } as const;
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." } as const;
+    return { error: "You do not have access." } as const;
   if (item.productId !== productId)
-    return { error: `Samo za ${productId}.` } as const;
+    return { error: `Only for ${productId}.` } as const;
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." } as const;
+    return { error: "Changes are allowed only on a draft." } as const;
   return { item } as const;
 }
 
@@ -1124,19 +1125,19 @@ export async function updateInteriorFloors(
   floors: InteriorFloor[],
 ): Promise<ItemConfigResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
   const item = await prisma.orderItem.findUnique({
     where: { id: itemId },
     include: { order: { select: { userId: true, status: true, id: true } } },
   });
-  if (!item) return { error: "Stavka nije pronađena." };
+  if (!item) return { error: "Item not found." };
   if (item.order.userId !== session.user.id)
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   if (item.productId !== "int-static")
-    return { error: "Samo za render enterijera (statički)." };
+    return { error: "Only for the interior render (static)." };
   if (item.order.status !== "draft")
-    return { error: "Izmene dozvoljene samo u nacrtu." };
+    return { error: "Changes are allowed only on a draft." };
 
   const sanitized = floors.slice(0, 20).map(sanitizeFloor);
   const { totalEur } = calcInteriorTotal(sanitized);

@@ -100,7 +100,7 @@ function validateFiles(
 ): ProjectInquiryFileInput[] | { error: string } {
   if (!files?.length) return [];
   if (files.length > 12) {
-    return { error: "Možete priložiti najviše 12 fajlova." };
+    return { error: "You can attach up to 12 files." };
   }
 
   let total = 0;
@@ -114,16 +114,16 @@ function validateFiles(
     const fileSize = Number(file.fileSize);
 
     if (!fileName || !mimeType || !storagePath || !Number.isFinite(fileSize)) {
-      return { error: "Jedan od priloženih fajlova nije ispravan." };
+      return { error: "One of the attached files is invalid." };
     }
     if (fileSize <= 0 || fileSize > PROJECT_INQUIRY_MAX_FILE_BYTES) {
-      return { error: "Jedan od fajlova prelazi limit od 50MB." };
+      return { error: "One of the files exceeds the 50MB limit." };
     }
     if (!isAllowedProjectInquiryMimeType(mimeType)) {
-      return { error: "Podržani su JPG, PNG, WebP, TIFF i PDF fajlovi." };
+      return { error: "Supported file types are JPG, PNG, WebP, TIFF and PDF." };
     }
     if (!storagePath.startsWith(`inquiries/${draftId}/`)) {
-      return { error: "Putanja priloženog fajla nije ispravna." };
+      return { error: "The attached file path is invalid." };
     }
     if (seen.has(storagePath)) continue;
     seen.add(storagePath);
@@ -132,7 +132,7 @@ function validateFiles(
   }
 
   if (total > PROJECT_INQUIRY_MAX_TOTAL_BYTES) {
-    return { error: "Ukupna veličina fajlova prelazi 100MB." };
+    return { error: "The total size of the files exceeds 100MB." };
   }
 
   return cleaned;
@@ -154,33 +154,34 @@ export async function submitProjectInquiry(
   if (!limit.ok) return { error: rateLimitMessage(limit.retryAfterSeconds) };
 
   if (!input || typeof input !== "object") {
-    return { error: "Neispravan zahtev." };
+    return { error: "Invalid request." };
   }
 
   const draftId = cleanRequired(input.draftId, 80);
-  if (!validDraftId(draftId)) return { error: "Neispravan draft upita." };
+  if (!validDraftId(draftId)) return { error: "Invalid inquiry draft." };
 
   const contactName = cleanRequired(input.contactName, 120);
-  if (contactName.length < 2) return { error: "Ime je obavezno." };
+  if (contactName.length < 2) return { error: "Name is required." };
 
   const email = cleanRequired(input.email, 200).toLowerCase();
-  if (!validEmail(email)) return { error: "Email adresa nije ispravna." };
+  if (!validEmail(email)) return { error: "Email address is invalid." };
 
   const message = cleanRequired(input.message, 4000);
   if (message.length < 8) {
-    return { error: "Dodajte bar kratak opis projekta." };
+    return { error: "Add at least a short project description." };
   }
 
   const files = validateFiles(input.files, draftId);
   if ("error" in files) return files;
 
   // ISO 27001 A.8.7. Sync AV scan all attached files in parallel before
-  // creating any DB rows. Zaražen fajl UVEK odbija ceo upit. Ali kad je
-  // skener NEDOSTUPAN, umesto da tiho izgubimo lead (incident 2026-06-24:
-  // kupac slao fotografije prostora, Cloudmersive pao, upit nestao bez
-  // traga), fajlove stavljamo u KARANTIN (scanStatus "pending", zadržani
-  // u storage-u) i puštamo upit da se sačuva — kontakt kupca je vredniji
-  // od trenutne provere. Admin dobija upozorenje i proverava ručno.
+  // creating any DB rows. An infected file ALWAYS rejects the whole inquiry.
+  // But when the scanner is UNAVAILABLE, instead of silently losing the lead
+  // (incident 2026-06-24: a customer sent photos of the space, Cloudmersive
+  // went down, the inquiry vanished without a trace), we QUARANTINE the
+  // files (scanStatus "pending", kept in storage) and let the inquiry save —
+  // the customer's contact is worth more than an instant check. Admin gets
+  // a warning and reviews manually.
   const fileScanStatus: Array<"clean" | "pending"> = files.map(() => "clean");
   let quarantinedCount = 0;
   if (files.length > 0) {
@@ -197,7 +198,7 @@ export async function submitProjectInquiry(
         }),
       ),
     );
-    // Uz "quarantine" jedini preostali ok:false je zaražen fajl.
+    // With "quarantine", the only remaining ok:false is an infected file.
     const infected = scanResults.find((r) => !r.ok);
     if (infected && !infected.ok) {
       // Best-effort cleanup of any other files in the same inquiry —
@@ -246,8 +247,8 @@ export async function submitProjectInquiry(
           mimeType: file.mimeType,
           storagePath: file.storagePath,
           scanStatus: fileScanStatus[idx],
-          // Skenirani u ovom trenutku samo ako je čist; pending čeka ručnu
-          // proveru pa nema vreme skena.
+          // Marked as scanned right now only when clean; pending awaits a
+          // manual review, so it has no scan timestamp.
           scannedAt: fileScanStatus[idx] === "clean" ? scannedAt : null,
         })),
       },
@@ -271,12 +272,13 @@ export async function submitProjectInquiry(
     });
   });
 
-  // Vidljiv alarm kad je lead ušao sa neskeniranim fajlovima — ranije bi
-  // ceo upit tiho nestao. Ide u Sentry (message, ne exception) da se ne
-  // izgubi u šumu i da se vidi učestalost skenerskih ispada.
+  // Visible alarm when a lead came in with unscanned files — previously the
+  // whole inquiry would silently vanish. Goes to Sentry (message, not
+  // exception) so it doesn't get lost in the noise and the frequency of
+  // scanner outages stays visible.
   if (quarantinedCount > 0) {
     Sentry.captureMessage(
-      `Upit ${inquiry.id} sačuvan sa ${quarantinedCount} neskeniranih fajlova (skener nedostupan) — potrebna ručna provera.`,
+      `Inquiry ${inquiry.id} saved with ${quarantinedCount} unscanned file(s) (scanner unavailable) — manual review required.`,
       {
         level: "warning",
         tags: { area: "project-inquiry", flow: "scan-quarantine" },
@@ -316,7 +318,7 @@ async function assertAdmin(): Promise<{ ok: true } | { error: string }> {
     await requirePermission("INQUIRIES_MANAGE");
     return { ok: true };
   } catch {
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   }
 }
 
@@ -326,7 +328,7 @@ export async function updateProjectInquiryStatus(
 ): Promise<{ ok: true } | { error: string }> {
   const admin = await assertAdmin();
   if ("error" in admin) return admin;
-  if (!VALID_STATUSES.includes(status)) return { error: "Nepoznat status." };
+  if (!VALID_STATUSES.includes(status)) return { error: "Unknown status." };
 
   await prisma.projectInquiry.update({
     where: { id: inquiryId },
@@ -356,7 +358,7 @@ export async function retryProjectInquiryBitrixSync(
       error:
         err instanceof Error
           ? err.message
-          : "Bitrix sync trenutno nije uspeo.",
+          : "Bitrix sync failed this time. Please try again.",
     };
   }
 }

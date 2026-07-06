@@ -45,7 +45,7 @@ export async function handleDealUpdate(dealId: string) {
       order.id,
       newStatus,
       undefined,
-      "Status ažuriran iz Bitrix24",
+      "Status updated from Bitrix24",
       "bitrix24",
     );
     console.log(`[Bitrix24 Inbound] Order ${order.orderNumber}: ${order.status} → ${newStatus}`);

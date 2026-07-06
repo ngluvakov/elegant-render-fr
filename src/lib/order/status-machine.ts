@@ -12,8 +12,8 @@ import { prisma } from "@/lib/db";
 import { canTransition } from "@/lib/order/status-transitions";
 import { syncDealStatus } from "@/server/bitrix/sync-status";
 
-// Tabela prelaza živi u status-transitions.ts (čist modul, testabilan
-// bez DB) — ovde ostaje samo DB-vezani transitionOrder.
+// The transition table lives in status-transitions.ts (a pure module,
+// testable without the DB) — only the DB-bound transitionOrder stays here.
 export { canTransition } from "@/lib/order/status-transitions";
 
 export async function transitionOrder(

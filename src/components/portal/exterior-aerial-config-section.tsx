@@ -450,7 +450,7 @@ export function ExtAerialConfigSection({
                   Plot boundary marking
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  Show lines plot na render
+                  Show plot boundary lines on the render
                 </span>
               </div>
             </div>

@@ -17,8 +17,9 @@ export type AdminContext = {
   permissions: AdminPermission[];
 };
 
-// cache(): admin layout + requirePermission + stranica zovu ovo u istom
-// renderu — bez keša to su 3× auth() + 3 user upita po admin navigaciji.
+// cache(): the admin layout + requirePermission + the page call this in the
+// same render — without the cache that is 3× auth() + 3 user queries per
+// admin navigation.
 export const getAdminContext = cache(
   async (): Promise<AdminContext | null> => {
     const session = await auth();

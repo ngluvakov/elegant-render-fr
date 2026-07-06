@@ -176,7 +176,7 @@ export default async function AdminOrderDetailPage({
         {/* Left: comments */}
         <div className="space-y-4">
           <h2 className="text-sm font-semibold text-foreground">
-            Konverzacija ({order.comments.length})
+            Conversation ({order.comments.length})
           </h2>
 
           {order.comments.length === 0 && (
@@ -320,17 +320,17 @@ export default async function AdminOrderDetailPage({
           {order.sourceInquiry && (
             <div className="rounded-2xl border border-[color:var(--color-sage)]/30 bg-[color:var(--color-sage)]/5 p-5">
               <h3 className="text-sm font-semibold text-foreground">
-                Iz upita
+                From inquiry
               </h3>
               <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
                 <div className="flex flex-wrap gap-x-2">
-                  <dt className="w-20 text-muted-foreground">Tip:</dt>
+                  <dt className="w-20 text-muted-foreground">Type:</dt>
                   <dd className="text-foreground">
                     {order.sourceInquiry.serviceType ?? "—"}
                   </dd>
                 </div>
                 <div className="flex flex-wrap gap-x-2">
-                  <dt className="w-20 text-muted-foreground">Stigao:</dt>
+                  <dt className="w-20 text-muted-foreground">Received:</dt>
                   <dd className="text-foreground">
                     {new Date(order.sourceInquiry.createdAt).toLocaleString(
                       "en-GB",

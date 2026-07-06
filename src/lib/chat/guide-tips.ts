@@ -29,198 +29,198 @@ type ChatGuideRule = ChatGuideTip & {
 const GENERAL_TIPS: ChatGuideTip[] = [
   {
     id: "model-reuse",
-    label: "Pametniji budžet",
+    label: "Smarter budget",
     body:
-      "Ako već planirate render, isti 3D model može pojeftiniti animaciju, 360 ili VR.",
+      "If you are already planning a render, the same 3D model can make an animation, 360 or VR cheaper.",
   },
   {
     id: "better-input",
-    label: "Bolji rezultat",
+    label: "Better results",
     body:
-      "Osnove, fotografije i stil reference najčešće smanjuju broj revizija.",
+      "Floor plans, photographs and style references usually reduce the number of revision rounds.",
   },
   {
     id: "missing-details",
-    label: "Pre slanja",
+    label: "Before you submit",
     body:
-      "Dodajte broj prostorija, spratova, kadrova i rok pre nego što pošaljete projekat.",
+      "Add the number of rooms, floors and views plus the deadline before you submit the project.",
   },
 ];
 
 const PRICING_TIPS: ChatGuideTip[] = [
   {
     id: "animation-active",
-    label: "Animacija jeftinije",
+    label: "Cheaper animation",
     body:
-      "Animacija je najpovoljnija uz aktivan 3D projekat: €15/sek pada na €8/sek.",
+      "Animation is cheapest with an active 3D project: €15/sec drops to €8/sec.",
   },
   {
     id: "vr-existing-model",
-    label: "VR sa modelom",
+    label: "VR with a model",
     body:
-      "VR sa postojećim modelom kreće od €1500; samostalni VR od €3000.",
+      "VR with an existing model starts at €1500; standalone VR from €3000.",
   },
   {
     id: "interior-included",
-    label: "Iskoristite paket",
+    label: "Use the full package",
     body:
-      "Enterijer uključuje 10 soba i 10 rendera. Manje soba? Preostale kadrove usmerite na ključne prostorije.",
+      "The interior package includes 10 rooms and 10 renders. Fewer rooms? Point the remaining views at the key spaces.",
   },
   {
     id: "wrong-service-choice",
-    label: "Izbor usluge",
+    label: "Choosing a service",
     body:
-      "Ako niste sigurni šta vam treba, opišite cilj. Nekad je jeftinije dodati uslugu nego naručiti pogrešan format.",
+      "If you are not sure what you need, describe the goal. Sometimes adding a service is cheaper than ordering the wrong format.",
   },
 ];
 
 const AI_STUDIO_ROUTE_TIPS: ChatGuideTip[] = [
   {
     id: "ai-tool-choice",
-    label: "Izbor AI alata",
+    label: "Choosing an AI tool",
     body:
-      "Simple alati su za brze korekcije; advanced alati su bolji kada menjate veći deo prostora.",
+      "Simple tools are for quick corrections; advanced tools work better when you change a larger part of the space.",
   },
   {
     id: "ai-credit-logic",
-    label: "Krediti",
+    label: "Credits",
     body:
-      "Jednostavne obrade troše 0.5 kredita, kompleksne 1 kredit. Veći paket spušta cenu po kreditu.",
+      "Simple edits use 0.5 credits, complex ones 1 credit. A larger pack lowers the price per credit.",
   },
   {
     id: "ai-instruction",
-    label: "Jasna AI instrukcija",
+    label: "Clear AI instructions",
     body:
-      "Kod AI obrade napišite šta sme da se menja, a šta mora da ostane isto.",
+      "For AI edits, write down what may change and what must stay the same.",
   },
   {
     id: "ai-object-reference",
-    label: "Komad kao referenca",
+    label: "Item as reference",
     body:
-      "Za dodavanje ili zamenu nameštaja/dekora treba vam fotografija prostora i jedna ili više slika istog komada koji ubacujete.",
+      "To add or replace furniture/decor you need a photo of the space and one or more images of the exact item you are inserting.",
   },
 ];
 
 const CREDIT_TIPS: ChatGuideTip[] = [
   {
     id: "credit-tier",
-    label: "Cena po kreditu",
+    label: "Price per credit",
     body:
-      "Ako planirate seriju obrada, veći paket smanjuje cenu po kreditu i važi 12 meseci.",
+      "If you plan a series of edits, a larger pack lowers the price per credit and stays valid for 12 months.",
   },
   {
     id: "credit-simple-complex",
-    label: "Planiranje obrade",
+    label: "Planning your edits",
     body:
-      "Brze korekcije obično troše 0.5 kredita, a staging, renovacija i redesign 1 kredit.",
+      "Quick corrections usually use 0.5 credits, while staging, renovation and redesign use 1 credit.",
   },
 ];
 
 const ORDER_ROUTE_TIPS: ChatGuideTip[] = [
   {
     id: "order-source-files",
-    label: "Fajlovi pomažu",
+    label: "Files help",
     body:
-      "Najkorisnije je poslati osnove, fotografije postojećeg stanja, skice i reference materijala.",
+      "The most useful uploads are floor plans, photos of the current state, sketches and material references.",
   },
   {
     id: "order-instructions",
-    label: "Bolje instrukcije",
+    label: "Better instructions",
     body:
-      "Dodavanje kratkog cilja projekta pomaže da prvi rezultat bude bliži onome što želite.",
+      "Adding a short project goal helps the first result land closer to what you want.",
   },
   {
     id: "order-camera-priority",
-    label: "Prioritet kadrova",
+    label: "View priorities",
     body:
-      "Napišite koje uglove najviše želite da prodate ili objasnite.",
+      "Tell us which angles you most want to sell or explain.",
   },
 ];
 
 const SERVICE_ROUTE_TIPS: ChatGuideTip[] = [
   {
     id: "service-materials",
-    label: "Pre poručivanja",
+    label: "Before ordering",
     body:
-      "Za ovu uslugu unapred spremite osnove, fotografije, reference stila i kratku listu prioriteta.",
+      "For this service, prepare floor plans, photographs, style references and a short list of priorities in advance.",
   },
   {
     id: "service-scope",
-    label: "Opseg projekta",
+    label: "Project scope",
     body:
-      "Jasan broj prostorija, spratova, kadrova ili hotspotova sprečava pogrešan izbor paketa.",
+      "A clear number of rooms, floors, views or hotspots prevents choosing the wrong package.",
   },
 ];
 
 const PORTFOLIO_TIPS: ChatGuideTip[] = [
   {
     id: "portfolio-reference",
-    label: "Sačuvajte referencu",
+    label: "Save a reference",
     body:
-      "Ako želite rezultat sličan nekom radu, sačuvajte referencu i napišite šta vam se tačno dopada.",
+      "If you want a result similar to one of our projects, save the reference and note exactly what you like about it.",
   },
   {
     id: "portfolio-style",
-    label: "Stil nije slučajan",
+    label: "Style is deliberate",
     body:
-      "Najkorisnije reference su one koje pokazuju svetlo, materijale i atmosferu koju želite.",
+      "The most useful references show the light, materials and atmosphere you want.",
   },
 ];
 
 const CONTACT_TIPS: ChatGuideTip[] = [
   {
     id: "contact-short-brief",
-    label: "Kratak brief",
+    label: "Short brief",
     body:
-      "Dovoljni su osnovni podaci, rok i cilj projekta. Detalje možemo razjasniti bez pritiska.",
+      "Basic details, a deadline and the project goal are enough. We can clarify the rest without pressure.",
   },
 ];
 
 const ABOUT_TIPS: ChatGuideTip[] = [
   {
     id: "about-white-rook",
-    label: "Ko stoji iza brenda",
+    label: "Who is behind the brand",
     body:
-      "Elegant Render je B2C podbrend kompanije White Rook DOO, sa istim timom i jasnijim procesom za krajnje kupce.",
+      "Elegant Render is a B2C sub-brand of White Rook DOO, with the same team and a clearer process for end customers.",
   },
   {
     id: "about-certificates",
-    label: "Sertifikati",
+    label: "Certifications",
     body:
-      "Proces se oslanja na ISO 9001, ISO/IEC 27001 i ISO 50001 sertifikate koje potvrđuje TUV Rheinland.",
+      "The process relies on ISO 9001, ISO/IEC 27001 and ISO 50001 certifications verified by TUV Rheinland.",
   },
 ];
 
 const FAQ_ROUTE_TIPS: ChatGuideTip[] = [
   {
     id: "faq-answer-scope",
-    label: "Brz odgovor",
+    label: "Quick answers",
     body:
-      "Pitajte konkretno za rok, materijale, revizije, cenu ili AI obradu i dobićete najkraći relevantan odgovor.",
+      "Ask specifically about timing, materials, revisions, pricing or AI edits and you will get the shortest relevant answer.",
   },
   {
     id: "faq-next-step",
-    label: "Sledeći korak",
+    label: "Next step",
     body:
-      "Ako odgovor zavisi od obima projekta, najbrži sledeći korak je opis + osnove/fotografije kroz brzi upit.",
+      "If the answer depends on project scope, the fastest next step is a description plus floor plans/photos via a quick inquiry.",
   },
 ];
 
 const CONTEXT_TIPS: ChatGuideRule[] = [
   {
     id: "ai-before-upload",
-    label: "Pre uploada",
+    label: "Before uploading",
     body:
-      "Uploadujte jasnu fotografiju. Za staging i renovaciju najbolji su široki kadrovi; za dodavanje ili zamenu nameštaja/dekora dodajte i posebne slike tog komada.",
+      "Upload a clear photograph. Wide shots work best for staging and renovation; for adding or replacing furniture/decor, also include separate images of that item.",
     pages: ["ai_studio"],
     stages: ["before_upload"],
     priority: 100,
   },
   {
     id: "ai-after-upload",
-    label: "Pre generisanja",
+    label: "Before generating",
     body:
-      "Pre generisanja napišite šta mora da ostane isto: zidovi, prozori, raspored, materijali.",
+      "Before generating, write down what must stay the same: walls, windows, layout, materials.",
     pages: ["ai_studio"],
     stages: ["after_upload", "ready_to_generate"],
     priority: 95,
@@ -229,97 +229,97 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
     id: "ai-virtual-staging",
     label: "Virtual staging",
     body:
-      "Navedite namenu sobe, stil, paletu i šta ne želite da se pojavi u prostoru.",
+      "State the room's purpose, style, palette and anything you do not want to appear in the space.",
     pages: ["ai_studio"],
     editTypes: ["virtual_staging"],
     priority: 90,
   },
   {
     id: "ai-object-insertion",
-    label: "Nameštaj/dekor u enterijeru",
+    label: "Furniture/decor in interiors",
     body:
-      "Prva slika komada je glavna. Dodatni uglovi moraju biti isti model/boja/materijal. Maska je poželjna za dodavanje, a obavezna za zamenu.",
+      "The first item image is the main one. Additional angles must show the same model/color/material. A mask is recommended for adding and required for replacing.",
     pages: ["ai_studio"],
     editTypes: ["object_insertion"],
     priority: 90,
   },
   {
     id: "ai-renovation-redesign",
-    label: "Renovacija",
+    label: "Renovation",
     body:
-      "Odvojite materijale, nameštaj i osvetljenje. AI bolje razume zahtev kada nije sve u jednoj rečenici.",
+      "Separate materials, furniture and lighting. AI understands the request better when it is not all in one sentence.",
     pages: ["ai_studio"],
     editTypes: ["virtual_renovation", "room_redesign"],
     priority: 90,
   },
   {
     id: "ai-item-removal",
-    label: "Uklanjanje predmeta",
+    label: "Item removal",
     body:
-      "Ako uklanjate veći predmet, advanced maska pomaže da pozadina ostane prirodnija.",
+      "If you are removing a larger item, an advanced mask helps keep the background more natural.",
     pages: ["ai_studio"],
     editTypes: ["item_removal"],
     priority: 90,
   },
   {
     id: "ai-wall-color",
-    label: "Boja zidova",
+    label: "Wall color",
     body:
-      "Za promenu zidova napišite da li plafon, pod i nameštaj treba da ostanu netaknuti.",
+      "When changing walls, note whether the ceiling, floor and furniture should stay untouched.",
     pages: ["ai_studio"],
     editTypes: ["wall_color_change"],
     priority: 90,
   },
   {
     id: "ai-no-credits",
-    label: "Krediti",
+    label: "Credits",
     body:
-      "Jednostavne obrade troše 0.5 kredita, kompleksne 1 kredit. Veći paket spušta cenu po kreditu.",
+      "Simple edits use 0.5 credits, complex ones 1 credit. A larger pack lowers the price per credit.",
     pages: ["ai_studio"],
     stages: ["no_credits"],
     priority: 110,
   },
   {
     id: "ai-result-loop",
-    label: "Blizu dobrog?",
+    label: "Almost there?",
     body:
-      "Ako je rezultat blizu dobrog, koristite ga kao novu ulaznu sliku i tražite samo malu korekciju.",
+      "If the result is close, use it as the new input image and ask only for a small correction.",
     pages: ["ai_studio"],
     stages: ["has_result"],
     priority: 105,
   },
   {
     id: "order-missing-data",
-    label: "Čekaju podatke",
+    label: "Waiting for details",
     body:
-      "Ove stavke čekaju opis ili fajlove. Dodajte bar osnovu, fotografije i kratak cilj projekta.",
+      "These items are waiting for a description or files. Add at least a floor plan, photographs and a short project goal.",
     pages: ["order_detail"],
     stages: ["missing_order_data"],
     priority: 110,
   },
   {
     id: "order-interior-rooms",
-    label: "Enterijer",
+    label: "Interior",
     body:
-      "Ako imate manje od 10 soba, iskoristite preostale kadrove za dnevnu, kuhinju ili master spavaću.",
+      "If you have fewer than 10 rooms, use the remaining views for the living room, kitchen or master bedroom.",
     pages: ["order_detail"],
     productIds: ["int-static", "interior-static"],
     priority: 95,
   },
   {
     id: "order-360-interior",
-    label: "360 enterijer",
+    label: "360 interior",
     body:
-      "Za svaku sobu napišite hotspot prioritete i statične kadrove koji moraju postojati.",
+      "For each room, list the hotspot priorities and the static views that must exist.",
     pages: ["order_detail"],
     productIds: ["int-360", "interior-360"],
     priority: 95,
   },
   {
     id: "order-exterior-sides",
-    label: "Eksterijer",
+    label: "Exterior",
     body:
-      "Navedite koje strane objekta su najvažnije. Novi ugao sa nemodelovane strane može tražiti dodatnu geometriju.",
+      "Tell us which sides of the building matter most. A new angle from an unmodeled side may require additional geometry.",
     pages: ["order_detail"],
     productIds: [
       "ext-static",
@@ -333,18 +333,18 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
   },
   {
     id: "order-animation-path",
-    label: "Animacija",
+    label: "Animation",
     body:
-      "Opišite početak, kraj i tempo kamere. Ako već postoji aktivan model, animacija je znatno povoljnija.",
+      "Describe the start, end and pace of the camera. If an active model already exists, the animation is significantly cheaper.",
     pages: ["order_detail"],
     productIds: ["anim", "animation-from-scratch", "tour-assembly"],
     priority: 94,
   },
   {
     id: "order-staging-renovation",
-    label: "Staging i renovacija",
+    label: "Staging and renovation",
     body:
-      "Dodajte reference stila i šta ne treba menjati. To je često važnije od duge opšte instrukcije.",
+      "Add style references and what should not change. That is often more valuable than a long general instruction.",
     pages: ["order_detail"],
     productIds: [
       "vs-static",
@@ -358,28 +358,28 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
   },
   {
     id: "order-files-needed",
-    label: "Fajlovi",
+    label: "Files",
     body:
-      "Najkorisnije je poslati osnove, fotografije postojećeg stanja, skice i reference materijala.",
+      "The most useful uploads are floor plans, photos of the current state, sketches and material references.",
     pages: ["order_detail"],
     priority: 70,
     when: (context) => context.hasFiles === false,
   },
-  // ── Cenovnik (/pricing) — cart-aware purchase advice ──────────
+  // ── Pricing (/pricing) — cart-aware purchase advice ──────────
   {
     id: "pricing-empty-cart",
-    label: "Krenite od cilja",
+    label: "Start from the goal",
     body:
-      "Izaberite uslugu iz tabele i cena se računa odmah. Ako niste sigurni šta vam treba, pitajte me ovde.",
+      "Pick a service from the table and the price is calculated instantly. If you are not sure what you need, ask me here.",
     pages: ["pricing"],
     priority: 100,
     when: (context) => !(context.productIds && context.productIds.length),
   },
   {
     id: "pricing-exterior-second-view",
-    label: "Drugi prikaz je jeftiniji",
+    label: "A second view costs less",
     body:
-      "Imate eksterijer u korpi — drugi prikaz iz istog modela (360 ili iz vazduha) košta znatno manje jer je model već izgrađen.",
+      "You have an exterior in the cart — a second view from the same model (360 or aerial) costs significantly less because the model is already built.",
     pages: ["pricing"],
     productIds: ["ext-static", "exterior-static"],
     priority: 96,
@@ -392,18 +392,18 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
   },
   {
     id: "pricing-animation-active",
-    label: "Animacija uz model",
+    label: "Animation with your model",
     body:
-      "Animacija je znatno povoljnija uz aktivan 3D model nego iz nule. Ako već naručujete render, dodajte je u istoj porudžbini.",
+      "Animation is significantly cheaper with an active 3D model than from scratch. If you are already ordering a render, add it in the same order.",
     pages: ["pricing"],
     productIds: ["anim", "animation-from-scratch"],
     priority: 95,
   },
   {
     id: "pricing-model-first-discount",
-    label: "Model se gradi jednom",
+    label: "The model is built once",
     body:
-      "Više prikaza iz istog modela = niža cena po prikazu. Prva isporuka nosi pun iznos, svaki sledeći je jeftiniji.",
+      "More views from the same model = a lower price per view. The first delivery carries the full amount; each following one is cheaper.",
     pages: ["pricing"],
     priority: 94,
     when: (context) =>

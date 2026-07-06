@@ -1,8 +1,8 @@
 /**
- * Invarijante cenovnika preko celog kataloga. Tačne poslovne vrednosti
- * (popusti po pravilima 1-4, EUR baze) pokriva scripts/verify-pricing.ts;
- * ovi testovi čuvaju strukturna svojstva na koja se oslanjaju checkout i
- * repriceOrder: celobrojne cene, konzistentnost centi, granice popusta.
+ * Pricing invariants across the whole catalog. Exact business values
+ * (discounts per rules 1-4, EUR bases) are covered by scripts/verify-pricing.ts;
+ * these tests guard the structural properties that checkout and
+ * repriceOrder rely on: integer prices, cent consistency, discount bounds.
  */
 import { describe, expect, it } from "vitest";
 import { calculateQuote, priceItems, type QuoteItem } from "@/lib/catalog/calculate";
@@ -23,33 +23,33 @@ const ALL_PRODUCTS = CONFIGURATOR_CATEGORIES.flatMap((cat) =>
     .map((p) => ({ categoryId: cat.id, productId: p.id })),
 );
 
-describe("calculateQuote — invarijante preko celog kataloga", () => {
-  it("katalog nije prazan", () => {
+describe("calculateQuote — invariants across the whole catalog", () => {
+  it("catalog is not empty", () => {
     expect(ALL_PRODUCTS.length).toBeGreaterThan(0);
   });
 
   for (const { categoryId, productId } of ALL_PRODUCTS) {
-    it(`${productId}: pojedinačna stavka daje validan breakdown`, () => {
+    it(`${productId}: a single item yields a valid breakdown`, () => {
       const calc = calculateQuote([singleItem(productId, categoryId)]);
       expect(calc.items).toHaveLength(1);
       const item = calc.items[0];
 
-      // EUR major-unit cene su celobrojne (pravilo platforme).
+      // EUR major-unit prices are integers (platform rule).
       expect(Number.isInteger(item.totalEur)).toBe(true);
       expect(Number.isInteger(item.totalCents)).toBe(true);
       expect(item.totalEur).toBeGreaterThanOrEqual(0);
 
-      // Centi i major-unit ne smeju da se raziđu više od zaokruživanja.
+      // Cents and major units must not diverge by more than rounding.
       expect(Math.abs(item.totalCents / 100 - item.totalEur)).toBeLessThan(1);
 
-      // Popust u [0, 100] i original ≥ finalna cena.
+      // Discount in [0, 100] and original ≥ final price.
       expect(item.discountPct).toBeGreaterThanOrEqual(0);
       expect(item.discountPct).toBeLessThanOrEqual(100);
       expect(item.originalTotalEur).toBeGreaterThanOrEqual(item.totalEur);
     });
   }
 
-  it("ukupno = suma stavki (EUR i centi)", () => {
+  it("total = sum of items (EUR and cents)", () => {
     const items = ALL_PRODUCTS.slice(0, 4).map(({ productId, categoryId }, i) => ({
       ...singleItem(productId, categoryId),
       instanceId: `multi-${i}`,
@@ -61,7 +61,7 @@ describe("calculateQuote — invarijante preko celog kataloga", () => {
     expect(calc.totalCents).toBe(sumCents);
   });
 
-  it("priceItems se slaže sa calculateQuote za standardne stavke", () => {
+  it("priceItems agrees with calculateQuote for standard items", () => {
     const items = ALL_PRODUCTS.slice(0, 3).map(({ productId, categoryId }, i) => ({
       ...singleItem(productId, categoryId),
       instanceId: `pi-${i}`,
@@ -72,10 +72,10 @@ describe("calculateQuote — invarijante preko celog kataloga", () => {
     expect(viaOrchestrator.totalCents).toBe(viaEngine.totalCents);
   });
 
-  it("cross-service popusti mogu samo da snize ukupnu cenu", () => {
-    // Sve stavke zajedno — najagresivniji cross-service scenario koji
-    // konfigurator može da proizvede. Ukupno sa popustima ne sme preći
-    // sumu pojedinačnih cena, a popust ostaje u [0, 100].
+  it("cross-service discounts can only lower the total price", () => {
+    // All items together — the most aggressive cross-service scenario the
+    // configurator can produce. The discounted total must not exceed the
+    // sum of individual prices, and the discount stays in [0, 100].
     const items = ALL_PRODUCTS.map(({ productId, categoryId }, i) => ({
       ...singleItem(productId, categoryId),
       instanceId: `cap-${i}`,

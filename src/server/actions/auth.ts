@@ -45,16 +45,16 @@ export async function signUpAction(
   const callbackUrl = sanitizeAuthCallback(formData.get("callbackUrl"));
 
   if (!name || !email || !password) {
-    return { error: "Sva polja su obavezna." };
+    return { error: "All fields are required." };
   }
 
   if (password.length < 8) {
-    return { error: "Lozinka mora imati najmanje 8 karaktera." };
+    return { error: "The password must be at least 8 characters long." };
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    return { error: "Nalog sa ovom email adresom već postoji." };
+    return { error: "An account with this email address already exists." };
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
@@ -104,7 +104,7 @@ export async function signInAction(
   const callbackUrl = sanitizeAuthCallback(formData.get("callbackUrl"));
 
   if (!email || !password) {
-    return { error: "Email i lozinka su obavezni." };
+    return { error: "Email and password are required." };
   }
 
   try {
@@ -114,7 +114,7 @@ export async function signInAction(
       redirect: false,
     });
   } catch {
-    return { error: "Pogrešan email ili lozinka." };
+    return { error: "Incorrect email or password." };
   }
 
   redirect(callbackUrl);
@@ -129,7 +129,7 @@ export async function forgotPasswordAction(
   const email = (formData.get("email") as string)?.trim().toLowerCase();
 
   if (!email) {
-    return { error: "Email adresa je obavezna." };
+    return { error: "Email address is required." };
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
@@ -138,7 +138,7 @@ export async function forgotPasswordAction(
   if (!user) {
     return {
       success: true,
-      message: "Ako nalog postoji, poslali smo link za resetovanje lozinke.",
+      message: "If the account exists, we sent a password reset link.",
     };
   }
 
@@ -154,12 +154,12 @@ export async function forgotPasswordAction(
   try {
     await sendPasswordResetEmail(email, token);
   } catch {
-    return { error: "Greška pri slanju emaila. Pokušajte ponovo." };
+    return { error: "Failed to send the email. Please try again." };
   }
 
   return {
     success: true,
-    message: "Ako nalog postoji, poslali smo link za resetovanje lozinke.",
+    message: "If the account exists, we sent a password reset link.",
   };
 }
 
@@ -173,11 +173,11 @@ export async function resetPasswordAction(
   const password = formData.get("password") as string;
 
   if (!token || !password) {
-    return { error: "Sva polja su obavezna." };
+    return { error: "All fields are required." };
   }
 
   if (password.length < 8) {
-    return { error: "Lozinka mora imati najmanje 8 karaktera." };
+    return { error: "The password must be at least 8 characters long." };
   }
 
   const verificationToken = await prisma.verificationToken.findUnique({
@@ -185,7 +185,7 @@ export async function resetPasswordAction(
   });
 
   if (!verificationToken || verificationToken.expires < new Date()) {
-    return { error: "Link je istekao ili je nevažeći. Zatražite novi." };
+    return { error: "The link has expired or is invalid. Request a new one." };
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
@@ -213,7 +213,7 @@ export async function requestPortalAccessAction(
   orderId: string,
 ): Promise<AuthState> {
   if (!orderId) {
-    return { error: "Porudžbina nije pronađena." };
+    return { error: "Order not found." };
   }
 
   const order = await prisma.order.findUnique({
@@ -222,7 +222,7 @@ export async function requestPortalAccessAction(
   });
 
   if (!order || !order.user.email) {
-    return { error: "Porudžbina nije pronađena." };
+    return { error: "Order not found." };
   }
 
   const token = generateToken();
@@ -236,7 +236,7 @@ export async function requestPortalAccessAction(
 
   // Enqueue via outbox so transient Resend outages don't lose the
   // magic-link mail. Idempotency key includes the token hash so a
-  // newly-issued token (e.g. user clicked "Pošalji ponovo") gets its
+  // newly-issued token (e.g. user clicked "Resend") gets its
   // own row instead of being deduped against the previous one.
   await enqueueOutboxEvent({
     type: "portal_access_email",
@@ -251,7 +251,7 @@ export async function requestPortalAccessAction(
 
   return {
     success: true,
-    message: "Poslali smo vam link za pristup portalu na email.",
+    message: "We sent a portal access link to your email.",
   };
 }
 
@@ -285,7 +285,7 @@ export async function verifyEmailAction(token: string): Promise<AuthState> {
   });
 
   if (!verificationToken || verificationToken.expires < new Date()) {
-    return { error: "Link za verifikaciju je istekao ili je nevažeći." };
+    return { error: "The verification link has expired or is invalid." };
   }
 
   await prisma.user.update({
@@ -302,5 +302,5 @@ export async function verifyEmailAction(token: string): Promise<AuthState> {
     },
   });
 
-  return { success: true, message: "Email je uspešno potvrđen." };
+  return { success: true, message: "Your email has been confirmed." };
 }

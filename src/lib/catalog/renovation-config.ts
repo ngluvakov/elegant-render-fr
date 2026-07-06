@@ -10,12 +10,12 @@
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const RENO_ROOM_TYPES = [
-  { id: "bathroom", label: "Kupatilo" },
-  { id: "kitchen", label: "Kuhinja" },
-  { id: "living-room", label: "Dnevna soba" },
-  { id: "bedroom", label: "Spavaća soba" },
-  { id: "facade", label: "Eksterijer / Fasada" },
-  { id: "commercial", label: "Komercijalni prostor" },
+  { id: "bathroom", label: "Bathroom" },
+  { id: "kitchen", label: "Kitchen" },
+  { id: "living-room", label: "Living room" },
+  { id: "bedroom", label: "Bedroom" },
+  { id: "facade", label: "Exterior / Facade" },
+  { id: "commercial", label: "Commercial space" },
 ] as const;
 export type RenoRoomTypeId = (typeof RENO_ROOM_TYPES)[number]["id"];
 export const RENO_ROOM_TYPE_IDS = RENO_ROOM_TYPES.map(
@@ -23,23 +23,23 @@ export const RENO_ROOM_TYPE_IDS = RENO_ROOM_TYPES.map(
 ) as RenoRoomTypeId[];
 
 export const RENO_SCOPES = [
-  { id: "cosmetic", label: "Kozmetička (samo boje i nameštaj)" },
-  { id: "partial", label: "Delimična (zamena podova / pločica)" },
+  { id: "cosmetic", label: "Cosmetic (paint and furniture only)" },
+  { id: "partial", label: "Partial (floor / tile replacement)" },
   {
     id: "complete",
-    label: "Kompletna (rušenje zidova, nove instalacije)",
+    label: "Complete (wall demolition, new installations)",
   },
 ] as const;
 export type RenoScopeId = (typeof RENO_SCOPES)[number]["id"];
 export const RENO_SCOPE_IDS = RENO_SCOPES.map((s) => s.id) as RenoScopeId[];
 
 export const RENO_FLOOR_MATERIALS = [
-  { id: "keep-existing", label: "Zadrži postojeće" },
-  { id: "parquet-light", label: "Parket / Laminat (svetlo drvo)" },
-  { id: "parquet-dark", label: "Parket / Laminat (tamno drvo)" },
-  { id: "tiles-marble", label: "Pločice (mermer / kamen)" },
-  { id: "tiles-concrete", label: "Pločice (beton / industrijski)" },
-  { id: "carpet", label: "Tepison" },
+  { id: "keep-existing", label: "Keep existing" },
+  { id: "parquet-light", label: "Parquet / Laminate (light wood)" },
+  { id: "parquet-dark", label: "Parquet / Laminate (dark wood)" },
+  { id: "tiles-marble", label: "Tiles (marble / stone)" },
+  { id: "tiles-concrete", label: "Tiles (concrete / industrial)" },
+  { id: "carpet", label: "Carpet" },
 ] as const;
 export type RenoFloorMaterialId =
   (typeof RENO_FLOOR_MATERIALS)[number]["id"];
@@ -48,12 +48,12 @@ export const RENO_FLOOR_MATERIAL_IDS = RENO_FLOOR_MATERIALS.map(
 ) as RenoFloorMaterialId[];
 
 export const RENO_WALL_MATERIALS = [
-  { id: "keep-existing", label: "Zadrži postojeće" },
-  { id: "paint-white", label: "Krečenje (belo / neutralno)" },
-  { id: "paint-dark", label: "Krečenje (tamno / akcentno)" },
-  { id: "wallpaper", label: "Tapete" },
-  { id: "wood-paneling", label: "Drvene obloge" },
-  { id: "stone-brick", label: "Dekorativni kamen / cigla" },
+  { id: "keep-existing", label: "Keep existing" },
+  { id: "paint-white", label: "Paint (white / neutral)" },
+  { id: "paint-dark", label: "Paint (dark / accent)" },
+  { id: "wallpaper", label: "Wallpaper" },
+  { id: "wood-paneling", label: "Wood paneling" },
+  { id: "stone-brick", label: "Decorative stone / brick" },
 ] as const;
 export type RenoWallMaterialId =
   (typeof RENO_WALL_MATERIALS)[number]["id"];
@@ -67,7 +67,7 @@ export const RENO_FURNITURE_STYLES = [
   { id: "minimalist", label: "Minimalist" },
   { id: "industrial", label: "Industrial" },
   { id: "classic", label: "Classic / Traditional" },
-  { id: "keep-existing", label: "Zadrži postojeći nameštaj" },
+  { id: "keep-existing", label: "Keep existing furniture" },
 ] as const;
 export type RenoFurnitureStyleId =
   (typeof RENO_FURNITURE_STYLES)[number]["id"];
@@ -102,7 +102,7 @@ export type RenovationConfig = {
 
 export function defaultRenovationConfig(): RenovationConfig {
   return {
-    roomName: "Kupatilo 1",
+    roomName: "Bathroom 1",
     roomType: "bathroom",
     scope: "complete",
     wallChangesEnabled: false,
@@ -141,7 +141,7 @@ export function sanitizeRenovationConfig(
   const variantEnabled = Boolean(c.variantEnabled);
   return {
     roomName:
-      String(c.roomName ?? "").trim().slice(0, 100) || "Kupatilo 1",
+      String(c.roomName ?? "").trim().slice(0, 100) || "Bathroom 1",
     roomType,
     scope,
     ...((d) => (d ? { description: d } : {}))(

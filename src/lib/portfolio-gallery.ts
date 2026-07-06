@@ -26,130 +26,130 @@ const keptGroup = (label: string, base: string): PortfolioTile[] =>
   Array.from({ length: 4 }, (_, i) => ({
     kind: "image" as const,
     src: `${A}/${base}-0${i + 1}.webp`,
-    alt: `${label} — primer ${i + 1}, Elegant Render`,
+    alt: `${label} — example ${i + 1}, Elegant Render`,
     label,
   }));
 
 const KEPT: PortfolioTile[] = [
-  ...keptGroup("Renderi enterijera", "portfolio-interior-static"),
-  ...keptGroup("Renderi iz vazduha", "portfolio-aerial"),
-  ...keptGroup("3D prikaz ulice", "portfolio-streetscape"),
-  ...keptGroup("Uređenje pejzaža", "portfolio-landscape-design"),
-  ...keptGroup("Render u fotografiji lokacije", "portfolio-photomontage"),
-  ...keptGroup("Dnevni u noćni prikaz", "portfolio-day-to-dusk"),
-  ...keptGroup("3D situacioni plan", "portfolio-3d-site-plan"),
-  { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-apartment.webp`, alt: "3D osnova jednosobnog stana, Elegant Render", label: "3D osnove" },
-  { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-open-concept.webp`, alt: "3D osnova jednosobnog stana otvorenog koncepta, Elegant Render", label: "3D osnove" },
-  { kind: "image", src: `${A}/portfolio-3d-floor-plans-duplex-two-levels.webp`, alt: "3D osnova dupleksa na dva nivoa, Elegant Render", label: "3D osnove" },
-  { kind: "image", src: `${A}/portfolio-3d-floor-plans-house-with-garage.webp`, alt: "3D osnova kuće sa garažom, Elegant Render", label: "3D osnove" },
+  ...keptGroup("Interior renders", "portfolio-interior-static"),
+  ...keptGroup("Aerial renders", "portfolio-aerial"),
+  ...keptGroup("3D streetscape", "portfolio-streetscape"),
+  ...keptGroup("Landscape design", "portfolio-landscape-design"),
+  ...keptGroup("Render in a site photo", "portfolio-photomontage"),
+  ...keptGroup("Day-to-dusk", "portfolio-day-to-dusk"),
+  ...keptGroup("3D site plan", "portfolio-3d-site-plan"),
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-apartment.webp`, alt: "3D floor plan of a one-bedroom apartment, Elegant Render", label: "3D floor plans" },
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-open-concept.webp`, alt: "3D floor plan of an open-concept one-bedroom apartment, Elegant Render", label: "3D floor plans" },
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-duplex-two-levels.webp`, alt: "3D floor plan of a two-level duplex, Elegant Render", label: "3D floor plans" },
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-house-with-garage.webp`, alt: "3D floor plan of a house with a garage, Elegant Render", label: "3D floor plans" },
 ];
 
 /** New interior renders (interior-01..19.webp). */
 const INTERIOR_ALT = [
-  "Kupatilo — render enterijera, Elegant Render",
-  "Dnevna soba — render enterijera, Elegant Render",
-  "Kuhinja — render enterijera, Elegant Render",
-  "Spavaća soba — render enterijera, Elegant Render",
-  "Bazen u suterenu — render enterijera, Elegant Render",
-  "Sauna — render enterijera, Elegant Render",
-  "Master spavaća soba — render enterijera, Elegant Render",
-  "Kupatilo — render enterijera, Elegant Render",
-  "Dnevni boravak i trpezarija — render enterijera, Elegant Render",
-  "Dnevna soba trosobnog stana — render enterijera, Elegant Render",
-  "Multimedijalna soba — render enterijera, Elegant Render",
-  "Trpezarija — render enterijera, Elegant Render",
-  "Prostor za masažu — render enterijera, Elegant Render",
-  "Virtuelno opremljen prostor — render enterijera, Elegant Render",
-  "Spavaća soba na spratu — render enterijera, Elegant Render",
-  "Kuhinja — render enterijera, Elegant Render",
-  "Dnevna soba — render enterijera, Elegant Render",
-  "Spavaća soba — render enterijera, Elegant Render",
-  "Hodnik i dnevni boravak — render enterijera, Elegant Render",
+  "Bathroom — interior render, Elegant Render",
+  "Living room — interior render, Elegant Render",
+  "Kitchen — interior render, Elegant Render",
+  "Bedroom — interior render, Elegant Render",
+  "Basement pool — interior render, Elegant Render",
+  "Sauna — interior render, Elegant Render",
+  "Master bedroom — interior render, Elegant Render",
+  "Bathroom — interior render, Elegant Render",
+  "Living and dining room — interior render, Elegant Render",
+  "Living room of a two-bedroom apartment — interior render, Elegant Render",
+  "Media room — interior render, Elegant Render",
+  "Dining room — interior render, Elegant Render",
+  "Massage room — interior render, Elegant Render",
+  "Virtually staged space — interior render, Elegant Render",
+  "Upstairs bedroom — interior render, Elegant Render",
+  "Kitchen — interior render, Elegant Render",
+  "Living room — interior render, Elegant Render",
+  "Bedroom — interior render, Elegant Render",
+  "Hallway and living room — interior render, Elegant Render",
 ];
 const NEW_INTERIOR: PortfolioTile[] = INTERIOR_ALT.map((alt, i) => ({
   kind: "image",
   src: `${P}/interior-${nn(i)}.webp`,
   alt,
-  label: "Renderi enterijera",
+  label: "Interior renders",
 }));
 
 /** New exterior renders (exterior-*.webp; 07 intentionally omitted). */
 const EXTERIOR: { n: string; alt: string }[] = [
-  { n: "01", alt: "Prednja fasada — render eksterijera, Elegant Render" },
-  { n: "02", alt: "Noćni prikaz A-frame kuće — render eksterijera, Elegant Render" },
-  { n: "03", alt: "Bočni prikaz objekta — render eksterijera, Elegant Render" },
-  { n: "04", alt: "Vazdušni prikaz kompleksa — render eksterijera, Elegant Render" },
-  { n: "05", alt: "Prednja fasada — render eksterijera, Elegant Render" },
-  { n: "06", alt: "Terasasta stambena zgrada na padini — render eksterijera, Elegant Render" },
-  { n: "08", alt: "Stambeni kompleks — render eksterijera, Elegant Render" },
-  { n: "09", alt: "Noćni prikaz — render eksterijera, Elegant Render" },
-  { n: "10", alt: "Prednji prikaz objekta — render eksterijera, Elegant Render" },
-  { n: "11", alt: "Prednja fasada objekta — render eksterijera, Elegant Render" },
-  { n: "12", alt: "Bočni prikaz objekta — render eksterijera, Elegant Render" },
-  { n: "13", alt: "Stambeni objekat — render eksterijera, Elegant Render" },
-  { n: "14", alt: "Zadnja fasada — render eksterijera, Elegant Render" },
+  { n: "01", alt: "Front facade — exterior render, Elegant Render" },
+  { n: "02", alt: "Night view of an A-frame house — exterior render, Elegant Render" },
+  { n: "03", alt: "Side view of the building — exterior render, Elegant Render" },
+  { n: "04", alt: "Aerial view of a complex — exterior render, Elegant Render" },
+  { n: "05", alt: "Front facade — exterior render, Elegant Render" },
+  { n: "06", alt: "Terraced residential building on a slope — exterior render, Elegant Render" },
+  { n: "08", alt: "Residential complex — exterior render, Elegant Render" },
+  { n: "09", alt: "Night view — exterior render, Elegant Render" },
+  { n: "10", alt: "Front view of the building — exterior render, Elegant Render" },
+  { n: "11", alt: "Front facade of the building — exterior render, Elegant Render" },
+  { n: "12", alt: "Side view of the building — exterior render, Elegant Render" },
+  { n: "13", alt: "Residential building — exterior render, Elegant Render" },
+  { n: "14", alt: "Rear facade — exterior render, Elegant Render" },
 ];
 const NEW_EXTERIOR: PortfolioTile[] = EXTERIOR.map(({ n, alt }) => ({
   kind: "image",
   src: `${P}/exterior-${n}.webp`,
   alt,
-  label: "Renderi eksterijera",
+  label: "Exterior renders",
 }));
 
-/** 3D floor plans — original "3D osnove" set (osnova-01..04.webp). */
+/** 3D floor plans — original "3D floor plans" set (osnova-01..04.webp). */
 const OSNOVA: { file: string; alt: string }[] = [
-  { file: "3d-floor-plan-01", alt: "3D osnova iz ptičje perspektive, Elegant Render" },
-  { file: "3d-floor-plan-02", alt: "3D osnova stana, Elegant Render" },
-  { file: "3d-floor-plan-03", alt: "3D osnova A-frame kuće, Elegant Render" },
+  { file: "3d-floor-plan-01", alt: "3D floor plan from a bird's-eye perspective, Elegant Render" },
+  { file: "3d-floor-plan-02", alt: "3D floor plan of an apartment, Elegant Render" },
+  { file: "3d-floor-plan-03", alt: "3D floor plan of an A-frame house, Elegant Render" },
   // osnova-04 replaced by the "Levi stan" duplex 3D floor plan (fresh,
   // cache-safe filename so the CDN serves the new bytes).
   {
     file: "3d-floor-plan-duplex-left-unit",
-    alt: "3D osnova dupleks stana — levi stan, Elegant Render",
+    alt: "3D floor plan of a duplex apartment — left unit, Elegant Render",
   },
 ];
 const NEW_OSNOVA: PortfolioTile[] = OSNOVA.map(({ file, alt }) => ({
   kind: "image",
   src: `${P}/${file}.webp`,
   alt,
-  label: "3D osnove",
+  label: "3D floor plans",
 }));
 
-/** More 3D floor plans (3d-floor-plan-space-01..04.webp), shown under "3D osnove". */
+/** More 3D floor plans (3d-floor-plan-space-01..04.webp), shown under "3D floor plans". */
 const OSNOVA_PROSTORA_ALT = [
-  "3D osnova iz ptičje perspektive, Elegant Render",
-  "3D osnova prizemlja, Elegant Render",
-  "3D osnova prvog i drugog sprata, Elegant Render",
-  "3D osnova sa garažom, Elegant Render",
+  "3D floor plan from a bird's-eye perspective, Elegant Render",
+  "3D floor plan of a ground floor, Elegant Render",
+  "3D floor plan of the first and second floor, Elegant Render",
+  "3D floor plan with a garage, Elegant Render",
 ];
 const NEW_OSNOVA_PROSTORA: PortfolioTile[] = OSNOVA_PROSTORA_ALT.map((alt, i) => ({
   kind: "image",
   src: `${P}/3d-floor-plan-space-${nn(i)}.webp`,
   alt,
-  label: "3D osnove",
+  label: "3D floor plans",
 }));
 
 /** Interactive 360 panoramas (360-01..19): thumb .webp + full -full.jpg. */
 const PANO_META: { label: string; alt: string }[] = [
-  { label: "360 tura enterijera", alt: "360 tura — dnevna soba, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — kuhinja i dnevni boravak, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — spavaća soba, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — kupatilo, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — dnevni boravak, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — bazen, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — spa, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — sauna, Elegant Render" },
-  { label: "360 tura eksterijera", alt: "360 tura — krovna terasa, Elegant Render" },
-  { label: "360 tura eksterijera", alt: "360 tura — eksterijer, Elegant Render" },
-  { label: "360 tura eksterijera", alt: "360 tura — eksterijer vile, Elegant Render" },
-  { label: "360 tura eksterijera", alt: "360 tura — eksterijer, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — dnevna zona, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — glavni hol, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — dnevni boravak, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — enterijer, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — kafe, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — spavaća soba, Elegant Render" },
-  { label: "360 tura enterijera", alt: "360 tura — dnevni boravak i trpezarija, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — living room, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — kitchen and living area, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — bedroom, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — bathroom, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — living area, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — pool, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — spa, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — sauna, Elegant Render" },
+  { label: "Exterior 360 tour", alt: "360 tour — rooftop terrace, Elegant Render" },
+  { label: "Exterior 360 tour", alt: "360 tour — exterior, Elegant Render" },
+  { label: "Exterior 360 tour", alt: "360 tour — villa exterior, Elegant Render" },
+  { label: "Exterior 360 tour", alt: "360 tour — exterior, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — living area, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — main hall, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — living room, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — interior, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — café, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — bedroom, Elegant Render" },
+  { label: "Interior 360 tour", alt: "360 tour — living and dining room, Elegant Render" },
 ];
 const PANORAMAS: PortfolioTile[] = PANO_META.map((m, i) => ({
   kind: "panorama",
@@ -161,21 +161,21 @@ const PANORAMAS: PortfolioTile[] = PANO_META.map((m, i) => ({
 
 /** Architectural animations (video-01..08.mp4 + poster .webp). */
 const VIDEO_ALT = [
-  "Animacija — A-frame kuća, Elegant Render",
-  "Animacija — drugi sprat, Elegant Render",
-  "Animacija — osnova stana, Elegant Render",
-  "Animacija — šetnja kroz stan, Elegant Render",
-  "Animacija — stambeni objekat, Elegant Render",
-  "Animacija — enterijer, Elegant Render",
-  "Animacija — prizemlje, Elegant Render",
-  "Animacija — A-frame kuća, Elegant Render",
+  "Animation — A-frame house, Elegant Render",
+  "Animation — second floor, Elegant Render",
+  "Animation — apartment floor plan, Elegant Render",
+  "Animation — walkthrough of an apartment, Elegant Render",
+  "Animation — residential building, Elegant Render",
+  "Animation — interior, Elegant Render",
+  "Animation — ground floor, Elegant Render",
+  "Animation — A-frame house, Elegant Render",
 ];
 const VIDEOS: PortfolioTile[] = VIDEO_ALT.map((alt, i) => ({
   kind: "video",
   src: `${P}/video-${nn(i)}.webp`,
   full: `${P}/video-${nn(i)}.mp4`,
   alt,
-  label: "Arhitektonska animacija",
+  label: "Architectural animation",
 }));
 
 /**

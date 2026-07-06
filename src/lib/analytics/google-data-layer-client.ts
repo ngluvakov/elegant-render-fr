@@ -19,7 +19,7 @@ function hasMarketingConsent(): boolean {
 }
 
 function defaultOnceKey(event: GoogleDataLayerEvent): string | undefined {
-  if (event.event === "er_purchase") {
+  if (event.event === "purchase") {
     return `${event.event}:${event.transaction_id}`;
   }
   return event.event_id ? `${event.event}:${event.event_id}` : undefined;

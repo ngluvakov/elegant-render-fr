@@ -8,7 +8,7 @@ import {
 const ALL_STATUSES = Object.keys(VALID_TRANSITIONS) as OrderStatus[];
 
 describe("canTransition", () => {
-  it("dozvoljava regularan put porudžbine", () => {
+  it("allows the regular order path", () => {
     const happyPath: OrderStatus[] = [
       "draft",
       "awaiting_payment",
@@ -23,23 +23,23 @@ describe("canTransition", () => {
     }
   });
 
-  it("dozvoljava revizionu petlju", () => {
+  it("allows the revision loop", () => {
     expect(canTransition("in_review", "revision_requested")).toBe(true);
     expect(canTransition("revision_requested", "in_progress")).toBe(true);
   });
 
-  it("dozvoljava besplatnu reviziju posle isporuke (admin override)", () => {
+  it("allows a free revision after delivery (admin override)", () => {
     expect(canTransition("delivered", "in_progress")).toBe(true);
   });
 
-  it("ne dozvoljava preskakanje plaćanja", () => {
+  it("does not allow skipping payment", () => {
     expect(canTransition("draft", "paid")).toBe(false);
     expect(canTransition("draft", "in_progress")).toBe(false);
     expect(canTransition("awaiting_payment", "in_progress")).toBe(false);
     expect(canTransition("awaiting_payment", "delivered")).toBe(false);
   });
 
-  it("refundacija je moguća samo iz paid", () => {
+  it("refund is only possible from paid", () => {
     for (const from of ALL_STATUSES) {
       expect(canTransition(from, "refunded" as OrderStatus)).toBe(
         from === "paid",
@@ -47,7 +47,7 @@ describe("canTransition", () => {
     }
   });
 
-  it("terminalna stanja nemaju izlaz", () => {
+  it("terminal states have no exit", () => {
     for (const terminal of ["closed", "cancelled", "refunded"] as OrderStatus[]) {
       for (const to of ALL_STATUSES) {
         expect(canTransition(terminal, to)).toBe(false);
@@ -55,7 +55,7 @@ describe("canTransition", () => {
     }
   });
 
-  it("nepoznat status ne prolazi", () => {
-    expect(canTransition("nepostojeci" as OrderStatus, "paid")).toBe(false);
+  it("an unknown status does not pass", () => {
+    expect(canTransition("nonexistent" as OrderStatus, "paid")).toBe(false);
   });
 });

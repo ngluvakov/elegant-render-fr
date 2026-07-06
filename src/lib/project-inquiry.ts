@@ -23,15 +23,15 @@ export type ProjectInquirySource = {
 };
 
 export const PROJECT_INQUIRY_SERVICE_TYPES = [
-  "Nisam siguran/na",
-  "Unutrašnji renderi",
-  "Spoljašnji renderi",
-  "360 ture i animacije",
-  "Virtuelno opremanje",
-  "Virtuelna renovacija",
-  "2D/3D osnove prostora",
-  "AI obrada fotografija",
-  "Veći projekat / više usluga",
+  "Not sure yet",
+  "Interior renders",
+  "Exterior renders",
+  "360 tours and animations",
+  "Virtual staging",
+  "Virtual renovation",
+  "2D/3D floor plans",
+  "AI photo editing",
+  "Larger project / multiple services",
 ] as const;
 
 export function isAllowedProjectInquiryMimeType(mimeType: string): boolean {

@@ -1,6 +1,6 @@
 /**
  * HelpTip — Tiny `?` icon next to a label that reveals a short
- * explanation on hover or tap. Used to demystify jargon (fotomontaža,
+ * explanation on hover or tap. Used to demystify jargon (photomontage,
  * hotspot, white-label, phasing) without cluttering the field copy.
  *
  * Wraps base-ui Tooltip; works with hover (desktop) and press (mobile).
@@ -17,7 +17,7 @@ type Props = {
   label?: string;
 };
 
-export function HelpTip({ children, className, label = "Pomoć" }: Props) {
+export function HelpTip({ children, className, label = "Help" }: Props) {
   return (
     <Tooltip.Root>
       <Tooltip.Trigger

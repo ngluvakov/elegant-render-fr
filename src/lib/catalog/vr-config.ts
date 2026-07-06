@@ -1,7 +1,7 @@
 /**
  * vr-config.ts — Per-item config + vocabularies for the two VR
- * products: `vr-existing` (postojeći model, €1500) and `vr-standalone`
- * (samostalno, €3000). One config shape covers both; productId picks
+ * products: `vr-existing` (existing model, €1500) and `vr-standalone`
+ * (standalone, €3000). One config shape covers both; productId picks
  * the correct add-on suffix (vr-{suffix}-floor / -interactive).
  *
  * Both products share the same add-on schema:
@@ -21,8 +21,8 @@ const VR_SUFFIX = {
 } as const;
 
 const VR_PRODUCT_LABELS = {
-  "vr-existing": "VR Walkthrough (postojeći model)",
-  "vr-standalone": "VR Walkthrough (samostalno)",
+  "vr-existing": "VR walkthrough (existing model)",
+  "vr-standalone": "VR walkthrough (standalone)",
 } as const;
 
 const VR_BASE_PRICE = {
@@ -43,9 +43,9 @@ export const VR_INTERACTIVE_EUR = 200;
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const VR_EXPERIENCE_TYPES = [
-  { id: "exterior", label: "Eksterijer (slobodno kretanje oko objekta)" },
-  { id: "interior", label: "Enterijer (kretanje kroz prostorije)" },
-  { id: "complex", label: "Kompleks (eksterijer + enterijer)" },
+  { id: "exterior", label: "Exterior (free movement around the building)" },
+  { id: "interior", label: "Interior (movement through rooms)" },
+  { id: "complex", label: "Complex (exterior + interior)" },
 ] as const;
 export type VrExperienceTypeId =
   (typeof VR_EXPERIENCE_TYPES)[number]["id"];
@@ -54,9 +54,9 @@ export const VR_EXPERIENCE_TYPE_IDS = VR_EXPERIENCE_TYPES.map(
 ) as VrExperienceTypeId[];
 
 export const VR_TARGET_DEVICES = [
-  { id: "meta-quest", label: "Meta Quest 2 / 3 / Pro (Standalone VR)" },
-  { id: "pc-vr", label: "PC VR (Tethered, viši kvalitet grafike)" },
-  { id: "web-vr", label: "Web VR (kroz browser, niži kvalitet)" },
+  { id: "meta-quest", label: "Meta Quest 2 / 3 / Pro (standalone VR)" },
+  { id: "pc-vr", label: "PC VR (tethered, higher graphics quality)" },
+  { id: "web-vr", label: "Web VR (in the browser, lower quality)" },
 ] as const;
 export type VrTargetDeviceId =
   (typeof VR_TARGET_DEVICES)[number]["id"];
@@ -65,9 +65,9 @@ export const VR_TARGET_DEVICE_IDS = VR_TARGET_DEVICES.map(
 ) as VrTargetDeviceId[];
 
 export const VR_LOCOMOTION = [
-  { id: "teleport", label: "Teleportacija (najbolje protiv mučnine)" },
-  { id: "smooth", label: "Slobodno hodanje (smooth locomotion)" },
-  { id: "guided", label: "Vođena tura (po šinama)" },
+  { id: "teleport", label: "Teleportation (best against motion sickness)" },
+  { id: "smooth", label: "Free walking (smooth locomotion)" },
+  { id: "guided", label: "Guided tour (on rails)" },
 ] as const;
 export type VrLocomotionId = (typeof VR_LOCOMOTION)[number]["id"];
 export const VR_LOCOMOTION_IDS = VR_LOCOMOTION.map(
@@ -75,9 +75,9 @@ export const VR_LOCOMOTION_IDS = VR_LOCOMOTION.map(
 ) as VrLocomotionId[];
 
 export const VR_DAY_NIGHT_MODES = [
-  { id: "daylight", label: "Dnevno svetlo" },
-  { id: "night", label: "Noćno svetlo" },
-  { id: "dynamic", label: "Dinamično (korisnik menja dan / noć)" },
+  { id: "daylight", label: "Daylight" },
+  { id: "night", label: "Night lighting" },
+  { id: "dynamic", label: "Dynamic (user switches day / night)" },
 ] as const;
 export type VrDayNightModeId =
   (typeof VR_DAY_NIGHT_MODES)[number]["id"];
@@ -110,7 +110,7 @@ export type VrConfig = {
 
 export function defaultVrConfig(): VrConfig {
   return {
-    projectName: "VR Prezentacija 1",
+    projectName: "VR presentation 1",
     experienceType: "interior",
     targetDevice: "meta-quest",
     movementRestrictions: false,
@@ -154,7 +154,7 @@ export function sanitizeVrConfig(c: VrConfig): VrConfig {
   return {
     projectName:
       String(c.projectName ?? "").trim().slice(0, 100) ||
-      "VR Prezentacija 1",
+      "VR presentation 1",
     experienceType,
     targetDevice,
     ...((d) => (d ? { description: d } : {}))(

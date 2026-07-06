@@ -1,7 +1,7 @@
 /**
  * item-removal-config.ts — Per-item config + vocabularies for the
- * item-removal products: `ir-simple` (jednostavno uklanjanje) and
- * `ir-complex` (složeno uklanjanje). One config shape covers both;
+ * item-removal products: `ir-simple` (simple removal) and
+ * `ir-complex` (complex removal). One config shape covers both;
  * the productId selects which catalog add-on gets driven
  * (ir-simple-additional vs ir-complex-additional).
  *
@@ -34,7 +34,7 @@ export type ItemRemovalConfig = {
 
 export function defaultItemRemovalConfig(): ItemRemovalConfig {
   return {
-    imageName: "Slika 1",
+    imageName: "Image 1",
     photoCount: 1,
     stagingUpsellEnabled: false,
   };
@@ -66,7 +66,7 @@ export function sanitizeItemRemovalConfig(
     VS_FURNITURE_STYLE_IDS,
   );
   return {
-    imageName: String(c.imageName ?? "").trim().slice(0, 100) || "Slika 1",
+    imageName: String(c.imageName ?? "").trim().slice(0, 100) || "Image 1",
     photoCount: clampCount(c.photoCount, 1, 200),
     ...((d) => (d ? { description: d } : {}))(
       String(c.description ?? "").slice(0, 2000),
@@ -105,8 +105,8 @@ export function itemRemovalProductLabel(
   productId: ItemRemovalProductId,
 ): string {
   return productId === "ir-simple"
-    ? "Jednostavno uklanjanje"
-    : "Složeno uklanjanje";
+    ? "Simple removal"
+    : "Complex removal";
 }
 
 export function itemRemovalAdditionalPriceEur(

@@ -272,7 +272,7 @@ export function AnimationConfigSection({
           <Film className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.animationName || "Animacija"}
+              {config.animationName || "Animation"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
               <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-accent">
@@ -625,7 +625,7 @@ export function AnimationConfigSection({
             </p>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Fokus animacije</Label>
+              <Label className="text-[0.7rem]">Animation focus</Label>
               <div className="grid gap-1.5 sm:grid-cols-2">
                 {ANIM_FOCUS_AREA_OPTIONS.map((o) => (
                   <label
@@ -726,11 +726,11 @@ export function AnimationConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Dodatne opcije
+            Additional options
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
             Additional camera paths or seasonal / day-to-dusk
-            varijacije iste animacije.
+            variations of the same animation.
           </p>
         </div>
 
@@ -753,7 +753,7 @@ export function AnimationConfigSection({
                 type="button"
                 disabled={!editable || config.extraPathsCount <= 0}
                 onClick={decPaths}
-                aria-label="Decrease number of putanja"
+                aria-label="Decrease number of camera paths"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Minus className="h-3 w-3" />
@@ -765,7 +765,7 @@ export function AnimationConfigSection({
                 type="button"
                 disabled={!editable || config.extraPathsCount >= 10}
                 onClick={incPaths}
-                aria-label="Increase number of putanja"
+                aria-label="Increase number of camera paths"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Plus className="h-3 w-3" />
@@ -826,7 +826,7 @@ export function AnimationConfigSection({
               <Leaf className="h-3.5 w-3.5 text-accent" />
               <div>
                 <span className="block text-[0.78rem] font-medium text-foreground">
-                  Sezonska varijacija
+                  Season variation
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
                   Same animation in another season

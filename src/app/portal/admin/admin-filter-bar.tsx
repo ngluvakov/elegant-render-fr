@@ -52,7 +52,7 @@ export function AdminFilterBar() {
         onChange={(e) => updateParam("status", e.target.value)}
         className="h-9 rounded-lg border border-border bg-background px-3 text-sm text-foreground"
       >
-        <option value="">Svi statusi</option>
+        <option value="">All statuses</option>
         {Object.entries(STATUS_LABELS).map(([key, label]) => (
           <option key={key} value={key}>{label}</option>
         ))}
@@ -74,7 +74,7 @@ export function AdminFilterBar() {
         title="Filter by payment method"
       >
         <option value="">All payments</option>
-        <option value="online_payment">Online kartica</option>
+        <option value="online_payment">Online card payment</option>
         <option value="wire_transfer">Bank transfer (proforma)</option>
       </select>
     </div>

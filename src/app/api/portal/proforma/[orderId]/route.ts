@@ -1,11 +1,11 @@
 /**
  * GET /api/portal/proforma/[orderId] — signed-URL redirect to the
- * issued predračun PDF. Same auth shape as the invoice route:
+ * issued proforma PDF. Same auth shape as the invoice route:
  * order owner OR any admin.
  *
  * Different storage prefix (proformas/{year}/{number}.pdf) and a
  * distinct download filename so the customer doesn't confuse the
- * payment instruction with the legal faktura that comes later.
+ * payment instruction with the legal invoice that comes later.
  */
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
@@ -68,7 +68,7 @@ export async function GET(
   const { data, error } = await getSupabaseAdmin().storage
     .from(UPLOADS_BUCKET)
     .createSignedUrl(order.proformaPdfPath, 3600, {
-      download: `predracun-${order.proformaNumber}.pdf`,
+      download: `proforma-${order.proformaNumber}.pdf`,
     });
 
   if (error || !data) {

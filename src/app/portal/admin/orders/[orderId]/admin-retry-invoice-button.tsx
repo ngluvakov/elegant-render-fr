@@ -49,7 +49,7 @@ export function AdminRetryInvoiceButton({ orderId }: Props) {
 }
 
 function humanReason(reason: string): string {
-  if (reason === "not_admin") return "Niste admin.";
+  if (reason === "not_admin") return "You are not an admin.";
   if (reason === "order_not_found") return "Order was not found.";
   if (reason === "not_paid") return "Order is not paid.";
   if (reason === "no_billable_items")

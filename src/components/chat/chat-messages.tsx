@@ -1,7 +1,7 @@
 /**
  * ChatMessages — Scrollable message list for the AI assistant chat.
  * Renders user and assistant messages with markdown link support.
- * Parses :::predlog blocks into actionable "add to configurator" buttons.
+ * Parses :::proposal blocks into actionable "add to configurator" buttons.
  *
  * Used on: ChatWidget
  */
@@ -23,9 +23,9 @@ export type ChatMessage = {
   content: string;
 };
 
-// Lagani markdown za poruke asistenta: linkovi, **bold** i "- " liste.
-// Model ih redovno emituje, a ranije su se prikazivali kao sirov tekst
-// (samo su linkovi bili renderovani).
+// Lightweight markdown for assistant messages: links, **bold** and "- " lists.
+// The model emits them regularly; previously they showed as raw text
+// (only links were rendered).
 function renderInline(text: string, keyPrefix: string) {
   const parts = text.split(/(\[[^\]]+\]\([^)]+\)|\*\*[^*]+\*\*)/g);
   return parts.map((part, i) => {
@@ -113,7 +113,7 @@ function parseProposalItems(raw: string[]): ProposalItem[] {
     });
 }
 
-// Parses a :::predlog body. Two grammars supported:
+// Parses a :::proposal body. Two grammars supported:
 //
 //   Option A (flat, legacy — backwards-compatible):
 //     id1:qty,id2:qty,id3:qty
@@ -121,7 +121,7 @@ function parseProposalItems(raw: string[]): ProposalItem[] {
 //   Option B (sectioned, current):
 //     primary: id:qty
 //     related: id1:qty,id2:qty
-//     note: free-form Serbian text
+//     note: free-form text
 //
 // Option B is detected by a `primary:` line. Anything else falls through
 // to flat parse so older bot completions keep working.
@@ -202,7 +202,7 @@ function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
   return (
     <div className="mt-3 rounded-xl border border-accent/20 bg-accent/5 p-3">
       <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-wider text-accent">
-        Predlog usluga
+        Suggested services
       </p>
       <div className="space-y-1.5">
         {primary.map((item) => (
@@ -229,7 +229,7 @@ function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
       {related.length > 0 && (
         <div className="mt-2 border-t border-accent/10 pt-2">
           <p className="mb-1 text-[0.68rem] font-medium text-foreground/60">
-            Uz ovaj paket:
+            Pairs well with this:
           </p>
           <div className="flex flex-wrap gap-1.5">
             {related.map((item) => (
@@ -254,7 +254,7 @@ function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
         className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-accent/90"
       >
         <ShoppingCart className="h-3.5 w-3.5" />
-        {isOnCene ? "Dodaj u konfigurator" : "Pogledaj na cenovniku"}
+        {isOnCene ? "Add to configurator" : "View on the pricing page"}
         <ArrowRight className="h-3 w-3" />
       </button>
     </div>
@@ -262,7 +262,7 @@ function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
 }
 
 function MessageContent({ content }: { content: string }) {
-  const proposalMatch = content.match(/:::predlog\n([\s\S]*?)\n:::/);
+  const proposalMatch = content.match(/:::proposal\n([\s\S]*?)\n:::/);
   const textBefore = proposalMatch
     ? content.slice(0, proposalMatch.index).trim()
     : content;

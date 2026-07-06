@@ -10,7 +10,7 @@
  *    `{rootBase}__{editCode}__v{NN}__{YYYYMMDD}.{ext}`.
  *
  * Old generations (created before this feature shipped) have all three
- * unset; downloads fall back to `obrada-YYYYMMDD-{shortId}.{ext}`.
+ * unset; downloads fall back to `edit-YYYYMMDD-{shortId}.{ext}`.
  */
 import type { AiEditType } from "@/lib/ai-studio/catalog";
 
@@ -72,7 +72,7 @@ export function slugifyFileName(fileName: string, maxBaseLength = 60): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, maxBaseLength) || "slika";
+    .slice(0, maxBaseLength) || "image";
   return `${slug}.${ext}`;
 }
 
@@ -108,7 +108,7 @@ export function fallbackDownloadName(args: {
 }): string {
   const ext = args.mimeType?.includes("png") ? "png" : "jpg";
   const shortId = args.generationId.slice(-6);
-  return `obrada-${formatDateCode(args.createdAt)}-${shortId}.${ext}`;
+  return `edit-${formatDateCode(args.createdAt)}-${shortId}.${ext}`;
 }
 
 // Encodes a filename for the Content-Disposition header. RFC 6266 +

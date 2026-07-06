@@ -59,25 +59,25 @@ export async function submitVrInquiry(
   }
 
   if (!input || typeof input !== "object") {
-    return { error: "Neispravan zahtev." };
+    return { error: "Invalid request." };
   }
 
   const productId = String(input.productId ?? "");
   if (!VALID_PRODUCT_IDS.includes(productId as VrProductId)) {
-    return { error: "Nepoznata VR usluga." };
+    return { error: "Unknown VR service." };
   }
   const product = getConfiguratorProduct(productId);
   if (!product || !product.product.inquiryOnly) {
-    return { error: "Nepoznata VR usluga." };
+    return { error: "Unknown VR service." };
   }
 
   const contactName = String(input.contactName ?? "").trim().slice(0, 120);
   if (contactName.length < 2) {
-    return { error: "Ime je obavezno." };
+    return { error: "Name is required." };
   }
   const email = String(input.email ?? "").trim().toLowerCase().slice(0, 200);
   if (!validEmail(email)) {
-    return { error: "Email adresa nije ispravna." };
+    return { error: "Email address is invalid." };
   }
   const phone = input.phone ? String(input.phone).trim().slice(0, 40) : undefined;
   const message = input.message ? String(input.message).trim().slice(0, 4000) : undefined;
@@ -138,7 +138,7 @@ export async function updateVrInquiryStatus(
   try {
     await requirePermission("INQUIRIES_MANAGE");
   } catch {
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   }
 
   await prisma.vrInquiry.update({
@@ -171,25 +171,25 @@ export async function convertVrInquiryToOrder(args: {
   try {
     admin = await requirePermission("FINANCE_MANAGE");
   } catch {
-    return { error: "Nemate pristup." };
+    return { error: "You do not have access." };
   }
 
   const priceEur = Math.round(Number(args.priceEur));
   if (!Number.isFinite(priceEur) || priceEur <= 0) {
-    return { error: "Cena mora biti veća od 0." };
+    return { error: "The price must be greater than 0." };
   }
 
   const inquiry = await prisma.vrInquiry.findUnique({
     where: { id: args.inquiryId },
   });
-  if (!inquiry) return { error: "Upit nije pronađen." };
+  if (!inquiry) return { error: "Inquiry not found." };
   if (inquiry.convertedOrderId) {
-    return { error: "Upit je već konvertovan u order." };
+    return { error: "The inquiry has already been converted to an order." };
   }
 
   const productLookup = getConfiguratorProduct(inquiry.productId);
   if (!productLookup) {
-    return { error: "Nepoznata VR usluga u upitu." };
+    return { error: "Unknown VR service in the inquiry." };
   }
   const { product, category } = productLookup;
 
@@ -256,13 +256,13 @@ export async function convertVrInquiryToOrder(args: {
             {
               fromStatus: null,
               toStatus: "draft",
-              note: `Konvertovano iz VR upita ${inquiry.id}`,
+              note: `Converted from VR inquiry ${inquiry.id}`,
               actorId: admin.id,
             },
             {
               fromStatus: "draft",
               toStatus: "awaiting_payment",
-              note: "Tim je dogovorio opseg i cenu",
+              note: "The team agreed the scope and price",
               actorId: admin.id,
             },
           ],

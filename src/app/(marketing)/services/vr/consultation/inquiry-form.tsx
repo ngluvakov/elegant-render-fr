@@ -107,7 +107,9 @@ export function VrInquiryForm({
       target_device: config.targetDevice,
     });
     pushGoogleDataLayerEvent({
-      event: "er_generate_lead",
+      event: "generate_lead",
+      value: 0,
+      currency: "EUR",
       event_id: `lead:${res.inquiryId}`,
       lead_type: "vr_inquiry",
       source_path: window.location.pathname,

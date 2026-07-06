@@ -237,7 +237,9 @@ export function ProjectInquiryForm({
       has_quote_snapshot: Boolean(source?.quoteSnapshot),
     });
     pushGoogleDataLayerEvent({
-      event: "er_generate_lead",
+      event: "generate_lead",
+      value: 0,
+      currency: "EUR",
       event_id: `lead:${res.inquiryId}`,
       lead_type: mode === "quick" ? "quick_inquiry" : "project_inquiry",
       source_path: source?.sourcePath ?? window.location.pathname,

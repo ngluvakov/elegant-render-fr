@@ -64,7 +64,7 @@ export function BrandLogo({
     <Link
       href="/"
       className="inline-flex items-center transition-opacity hover:opacity-80"
-      aria-label="Elegant Render — početna"
+      aria-label="Elegant Render — home"
     >
       {content}
     </Link>

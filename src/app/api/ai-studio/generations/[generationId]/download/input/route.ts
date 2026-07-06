@@ -5,7 +5,7 @@
  * input to this generation. For derivatives, that's the parent
  * generation's result image; for fresh uploads, it's the customer's
  * original photo. Filename comes from generation.inputFileName, with
- * the same `obrada-YYYYMMDD-{shortId}` fallback for old rows.
+ * the same `edit-YYYYMMDD-{shortId}` fallback for old rows.
  */
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
@@ -28,7 +28,7 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) {
-    return NextResponse.json({ error: "Niste prijavljeni." }, { status: 401 });
+    return NextResponse.json({ error: "You are not signed in." }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
@@ -36,7 +36,7 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
     select: { isAdmin: true, adminPermissions: true },
   });
   if (!user) {
-    return NextResponse.json({ error: "Korisnik nije pronađen." }, { status: 404 });
+    return NextResponse.json({ error: "User not found." }, { status: 404 });
   }
 
   const canViewAllGenerations = hasAdminPermission(
@@ -61,10 +61,10 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
   });
 
   if (!generation) {
-    return NextResponse.json({ error: "AI obrada nije pronađena." }, { status: 404 });
+    return NextResponse.json({ error: "AI generation not found." }, { status: 404 });
   }
   if (generation.expiresAt <= new Date()) {
-    return NextResponse.json({ error: "Fajl je istekao." }, { status: 410 });
+    return NextResponse.json({ error: "The file has expired." }, { status: 410 });
   }
 
   const { data, error } = await getSupabaseAdmin().storage
@@ -73,7 +73,7 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
 
   if (error || !data) {
     return NextResponse.json(
-      { error: error?.message ?? "Fajl nije pronađen." },
+      { error: error?.message ?? "File not found." },
       { status: 404 },
     );
   }

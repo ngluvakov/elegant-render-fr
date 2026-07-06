@@ -152,7 +152,7 @@ export default async function InvoiceExportPage({
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         <Stat label="Invoice count" value={totals.count.toString()} />
         <Stat
-          label="Gross total (RSD)"
+          label="Gross total (EUR)"
           value={formatEur(totals.gross)}
         />
         <Stat
@@ -182,7 +182,7 @@ export default async function InvoiceExportPage({
                   <th className="px-2 py-3">Order</th>
                   <th className="px-2 py-3">Buyer</th>
                   <th className="px-2 py-3">PIB / VAT</th>
-                  <th className="px-2 py-3 text-right">Gross (RSD)</th>
+                  <th className="px-2 py-3 text-right">Gross (EUR)</th>
                   <th className="px-2 py-3">Status</th>
                 </tr>
               </thead>

@@ -665,7 +665,7 @@ export function LandscapeConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`vegage-${itemId}`} className="text-[0.7rem]">
-                  Starost vegetacije
+                  Vegetation age
                 </Label>
                 <select
                   id={`vegage-${itemId}`}
@@ -694,17 +694,17 @@ export function LandscapeConfigSection({
           {/* 2.2 Terrain & hardscape */}
           <div className="space-y-2">
             <p className="flex items-center gap-1.5 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Teren i hardscape
+              Terrain and hardscape
               <HelpTip>
                 <strong>Hardscape</strong> - non-living landscape elements:
                 paths, paved areas, low walls, stairs, fences,
-                drvene terase. Suprotno od „softscape“ (biljke, trava).
+                wooden decks. The opposite of “softscape” (plants, grass).
               </HelpTip>
             </p>
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor={`topo-${itemId}`} className="text-[0.7rem]">
-                  Topografija terena
+                  Terrain topography
                 </Label>
                 <select
                   id={`topo-${itemId}`}
@@ -756,7 +756,7 @@ export function LandscapeConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`fence-${itemId}`} className="text-[0.7rem]">
-                  Ograde i boundaries
+                  Fences and boundaries
                 </Label>
                 <select
                   id={`fence-${itemId}`}
@@ -815,7 +815,7 @@ export function LandscapeConfigSection({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Spoljna rasveta</Label>
+              <Label className="text-[0.7rem]">Outdoor lighting</Label>
               <CheckboxRow<keyof ExteriorLighting>
                 options={EXTERIOR_LIGHTING_OPTIONS}
                 state={config.exteriorLighting}
@@ -849,10 +849,10 @@ export function LandscapeConfigSection({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Plan sadnje (Planting plan)</Label>
+              <Label className="text-[0.7rem]">Planting plan</Label>
               {renderUploadZone(
                 plantingInputRef,
-                "PDF, tabele sa spiskom biljaka",
+                "PDF, tables with a plant list",
                 "image/*,application/pdf",
                 "planting-plan",
               )}

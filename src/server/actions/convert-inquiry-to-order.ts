@@ -3,7 +3,7 @@
  * ProjectInquiry into a draft Order on the wire-transfer payment
  * track. The created order has no items yet — admin adds them on the
  * order detail page (existing add-service flow), then issues a
- * predračun (existing #97 button).
+ * proforma (existing #97 button).
  *
  * This is the first half of the inquiry → admin offer wizard. The
  * second half (item suggestion from inquiry.serviceType + snapshot,
@@ -150,14 +150,14 @@ export async function convertInquiryToOrder(
     // Forward attached inquiry files into the order's source files
     // bucket so admin can see them next to the items configurator.
     // Best-effort: failures are logged but don't roll back the order
-    // (the "Iz upita" link from #105 still gets admin to the originals).
+    // (the "From inquiry" link from #105 still gets admin to the originals).
     const forwardResult = await forwardInquiryFiles(inquiryId, order.id);
 
     // Heads-up email to the customer so they know their inquiry was
-    // received and a predračun is being prepared. Idempotent on the
+    // received and a proforma is being prepared. Idempotent on the
     // (inquiry, order) pair so a stuck UI / replayed action can't
-    // double-mail. PDF-less — the predračun email comes separately
-    // when admin clicks "Izdaj predračun".
+    // double-mail. PDF-less — the proforma email comes separately
+    // when admin clicks "Issue proforma".
     await enqueueOutboxEvent({
       type: "inquiry_converted_email",
       payload: {
@@ -217,14 +217,14 @@ function composeCustomerNote(inquiry: {
   sourceLabel: string | null;
   sourcePath: string | null;
 }): string {
-  const parts: string[] = [`Iz upita #${inquiry.id}.`];
+  const parts: string[] = [`From inquiry #${inquiry.id}.`];
 
-  if (inquiry.serviceType) parts.push(`Tip usluge: ${inquiry.serviceType}.`);
-  if (inquiry.budget) parts.push(`Budžet: ${inquiry.budget}.`);
-  if (inquiry.deadline) parts.push(`Rok: ${inquiry.deadline}.`);
+  if (inquiry.serviceType) parts.push(`Service type: ${inquiry.serviceType}.`);
+  if (inquiry.budget) parts.push(`Budget: ${inquiry.budget}.`);
+  if (inquiry.deadline) parts.push(`Deadline: ${inquiry.deadline}.`);
   if (inquiry.sourceLabel || inquiry.sourcePath) {
     parts.push(
-      `Izvor: ${inquiry.sourceLabel ?? inquiry.sourcePath ?? "—"}.`,
+      `Source: ${inquiry.sourceLabel ?? inquiry.sourcePath ?? "—"}.`,
     );
   }
 

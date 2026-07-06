@@ -83,7 +83,7 @@ export function AdminMarkPaidButton({ orderId }: Props) {
 }
 
 function humanReason(reason: string): string {
-  if (reason === "not_admin") return "Niste admin.";
+  if (reason === "not_admin") return "You are not an admin.";
   if (reason === "order_not_found") return "Order was not found.";
   if (reason === "not_wire_transfer")
     return "Order is not on the proforma flow.";

@@ -4,9 +4,9 @@ import { SectionKicker } from "@/components/brand/section-kicker";
 import { ButtonLink } from "@/components/ui/button-link";
 
 export const metadata: Metadata = {
-  title: "404 — Stranica nije pronađena",
+  title: "404 — Page not found",
   description:
-    "Stranica nije pronađena. Vratite se na početnu stranicu ili otvorite pregled Elegant Render usluga.",
+    "Page not found. Return to the homepage or browse the Elegant Render services.",
   robots: { index: false, follow: false },
 };
 
@@ -32,17 +32,17 @@ export default function NotFound() {
           404
         </p>
         <h1 className="mt-[-1rem] max-w-[18rem] text-3xl leading-tight text-foreground sm:mt-[-1.4rem] sm:max-w-2xl sm:text-6xl">
-          Stranica nije pronađena
+          Page not found
         </h1>
         <p className="mt-6 max-w-sm text-base leading-8 text-foreground/70 sm:max-w-xl sm:text-lg">
-          Izgleda da je ovaj link napustio plan. Vratite se na početnu
-          stranicu ili nastavite ka pregledu usluga.
+          It looks like this link left the plan. Return to the homepage
+          or continue to the services overview.
         </p>
 
         <div className="mt-10 flex w-full max-w-sm flex-col gap-3 sm:max-w-md sm:flex-row sm:justify-center">
           <ButtonLink href="/" size="lg" className="w-full gap-2 sm:w-auto">
             <Home aria-hidden size={18} />
-            Na početnu
+            Back to homepage
           </ButtonLink>
           <ButtonLink
             href="/services"
@@ -51,7 +51,7 @@ export default function NotFound() {
             className="w-full gap-2 sm:w-auto"
           >
             <Sparkles aria-hidden size={18} />
-            Pogledaj usluge
+            View services
           </ButtonLink>
         </div>
       </section>

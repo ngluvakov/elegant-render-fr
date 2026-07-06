@@ -19,9 +19,15 @@ export type GoogleDataLayerItem = {
   ai_credit_quantity?: number;
 };
 
+// Event names + payload shapes match the live GTM container (v19):
+// custom-event triggers "purchase" / "InitiateCheckout" / "generate_lead",
+// GA4 tags reading the standard `ecommerce` object. Do not rename without
+// updating the GTM triggers in lockstep.
 export type GoogleLeadDataLayerEvent = {
-  event: "er_generate_lead";
+  event: "generate_lead";
   event_id: string;
+  value: number;
+  currency: GoogleConversionCurrency;
   lead_type: "project_inquiry" | "quick_inquiry" | "vr_inquiry";
   source_path?: string;
   conversion_source?: string;
@@ -32,26 +38,31 @@ export type GoogleLeadDataLayerEvent = {
   target_device?: string;
 };
 
+export type GoogleEcommercePayload = {
+  transaction_id?: string;
+  value: number;
+  currency: GoogleConversionCurrency;
+  items: GoogleDataLayerItem[];
+};
+
 export type GoogleCommerceDataLayerEvent = {
-  event: "er_begin_checkout";
+  event: "InitiateCheckout";
   event_id: string;
   value: number;
   currency: GoogleConversionCurrency;
-  transaction_value: number;
-  transaction_currency: GoogleConversionCurrency;
+  ecommerce: GoogleEcommercePayload;
   items: GoogleDataLayerItem[];
   source_path?: string;
   conversion_source?: string;
 };
 
 export type GooglePurchaseDataLayerEvent = {
-  event: "er_purchase";
+  event: "purchase";
   event_id: string;
   transaction_id: string;
   value: number;
   currency: GoogleConversionCurrency;
-  transaction_value: number;
-  transaction_currency: GoogleConversionCurrency;
+  ecommerce: GoogleEcommercePayload;
   items: GoogleDataLayerItem[];
   payment_provider?: string | null;
   buyer_type?: string;
@@ -98,15 +109,15 @@ export function buildBeginCheckoutDataLayerEvent({
   conversionSource = "quote_summary",
 }: BuildBeginCheckoutArgs): GoogleCommerceDataLayerEvent {
   const value = centsToDataLayerValue(calculation.totalCents);
+  const items = calculation.items.map(quoteItemToDataLayerItem);
 
   return {
-    event: "er_begin_checkout",
+    event: "InitiateCheckout",
     event_id: `begin_checkout:${Date.now()}`,
     value,
     currency: "EUR",
-    transaction_value: value,
-    transaction_currency: "EUR",
-    items: calculation.items.map(quoteItemToDataLayerItem),
+    ecommerce: { value, currency: "EUR", items },
+    items,
     ...(sourcePath ? { source_path: sourcePath } : {}),
     conversion_source: conversionSource,
   };

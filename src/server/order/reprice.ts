@@ -1,11 +1,11 @@
 /**
- * reprice.ts — server-side reprice celе porudžbine.
+ * reprice.ts — server-side reprice of the whole order.
  *
- * Namerno OBIČAN server modul, ne "use server": repriceOrder prima goli
- * orderId bez auth/ownership provere (pozivaoci je već rade), pa ne sme
- * biti registrovan kao javno pozivljiv server-action endpoint. Pozivaju
- * ga isključivo akcije iz item-config.ts i order.ts posle sopstvenih
- * provera vlasništva i statusa.
+ * Deliberately a PLAIN server module, not "use server": repriceOrder takes
+ * a bare orderId without an auth/ownership check (callers already do it),
+ * so it must not be registered as a publicly callable server-action
+ * endpoint. It is called exclusively by actions in item-config.ts and
+ * order.ts after their own ownership and status checks.
  */
 import { prisma } from "@/lib/db";
 import {

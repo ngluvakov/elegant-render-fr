@@ -1,5 +1,5 @@
 /**
- * proforma-number.ts — Atomic per-year proforma (predračun) numbering.
+ * proforma-number.ts — Atomic per-year proforma numbering.
  *
  * Format: `P-{year}-{4-digit-seq}` (e.g. `P-2026-0001`). The `P-` prefix
  * keeps proforma numbers visually distinct from invoice numbers

@@ -1,6 +1,6 @@
 /**
  * staging-config.ts — Per-item config + vocabularies for the virtual
- * staging products: `vs-static` (statički staging) and `vs-360` (360
+ * staging products: `vs-static` (static staging) and `vs-360` (360
  * staging). One config shape covers both; the productId selects which
  * catalog add-ons get driven (vs-angle vs vs-360-hotspot, vs-restyle vs
  * vs-360-restyle).
@@ -25,12 +25,12 @@ export const VS_FURNITURE_STYLE_IDS = VS_FURNITURE_STYLES.map(
 ) as VsFurnitureStyleId[];
 
 export const VS_ROOM_PURPOSES = [
-  { id: "living-room", label: "Dnevna soba" },
-  { id: "bedroom", label: "Spavaća soba" },
-  { id: "kids-room", label: "Dečija soba" },
-  { id: "dining-room", label: "Trpezarija" },
-  { id: "office", label: "Radna soba / Kancelarija" },
-  { id: "open-space", label: "Prazan prostor (Open space)" },
+  { id: "living-room", label: "Living room" },
+  { id: "bedroom", label: "Bedroom" },
+  { id: "kids-room", label: "Kids' room" },
+  { id: "dining-room", label: "Dining room" },
+  { id: "office", label: "Home office / Office" },
+  { id: "open-space", label: "Open space" },
 ] as const;
 export type VsRoomPurposeId =
   (typeof VS_ROOM_PURPOSES)[number]["id"];
@@ -39,19 +39,19 @@ export const VS_ROOM_PURPOSE_IDS = VS_ROOM_PURPOSES.map(
 ) as VsRoomPurposeId[];
 
 export const VS_MOODS = [
-  { id: "airy", label: "Svetlo i prozračno (Airy)" },
-  { id: "cozy", label: "Toplo i ušuškano (Cozy)" },
-  { id: "moody", label: "Luksuzno i tamnije (Moody)" },
-  { id: "neutral", label: "Neutralno / Komercijalno" },
+  { id: "airy", label: "Light and airy" },
+  { id: "cozy", label: "Warm and cozy" },
+  { id: "moody", label: "Luxurious and moody" },
+  { id: "neutral", label: "Neutral / Commercial" },
 ] as const;
 export type VsMoodId = (typeof VS_MOODS)[number]["id"];
 export const VS_MOOD_IDS = VS_MOODS.map((m) => m.id) as VsMoodId[];
 
 export const VS_TARGET_AUDIENCES = [
-  { id: "young-couples", label: "Mladi parovi / Profesionalci" },
-  { id: "families", label: "Porodice sa decom" },
-  { id: "students", label: "Studenti" },
-  { id: "luxury", label: "Luksuzni kupci" },
+  { id: "young-couples", label: "Young couples / Professionals" },
+  { id: "families", label: "Families with children" },
+  { id: "students", label: "Students" },
+  { id: "luxury", label: "Luxury buyers" },
 ] as const;
 export type VsTargetAudienceId =
   (typeof VS_TARGET_AUDIENCES)[number]["id"];
@@ -84,7 +84,7 @@ export type StagingConfig = {
 
 export function defaultStagingConfig(): StagingConfig {
   return {
-    roomName: "Dnevna soba",
+    roomName: "Living room",
     furnitureStyle: "modern",
     roomPurpose: "living-room",
     lightingCorrection: false,
@@ -129,7 +129,7 @@ export function sanitizeStagingConfig(c: StagingConfig): StagingConfig {
   );
   return {
     roomName:
-      String(c.roomName ?? "").trim().slice(0, 100) || "Dnevna soba",
+      String(c.roomName ?? "").trim().slice(0, 100) || "Living room",
     furnitureStyle,
     roomPurpose,
     ...((d) => (d ? { description: d } : {}))(
@@ -177,7 +177,7 @@ export function addOnQuantitiesFor(
 // ─── Per-product copy ─────────────────────────────────────────────────
 
 export function stagingProductLabel(productId: StagingProductId): string {
-  return productId === "vs-static" ? "Statički staging" : "360 staging";
+  return productId === "vs-static" ? "Static staging" : "360 staging";
 }
 
 export function angleNoun(
@@ -185,11 +185,11 @@ export function angleNoun(
   count: number,
 ): string {
   if (productId === "vs-360") {
-    return count === 1 ? "hotspot" : "hotspota";
+    return count === 1 ? "hotspot" : "hotspots";
   }
-  if (count === 1) return "ugao";
-  if (count >= 2 && count <= 4) return "ugla";
-  return "uglova";
+  if (count === 1) return "angle";
+  if (count >= 2 && count <= 4) return "angles";
+  return "angles";
 }
 
 // ─── Read helper ──────────────────────────────────────────────────────

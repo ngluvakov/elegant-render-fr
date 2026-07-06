@@ -1,7 +1,7 @@
 /**
- * status-transitions.ts — čista tabela dozvoljenih prelaza statusa
- * porudžbine. Izdvojena iz status-machine.ts da bi bila testabilna bez
- * Prisma/Sentry/Bitrix imports (status-machine je vezan za DB).
+ * status-transitions.ts — pure table of allowed order status
+ * transitions. Split out of status-machine.ts so it is testable without
+ * Prisma/Sentry/Bitrix imports (status-machine is tied to the DB).
  *
  * `delivered → in_progress` is an admin-only override for the "free
  * revision" flow: customer asks for a change after delivery, admin

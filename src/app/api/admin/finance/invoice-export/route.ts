@@ -13,12 +13,12 @@
  *     history in one shot
  *
  * Format: RFC 4180-ish CSV with a BOM prefix so Excel opens UTF-8
- * correctly (Đ/Ć/Š/Ž/Č render right). CRLF line endings, fields
- * quoted only when they contain `,` `"` or a newline.
+ * correctly (diacritics in buyer names render right). CRLF line
+ * endings, fields quoted only when they contain `,` `"` or a newline.
  *
  * Each issued Order yields one row. Pre-A.2-era orders without an
  * invoiceNumber are excluded so the export only carries documents
- * that legally exist as faktura.
+ * that legally exist as invoices.
  */
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
 
   if (!ISO_DATE_RE.test(fromRaw) || !ISO_DATE_RE.test(toRaw)) {
     return NextResponse.json(
-      { error: "from i to moraju biti u formatu YYYY-MM-DD" },
+      { error: "from and to must be in YYYY-MM-DD format" },
       { status: 400 },
     );
   }
@@ -58,18 +58,18 @@ export async function GET(request: Request) {
   const from = new Date(`${fromRaw}T00:00:00.000Z`);
   const to = new Date(`${toRaw}T23:59:59.999Z`);
   if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) {
-    return NextResponse.json({ error: "Neispravan datum" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid date" }, { status: 400 });
   }
   if (from > to) {
     return NextResponse.json(
-      { error: "from mora biti pre ili isti kao to" },
+      { error: "from must be before or equal to to" },
       { status: 400 },
     );
   }
   const days = Math.ceil((to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24));
   if (days > MAX_RANGE_DAYS) {
     return NextResponse.json(
-      { error: `Opseg veći od ${MAX_RANGE_DAYS} dana — suzite filter.` },
+      { error: `Range longer than ${MAX_RANGE_DAYS} days — narrow the filter.` },
       { status: 400 },
     );
   }
@@ -84,20 +84,20 @@ export async function GET(request: Request) {
   });
 
   const header = [
-    "Broj fakture",
-    "Datum izdavanja",
-    "Datum prometa",
-    "Broj porudžbine",
-    "Kupac",
+    "Invoice number",
+    "Issue date",
+    "Date of supply",
+    "Order number",
+    "Buyer",
     "VAT ID",
-    "Država",
-    "Tip kupca",
-    "Valuta",
-    "Neto (valuta)",
-    "PDV (valuta)",
-    "Bruto (valuta)",
-    "Bruto (EUR)",
-    "Status plaćanja",
+    "Country",
+    "Buyer type",
+    "Currency",
+    "Net (currency)",
+    "VAT (currency)",
+    "Gross (currency)",
+    "Gross (EUR)",
+    "Payment status",
     "Payment provider",
     "Email",
   ];
@@ -165,7 +165,7 @@ export async function GET(request: Request) {
     status: 200,
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="elegant-render-racuni-${fromRaw}-${toRaw}.csv"`,
+      "Content-Disposition": `attachment; filename="elegant-render-invoices-${fromRaw}-${toRaw}.csv"`,
       "Cache-Control": "no-store",
     },
   });
@@ -194,6 +194,6 @@ function formatIsoDate(d: Date): string {
 }
 
 function buyerTypeLabel(t: string): string {
-  if (t === "business") return "Firma";
-  return "Fizičko lice";
+  if (t === "business") return "Business";
+  return "Individual";
 }

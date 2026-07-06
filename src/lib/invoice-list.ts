@@ -1,7 +1,7 @@
 /**
  * Builds a unified list of invoice-like documents for a single order:
- * predračun + račun porudžbine + račun za svaku doplatu.
- * Shared by the finansije page and the project detail "Računi" card.
+ * proforma + order invoice + an invoice for each additional charge.
+ * Shared by the finance page and the project detail "Invoices" card.
  */
 import {
   invoiceCurrencyForBuyer,
@@ -72,7 +72,7 @@ export function buildInvoiceList(
       issuedAt: order.proformaIssuedAt,
       amountCents: order.billingTotalCents ?? orderAmountCents(order),
       currency: invoiceCurrencyForBuyer(order),
-      label: "Predračun",
+      label: "Proforma invoice",
       href: `/api/portal/proforma/${order.id}`,
     });
   }
@@ -85,7 +85,7 @@ export function buildInvoiceList(
       issuedAt: order.invoiceIssuedAt,
       amountCents: order.billingTotalCents ?? orderAmountCents(order),
       currency: invoiceCurrencyForBuyer(order),
-      label: "Račun za porudžbinu",
+      label: "Order invoice",
       href: `/api/portal/invoice/${order.id}`,
     });
   }
@@ -117,7 +117,7 @@ export function buildInvoiceList(
         charge.billingTotalCents ??
         invoiceGrossCentsFromEurCents(charge.totalCents, chargeBuyer),
       currency: invoiceCurrencyForBuyer(chargeBuyer),
-      label: `Račun za doplatu${reasonHint}`,
+      label: `Additional charge invoice${reasonHint}`,
       href: `/api/portal/charge-invoice/${charge.id}`,
     });
   }

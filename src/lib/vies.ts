@@ -1,7 +1,8 @@
 /**
  * vies.ts — Thin client over the EU VIES (VAT Information Exchange
  * System) REST API. Used to verify a company_foreign customer's VAT
- * ID before issuing an export invoice with a 0% VAT (čl. 24 ZPDV).
+ * ID before issuing an export invoice with a 0% VAT (Art. 24 of the
+ * Serbian VAT Act, ZPDV).
  *
  * Endpoint: GET /vies/rest-api/ms/{country}/vat/{vatNumber}
  * Docs:    https://ec.europa.eu/taxation_customs/vies/

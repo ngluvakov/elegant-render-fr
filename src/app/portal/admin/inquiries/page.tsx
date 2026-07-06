@@ -287,7 +287,7 @@ export default async function ProjectInquiriesPage({
                               }
                             >
                               {unscanned
-                                ? "nije skeniran"
+                                ? "not scanned"
                                 : formatInquiryFileSize(file.fileSize)}
                             </span>
                           </a>
@@ -300,7 +300,7 @@ export default async function ProjectInquiriesPage({
                 {snapshot && (
                   <details className="mt-4 rounded-md border border-border/40 bg-background/50 px-3 py-2">
                     <summary className="cursor-pointer text-xs font-semibold text-muted-foreground">
-                      Snapshot iz konfiguratora
+                      Configurator snapshot
                     </summary>
                     <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap text-[0.7rem] leading-relaxed text-foreground/80">
                       {snapshot}
@@ -339,7 +339,7 @@ export default async function ProjectInquiriesPage({
                   ) : (
                     <span className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-2.5 py-1 text-muted-foreground">
                       <ExternalLink className="h-3.5 w-3.5" />
-                      Bitrix sync pokrenut
+                      Bitrix sync started
                     </span>
                   )}
                   <span className="text-muted-foreground">ID: {inquiry.id}</span>

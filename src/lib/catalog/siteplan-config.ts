@@ -11,9 +11,9 @@ import { TIME_OF_DAY_IDS, SEASON_IDS } from "./interior-config";
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const SP_ANGLE_TYPES = [
-  { id: "top-down", label: "Strogi pogled odozgo (Top-down / 2D osećaj)" },
-  { id: "isometric", label: "Izometrija (45°)" },
-  { id: "birds-eye", label: "Ptičja perspektiva (aerial pod uglom)" },
+  { id: "top-down", label: "Straight top-down view (2D feel)" },
+  { id: "isometric", label: "Isometric (45°)" },
+  { id: "birds-eye", label: "Bird's-eye view (angled aerial)" },
 ] as const;
 export type SpAngleTypeId = (typeof SP_ANGLE_TYPES)[number]["id"];
 export const SP_ANGLE_TYPE_IDS = SP_ANGLE_TYPES.map(
@@ -21,19 +21,19 @@ export const SP_ANGLE_TYPE_IDS = SP_ANGLE_TYPES.map(
 ) as SpAngleTypeId[];
 
 export const SP_ENV_REPS = [
-  { id: "parcel-only", label: "Samo parcela (bez okruženja)" },
-  { id: "abstract", label: "Apstraktno okruženje (bele blok zgrade okolo)" },
-  { id: "3d", label: "3D modelovano okruženje (realistično)" },
-  { id: "photomontage", label: "Uklapanje u dron fotografiju" },
+  { id: "parcel-only", label: "Plot only (no surroundings)" },
+  { id: "abstract", label: "Abstract surroundings (white block buildings around)" },
+  { id: "3d", label: "3D modeled surroundings (realistic)" },
+  { id: "photomontage", label: "Integration into a drone photograph" },
 ] as const;
 export type SpEnvRepId = (typeof SP_ENV_REPS)[number]["id"];
 export const SP_ENV_REP_IDS = SP_ENV_REPS.map((e) => e.id) as SpEnvRepId[];
 
 export const SP_LANDSCAPE_STYLES = [
-  { id: "minimalist", label: "Minimalističko (samo trava i osnovno drveće)" },
-  { id: "lush", label: "Bujno / Šumovito" },
-  { id: "urban", label: "Urbano (više betona / trgova)" },
-  { id: "per-plan", label: "Prema priloženom pejzažnom planu" },
+  { id: "minimalist", label: "Minimalist (grass and basic trees only)" },
+  { id: "lush", label: "Lush / Wooded" },
+  { id: "urban", label: "Urban (more concrete / plazas)" },
+  { id: "per-plan", label: "According to the provided landscape plan" },
 ] as const;
 export type SpLandscapeStyleId =
   (typeof SP_LANDSCAPE_STYLES)[number]["id"];
@@ -44,9 +44,9 @@ export const SP_LANDSCAPE_STYLE_IDS = SP_LANDSCAPE_STYLES.map(
 // ─── Checkbox groups ──────────────────────────────────────────────────
 
 export const SP_TRAFFIC_OPTIONS = [
-  { key: "vehiclesParked", label: "Automobili na parkinzima" },
-  { key: "vehiclesMoving", label: "Vozila u pokretu na ulicama" },
-  { key: "pedestrians", label: "Pešaci na stazama" },
+  { key: "vehiclesParked", label: "Cars in parking lots" },
+  { key: "vehiclesMoving", label: "Moving vehicles on streets" },
+  { key: "pedestrians", label: "Pedestrians on paths" },
 ] as const;
 export type SpTraffic = {
   vehiclesParked: boolean;
@@ -55,10 +55,10 @@ export type SpTraffic = {
 };
 
 export const SP_AMENITY_OPTIONS = [
-  { key: "playgrounds", label: "Dečija igrališta" },
-  { key: "sports", label: "Sportski tereni" },
-  { key: "water", label: "Bazeni / Vodene površine" },
-  { key: "parks", label: "Parkovi / Trgovi" },
+  { key: "playgrounds", label: "Children's playgrounds" },
+  { key: "sports", label: "Sports courts" },
+  { key: "water", label: "Pools / Water features" },
+  { key: "parks", label: "Parks / Plazas" },
 ] as const;
 export type SpAmenities = {
   playgrounds: boolean;
@@ -105,7 +105,7 @@ export function defaultAmenities(): SpAmenities {
 
 export function defaultSiteplanConfig(): SiteplanConfig {
   return {
-    projectName: "Situacija 1",
+    projectName: "Site plan 1",
     buildingCount: 1,
     angleCount: 1,
     angleType: "isometric",
@@ -165,7 +165,7 @@ export function sanitizeSiteplanConfig(c: SiteplanConfig): SiteplanConfig {
   );
   return {
     projectName:
-      String(c.projectName ?? "").trim().slice(0, 100) || "Situacija 1",
+      String(c.projectName ?? "").trim().slice(0, 100) || "Site plan 1",
     buildingCount: clampCount(c.buildingCount, 1, 100),
     angleCount: clampCount(c.angleCount, 1, 30),
     angleType,

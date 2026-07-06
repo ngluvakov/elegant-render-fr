@@ -52,8 +52,8 @@ function normalizeMessages(messages: unknown): IncomingChatMessage[] | null {
   return normalized.length > 0 ? normalized : null;
 }
 
-// Ranije golo `as` kastovanje — sadržaj ide u system prompt, pa oblik i
-// dužine moraju biti ograničeni. Nepoznata polja se odbacuju (strip).
+// Used to be a bare `as` cast — the content goes into the system prompt, so
+// shape and lengths must be constrained. Unknown fields are dropped (strip).
 const guideContextSchema = z.object({
   page: z.enum([
     "ai_studio",
@@ -160,8 +160,8 @@ export async function POST(request: Request) {
     return new Response("Missing messages", { status: 400 });
   }
   const { messages, pagePath, sessionId, guideContext } = payload;
-  // Poslednjih 40 poruka je dovoljno konteksta; bez limita bi zlonameran
-  // klijent mogao da naduva token potrošnju po zahtevu.
+  // The last 40 messages are enough context; without a limit a malicious
+  // client could inflate token usage per request.
   const normalizedMessages = normalizeMessages(messages)?.slice(-40) ?? null;
   const pagePathText = cleanText(pagePath, 240);
   const assistantGuideContext = normalizeGuideContext(guideContext);

@@ -226,13 +226,13 @@ export async function enforceCleanScan(input: {
   entityType: string;
   entityId: string;
   bucket?: string;
-  // Šta raditi kad skener NIJE DOSTUPAN (za razliku od zaraženog fajla).
-  //  - "reject" (podrazumevano): obriši fajl i vrati grešku. Zadržava
-  //    postojeće ponašanje checkout/order upload-a — fail-closed.
-  //  - "quarantine": ZADRŽI fajl, označi ga kao "pending" i pusti pozivaoca
-  //    da nastavi. Koristi ga tok upita da lead ne bi tiho nestao kad je
-  //    Cloudmersive privremeno nedostupan (incident 2026-06-24).
-  // Zaražen fajl se UVEK odbija, bez obzira na ovu opciju.
+  // What to do when the scanner is UNAVAILABLE (as opposed to an infected file).
+  //  - "reject" (default): delete the file and return an error. Keeps the
+  //    existing checkout/order upload behavior — fail-closed.
+  //  - "quarantine": KEEP the file, mark it as "pending" and let the caller
+  //    continue. Used by the inquiry flow so a lead doesn't silently vanish
+  //    when Cloudmersive is temporarily unavailable (incident 2026-06-24).
+  // An infected file is ALWAYS rejected, regardless of this option.
   onScanUnavailable?: "reject" | "quarantine";
 }): Promise<EnforceCleanScanResult> {
   const bucket = input.bucket ?? UPLOADS_BUCKET;
@@ -271,12 +271,12 @@ export async function enforceCleanScan(input: {
       reason: "infected",
       threats: result.threats,
       userError:
-        "Fajl je odbijen jer je antivirus skener pronašao potencijalne pretnje. Ako verujete da je ovo greška, javite nam se na kontakt@elegantrender.rs.",
+        "The file was rejected because the antivirus scanner found potential threats. If you believe this is a mistake, contact us at info@elegantrender.com.",
     };
   } catch (err) {
     if (err instanceof FileScanUnavailableError) {
       const quarantine = onScanUnavailable === "quarantine";
-      // Karantin zadržava fajl; "reject" ga briše (staro ponašanje).
+      // Quarantine keeps the file; "reject" deletes it (old behavior).
       if (!quarantine) {
         await deleteStorageObject({ bucket, path: input.storagePath });
       }
@@ -310,7 +310,7 @@ export async function enforceCleanScan(input: {
         reason: "scan_error",
         threats: [],
         userError:
-          "Trenutno ne možemo da proverimo fajl. Pokušajte ponovo za par minuta.",
+          "We cannot check the file right now. Try again in a few minutes.",
       };
     }
     throw err;

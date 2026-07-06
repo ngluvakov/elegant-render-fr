@@ -1,9 +1,9 @@
 /**
- * PostHogSessionBridge — klijentska varijanta PostHogIdentifyBridge-a
- * za marketing layout. Čita sesiju kroz useSession() (SessionProvider
- * je već fetch-uje klijentski), pa server layout NE mora da zove
- * auth() — čitanje kolačića u layoutu je celo (marketing) stablo
- * teralo u per-request dynamic rendering.
+ * PostHogSessionBridge — client-side variant of PostHogIdentifyBridge
+ * for the marketing layout. Reads the session through useSession()
+ * (SessionProvider already fetches it client-side), so the server layout
+ * does NOT have to call auth() — reading cookies in the layout forced the
+ * whole (marketing) tree into per-request dynamic rendering.
  */
 "use client";
 

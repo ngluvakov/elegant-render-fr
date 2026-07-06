@@ -44,7 +44,7 @@ export function RetryOutboxButton({ eventId }: { eventId: string }) {
 }
 
 function humanReason(reason: string): string {
-  if (reason === "not_admin") return "Niste admin.";
+  if (reason === "not_admin") return "You are not an admin.";
   if (reason === "event_not_found") return "Event was not found.";
   if (reason.startsWith("cannot_retry_"))
     return `Cannot retry - status is ${reason.replace("cannot_retry_", "")}.`;

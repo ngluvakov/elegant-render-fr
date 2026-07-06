@@ -155,7 +155,7 @@ export async function savePricingDraftChange(formData: FormData) {
         };
       }
 
-      throw new Error("Nepoznata izmena cenovnika.");
+      throw new Error("Unknown pricing change.");
     },
     {
       kind,
@@ -419,7 +419,7 @@ function boolValue(formData: FormData, key: string): boolean {
 function numberValue(formData: FormData, key: string): number {
   const parsed = Number(text(formData, key).replace(",", "."));
   if (!Number.isFinite(parsed) || parsed < 0) {
-    throw new Error(`Neispravna numerička vrednost: ${key}`);
+    throw new Error(`Invalid numeric value: ${key}`);
   }
   return parsed;
 }
@@ -446,7 +446,7 @@ function jsonValue<T>(raw: string, fallback: T): T {
   try {
     return JSON.parse(raw) as T;
   } catch {
-    throw new Error("JSON podešavanje nije ispravno.");
+    throw new Error("The JSON setting is invalid.");
   }
 }
 
@@ -457,9 +457,9 @@ function normalizeVisualPatch(
     return {
       kind: "product",
       productId: requiredText(patch.productId, "productId"),
-      label: requiredText(patch.label, "Naziv"),
+      label: requiredText(patch.label, "Name"),
       unitLabel: requiredText(patch.unitLabel, "Unit label"),
-      basePriceEur: positiveNumber(patch.basePriceEur, "Osnovna cena"),
+      basePriceEur: positiveNumber(patch.basePriceEur, "Base price"),
       includes: patch.includes
         .map((item) => item.trim())
         .filter(Boolean)
@@ -473,14 +473,14 @@ function normalizeVisualPatch(
       kind: "addon",
       productId: requiredText(patch.productId, "productId"),
       addOnId: requiredText(patch.addOnId, "addOnId"),
-      label: requiredText(patch.label, "Naziv dodatka"),
+      label: requiredText(patch.label, "Add-on name"),
       description: patch.description.trim(),
-      priceEur: nonNegativeNumber(patch.priceEur, "Cena dodatka"),
-      includedQty: nonNegativeInteger(patch.includedQty, "Uključeno"),
+      priceEur: nonNegativeNumber(patch.priceEur, "Add-on price"),
+      includedQty: nonNegativeInteger(patch.includedQty, "Included quantity"),
       maxQty:
         patch.maxQty === null
           ? null
-          : positiveInteger(patch.maxQty, "Maksimalna količina"),
+          : positiveInteger(patch.maxQty, "Maximum quantity"),
       volumeRules: normalizeVolumeRules(patch.volumeRules),
     };
   }
@@ -489,27 +489,27 @@ function normalizeVisualPatch(
     return {
       kind: "discount",
       productId: requiredText(patch.productId, "productId"),
-      ruleIndex: nonNegativeInteger(patch.ruleIndex, "Indeks popusta"),
-      discountPct: percent(patch.discountPct, "Popust"),
-      reason: requiredText(patch.reason, "Razlog popusta"),
+      ruleIndex: nonNegativeInteger(patch.ruleIndex, "Discount rule index"),
+      discountPct: percent(patch.discountPct, "Discount"),
+      reason: requiredText(patch.reason, "Discount reason"),
     };
   }
 
   if (patch.kind === "duration") {
-    const minSeconds = positiveInteger(patch.minSeconds, "Minimum sekundi");
+    const minSeconds = positiveInteger(patch.minSeconds, "Minimum seconds");
     const defaultSeconds = positiveInteger(
       patch.defaultSeconds,
-      "Default sekundi",
+      "Default seconds",
     );
     const maxSeconds =
       patch.maxSeconds === null
         ? null
-        : positiveInteger(patch.maxSeconds, "Maksimum sekundi");
+        : positiveInteger(patch.maxSeconds, "Maximum seconds");
     if (defaultSeconds < minSeconds) {
-      throw new Error("Default trajanje ne može biti manje od minimuma.");
+      throw new Error("The default duration cannot be shorter than the minimum.");
     }
     if (maxSeconds !== null && maxSeconds < defaultSeconds) {
-      throw new Error("Maksimum trajanja ne može biti manji od default trajanja.");
+      throw new Error("The maximum duration cannot be shorter than the default duration.");
     }
     return {
       kind: "duration",
@@ -518,7 +518,7 @@ function normalizeVisualPatch(
       minSeconds,
       defaultSeconds,
       maxSeconds,
-      perSecondEur: positiveNumber(patch.perSecondEur, "Cena po sekundi"),
+      perSecondEur: positiveNumber(patch.perSecondEur, "Price per second"),
       discountTiers: normalizeDurationTiers(patch.discountTiers),
     };
   }
@@ -531,21 +531,21 @@ function normalizeVisualPatch(
 
 function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
   return {
-    serbiaVatRate: percentRatio(settings.serbiaVatRate, "PDV Srbija"),
+    serbiaVatRate: percentRatio(settings.serbiaVatRate, "Serbia VAT rate"),
     aiCreditUnitsPerCredit: positiveInteger(
       settings.aiCreditUnitsPerCredit,
-      "AI jedinice po kreditu",
+      "AI units per credit",
     ),
     aiCreditExpiresAfterMonths: positiveInteger(
       settings.aiCreditExpiresAfterMonths,
-      "AI expiry meseci",
+      "AI expiry months",
     ),
     aiCreditTiers: settings.aiCreditTiers
       .map((tier) => ({
-        minCredits: positiveInteger(tier.minCredits, "Minimum kredita"),
+        minCredits: positiveInteger(tier.minCredits, "Minimum credits"),
         centsPerCredit: positiveInteger(
           tier.centsPerCredit,
-          "Cena po kreditu u centima",
+          "Price per credit in cents",
         ),
       }))
       .sort((a, b) => b.minCredits - a.minCredits),
@@ -553,66 +553,66 @@ function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
       interior: {
         firstFloorEur: positiveNumber(
           settings.specialPricing.interior.firstFloorEur,
-          "Enterijer prvi sprat",
+          "Interior first floor",
         ),
         extraFloorEur: positiveNumber(
           settings.specialPricing.interior.extraFloorEur,
-          "Enterijer dodatni sprat",
+          "Interior extra floor",
         ),
         includedRooms: nonNegativeInteger(
           settings.specialPricing.interior.includedRooms,
-          "Enterijer uključene prostorije",
+          "Interior included rooms",
         ),
         includedCameras: nonNegativeInteger(
           settings.specialPricing.interior.includedCameras,
-          "Enterijer uključeni kadrovi",
+          "Interior included cameras",
         ),
         extraRoomEur: positiveNumber(
           settings.specialPricing.interior.extraRoomEur,
-          "Enterijer doplata prostorije",
+          "Interior extra room charge",
         ),
         extraCameraEur: positiveNumber(
           settings.specialPricing.interior.extraCameraEur,
-          "Enterijer doplata kadra",
+          "Interior extra camera charge",
         ),
       },
       tour360: {
         firstFloorEur: positiveNumber(
           settings.specialPricing.tour360.firstFloorEur,
-          "360 prvi sprat",
+          "360 first floor",
         ),
         extraFloorEur: positiveNumber(
           settings.specialPricing.tour360.extraFloorEur,
-          "360 dodatni sprat",
+          "360 extra floor",
         ),
         includedHotspots: nonNegativeInteger(
           settings.specialPricing.tour360.includedHotspots,
-          "360 uključeni hotspotovi",
+          "360 included hotspots",
         ),
         includedCameras: nonNegativeInteger(
           settings.specialPricing.tour360.includedCameras,
-          "360 uključeni kadrovi",
+          "360 included cameras",
         ),
         extraHotspotEur: positiveNumber(
           settings.specialPricing.tour360.extraHotspotEur,
-          "360 doplata hotspota",
+          "360 extra hotspot charge",
         ),
         extraCameraEur: positiveNumber(
           settings.specialPricing.tour360.extraCameraEur,
-          "360 doplata kadra",
+          "360 extra camera charge",
         ),
         assembly: {
           baseEur: nonNegativeNumber(
             settings.specialPricing.tour360.assembly.baseEur,
-            "Tour assembly baza",
+            "Tour assembly base",
           ),
           freeHotspotThreshold: nonNegativeInteger(
             settings.specialPricing.tour360.assembly.freeHotspotThreshold,
-            "Tour assembly free hotspot prag",
+            "Tour assembly free hotspot threshold",
           ),
           floorPlanNavEur: nonNegativeNumber(
             settings.specialPricing.tour360.assembly.floorPlanNavEur,
-            "Tour floorplan navigacija",
+            "Tour floor plan navigation",
           ),
           whiteLabelEur: nonNegativeNumber(
             settings.specialPricing.tour360.assembly.whiteLabelEur,
@@ -623,15 +623,15 @@ function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
       tourAssembly: {
         baseEur: nonNegativeNumber(
           settings.specialPricing.tourAssembly.baseEur,
-          "Tour assembly baza",
+          "Tour assembly base",
         ),
         freeHotspotThreshold: nonNegativeInteger(
           settings.specialPricing.tourAssembly.freeHotspotThreshold,
-          "Tour assembly free hotspot prag",
+          "Tour assembly free hotspot threshold",
         ),
         floorPlanNavEur: nonNegativeNumber(
           settings.specialPricing.tourAssembly.floorPlanNavEur,
-          "Tour floorplan navigacija",
+          "Tour floor plan navigation",
         ),
         whiteLabelEur: nonNegativeNumber(
           settings.specialPricing.tourAssembly.whiteLabelEur,
@@ -645,8 +645,8 @@ function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
 function normalizeVolumeRules(rules: VolumeRule[]): VolumeRule[] {
   return rules
     .map((rule) => ({
-      afterQty: nonNegativeInteger(rule.afterQty, "Volume prag"),
-      priceEur: nonNegativeNumber(rule.priceEur, "Volume cena"),
+      afterQty: nonNegativeInteger(rule.afterQty, "Volume threshold"),
+      priceEur: nonNegativeNumber(rule.priceEur, "Volume price"),
     }))
     .sort((a, b) => a.afterQty - b.afterQty);
 }
@@ -661,27 +661,27 @@ function normalizeDurationTiers(
         tier.maxSec === null || tier.maxSec === undefined
           ? Infinity
           : positiveInteger(tier.maxSec, "Duration max"),
-      discountPct: percent(tier.discountPct, "Duration popust"),
+      discountPct: percent(tier.discountPct, "Duration discount"),
     }))
     .sort((a, b) => a.minSec - b.minSec);
 }
 
 function requiredText(value: string, label: string): string {
   const trimmed = value.trim();
-  if (!trimmed) throw new Error(`${label} je obavezno polje.`);
+  if (!trimmed) throw new Error(`${label} is a required field.`);
   return trimmed;
 }
 
 function nonNegativeNumber(value: number, label: string): number {
   if (!Number.isFinite(value) || value < 0) {
-    throw new Error(`${label} mora biti 0 ili veće.`);
+    throw new Error(`${label} must be 0 or greater.`);
   }
   return value;
 }
 
 function positiveNumber(value: number, label: string): number {
   if (!Number.isFinite(value) || value <= 0) {
-    throw new Error(`${label} mora biti veće od nule.`);
+    throw new Error(`${label} must be greater than zero.`);
   }
   return value;
 }
@@ -696,14 +696,14 @@ function positiveInteger(value: number, label: string): number {
 
 function percent(value: number, label: string): number {
   if (!Number.isFinite(value) || value < 0 || value > 100) {
-    throw new Error(`${label} mora biti između 0 i 100.`);
+    throw new Error(`${label} must be between 0 and 100.`);
   }
   return Math.round(value);
 }
 
 function percentRatio(value: number, label: string): number {
   if (!Number.isFinite(value) || value < 0 || value > 1) {
-    throw new Error(`${label} mora biti decimalno između 0 i 1.`);
+    throw new Error(`${label} must be a decimal between 0 and 1.`);
   }
   return value;
 }

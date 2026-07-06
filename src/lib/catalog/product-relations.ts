@@ -7,7 +7,7 @@
  * does NOT consult this file — it is display-only.
  *
  * Used by: components/configurator/related-services-postcard (Davenport),
- *          chat ProposalCard (for sectioned :::predlog blocks).
+ *          chat ProposalCard (for sectioned :::proposal blocks).
  */
 
 const PRODUCT_RELATIONS: Record<string, string[]> = {

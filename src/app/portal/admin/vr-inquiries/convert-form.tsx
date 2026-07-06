@@ -52,7 +52,7 @@ export function VrInquiryConvertForm({
         onClick={() => setOpen(true)}
         className="rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent/90"
       >
-        Konvertuj u order →
+        Convert to order →
       </button>
     );
   }
@@ -81,7 +81,7 @@ export function VrInquiryConvertForm({
   return (
     <div className="w-full space-y-3 rounded-lg border border-accent/30 bg-accent/[0.05] p-3">
       <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-accent">
-        Konvertuj u order
+        Convert to order
       </p>
       <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
         <div className="space-y-1.5">
@@ -98,7 +98,7 @@ export function VrInquiryConvertForm({
         </div>
         <div className="space-y-1.5">
           <Label htmlFor={`price-${inquiryId}`} className="text-[0.72rem]">
-            Price (RSD)
+            Price (EUR)
           </Label>
           <Input
             id={`price-${inquiryId}`}
@@ -141,7 +141,7 @@ export function VrInquiryConvertForm({
         >
           {pending ? (
             <>
-              <Loader2 className="h-3 w-3 animate-spin" /> Konvertujem…
+              <Loader2 className="h-3 w-3 animate-spin" /> Converting…
             </>
           ) : (
             "Confirm and send email"

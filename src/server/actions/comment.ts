@@ -23,14 +23,14 @@ export async function createCommentAction(
   body: string,
 ): Promise<CommentResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "Niste prijavljeni." };
+  if (!session?.user?.id) return { error: "You are not signed in." };
 
-  if (!body.trim()) return { error: "Poruka ne može biti prazna." };
+  if (!body.trim()) return { error: "The message cannot be empty." };
 
   // Verify ownership
   const order = await prisma.order.findUnique({ where: { id: orderId } });
   if (!order || order.userId !== session.user.id) {
-    return { error: "Porudžbina nije pronađena." };
+    return { error: "Order not found." };
   }
 
   const comment = await prisma.orderComment.create({

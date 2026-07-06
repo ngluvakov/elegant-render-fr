@@ -207,7 +207,7 @@ export function calcTour360Total(
 export function newTour360Floor(index: number): Tour360Floor {
   return {
     id: makeFloorId(),
-    name: index === 0 ? "Sprat 1" : `Sprat ${index + 1}`,
+    name: index === 0 ? "Floor 1" : `Floor ${index + 1}`,
     rooms: [],
     description: "",
   };

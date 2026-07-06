@@ -13,49 +13,49 @@ export const ROOM_STYLES = [
     id: "industrial-urban",
     label: "Industrial / urban",
     description:
-      "Sirove teksture — cigla, čelik, beton. Visoki plafoni, otvorene instalacije.",
+      "Raw textures — brick, steel, concrete. High ceilings, exposed installations.",
     image: "/styles/industrial-urban.webp",
   },
   {
     id: "scandinavian",
     label: "Scandinavian",
     description:
-      "Svetle neutralne boje, belo drvo, minimalizam. Čisto i funkcionalno.",
+      "Light neutral colors, white wood, minimalism. Clean and functional.",
     image: "/styles/scandinavian.webp",
   },
   {
     id: "farmhouse",
     label: "Farmhouse",
     description:
-      "Rustični elementi, patinirano drvo, topli tekstil. Domaće i udobno.",
+      "Rustic elements, weathered wood, warm textiles. Homely and comfortable.",
     image: "/styles/farmhouse.webp",
   },
   {
     id: "modern",
     label: "Modern",
     description:
-      "Čiste linije, neutralne boje, minimalna dekoracija. Strogo i uređeno.",
+      "Clean lines, neutral colors, minimal decoration. Strict and orderly.",
     image: "/styles/modern.webp",
   },
   {
     id: "contemporary",
     label: "Contemporary",
     description:
-      "Aktualni trendovi, mešanje tekstura i materijala. Elegantno bez rigidnih pravila.",
+      "Current trends, mixed textures and materials. Elegant without rigid rules.",
     image: "/styles/contemporary.webp",
   },
   {
     id: "mid-century",
     label: "Mid-century",
     description:
-      "Retro 1950ih–60ih. Organsko drvo, geometrijski oblici, topli akcenti.",
+      "1950s-60s retro. Organic wood, geometric shapes, warm accents.",
     image: "/styles/mid-century.webp",
   },
   {
     id: "coastal",
-    label: "Primorski stil",
+    label: "Coastal",
     description:
-      "Mediteran — bela, peščana i plava, lagane tkanine, maksimalna svetlost.",
+      "Mediterranean — white, sand and blue, light fabrics, maximum daylight.",
     image: "/styles/coastal.webp",
   },
 ] as const;
@@ -63,20 +63,20 @@ export type RoomStyleId = (typeof ROOM_STYLES)[number]["id"];
 export const ROOM_STYLE_IDS = ROOM_STYLES.map((s) => s.id) as RoomStyleId[];
 
 export const TIMES_OF_DAY = [
-  { id: "morning", label: "Jutro" },
-  { id: "midday", label: "Podne" },
-  { id: "afternoon", label: "Popodne" },
-  { id: "evening", label: "Veče" },
-  { id: "night", label: "Noć" },
+  { id: "morning", label: "Morning" },
+  { id: "midday", label: "Midday" },
+  { id: "afternoon", label: "Afternoon" },
+  { id: "evening", label: "Evening" },
+  { id: "night", label: "Night" },
 ] as const;
 export type TimeOfDayId = (typeof TIMES_OF_DAY)[number]["id"];
 export const TIME_OF_DAY_IDS = TIMES_OF_DAY.map((t) => t.id) as TimeOfDayId[];
 
 export const SEASONS = [
-  { id: "spring", label: "Proleće" },
-  { id: "summer", label: "Leto" },
-  { id: "autumn", label: "Jesen" },
-  { id: "winter", label: "Zima" },
+  { id: "spring", label: "Spring" },
+  { id: "summer", label: "Summer" },
+  { id: "autumn", label: "Autumn" },
+  { id: "winter", label: "Winter" },
 ] as const;
 export type SeasonId = (typeof SEASONS)[number]["id"];
 export const SEASON_IDS = SEASONS.map((s) => s.id) as SeasonId[];
@@ -215,7 +215,7 @@ export function makeFloorId(): string {
 export function newFloor(index: number): InteriorFloor {
   return {
     id: makeFloorId(),
-    name: index === 0 ? "Sprat 1" : `Sprat ${index + 1}`,
+    name: index === 0 ? "Floor 1" : `Floor ${index + 1}`,
     rooms: [],
     description: "",
   };

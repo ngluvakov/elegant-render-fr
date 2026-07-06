@@ -46,7 +46,7 @@ export function AdminProformaButton({ orderId, alreadyIssued }: Props) {
         className="inline-flex items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-[0.78rem] font-medium text-background transition hover:opacity-90 disabled:opacity-50"
       >
         {pending
-          ? "Izdajem…"
+          ? "Issuing…"
           : issued
             ? "Reissue proforma"
             : "Issue proforma"}
@@ -59,8 +59,8 @@ export function AdminProformaButton({ orderId, alreadyIssued }: Props) {
 }
 
 function humanReason(reason: string): string {
-  if (reason === "not_admin") return "Niste admin.";
+  if (reason === "not_admin") return "You are not an admin.";
   if (reason === "order_not_found") return "Order was not found.";
   if (reason === "no_billable_items") return "Order has no billable items.";
-  return `Error pri izdavanju: ${reason}`;
+  return `Error while issuing: ${reason}`;
 }

@@ -88,7 +88,7 @@ export function AdminFreeRevisionPanel({
           {error && <p className="text-xs text-destructive">{error}</p>}
           <div className="flex gap-2">
             <Button type="submit" variant="accent" size="sm" disabled={pending}>
-              {pending ? "Sending..." : "Confirm besplatnu izmenu"}
+              {pending ? "Sending..." : "Confirm free revision"}
             </Button>
             <Button
               type="button"

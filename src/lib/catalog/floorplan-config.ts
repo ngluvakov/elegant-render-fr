@@ -13,9 +13,9 @@
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const FP_DISPLAY_TYPES = [
-  { id: "unfurnished", label: "Prazna osnova (samo zidovi i sanitarije)" },
-  { id: "furnished", label: "Nameštena osnova" },
-  { id: "both", label: "Obe varijante (nameštena + prazna)" },
+  { id: "unfurnished", label: "Unfurnished plan (walls and fixtures only)" },
+  { id: "furnished", label: "Furnished plan" },
+  { id: "both", label: "Both variants (furnished + unfurnished)" },
 ] as const;
 export type FpDisplayTypeId = (typeof FP_DISPLAY_TYPES)[number]["id"];
 export const FP_DISPLAY_TYPE_IDS = FP_DISPLAY_TYPES.map(
@@ -36,9 +36,9 @@ export const FP_FURNITURE_STYLE_IDS = FP_FURNITURE_STYLES.map(
 ) as FpFurnitureStyleId[];
 
 export const FP_CAMERA_ANGLES = [
-  { id: "top-down", label: "Top-down (ptičja perspektiva)" },
-  { id: "isometric", label: "Izometrija (45°, najbolja dubina)" },
-  { id: "perspective", label: "Perspektiva (dramatičniji ugao)" },
+  { id: "top-down", label: "Top-down (bird's-eye view)" },
+  { id: "isometric", label: "Isometric (45°, best depth)" },
+  { id: "perspective", label: "Perspective (more dramatic angle)" },
 ] as const;
 export type FpCameraAngleId = (typeof FP_CAMERA_ANGLES)[number]["id"];
 export const FP_CAMERA_ANGLE_IDS = FP_CAMERA_ANGLES.map(
@@ -46,8 +46,8 @@ export const FP_CAMERA_ANGLE_IDS = FP_CAMERA_ANGLES.map(
 ) as FpCameraAngleId[];
 
 export const FP_WALL_DISPLAYS = [
-  { id: "solid", label: "Puni zidovi (presečeni na visini)" },
-  { id: "transparent", label: "Transparentni / Stakleni zidovi" },
+  { id: "solid", label: "Solid walls (cut at height)" },
+  { id: "transparent", label: "Transparent / Glass walls" },
 ] as const;
 export type FpWallDisplayId = (typeof FP_WALL_DISPLAYS)[number]["id"];
 export const FP_WALL_DISPLAY_IDS = FP_WALL_DISPLAYS.map(
@@ -55,9 +55,9 @@ export const FP_WALL_DISPLAY_IDS = FP_WALL_DISPLAYS.map(
 ) as FpWallDisplayId[];
 
 export const FP_BACKGROUNDS = [
-  { id: "white", label: "Bela (čisto, za štampu)" },
-  { id: "dark", label: "Tamna / Crna (luksuzni izgled)" },
-  { id: "transparent", label: "Transparentna (PNG bez pozadine)" },
+  { id: "white", label: "White (clean, for print)" },
+  { id: "dark", label: "Dark / Black (luxury look)" },
+  { id: "transparent", label: "Transparent (PNG without background)" },
 ] as const;
 export type FpBackgroundId = (typeof FP_BACKGROUNDS)[number]["id"];
 export const FP_BACKGROUND_IDS = FP_BACKGROUNDS.map(
@@ -88,7 +88,7 @@ export type FloorplanConfig = {
 
 export function defaultFloorplanConfig(): FloorplanConfig {
   return {
-    projectName: "Osnova 1",
+    projectName: "Floor plan 1",
     levels: 1,
     displayType: "unfurnished",
     showRoomLabels: false,
@@ -132,7 +132,7 @@ export function sanitizeFloorplanConfig(c: FloorplanConfig): FloorplanConfig {
   );
   return {
     projectName:
-      String(c.projectName ?? "").trim().slice(0, 100) || "Osnova 1",
+      String(c.projectName ?? "").trim().slice(0, 100) || "Floor plan 1",
     levels: clampCount(c.levels, 1, 30),
     displayType,
     ...(isFurnished && furnitureStyleId

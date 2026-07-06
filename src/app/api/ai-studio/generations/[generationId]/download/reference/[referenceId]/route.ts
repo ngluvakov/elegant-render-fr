@@ -22,7 +22,7 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) {
-    return NextResponse.json({ error: "Niste prijavljeni." }, { status: 401 });
+    return NextResponse.json({ error: "You are not signed in." }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
@@ -30,7 +30,7 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
     select: { isAdmin: true, adminPermissions: true },
   });
   if (!user) {
-    return NextResponse.json({ error: "Korisnik nije pronađen." }, { status: 404 });
+    return NextResponse.json({ error: "User not found." }, { status: 404 });
   }
 
   const canViewAllGenerations = hasAdminPermission(
@@ -62,12 +62,12 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
 
   if (!reference) {
     return NextResponse.json(
-      { error: "Referentna slika nije pronađena." },
+      { error: "Reference image not found." },
       { status: 404 },
     );
   }
   if (reference.generation.expiresAt <= new Date()) {
-    return NextResponse.json({ error: "Fajl je istekao." }, { status: 410 });
+    return NextResponse.json({ error: "The file has expired." }, { status: 410 });
   }
 
   const { data, error } = await getSupabaseAdmin().storage
@@ -76,7 +76,7 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
 
   if (error || !data) {
     return NextResponse.json(
-      { error: error?.message ?? "Fajl nije pronađen." },
+      { error: error?.message ?? "File not found." },
       { status: 404 },
     );
   }

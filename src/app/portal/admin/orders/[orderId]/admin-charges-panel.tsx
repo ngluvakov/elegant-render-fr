@@ -329,7 +329,7 @@ export function AdminChargesPanel({
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label className="text-[0.68rem]">Price (RSD)</Label>
+                      <Label className="text-[0.68rem]">Price (EUR)</Label>
                       <Input
                         type="number"
                         step="1"

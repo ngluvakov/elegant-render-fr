@@ -358,7 +358,7 @@ export function Ext360ConfigSection({
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              {formatPriceText("1 included, +€48 (€53 od 4.)")}
+              {formatPriceText("1 included, +€48 (€53 from the 4th)")}
             </span>
           </div>
         </div>

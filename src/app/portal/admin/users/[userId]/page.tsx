@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 type Params = Promise<{ userId: string }>;
 
 const TX_TYPE_LABEL: Record<string, string> = {
-  purchase: "Kupovina",
+  purchase: "Purchase",
   spend: "Spend",
   refund: "Refund",
   expiry: "Expiry",
@@ -135,7 +135,7 @@ export default async function AdminUserDetailPage({
               year: "numeric",
             })}
             {user.lastActiveAt &&
-              ` · poslednja aktivnost ${user.lastActiveAt.toLocaleDateString(
+              ` · last active ${user.lastActiveAt.toLocaleDateString(
                 "en-GB",
                 {
                   day: "numeric",
@@ -166,11 +166,11 @@ export default async function AdminUserDetailPage({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h3 className="text-sm font-semibold text-foreground">
-                Administrativni pristup
+                Admin access
               </h3>
               <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted-foreground">
                 Preset is a shortcut, and checked permissions are the source of truth for
-                backend provere na stranicama, akcijama i API rutama.
+                backend checks on pages, actions, and API routes.
               </p>
             </div>
             <div className="flex flex-col gap-3 lg:items-end">
@@ -218,13 +218,13 @@ export default async function AdminUserDetailPage({
       {canViewUsage && (
         <div className="rounded-2xl border border-border/40 bg-card/60 p-5">
           <h3 className="text-sm font-semibold text-foreground">
-            Aktivnost u poslednjih 30 dana
+            Activity in the last 30 days
           </h3>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            <UsageStat label="Portal posete" value={usageTotals.portalVisits} />
+            <UsageStat label="Portal visits" value={usageTotals.portalVisits} />
             <UsageStat label="Orders" value={usageTotals.ordersCreated} />
             <UsageStat
-              label="AI obrade"
+              label="AI jobs"
               value={usageTotals.aiGenerationsStarted}
             />
             <UsageStat

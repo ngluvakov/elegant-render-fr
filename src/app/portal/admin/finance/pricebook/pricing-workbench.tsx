@@ -440,7 +440,7 @@ function CategoryWorkbench({
             {category.label}
           </h2>
         </div>
-        <Badge variant="outline">{category.products.length} proizvoda</Badge>
+        <Badge variant="outline">{category.products.length} products</Badge>
       </div>
 
       <div className="space-y-4">
@@ -528,7 +528,7 @@ function ProductWorkbenchCard({
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">{category.label}</Badge>
               {product.inquiryOnly && <Badge variant="outline">Inquiry only</Badge>}
-              {product.durationConfig && <Badge variant="outline">Trajanje</Badge>}
+              {product.durationConfig && <Badge variant="outline">Duration</Badge>}
             </div>
             <div className="mt-3 grid gap-3 lg:grid-cols-[1.2fr_1fr_180px]">
               <TextInput
@@ -802,7 +802,7 @@ function DurationWorkbench({
               }
             />
             <NumberInput
-              label="RSD/sec"
+              label="EUR/sec"
               value={config.perSecondEur}
               min={0}
               onChange={(perSecondEur) =>
@@ -884,7 +884,7 @@ function DurationWorkbench({
             >
               <p className="text-xs font-semibold text-foreground">{sourceMode}</p>
               <NumberInput
-                label="RSD/sec for mode"
+                label="EUR/sec for mode"
                 value={rule.perSecondEur ?? config.perSecondEur}
                 min={0}
                 onChange={(perSecondEur) =>
@@ -990,7 +990,7 @@ function AddOnWorkbench({
             />
             <div>
               <Label className="text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
-                Tip cene
+                Price type
               </Label>
               <div className="mt-2 rounded-lg border border-border/50 bg-background/50 px-3 py-2 text-sm font-medium">
                 {addOn.priceType === "percent" ? "Percentage" : "Fixed"}
@@ -1089,7 +1089,7 @@ function VolumeRulesEditor({
           }
         >
           <Plus className="h-3 w-3" />
-          Prag
+          Threshold
         </Button>
       </div>
 
@@ -1304,7 +1304,7 @@ function SettingsWorkbench({
             Finance settings
           </p>
           <h2 className="mt-1 font-heading text-2xl text-foreground">
-            Global rules, AI paketi i specijalne cene
+            Global rules, AI packages, and special pricing
           </h2>
         </div>
         <Button type="button" variant="accent" onClick={onSave} disabled={saving}>
@@ -1315,7 +1315,7 @@ function SettingsWorkbench({
 
       <div className="grid gap-4 lg:grid-cols-3">
         <MetricEditor
-          label="PDV stopa"
+          label="VAT rate"
           value={settings.serbiaVatRate}
           suffix="decimal"
           step={0.01}
@@ -1326,7 +1326,7 @@ function SettingsWorkbench({
         <MetricEditor
           label="AI credits are valid for"
           value={settings.aiCreditExpiresAfterMonths}
-          suffix="meseci"
+          suffix="months"
           step={1}
           onChange={(aiCreditExpiresAfterMonths) =>
             onSettingsChange((current) => ({
@@ -1357,7 +1357,7 @@ function SettingsWorkbench({
                 <CardTitle>Advanced fallback JSON</CardTitle>
                 <CardDescription>
                   Hidden technical output for rare rules that do not yet have
-                  posebnu vizuelnu kontrolu.
+                  a dedicated visual control.
                 </CardDescription>
               </div>
             </div>
@@ -1409,7 +1409,7 @@ function AiTiersEditor({
           <div>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-accent" />
-              AI credit paketi
+              AI credit packages
             </CardTitle>
             <CardDescription>
               Each card shows the threshold and an example purchase for that tier.
@@ -1802,7 +1802,7 @@ function DurationTiersEditor({
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold text-foreground">
-            Duration popusti
+            Duration discounts
           </p>
           <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
             Rules are read in order: minimum seconds, maximum seconds, percentage.

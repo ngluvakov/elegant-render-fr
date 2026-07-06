@@ -99,7 +99,7 @@ export function ProjectInquiryActions({
                 onClick={convertToOrder}
                 className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background transition hover:opacity-90 disabled:opacity-50"
               >
-                {pending ? "Konvertujem…" : "Confirm konverziju"}
+                {pending ? "Converting…" : "Confirm conversion"}
               </button>
               <button
                 type="button"
@@ -148,7 +148,7 @@ export function ProjectInquiryActions({
 }
 
 function humanConvertReason(reason: string): string {
-  if (reason === "not_admin") return "Niste admin.";
+  if (reason === "not_admin") return "You are not an admin.";
   if (reason === "inquiry_not_found") return "Inquiry was not found.";
   if (reason === "already_converted")
     return "Inquiry has already been converted to an order.";

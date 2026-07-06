@@ -44,13 +44,13 @@ export async function syncNewDeal(orderId: string) {
 
   const dealId = await bitrixCall<number>("crm.deal.add", {
     fields: {
-      TITLE: `${order.orderNumber} — ${firstItem?.productLabel ?? "Porudžbina"}`,
+      TITLE: `${order.orderNumber} — ${firstItem?.productLabel ?? "Order"}`,
       CATEGORY_ID: process.env.BITRIX24_PIPELINE_ID,
       STAGE_ID: stageId,
       CONTACT_ID: contactId,
       OPPORTUNITY: order.premiumTotalEur ?? order.totalEur,
       CURRENCY_ID: "EUR",
-      COMMENTS: `Portal: ${process.env.AUTH_URL}/portal/admin/orders/${order.id}\n\nStavke:\n${itemsDescription}${order.customerNote ? `\n\nNapomena: ${order.customerNote}` : ""}`,
+      COMMENTS: `Portal: ${process.env.AUTH_URL}/portal/admin/orders/${order.id}\n\nItems:\n${itemsDescription}${order.customerNote ? `\n\nNote: ${order.customerNote}` : ""}`,
     },
   }, { entityType: "deal", entityId: orderId, direction: "outbound" });
 

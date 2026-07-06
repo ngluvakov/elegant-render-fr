@@ -78,13 +78,17 @@ export async function buildPurchaseDataLayerEvent(
   }));
 
   return {
-    event: "er_purchase",
+    event: "purchase",
     event_id: `purchase:${order.orderNumber}`,
     transaction_id: order.orderNumber,
     value,
     currency: "EUR",
-    transaction_value: value,
-    transaction_currency: "EUR",
+    ecommerce: {
+      transaction_id: order.orderNumber,
+      value,
+      currency: "EUR",
+      items,
+    },
     items,
     payment_provider: order.paymentProvider,
     buyer_type: order.buyerType,

@@ -1,8 +1,8 @@
 "use server";
 
-// Expire/spend/refund ledger živi u @/server/credits/ledger.ts (običan
-// modul) da ne bi bio izložen kao javni server-action endpoint. Ovde
-// ostaje samo kupovina kredita, koju poziva platni hook (payment.ts).
+// The expire/spend/refund ledger lives in @/server/credits/ledger.ts (a plain
+// module) so it is not exposed as a public server-action endpoint. Only
+// credit purchase stays here, called by the payment hook (payment.ts).
 import { prisma } from "@/lib/db";
 import {
   addMonths,
@@ -67,7 +67,7 @@ export async function applyPurchasedAiCreditsForOrder(orderId: string) {
         units,
         balanceAfterUnits: user.aiCreditBalanceUnits,
         amountCents,
-        note: "Kupovina AI Studio kredita",
+        note: "AI Studio credit purchase",
       },
     });
 

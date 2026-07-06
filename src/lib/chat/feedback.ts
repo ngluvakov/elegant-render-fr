@@ -9,29 +9,29 @@ const SIGNALS: Array<{
   {
     category: "missing_feature",
     patterns: [
-      /\b(nedostaje|fali|falite|nemate|nema opcij[aeu]|ne postoji|niste dodali)\b/i,
-      /\b(ne mogu da (nadjem|nađem|izaberem|dodam|unesem|promenim|platim))\b/i,
+      /\b(is missing|you don'?t have|there'?s no option|no option (to|for)|doesn'?t exist|not available|you haven'?t added)\b/i,
+      /\b(?:can'?t|cannot|unable to) (find|locate|select|choose|add|enter|change|update|pay)\b/i,
     ],
   },
   {
     category: "complaint",
     patterns: [
-      /\b(ne radi|bug|bag|problem|gre[šs]ka|lo[šs]e|sporo|preskupo|skupo)\b/i,
-      /\b(nezadovoljan|nezadovoljna|[žz]alim se|ne svi[đd]a|komplikovano)\b/i,
+      /\b(doesn'?t work|does not work|not working|broken|bug|glitch|problem|error|too slow|too expensive|overpriced)\b/i,
+      /\b(disappointed|unhappy|complain(?:t|ing)?|don'?t like|frustrating|complicated)\b/i,
     ],
   },
   {
     category: "request",
     patterns: [
-      /\b(bilo bi dobro|voleo bih|volio bih|[žz]eleo bih|[žz]elio bih)\b/i,
-      /\b(trebalo bi da (imate|dodate|omogu[ćc]ite|ubacite))\b/i,
-      /\b(dodajte|ubacite|omogu[ćc]ite)\b/i,
+      /\b(it would be (?:good|great|nice|helpful)|i(?:'d| would) (?:like|love)|i wish (?:you|there))\b/i,
+      /\byou should (?:have|add|offer|enable|include|support)\b/i,
+      /\b(?:can|could) you (?:add|include|enable|support)\b/i,
     ],
   },
   {
     category: "confusion",
     patterns: [
-      /\b(ne razumem|nije jasno|zbunjuje|zbunjuju[ćc]e|gde je|kako da)\b/i,
+      /\b(i don'?t understand|don'?t get it|not clear|unclear|confus(?:ed|ing)|where (?:is|do i|can i)|how (?:do|can) i)\b/i,
     ],
   },
 ];
@@ -54,13 +54,13 @@ export function detectChatFeedbackSignal(
 export function chatFeedbackCategoryLabel(category: string): string {
   switch (category) {
     case "complaint":
-      return "Kritika";
+      return "Complaint";
     case "missing_feature":
-      return "Nedostaje opcija";
+      return "Missing feature";
     case "request":
-      return "Zahtev";
+      return "Request";
     case "confusion":
-      return "Nejasnoća";
+      return "Confusion";
     default:
       return category;
   }

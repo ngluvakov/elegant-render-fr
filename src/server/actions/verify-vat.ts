@@ -6,7 +6,8 @@
  * and flaky during member-state outages. Letting customers retry on
  * blur during checkout would burn quota and produce confusing UX
  * during downtime. Admin-side verification is a deliberate review
- * step before issuing an export invoice with 0% VAT (čl. 24 ZPDV).
+ * step before issuing an export invoice with 0% VAT (Art. 24 of the
+ * Serbian VAT Act, ZPDV).
  */
 "use server";
 

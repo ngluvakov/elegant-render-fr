@@ -452,7 +452,7 @@ export function ItemRemovalConfigSection({
             <div className="space-y-3 rounded-md border border-border/30 bg-card/60 p-3">
               <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
                 <Hammer className="h-3 w-3 text-accent/60" />
-                Rekonstrukcija pozadine
+                Background reconstruction
               </p>
               <div className="space-y-1">
                 <Label
@@ -476,7 +476,7 @@ export function ItemRemovalConfigSection({
               <div className="space-y-1.5">
                 <Label className="text-[0.7rem]">
                   <ImageIcon className="h-3 w-3 text-accent/60" />
-                  Reference za pozadinu
+                  Background references
                 </Label>
                 {renderUploadZone(
                   bgRefInputRef,
@@ -495,7 +495,7 @@ export function ItemRemovalConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Dodatne opcije
+            Additional options
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
             After cleaning the space, you can additionally order virtual

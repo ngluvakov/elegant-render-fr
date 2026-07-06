@@ -2226,7 +2226,7 @@ function AiImageEditor({
               </span>
               <span className="px-6">
                 <span className="block text-sm font-semibold text-destructive">
-                  Processing nije uspela
+                  Processing failed
                 </span>
                 <span className="mt-1 block text-xs text-destructive/80">
                   {processingError}
@@ -3036,7 +3036,7 @@ function buildAiStudioReadiness({
   const primaryMessage = pending
     ? "Starting generation..."
     : processing
-      ? "Processing je u toku…"
+      ? "Processing is in progress…"
       : blockers[0] ?? warnings[0] ?? null;
 
   return {
@@ -3112,7 +3112,7 @@ async function uploadAiFile(file: File, purpose: "input" | "mask" | "reference")
 
   if (!urlRes.ok) {
     const { error } = await urlRes.json();
-    throw new Error(error || "Upload link nije generisan.");
+    throw new Error(error || "Upload link was not generated.");
   }
 
   const { signedUrl, storagePath } = await urlRes.json();
@@ -3125,7 +3125,7 @@ async function uploadAiFile(file: File, purpose: "input" | "mask" | "reference")
     body: file,
   });
 
-  if (!uploadRes.ok) throw new Error("Upload nije uspeo.");
+  if (!uploadRes.ok) throw new Error("Upload failed.");
 
   return { storagePath };
 }

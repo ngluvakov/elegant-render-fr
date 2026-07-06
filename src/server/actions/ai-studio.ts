@@ -200,7 +200,7 @@ type GenerationOptions = {
 export async function getAiStudioState() {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) return { error: "Niste prijavljeni." };
+  if (!userId) return { error: "You are not signed in." };
 
   await expireAiCreditsIfNeeded(userId);
 
@@ -236,7 +236,7 @@ export async function listAiStudioGenerations(
 ): Promise<AiStudioGenerationListResult> {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) return { error: "Niste prijavljeni." };
+  if (!userId) return { error: "You are not signed in." };
 
   await expireAiCreditsIfNeeded(userId);
 
@@ -278,7 +278,7 @@ export async function listAiStudioGenerations(
       cursor: input.cursor,
       message: err instanceof Error ? err.message : String(err),
     });
-    return { error: "AI kreacije trenutno nisu dostupne." };
+    return { error: "AI generations are currently unavailable." };
   }
 }
 
@@ -287,17 +287,17 @@ export async function deleteAiStudioGeneration(
 ): Promise<AiStudioDeleteGenerationResult> {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) return { error: "Niste prijavljeni." };
+  if (!userId) return { error: "You are not signed in." };
 
   const generation = await prisma.aiGeneration.findFirst({
     where: { id: generationId, userId },
     include: { referenceImages: true },
   });
-  if (!generation) return { error: "AI obrada nije pronađena." };
+  if (!generation) return { error: "AI generation not found." };
   if (generation.status === "queued" || generation.status === "processing") {
     return {
       error:
-        "Obrada je još u toku. Sačekajte da se završi ili ne uspe pre brisanja.",
+        "The generation is still in progress. Wait for it to finish or fail before deleting.",
     };
   }
 
@@ -339,7 +339,7 @@ export async function startAiStudioGeneration(
 ): Promise<AiStudioStartResult> {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) return { error: "Niste prijavljeni." };
+  if (!userId) return { error: "You are not signed in." };
   // Engine selection is internal — pickEngineForBilling resolves it once
   // the free-vs-paid decision is made further down. No client input.
   let provider: AiImageProvider = pickEngineForBilling(false).provider;
@@ -351,31 +351,31 @@ export async function startAiStudioGeneration(
       : "insert";
 
   if (!ownsAiStudioPath(userId, input.inputStoragePath)) {
-    return { error: "Ulazna slika nije dostupna za ovaj nalog." };
+    return { error: "The input image is not available for this account." };
   }
   if (referenceImages.length > AI_STUDIO_MAX_REFERENCE_IMAGES) {
-    return { error: "Možete dodati najviše 5 slika istog komada po obradi." };
+    return { error: "You can add at most 5 images of the same piece per generation." };
   }
   for (const reference of referenceImages) {
     if (!ownsAiStudioPath(userId, reference.storagePath)) {
-      return { error: "Slika nameštaja/dekora nije dostupna za ovaj nalog." };
+      return { error: "The furniture/decor image is not available for this account." };
     }
   }
   if (input.maskStoragePath && !ownsAiStudioPath(userId, input.maskStoragePath)) {
-    return { error: "Maska nije dostupna za ovaj nalog." };
+    return { error: "The mask is not available for this account." };
   }
 
   const editDef = getAiEditType(input.editType);
   if (editDef.requiresReferenceImage && referenceImages.length === 0) {
-    return { error: "Dodajte sliku nameštaja/dekora koji želite da ubacite u enterijer." };
+    return { error: "Add an image of the furniture or decor you want to insert into the interior." };
   }
   if (!editDef.requiresReferenceImage && referenceImages.length > 0) {
-    return { error: "Referentna slika komada dostupna je samo za alat za dodavanje ili zamenu nameštaja/dekora." };
+    return { error: "A reference image of the piece is only available for the add or replace furniture/decor tool." };
   }
   if (objectMode === "replace" && !input.maskStoragePath) {
     return {
       error:
-        "Za zamenu označite postojeći komad koji menjamo. Maska ne mora biti savršena.",
+        "For a replacement, mark the existing piece we are replacing. The mask does not have to be perfect.",
     };
   }
 
@@ -441,28 +441,28 @@ export async function startAiStudioGeneration(
   let rootCoveredUnits: number | null = null;
   // Filename tracking — propagate the root through derivative chains
   // so downloads stay tied to the original upload.
-  let rootFileName: string = slugifyFileName(input.inputFileName ?? "slika");
+  let rootFileName: string = slugifyFileName(input.inputFileName ?? "image");
   let inputFileName: string = rootFileName;
 
   if (input.parentGenerationId) {
     const parent = await prisma.aiGeneration.findFirst({
       where: { id: input.parentGenerationId, userId },
     });
-    if (!parent) return { error: "Prethodna obrada nije pronađena." };
+    if (!parent) return { error: "The previous generation was not found." };
     if (parent.status !== "completed" || !parent.resultStoragePath) {
-      return { error: "Prethodna obrada još nije završena." };
+      return { error: "The previous generation is not finished yet." };
     }
 
     // Free retry is gated ONLY by edit type matching the paid root.
-    // Input image, references, mask, style, options, prompt — all sme da
-    // se menjaju unutar istog besplatnog pokušaja. Promena editType-a
-    // znači da je ovo nov, plaćen edit (paidGenerationId ostaje null).
+    // Input image, references, mask, style, options, prompt — all may
+    // change within the same free attempt. Changing the editType means
+    // this is a new, paid edit (paidGenerationId stays null).
     if (parent.editType === input.editType) {
       paidGenerationId = parent.paidGenerationId ?? parent.id;
       const root = await prisma.aiGeneration.findFirst({
         where: { id: paidGenerationId, userId },
       });
-      if (!root) return { error: "Početna plaćena obrada nije pronađena." };
+      if (!root) return { error: "The original paid generation was not found." };
       rootCoveredUnits = root.coveredUnits;
 
       // Filename continuity: only inherit the root when the input file
@@ -646,7 +646,7 @@ export async function getAiStudioGenerationStatus(
 ): Promise<AiStudioStatusResult> {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) return { error: "Niste prijavljeni." };
+  if (!userId) return { error: "You are not signed in." };
 
   await expireAiCreditsIfNeeded(userId);
 
@@ -659,7 +659,7 @@ export async function getAiStudioGenerationStatus(
       aiCreditsExpireAt: true,
     },
   });
-  if (!user) return { error: "Korisnik nije pronađen." };
+  if (!user) return { error: "User not found." };
   const canViewAllGenerations = hasAdminPermission(
     normalizeAdminPermissions(user.adminPermissions, { isAdmin: user.isAdmin }),
     "USAGE_VIEW",
@@ -671,7 +671,7 @@ export async function getAiStudioGenerationStatus(
       ...(canViewAllGenerations ? {} : { userId }),
     },
   });
-  if (!generation) return { error: "AI obrada nije pronađena." };
+  if (!generation) return { error: "AI generation not found." };
 
   return {
     generation: await signGeneration(generation),
@@ -692,7 +692,7 @@ export async function processAiStudioGenerationJob(generationId: string) {
     await runGenerationProcessing(claimed);
   } catch (err) {
     const rawMessage =
-      err instanceof Error ? err.message : "AI obrada nije uspela.";
+      err instanceof Error ? err.message : "The AI generation failed.";
     console.error("[AI Studio] Generation failed", {
       generationId: claimed.id,
       provider: claimed.provider,
@@ -836,7 +836,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
       error: err,
     });
     throw new Error(
-      "AI rezultat nije mogao da se bezbedno spoji sa originalom. Kredit je vraćen, pokušajte ponovo ili izaberite drugi engine.",
+      "The AI result could not be safely merged with the original. Your credit was refunded; try again or choose another engine.",
     );
   }
 
@@ -1005,7 +1005,7 @@ async function failIfAttemptsExhausted(generationId: string) {
 
   await failAiGeneration(
     generation,
-    "AI obrada nije uspela posle više pokušaja. Kredit je vraćen.",
+    "The AI generation failed after several attempts. Your credit was refunded.",
   );
 }
 
@@ -1369,7 +1369,7 @@ async function downloadStorageFile(storagePath: string) {
     .download(storagePath);
 
   if (error || !data) {
-    throw new Error(error?.message ?? "Fajl nije pronađen.");
+    throw new Error(error?.message ?? "File not found.");
   }
 
   return {

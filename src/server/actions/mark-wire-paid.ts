@@ -1,12 +1,12 @@
 /**
  * mark-wire-paid.ts — Admin action that records a successful wire
- * transfer payment against an order on the predračun (proforma) flow.
+ * transfer payment against an order on the proforma flow.
  *
  * Closes the loop opened by issueProforma: the customer paid the
- * predračun off-platform (bank transfer), and the admin now flips the
+ * proforma off-platform (bank transfer), and the admin now flips the
  * order to paid + completed payment. That triggers the same
  * post-payment hook (finishSuccessfulPayment) used by card payments —
- * konačni račun is issued, AI credits are applied, the customer
+ * the final invoice is issued, AI credits are applied, the customer
  * receives the order_confirmation_email with the invoice attached.
  *
  * Used by: admin order detail (admin-mark-paid-button)
@@ -65,7 +65,7 @@ export async function markWireTransferPaid(
 
     // FSM only allows draft → awaiting_payment → paid, so step
     // through awaiting_payment if the order never started a payment.
-    // Predračun by itself doesn't transition status (issueProforma
+    // A proforma by itself doesn't transition status (issueProforma
     // leaves order in draft) — admin marking paid is the first
     // transition for the wire-transfer flow.
     if (order.status === "draft") {
@@ -73,18 +73,18 @@ export async function markWireTransferPaid(
         orderId,
         "awaiting_payment",
         admin.id,
-        "Predračun aktivan — čeka uplatu",
+        "Proforma active — awaiting payment",
       );
     }
     await transitionOrder(
       orderId,
       "paid",
       admin.id,
-      "Uplata po predračunu primljena",
+      "Payment against proforma received",
     );
 
     // Same hook as card payments: applies AI credits, transitions
-    // AI-only orders to closed, issues the konačni račun, and
+    // AI-only orders to closed, issues the final invoice, and
     // enqueues the confirmation email with the invoice attached.
     await finishSuccessfulPayment(orderId);
 

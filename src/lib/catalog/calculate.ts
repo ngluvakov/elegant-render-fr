@@ -296,7 +296,7 @@ function calculateAiCreditItem(
   return {
     instanceId: item.instanceId,
     productId: AI_CREDIT_PRODUCT_ID,
-    productLabel: "AI Studio krediti",
+    productLabel: "AI Studio credits",
     categoryLabel: "AI Studio",
     kind: "ai_credits",
     basePriceEur: totalEur,

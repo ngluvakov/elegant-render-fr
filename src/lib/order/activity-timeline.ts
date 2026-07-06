@@ -32,16 +32,16 @@ export type TimelineEntry = {
 };
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
-  draft: "Nacrt",
-  awaiting_payment: "Čeka uplatu",
-  paid: "Plaćeno",
-  in_progress: "U izradi",
-  in_review: "Na pregledu",
-  revision_requested: "Tražena revizija",
-  delivered: "Isporučeno",
-  closed: "Zatvoreno",
-  cancelled: "Otkazano",
-  refunded: "Refundirano",
+  draft: "Draft",
+  awaiting_payment: "Awaiting payment",
+  paid: "Paid",
+  in_progress: "In progress",
+  in_review: "In review",
+  revision_requested: "Revision requested",
+  delivered: "Delivered",
+  closed: "Closed",
+  cancelled: "Cancelled",
+  refunded: "Refunded",
 };
 
 export async function buildOrderActivityTimeline(
@@ -115,41 +115,41 @@ function mapAuditAction(row: {
   switch (row.action) {
     case "invoice.issued":
       return {
-        label: "Izdata faktura",
+        label: "Invoice issued",
         detail: metaString("invoiceNumber"),
         tone: "success",
       };
     case "invoice.error":
       return {
-        label: "Greška pri izdavanju fakture",
+        label: "Invoice issuing failed",
         detail: metaString("errorReason"),
         tone: "danger",
       };
     case "invoice.retry_requested":
       return {
-        label: "Pokrenut retry izdavanja fakture",
+        label: "Invoice issuing retry started",
         detail: metaString("existingInvoiceNumber")
-          ? `Postojeći broj: ${metaString("existingInvoiceNumber")}`
+          ? `Existing number: ${metaString("existingInvoiceNumber")}`
           : undefined,
         tone: "warning",
       };
     case "proforma.issued":
       return {
-        label: "Izdat predračun",
+        label: "Proforma invoice issued",
         detail: metaString("proformaNumber"),
         tone: "success",
       };
     case "proforma.error":
       return {
-        label: "Greška pri izdavanju predračuna",
+        label: "Proforma invoice issuing failed",
         detail: metaString("errorReason"),
         tone: "danger",
       };
     case "payment.wire_received":
       return {
-        label: "Uplata po predračunu zabeležena",
+        label: "Wire payment recorded for proforma",
         detail: metaString("proformaNumber")
-          ? `Predračun: ${metaString("proformaNumber")}`
+          ? `Proforma: ${metaString("proformaNumber")}`
           : undefined,
         tone: "success",
       };
@@ -163,7 +163,7 @@ function mapAuditAction(row: {
           : status === "invalid"
             ? "danger"
             : "neutral";
-      const label = `VIES provera VAT-a: ${status ?? "?"}`;
+      const label = `VIES VAT check: ${status ?? "?"}`;
       const idText =
         country && number ? `${country}${number}` : country ?? number ?? "";
       const verifiedName = metaString("name");
@@ -176,20 +176,20 @@ function mapAuditAction(row: {
     }
     case "order.created_with_buyer_info":
       return {
-        label: "Porudžbina kreirana",
+        label: "Order created",
         detail: metaString("buyerType"),
         tone: "neutral",
       };
     case "order.deliverable_upload":
       return {
-        label: "Dodat isporučeni fajl",
+        label: "Delivered file added",
         detail: metaString("fileName"),
         tone: "success",
       };
     case "order.free_revision_grant": {
       const reason = metaString("reason");
       return {
-        label: "Odobrena besplatna revizija",
+        label: "Free revision approved",
         detail: reason,
         tone: "success",
       };
@@ -200,8 +200,8 @@ function mapAuditAction(row: {
       // completeness if ever the audit shape changes.
       const seeded = metaNumber("itemsSeeded");
       return {
-        label: "Konvertovano iz upita",
-        detail: typeof seeded === "number" ? `Stavki: ${seeded}` : undefined,
+        label: "Converted from inquiry",
+        detail: typeof seeded === "number" ? `Items: ${seeded}` : undefined,
         tone: "neutral",
       };
     }

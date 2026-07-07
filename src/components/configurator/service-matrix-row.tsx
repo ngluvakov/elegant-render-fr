@@ -64,15 +64,21 @@ export function ServiceMatrixRow({
   const hasActiveDiscount =
     discount !== null && !isPreviewDiscount && cartItems.length > 0;
 
-  const originalPerUnit = product.displayPerUnitEur ?? product.basePriceEur;
-  const discountedPerUnit = discount
-    ? Math.round(originalPerUnit * (1 - discount.pct / 100))
+  // The HEADLINE price is the full package price — what actually lands on
+  // the invoice (owner decision 2026-07-07: "€17" as the big number next
+  // to a per-floor label misled buyers). The per-unit teaser stays as a
+  // small qualified note underneath.
+  const basePrice = product.basePriceEur;
+  const discountedBase = discount
+    ? Math.round(basePrice * (1 - discount.pct / 100))
     : null;
-  // Per-unit teaser prices are meaningless without their unit ("from €17"
-  // next to a per-floor label reads as the floor price) — always qualify
-  // them, same pattern as RelatedServicesPostcard.
+  const perUnit = product.displayPerUnitEur ?? null;
+  const discountedPerUnit =
+    discount && perUnit != null
+      ? Math.round(perUnit * (1 - discount.pct / 100))
+      : null;
   const perUnitSuffix =
-    product.displayPerUnitEur != null && product.displayUnitLabel
+    perUnit != null && product.displayUnitLabel
       ? ` / ${product.displayUnitLabel}`
       : "";
 
@@ -103,15 +109,17 @@ export function ServiceMatrixRow({
       data-active={active ? "" : undefined}
       className={cn(
         "group relative flex items-center gap-3 rounded-lg border bg-card px-3 py-2 transition-colors duration-200",
-        "border-border/50 hover:border-input hover:bg-secondary/30",
+        // Rest border uses the input grey (#d4d4d4) — the subtle #e8e8e8/50
+        // made rows hard to scan (owner feedback 2026-07-07).
+        "border-input hover:border-foreground/40 hover:bg-secondary/30",
         recommended &&
           "border-accent/45 bg-secondary/50",
         active &&
-          "border-l-[3px] border-l-accent border-r-border/50 border-y-border/50 bg-accent/[0.04]",
+          "border-l-[3px] border-l-accent border-r-input border-y-input bg-accent/[0.04]",
         isInCart && "border-accent/45 bg-accent/10",
-        // orbit-glow retired with the international theme; discounted rows
-        // get a static 1px green border + mono badge in the Track C restyle.
-        hasActiveDiscount && "border-[color:var(--color-green)]",
+        // Rows made cheaper by the current cart get the orbiting green glow
+        // + an emphasized tint (restored .rs pattern in the new language).
+        hasActiveDiscount && "orbit-glow border-accent bg-accent/[0.07]",
       )}
     >
       <div className="min-w-0 flex-1 flex flex-col justify-center">
@@ -135,29 +143,25 @@ export function ServiceMatrixRow({
         </p>
       </div>
 
-      <div className="flex flex-col items-end justify-center text-right shrink-0 min-w-[88px] sm:min-w-[120px]">
+      <div className="flex flex-col items-end justify-center text-right shrink-0 min-w-[104px] sm:min-w-[136px]">
         {discount ? (
           <div className="flex items-baseline gap-1 sm:gap-1.5">
-            <span className="text-[0.65rem] sm:text-xs line-through text-muted-foreground/55">
-              {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
+            <span className="text-[0.7rem] sm:text-xs line-through text-muted-foreground/55">
+              {formatPublicPrice(basePrice, displayCurrency, pricingSettings)}
             </span>
-            <span className="text-sm sm:text-base font-semibold text-foreground">
-              {formatPublicPrice(discountedPerUnit!, displayCurrency, pricingSettings)}
-              {perUnitSuffix && (
-                <span className="text-xs font-normal text-muted-foreground">
-                  {perUnitSuffix}
-                </span>
-              )}
+            <span className="text-base sm:text-lg font-semibold tracking-tight text-foreground tabular-nums">
+              {formatPublicPrice(discountedBase!, displayCurrency, pricingSettings)}
             </span>
           </div>
         ) : (
-          <span className="text-sm sm:text-base font-semibold text-foreground">
-            from {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}
-            {perUnitSuffix && (
-              <span className="text-xs font-normal text-muted-foreground">
-                {perUnitSuffix}
-              </span>
-            )}
+          <span className="text-base sm:text-lg font-semibold tracking-tight text-foreground tabular-nums">
+            from {formatPublicPrice(basePrice, displayCurrency, pricingSettings)}
+          </span>
+        )}
+        {perUnit != null && (
+          <span className="mt-0.5 font-mono text-[0.65rem] text-muted-foreground tabular-nums">
+            ≈ {formatPublicPrice(discountedPerUnit ?? perUnit, displayCurrency, pricingSettings)}
+            {perUnitSuffix}
           </span>
         )}
         {/* The discount badge line is ALWAYS in flow (invisible when there is

@@ -21,3 +21,13 @@ the QuickOrderHero left column.
 JetBrains Mono, 4px radius, borders/shadows), the motion system, component
 styling rules, and the final English copy blocks. Only the homepage *section
 layout* deviates.
+
+## Configurator discount glow (owner override, 2026-07-07)
+
+The handoff's motion migration table retired `.orbit-glow` ("no looping
+animations"). Owner override: the .rs orbiting-comet attention cue returns on
+configurator rows made cheaper by the current cart — recolored to the brand
+green, reduced-motion falls back to a static green ring. This joins
+`.flash-new` as the second sanctioned attention cue. The headline price in
+configurator rows is the full package price; the per-unit teaser is a small
+mono note underneath (owner: the big per-unit number misled buyers).

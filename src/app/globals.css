@@ -225,6 +225,60 @@
   }
 
   /*
+    .orbit-glow — restored by owner decision (2026-07-07, see
+    docs/design-handoff/DEVIATIONS.md): a thin GREEN ring with a brighter
+    "comet" that orbits the border of configurator rows made cheaper by
+    an item already in the cart. Recolored from the Serbian red to the
+    brand green; conic-gradient mask keeps the glow on the border only.
+    Reduced-motion falls back to a static green ring.
+  */
+  @property --er-orbit-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+
+  @keyframes orbit-glow {
+    to {
+      --er-orbit-angle: 360deg;
+    }
+  }
+
+  .orbit-glow {
+    position: relative;
+  }
+  .orbit-glow::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    padding: 2px;
+    background: conic-gradient(
+      from var(--er-orbit-angle),
+      transparent 0deg,
+      transparent 260deg,
+      rgba(0, 217, 138, 0.55) 320deg,
+      rgba(0, 217, 138, 1) 340deg,
+      rgba(0, 217, 138, 0.55) 350deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: orbit-glow 3.5s linear infinite;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .orbit-glow::before {
+      animation: none;
+      background: rgba(0, 217, 138, 0.45);
+    }
+  }
+
+  /*
     .flash-new — KEPT (the one attention cue in the system), recolored
     from clay to green and retimed to the standard curve.
     Motion system: cubic-bezier(0.2, 0, 0, 1); 120 / 200 / 360 ms.

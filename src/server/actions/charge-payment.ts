@@ -20,6 +20,7 @@ import {
   capturePayPalOrder,
   createPayPalOrderMinor,
   getPayPalOrder,
+  isPayPalOrderNotFound,
 } from "@/lib/payment/paypal";
 import { isChargeCurrency } from "@/lib/currency/config";
 import { processMockCardPaymentCents } from "@/lib/payment/mock-card";
@@ -223,10 +224,14 @@ export async function createPayPalChargeAction(
           return { paypalOrderId: charge.paymentId };
         }
       } catch (err) {
-        Sentry.captureException(err, {
-          tags: { area: "payment", flow: "paypal-charge-create-lookup" },
-          extra: { chargeId, paypalOrderId: charge.paymentId },
-        });
+        // A 404 (sandbox id on live / expired order) is the expected
+        // fall-through — mint a fresh order without alerting.
+        if (!isPayPalOrderNotFound(err)) {
+          Sentry.captureException(err, {
+            tags: { area: "payment", flow: "paypal-charge-create-lookup" },
+            extra: { chargeId, paypalOrderId: charge.paymentId },
+          });
+        }
       }
     }
 

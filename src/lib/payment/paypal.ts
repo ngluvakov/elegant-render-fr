@@ -21,6 +21,67 @@ const PAYPAL_BASE =
     ? "https://api-m.paypal.com"
     : "https://api-m.sandbox.paypal.com";
 
+/**
+ * Typed PayPal REST failure. Carries the HTTP status plus the parsed
+ * PayPal error `name` (e.g. RESOURCE_NOT_FOUND) and first-detail `issue`
+ * (e.g. INVALID_RESOURCE_ID) so callers can branch on "order not found"
+ * instead of string-matching a flat message.
+ *
+ * The `message` is kept byte-for-byte compatible with the previous
+ * `throw new Error("PayPal <op> failed: <status> <body>")` shape so
+ * Sentry grouping and log scraping are unaffected — only the type is richer.
+ */
+export class PayPalApiError extends Error {
+  readonly status: number;
+  /** PayPal's top-level error name, e.g. "RESOURCE_NOT_FOUND". */
+  readonly paypalName: string | null;
+  /** First detail issue code, e.g. "INVALID_RESOURCE_ID". */
+  readonly issue: string | null;
+  /** Raw response body (parsed if JSON, else the text). */
+  readonly bodyText: string;
+
+  constructor(operation: string, status: number, bodyText: string) {
+    super(`PayPal ${operation} failed: ${status} ${bodyText}`);
+    this.name = "PayPalApiError";
+    this.status = status;
+    this.bodyText = bodyText;
+
+    let paypalName: string | null = null;
+    let issue: string | null = null;
+    try {
+      const parsed = JSON.parse(bodyText) as {
+        name?: unknown;
+        details?: Array<{ issue?: unknown }>;
+      };
+      if (typeof parsed?.name === "string") paypalName = parsed.name;
+      const firstIssue = parsed?.details?.[0]?.issue;
+      if (typeof firstIssue === "string") issue = firstIssue;
+    } catch {
+      // Body wasn't JSON (HTML error page, empty, etc.) — leave nulls.
+    }
+    this.paypalName = paypalName;
+    this.issue = issue;
+  }
+
+  /**
+   * The referenced order id doesn't exist on the current PayPal
+   * environment — a sandbox id queried on live, or an order PayPal has
+   * expired/purged. Terminal: it can never settle.
+   */
+  get isOrderNotFound(): boolean {
+    return (
+      this.status === 404 ||
+      this.paypalName === "RESOURCE_NOT_FOUND" ||
+      this.issue === "INVALID_RESOURCE_ID"
+    );
+  }
+}
+
+/** Narrow an unknown error to a terminal PayPal "order not found". */
+export function isPayPalOrderNotFound(err: unknown): boolean {
+  return err instanceof PayPalApiError && err.isOrderNotFound;
+}
+
 async function getAccessToken(): Promise<string> {
   const auth = Buffer.from(
     `${process.env.PAYPAL_CLIENT_ID}:${process.env.PAYPAL_CLIENT_SECRET}`,
@@ -195,7 +256,7 @@ export async function getPayPalOrder(paypalOrderId: string): Promise<PayPalCaptu
 
   if (!res.ok) {
     const body = await res.text();
-    throw new Error(`PayPal get order failed: ${res.status} ${body}`);
+    throw new PayPalApiError("get order", res.status, body);
   }
 
   return extractCapture(await res.json());

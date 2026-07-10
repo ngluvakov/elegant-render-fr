@@ -29,6 +29,7 @@ import {
   capturePayPalOrder,
   createPayPalOrderMinor,
   getPayPalOrder,
+  isPayPalOrderNotFound,
 } from "@/lib/payment/paypal";
 import { isChargeCurrency } from "@/lib/currency/config";
 import { processMockCardPaymentCents } from "@/lib/payment/mock-card";
@@ -88,29 +89,40 @@ export type FailedPaymentDetails = {
  * the customer can retry from the same checkout state. Any forensic
  * snapshot (capture status, raw response) is persisted by the caller
  * before this runs — here we flip paymentStatus and email the customer.
+ *
+ * `enqueueEmail` (default true) can be turned off for terminal states
+ * that aren't a real decline — e.g. the reconciler pruning an order
+ * whose PayPal id no longer exists (sandbox id on live / expired order):
+ * we still flip paymentStatus so it stops being reconciled, but must not
+ * retroactively email the customer.
  */
 export async function finishFailedPayment(
   orderId: string,
   details: FailedPaymentDetails,
+  options: { enqueueEmail?: boolean } = {},
 ) {
+  const enqueueEmail = options.enqueueEmail ?? true;
+
   await prisma.order.updateMany({
     where: { id: orderId, paymentStatus: { not: "completed" } },
     data: { paymentStatus: "failed" },
   });
 
-  await enqueueOutboxEvent({
-    type: "payment_failure_email",
-    payload: {
-      orderId,
-      reason: details.reason ?? null,
-      response: details.response ?? null,
-      errMsg: details.errMsg ?? null,
-    },
-    // Per-attempt key: include the provider status so a same-order
-    // second decline still emails the customer, while a retried
-    // delivery of the same decline doesn't email twice.
-    idempotencyKey: `payment_failure:${orderId}:${details.response ?? details.reason ?? "x"}`,
-  });
+  if (enqueueEmail) {
+    await enqueueOutboxEvent({
+      type: "payment_failure_email",
+      payload: {
+        orderId,
+        reason: details.reason ?? null,
+        response: details.response ?? null,
+        errMsg: details.errMsg ?? null,
+      },
+      // Per-attempt key: include the provider status so a same-order
+      // second decline still emails the customer, while a retried
+      // delivery of the same decline doesn't email twice.
+      idempotencyKey: `payment_failure:${orderId}:${details.response ?? details.reason ?? "x"}`,
+    });
+  }
 }
 
 export async function finishSuccessfulPayment(
@@ -229,10 +241,14 @@ export async function createPayPalOrderAction(
       } catch (err) {
         // Lookup failure falls through to create; the PayPal-Request-Id
         // below dedupes on PayPal's side if the old order still exists.
-        Sentry.captureException(err, {
-          tags: { area: "payment", flow: "paypal-create-lookup" },
-          extra: { orderId, paypalOrderId: order.paymentId },
-        });
+        // A 404 (sandbox id on live / expired order) is the expected
+        // fall-through case — mint a fresh order without alerting.
+        if (!isPayPalOrderNotFound(err)) {
+          Sentry.captureException(err, {
+            tags: { area: "payment", flow: "paypal-create-lookup" },
+            extra: { orderId, paypalOrderId: order.paymentId },
+          });
+        }
       }
     }
 

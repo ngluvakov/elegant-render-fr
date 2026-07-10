@@ -19,7 +19,11 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/lib/db";
-import { capturePayPalOrder, getPayPalOrder } from "@/lib/payment/paypal";
+import {
+  capturePayPalOrder,
+  getPayPalOrder,
+  isPayPalOrderNotFound,
+} from "@/lib/payment/paypal";
 import { transitionOrder } from "@/lib/order/status-machine";
 import {
   finishFailedPayment,
@@ -38,6 +42,8 @@ export type ReconcilePayPalStats = {
   completed: number;
   captured: number;
   failed: number;
+  /** Orders PayPal no longer knows (404) — settled failed, not alerted. */
+  pruned: number;
   stillPending: number;
   errors: Array<{ orderId: string; reason: string }>;
 };
@@ -71,6 +77,7 @@ export async function reconcilePayPalPending(
   let completed = 0;
   let captured = 0;
   let failed = 0;
+  let pruned = 0;
   let stillPending = 0;
 
   for (const order of candidates) {
@@ -150,12 +157,41 @@ export async function reconcilePayPalPending(
         stillPending += 1;
       }
     } catch (err) {
+      // The PayPal order no longer exists (a sandbox id queried on live
+      // after the mode flip, or an order PayPal expired/purged). It can
+      // never settle, and the throttle stamp below is never reached on
+      // this path, so it would re-throw and re-alert every run until it
+      // ages out at 7 days. Settle it failed — WITHOUT emailing the
+      // customer — so it drops out of the candidate query for good.
+      if (isPayPalOrderNotFound(err)) {
+        await finishFailedPayment(
+          order.id,
+          {
+            provider: "paypal",
+            response: "NOT_FOUND",
+            reason: "paypal_order_not_found",
+          },
+          { enqueueEmail: false },
+        );
+        pruned += 1;
+        continue;
+      }
+
       const message = err instanceof Error ? err.message : String(err);
       Sentry.captureException(err, {
         tags: { area: "payment", flow: "paypal-reconcile" },
         extra: { orderId: order.id, paypalOrderId: order.paymentId },
       });
       errors.push({ orderId: order.id, reason: message });
+      // Back off a persistently-erroring order to the 30-min requery
+      // cadence instead of re-hitting (and re-alerting) it every run.
+      // Best-effort: a stamp failure must not mask the original error.
+      await prisma.order
+        .update({
+          where: { id: order.id },
+          data: { paypalLastQueryAt: new Date() },
+        })
+        .catch(() => {});
     }
   }
 
@@ -165,6 +201,7 @@ export async function reconcilePayPalPending(
     completed,
     captured,
     failed,
+    pruned,
     stillPending,
     errors,
   };

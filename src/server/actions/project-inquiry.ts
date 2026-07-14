@@ -9,8 +9,10 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { verifyTurnstile } from "@/lib/turnstile";
 import { requirePermission } from "@/lib/admin-auth";
 import type { Prisma } from "@/generated/prisma/client";
 import {
@@ -50,6 +52,11 @@ export type SubmitProjectInquiryInput = {
   sourceLabel?: string;
   quoteSnapshot?: unknown;
   files?: ProjectInquiryFileInput[];
+  // Anti-spam. `companyWebsite` is a honeypot — a hidden field no human
+  // fills; any value means a bot and we reject silently. `turnstileToken`
+  // is the Cloudflare Turnstile response verified server-side.
+  companyWebsite?: string;
+  turnstileToken?: string;
 };
 
 export type SubmitProjectInquiryResult =
@@ -155,6 +162,23 @@ export async function submitProjectInquiry(
 
   if (!input || typeof input !== "object") {
     return { error: "Invalid request." };
+  }
+
+  // Honeypot: a hidden `company_website` field that no human sees. If a bot
+  // fills it, reject silently — return success so the bot can't learn the
+  // form is protected. No DB row, no lead, no email.
+  if (String(input.companyWebsite ?? "").trim() !== "") {
+    return { ok: true, inquiryId: "" };
+  }
+
+  // Cloudflare Turnstile. No-ops (ok=true) when TURNSTILE_SECRET_KEY is
+  // unset (local dev / preview), so the form stays usable until keys are
+  // configured in Vercel.
+  const ip =
+    (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
+  const captcha = await verifyTurnstile(input.turnstileToken, ip);
+  if (!captcha.ok) {
+    return { error: "Captcha verification failed. Please try again." };
   }
 
   const draftId = cleanRequired(input.draftId, 80);

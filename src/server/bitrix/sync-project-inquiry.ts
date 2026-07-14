@@ -5,6 +5,7 @@
  */
 import { prisma } from "@/lib/db";
 import { bitrixCall } from "@/lib/bitrix24/client";
+import { scoreInquiry } from "@/lib/spam-detection";
 
 function getBaseUrl(): string {
   if (process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL) {
@@ -57,6 +58,22 @@ export async function syncProjectInquiryLead(
   const { firstName, lastName } = splitName(inquiry.contactName);
   const adminUrl = `${getBaseUrl()}/portal/admin/inquiries`;
   const quoteSnapshot = formatQuoteSnapshot(inquiry.quoteSnapshotJson);
+
+  // Preventive gate: if the inquiry is heuristically likely_spam, the lead
+  // is still created (flag, not rejection — a false positive must never lose
+  // a real lead), but with a clear marker in the title + reasons in the
+  // comment, and routed straight to JUNK so it never pollutes the NEW
+  // pipeline and is trivial to filter in Bitrix.
+  const spam = scoreInquiry({
+    contactName: inquiry.contactName,
+    email: inquiry.email,
+    phone: inquiry.phone,
+    company: inquiry.company,
+    message: inquiry.message,
+    serviceType: inquiry.serviceType,
+  });
+  const isSpam = spam.level === "likely_spam";
+
   const fileLines =
     inquiry.files.length > 0
       ? inquiry.files
@@ -70,6 +87,9 @@ export async function syncProjectInquiryLead(
       : "No files attached.";
 
   const comments = [
+    isSpam
+      ? `⚠ AUTO-FLAGGED SPAM — reasons: ${spam.reasons.join("; ")}`
+      : null,
     `Admin: ${adminUrl}`,
     `Inquiry ID: ${inquiry.id}`,
     inquiry.source ? `Source: ${inquiry.source}` : null,
@@ -94,12 +114,12 @@ export async function syncProjectInquiryLead(
       "crm.lead.add",
       {
         fields: {
-          TITLE: `Elegant Render inquiry — ${inquiry.contactName}`,
+          TITLE: `${isSpam ? "⚠ LIKELY SPAM — " : ""}Elegant Render inquiry — ${inquiry.contactName}`,
           NAME: firstName,
           LAST_NAME: lastName,
           COMPANY_TITLE: inquiry.company ?? undefined,
           SOURCE_ID: "WEB",
-          STATUS_ID: "NEW",
+          STATUS_ID: isSpam ? "JUNK" : "NEW",
           EMAIL: [{ VALUE: inquiry.email, VALUE_TYPE: "WORK" }],
           PHONE: inquiry.phone
             ? [{ VALUE: inquiry.phone, VALUE_TYPE: "WORK" }]

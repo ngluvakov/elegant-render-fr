@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { TurnstileWidget } from "@/components/ui/turnstile-widget";
 import {
   PROJECT_INQUIRY_MAX_FILE_BYTES,
   PROJECT_INQUIRY_MAX_TOTAL_BYTES,
@@ -73,8 +74,16 @@ export function ProjectInquiryForm({
     | { kind: "error"; message: string }
   >({ kind: "idle" });
   const [pending, setPending] = useState(false);
+  // Honeypot: bound to a hidden field no human fills. Any value → bot.
+  const [companyWebsite, setCompanyWebsite] = useState("");
+  // Cloudflare Turnstile token. Only gates submit when a site key is set.
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const contactFormStartedRef = useRef(false);
+
+  const turnstileEnabled = Boolean(
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+  );
 
   const totalUploaded = files.reduce((sum, file) => sum + file.fileSize, 0);
   const totalUploading = uploading.reduce(
@@ -101,6 +110,7 @@ export function ProjectInquiryForm({
     setFiles([]);
     setUploading([]);
     setResult({ kind: "idle" });
+    setTurnstileToken(null);
   };
 
   const uploadFile = async (file: File) => {
@@ -223,11 +233,22 @@ export function ProjectInquiryForm({
       sourceLabel: source?.sourceLabel,
       quoteSnapshot: source?.quoteSnapshot,
       files,
+      companyWebsite,
+      turnstileToken: turnstileToken ?? undefined,
     });
 
     setPending(false);
     if ("error" in res) {
       setResult({ kind: "error", message: res.error });
+      return;
+    }
+
+    // A silently-rejected honeypot submission returns ok with an empty
+    // inquiryId. Show the success screen (so a bot can't tell) but skip the
+    // lead analytics so bot noise never counts as a real conversion.
+    if (!res.inquiryId) {
+      setResult({ kind: "success", inquiryId: "" });
+      onSubmitted?.();
       return;
     }
 
@@ -281,6 +302,25 @@ export function ProjectInquiryForm({
 
   return (
     <form onSubmit={submit} onFocusCapture={trackContactFormStarted} className="space-y-6">
+      {/* Honeypot — hidden from humans (off-screen, out of tab order, no
+          autofill). A filled value means a bot; the server rejects it
+          silently. Do not remove or make visible. */}
+      <input
+        type="text"
+        name="company_website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        value={companyWebsite}
+        onChange={(event) => setCompanyWebsite(event.target.value)}
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          width: 1,
+          height: 1,
+          opacity: 0,
+        }}
+      />
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor={`${mode}-inquiry-name`}>
@@ -507,12 +547,23 @@ export function ProjectInquiryForm({
         </div>
       )}
 
+      {turnstileEnabled && (
+        <div className="flex justify-start">
+          <TurnstileWidget onVerify={setTurnstileToken} />
+        </div>
+      )}
+
       <div className="flex flex-col gap-3 border-t border-border/40 pt-5 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs leading-relaxed text-muted-foreground">
           By submitting this form you agree that we process your details to
           prepare a response.
         </p>
-        <Button type="submit" size="lg" variant="accent" disabled={pending}>
+        <Button
+          type="submit"
+          size="lg"
+          variant="accent"
+          disabled={pending || (turnstileEnabled && !turnstileToken)}
+        >
           {pending ? "Sending..." : "Send an inquiry"}
         </Button>
       </div>

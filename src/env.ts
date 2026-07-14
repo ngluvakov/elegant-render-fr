@@ -26,6 +26,11 @@ const INTEGRATION_ENV = [
   "BITRIX24_WEBHOOK_URL",
   "UPSTASH_REDIS_REST_URL",
   "UPSTASH_REDIS_REST_TOKEN",
+  // Turnstile bot protection on the inquiry form. Without them the layer
+  // no-ops (verifyTurnstile returns ok=true) and honeypot + heuristics
+  // still run — so local dev needs neither, but production should set both.
+  "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
+  "TURNSTILE_SECRET_KEY",
 ] as const;
 
 // Without PAYPAL_WEBHOOK_ID the webhook route rejects every delivery

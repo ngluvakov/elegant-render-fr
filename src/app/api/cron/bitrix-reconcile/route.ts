@@ -11,8 +11,8 @@ export async function GET(request: Request) {
   return Sentry.withMonitor(
     "bitrix-reconcile",
     async () => {
-      await reconcileAllOrders();
-      return NextResponse.json({ ok: true });
+      const summary = await reconcileAllOrders();
+      return NextResponse.json({ ok: true, ...summary });
     },
     {
       schedule: { type: "crontab", value: "0 3 * * *" },

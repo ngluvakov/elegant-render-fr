@@ -9,15 +9,25 @@
  */
 import * as Sentry from "@sentry/nextjs";
 import { prisma } from "@/lib/db";
-import { bitrixCall } from "@/lib/bitrix24/client";
+import { bitrixCall, isBitrixNotFound } from "@/lib/bitrix24/client";
 import { stageToOrderStatus } from "@/lib/bitrix24/stage-map";
 import { transitionOrder } from "@/lib/order/status-machine";
 import type { BitrixDeal } from "@/lib/bitrix24/types";
 
 export async function handleDealUpdate(dealId: string) {
-  // Fetch deal from Bitrix24
-  const deal = await bitrixCall<BitrixDeal>("crm.deal.get", { id: dealId });
-  if (!deal) return;
+  // Fetch deal from Bitrix24. bitrixCall throws on a missing/empty Deal; a
+  // deleted Deal is a no-op here, real errors bubble to the webhook route
+  // (which reports to Sentry and still returns 200).
+  let deal: BitrixDeal;
+  try {
+    deal = await bitrixCall<BitrixDeal>("crm.deal.get", { id: dealId });
+  } catch (err) {
+    if (isBitrixNotFound(err)) {
+      console.log(`[Bitrix24 Inbound] Deal ${dealId} not found in Bitrix — skipping`);
+      return;
+    }
+    throw err;
+  }
 
   // Find our order by bitrix24DealId
   const order = await prisma.order.findUnique({

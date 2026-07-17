@@ -20,6 +20,19 @@ The pre-fork Serbian platform history is preserved as a brief archive in `docs/p
 - **References:** PR, commit, issue, or chat context if available.
 ```
 
+## 2026-07-17 - Bitrix reconcile hardened against a missing/empty Deal (STAGE_ID crash)
+
+- **Area:** CRM sync
+- **What changed:** `bitrixCall()` no longer returns `body.result` blindly cast `as T`. It now throws typed errors — `BitrixApiError` (preserves `code` = `error` and `description` = `error_description`) on a Bitrix error payload, and `BitrixEmptyResultError` when the transport succeeds but `result` is null/undefined (a Deal that no longer exists). `false`/`0`/`""`/`[]` are still valid results and pass through untouched. A new `isBitrixNotFound(err)` classifies "entity gone" (empty result OR explicit NOT_FOUND). `reconcileAllOrders()` catches per order: a missing Deal is counted (`missing`), written to `BitrixSyncLog`, and reported to Sentry with `orderId`/`orderNumber`/`bitrix24DealId`, then the loop **continues**; unexpected errors are counted (`errors`) and also continue. It now returns a `{ checked, drift, missing, errors, retried }` summary, echoed in the cron's JSON response and the final `[Reconcile] Done…` log line. `handleDealUpdate()` (inbound webhook) catches the same not-found signal and skips gracefully; real errors bubble to the webhook route (Sentry + still 200).
+- **Why:** Production `TypeError: Cannot read properties of undefined (reading 'STAGE_ID')` through `Sentry.withMonitor` → `/api/cron/bitrix-reconcile`. Root cause: `crm.deal.get` on a deleted/merged Deal returns an empty result, `bitrixCall` handed back `undefined`, and reconcile read `deal.STAGE_ID` off it. Same class of defect as the PayPal 404 "order not found" fix — an external system reporting "object does not exist" must be an explicitly handled case.
+- **Safe repair path (deliberately NOT automated):** When reconcile flags a Deal as missing, it is **left linked** — `bitrix24DealId` is never auto-cleared and no replacement Deal is auto-created, because an ambiguous empty response can be transient and blind recreation would produce duplicate Deals. Repair is manual and confirmed: verify in Bitrix that the Deal is genuinely gone (not merged/moved pipeline), then either restore the Deal ID on the order or clear `bitrix24DealId` so the next reconcile recreates it via `syncNewDeal`. Only act on a persistent, confirmed miss, not a single night's empty response.
+- **Impact on conversion:** None.
+- **Impact on design:** None.
+- **Impact on code:** `src/lib/bitrix24/client.ts` (typed errors + `isBitrixNotFound`), `src/server/bitrix/reconcile.ts` (per-order guard, counts, summary), `src/server/bitrix/inbound.ts` (typed-error catch), `src/app/api/cron/bitrix-reconcile/route.ts` (summary in response). Tests added: `src/lib/bitrix24/client.test.ts`, `src/server/bitrix/reconcile.test.ts`.
+- **Impact on docs:** This entry.
+- **Related files:** `src/lib/bitrix24/client.ts`, `src/server/bitrix/reconcile.ts`, `src/server/bitrix/inbound.ts`, `src/app/api/cron/bitrix-reconcile/route.ts`
+- **References:** Sentry issue "STAGE_ID" on `bitrix-reconcile`; parallels the PayPal 404 not-found fix (commit e2b0d30).
+
 ## 2026-07-07 - LIVE launch flip, price sign-off (a), PayPal-only billing
 
 - **Area:** payments | pricing | docs

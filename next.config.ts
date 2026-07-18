@@ -48,9 +48,15 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // No redirects: elegantrender.com is a fresh domain with no legacy
-  // URLs to preserve. The Serbian site's slug-history 301s stay on
-  // elegantrender.rs and have no meaning here.
+  async redirects() {
+    return [
+      {
+        source: "/home",
+        destination: "/",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withSentryConfig(nextConfig, {

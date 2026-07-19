@@ -56,6 +56,7 @@ import { UPLOADS_BUCKET } from "@/lib/file-scan";
 import { formatBillingMoney } from "@/lib/billing";
 import { isChargeCurrency } from "@/lib/currency/config";
 import { formatChargeAmount } from "@/lib/currency/convert";
+import { syncPlutosInvoice } from "@/server/plutos/sync";
 
 // ─── Producer ────────────────────────────────────────────
 
@@ -102,7 +103,7 @@ export async function enqueueOutboxEvent(args: EnqueueArgs): Promise<void> {
  * row was enqueued with the optional `tx`. The every-minute cron remains the
  * backstop for retries and any enqueue made outside a request scope.
  */
-function kickOutboxSoon(): void {
+export function kickOutboxSoon(): void {
   try {
     after(async () => {
       try {
@@ -445,6 +446,17 @@ const HANDLERS: Record<OutboxEventType, Handler> = {
       reason,
       retryUrl: data.retryUrl,
     });
+  },
+
+  plutos_invoice_requested: async (payload) => {
+    const target = payload.target === "charge" ? "charge" : "order";
+    const targetId = String(payload.targetId ?? "");
+    if (!targetId) {
+      throw new Error("plutos_invoice_requested: missing targetId");
+    }
+    // The event payload carries only { target, targetId } — no money, no PII.
+    // syncPlutosInvoice reloads all invoice + buyer data from the database.
+    await syncPlutosInvoice(target, targetId);
   },
 };
 

@@ -5,6 +5,7 @@
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { reconcileMissingInvoices } from "@/server/finance/reconcile-invoices";
+import { reconcilePlutosSync } from "@/server/plutos/reconcile";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,7 +27,19 @@ export async function GET(request: Request) {
           extra: stats,
         });
       }
-      return NextResponse.json(stats);
+
+      // Second pass: repair invoices that were issued but never enqueued to
+      // Plutos (bounded; no-op when the integration is disabled).
+      const plutos = await reconcilePlutosSync();
+      if (!plutos.ok) {
+        Sentry.captureMessage("plutos-reconcile completed with errors", {
+          level: "warning",
+          tags: { area: "plutos", flow: "reconcile" },
+          extra: plutos,
+        });
+      }
+
+      return NextResponse.json({ ...stats, plutos });
     },
     {
       schedule: { type: "crontab", value: "15 4 * * *" },

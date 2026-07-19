@@ -25,6 +25,7 @@ import {
   paymentMethodLabel,
 } from "@/lib/invoice-data";
 import { enqueueOutboxEvent } from "@/lib/outbox";
+import { enqueuePlutosSyncIfEligible } from "@/server/plutos/producer";
 import { UPLOADS_BUCKET } from "@/lib/file-scan";
 
 export type IssueChargeInvoiceResult =
@@ -49,6 +50,13 @@ export async function issueChargeInvoice(
     if (!charge) return { ok: false, reason: "charge_not_found" };
 
     if (charge.invoiceNumber) {
+      // Idempotent return path: ensure the (possibly missed) Plutos enqueue
+      // exists for an already-issued charge invoice.
+      await enqueuePlutosSyncIfEligible(
+        "charge",
+        chargeId,
+        charge.invoiceIssuedAt,
+      );
       return { ok: true, invoiceNumber: charge.invoiceNumber };
     }
     if (charge.status !== "paid" || charge.paymentStatus !== "completed") {
@@ -133,6 +141,10 @@ export async function issueChargeInvoice(
         invoicePdfPath: storagePath,
       },
     });
+
+    // Best-effort: mirror this charge invoice into Plutos (books/SEF). Never
+    // blocks or changes the local invoice result.
+    await enqueuePlutosSyncIfEligible("charge", chargeId, now);
 
     if (order.user.email) {
       await enqueueOutboxEvent({

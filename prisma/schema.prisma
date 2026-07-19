@@ -305,6 +305,19 @@ model Order {
   invoiceNumber       String?          @unique
   invoiceIssuedAt     DateTime?
   invoicePdfPath      String?
+  // ─── Plutos accounting sync (elegantrender.com → Plutos books/SEF) ───
+  // Additive, all-nullable. The sync is best-effort and never blocks or
+  // delays the local invoice; failures surface in Sentry + these fields.
+  // See src/server/plutos/**. plutosInvoiceId is the external document id
+  // (Plutos returns it numeric; we store it as a string). plutosNumber echoes
+  // the local invoiceNumber — a divergence is treated as an error, never stored.
+  plutosInvoiceId     String?
+  plutosNumber        String?
+  plutosStatus        String?
+  plutosSefStatus     String?
+  plutosLastAttemptAt DateTime?
+  plutosSyncedAt      DateTime?
+  plutosLastError     String?          @db.Text
   paymentMethod       PaymentMethod    @default(online_payment)
   // Predračun (proforma) issuance — populated when admin clicks
   // "Izdaj predračun" on a wire_transfer order. The proforma is NOT
@@ -499,6 +512,14 @@ model OrderCharge {
   invoiceNumber       String?           @unique
   invoiceIssuedAt     DateTime?
   invoicePdfPath      String?
+  // Plutos accounting sync — see Order.plutos* and src/server/plutos/**.
+  plutosInvoiceId     String?
+  plutosNumber        String?
+  plutosStatus        String?
+  plutosSefStatus     String?
+  plutosLastAttemptAt DateTime?
+  plutosSyncedAt      DateTime?
+  plutosLastError     String?           @db.Text
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
   paidAt              DateTime?
@@ -1013,6 +1034,9 @@ enum OutboxEventType {
   inquiry_converted_email
   payment_success_email
   payment_failure_email
+  // Ingest a local invoice (order or charge) into Plutos. Payload carries
+  // only { target, targetId }; all money/PII is reloaded from the DB.
+  plutos_invoice_requested
 }
 
 /// Atomic per-year invoice counter. One row per calendar year; the

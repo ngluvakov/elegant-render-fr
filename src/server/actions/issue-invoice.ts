@@ -35,6 +35,7 @@ import {
   paymentMethodLabel,
 } from "@/lib/invoice-data";
 import { enqueueOutboxEvent } from "@/lib/outbox";
+import { enqueuePlutosSyncIfEligible } from "@/server/plutos/producer";
 import { UPLOADS_BUCKET } from "@/lib/file-scan";
 
 export type IssueInvoiceResult =
@@ -55,6 +56,9 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
     // Idempotency — invoice already issued (e.g. payment callback
     // retried after a transient error). Return the existing number.
     if (order.invoiceNumber) {
+      // Idempotent return path: ensure the (possibly missed) Plutos enqueue
+      // exists for an already-issued invoice.
+      await enqueuePlutosSyncIfEligible("order", orderId, order.invoiceIssuedAt);
       return { ok: true, invoiceNumber: order.invoiceNumber };
     }
 
@@ -120,6 +124,10 @@ export async function issueInvoice(orderId: string): Promise<IssueInvoiceResult>
         invoicePdfPath: storagePath,
       },
     });
+
+    // Best-effort: mirror this invoice into Plutos (books/SEF). Never blocks
+    // or changes the local invoice result.
+    await enqueuePlutosSyncIfEligible("order", orderId, now);
 
     if (order.user.email) {
       await enqueueOutboxEvent({

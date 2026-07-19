@@ -92,10 +92,23 @@ Use this checklist before merging release branches, before the sandbox freeze, a
 
 - [ ] Verification, password reset, guest access, payment confirmation, source-file reminder, comment, revision, deliverable, refund, and admin notification emails render in English.
 - [ ] Email amounts match the charged currency and EUR accounting rules.
+- [ ] Invoice/proforma issue and due dates match across PDFs and email at a UTC-midnight boundary when interpreted in `Europe/Belgrade`.
 - [ ] All links use English routes on the tested host.
 - [ ] Sender identity uses the configured elegantrender.com mailbox.
 
-## 10. Error handling
+## 10. Plutos accounting sync
+
+- [ ] With `PLUTOS_SYNC_ENABLED=false`, a paid order still issues and emails its invoice without creating a Plutos outbox event.
+- [ ] With the mock enabled, a newly issued order invoice is queued once and reaches `Synced`.
+- [ ] A paid additional charge queues a separate document ID and displays its own invoice and Plutos state.
+- [ ] Repeated payment callbacks and invoice retries do not create duplicate Plutos events.
+- [ ] Invoices earlier than `PLUTOS_SYNC_FROM` are not queued automatically.
+- [ ] A mock 401, 422, timeout, and 5xx response leave the local invoice intact and surface a sanitized admin error.
+- [ ] `Retry sync` reuses the failed outbox event; `Refresh status` updates the stored remote status.
+- [ ] The Plutos API key and complete buyer payload never appear in browser responses, admin errors, logs, or Sentry metadata.
+- [ ] Existing PayPal, PDF, email, and Bitrix behavior is unchanged when Plutos is unavailable.
+
+## 11. Error handling
 
 - [ ] Unknown public routes render the English 404 state.
 - [ ] Invalid checkout data returns field-level English errors.
@@ -104,7 +117,7 @@ Use this checklist before merging release branches, before the sandbox freeze, a
 - [ ] Oversized files and unsupported formats return English errors.
 - [ ] API failures are logged without leaking secrets to the browser.
 
-## 11. Launch gate
+## 12. Launch gate
 
 - [ ] PayPal live webhook is configured and signature verification is green.
 - [ ] A low-value live purchase and refund have been tested end to end.

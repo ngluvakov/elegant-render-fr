@@ -18,10 +18,16 @@ import { AdminDeliverableUpload } from "./admin-deliverable-upload";
 import { AdminGrantCreditsPanel } from "./admin-grant-credits-panel";
 import { AdminFreeRevisionPanel } from "./admin-free-revision-panel";
 import { AdminChargesPanel } from "./admin-charges-panel";
+import { AdminPlutosSyncPanel } from "./admin-plutos-sync-panel";
 import { AdminRefundButton } from "./admin-refund-button";
 import { adminHas, requirePermission } from "@/lib/admin-auth";
 import { isChargeCurrency } from "@/lib/currency/config";
 import { formatChargeAmount } from "@/lib/currency/convert";
+import {
+  refreshPlutosStatus,
+  requestPlutosSync,
+} from "@/server/plutos/actions";
+import { loadPlutosSyncSnapshot } from "@/server/plutos/snapshot";
 
 export const metadata: Metadata = {
   title: "Admin - Order details",
@@ -81,6 +87,21 @@ export default async function AdminOrderDetailPage({
   });
 
   if (!order) return notFound();
+
+  const [orderPlutosSync, chargePlutosSyncEntries] = await Promise.all([
+    canViewFinance
+      ? loadPlutosSyncSnapshot("order", order.id)
+      : Promise.resolve(null),
+    canManageFinance
+      ? Promise.all(
+          order.charges.map(async (charge) => [
+            charge.id,
+            await loadPlutosSyncSnapshot("charge", charge.id),
+          ] as const),
+        )
+      : Promise.resolve([]),
+  ]);
+  const chargePlutosSyncById = new Map(chargePlutosSyncEntries);
 
   const sourceFiles = order.files.filter((f) => f.kind === "source" || f.kind === "revision");
   const deliverableFiles = order.files.filter((f) => f.kind === "deliverable");
@@ -158,7 +179,10 @@ export default async function AdminOrderDetailPage({
             status: c.status,
             paymentProvider: c.paymentProvider,
             paidAt: c.paidAt,
+            invoiceNumber: c.invoiceNumber,
+            invoiceIssuedAt: c.invoiceIssuedAt,
             createdAt: c.createdAt,
+            plutosSync: chargePlutosSyncById.get(c.id),
             items: c.items.map((it) => ({
               id: it.id,
               productId: it.productId,
@@ -168,6 +192,8 @@ export default async function AdminOrderDetailPage({
               quantity: it.quantity,
             })),
           }))}
+          plutosRequestAction={requestPlutosSync}
+          plutosRefreshAction={refreshPlutosStatus}
         />
       )}
 
@@ -651,6 +677,20 @@ export default async function AdminOrderDetailPage({
               >
                 Download PDF
               </a>
+              {orderPlutosSync && (
+                <AdminPlutosSyncPanel
+                  target="order"
+                  targetId={order.id}
+                  sync={orderPlutosSync}
+                  requestAction={
+                    canManageFinance ? requestPlutosSync : undefined
+                  }
+                  refreshAction={
+                    canManageFinance ? refreshPlutosStatus : undefined
+                  }
+                  compact
+                />
+              )}
             </div>
           )}
             </>

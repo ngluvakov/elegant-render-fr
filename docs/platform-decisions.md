@@ -4,6 +4,30 @@ Lightweight decision and change log for key characteristics of the Elegant Rende
 
 The pre-fork Serbian platform history is preserved as a brief archive in `docs/platform-decisions-rs-archive.md`.
 
+## 2026-07-19 - Accounting document dates use the Belgrade calendar day
+
+- **Area:** order lifecycle | architecture
+- **What changed:** Invoice PDFs, proforma PDFs, and proforma due-date email copy now format accounting dates in the `Europe/Belgrade` timezone.
+- **Why:** An accounting document must show one stable local calendar date across PDF and email output, including around UTC midnight and daylight-saving transitions.
+- **Impact on conversion:** None.
+- **Impact on design:** Date presentation is unchanged except where the server's UTC day previously differed from the Belgrade calendar day.
+- **Impact on code:** Shared invoice/proforma output now supplies an explicit Belgrade timezone to date formatting. AI-credit expiry dates remain outside this accounting-date decision.
+- **Impact on docs:** Added the corresponding QA check.
+- **Related files:** `src/lib/invoice-pdf.tsx`, `src/lib/proforma-pdf.tsx`, `src/lib/email.ts`, `TESTING.md`
+- **References:** Commit `faf328f`.
+
+## 2026-07-19 - Plutos invoice sync added as a fail-open outbox integration
+
+- **Area:** order lifecycle | payments | architecture
+- **What changed:** Issued primary and additional (`OrderCharge`) invoices can now be submitted to Plutos through the existing outbox. The integration is disabled by default and bounded by `PLUTOS_SYNC_FROM`; it uses stable document IDs, reloads invoice data in the worker, validates totals and remote responses, persists sync/SEF state, supports reconciliation, and exposes manual send, retry, and refresh controls to `FINANCE_MANAGE` users. International individuals map to `individual_foreign`, businesses to `company_foreign`, and VAT is derived from the existing immutable invoice snapshot/billing rule.
+- **Why:** Prepare elegantrender.com for Plutos and eventual SEF integration without coupling invoicing or payment success to an external service that is still being validated.
+- **Impact on conversion:** None. Plutos enqueue and processing are best-effort; failures do not change PayPal capture, local invoice issuance, PDF generation, email, or Bitrix behavior.
+- **Impact on design:** Admin order details now show Plutos state and finance-only recovery controls for primary and additional invoices.
+- **Impact on code:** Additive nullable database fields and a new outbox event support the sync. The client uses an API-key header, an eight-second timeout, response validation, sanitized errors, existing retry behavior, and exact-cent payload guards. Reconciliation is limited to ten eligible invoices per pass and does not automatically backfill invoices before the configured cutoff.
+- **Impact on docs:** Added the Track A implementation handoff and Plutos testing checklist.
+- **Related files:** `prisma/schema.prisma`, `src/server/plutos/`, `src/app/portal/admin/orders/[orderId]/`, `src/lib/outbox.ts`, `docs/plan/plutos-com-core-handoff.md`, `TESTING.md`
+- **References:** Commit `9750f43`; Plutos `.com` implementation plan and `docs/integracija/Sajt_Plutos_integracija_handoff.md`.
+
 ## Template
 
 ```md

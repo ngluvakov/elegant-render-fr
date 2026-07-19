@@ -1,11 +1,10 @@
 /**
  * Outbox observability — read-only dashboard over the OutboxEvent
- * table that powers transactional emails (order confirmation,
- * proforma, invoice, inquiry-converted, AI credit reminders, etc).
+ * table that powers transactional emails and external integrations.
  *
  * Lets admin see at a glance whether the cron processor is moving
- * rows and triage failed deliveries (e.g. Resend domain not yet
- * verified → invoice emails pile up in `failed`). Each failed row
+ * rows and triage failed deliveries (for example, an email or Plutos
+ * request whose provider is unavailable). Each failed row
  * gets a one-click "Send again" button that resets it to
  * pending; the cron picks it up on the next tick.
  *
@@ -23,7 +22,7 @@ import { requirePermission } from "@/lib/admin-auth";
 export const metadata: Metadata = {
   title: "Outbox — Admin",
   description:
-    "Admin outbox for email messages, send statuses, and resending system notifications.",
+    "Admin outbox for email messages, integration requests, and retry statuses.",
   robots: { index: false, follow: false },
 };
 
@@ -48,7 +47,7 @@ const STATUS_META: Record<
     icon: Clock,
   },
   running: {
-    label: "U radu",
+    label: "Running",
     tone: "bg-accent/15 text-accent",
     icon: Loader2,
   },
@@ -109,11 +108,9 @@ export default async function AdminOutboxPage({
       <div>
         <h1 className="text-3xl font-semibold text-foreground">Outbox</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          The cron processor handles transactional emails (proformas,
-          invoices, order confirmations, AI credits). If Resend has
-          an outage or the domain is not verified, rows pile up as{" "}
-          <strong>Failed</strong> — fix the cause and click{" "}
-          {"„Send again”"}.
+          The cron processor handles transactional emails and external
+          integrations. If a provider is unavailable, rows appear as{" "}
+          <strong>Failed</strong>. Fix the cause, then send them again.
         </p>
       </div>
 

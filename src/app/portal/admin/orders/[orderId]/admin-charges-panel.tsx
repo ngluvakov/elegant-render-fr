@@ -14,6 +14,11 @@ import {
   adminCancelCharge,
   adminCreateCharge,
 } from "@/server/actions/admin-charges";
+import {
+  AdminPlutosSyncPanel,
+  type PlutosSyncAction,
+  type PlutosSyncSnapshot,
+} from "./admin-plutos-sync-panel";
 
 type ChargeItemView = {
   id: string;
@@ -31,8 +36,11 @@ type ChargeView = {
   status: "pending" | "paid" | "cancelled";
   paymentProvider: string | null;
   paidAt: Date | null;
+  invoiceNumber: string | null;
+  invoiceIssuedAt: Date | null;
   createdAt: Date;
   items: ChargeItemView[];
+  plutosSync?: PlutosSyncSnapshot;
 };
 
 type CatalogOption = {
@@ -86,9 +94,13 @@ function statusAccent(status: ChargeView["status"]): string {
 export function AdminChargesPanel({
   orderId,
   charges,
+  plutosRequestAction,
+  plutosRefreshAction,
 }: {
   orderId: string;
   charges: ChargeView[];
+  plutosRequestAction?: PlutosSyncAction;
+  plutosRefreshAction?: PlutosSyncAction;
 }) {
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState<RowState[]>([blankRow()]);
@@ -250,6 +262,40 @@ export function AdminChargesPanel({
                   </li>
                 ))}
               </ul>
+              {charge.invoiceNumber && (
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/40 pt-3 text-[0.72rem]">
+                  <div>
+                    <span className="text-muted-foreground">Invoice </span>
+                    <span className="font-mono text-foreground">
+                      {charge.invoiceNumber}
+                    </span>
+                    {charge.invoiceIssuedAt && (
+                      <span className="text-muted-foreground">
+                        {" "}
+                        · {charge.invoiceIssuedAt.toLocaleDateString("en-GB")}
+                      </span>
+                    )}
+                  </div>
+                  <a
+                    href={`/api/portal/charge-invoice/${charge.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium text-foreground underline-offset-4 hover:underline"
+                  >
+                    Download invoice
+                  </a>
+                </div>
+              )}
+              {charge.invoiceNumber && charge.plutosSync && (
+                <AdminPlutosSyncPanel
+                  target="charge"
+                  targetId={charge.id}
+                  sync={charge.plutosSync}
+                  requestAction={plutosRequestAction}
+                  refreshAction={plutosRefreshAction}
+                  compact
+                />
+              )}
               {charge.status === "pending" && (
                 <div className="mt-2 flex justify-end">
                   <Button

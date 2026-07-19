@@ -201,10 +201,14 @@ function formatMoney(cents: number, _currency: "EUR"): string {
 }
 
 function formatDate(date: Date, locale: "sr-Latn-RS" | "en-GB"): string {
+  // Serbian tax point: render in Europe/Belgrade so the printed invoice date
+  // matches the accounting (Plutos) issue/supply/due date regardless of the
+  // server timezone (UTC on Vercel).
   return date.toLocaleDateString(locale, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
+    timeZone: "Europe/Belgrade",
   });
 }
 

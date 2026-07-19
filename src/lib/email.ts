@@ -275,6 +275,7 @@ export async function sendProformaIssuedEmail(args: {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
+    timeZone: "Europe/Belgrade",
   });
   const amountLabel = args.amountLabel ?? formatEmailEur(args.totalEur);
 

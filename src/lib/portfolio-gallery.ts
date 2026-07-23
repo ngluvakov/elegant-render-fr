@@ -32,12 +32,41 @@ const keptGroup = (label: string, base: string): PortfolioTile[] =>
 
 const KEPT: PortfolioTile[] = [
   ...keptGroup("Interior renders", "portfolio-interior-static"),
-  ...keptGroup("Aerial renders", "portfolio-aerial"),
+  // "Aerial renders" — fresh, cache-safe files for tiles 01 (aerial
+  // montage), 03 and 04; tile 02 keeps the built version.
+  ...keptGroup("Aerial renders", "portfolio-aerial").map(
+    (tile, i): PortfolioTile => {
+      const src =
+        i === 0
+          ? `${A}/portfolio-aerial-01-montage.webp`
+          : i === 2
+            ? `${A}/portfolio-aerial-03-v2.webp`
+            : i === 3
+              ? `${A}/portfolio-aerial-04-v2.webp`
+              : tile.src;
+      const alt =
+        i === 0
+          ? "Aerial render of a residential complex in golden light — Aerial renders, Elegant Render"
+          : tile.alt;
+      return { kind: "image", src, alt, label: "Aerial renders" };
+    },
+  ),
   ...keptGroup("3D streetscape", "portfolio-streetscape"),
   ...keptGroup("Landscape design", "portfolio-landscape-design"),
   ...keptGroup("Render in a site photo", "portfolio-photomontage"),
   ...keptGroup("Day-to-dusk", "portfolio-day-to-dusk"),
-  ...keptGroup("3D site plan", "portfolio-3d-site-plan"),
+  // "3D site plan" — tile 01 uses a fresh, cache-safe file.
+  ...keptGroup("3D site plan", "portfolio-3d-site-plan").map(
+    (tile, i): PortfolioTile =>
+      i === 0
+        ? {
+            kind: "image",
+            src: `${A}/portfolio-3d-site-plan-01-v2.webp`,
+            alt: tile.alt,
+            label: "3D site plan",
+          }
+        : tile,
+  ),
   { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-apartment.webp`, alt: "3D floor plan of a one-bedroom apartment, Elegant Render", label: "3D floor plans" },
   { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-open-concept.webp`, alt: "3D floor plan of an open-concept one-bedroom apartment, Elegant Render", label: "3D floor plans" },
   { kind: "image", src: `${A}/portfolio-3d-floor-plans-duplex-two-levels.webp`, alt: "3D floor plan of a two-level duplex, Elegant Render", label: "3D floor plans" },
@@ -74,9 +103,13 @@ const NEW_INTERIOR: PortfolioTile[] = INTERIOR_ALT.map((alt, i) => ({
 }));
 
 /** New exterior renders (exterior-*.webp; 07 intentionally omitted). */
-const EXTERIOR: { n: string; alt: string }[] = [
+const EXTERIOR: { n: string; alt: string; file?: string }[] = [
   { n: "01", alt: "Front facade — exterior render, Elegant Render" },
-  { n: "02", alt: "Night view of an A-frame house — exterior render, Elegant Render" },
+  {
+    n: "02",
+    alt: "Exterior render — landscaped yard with a children's playground, a garden and mountain views, Elegant Render",
+    file: "exterior-gossau-playground.webp",
+  },
   { n: "03", alt: "Side view of the building — exterior render, Elegant Render" },
   { n: "04", alt: "Aerial view of a complex — exterior render, Elegant Render" },
   { n: "05", alt: "Front facade — exterior render, Elegant Render" },
@@ -89,9 +122,9 @@ const EXTERIOR: { n: string; alt: string }[] = [
   { n: "13", alt: "Residential building — exterior render, Elegant Render" },
   { n: "14", alt: "Rear facade — exterior render, Elegant Render" },
 ];
-const NEW_EXTERIOR: PortfolioTile[] = EXTERIOR.map(({ n, alt }) => ({
+const NEW_EXTERIOR: PortfolioTile[] = EXTERIOR.map(({ n, alt, file }) => ({
   kind: "image",
-  src: `${P}/exterior-${n}.webp`,
+  src: `${P}/${file ?? `exterior-${n}.webp`}`,
   alt,
   label: "Exterior renders",
 }));

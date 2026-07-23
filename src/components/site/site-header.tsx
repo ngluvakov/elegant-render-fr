@@ -100,8 +100,11 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-white/85 backdrop-blur-[12px]">
       {/* 80px bar with a 72px logo vertically centered — same sizing and
-          placement as the .rs header (BrandLogo size="xl" in an h-20 bar). */}
-      <div className="mx-auto flex h-20 w-full max-w-[1280px] items-center justify-between gap-8 px-6 sm:px-12">
+          placement as the .rs header (BrandLogo size="xl" in an h-20 bar).
+          Inner content is constrained to the same page-shell container as
+          the rest of the site (max-w-[min(96vw,1720px)] px-6), so the
+          logo's left edge lines up with where page content begins. */}
+      <div className="mx-auto flex h-20 w-full max-w-[min(96vw,1720px)] items-center justify-between gap-8 px-6">
         <Link
           href="/"
           className="flex h-20 items-center gap-3 text-foreground"

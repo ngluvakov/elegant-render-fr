@@ -28,10 +28,12 @@ import { cn } from "@/lib/utils";
 
 const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
   { href: "/services", label: "Services", pattern: "/services" },
+  { href: "/ai-studio", label: "AI Studio", pattern: "/ai-studio" },
   { href: "/pricing", label: "Pricing", pattern: "/pricing" },
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Our work", pattern: "/portfolio" }]
     : []),
+  { href: "/blog", label: "Blog", pattern: "/blog" },
   { href: "/faq", label: "FAQ", pattern: "/faq" },
   { href: "/contact", label: "Contact", pattern: "/contact" },
 ];

@@ -12,6 +12,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { Manrope } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -68,6 +69,14 @@ const MENU_COLUMNS = [
   MENU_CATEGORIES.slice(Math.ceil(MENU_CATEGORIES.length / 2)),
 ];
 
+// The wordmark next to the logo matches the .rs header exactly: Manrope
+// (the .rs body font), text-lg font-medium tracking-tight. Scoped to this
+// one span — the rest of the site stays on Inter Tight.
+const manrope = Manrope({
+  subsets: ["latin", "latin-ext"],
+  display: "swap",
+});
+
 const SIGN_IN_CLASSES =
   "inline-flex h-9 items-center rounded-[4px] border border-[#111111] bg-white px-4 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-secondary";
 const START_PROJECT_CLASSES =
@@ -118,8 +127,15 @@ export function SiteHeader() {
             priority
             className="h-[4.5rem] w-auto"
           />
-          <span className="hidden text-lg font-medium tracking-tight sm:inline">
-            Elegant Render
+          <span className="hidden items-center sm:inline-flex">
+            <span
+              className={cn(
+                manrope.className,
+                "text-lg font-medium tracking-tight text-foreground",
+              )}
+            >
+              Elegant Render
+            </span>
           </span>
         </Link>
 

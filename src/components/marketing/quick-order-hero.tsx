@@ -67,6 +67,15 @@ const SCROLL_STEP_PX = 220;
 
 const HERO_BEFORE_AFTER_DEMO_INTERVAL_MS = 10_000;
 
+// Quick-order picker list — de-duplicated by display name, keeping the first
+// occurrence. A master service and its dedicated split can share a name (e.g.
+// the "interior-renders" master and "interior-render" both read
+// "Interior render"); without this they'd appear twice in the picker.
+const PICKER_SERVICES = SERVICES.filter(
+  (service, index) =>
+    SERVICES.findIndex((other) => other.name === service.name) === index,
+);
+
 export function QuickOrderHero() {
   const displayCurrency = usePublicCurrency();
   const pricingSettings = usePublicPricingSettings();
@@ -377,7 +386,7 @@ export function QuickOrderHero() {
                   <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
                     1. Pick a service
                     <span className="ml-1.5 text-muted-foreground/60">
-                      · {SERVICES.length}
+                      · {PICKER_SERVICES.length}
                     </span>
                   </p>
                   <div className="flex items-center gap-1">
@@ -405,7 +414,7 @@ export function QuickOrderHero() {
                     ref={servicesScrollRef}
                     className="scrollbar-warm max-h-[264px] space-y-2 overflow-y-auto overscroll-contain pt-1 pr-2 pb-12"
                   >
-                    {SERVICES.map((service) => {
+                    {PICKER_SERVICES.map((service) => {
                       const isActive = service.slug === selectedService.slug;
                       const ServiceIconEl = ICON_MAP[service.icon];
                       return (

@@ -258,8 +258,8 @@ export const SERVICES: Service[] = [
   {
     slug: "interior-renders",
     code: "interior-rendering",
-    name: "Interior renders",
-    shortName: "Interior renders",
+    name: "Interior render",
+    shortName: "Interior render",
     category: "interior",
     icon: "home",
     hideFromMenu: true,

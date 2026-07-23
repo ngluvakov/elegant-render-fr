@@ -50,7 +50,7 @@ const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
   { href: "/ai-studio", label: "AI Studio", pattern: "/ai-studio" },
   { href: "/pricing", label: "Pricing", pattern: "/pricing" },
   ...(SITE_FEATURES.portfolio
-    ? [{ href: "/portfolio", label: "Our work", pattern: "/portfolio" }]
+    ? [{ href: "/portfolio", label: "Portfolio", pattern: "/portfolio" }]
     : []),
   { href: "/blog", label: "Blog", pattern: "/blog" },
   { href: "/faq", label: "FAQ", pattern: "/faq" },
@@ -99,10 +99,12 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-white/85 backdrop-blur-[12px]">
-      <div className="mx-auto flex h-[72px] w-full max-w-[1280px] items-center justify-between gap-8 px-6 sm:px-12">
+      {/* 80px bar with a 72px logo vertically centered — same sizing and
+          placement as the .rs header (BrandLogo size="xl" in an h-20 bar). */}
+      <div className="mx-auto flex h-20 w-full max-w-[1280px] items-center justify-between gap-8 px-6 sm:px-12">
         <Link
           href="/"
-          className="flex items-center gap-3.5 text-foreground"
+          className="flex h-20 items-center gap-3 text-foreground"
           aria-label="Elegant Render — home"
         >
           <Image
@@ -111,9 +113,9 @@ export function SiteHeader() {
             width={2011}
             height={3186}
             priority
-            className="h-12 w-auto"
+            className="h-[4.5rem] w-auto"
           />
-          <span className="text-[15px] font-medium tracking-[-0.01em]">
+          <span className="hidden text-lg font-medium tracking-tight sm:inline">
             Elegant Render
           </span>
         </Link>

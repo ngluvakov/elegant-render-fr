@@ -44,7 +44,7 @@ const COMPANY_LINKS: NavItem[] = [
   { href: "/pricing", label: "Pricing" },
   { href: "/ai-studio", label: "AI Studio" },
   ...(SITE_FEATURES.portfolio
-    ? [{ href: "/portfolio", label: "Our work" }]
+    ? [{ href: "/portfolio", label: "Portfolio" }]
     : []),
   { href: "/blog", label: "Blog" },
   { href: "/faq", label: "FAQ" },

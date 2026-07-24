@@ -59,6 +59,18 @@ Server actions in `src/server/actions/` (`"use server"`). After a write:
 
 Destructive UI uses inline confirm — no `window.confirm()`. Editable fields autosave with 600ms debounce.
 
+## Before/after sliders
+
+**User pointer input always beats the auto-demo swipe.** A visitor inspecting the image must never have it animate out from under them. Applies to every `src/components/marketing/before-after-*` component and anything new that compares two images.
+
+- Never write `if (animatingRef.current) return;` in a pointer handler — that gives the timed animation priority over the cursor and is the exact bug this rule exists to prevent. Cancel the demo, then act on the pointer.
+- Gate the demo where it starts: `if (pointerInsideRef.current || el.matches(":hover")) return;`. The `:hover` half is load-bearing — it covers the image scrolling under a stationary cursor and the pre-hydration window, where no `pointerenter` ever fires.
+- Keep the repeat timer running and gate each tick. Do **not** stop/restart it on enter/leave — that adds a "paused and never resumed" failure mode and kills the only recovery from a stuck `:hover` on hybrid touch+mouse laptops. Add a leave-timestamp cooldown if you need a calm period.
+- Hover handlers use `onPointerEnter`/`onPointerLeave` with an `e.pointerType === "touch"` bail (convention: `src/components/marketing/portfolio-gallery.tsx`). Filter on `"touch"`, not on `!== "mouse"` — a pen genuinely hovers. Keep tracking on `onMouseMove`, never `onPointerMove` (touch-drag scroll would fight the mobile path).
+- Coarse pointers keep the scroll-driven reveal in `use-mobile-before-after-scroll-reveal.ts` — leave it alone.
+
+Full contract and rationale: the header comment in `src/components/marketing/before-after-demo-animation.ts`.
+
 ## Order status gates
 
 Structural edits (add/remove items, rename project, edit rooms) only allowed when `status === 'draft'`. `awaiting_payment` and `paid` allow per-item notes/files. Post-delivery states lock everything. FSM: `src/lib/order/status-transitions.ts`.

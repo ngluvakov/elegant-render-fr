@@ -3,6 +3,10 @@
  * mouse on desktop, then on coarse pointers demos itself on viewport entry
  * before switching to a scroll-driven reveal.
  *
+ * Hover always wins over the auto-demo swipe: the cursor entering the image
+ * cancels any demo in flight, and `runDemo` refuses to start one while the
+ * pointer is inside. See the contract in `before-after-demo-animation.ts`.
+ *
  * Drives the `--reveal` CSS custom property directly on the DOM (no React
  * state per frame) so mouse-move stays cheap. Styling lives in
  * `src/app/globals.css` under `.before-after-media`, `.before-after-after-layer`,
@@ -19,6 +23,7 @@ import {
   useEffect,
   useRef,
   type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
 import Image from "next/image";
@@ -63,6 +68,10 @@ export function BeforeAfterReveal({
 }: Props) {
   const mediaRef = useRef<HTMLDivElement>(null);
   const animatingRef = useRef(false);
+  const cancelDemoRef = useRef<(() => void) | null>(null);
+  const pointerInsideRef = useRef(false);
+  const pointerLeftAtRef = useRef(0);
+  const coarsePointerRef = useRef<boolean | null>(null);
 
   const setReveal = useCallback((value: number) => {
     const el = mediaRef.current;
@@ -72,6 +81,22 @@ export function BeforeAfterReveal({
       String(Math.max(0, Math.min(100, value))),
     );
   }, []);
+
+  const cancelInFlightDemo = useCallback(() => {
+    cancelDemoRef.current?.();
+    cancelDemoRef.current = null;
+  }, []);
+
+  // Resolved once on the first pointer event — mouse-move fires ~100×/s and
+  // matchMedia allocates a fresh MediaQueryList on every call.
+  const isCoarsePointer = () => {
+    if (coarsePointerRef.current === null) {
+      coarsePointerRef.current =
+        typeof window !== "undefined" &&
+        window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    }
+    return coarsePointerRef.current;
+  };
 
   useMobileBeforeAfterScrollReveal({
     mediaRef,
@@ -101,8 +126,8 @@ export function BeforeAfterReveal({
     const el = mediaRef.current;
     if (!el) return;
 
+    const intervalMs = autoDemoIntervalMs;
     let intervalId: number | null = null;
-    let cancelDemo: (() => void) | null = null;
 
     const stopInterval = () => {
       if (intervalId === null) return;
@@ -110,13 +135,33 @@ export function BeforeAfterReveal({
       intervalId = null;
     };
 
+    // The timer keeps ticking while the cursor is inside; this is the single
+    // gate that decides whether a tick becomes a swipe. Gating here rather
+    // than suspending the timer means a stuck `:hover` (hybrid touch+mouse
+    // laptops) self-heals on the next tick instead of parking the demo for good.
     const runDemo = () => {
-      cancelDemo?.();
-      cancelDemo = playBeforeAfterDemoAnimation(
+      // Hover always wins. `matches(":hover")` catches what pointerenter
+      // cannot: the card scrolling under a stationary cursor, and the
+      // pre-hydration window where the div is hoverable but has no handlers.
+      if (pointerInsideRef.current || el.matches(":hover")) return;
+      // Give a full interval of calm after the cursor leaves, otherwise a tick
+      // landing milliseconds later reads as the swipe chasing the user out.
+      if (
+        pointerLeftAtRef.current &&
+        performance.now() - pointerLeftAtRef.current < intervalMs
+      ) {
+        return;
+      }
+      cancelInFlightDemo();
+      // playBeforeAfterDemoAnimation hands back a no-op cancel when the flag is
+      // already set, so a leaked flag would leave the demo permanently
+      // unstartable *and* uncancellable. Clear it before playing.
+      animatingRef.current = false;
+      cancelDemoRef.current = playBeforeAfterDemoAnimation(
         setReveal,
         animatingRef,
         () => {
-          cancelDemo = null;
+          cancelDemoRef.current = null;
         },
       );
     };
@@ -125,14 +170,13 @@ export function BeforeAfterReveal({
       ([entry]) => {
         if (!entry.isIntersecting) {
           stopInterval();
-          cancelDemo?.();
-          cancelDemo = null;
+          cancelInFlightDemo();
           return;
         }
 
         runDemo();
         stopInterval();
-        intervalId = window.setInterval(runDemo, autoDemoIntervalMs);
+        intervalId = window.setInterval(runDemo, intervalMs);
       },
       { threshold: 0.35 },
     );
@@ -142,20 +186,18 @@ export function BeforeAfterReveal({
     return () => {
       obs.disconnect();
       stopInterval();
-      cancelDemo?.();
+      cancelInFlightDemo();
     };
-  }, [autoDemoIntervalMs, demoReplayKey, setReveal]);
+  }, [autoDemoIntervalMs, cancelInFlightDemo, demoReplayKey, setReveal]);
 
   // Project (px, py) onto the 135° gradient line. Exact projection keeps
   // the diagonal anchored to the cursor on non-square aspect ratios.
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (animatingRef.current) return;
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia("(hover: none), (pointer: coarse)").matches
-    ) {
-      return;
-    }
+    if (isCoarsePointer()) return;
+    // Unconditional, so the cursor takes over even when pointerenter never
+    // fired (scroll-under-cursor, pre-hydration) or a demo is mid-flight.
+    pointerInsideRef.current = true;
+    cancelInFlightDemo();
     const rect = e.currentTarget.getBoundingClientRect();
     const px = e.clientX - rect.left;
     const py = e.clientY - rect.top;
@@ -166,8 +208,21 @@ export function BeforeAfterReveal({
     setReveal(reveal);
   };
 
-  const onMouseLeave = () => {
-    if (animatingRef.current) return;
+  // Touch is filtered out on both: hybrid laptops report `pointer: fine` yet
+  // still emit compatibility mouse events on tap, and letting those through
+  // would park the demo (enter with no matching leave) and stomp the
+  // scroll-driven reveal (leave snapping back to 50). Pen genuinely hovers,
+  // so filter on "touch" rather than on "not mouse".
+  const onPointerEnter = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "touch") return;
+    pointerInsideRef.current = true;
+    cancelInFlightDemo();
+  };
+
+  const onPointerLeave = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "touch") return;
+    pointerInsideRef.current = false;
+    pointerLeftAtRef.current = performance.now();
     setReveal(DEFAULT_REVEAL);
   };
 
@@ -175,7 +230,8 @@ export function BeforeAfterReveal({
     <div
       ref={mediaRef}
       onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
       className={cn(
         "relative overflow-hidden before-after-media",
         className,

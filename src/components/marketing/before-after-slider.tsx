@@ -10,6 +10,9 @@
  *    (500ms), ease-in-out quad. Runs once per mount.
  *  - After the demo, the 135° diagonal tracks the cursor (exact projection,
  *    no lag); mouse leave returns to 50.
+ *  - Pointer input always beats the demo: entering the image cancels a demo
+ *    in flight, and the demo never starts under the cursor. See the contract
+ *    in `before-after-demo-animation.ts`.
  *  - Touch / coarse pointers: demo on entry, then scroll-driven reveal.
  *  - `prefers-reduced-motion: reduce`: static 50/50 split, no demo.
  *  - 2px white divider along the diagonal; JetBrains Mono BEFORE / AFTER
@@ -19,8 +22,9 @@
  * state per frame). Mask plumbing lives in `src/app/globals.css` under
  * `.before-after-media` / `.before-after-after-layer`.
  *
- * Used by: the homepage before/after section; also wrapped by
- * `before-after-showcase.tsx` for the /services listing.
+ * Used by: nothing at present — `before-after-showcase.tsx` wraps it, but that
+ * wrapper has no importers either. The shipping slider is
+ * `before-after-reveal.tsx`.
  */
 "use client";
 
@@ -29,6 +33,7 @@ import {
   useEffect,
   useRef,
   type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
 import Image from "next/image";
@@ -74,6 +79,24 @@ export function BeforeAfterSlider({
   const animatingRef = useRef(false);
   const demoPlayedRef = useRef(false);
   const cancelDemoRef = useRef<(() => void) | null>(null);
+  const pointerInsideRef = useRef(false);
+  const coarsePointerRef = useRef<boolean | null>(null);
+
+  const cancelInFlightDemo = useCallback(() => {
+    cancelDemoRef.current?.();
+    cancelDemoRef.current = null;
+  }, []);
+
+  // Resolved once on the first pointer event — mouse-move fires ~100×/s and
+  // matchMedia allocates a fresh MediaQueryList on every call.
+  const isCoarsePointer = () => {
+    if (coarsePointerRef.current === null) {
+      coarsePointerRef.current =
+        typeof window !== "undefined" &&
+        window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    }
+    return coarsePointerRef.current;
+  };
 
   const setReveal = useCallback((value: number) => {
     const clamped = Math.max(0, Math.min(100, value));
@@ -120,8 +143,16 @@ export function BeforeAfterSlider({
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting || demoPlayedRef.current) return;
+        // Hover always wins — never open the demo under the cursor.
+        // `matches(":hover")` catches what pointerenter cannot: the image
+        // scrolling under a stationary cursor, and the pre-hydration window.
+        if (pointerInsideRef.current || el.matches(":hover")) return;
         demoPlayedRef.current = true;
         obs.disconnect();
+        cancelInFlightDemo();
+        // A leaked flag would make the demo unstartable and uncancellable —
+        // playBeforeAfterDemoAnimation returns a no-op cancel in that case.
+        animatingRef.current = false;
         cancelDemoRef.current = playBeforeAfterDemoAnimation(
           setReveal,
           animatingRef,
@@ -136,10 +167,9 @@ export function BeforeAfterSlider({
 
     return () => {
       obs.disconnect();
-      cancelDemoRef.current?.();
-      cancelDemoRef.current = null;
+      cancelInFlightDemo();
     };
-  }, [setReveal]);
+  }, [cancelInFlightDemo, setReveal]);
 
   const clampPointer = (value: number) =>
     Math.max(POINTER_MIN, Math.min(POINTER_MAX, value));
@@ -147,13 +177,11 @@ export function BeforeAfterSlider({
   // Project (px, py) onto the 135° gradient axis — exact projection keeps
   // the diagonal anchored to the cursor on non-square aspect ratios.
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (animatingRef.current) return;
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia("(hover: none), (pointer: coarse)").matches
-    ) {
-      return;
-    }
+    if (isCoarsePointer()) return;
+    // Unconditional, so the cursor takes over even when pointerenter never
+    // fired (scroll-under-cursor, pre-hydration) or a demo is mid-flight.
+    pointerInsideRef.current = true;
+    cancelInFlightDemo();
     const rect = e.currentTarget.getBoundingClientRect();
     const px = e.clientX - rect.left;
     const py = e.clientY - rect.top;
@@ -164,13 +192,28 @@ export function BeforeAfterSlider({
     setReveal(clampPointer(reveal));
   };
 
-  const onMouseLeave = () => {
-    if (animatingRef.current) return;
+  // Touch is filtered out on both: hybrid laptops report `pointer: fine` yet
+  // still emit compatibility mouse events on tap, and letting those through
+  // would park the demo (enter with no matching leave) and stomp the
+  // scroll-driven reveal (leave snapping back to rest). Pen genuinely hovers,
+  // so filter on "touch" rather than on "not mouse".
+  const onPointerEnter = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "touch") return;
+    pointerInsideRef.current = true;
+    cancelInFlightDemo();
+  };
+
+  const onPointerLeave = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.pointerType === "touch") return;
+    pointerInsideRef.current = false;
     setReveal(REST_REVEAL);
   };
 
   const onRangeInput = (e: React.FormEvent<HTMLInputElement>) => {
-    if (animatingRef.current) return;
+    // Drag and keyboard are user input too — they outrank the demo. Don't
+    // touch pointerInsideRef here: keyboard drives this with the cursor
+    // elsewhere, and there is no pointerleave to clear the flag afterwards.
+    cancelInFlightDemo();
     setReveal(clampPointer(Number(e.currentTarget.value)));
   };
 
@@ -178,7 +221,8 @@ export function BeforeAfterSlider({
     <div
       ref={mediaRef}
       onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
       className={cn(
         "before-after-media relative cursor-crosshair select-none overflow-hidden bg-[#0a0a0a]",
         className,

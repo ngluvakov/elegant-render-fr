@@ -173,17 +173,19 @@ export function QuickOrderHero() {
             Desktop: 2 columns; left col stacks Hero → Minimum → Selected →
             Trust, right col is the sticky panel spanning all rows. */}
         <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,440px)]">
-          {/* Hero header: pill + title + description */}
-          <div className="order-1 space-y-5 xl:col-start-1 xl:row-start-1">
+          {/* Hero header: pill + title + description. @container so the h1
+              can size itself against this column's width (cqw units). */}
+          <div className="@container order-1 space-y-5 xl:col-start-1 xl:row-start-1">
             <span className="inline-flex rounded-full border border-border bg-secondary/70 px-4 py-2 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
               {view.kicker}
             </span>
-            {/* Same title size as the .rs hero. (Inline style because Tailwind
-                can't parse a nested calc() inside clamp() in an arbitrary
-                value.) */}
+            {/* As large as the column allows while staying on ONE line: the
+                string measures 15.2em in Inter Tight 500, so 6.3cqw fills
+                ~96% of the container width at every viewport. nowrap guards
+                the single-line guarantee. */}
             <h1
-              style={{ fontSize: "clamp(1.75rem, calc(4.1vw - 22px), 3.1rem)" }}
-              className="leading-[1.1] text-foreground"
+              style={{ fontSize: "6.3cqw" }}
+              className="whitespace-nowrap leading-[1.1] text-foreground"
             >
               See your space before you decide.
             </h1>

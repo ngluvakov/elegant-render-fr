@@ -287,9 +287,8 @@ function toolStartingEur(
   return (units / unitsPerCredit) * rsdPerCredit;
 }
 
-function publicTaxNote(_displayCurrency: DisplayCurrency): string {
-  void _displayCurrency;
-  return "RSD gross, VAT included.";
+function publicTaxNote(displayCurrency: DisplayCurrency): string {
+  return `Prices are shown in ${displayCurrency}, VAT included.`;
 }
 
 export default async function AiStudioLandingPage() {

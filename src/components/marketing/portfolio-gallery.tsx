@@ -3,18 +3,14 @@
  * lightbox. Static renders enlarge; videos open an autoplaying player;
  * 360 panoramas are drag-to-look right in the grid.
  *
- * Thumbnails stay lightweight (one <Image> each). To keep WebGL contexts low,
- * a panorama tile only mounts its live viewer while hovered (desktop) and
- * tears it down on leave; touch devices tap to open the fullscreen viewer.
+ * 360 panoramas auto-mount a live, auto-rotating, drag-to-look viewer as they
+ * enter the viewport (and tear the viewer down once scrolled well past), so
+ * every panorama on screen is already interactive while only a handful of
+ * WebGL contexts are alive at once. A corner button opens fullscreen.
  */
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type PointerEvent as ReactPointerEvent,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Dialog } from "@base-ui/react/dialog";
 import { Maximize2, Play, X } from "lucide-react";
@@ -67,10 +63,11 @@ function Tile({
 }
 
 /**
- * A 360 tile that becomes a live, drag-to-look viewer on hover. The heavy
- * Pannellum viewer mounts only while hovered and is destroyed on leave, so at
- * most a couple of WebGL contexts are ever alive at once. On touch devices
- * (no hover) the tile opens the fullscreen viewer on tap.
+ * A 360 tile that auto-mounts a live, auto-rotating, drag-to-look viewer as
+ * soon as it nears the viewport (IntersectionObserver), and tears it down a
+ * short moment after it scrolls well past — so every panorama on screen is
+ * already interactive while only a handful of WebGL contexts exist at once.
+ * A corner button opens the fullscreen viewer.
  */
 function PanoramaTile({
   tile,
@@ -82,40 +79,46 @@ function PanoramaTile({
   onOpen: () => void;
 }) {
   const [active, setActive] = useState(false);
-  const leaveTimer = useRef<number | null>(null);
-
-  const clearLeaveTimer = () => {
-    if (leaveTimer.current !== null) {
-      window.clearTimeout(leaveTimer.current);
-      leaveTimer.current = null;
-    }
-  };
-
-  // Ignore hover from coarse pointers (touch) — those tap to open fullscreen.
-  const activate = (e: ReactPointerEvent) => {
-    if (e.pointerType === "touch") return;
-    clearLeaveTimer();
-    setActive(true);
-  };
-  const scheduleDeactivate = () => {
-    clearLeaveTimer();
-    leaveTimer.current = window.setTimeout(() => setActive(false), 140);
-  };
+  const ref = useRef<HTMLDivElement>(null);
+  const offTimer = useRef<number | null>(null);
 
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const clearOff = () => {
+      if (offTimer.current !== null) {
+        window.clearTimeout(offTimer.current);
+        offTimer.current = null;
+      }
+    };
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          clearOff();
+          setActive(true);
+        } else {
+          // Debounce teardown so a quick scroll-by doesn't thrash the viewer.
+          clearOff();
+          offTimer.current = window.setTimeout(() => setActive(false), 500);
+        }
+      },
+      // Go live a bit before the tile actually scrolls into view.
+      { rootMargin: "300px 0px" },
+    );
+    obs.observe(el);
     return () => {
-      if (leaveTimer.current !== null) window.clearTimeout(leaveTimer.current);
+      obs.disconnect();
+      clearOff();
     };
   }, []);
 
   return (
     <div
-      onPointerEnter={activate}
-      onPointerLeave={scheduleDeactivate}
+      ref={ref}
       className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-border/60 bg-secondary"
     >
-      {/* Thumbnail — stays behind the viewer so there's no black flash while
-          the panorama loads. */}
+      {/* Thumbnail placeholder — shown until the live viewer mounts, and for
+          tiles scrolled far out of view. */}
       <Image
         src={tile.src}
         alt={tile.alt}
@@ -125,10 +128,10 @@ function PanoramaTile({
         className="object-cover"
       />
 
-      {/* Live drag-to-look viewer — only while hovered. */}
+      {/* Live, auto-rotating, drag-to-look viewer. */}
       {active && (
         <div className="absolute inset-0 cursor-grab active:cursor-grabbing">
-          <Panorama360 src={tile.full} title={tile.alt} showZoomCtrl={false} />
+          <Panorama360 src={tile.full} title={tile.alt} />
         </div>
       )}
 

@@ -67,6 +67,15 @@ const SCROLL_STEP_PX = 220;
 
 const HERO_BEFORE_AFTER_DEMO_INTERVAL_MS = 10_000;
 
+// Quick-order picker list — de-duplicated by display name, keeping the first
+// occurrence. A master service and its dedicated split can share a name (e.g.
+// the "interior-renders" master and "interior-render" both read
+// "Interior render"); without this they'd appear twice in the picker.
+const PICKER_SERVICES = SERVICES.filter(
+  (service, index) =>
+    SERVICES.findIndex((other) => other.name === service.name) === index,
+);
+
 export function QuickOrderHero() {
   const displayCurrency = usePublicCurrency();
   const pricingSettings = usePublicPricingSettings();
@@ -118,7 +127,7 @@ export function QuickOrderHero() {
       priceContext: selectedService.priceContext
         ? priceText(selectedService.priceContext)
         : undefined,
-      kicker: "Architectural visualization · delivered across Europe",
+      kicker: "Architectural visualization · delivered across the world",
     }) as const,
     [selectedService, priceText],
   );
@@ -164,12 +173,20 @@ export function QuickOrderHero() {
             Desktop: 2 columns; left col stacks Hero → Minimum → Selected →
             Trust, right col is the sticky panel spanning all rows. */}
         <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,440px)]">
-          {/* Hero header: pill + title + description */}
-          <div className="order-1 space-y-5 xl:col-start-1 xl:row-start-1">
+          {/* Hero header: pill + title + description. @container so the h1
+              can size itself against this column's width (cqw units). */}
+          <div className="@container order-1 space-y-5 xl:col-start-1 xl:row-start-1">
             <span className="inline-flex rounded-full border border-border bg-secondary/70 px-4 py-2 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
               {view.kicker}
             </span>
-            <h1 className="text-5xl leading-[0.94] text-foreground sm:text-6xl lg:text-7xl xl:text-[5.2rem]">
+            {/* As large as the column allows while staying on ONE line: the
+                string measures 15.2em in Inter Tight 500, so 6.3cqw fills
+                ~96% of the container width at every viewport. nowrap guards
+                the single-line guarantee. */}
+            <h1
+              style={{ fontSize: "6.3cqw" }}
+              className="whitespace-nowrap leading-[1.1] text-foreground"
+            >
               See your space before you decide.
             </h1>
             <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
@@ -377,7 +394,7 @@ export function QuickOrderHero() {
                   <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
                     1. Pick a service
                     <span className="ml-1.5 text-muted-foreground/60">
-                      · {SERVICES.length}
+                      · {PICKER_SERVICES.length}
                     </span>
                   </p>
                   <div className="flex items-center gap-1">
@@ -405,7 +422,7 @@ export function QuickOrderHero() {
                     ref={servicesScrollRef}
                     className="scrollbar-warm max-h-[264px] space-y-2 overflow-y-auto overscroll-contain pt-1 pr-2 pb-12"
                   >
-                    {SERVICES.map((service) => {
+                    {PICKER_SERVICES.map((service) => {
                       const isActive = service.slug === selectedService.slug;
                       const ServiceIconEl = ICON_MAP[service.icon];
                       return (

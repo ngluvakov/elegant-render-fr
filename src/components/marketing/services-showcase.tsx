@@ -113,7 +113,7 @@ const SERVICES: Service[] = [
   {
     name: "Interior renders",
     slug: "interior-render",
-    priceEur: 19924,
+    priceEur: 170,
     category: "renderi",
     short: "Interior visualization before furnishing, renovation, or sale.",
     audience: "For apartment owners, architects, designers, and smaller investors.",
@@ -126,7 +126,7 @@ const SERVICES: Service[] = [
   {
     name: "360° interiors",
     slug: "interior-360-tour",
-    priceEur: 34574,
+    priceEur: 295,
     category: "360",
     short: "An interactive 360° tour of the space with additional static camera angles.",
     audience: "For presenting apartments, villas, showrooms, and hospitality spaces.",
@@ -144,7 +144,7 @@ const SERVICES: Service[] = [
   {
     name: "Exterior renders",
     slug: "exterior-renders",
-    priceEur: 29300,
+    priceEur: 250,
     category: "renderi",
     short: "A realistic view of a house, building, or facade with materials and surroundings.",
     audience: "For private houses, smaller residential projects, and architectural presentations.",
@@ -157,7 +157,7 @@ const SERVICES: Service[] = [
   {
     name: "360° exteriors",
     slug: "exterior-360",
-    priceEur: 39262,
+    priceEur: 335,
     category: "360",
     short: "A VR-ready exterior view with interactive viewpoints.",
     audience: "For marketing the sale of houses, villas, and smaller developments.",
@@ -174,7 +174,7 @@ const SERVICES: Service[] = [
   {
     name: "3D streetscape",
     slug: "3d-streetscape",
-    priceEur: 49224,
+    priceEur: 420,
     category: "renderi",
     short: "Your building with the neighboring houses, modeled in 3D — viewed from the street (and from the air if needed).",
     audience: "For buildings where the street, neighborhood, and plot context matters.",
@@ -191,7 +191,7 @@ const SERVICES: Service[] = [
   {
     name: "Landscape design",
     slug: "landscape-design",
-    priceEur: 25784,
+    priceEur: 220,
     category: "renderi",
     short: "A view of a yard, garden, park, or outdoor design with vegetation and terrain.",
     audience: "For private houses, villas, and projects where the outdoor setting matters.",
@@ -207,7 +207,7 @@ const SERVICES: Service[] = [
   {
     name: "Photomontage",
     slug: "photomontage",
-    priceEur: 35160,
+    priceEur: 300,
     category: "renderi",
     short: "Your future building blended into a real photo of the site — with the true surroundings and light.",
     audience: "For permits, public hearings, and presentations where site accuracy matters.",
@@ -223,7 +223,7 @@ const SERVICES: Service[] = [
   {
     name: "3D floor plans",
     slug: "3d-floor-plans",
-    priceEur: 3399,
+    priceEur: 29,
     category: "osnove",
     short: "A top-down 3D view of the room layout, furniture, and functional organization.",
     audience: "For listings, apartment presentations, and easier understanding of the layout.",
@@ -236,7 +236,7 @@ const SERVICES: Service[] = [
   {
     name: "2D floor plans",
     slug: "2d-floor-plans",
-    priceEur: 2344,
+    priceEur: 20,
     category: "osnove",
     short: "Clean, easy-to-read 2D floor plans for marketing materials, websites, and listings.",
     audience: "For agents, apartment owners, and property sales presentations.",
@@ -249,7 +249,7 @@ const SERVICES: Service[] = [
   {
     name: "3D site plans",
     slug: "site-plans",
-    priceEur: 41020,
+    priceEur: 350,
     category: "osnove",
     short: "An overview of the entire plot with buildings, access routes, greenery, and the wider spatial context.",
     audience: "For houses, villas, smaller complexes, and project sales brochures.",
@@ -262,7 +262,7 @@ const SERVICES: Service[] = [
   {
     name: "Architectural animation",
     slug: "architectural-animation",
-    priceEur: 26370,
+    priceEur: 225,
     category: "360",
     short: "Walkthrough and flythrough video for a stronger sales impression.",
     audience: "For projects where a static view is not enough to show the space.",
@@ -276,7 +276,7 @@ const SERVICES: Service[] = [
   {
     name: "VR tour",
     slug: "vr-tour",
-    priceEur: 2344,
+    priceEur: 20,
     category: "360",
     short: "Web-based tours that link 360° views into an interactive experience.",
     audience: "For advertising, property presentations, and remote sales.",
@@ -291,7 +291,7 @@ const SERVICES: Service[] = [
   {
     name: "Virtual staging",
     slug: "virtual-staging",
-    priceEur: 2110,
+    priceEur: 18,
     category: "nekretnine",
     short: "Digital furnishing of an empty room based on an existing photo.",
     audience: "For property owners, agents, and investors who want a better listing.",
@@ -307,7 +307,7 @@ const SERVICES: Service[] = [
   {
     name: "Virtual renovation",
     slug: "virtual-renovation",
-    priceEur: 7735,
+    priceEur: 66,
     category: "nekretnine",
     short: "A view of how the space would look after renovation and new materials.",
     audience: "For property buyers, owners, and designers who want a clear before-and-after scenario.",
@@ -323,7 +323,7 @@ const SERVICES: Service[] = [
   {
     name: "Day-to-dusk",
     slug: "day-to-dusk",
-    priceEur: 1172,
+    priceEur: 10,
     category: "nekretnine",
     short: "Turning a daytime exterior photo into a more striking dusk scene.",
     audience: "For listings that need a stronger first impression.",
@@ -339,7 +339,7 @@ const SERVICES: Service[] = [
   {
     name: "Item removal",
     slug: "item-removal",
-    priceEur: 1406,
+    priceEur: 12,
     category: "nekretnine",
     short: "Digital removal of clutter and unwanted objects from a photo of the space.",
     audience: "For preparing a property for listing, rental, or presentation.",

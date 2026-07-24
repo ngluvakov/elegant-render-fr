@@ -200,7 +200,7 @@ export const NAV_MAIN: NavItem[] = [
   { href: "/services", label: "Services" },
   { href: "/pricing", label: "Pricing" },
   ...(SITE_FEATURES.portfolio
-    ? [{ href: "/portfolio", label: "Our work" }]
+    ? [{ href: "/portfolio", label: "Portfolio" }]
     : []),
   { href: "/about", label: "About us" },
   { href: "/faq", label: "FAQ" },

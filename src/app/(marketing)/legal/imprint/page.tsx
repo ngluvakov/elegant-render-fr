@@ -35,7 +35,7 @@ export default function ImprintPage() {
         <p className="mt-6 text-base leading-relaxed text-foreground/75">
           This page identifies the company responsible for {SITE.name}. It is
           provided for transparency and for the information duties that apply to
-          an online service offered to customers in the European market.
+          an online service offered to customers.
         </p>
 
         <dl className="mt-12 grid gap-x-8 gap-y-5 rounded-xl border border-border/60 bg-secondary/30 p-8 sm:grid-cols-[200px_1fr]">

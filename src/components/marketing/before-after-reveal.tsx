@@ -7,9 +7,10 @@
  * cancels any demo in flight, and `runDemo` refuses to start one while the
  * pointer is inside. See the contract in `before-after-demo-animation.ts`.
  *
- * Auto-demo ticks are aligned to a shared wall-clock phase (multiples of
- * intervalMs since the epoch), so every visible slider with the same
- * interval swipes at the same moment — grids demo in unison.
+ * Auto-demo ticks come from a single page-load clock (DEMO_CLOCK_ORIGIN):
+ * the first tick lands ~0.8s after hydration, later ticks every intervalMs.
+ * Every slider — first row, second row, or scrolled in later — swipes only
+ * on these shared ticks, so the whole page demos in unison.
  *
  * Drives the `--reveal` CSS custom property directly on the DOM (no React
  * state per frame) so mouse-move stays cheap. Styling lives in
@@ -36,6 +37,14 @@ import { playBeforeAfterDemoAnimation } from "@/components/marketing/before-afte
 import { useMobileBeforeAfterScrollReveal } from "@/components/marketing/use-mobile-before-after-scroll-reveal";
 
 const DEFAULT_REVEAL = 50;
+
+// One demo clock per page load, shared by every instance: the first tick
+// lands shortly after hydration, later ticks every intervalMs from that
+// origin. Cards in any row — visible at load or scrolled in later — only
+// swipe on these shared ticks, so the whole page swipes in unison.
+const DEMO_CLOCK_ORIGIN =
+  typeof performance !== "undefined" ? performance.now() : 0;
+const DEMO_FIRST_TICK_DELAY_MS = 800;
 
 type Props = {
   beforeSrc: string;
@@ -139,19 +148,26 @@ export function BeforeAfterReveal({
       tickId = null;
     };
 
-    // All visible sliders share a wall-clock phase: every tick lands on a
-    // multiple of intervalMs since the epoch, so cards in a grid swipe in
-    // unison instead of each drifting by its own viewport-entry time.
+    // Every instance schedules against the shared page clock (see
+    // DEMO_CLOCK_ORIGIN): first tick ~0.8s after load, then every
+    // intervalMs. No per-entry solo demos — rows entering the viewport
+    // later simply join the next shared tick.
     let lastDemoAt = 0;
+    const msUntilNextTick = () => {
+      const sinceFirst =
+        performance.now() - DEMO_CLOCK_ORIGIN - DEMO_FIRST_TICK_DELAY_MS;
+      return sinceFirst < 0
+        ? -sinceFirst
+        : intervalMs - (sinceFirst % intervalMs) || intervalMs;
+    };
     const scheduleAlignedTick = () => {
       stopTick();
-      const delay = intervalMs - (Date.now() % intervalMs) || intervalMs;
       tickId = window.setTimeout(() => {
-        // Skip a tick landing right after the viewport-entry demo — one
-        // swipe, not two back to back.
+        // Skip a tick landing right after a replay-key demo — one swipe,
+        // not two back to back.
         if (performance.now() - lastDemoAt >= intervalMs / 2) runDemo();
         scheduleAlignedTick();
-      }, delay);
+      }, msUntilNextTick());
     };
 
     // The timer keeps ticking while the cursor is inside; this is the single
@@ -194,10 +210,11 @@ export function BeforeAfterReveal({
           return;
         }
 
-        // Demo immediately on viewport entry (cards visible on page load all
-        // enter together, so they swipe together), then repeat on the shared
-        // wall-clock tick so grids stay in unison.
-        runDemo();
+        // Only replay-keyed instances (the standalone hero preview swapping
+        // images per selection) demo immediately on entry/key change; grid
+        // cards swipe exclusively on the shared page clock so every row
+        // stays in unison.
+        if (demoReplayKey !== undefined) runDemo();
         scheduleAlignedTick();
       },
       { threshold: 0.35 },

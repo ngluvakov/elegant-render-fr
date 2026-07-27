@@ -142,11 +142,14 @@ export function BeforeAfterReveal({
     // All visible sliders share a wall-clock phase: every tick lands on a
     // multiple of intervalMs since the epoch, so cards in a grid swipe in
     // unison instead of each drifting by its own viewport-entry time.
+    let lastDemoAt = 0;
     const scheduleAlignedTick = () => {
       stopTick();
       const delay = intervalMs - (Date.now() % intervalMs) || intervalMs;
       tickId = window.setTimeout(() => {
-        runDemo();
+        // Skip a tick landing right after the viewport-entry demo — one
+        // swipe, not two back to back.
+        if (performance.now() - lastDemoAt >= intervalMs / 2) runDemo();
         scheduleAlignedTick();
       }, delay);
     };
@@ -169,6 +172,7 @@ export function BeforeAfterReveal({
         return;
       }
       cancelInFlightDemo();
+      lastDemoAt = performance.now();
       // playBeforeAfterDemoAnimation hands back a no-op cancel when the flag is
       // already set, so a leaked flag would leave the demo permanently
       // unstartable *and* uncancellable. Clear it before playing.
@@ -190,10 +194,10 @@ export function BeforeAfterReveal({
           return;
         }
 
-        // Replay-keyed instances (the hero preview swapping images per
-        // selection) still demo immediately; anonymous grid instances wait
-        // for the shared tick so the whole grid swipes together.
-        if (demoReplayKey !== undefined) runDemo();
+        // Demo immediately on viewport entry (cards visible on page load all
+        // enter together, so they swipe together), then repeat on the shared
+        // wall-clock tick so grids stay in unison.
+        runDemo();
         scheduleAlignedTick();
       },
       { threshold: 0.35 },

@@ -485,6 +485,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                     beforeAlt={img.beforeAlt ?? img.alt}
                     afterAlt={img.alt}
                     sizes="(max-width: 768px) 100vw, 50vw"
+                    autoDemoIntervalMs={SERVICE_BEFORE_AFTER_DEMO_INTERVAL_MS}
                     className="aspect-[16/9] w-full rounded-2xl border border-border/70 bg-secondary"
                   >
                     <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 font-mono text-[0.65rem] font-medium uppercase tracking-[0.08em] text-background/95">

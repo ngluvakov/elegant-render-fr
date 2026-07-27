@@ -105,6 +105,7 @@ function BeforeAfterCard({
         beforeAlt={`Before AI editing: ${label}`}
         afterAlt={`After AI editing: ${label}`}
         sizes="(max-width: 768px) 50vw, 25vw"
+        autoDemoIntervalMs={7000}
         className="aspect-[4/3] bg-secondary"
         fallback={
           <Icon className="h-10 w-10 text-foreground/35" strokeWidth={1.5} />

@@ -98,6 +98,7 @@ export async function ResultsProof() {
                   beforeAlt={item.beforeAlt}
                   afterAlt={item.afterAlt}
                   sizes="(max-width: 1024px) 100vw, 33vw"
+                  autoDemoIntervalMs={7000}
                   className="aspect-[4/3] w-full bg-secondary"
                 >
                   <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-[#0a0a0a]/55 px-2 py-1 font-mono text-[0.6rem] font-medium uppercase tracking-[0.08em] text-white/95">

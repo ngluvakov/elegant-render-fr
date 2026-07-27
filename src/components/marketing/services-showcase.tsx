@@ -491,6 +491,7 @@ export function ServicesShowcase() {
                   beforeAlt={serviceCardBeforeAlt(service)}
                   afterAlt={serviceCardAfterAlt(service)}
                   sizes="(min-width: 1280px) 25vw, (min-width: 640px) 50vw, 100vw"
+                  autoDemoIntervalMs={7000}
                   className="relative z-10 h-48 w-full bg-secondary/40"
                 >
                   <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-white/60 bg-white/90 px-2.5 py-1 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground shadow-sm backdrop-blur">

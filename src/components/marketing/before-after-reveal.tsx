@@ -7,6 +7,10 @@
  * cancels any demo in flight, and `runDemo` refuses to start one while the
  * pointer is inside. See the contract in `before-after-demo-animation.ts`.
  *
+ * Auto-demo ticks are aligned to a shared wall-clock phase (multiples of
+ * intervalMs since the epoch), so every visible slider with the same
+ * interval swipes at the same moment — grids demo in unison.
+ *
  * Drives the `--reveal` CSS custom property directly on the DOM (no React
  * state per frame) so mouse-move stays cheap. Styling lives in
  * `src/app/globals.css` under `.before-after-media`, `.before-after-after-layer`,
@@ -127,12 +131,24 @@ export function BeforeAfterReveal({
     if (!el) return;
 
     const intervalMs = autoDemoIntervalMs;
-    let intervalId: number | null = null;
+    let tickId: number | null = null;
 
-    const stopInterval = () => {
-      if (intervalId === null) return;
-      window.clearInterval(intervalId);
-      intervalId = null;
+    const stopTick = () => {
+      if (tickId === null) return;
+      window.clearTimeout(tickId);
+      tickId = null;
+    };
+
+    // All visible sliders share a wall-clock phase: every tick lands on a
+    // multiple of intervalMs since the epoch, so cards in a grid swipe in
+    // unison instead of each drifting by its own viewport-entry time.
+    const scheduleAlignedTick = () => {
+      stopTick();
+      const delay = intervalMs - (Date.now() % intervalMs) || intervalMs;
+      tickId = window.setTimeout(() => {
+        runDemo();
+        scheduleAlignedTick();
+      }, delay);
     };
 
     // The timer keeps ticking while the cursor is inside; this is the single
@@ -169,14 +185,16 @@ export function BeforeAfterReveal({
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) {
-          stopInterval();
+          stopTick();
           cancelInFlightDemo();
           return;
         }
 
-        runDemo();
-        stopInterval();
-        intervalId = window.setInterval(runDemo, intervalMs);
+        // Replay-keyed instances (the hero preview swapping images per
+        // selection) still demo immediately; anonymous grid instances wait
+        // for the shared tick so the whole grid swipes together.
+        if (demoReplayKey !== undefined) runDemo();
+        scheduleAlignedTick();
       },
       { threshold: 0.35 },
     );
@@ -185,7 +203,7 @@ export function BeforeAfterReveal({
 
     return () => {
       obs.disconnect();
-      stopInterval();
+      stopTick();
       cancelInFlightDemo();
     };
   }, [autoDemoIntervalMs, cancelInFlightDemo, demoReplayKey, setReveal]);

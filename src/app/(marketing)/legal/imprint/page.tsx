@@ -4,7 +4,7 @@ import { FinalCta } from "@/components/marketing/final-cta";
 import { IMPRINT, SITE } from "@/lib/content/site";
 import { createPublicMetadata } from "@/lib/seo";
 
-const LAST_UPDATED = "2026-07-06";
+const LAST_UPDATED = "2026-08-05";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Imprint",
@@ -111,32 +111,27 @@ export default function ImprintPage() {
           </dd>
         </dl>
 
-        <Section title="EU representative">
-          {euRepresentative ? (
+        <Section title="Data protection contacts">
+          <p>
+            Privacy questions and requests can be sent directly to the
+            controller at{" "}
+            <a
+              href={`mailto:${IMPRINT.privacyEmail}`}
+              className="text-foreground underline-offset-4 hover:underline"
+            >
+              {IMPRINT.privacyEmail}
+            </a>
+            .
+          </p>
+          {euRepresentative && (
             <p>
-              Our representative in the European Union for GDPR article 27
-              purposes is {euRepresentative.name}, {euRepresentative.address}. You
-              can contact the representative at{" "}
+              Our representative in the European Union for GDPR article 27 is{" "}
+              {euRepresentative.name}, {euRepresentative.address}. Contact:{" "}
               <a
                 href={`mailto:${euRepresentative.email}`}
                 className="text-foreground underline-offset-4 hover:underline"
               >
                 {euRepresentative.email}
-              </a>
-              .
-            </p>
-          ) : (
-            <p>
-              {IMPRINT.shortName} is established in Serbia and offers services
-              to customers in the European Union. Appointment of an EU
-              representative under GDPR article 27 is pending and must be
-              completed before public launch. Until the representative is named,
-              EU data protection requests can be sent to{" "}
-              <a
-                href={`mailto:${IMPRINT.privacyEmail}`}
-                className="text-foreground underline-offset-4 hover:underline"
-              >
-                {IMPRINT.privacyEmail}
               </a>
               .
             </p>

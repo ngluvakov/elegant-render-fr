@@ -5,7 +5,7 @@ import { FinalCta } from "@/components/marketing/final-cta";
 import { IMPRINT, SITE } from "@/lib/content/site";
 import { createPublicMetadata } from "@/lib/seo";
 
-const LAST_UPDATED = "2026-07-06";
+const LAST_UPDATED = "2026-08-05";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Digital delivery",
@@ -70,6 +70,12 @@ export default function DeliveryPage() {
             majeure event occurs, we will provide a written update and a
             realistic revised timeline.
           </p>
+          <p>
+            If we fail to supply digital content or a digital service when
+            required, mandatory consumer law may allow you to require supply and,
+            in defined circumstances, terminate the contract. Contact us with
+            the order number so we can investigate promptly.
+          </p>
         </Section>
 
         <Section title="4. Standard file types">
@@ -89,7 +95,16 @@ export default function DeliveryPage() {
           </p>
         </Section>
 
-        <Section title="6. Delivery questions">
+        <Section title="6. Access and retention">
+          <p>
+            Download completed work promptly and keep your own backup. AI Studio
+            inputs and outputs are available for 30 days. Retention for bespoke
+            project deliverables can vary with the order, revision period, and
+            support needs; it is not a permanent cloud-storage service.
+          </p>
+        </Section>
+
+        <Section title="7. Delivery questions">
           <p>
             Questions about delivery can be sent to{" "}
             <a

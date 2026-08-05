@@ -108,7 +108,19 @@ Use this checklist before merging release branches, before the sandbox freeze, a
 - [ ] The Plutos API key and complete buyer payload never appear in browser responses, admin errors, logs, or Sentry metadata.
 - [ ] Existing PayPal, PDF, email, and Bitrix behavior is unchanged when Plutos is unavailable.
 
-## 11. Error handling
+## 11. Legal and consumer-rights routes
+
+- [ ] `/legal`, `/legal/imprint`, `/legal/terms`, `/legal/privacy`, `/legal/cookies`, `/legal/withdrawal`, `/legal/refunds`, `/legal/complaints`, `/legal/delivery`, and `/legal/certificates` return 200 and render English metadata and visible copy.
+- [ ] Footer Privacy policy opens `/legal/privacy`, Terms of service opens `/legal/terms`, and Refunds policy opens `/legal/refunds`; no `#privatnost`, `#uslovi`, `#povracaj`, or `/legal/privatnost` path appears.
+- [ ] Cookie settings can be reopened from the cookie policy and optional categories remain off until chosen.
+- [ ] The cookie inventory matches production scripts, cookies, localStorage, and sessionStorage after sign-in, chat, checkout, PayPal, analytics consent, marketing consent, and replay consent are each tested separately.
+- [ ] `/legal/withdrawal#online-withdrawal` supports entry, review, edit, and an explicit `Confirm withdrawal` step on desktop and mobile.
+- [ ] A valid withdrawal submission creates a server timestamp and reference, reaches the operations mailbox, records `consumer.withdrawal_notice_received`, and sends the consumer a durable-medium confirmation with matching content.
+- [ ] Invalid fields, the honeypot, rate limiting, a missing Resend key, an operations-email failure, and a customer-confirmation failure each produce the documented safe outcome without falsely reporting an unrecorded notice.
+- [ ] The withdrawal function does not automatically change order status or issue a refund.
+- [ ] Account data export points to `/legal/privacy`.
+
+## 12. Error handling
 
 - [ ] Unknown public routes render the English 404 state.
 - [ ] Invalid checkout data returns field-level English errors.
@@ -117,7 +129,7 @@ Use this checklist before merging release branches, before the sandbox freeze, a
 - [ ] Oversized files and unsupported formats return English errors.
 - [ ] API failures are logged without leaking secrets to the browser.
 
-## 12. Launch gate
+## 13. Launch gate
 
 - [ ] PayPal live webhook is configured and signature verification is green.
 - [ ] A low-value live purchase and refund have been tested end to end.
@@ -125,4 +137,7 @@ Use this checklist before merging release branches, before the sandbox freeze, a
 - [ ] Search Console and Bing properties are verified.
 - [ ] GTM consent mode and GA4 purchase events are validated with EUR values.
 - [ ] Sitemap is submitted after the production deploy.
-- [ ] Legal pages name the appointed EU representative before public launch.
+- [ ] The appointed EU representative is named on the privacy policy and imprint, or counsel has documented why the GDPR Article 27 exception applies.
+- [ ] UK representative requirements are separately assessed and any required representative is named.
+- [ ] Checkout stores the exact versioned withdrawal request/consent/acknowledgement and includes it in the durable-medium order confirmation.
+- [ ] Target-market counsel approves the privacy, consumer-rights, and checkout classification; the operational retention and processor-transfer checklists are signed off.

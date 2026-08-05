@@ -211,16 +211,16 @@ const STRUCTURED_DATA_DESCRIPTION =
   "Professional architectural visualization — 3D interior and exterior renders, virtual staging and virtual renovation.";
 
 export const NAV_LEGAL: NavItem[] = [
+  { href: "/legal", label: "Legal information" },
   { href: "/legal/imprint", label: "Imprint" },
-  // Privacy/refunds live as anchors on the consolidated terms page until
-  // Track D splits them into standalone /legal/privacy and /legal/refunds.
-  { href: "/legal/terms#privatnost", label: "Privacy policy" },
-  { href: "/legal/terms#uslovi", label: "Terms of service" },
+  { href: "/legal/terms", label: "Terms of service" },
+  { href: "/legal/privacy", label: "Privacy policy" },
   { href: "/legal/cookies", label: "Cookie policy" },
-  { href: "/legal/complaints", label: "Complaints policy" },
-  { href: "/legal/terms#povracaj", label: "Refunds" },
-  { href: "/legal/delivery", label: "Delivery" },
-  { href: "/legal/certificates", label: "Certificates & standards" },
+  { href: "/legal/withdrawal#online-withdrawal", label: "Withdraw from a contract" },
+  { href: "/legal/refunds", label: "Refunds policy" },
+  { href: "/legal/complaints", label: "Complaints procedure" },
+  { href: "/legal/delivery", label: "Digital delivery" },
+  { href: "/legal/certificates", label: "Certificates and standards" },
 ];
 
 // Four concrete model-first savings examples — copy per the design handoff

@@ -1,101 +1,151 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { SectionKicker } from "@/components/brand/section-kicker";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { IMPRINT, SITE } from "@/lib/content/site";
 import { createPublicMetadata } from "@/lib/seo";
+import { WithdrawalForm } from "./withdrawal-form";
 
-const LAST_UPDATED = "2026-07-06";
+const LAST_UPDATED = "2026-08-05";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Withdrawal right",
-  description: `EU consumer withdrawal information for ${SITE.name}, including the 14-day right, digital content waiver, and model withdrawal form.`,
+  description: `EU and EEA consumer withdrawal information for ${SITE.name}, including the online withdrawal function and model notice.`,
   path: "/legal/withdrawal",
 });
 
 export default function WithdrawalPage() {
   return (
     <>
-      <article className="mx-auto w-full max-w-3xl px-6 pb-24 pt-20 md:pt-28">
+      <article className="mx-auto w-full max-w-4xl px-6 pb-24 pt-20 md:pt-28">
         <SectionKicker>Legal</SectionKicker>
         <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">
           Withdrawal right
         </h1>
         <p className="mt-6 text-base text-foreground/60">
-          Last updated:{" "}
-          {new Date(LAST_UPDATED).toLocaleDateString("en-GB", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          })}
+          Last updated: {formatDate(LAST_UPDATED)}
+        </p>
+        <p className="mt-6 max-w-3xl text-base leading-relaxed text-foreground/75">
+          This notice explains the statutory right of withdrawal for consumers
+          who enter into an eligible distance contract. It does not limit any
+          stronger mandatory right in the country whose law applies to you.
         </p>
 
-        <Section title="1. 14-day withdrawal right">
+        <Section title="1. Who has the right">
           <p>
-            If you are a consumer in the European Union and order at a distance,
-            you may have the right to withdraw from the contract within 14 days
-            without giving a reason. The withdrawal period usually runs from the
-            day the contract is concluded.
+            If you are an EU or EEA consumer and order online for purposes
+            mainly outside your trade, business, craft, or profession, you
+            generally have 14 days to withdraw from an eligible service contract
+            without giving a reason. The period normally starts on the day the
+            contract is concluded.
           </p>
           <p>
-            To exercise the right, you must send a clear statement before the
-            withdrawal period expires. You may use the model form below, but you
-            do not have to use that exact format.
-          </p>
-        </Section>
-
-        <Section title="2. Digital content and immediate performance">
-          <p>
-            Our services are bespoke digital content and digital services. At
-            checkout, you may be asked to consent to immediate performance and
-            acknowledge that you lose the right of withdrawal once the digital
-            content or digital service has been fully supplied, as reflected in
-            article 16(m) of Directive 2011/83/EU.
-          </p>
-          <p>
-            If production has started but the service has not been fully
-            supplied, mandatory consumer law may allow proportionate payment for
-            the work already performed where applicable.
+            Business customers do not have this statutory consumer withdrawal
+            right, but can still ask to cancel under the{" "}
+            <Link
+              href="/legal/refunds"
+              className="text-foreground underline-offset-4 hover:underline"
+            >
+              refunds policy
+            </Link>
+            . Consumers elsewhere may have a similar or longer local right.
           </p>
         </Section>
 
-        <Section title="3. Effects of withdrawal">
+        <Section title="2. How the deadline is met">
           <p>
-            If you validly withdraw before the right is lost or limited, we will
-            refund payments received from you using the same payment method
-            where possible, unless we agree otherwise. Refund timing follows the
-            payment provider and card issuer rules described in the refunds
-            policy.
-          </p>
-        </Section>
-
-        <Section title="4. How to notify us">
-          <p>
-            Send your withdrawal notice to{" "}
+            It is enough to send an unambiguous statement before the applicable
+            deadline. You may use the online function or model notice below, or
+            email{" "}
             <a
-              href={`mailto:${IMPRINT.email}`}
+              href={`mailto:${IMPRINT.email}?subject=Withdrawal%20from%20contract`}
               className="text-foreground underline-offset-4 hover:underline"
             >
               {IMPRINT.email}
             </a>
-            . Include enough information for us to identify your order.
+            . You do not need to explain why you are withdrawing. Keep the
+            confirmation or sent email as evidence.
           </p>
         </Section>
 
-        <section className="mt-12 rounded-xl border border-border/60 bg-secondary/30 p-6">
-          <h2 className="text-2xl text-foreground">Model withdrawal form</h2>
+        <Section title="3. Starting work during the 14-day period">
+          <p>
+            Our orders can include a service contract, digital content supplied
+            without a physical medium, or both. The legal result depends on what
+            was ordered and how performance began.
+          </p>
+          <ul className="list-disc space-y-3 pl-5">
+            <li>
+              <strong>Services:</strong> if you expressly ask us to begin during
+              the withdrawal period and then withdraw before full performance,
+              you may have to pay a proportionate amount for work supplied up to
+              the withdrawal notice, where the legal conditions are met. The
+              right is lost after the service is fully performed only if the
+              required prior express consent and acknowledgement were given.
+            </li>
+            <li>
+              <strong>Digital content:</strong> the right can be lost when supply
+              begins only if you gave prior express consent to immediate supply,
+              acknowledged the loss of the right, and received the required
+              contract confirmation on a durable medium.
+            </li>
+          </ul>
+          <p>
+            A checkbox accepting general terms is not, by itself, a substitute
+            for any separate express request or acknowledgement required by law.
+            If the required information, request, consent, acknowledgement, or
+            confirmation was not properly provided, the statutory consequences
+            of that omission apply.
+          </p>
+        </Section>
+
+        <Section title="4. Effects of a valid withdrawal">
+          <p>
+            When withdrawal is valid, we reimburse amounts due without undue
+            delay and no later than the mandatory deadline, normally 14 days
+            after we are informed. We use the original payment method unless
+            you expressly agree otherwise, and we do not charge a reimbursement
+            fee. PayPal or your funding provider controls when the credit appears
+            in your balance or statement.
+          </p>
+          <p>
+            A proportionate amount can remain payable for a service properly
+            started at your express request before withdrawal. Separate
+            statutory remedies for non-conforming or defective digital content
+            or services continue to apply and are not replaced by this notice.
+          </p>
+        </Section>
+
+        <section id="online-withdrawal" className="mt-14 scroll-mt-24 rounded-xl border border-border/60 bg-secondary/25 p-6 md:p-8">
+          <h2 className="text-3xl text-foreground">Withdraw from the contract here</h2>
+          <p className="mt-4 max-w-3xl text-base leading-relaxed text-foreground/70">
+            This function sends an unambiguous withdrawal statement. First enter
+            the contract details, then review and confirm the statement. We
+            record the server receipt time and email a durable copy. Submitting
+            the form does not ask you to waive any right or give a reason.
+          </p>
+          <div className="mt-7">
+            <WithdrawalForm />
+          </div>
+        </section>
+
+        <section className="mt-14 rounded-xl border border-border/60 bg-secondary/30 p-6 md:p-8">
+          <h2 className="text-2xl text-foreground">Model withdrawal notice</h2>
           <p className="mt-4 text-base leading-relaxed text-foreground/75">
-            Complete and return this form only if you wish to withdraw from the
-            contract.
+            Complete and send this notice only if you wish to withdraw. The
+            online form above is optional; a clear statement by email is also
+            valid when sent on time.
           </p>
           <div className="mt-5 space-y-3 rounded-lg bg-background/70 p-5 font-mono text-sm leading-relaxed text-foreground/80">
-            <p>To: {IMPRINT.shortName}</p>
+            <p>To: {IMPRINT.legalName}</p>
+            <p>Address: {IMPRINT.street}, {IMPRINT.postalCode} {IMPRINT.city}, {IMPRINT.country}</p>
             <p>Email: {IMPRINT.email}</p>
             <p>
               I hereby give notice that I withdraw from my contract for the
-              supply of the following service:
+              supply of the following service or digital content:
             </p>
+            <p>Contract or order number:</p>
             <p>Ordered on:</p>
-            <p>Order number:</p>
             <p>Consumer name:</p>
             <p>Consumer address:</p>
             <p>Consumer email:</p>
@@ -123,4 +173,13 @@ function Section({
       </div>
     </section>
   );
+}
+
+function formatDate(value: string): string {
+  return new Date(`${value}T00:00:00Z`).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 }

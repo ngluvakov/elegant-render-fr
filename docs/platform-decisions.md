@@ -4,6 +4,18 @@ Lightweight decision and change log for key characteristics of the Elegant Rende
 
 The pre-fork Serbian platform history is preserved as a brief archive in `docs/platform-decisions-rs-archive.md`.
 
+## 2026-08-05 - Global privacy notice and online consumer-withdrawal function
+
+- **Area:** order lifecycle | architecture | legal
+- **What changed:** The English legal surface now has a `/legal` index, a processing-activity privacy notice, a runtime-aligned cookie inventory, corrected service-versus-digital-content withdrawal language, and a two-step online withdrawal function. A confirmed notice is timestamped on the server, copied to the operations mailbox, written to the audit log, and acknowledged to the consumer by email with a reference. Refunds, delivery, terms, complaints, and AI-readable legal discovery were aligned with the same consumer-rights model.
+- **Why:** EU transparency rules require the privacy notice to connect data, purpose, lawful basis, recipients, transfers, retention, and rights. Since 19 June 2026, the amended Consumer Rights Directive also requires an online withdrawal function for eligible distance contracts concluded through an online interface.
+- **Impact on conversion:** No checkout step was added. Consumers receive a separate legal function at `/legal/withdrawal#online-withdrawal`; submission does not automatically cancel, refund, or change an order status and remains subject to an operational review of the statutory effect.
+- **Impact on design:** Legal pages keep the existing White Rook typography and card system. The new legal index makes all notices discoverable from one English route.
+- **Impact on code:** Added a legal-page Server Action and client review step, plus transactional admin and customer acknowledgement emails. Existing inquiry rate limiting protects the public action until a dedicated limiter is added by the platform track.
+- **Impact on docs:** Added the Track A/C and operational handoff with launch blockers and exact stale-link replacements.
+- **Related files:** `src/app/(marketing)/legal/**`, `src/lib/email.ts`, `src/lib/llms.ts`, `docs/plan/legal-compliance-handoff.md`
+- **References:** GDPR Articles 12-14 and 27; Directive 2011/83/EU Articles 8, 11a, 14, and 16 as amended by Directive (EU) 2023/2673; Directive (EU) 2019/770; Regulation (EU) 2024/3228.
+
 ## 2026-07-19 - Accounting document dates use the Belgrade calendar day
 
 - **Area:** order lifecycle | architecture

@@ -5,7 +5,7 @@ import { FinalCta } from "@/components/marketing/final-cta";
 import { IMPRINT, SITE } from "@/lib/content/site";
 import { createPublicMetadata } from "@/lib/seo";
 
-const LAST_UPDATED = "2026-07-06";
+const LAST_UPDATED = "2026-08-05";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Terms of service",
@@ -83,6 +83,13 @@ export default function TermsPage() {
             references are missing, deadlines can move until the missing
             information is supplied.
           </p>
+          <p>
+            You must be at least 18 years old and legally able to enter into the
+            contract, or place the order with the authority of the person or
+            organisation you represent. Keep account credentials and one-time
+            access links confidential and tell us promptly about suspected
+            unauthorised access.
+          </p>
         </Section>
 
         <Section title="4. Prices and payment">
@@ -139,16 +146,21 @@ export default function TermsPage() {
 
         <Section title="7. Withdrawal right for consumers">
           <p>
-            EU consumers may have a 14-day right of withdrawal for distance
-            contracts. Because our work is custom digital content and digital
-            services, checkout may ask you to consent to immediate performance
-            and acknowledge that the right of withdrawal can be lost once the
-            digital content or service has been fully supplied.
+            EU and EEA consumers generally have a 14-day right of withdrawal
+            for eligible distance service contracts. If you expressly ask us to
+            start during that period and later withdraw before completion, a
+            proportionate amount can remain payable where the legal conditions
+            are met. For services, the right is lost after full performance only
+            when the required prior express consent and acknowledgement were
+            given. For digital content, different rules can cause the right to
+            be lost when supply begins, but only after the required express
+            consent, acknowledgement, and durable-medium confirmation.
           </p>
           <p>
-            The detailed notice and model form are available on the{" "}
+            The detailed notice, model notice, and online withdrawal function
+            are available on the{" "}
             <Link
-              href="/legal/withdrawal"
+              href="/legal/withdrawal#online-withdrawal"
               className="text-foreground underline-offset-4 hover:underline"
             >
               withdrawal page
@@ -180,6 +192,13 @@ export default function TermsPage() {
             </Link>
             .
           </p>
+          <p>
+            These policies do not replace mandatory remedies for a digital
+            service or digital content that is not supplied, is defective, or
+            does not conform to the contract. Where applicable, consumers may
+            require conformity, a proportionate price reduction, or termination
+            under the conditions of the law that protects them.
+          </p>
         </Section>
 
         <Section title="9. Acceptable use">
@@ -191,7 +210,22 @@ export default function TermsPage() {
           </p>
         </Section>
 
-        <Section title="10. Intellectual property in deliverables">
+        <Section title="10. AI Studio and automated outputs">
+          <p>
+            AI Studio can produce unexpected, inaccurate, or visually
+            inconsistent results. You must review an output before publishing or
+            relying on it, especially where it depicts a property feature,
+            product, boundary, view, or planning outcome. AI output is a visual
+            concept, not proof of an existing condition or professional advice.
+          </p>
+          <p>
+            Do not submit unlawful material, identity documents, confidential
+            material you are not authorised to share, or content that violates
+            another person&apos;s privacy or intellectual-property rights.
+          </p>
+        </Section>
+
+        <Section title="11. Intellectual property in deliverables">
           <p>
             After full payment, you may use the final deliverables for the
             project purpose described in the order, including property marketing,
@@ -205,7 +239,7 @@ export default function TermsPage() {
           </p>
         </Section>
 
-        <Section title="11. Liability">
+        <Section title="12. Liability">
           <p>
             Our deliverables are visual communication assets. They are not
             architectural plans, engineering documentation, building permits,
@@ -219,9 +253,25 @@ export default function TermsPage() {
             decisions made from materials that were supplied to us incorrectly
             or incompletely.
           </p>
+          <p>
+            Nothing in these terms excludes or limits liability that cannot
+            legally be excluded, including mandatory consumer remedies or
+            liability for fraud, wilful misconduct, or death or personal injury
+            caused by negligence where applicable law prohibits exclusion.
+          </p>
         </Section>
 
-        <Section title="12. Governing law and consumer protections">
+        <Section title="13. Changes, suspension, and termination">
+          <p>
+            We may update site features and these terms for legal, security, or
+            operational reasons. Changes do not retroactively remove rights from
+            an accepted order. We may suspend access or stop work when reasonably
+            necessary to address non-payment, security risk, unlawful use, or a
+            material breach, and will provide notice where practical and lawful.
+          </p>
+        </Section>
+
+        <Section title="14. Governing law and consumer protections">
           <p>
             These terms are governed by the law of Serbia. If you are a consumer
             habitually resident in the European Union, this choice of law does
@@ -231,7 +281,7 @@ export default function TermsPage() {
           </p>
         </Section>
 
-        <Section title="13. Alternative dispute resolution">
+        <Section title="15. Alternative dispute resolution">
           <p>
             We prefer to resolve complaints directly and in writing. If a
             dispute cannot be resolved, EU consumers may contact a competent

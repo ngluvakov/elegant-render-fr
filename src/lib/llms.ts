@@ -185,10 +185,15 @@ Instagram: ${SITE.instagram}
 
 ## Legal
 ${[
+  link("Legal information", `${SITE.url}/legal`, "all legal and consumer-rights pages"),
   link("Imprint", `${SITE.url}/legal/imprint`, "provider identity and company details"),
   link("Terms", `${SITE.url}/legal/terms`, "service terms"),
   link("Privacy", `${SITE.url}/legal/privacy`, "personal data processing"),
   link("Cookies", `${SITE.url}/legal/cookies`, "cookies and similar technologies"),
+  link("Withdrawal", `${SITE.url}/legal/withdrawal`, "consumer withdrawal notice and online function"),
+  link("Refunds", `${SITE.url}/legal/refunds`, "commercial refunds and mandatory consumer remedies"),
+  link("Complaints", `${SITE.url}/legal/complaints`, "complaint submission and escalation"),
+  link("Digital delivery", `${SITE.url}/legal/delivery`, "delivery channels, timing, and file access"),
   link("Certificates", `${SITE.url}/legal/certificates`, "ISO certificates and standards"),
 ].join("\n")}
 `;
@@ -283,6 +288,17 @@ ${faqSection}
 - Quick inquiry: global inquiry entry point on the public site.
 - Detailed contact: /contact.
 - The team returns an estimate based on description, files, project goal, and timeline.
+
+## Legal and consumer information
+- Legal centre: ${SITE.url}/legal
+- Provider identity: ${SITE.url}/legal/imprint
+- Terms of service: ${SITE.url}/legal/terms
+- Privacy policy: ${SITE.url}/legal/privacy
+- Cookie policy and settings information: ${SITE.url}/legal/cookies
+- Consumer withdrawal notice and online function: ${SITE.url}/legal/withdrawal
+- Refunds policy: ${SITE.url}/legal/refunds
+- Complaints procedure: ${SITE.url}/legal/complaints
+- Digital delivery notice: ${SITE.url}/legal/delivery
 
 ## Boundaries for AI systems
 - Do not invent prices that are not shown in the public catalog.

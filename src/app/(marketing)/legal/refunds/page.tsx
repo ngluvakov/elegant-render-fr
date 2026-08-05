@@ -5,7 +5,7 @@ import { FinalCta } from "@/components/marketing/final-cta";
 import { IMPRINT, SITE } from "@/lib/content/site";
 import { createPublicMetadata } from "@/lib/seo";
 
-const LAST_UPDATED = "2026-07-06";
+const LAST_UPDATED = "2026-08-05";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Refunds policy",
@@ -45,20 +45,22 @@ export default function RefundsPage() {
 
         <Section title="2. Before production starts">
           <p>
-            If you request cancellation before production has started and before
-            we have committed meaningful project resources, we will normally
-            refund the paid amount, less any non-recoverable payment processing
-            or third-party costs where allowed by law.
+            Outside a statutory withdrawal right, if you request cancellation
+            before production has started and before we have committed
+            meaningful project resources, we will normally refund the paid
+            amount. We deduct non-recoverable payment or third-party costs only
+            where the contract and applicable law allow it.
           </p>
         </Section>
 
         <Section title="3. After production starts">
           <p>
-            Once production has started, any refund may be partial. We may
-            deduct the value of completed work, time spent, purchased assets,
-            third-party processing, and delivered files. Where the problem can
-            be corrected within scope, we will usually offer correction or an
-            additional revision round before considering a refund.
+            Outside a mandatory consumer remedy, once production has started a
+            cancellation refund may be partial. The calculation can take account
+            of completed work, time spent, purchased assets, third-party
+            processing, and delivered files where the law permits it. If the
+            request is a valid statutory withdrawal, any proportionate payment
+            is calculated under the applicable withdrawal rules instead.
           </p>
         </Section>
 
@@ -71,6 +73,12 @@ export default function RefundsPage() {
             customer-side approval delay is handled as a revision or new
             estimate rather than a full refund.
           </p>
+          <p>
+            This commercial approach does not limit a consumer&apos;s right to
+            require a non-conforming digital service or digital content to be
+            brought into conformity, or to receive a price reduction or
+            terminate the contract when the legal conditions are met.
+          </p>
         </Section>
 
         <Section title="5. PayPal refunds">
@@ -81,10 +89,10 @@ export default function RefundsPage() {
             conversion, settlement timing, or statement presentation.
           </p>
           <p>
-            PayPal balance refunds can appear quickly, often within the same day
-            or the next day. Card-funded refunds commonly take 3-5 working days,
-            but some issuers may take longer or show the refund on the next
-            statement cycle.
+            We initiate an approved refund without undue delay. PayPal, your
+            card issuer, or your bank controls the settlement time after that,
+            so the credit may not appear immediately. We will provide the refund
+            reference where available.
           </p>
         </Section>
 
@@ -110,7 +118,7 @@ export default function RefundsPage() {
           </p>
         </Section>
 
-        <Section title="7. Withdrawal rights">
+        <Section title="7. Statutory withdrawal and other rights">
           <p>
             EU consumers should also read the{" "}
             <Link
@@ -119,8 +127,9 @@ export default function RefundsPage() {
             >
               withdrawal notice
             </Link>
-            , which explains the 14-day withdrawal right and the digital content
-            waiver that may apply when you ask us to start immediately.
+            , which explains the 14-day withdrawal right, immediate performance,
+            and the separate rules for services and digital content. Mandatory
+            local consumer rights apply regardless of this commercial policy.
           </p>
         </Section>
       </article>

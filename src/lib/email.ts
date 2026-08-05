@@ -211,6 +211,107 @@ export async function sendOrderConfirmationEmail(
   });
 }
 
+export type WithdrawalNoticeEmailArgs = {
+  reference: string;
+  receivedAt: Date;
+  consumerName: string;
+  consumerEmail: string;
+  orderNumber: string;
+  contractDate?: string;
+  serviceDescription?: string;
+  message?: string;
+};
+
+function renderWithdrawalNotice(args: WithdrawalNoticeEmailArgs): string {
+  const receivedAt = args.receivedAt.toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Belgrade",
+    timeZoneName: "short",
+  });
+
+  return `
+    <div style="background:#f6f1ea; border-radius:8px; padding:16px; margin:16px 0;">
+      <p style="margin:0; color:#1C1A19; line-height:1.7;">
+        <strong>Reference:</strong> ${escapeHtml(args.reference)}<br/>
+        <strong>Received:</strong> ${escapeHtml(receivedAt)}<br/>
+        <strong>Consumer:</strong> ${escapeHtml(args.consumerName)}<br/>
+        <strong>Email:</strong> ${escapeHtml(args.consumerEmail)}<br/>
+        <strong>Order number:</strong> ${escapeHtml(args.orderNumber)}
+        ${args.contractDate ? `<br/><strong>Contract date:</strong> ${escapeHtml(args.contractDate)}` : ""}
+        ${args.serviceDescription ? `<br/><strong>Service:</strong> ${escapeHtml(args.serviceDescription)}` : ""}
+      </p>
+      ${
+        args.message
+          ? `<p style="margin:14px 0 0; color:#1C1A19; white-space:pre-wrap;"><strong>Additional information:</strong><br/>${escapeHtml(args.message)}</p>`
+          : ""
+      }
+    </div>
+  `;
+}
+
+/**
+ * Records the consumer's online withdrawal statement in the team mailbox.
+ * The public form sends this first so the notice is not reported as received
+ * unless an operational copy exists outside the browser session.
+ */
+export async function sendWithdrawalNoticeAdminEmail(
+  args: WithdrawalNoticeEmailArgs,
+) {
+  await send({
+    to: ADMIN_NOTIFY_EMAIL,
+    subject: `Contract withdrawal — ${args.orderNumber} — ${args.reference}`,
+    html: `
+      <div style="font-family:sans-serif; max-width:640px; margin:0 auto;">
+        <h2 style="color:#1C1A19;">Online withdrawal notice received</h2>
+        <p style="color:#6e665d; line-height:1.6;">
+          The consumer used the public withdrawal function and made the
+          following unambiguous statement: “I withdraw from the contract
+          identified below.” Review the order and apply the mandatory
+          withdrawal rules without treating this email as a discretionary
+          cancellation request.
+        </p>
+        ${renderWithdrawalNotice(args)}
+        <hr style="border:none; border-top:1px solid #d8cec4; margin:24px 0;" />
+        <p style="color:#9ca3af; font-size:12px;">${escapeHtml(IMPRINT.legalName)}</p>
+      </div>
+    `,
+  });
+}
+
+/** Durable-medium acknowledgement required by the online withdrawal flow. */
+export async function sendWithdrawalNoticeCustomerEmail(
+  args: WithdrawalNoticeEmailArgs,
+) {
+  await send({
+    to: args.consumerEmail,
+    subject: `Withdrawal notice received — ${args.reference}`,
+    html: `
+      <div style="font-family:sans-serif; max-width:560px; margin:0 auto;">
+        <h2 style="color:#1C1A19;">Your withdrawal notice was received</h2>
+        <p style="color:#6e665d; line-height:1.6;">
+          We confirm that ${escapeHtml(IMPRINT.shortName)} received your
+          statement withdrawing from the contract identified below. Keep this
+          email as evidence of the content and time of your notice.
+        </p>
+        ${renderWithdrawalNotice(args)}
+        <p style="color:#6e665d; line-height:1.6;">
+          We will review the order status and contact you about the legal and
+          payment effects. This acknowledgement does not reduce any mandatory
+          consumer right.
+        </p>
+        <hr style="border:none; border-top:1px solid #d8cec4; margin:24px 0;" />
+        <p style="color:#9ca3af; font-size:12px;">
+          ${escapeHtml(IMPRINT.legalName)} · ${escapeHtml(IMPRINT.email)}
+        </p>
+      </div>
+    `,
+  });
+}
+
 /**
  * Issued-invoice notification with the rendered PDF as an attachment.
  * Triggered from the invoice_issued_email outbox handler after

@@ -5,7 +5,7 @@ import { FinalCta } from "@/components/marketing/final-cta";
 import { IMPRINT, SITE } from "@/lib/content/site";
 import { createPublicMetadata } from "@/lib/seo";
 
-const LAST_UPDATED = "2026-07-06";
+const LAST_UPDATED = "2026-08-05";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Complaints procedure",
@@ -109,6 +109,12 @@ export default function ComplaintsPage() {
             We are not generally obliged to participate in a particular
             alternative dispute resolution process unless mandatory law requires
             it or we agree in writing.
+          </p>
+          <p>
+            The former European Commission Online Dispute Resolution platform
+            was discontinued on 20 July 2025 and no longer accepts complaints.
+            This does not remove any right to use a competent national consumer
+            authority, court, or available ADR body.
           </p>
         </Section>
       </article>

@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
-import { requirePermission } from "@/lib/admin-auth";
+import { requirePagePermission } from "@/lib/admin-auth";
 import { normalizeAdminPermissions } from "@/lib/admin-permissions";
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ export default async function AdminAuditLogPage({
 }: {
   searchParams: SearchParams;
 }) {
-  await requirePermission("AUDIT_VIEW");
+  await requirePagePermission("AUDIT_VIEW");
   const { action, entity } = await searchParams;
 
   const where: Record<string, unknown> = {};

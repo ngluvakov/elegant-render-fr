@@ -4,7 +4,7 @@ import { Search, Sparkles, ShieldCheck } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { formatCreditsFromUnits } from "@/lib/ai-studio/catalog";
-import { requirePermission } from "@/lib/admin-auth";
+import { requirePagePermission } from "@/lib/admin-auth";
 import {
   ADMIN_PRESET_LABELS,
   inferAdminPreset,
@@ -25,7 +25,7 @@ export default async function AdminUsersPage({
 }: {
   searchParams: SearchParams;
 }) {
-  await requirePermission("USERS_VIEW");
+  await requirePagePermission("USERS_VIEW");
   const { q } = await searchParams;
 
   const where = q

@@ -17,7 +17,7 @@ import { AlertCircle, CheckCircle2, Clock, Loader2 } from "lucide-react";
 import { prisma } from "@/lib/db";
 import type { OutboxEventStatus } from "@/generated/prisma/client";
 import { RetryOutboxButton } from "./retry-button";
-import { requirePermission } from "@/lib/admin-auth";
+import { requirePagePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Outbox — Admin",
@@ -77,7 +77,7 @@ export default async function AdminOutboxPage({
 }: {
   searchParams: SearchParams;
 }) {
-  await requirePermission("SYSTEM_MANAGE");
+  await requirePagePermission("SYSTEM_MANAGE");
   const { status } = await searchParams;
   const filter =
     status && VALID_STATUSES.has(status as OutboxEventStatus)

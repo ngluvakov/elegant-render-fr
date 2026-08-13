@@ -11,7 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { requirePermission } from "@/lib/admin-auth";
+import { requirePagePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Analytics — Admin",
@@ -130,7 +130,7 @@ const dashboardLinks: DashboardLink[] = [
 ];
 
 export default async function AdminAnalyticsPage() {
-  await requirePermission("ANALYTICS_VIEW");
+  await requirePagePermission("ANALYTICS_VIEW");
   const configuredCount = dashboardLinks.filter((item) => item.href).length;
   const ga4Enabled = process.env.NEXT_PUBLIC_GA4_ENABLED === "true";
   const ga4MeasurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID?.trim() ?? "";

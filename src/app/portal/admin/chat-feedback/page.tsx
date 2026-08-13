@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { MessageSquareWarning } from "lucide-react";
 import { prisma } from "@/lib/db";
 import { chatFeedbackCategoryLabel } from "@/lib/chat/feedback";
-import { requirePermission } from "@/lib/admin-auth";
+import { requirePagePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "AI assistant - client requests",
@@ -19,7 +19,7 @@ const CATEGORY_STYLES: Record<string, string> = {
 };
 
 export default async function AdminChatFeedbackPage() {
-  await requirePermission("ANALYTICS_VIEW");
+  await requirePagePermission("ANALYTICS_VIEW");
   const feedback = await prisma.chatFeedback.findMany({
     include: {
       user: { select: { name: true, email: true } },

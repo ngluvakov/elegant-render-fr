@@ -20,7 +20,7 @@ import { AdminFreeRevisionPanel } from "./admin-free-revision-panel";
 import { AdminChargesPanel } from "./admin-charges-panel";
 import { AdminPlutosSyncPanel } from "./admin-plutos-sync-panel";
 import { AdminRefundButton } from "./admin-refund-button";
-import { adminHas, requirePermission } from "@/lib/admin-auth";
+import { adminHas, requirePagePermission } from "@/lib/admin-auth";
 import { isChargeCurrency } from "@/lib/currency/config";
 import { formatChargeAmount } from "@/lib/currency/convert";
 import {
@@ -44,7 +44,7 @@ export default async function AdminOrderDetailPage({
   params: Params;
 }) {
   const { orderId } = await params;
-  const admin = await requirePermission("PROJECTS_VIEW");
+  const admin = await requirePagePermission("PROJECTS_VIEW");
   const canManageProjects = adminHas(admin, "PROJECTS_MANAGE");
   const canManageCredits = adminHas(admin, "AI_CREDITS_MANAGE");
   const canViewFinance = adminHas(admin, "FINANCE_VIEW");

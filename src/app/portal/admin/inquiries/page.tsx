@@ -14,7 +14,7 @@ import { prisma } from "@/lib/db";
 import { Badge } from "@/components/ui/badge";
 import { formatInquiryFileSize } from "@/lib/project-inquiry";
 import { ProjectInquiryActions } from "./inquiry-actions";
-import { adminHas, requirePermission } from "@/lib/admin-auth";
+import { adminHas, requirePagePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Inquiries — Admin",
@@ -77,7 +77,7 @@ export default async function ProjectInquiriesPage({
   searchParams: SearchParams;
 }) {
   const { status, highlight } = await searchParams;
-  const admin = await requirePermission("INQUIRIES_MANAGE");
+  const admin = await requirePagePermission("INQUIRIES_MANAGE");
   const canConvertToOrder = adminHas(admin, "FINANCE_MANAGE");
   const statusFilter =
     status && VALID_STATUSES.has(status as ProjectInquiryStatus)

@@ -12,7 +12,7 @@ import {
 import { statusLabel, statusAccent } from "@/components/portal/status-utils";
 import { AdminGrantCreditsPanel } from "../../orders/[orderId]/admin-grant-credits-panel";
 import { saveUserAdminAccess } from "@/server/actions/admin-access";
-import { adminHas, requirePermission } from "@/lib/admin-auth";
+import { adminHas, requirePagePermission } from "@/lib/admin-auth";
 import {
   ADMIN_PERMISSION_LABELS,
   ADMIN_PERMISSIONS,
@@ -44,7 +44,7 @@ export default async function AdminUserDetailPage({
   params: Params;
 }) {
   const { userId } = await params;
-  const admin = await requirePermission("USERS_VIEW");
+  const admin = await requirePagePermission("USERS_VIEW");
   const canManageCredits = adminHas(admin, "AI_CREDITS_MANAGE");
   const canManageAdminAccess = adminHas(admin, "ADMIN_MANAGE");
   const canViewFinance = adminHas(admin, "FINANCE_VIEW");

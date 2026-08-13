@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cache } from "react";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import {
@@ -66,6 +67,31 @@ export async function requirePermission(
   if (!admin || !hasAdminPermission(admin.permissions, permission)) {
     throw new Error(`Admin permission required: ${permission}`);
   }
+  return admin;
+}
+
+// Page variants of the guards above. Pages have no try/catch around the
+// render, so a thrown Error escapes as a visitor-facing 500 + Sentry noise
+// (ELEGANT-RENDER-COM-7); proxy.ts only checks that a session cookie exists,
+// so any logged-in customer can reach admin page code by typing the URL.
+// No admin context → back to the portal; missing the specific permission →
+// 404, so the admin surface stays invisible to probing. API routes and
+// server actions must keep using the throwing variants they already catch.
+export async function requirePagePermission(
+  permission: AdminPermission,
+): Promise<AdminContext> {
+  const admin = await getAdminContext();
+  if (!admin) redirect("/portal");
+  if (!hasAdminPermission(admin.permissions, permission)) notFound();
+  return admin;
+}
+
+export async function requireAnyAdminPagePermission(
+  permissions: readonly AdminPermission[] = ADMIN_PERMISSIONS,
+): Promise<AdminContext> {
+  const admin = await getAdminContext();
+  if (!admin) redirect("/portal");
+  if (!hasAnyAdminPermission(admin.permissions, permissions)) notFound();
   return admin;
 }
 

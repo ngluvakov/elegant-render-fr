@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatEur } from "@/lib/catalog/calculate";
 import { statusLabel, statusAccent } from "@/components/portal/status-utils";
 import { AdminFilterBar } from "./admin-filter-bar";
-import { adminHas, requireAnyAdminPermission } from "@/lib/admin-auth";
+import { adminHas, requireAnyAdminPagePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
   title: "Admin — Platform management",
@@ -34,7 +34,7 @@ export default async function AdminPage({
   searchParams: SearchParams;
 }) {
   const { status, q, usluga, placanje } = await searchParams;
-  const admin = await requireAnyAdminPermission();
+  const admin = await requireAnyAdminPagePermission();
   const canViewProjects = adminHas(admin, "PROJECTS_VIEW");
   const canViewFinance = adminHas(admin, "FINANCE_VIEW");
   const canViewUsers = adminHas(admin, "USERS_VIEW");

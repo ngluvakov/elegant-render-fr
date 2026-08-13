@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { PricingWorkbench } from "./pricing-workbench";
-import { requireFinanceAdmin } from "@/server/actions/finance";
+import { requirePagePermission } from "@/lib/admin-auth";
 import {
   getDraftPricingCatalog,
   getPublishedPricingCatalog,
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function PricingFinancePage() {
-  await requireFinanceAdmin();
+  await requirePagePermission("FINANCE_MANAGE");
   const [draft, published] = await Promise.all([
     getDraftPricingCatalog(),
     getPublishedPricingCatalog(),

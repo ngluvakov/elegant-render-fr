@@ -55,7 +55,7 @@ const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
     : []),
   { href: "/blog", label: "Blog", pattern: "/blog" },
   { href: "/faq", label: "FAQ", pattern: "/faq" },
-  { href: "/jobs", label: "Jobs", pattern: "/jobs" },
+  { href: "/career", label: "Career", pattern: "/career" },
   { href: "/contact", label: "Contact", pattern: "/contact" },
 ];
 

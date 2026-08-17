@@ -55,6 +55,11 @@ const nextConfig: NextConfig = {
         destination: "/",
         permanent: true,
       },
+      {
+        source: "/jobs",
+        destination: "/career",
+        permanent: true,
+      },
     ];
   },
 };

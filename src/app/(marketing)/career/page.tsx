@@ -8,10 +8,10 @@ import {
 } from "@/lib/seo";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Jobs",
+  title: "Career",
   description:
     "Join the Elegant Render team — 3D artists, animators and visualization specialists. Apply with your CV and portfolio.",
-  path: "/jobs",
+  path: "/career",
   keywords: [
     "3D artist job",
     "architectural visualization careers",
@@ -38,26 +38,26 @@ const HIRING_STEPS = [
   },
 ];
 
-export default function JobsPage() {
+export default function CareerPage() {
   return (
     <>
       <JsonLd
         data={[
           buildWebPageJsonLd({
-            path: "/jobs",
-            name: "Jobs at Elegant Render",
+            path: "/career",
+            name: "Career at Elegant Render",
             description:
               "Open application for 3D artists, animators and visualization specialists.",
           }),
           buildBreadcrumbJsonLd([
             { name: "Home", path: "/" },
-            { name: "Jobs", path: "/jobs" },
+            { name: "Career", path: "/career" },
           ]),
         ]}
       />
 
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
-        <p className="section-kicker">Jobs</p>
+        <p className="section-kicker">Career</p>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
           Build spaces people fall in love with
         </h1>

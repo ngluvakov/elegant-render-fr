@@ -1091,3 +1091,131 @@ export async function sendVrInquiryCustomerEmail(args: {
     `,
   });
 }
+
+export async function sendJobApplicationAdminEmail(args: {
+  applicationId: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  location?: string;
+  linkedinUrl?: string;
+  portfolioUrl?: string;
+  position: string;
+  employmentType?: string;
+  availableFrom?: string;
+  expectedSalary?: string;
+  experienceYears?: string;
+  education?: string;
+  coverLetter: string;
+  software: string[];
+  softwareOther?: string;
+  skills: string[];
+  skillsOther?: string;
+  /** Signed download links (30 days) for the attached files. */
+  fileLinks: Array<{ label: string; url: string | null; fileName: string }>;
+  unscannedFileCount?: number;
+}) {
+  const unscanned = args.unscannedFileCount ?? 0;
+  const listOrDash = (items: string[], other?: string) => {
+    const all = [...items, ...(other ? [other] : [])];
+    return all.length ? escapeHtml(all.join(", ")) : "—";
+  };
+  await send({
+    to: ADMIN_NOTIFY_EMAIL,
+    subject:
+      unscanned > 0
+        ? `⚠ New job application (files not scanned) — ${args.fullName}`
+        : `New job application — ${args.fullName} (${args.position})`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">New job application</h2>
+        ${
+          unscanned > 0
+            ? `<div style="background: #fdecea; border: 1px solid #e5b3ab; border-radius: 8px; padding: 12px 16px; margin: 16px 0; color: #8a2c1c; line-height: 1.6;">
+          <strong>⚠ ${unscanned} file(s) were not scanned</strong> because the antivirus
+          service was unavailable. Check them manually (or download them in a safe
+          environment) before opening.
+        </div>`
+            : ""
+        }
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Candidate:</strong></p>
+          <ul style="margin: 0; padding-left: 18px; color: #1C1A19; line-height: 1.6;">
+            <li>${escapeHtml(args.fullName)}</li>
+            <li><a href="mailto:${escapeHtml(args.email)}">${escapeHtml(args.email)}</a></li>
+            ${args.phone ? `<li>${escapeHtml(args.phone)}</li>` : ""}
+            ${args.location ? `<li>${escapeHtml(args.location)}</li>` : ""}
+            ${args.linkedinUrl ? `<li><a href="${escapeHtml(args.linkedinUrl)}">${escapeHtml(args.linkedinUrl)}</a></li>` : ""}
+            ${args.portfolioUrl ? `<li><a href="${escapeHtml(args.portfolioUrl)}">${escapeHtml(args.portfolioUrl)}</a></li>` : ""}
+          </ul>
+        </div>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Application:</strong></p>
+          <p style="margin: 0; color: #1C1A19; line-height: 1.7;">
+            <strong>Position:</strong> ${escapeHtml(args.position)}<br/>
+            ${args.employmentType ? `<strong>Type:</strong> ${escapeHtml(args.employmentType)}<br/>` : ""}
+            ${args.availableFrom ? `<strong>Available from:</strong> ${escapeHtml(args.availableFrom)}<br/>` : ""}
+            ${args.expectedSalary ? `<strong>Expected salary:</strong> ${escapeHtml(args.expectedSalary)}<br/>` : ""}
+            ${args.experienceYears ? `<strong>Experience:</strong> ${escapeHtml(args.experienceYears)}<br/>` : ""}
+            ${args.education ? `<strong>Education:</strong> ${escapeHtml(args.education)}<br/>` : ""}
+          </p>
+        </div>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Software:</strong></p>
+          <p style="margin: 0 0 12px 0; color: #1C1A19; line-height: 1.7;">${listOrDash(args.software, args.softwareOther)}</p>
+          <p style="margin: 0 0 8px 0;"><strong>3D skills:</strong></p>
+          <p style="margin: 0; color: #1C1A19; line-height: 1.7;">${listOrDash(args.skills, args.skillsOther)}</p>
+        </div>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Cover letter:</strong></p>
+          <p style="margin: 0; color: #1C1A19; white-space: pre-wrap;">${escapeHtml(args.coverLetter)}</p>
+        </div>
+        <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
+          <p style="margin: 0 0 8px 0;"><strong>Attachments (links valid 30 days):</strong></p>
+          <ul style="margin: 0; padding-left: 18px; color: #1C1A19; line-height: 1.6;">
+            ${args.fileLinks
+              .map((f) =>
+                f.url
+                  ? `<li><a href="${escapeHtml(f.url)}">${escapeHtml(f.label)}: ${escapeHtml(f.fileName)}</a></li>`
+                  : `<li>${escapeHtml(f.label)}: ${escapeHtml(f.fileName)} (link unavailable — download from storage)</li>`,
+              )
+              .join("")}
+          </ul>
+        </div>
+        <p style="color: #9ca3af; font-size: 12px;">Application ID: ${escapeHtml(args.applicationId)}</p>
+      </div>
+    `,
+  });
+}
+
+export async function sendJobApplicationCandidateEmail(args: {
+  to: string;
+  fullName: string;
+  position: string;
+}) {
+  await send({
+    to: args.to,
+    subject: "Your application has been received — Elegant Render",
+    html: `
+      <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+        <h2 style="color: #1C1A19;">Thank you for applying</h2>
+        <p style="color: #6e665d; line-height: 1.6;">
+          Hello ${escapeHtml(args.fullName)},
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          We received your application for the
+          <strong>${escapeHtml(args.position)}</strong> position, along with
+          your CV and portfolio. Our team reviews every application — if your
+          profile matches what we are looking for, we will reach out to
+          schedule a conversation.
+        </p>
+        <p style="color: #6e665d; line-height: 1.6;">
+          If you would like to add anything, you can reply directly to this
+          email.
+        </p>
+        <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+      </div>
+    `,
+  });
+}

@@ -52,6 +52,7 @@ function makeLimiter(requests: number, window: `${number} ${"s" | "m" | "h" | "d
 export const rateLimiters = {
   vrInquiry: makeLimiter(5, "1 h", "rl:vr-inquiry"),
   projectInquiry: makeLimiter(5, "1 h", "rl:project-inquiry"),
+  jobApplication: makeLimiter(3, "1 h", "rl:job-application"),
   checkout: makeLimiter(10, "1 h", "rl:checkout"),
   uploadUrl: makeLimiter(60, "1 h", "rl:upload-url"),
   chat: makeLimiter(30, "1 h", "rl:chat"),

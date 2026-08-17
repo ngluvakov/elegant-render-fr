@@ -47,6 +47,7 @@ const COMPANY_LINKS: NavItem[] = [
     ? [{ href: "/portfolio", label: "Portfolio" }]
     : []),
   { href: "/blog", label: "Blog" },
+  { href: "/jobs", label: "Jobs" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
 ];

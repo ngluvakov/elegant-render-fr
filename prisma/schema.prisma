@@ -832,6 +832,73 @@ model ProjectInquiryFile {
   @@map("project_inquiry_files")
 }
 
+// ─── Job applications (/jobs page) ───────────────────────
+
+enum JobApplicationStatus {
+  new
+  reviewing
+  interview
+  rejected
+  hired
+}
+
+model JobApplication {
+  id              String               @id @default(cuid())
+  fullName        String
+  email           String
+  phone           String?
+  location        String?
+  linkedinUrl     String?
+  /// Candidate's own portfolio/website link (files live in `files`).
+  portfolioUrl    String?
+  position        String
+  employmentType  String?
+  availableFrom   String?
+  expectedSalary  String?
+  experienceYears String?
+  education       String?
+  coverLetter     String               @db.Text
+  /// Checked software labels from JOB_SOFTWARE (free-form extras in softwareOther).
+  software        String[]             @default([])
+  softwareOther   String?
+  /// Checked 3D skill labels from JOB_3D_SKILLS (free-form extras in skillsOther).
+  skills          String[]             @default([])
+  skillsOther     String?
+  status          JobApplicationStatus @default(new)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  reviewedAt      DateTime?
+
+  files JobApplicationFile[]
+
+  @@index([status, createdAt])
+  @@index([email, createdAt])
+  @@map("job_applications")
+}
+
+model JobApplicationFile {
+  id            String    @id @default(cuid())
+  applicationId String
+  /// "cv" | "portfolio"
+  kind          String
+  fileName      String
+  fileSize      Int
+  mimeType      String
+  storagePath   String    @unique
+  uploadedAt    DateTime  @default(now())
+  // Antivirus scan state — same pipeline and semantics as
+  // ProjectInquiryFile; an infected file fails the whole application.
+  scanStatus    String?
+  scannedAt     DateTime?
+  // @default([]) je OBAVEZAN — vidi napomenu na OrderFile.scanThreats.
+  scanThreats   String[]  @default([])
+
+  application JobApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("job_application_files")
+}
+
 // ─── Versioned pricing catalog ───────────────────────────
 //
 // EUR list amounts are the financial source of truth (integer major

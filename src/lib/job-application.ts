@@ -36,13 +36,7 @@ export type JobApplicationFileInput = {
 };
 
 export const JOB_POSITIONS = [
-  "3D Artist — Interior",
-  "3D Artist — Exterior",
-  "3D Generalist",
-  "360 / VR Specialist",
-  "3D Animator",
-  "2D/3D Floor Plan Artist",
-  "AI Studio Photo Editor",
+  "3D Artist",
   "Project Manager",
   "Other",
 ] as const;

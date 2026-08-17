@@ -33,8 +33,8 @@ const HIRING_STEPS = [
     text: "A short call about your experience, tools and what you want to work on.",
   },
   {
-    title: "4. Paid test task",
-    text: "A small, realistic scene from our production — paid whether or not we continue.",
+    title: "4. Test task",
+    text: "A small, realistic scene from our production.",
   },
 ];
 

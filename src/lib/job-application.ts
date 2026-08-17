@@ -94,7 +94,7 @@ export const JOB_3D_SKILLS = [
   "UV unwrapping",
   "Animation",
   "Rigging",
-  "Simulation",
+  "Simulation (cloth, fluids, particles)",
 ] as const;
 
 export function formatJobFileSize(bytes: number): string {

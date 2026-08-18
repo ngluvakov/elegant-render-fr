@@ -738,10 +738,6 @@ export function JobApplicationForm() {
           </span>
         </label>
 
-        {turnstileEnabled && (
-          <TurnstileWidget onVerify={setTurnstileToken} />
-        )}
-
         {result.kind === "error" && (
           <p className="rounded-[4px] border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
             {result.message}
@@ -751,6 +747,12 @@ export function JobApplicationForm() {
         <Button type="submit" disabled={pending} className="w-full sm:w-auto">
           {pending ? "Sending…" : "Submit application"}
         </Button>
+
+        {/* Cloudflare Turnstile sits below the submit button (owner request);
+            it only renders when NEXT_PUBLIC_TURNSTILE_SITE_KEY is configured. */}
+        {turnstileEnabled && (
+          <TurnstileWidget onVerify={setTurnstileToken} />
+        )}
       </section>
     </form>
   );

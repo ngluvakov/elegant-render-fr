@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/site/site-header";
 import { SiteFooter } from "@/components/site/site-footer";
+import { BackToTop } from "@/components/site/back-to-top";
 import { SessionProvider } from "@/components/auth/session-provider";
 import { PostHogSessionBridge } from "@/components/posthog-session-bridge";
 import { ChatWidget } from "@/components/chat/chat-widget";
@@ -33,6 +34,7 @@ export default async function MarketingLayout({
           <main className="flex flex-1 flex-col">{children}</main>
           <SiteFooter />
           <ChatWidget />
+          <BackToTop />
         </QuickInquiryProvider>
       </PublicCurrencyProvider>
     </SessionProvider>

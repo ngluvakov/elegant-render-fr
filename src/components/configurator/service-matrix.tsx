@@ -47,7 +47,7 @@ export function ServiceMatrix({ cartSlot }: Props = {}) {
     >
       <header className="mb-4 px-1">
         <h2 className="text-xl font-semibold leading-tight text-foreground md:text-2xl">
-          Choose a service
+          Choisissez un service
         </h2>
       </header>
 
@@ -55,10 +55,10 @@ export function ServiceMatrix({ cartSlot }: Props = {}) {
         <Percent className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
         <div>
           <p className="text-base md:text-lg font-medium leading-snug text-foreground">
-            Services become more efficient when combined with other services.
+            Les services deviennent plus avantageux lorsqu’ils sont combinés entre eux.
           </p>
           <p className="mt-1 text-sm md:text-[0.95rem] leading-relaxed text-muted-foreground">
-            Try the combination you need and see how much you would save.
+            Essayez la combinaison qu’il vous faut et voyez ce que vous économiseriez.
           </p>
         </div>
       </div>

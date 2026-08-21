@@ -170,7 +170,7 @@ function PreviewCard({
   onClick: () => void;
 }) {
   const [mediaLoaded, setMediaLoaded] = useState(false);
-  const mediaAlt = `${label} - ${blurb}`;
+  const mediaAlt = `${label} — ${blurb}`;
 
   return (
     <Link
@@ -231,7 +231,7 @@ function PreviewCard({
           <div className="mt-auto pt-2">
             <p>
               <span className="text-xs font-normal normal-case tracking-normal text-muted-foreground">
-                from{" "}
+                dès{" "}
               </span>
               <span className="text-2xl font-bold text-foreground">
                 {formatPublicPrice(displayPerUnitEur, displayCurrency, pricingSettings)}
@@ -257,7 +257,7 @@ function PreviewCard({
           </div>
         ) : (
           <p className="mt-auto pt-2 text-xs text-muted-foreground">
-            from{" "}
+            dès{" "}
             <span className="text-base font-bold text-foreground">
               {formatPublicPrice(startingEur, displayCurrency, pricingSettings)}
             </span>

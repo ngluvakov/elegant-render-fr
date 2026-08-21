@@ -185,7 +185,7 @@ export function ConfiguratorBody({
           {calculation.items.length > 0 && (
             <section>
               <h2 className="mb-4 text-[0.7rem] font-bold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-                Your items ({calculation.items.length})
+                Vos articles ({calculation.items.length})
               </h2>
               <div className="space-y-4">
                 {calculation.items.map((breakdown) => (
@@ -205,7 +205,7 @@ export function ConfiguratorBody({
                 className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/60 bg-transparent px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent"
               >
                 <Plus className="h-4 w-4" />
-                Add another service
+                Ajouter un autre service
               </button>
               <div className="mt-6 border-t border-border/40 pt-5">
                 <div className="mb-3 flex items-baseline justify-between gap-3">
@@ -226,7 +226,7 @@ export function ConfiguratorBody({
                     "w-full justify-center rounded-xl",
                   )}
                 >
-                  Order
+                  Commander
                   <ArrowRight className="ml-1.5 h-4 w-4" />
                 </button>
               </div>
@@ -240,7 +240,7 @@ export function ConfiguratorBody({
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
                   <span className="flex items-center gap-2 text-sm font-medium text-foreground">
                     <Sparkles className="h-4 w-4 text-accent" />
-                    Add AI credits to your order
+                    Ajouter des crédits IA à votre commande
                   </span>
                   <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
                 </summary>

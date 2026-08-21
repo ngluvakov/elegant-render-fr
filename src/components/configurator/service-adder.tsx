@@ -96,7 +96,7 @@ export function ServiceAdder() {
       <div
         className="flex flex-wrap gap-1.5"
         role="tablist"
-        aria-label="Service types"
+        aria-label="Types de services"
       >
         {CUSTOMER_GROUPS.map((group) => {
           const isActive = group.id === activeGroupId;
@@ -249,7 +249,7 @@ function ProductCard({
                 )}
             {product.durationConfig && (
               <span className="text-xs font-normal text-muted-foreground">
-                /sec
+                /s
               </span>
             )}
           </p>
@@ -258,7 +258,7 @@ function ProductCard({
               href={`/services/vr/consultation?p=${product.id}`}
               className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-4 py-2 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-accent-foreground"
             >
-              <Headphones className="h-3 w-3" /> Request consultation
+              <Headphones className="h-3 w-3" /> Demander une consultation
               <ArrowRight className="h-3 w-3" />
             </Link>
           ) : (
@@ -274,11 +274,11 @@ function ProductCard({
             >
               {isAdded ? (
                 <>
-                  <Check className="h-3 w-3" /> Added
+                  <Check className="h-3 w-3" /> Ajouté
                 </>
               ) : (
                 <>
-                  <Plus className="h-3 w-3" /> Add
+                  <Plus className="h-3 w-3" /> Ajouter
                 </>
               )}
             </button>
@@ -342,17 +342,17 @@ function AnimationCard({
         <div className="min-w-0 flex-1">
           <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
             <Film className="h-4 w-4 text-accent" />
-            3D animation
+            Animation 3D
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Cinematic flythrough / walkthrough - minimum 15 seconds
+            Survol et visite cinématiques — 15 secondes minimum
           </p>
         </div>
         <div className="flex flex-shrink-0 flex-col items-end gap-2">
           <p className="text-xl font-semibold text-foreground">
             {formatPublicPrice(perSec, displayCurrency, pricingSettings)}
             <span className="text-xs font-normal text-muted-foreground">
-              /sec
+              /s
             </span>
           </p>
         </div>
@@ -412,11 +412,11 @@ function AnimationCard({
         >
           {isAdded ? (
             <>
-              <Check className="h-3 w-3" /> Added
+              <Check className="h-3 w-3" /> Ajouté
             </>
           ) : (
             <>
-              <Plus className="h-3 w-3" /> Add animation
+              <Plus className="h-3 w-3" /> Ajouter l’animation
             </>
           )}
         </button>

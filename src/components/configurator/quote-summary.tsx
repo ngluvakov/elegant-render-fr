@@ -75,8 +75,8 @@ export function QuoteSummary() {
   const handleInquiryFromQuote = () => {
     openInquiry({
       source: "quote-summary",
-      sourceLabel: "Prepare my estimate",
-      serviceType: "Already selected configurator items",
+      sourceLabel: "Préparer mon devis",
+      serviceType: "Articles déjà sélectionnés dans le configurateur",
       quoteSnapshot: {
         totalEur: calculation.total,
         originalTotalEur: calculation.originalTotal,
@@ -142,7 +142,7 @@ export function QuoteSummary() {
         <div className="flex items-center gap-2">
           <ShoppingCart className="h-4 w-4 text-background/60" />
           <h3 className="text-sm font-semibold text-background">
-            Your estimate
+            Votre devis
           </h3>
           {hasItems && (
             <span className="rounded-full bg-accent px-2 py-0.5 text-[0.72rem] font-bold text-accent-foreground">
@@ -157,7 +157,7 @@ export function QuoteSummary() {
             className="flex items-center gap-1 text-xs text-background/50 transition-colors hover:text-background/80"
           >
             <Trash2 className="h-3 w-3" />
-            Clear
+            Vider
           </button>
         )}
       </div>
@@ -170,10 +170,10 @@ export function QuoteSummary() {
               <ShoppingCart className="h-5 w-5 text-background/30" />
             </div>
             <p className="text-sm text-background/50">
-              No services in the estimate yet
+              Aucun service dans le devis pour l’instant
             </p>
             <p className="mt-1 text-xs text-background/30">
-              Choose a service from the list above
+              Choisissez un service dans la liste ci-dessus
             </p>
           </div>
         )}
@@ -203,7 +203,7 @@ export function QuoteSummary() {
                   {billableAddOns > 0 && (
                     <span className="text-accent">
                       {" "}
-                      + {billableAddOns} {billableAddOns === 1 ? "add-on" : "add-ons"}
+                      + {billableAddOns} {billableAddOns === 1 ? "option" : "options"}
                     </span>
                   )}
                 </p>
@@ -219,7 +219,7 @@ export function QuoteSummary() {
               <button
                 type="button"
                 onClick={() => removeProduct(item.instanceId)}
-                aria-label="Remove item"
+                aria-label="Retirer l’article"
                 className="ml-2 flex-shrink-0 rounded p-0.5 text-background/30 transition-colors hover:text-background/70"
               >
                 <X className="h-3.5 w-3.5" />
@@ -241,7 +241,7 @@ export function QuoteSummary() {
                   className="inline-flex items-center gap-1 text-background/50 transition-colors hover:text-background/80"
                   aria-expanded={explainerOpen}
                 >
-                  Savings
+                  Économies
                   <Info
                     className={cn(
                       "h-3 w-3 transition-colors",
@@ -261,39 +261,40 @@ export function QuoteSummary() {
               <Collapsible open={explainerOpen}>
                 <div className="mt-2 rounded-lg bg-background/5 p-3 text-[0.72rem] leading-relaxed text-background/60">
                   <p>
-                    When you order several services together, the 3D model
-                    created for one service can be reused for others, so those
-                    additional services get an automatic discount.
+                    Lorsque vous commandez plusieurs services ensemble, le
+                    modèle 3D créé pour l’un peut être réutilisé pour les
+                    autres ; ces services supplémentaires bénéficient donc
+                    d’une remise automatique.
                   </p>
                   <ul className="mt-2 space-y-1">
                     <li>
-                      • Exterior + 360° exterior → 360° is{" "}
+                      • Extérieur + extérieur 360° → le 360° est à{" "}
                       <strong className="text-accent">
-                        −40%
+                        −40 %
                       </strong>{" "}
-                      (the exterior is already built in the model)
+                      (l’extérieur est déjà modélisé)
                     </li>
                     <li>
-                      • Interior + 3D floor plan → the floor plan is{" "}
+                      • Intérieur + plan 3D → le plan est à{" "}
                       <strong className="text-accent">
-                        −70%
+                        −70 %
                       </strong>{" "}
-                      (the space is already modelled)
+                      (l’espace est déjà modélisé)
                     </li>
                     <li>
-                      • Animation + exterior → both receive a discount because
-                      each shares a model with the other
+                      • Animation + extérieur → les deux bénéficient d’une
+                      remise, car ils partagent le même modèle
                     </li>
                   </ul>
                   <p className="mt-2 text-background/40">
-                    Discounts do not stack - the best one always applies.
+                    Les remises ne se cumulent pas — la meilleure s’applique toujours.
                   </p>
                 </div>
               </Collapsible>
             </div>
           )}
           <div className="mb-4 flex items-center justify-between gap-3">
-            <p className="text-sm text-background/60">Estimated price</p>
+            <p className="text-sm text-background/60">Prix estimé</p>
             <div className="flex flex-col items-end">
               {calculation.originalTotal > calculation.total && (
                 <p className="text-sm font-normal text-background/40 line-through tabular-nums">
@@ -321,7 +322,7 @@ export function QuoteSummary() {
               "w-full justify-center rounded-xl",
             )}
           >
-            Order
+            Commander
             <ArrowRight className="ml-1.5 h-4 w-4" />
           </button>
           <button
@@ -329,10 +330,10 @@ export function QuoteSummary() {
             onClick={handleInquiryFromQuote}
             className="mt-2 w-full rounded-xl border border-background/15 px-4 py-3 text-sm font-medium text-background/80 transition-colors hover:bg-background/10 hover:text-background"
           >
-            Ask the team to send an estimate
+            Demander un devis à l’équipe
           </button>
           <p className="mt-3 text-center text-[0.7rem] text-background/40">
-            No registration - order in a few steps.
+            Sans inscription — commandez en quelques étapes.
           </p>
 
           {/* Share quote — saves to DB and returns a tokenized link.
@@ -345,12 +346,12 @@ export function QuoteSummary() {
                 className="flex w-full items-center justify-center gap-1.5 rounded-lg py-2 text-[0.72rem] font-medium text-background/55 transition-colors hover:bg-background/5 hover:text-background/85"
               >
                 <Share2 className="h-3 w-3" />
-                Save and share estimate
+                Enregistrer et partager le devis
               </button>
             )}
             {shareState.kind === "saving" && (
               <p className="text-center text-[0.72rem] text-background/40">
-                Saving...
+                Enregistrement…
               </p>
             )}
             {shareState.kind === "error" && (
@@ -361,7 +362,7 @@ export function QuoteSummary() {
             {shareState.kind === "saved" && (
               <div className="space-y-2">
                 <p className="text-[0.7rem] text-background/55">
-                  The link is valid for 30 days. Opening it loads the same items.
+                  Le lien est valable 30 jours. L’ouvrir recharge les mêmes articles.
                 </p>
                 <div className="flex items-center gap-1.5 rounded-lg bg-background/10 p-1.5">
                   <input
@@ -378,12 +379,12 @@ export function QuoteSummary() {
                     {shareState.copied ? (
                       <>
                         <Check className="h-3 w-3" />
-                        Copied
+                        Copié
                       </>
                     ) : (
                       <>
                         <Copy className="h-3 w-3" />
-                        Copy
+                        Copier
                       </>
                     )}
                   </button>
@@ -393,8 +394,8 @@ export function QuoteSummary() {
           </div>
 
           <p className="mt-3 text-center text-[0.68rem] text-background/30">
-            Prices are estimates. The final estimate can vary depending on the
-            specifics of the project. {pricingTerms.shortNote}
+            Les prix sont indicatifs. Le devis final peut varier selon les
+            spécificités du projet. {pricingTerms.shortNote}
           </p>
         </div>
       )}

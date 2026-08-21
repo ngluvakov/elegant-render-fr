@@ -129,7 +129,7 @@ export function ServiceDetailDrawer({
           >
             {discount && (
               <div className="mb-2 inline-flex items-center gap-1.5 rounded bg-accent px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-accent-foreground">
-                Discount &minus;{discount.pct}%
+                Remise &minus;{discount.pct} %
               </div>
             )}
 
@@ -142,12 +142,12 @@ export function ServiceDetailDrawer({
                   <span className="font-medium text-foreground">
                     {formatPublicPrice(discountedPackage!, displayCurrency, pricingSettings)}
                   </span>
-                  {" / package"}
+                  {" / forfait"}
                 </>
               ) : (
                 <>
                   {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}
-                  {" / package"}
+                  {" / forfait"}
                 </>
               )}
             </p>
@@ -162,7 +162,7 @@ export function ServiceDetailDrawer({
                     {formatPublicPrice(discountedPerUnit!, displayCurrency, pricingSettings)}
                   </>
                 ) : (
-                  <>from {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}</>
+                  <>dès {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}</>
                 )}
                 <span className="ml-1 text-base font-medium text-muted-foreground">
                   / {formattedDisplayUnitLabel}
@@ -178,7 +178,7 @@ export function ServiceDetailDrawer({
                     {formatPublicPrice(discountedPackage!, displayCurrency, pricingSettings)}
                   </>
                 ) : (
-                  <>from {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}</>
+                  <>dès {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}</>
                 )}
               </p>
             )}
@@ -203,7 +203,7 @@ export function ServiceDetailDrawer({
           {product.includes.length > 0 && (
             <div>
               <p className="mb-2 text-[0.7rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-                What is included
+                Ce qui est inclus
               </p>
               <ul className="flex flex-col gap-1.5">
                 {product.includes.map((line) => (
@@ -222,7 +222,7 @@ export function ServiceDetailDrawer({
           {product.addOns.length > 0 && (
             <div>
               <p className="mb-2 text-[0.7rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-                Add-ons
+                Options
               </p>
               <ul className="flex flex-col gap-2">
                 {product.addOns.map((ao) => (
@@ -234,7 +234,7 @@ export function ServiceDetailDrawer({
                       <span className="font-medium text-foreground">{ao.label}</span>
                       <span className="shrink-0 text-foreground">
                         {ao.priceType === "percent"
-                          ? `+${ao.priceEur}%`
+                          ? `+${ao.priceEur} %`
                           : `+${formatPublicPrice(ao.priceEur, displayCurrency, pricingSettings)}`}
                       </span>
                     </div>
@@ -266,7 +266,7 @@ export function ServiceDetailDrawer({
                 href={`/contact?service=${product.id}`}
                 className="inline-flex w-full items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
               >
-                Send inquiry
+                Envoyer une demande
               </Link>
             ) : (
               <button
@@ -275,8 +275,8 @@ export function ServiceDetailDrawer({
                 className="inline-flex w-full items-center justify-center rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
               >
                 {product.id === "int-static" || product.id === "int-360"
-                  ? "Configure in cart"
-                  : "Add to cart"}
+                  ? "Configurer dans le panier"
+                  : "Ajouter au panier"}
               </button>
             )}
             {isInCart && (
@@ -285,7 +285,7 @@ export function ServiceDetailDrawer({
                 onClick={handleScrollToCart}
                 className="inline-flex items-center justify-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
-                Open in cart <ArrowDownToLine className="h-3.5 w-3.5" />
+                Ouvrir dans le panier <ArrowDownToLine className="h-3.5 w-3.5" />
               </button>
             )}
           </div>

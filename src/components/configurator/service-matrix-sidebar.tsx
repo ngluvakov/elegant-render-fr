@@ -26,7 +26,7 @@ export function ServiceMatrixSidebar({ activeCat }: { activeCat: string }) {
     0,
   );
 
-  const allItem: Item = { id: ALL_FILTER, label: "All services", count: totalCount };
+  const allItem: Item = { id: ALL_FILTER, label: "Tous les services", count: totalCount };
   const catItems: Item[] = categories.map((c) => ({
     id: c.id,
     label: c.label,
@@ -76,7 +76,7 @@ export function ServiceMatrixSidebar({ activeCat }: { activeCat: string }) {
       <aside className="hidden lg:block">
         <div className="sticky top-24">
           <p className="mb-3 px-2 text-[0.65rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-            Kategorije
+            Catégories
           </p>
           <ul ref={desktopRef} className="flex flex-col gap-0.5">
             {orderedItems.map((item, idx) => {

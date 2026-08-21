@@ -54,21 +54,22 @@ export function StandaloneAiCredits() {
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-2xl">
-            <SectionKicker>AI Studio credits</SectionKicker>
+            <SectionKicker>Crédits AI Studio</SectionKicker>
             <h2 className="mt-3 text-3xl leading-tight text-foreground md:text-4xl">
-              AI photo editing right away, without waiting for an estimate
+              Retouche photo par IA immédiate, sans attendre de devis
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              For edits to existing photos, buy a credit package and start
-              right away: item removal, day-to-dusk, sky replacement, wall
-              colours, staging, and renovation. Simple edits start from{" "}
+              Pour retoucher des photos existantes, achetez un pack de crédits
+              et commencez tout de suite : suppression d’objets, jour au
+              crépuscule, remplacement du ciel, couleurs des murs, home
+              staging et rénovation. Les retouches simples commencent à{" "}
               {formatPublicPriceFromCents(
                 simpleStartingCents,
                 displayCurrency,
                 pricingSettings,
-              )};
-              credits are valid for {pricingSettings.aiCreditExpiresAfterMonths} months
-              from top-up.
+              )} ;
+              les crédits sont valables {pricingSettings.aiCreditExpiresAfterMonths} mois
+              à compter de la recharge.
             </p>
           </div>
           <a
@@ -76,7 +77,7 @@ export function StandaloneAiCredits() {
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-accent hover:underline"
           >
             <Sparkles className="h-3.5 w-3.5" />
-            View AI tools
+            Voir les outils IA
           </a>
         </div>
 
@@ -141,7 +142,7 @@ function PackageCard({
         <span className="text-3xl font-bold text-foreground tabular-nums">
           {credits}
         </span>
-        <span className="text-sm text-muted-foreground">credits</span>
+        <span className="text-sm text-muted-foreground">crédits</span>
       </div>
       <div className="mt-4">
         <div className="text-xl font-semibold text-foreground tabular-nums">
@@ -157,7 +158,7 @@ function PackageCard({
             displayCurrency,
             pricingSettings,
           )}{" "}
-          / credit
+          / crédit
         </div>
       </div>
       <div
@@ -171,12 +172,12 @@ function PackageCard({
         {isActive ? (
           <>
             <Check className="h-3 w-3" />
-            In estimate
+            Dans le devis
           </>
         ) : (
           <>
             <Coins className="h-3 w-3" />
-            Add credits
+            Ajouter des crédits
           </>
         )}
       </div>
@@ -223,10 +224,10 @@ function CustomAmountRow({
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
         <div>
           <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-            Or enter an exact number of credits
+            Ou saisissez un nombre exact de crédits
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            The system automatically applies the best volume price.
+            Le meilleur tarif dégressif s’applique automatiquement.
           </p>
         </div>
 
@@ -236,7 +237,7 @@ function CustomAmountRow({
               type="button"
               onClick={() => update(draft - 1)}
               disabled={draft <= 1}
-              aria-label="Decrease credit count"
+              aria-label="Diminuer le nombre de crédits"
               className="flex h-9 w-9 items-center justify-center rounded-l-lg transition-colors hover:bg-muted disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -247,14 +248,14 @@ function CustomAmountRow({
               max={MAX_CUSTOM_CREDITS}
               value={draft}
               onChange={(e) => update(Number(e.target.value))}
-              aria-label="Credit count"
+              aria-label="Nombre de crédits"
               className="h-9 w-16 border-x border-border/60 bg-transparent text-center text-sm font-semibold text-foreground tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
             <button
               type="button"
               onClick={() => update(draft + 1)}
               disabled={draft >= MAX_CUSTOM_CREDITS}
-              aria-label="Increase credit count"
+              aria-label="Augmenter le nombre de crédits"
               className="flex h-9 w-9 items-center justify-center rounded-r-lg transition-colors hover:bg-muted disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -275,7 +276,7 @@ function CustomAmountRow({
                 displayCurrency,
                 pricingSettings,
               )}{" "}
-              / credit
+              / crédit
             </div>
           </div>
 
@@ -293,17 +294,17 @@ function CustomAmountRow({
             {isCommitted ? (
               <>
                 <Check className="h-3 w-3" />
-                In estimate
+                Dans le devis
               </>
             ) : isCustomActive ? (
               <>
                 <Coins className="h-3 w-3" />
-                Update
+                Mettre à jour
               </>
             ) : (
               <>
                 <Coins className="h-3 w-3" />
-                Add credits
+                Ajouter des crédits
               </>
             )}
           </button>

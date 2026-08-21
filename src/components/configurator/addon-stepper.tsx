@@ -73,12 +73,12 @@ export function AddOnStepper({
           <p className="text-sm font-medium text-foreground">{label}</p>
           {isWithinIncluded && quantity > 0 && (
             <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[0.72rem] font-semibold uppercase tracking-wider text-foreground">
-              Included
+              Inclus
             </span>
           )}
           {billableQty > 0 && (
             <span className="rounded bg-accent/15 px-1.5 py-0.5 text-[0.72rem] font-semibold text-foreground">
-              +{billableQty} extra
+              +{billableQty} suppl.
             </span>
           )}
         </div>
@@ -87,20 +87,20 @@ export function AddOnStepper({
         </p>
         {isVolumeRate && billableQty > 0 && (
           <p className="mt-0.5 text-[0.68rem] font-medium text-muted-foreground">
-            Volume price:{" "}
-            {formatPublicPrice(priceEur, displayCurrency, pricingSettings)} per
-            item
+            Tarif dégressif :{" "}
+            {formatPublicPrice(priceEur, displayCurrency, pricingSettings)} par
+            unité
           </p>
         )}
         {upcomingDiscount && (
           <p className="mt-0.5 text-[0.68rem] font-medium text-muted-foreground">
-            From {upcomingDiscount.afterQty + 1} onward:{" "}
+            À partir de {upcomingDiscount.afterQty + 1} :{" "}
             {formatPublicPrice(
               upcomingDiscount.priceEur,
               displayCurrency,
               pricingSettings,
-            )} per
-            item
+            )} par
+            unité
             <span className="ml-1 text-muted-foreground">
               (-
               {formatPublicPrice(
@@ -117,7 +117,7 @@ export function AddOnStepper({
       <div className="flex flex-shrink-0 items-center gap-2">
         <span className="w-24 text-right text-xs font-medium text-muted-foreground">
           {priceType === "percent"
-            ? `+${priceEur}%`
+            ? `+${priceEur} %`
             : formatPublicPrice(priceEur, displayCurrency, pricingSettings)}
         </span>
         <div className="flex items-center rounded-lg bg-secondary/70">
@@ -125,7 +125,7 @@ export function AddOnStepper({
             type="button"
             onClick={() => onChange(quantity - 1)}
             disabled={atMin}
-            aria-label={`Decrease ${label}`}
+            aria-label={`Diminuer ${label}`}
             className="flex h-8 w-8 items-center justify-center rounded-l-lg transition-colors hover:bg-muted disabled:opacity-30"
           >
             <Minus className="h-3.5 w-3.5" />
@@ -137,7 +137,7 @@ export function AddOnStepper({
             type="button"
             onClick={() => onChange(quantity + 1)}
             disabled={atMax}
-            aria-label={`Increase ${label}`}
+            aria-label={`Augmenter ${label}`}
             className="flex h-8 w-8 items-center justify-center rounded-r-lg transition-colors hover:bg-muted disabled:opacity-30"
           >
             <Plus className="h-3.5 w-3.5" />

@@ -33,23 +33,21 @@ import type { ConfiguratorCategory, ConfiguratorProduct } from "@/lib/catalog/co
 import type { QuoteItem } from "@/lib/catalog/calculate";
 import type { ResolvedPricingCatalog } from "@/lib/pricing/catalog";
 
-// English pluralization for unit labels used in the "Package of X Y" annotation.
-// Only needed for the small set of units that appear on /pricing. Extend if needed.
+// French pluralization for unit labels used in the "Forfait de X Y" annotation.
+// Keys must match the catalog's French unit labels. Extend if needed.
 function pluralizeUnit(unitLabel: string, qty: number): string {
-  const map: Record<string, [string, string, string]> = {
-    "render": ["render", "renders", "renders"],
-    "panorama": ["panorama", "panoramas", "panoramas"],
-    "second": ["second", "seconds", "seconds"],
-    "image": ["image", "images", "images"],
-    "frame": ["frame", "frames", "frames"],
-    "level": ["level", "levels", "levels"],
-    "view": ["view", "views", "views"],
-    "room": ["room", "rooms", "rooms"],
+  const map: Record<string, [string, string]> = {
+    "rendu": ["rendu", "rendus"],
+    "panorama": ["panorama", "panoramas"],
+    "seconde": ["seconde", "secondes"],
+    "image": ["image", "images"],
+    "cadre": ["cadre", "cadres"],
+    "niveau": ["niveau", "niveaux"],
+    "vue": ["vue", "vues"],
+    "pièce": ["pièce", "pièces"],
   };
-  const forms = map[unitLabel] ?? [unitLabel, unitLabel, unitLabel];
-  if (qty === 1) return forms[0];
-  if (qty >= 2 && qty <= 4) return forms[1];
-  return forms[2];
+  const forms = map[unitLabel] ?? [unitLabel, unitLabel];
+  return qty === 1 ? forms[0] : forms[1];
 }
 
 type Props = {
@@ -129,10 +127,10 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
         href={`/contact?service=${product.id}`}
         className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-[var(--color-green-hover)] px-4 py-2.5 text-sm font-semibold transition-colors"
       >
-        Send inquiry
+        Envoyer une demande
       </Link>
       <p className="mt-2 text-xs text-muted-foreground text-center">
-        We respond within one working day.
+        Nous répondons sous un jour ouvré.
       </p>
     </div>
   ) : marketingMode ? (
@@ -147,7 +145,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
       }
       className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-[var(--color-green-hover)] px-4 py-2.5 text-sm font-semibold transition-colors"
     >
-      View in pricing
+      Voir les tarifs
     </Link>
   ) : (
     <button
@@ -155,7 +153,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
       onClick={handleAddToCart}
       className="inline-flex items-center justify-center w-full rounded-lg bg-accent text-accent-foreground hover:bg-[var(--color-green-hover)] px-4 py-2.5 text-sm font-semibold transition-colors"
     >
-      {isInterior ? "Configure floor" : "Add to cart"}
+      {isInterior ? "Configurer les niveaux" : "Ajouter au panier"}
     </button>
   );
 
@@ -178,7 +176,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={`/artwork/service-table-${product.id}.webp`}
-            alt={`${product.label} - ${category.description}`}
+            alt={`${product.label} — ${category.description}`}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover object-center"
             onError={() => setImgFailed(true)}
@@ -225,10 +223,10 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
               {/* Kicker row */}
               <div className="flex items-start justify-between gap-3 mb-3">
                 <p className="text-[0.7rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground leading-none">
-                  Often ordered together
+                  Souvent commandés ensemble
                   {hasAnyUpsellDiscount && (
                     <span className="ml-2 inline-flex items-center rounded bg-accent/15 px-1.5 py-0.5 text-[0.6rem] font-bold normal-case tracking-normal text-foreground">
-                      Discounted
+                      Avec remise
                     </span>
                   )}
                 </p>
@@ -237,7 +235,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                   onClick={() => setUpsellOpen((v) => !v)}
                   className="inline-flex items-center gap-1 text-xs font-medium text-foreground hover:underline transition-colors shrink-0"
                 >
-                  {upsellOpen ? "Hide" : "View all"}
+                  {upsellOpen ? "Masquer" : "Tout voir"}
                   <ChevronDown
                     className={cn(
                       "h-3.5 w-3.5 transition-transform",
@@ -259,7 +257,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                       {up.label}
                       {chipDiscount !== null && (
                         <span className="text-[0.65rem] font-bold text-muted-foreground">
-                          &minus;{chipDiscount.pct}%
+                          &minus;{chipDiscount.pct} %
                         </span>
                       )}
                     </span>
@@ -293,7 +291,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
           {/* Configure / Details ghost link — for interior products only on desktop */}
           {!isInquiry && isInterior && (
             <p className="text-xs text-muted-foreground">
-              The price depends on the number of floors and rooms - configure it in the cart.
+              Le prix dépend du nombre de niveaux et de pièces — configurez-le dans le panier.
             </p>
           )}
         </div>
@@ -305,7 +303,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
             onClick={() => setExpanded((v) => !v)}
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            <span>{expanded ? "Close" : "Details"}</span>
+            <span>{expanded ? "Fermer" : "Détails"}</span>
             <ChevronRight
               className={cn(
                 "h-4 w-4 transition-transform",
@@ -325,14 +323,14 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
           {/* Issue 4: own discount badge */}
           {showOwnDiscount && (
             <div className="mb-2 inline-flex items-center gap-1.5 rounded bg-accent px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-accent-foreground">
-              Discount &minus;{ownDiscount.pct}%
+              Remise &minus;{ownDiscount.pct} %
             </div>
           )}
 
           {/* Issue 3a: kicker for package products (no discount state) */}
           {!showOwnDiscount && displayMinQty !== undefined && displayMinQty > 1 && (
             <p className="text-[0.65rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground mb-1">
-              Price per render
+              Prix par rendu
             </p>
           )}
 
@@ -346,12 +344,12 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                 <span className="text-foreground font-medium">
                   {formatPublicPrice(discountedPackage!, displayCurrency, pricingSettings)}
                 </span>
-                {" / package"}
+                {" / forfait"}
               </>
             ) : (
               <>
                 {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}
-                {" / package"}
+                {" / forfait"}
               </>
             )}
           </p>
@@ -368,7 +366,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                     {formatPublicPrice(discountedPerUnit!, displayCurrency, pricingSettings)}
                   </>
                 ) : (
-                  <>from {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}</>
+                  <>dès {formatPublicPrice(originalPerUnit, displayCurrency, pricingSettings)}</>
                 )}
               </p>
               <p className="text-lg text-muted-foreground mt-1">
@@ -385,7 +383,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
                   {formatPublicPrice(discountedPackage!, displayCurrency, pricingSettings)}
                 </>
               ) : (
-                <>from {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}</>
+                <>dès {formatPublicPrice(originalPackage, displayCurrency, pricingSettings)}</>
               )}
             </p>
           )}
@@ -411,7 +409,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
           {/* Issue 3a: "Package of X" annotation — only when no own discount showing */}
           {!showOwnDiscount && displayMinQty !== undefined && displayMinQty > 1 && (
             <p className="text-xs text-muted-foreground mt-1.5">
-              Package of {displayMinQty} {pluralizeUnit(formattedDisplayUnitLabel ?? "", displayMinQty)}
+              Forfait de {displayMinQty} {pluralizeUnit(formattedDisplayUnitLabel ?? "", displayMinQty)}
             </p>
           )}
         </div>

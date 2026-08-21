@@ -129,12 +129,12 @@ export function ServiceMatrixRow({
           </h4>
           {isInCart && (
             <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-foreground">
-              <Check className="h-2.5 w-2.5" strokeWidth={3} /> In cart
+              <Check className="h-2.5 w-2.5" strokeWidth={3} /> Au panier
             </span>
           )}
           {recommended && !isInCart && (
             <span className="inline-flex items-center rounded-full bg-accent/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-foreground">
-              Better value
+              Plus avantageux
             </span>
           )}
         </div>
@@ -155,7 +155,7 @@ export function ServiceMatrixRow({
           </div>
         ) : (
           <span className="text-base sm:text-lg font-semibold tracking-tight text-foreground tabular-nums">
-            from {formatPublicPrice(basePrice, displayCurrency, pricingSettings)}
+            dès {formatPublicPrice(basePrice, displayCurrency, pricingSettings)}
           </span>
         )}
         {perUnit != null && (
@@ -182,9 +182,9 @@ export function ServiceMatrixRow({
         >
           {discount ? (
             <>
-              &minus;{discount.pct}%{" "}
+              &minus;{discount.pct} %{" "}
               {isPreviewDiscount && (
-                <span className="ml-1 hidden sm:inline font-normal normal-case tracking-normal">preview</span>
+                <span className="ml-1 hidden sm:inline font-normal normal-case tracking-normal">aperçu</span>
               )}
             </>
           ) : (
@@ -197,7 +197,7 @@ export function ServiceMatrixRow({
         <button
           type="button"
           onClick={handleInfo}
-          aria-label={`Service details: ${product.label}`}
+          aria-label={`Détails du service : ${product.label}`}
           className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/50 bg-background text-muted-foreground transition-colors hover:border-input hover:text-foreground"
         >
           <Info className="h-4 w-4" />
@@ -206,40 +206,40 @@ export function ServiceMatrixRow({
         {isInquiry ? (
           <Link
             href={`/contact?service=${product.id}`}
-            aria-label="Send inquiry"
+            aria-label="Envoyer une demande"
             className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
           >
             <Mail className="h-4 w-4" />
-            <span className="hidden sm:inline">Inquiry</span>
+            <span className="hidden sm:inline">Demande</span>
           </Link>
         ) : isInCart ? (
           isInterior ? (
             <Link
               href="#korpa"
-              aria-label="Configure in cart"
+              aria-label="Configurer dans le panier"
               className="inline-flex h-8 items-center gap-1.5 rounded-full bg-primary px-3 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/85"
             >
               <Sliders className="h-4 w-4" />
-              <span className="hidden sm:inline">Configure</span>
+              <span className="hidden sm:inline">Configurer</span>
             </Link>
           ) : (
             <span
-              aria-label="Already in cart"
+              aria-label="Déjà dans le panier"
               className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent/15 px-3 text-xs font-semibold text-foreground"
             >
               <Check className="h-4 w-4" />
-              <span className="hidden sm:inline">In cart</span>
+              <span className="hidden sm:inline">Au panier</span>
             </span>
           )
         ) : (
           <button
             type="button"
             onClick={handleAdd}
-            aria-label="Add to cart"
+            aria-label="Ajouter au panier"
             className="inline-flex h-8 items-center gap-1.5 rounded-full bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
           >
             <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline">Add</span>
+            <span className="hidden sm:inline">Ajouter</span>
           </button>
         )}
       </div>

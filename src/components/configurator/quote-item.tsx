@@ -150,7 +150,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           <button
             type="button"
             onClick={() => removeProduct(breakdown.instanceId)}
-            aria-label="Remove"
+            aria-label="Retirer"
             className="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors hover:bg-destructive/20"
           >
             <X className="h-3.5 w-3.5" />
@@ -164,7 +164,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {hasIncludedAddOns && (
             <div className="border-t border-border/40 bg-secondary/50 px-5 py-3">
               <p className="mb-2 text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-                Already included
+                Déjà inclus
               </p>
               <div className="flex flex-wrap gap-2">
                 {breakdown.addOns
@@ -186,7 +186,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {product.durationConfig && item.durationSeconds !== undefined && (
             <div className="border-t border-border/40 px-5 py-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-foreground">Duration</p>
+                <p className="text-sm font-medium text-foreground">Durée</p>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -201,7 +201,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                     }
                     className="w-16 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm font-semibold text-foreground"
                   />
-                  <span className="text-sm text-muted-foreground">seconds</span>
+                  <span className="text-sm text-muted-foreground">secondes</span>
                 </div>
               </div>
               <input
@@ -227,13 +227,13 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
                   displayCurrency,
                   pricingSettings,
                 )}
-                /sec ×{" "}
+                /s ×{" "}
                 {item.durationSeconds}s
                 {breakdown.durationDiscount && breakdown.durationDiscount > 0 && (
                   <span className="font-semibold text-muted-foreground">
                     {" "}
-                    - {Math.round(breakdown.durationDiscount * 100)}% duration
-                    discount
+                    − {Math.round(breakdown.durationDiscount * 100)} % de remise
+                    sur la durée
                   </span>
                 )}
               </p>
@@ -282,7 +282,7 @@ export function QuoteItemCard({ breakdown }: QuoteItemProps) {
           {!usesSpecialEditor && product.addOns.length > 0 && (
             <div className="border-t border-border/40 px-5 py-4">
               <p className="mb-3 text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-                Customize
+                Personnaliser
               </p>
               <div className="space-y-1">
                 {product.addOns.map((def) => {

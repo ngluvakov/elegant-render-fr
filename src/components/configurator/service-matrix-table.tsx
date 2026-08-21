@@ -93,7 +93,7 @@ export function ServiceMatrixTable({
   if (!activeCategory) {
     return (
       <div className="py-20 text-center text-sm text-muted-foreground">
-        Category not found.
+        Catégorie introuvable.
       </div>
     );
   }
@@ -165,10 +165,10 @@ export function ServiceMatrixTable({
         <section>
           <header className="mb-2 flex items-baseline justify-between px-1">
             <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              Better value with {activeCategory.label.toLowerCase()}
+              Plus avantageux avec « {activeCategory.label.toLowerCase()} »
             </h3>
             <span className="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
-              Hover &rarr; discount preview
+              Survol &rarr; aperçu de la remise
             </span>
           </header>
           <ul className="flex flex-col gap-1.5">
@@ -192,10 +192,10 @@ export function ServiceMatrixTable({
         <section>
           <header className="mb-2 flex items-baseline justify-between px-1">
             <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              Other services
+              Autres services
             </h3>
             <span className="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-muted-foreground/70">
-              From other categories
+              D’autres catégories
             </span>
           </header>
           <ul className="flex flex-col gap-1.5">

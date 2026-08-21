@@ -38,11 +38,11 @@ export function AiCreditAdder() {
             AI Studio
           </div>
           <h3 className="mt-3 text-lg font-semibold text-foreground">
-            Add AI credits to the same order
+            Ajouter des crédits IA à la même commande
           </h3>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-            Credits activate immediately after payment. One credit covers one
-            complex AI edit or two simple edits.
+            Les crédits s’activent immédiatement après le paiement. Un crédit
+            couvre une retouche IA complexe ou deux retouches simples.
           </p>
         </div>
         <div className="text-right">
@@ -59,7 +59,7 @@ export function AiCreditAdder() {
               displayCurrency,
               pricingSettings,
             )}{" "}
-            per credit
+            par crédit
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ export function AiCreditAdder() {
                 }`}
               >
                 <span className="block text-sm font-semibold text-foreground">
-                  {preset} credits
+                  {preset} crédits
                 </span>
                 <span className="mt-1 block text-xs text-muted-foreground">
                   {formatPublicPriceFromCents(
@@ -97,7 +97,7 @@ export function AiCreditAdder() {
 
         <div className="rounded-xl border border-border/50 bg-background/50 p-3">
           <p className="text-xs font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-            Custom amount
+            Montant personnalisé
           </p>
           <div className="mt-2 flex items-center gap-2">
             <Button
@@ -136,13 +136,13 @@ export function AiCreditAdder() {
               : `${tier.minCredits}+`;
             return (
               <span key={tier.minCredits} className="rounded-full bg-secondary/60 px-2.5 py-1">
-                {label}:{" "}
+                {label} :{" "}
                 {formatPublicPriceFromCents(
                   tier.centsPerCredit,
                   displayCurrency,
                   pricingSettings,
                 )}
-                /credit
+                /crédit
               </span>
             );
           })}
@@ -153,7 +153,7 @@ export function AiCreditAdder() {
           onClick={() => setAiCredits(credits)}
         >
           <Coins className="h-4 w-4" />
-          {existingCredits > 0 ? "Update credits" : "Add credits"}
+          {existingCredits > 0 ? "Mettre à jour les crédits" : "Ajouter des crédits"}
         </Button>
       </div>
     </div>

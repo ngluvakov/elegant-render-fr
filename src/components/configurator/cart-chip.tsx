@@ -28,7 +28,7 @@ export function CartChip() {
       onClick={handleClick}
       className="snap-start shrink-0 rounded-full bg-foreground text-background px-4 py-2 text-sm font-medium animate-in fade-in slide-in-from-right-2 duration-150 ease-out"
     >
-      Cart ({count}) &rarr;
+      Panier ({count}) &rarr;
     </button>
   );
 }

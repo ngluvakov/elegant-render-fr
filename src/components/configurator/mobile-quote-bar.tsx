@@ -30,8 +30,8 @@ export function MobileQuoteBar() {
       <div className="mx-auto flex w-full max-w-[min(96vw,1720px)] items-center justify-between gap-3 px-5 py-3">
         <div className="min-w-0 flex-1">
           <div className="text-[0.65rem] font-mono uppercase tracking-[0.08em] text-background/50">
-            Estimated price · {calculation.items.length}{" "}
-            {calculation.items.length === 1 ? "item" : "items"}
+            Prix estimé · {calculation.items.length}{" "}
+            {calculation.items.length === 1 ? "article" : "articles"}
           </div>
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <span className="text-lg font-semibold text-background tabular-nums">
@@ -51,7 +51,7 @@ export function MobileQuoteBar() {
                   )}
                 </span>
                 <span className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[0.68rem] font-semibold text-accent">
-                  −{savingsPct}%
+                  −{savingsPct} %
                 </span>
               </>
             )}
@@ -61,7 +61,7 @@ export function MobileQuoteBar() {
           href="#quote-summary"
           className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
         >
-          View estimate
+          Voir le devis
           <ArrowDown className="h-3 w-3" />
         </a>
       </div>

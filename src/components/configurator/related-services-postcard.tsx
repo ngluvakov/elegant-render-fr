@@ -76,7 +76,7 @@ export function RelatedServicesPostcard({ productId }: Props) {
       <button
         type="button"
         onClick={() => setDismissed(true)}
-        aria-label="Close"
+        aria-label="Fermer"
         className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
       >
         <X className="h-4 w-4" />
@@ -85,11 +85,11 @@ export function RelatedServicesPostcard({ productId }: Props) {
       {/* Header — SectionKicker-style + optional discount pill */}
       <div className="mb-3 flex items-center gap-2 pr-6">
         <p className="text-[0.7rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-          With this package
+          Avec ce service
         </p>
         {hasAnyDiscount && (
           <span className="inline-flex items-center rounded bg-accent/15 px-1.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-foreground">
-            Discounted
+            Avec remise
           </span>
         )}
       </div>
@@ -118,7 +118,7 @@ export function RelatedServicesPostcard({ productId }: Props) {
               {discount && discounted !== null ? (
                 <>
                   <span className="inline-flex items-center rounded border border-border bg-accent/15 px-1.5 py-0.5 text-[0.65rem] font-bold tracking-wide text-foreground">
-                    &minus;{discount.pct}%
+                    &minus;{discount.pct} %
                   </span>
                   <span className="text-xs text-muted-foreground/60 line-through">
                     {formatPublicPrice(
@@ -153,7 +153,7 @@ export function RelatedServicesPostcard({ productId }: Props) {
                 onClick={() => addProduct(id, categoryId)}
                 className="ml-auto flex h-7 items-center rounded-md border border-foreground/20 bg-transparent px-2.5 text-xs font-medium text-foreground transition-colors hover:border-foreground/30 hover:bg-foreground/5"
               >
-                + Add
+                + Ajouter
               </button>
             </div>
           );

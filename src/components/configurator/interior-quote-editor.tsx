@@ -78,7 +78,7 @@ export function InteriorQuoteEditor({
     const floor = floors[floorIdx];
     if (floor.rooms.length >= MAX_ROOMS_PER_FLOOR) return;
     const next: InteriorRoom = {
-      name: `Room ${floor.rooms.length + 1}`,
+      name: `Pièce ${floor.rooms.length + 1}`,
       cameras: 1,
     };
     updateFloor(floorIdx, { rooms: [...floor.rooms, next] });
@@ -118,9 +118,9 @@ export function InteriorQuoteEditor({
   return (
     <div className="space-y-4">
       <p className="text-xs leading-relaxed text-muted-foreground">
-        Each floor includes 10 rooms + 10 frames in the base price. Additional
-        rooms and frames are charged above that threshold; following floors are
-        automatically priced at a discount (-30%).
+        Chaque niveau comprend 10 pièces + 10 vues dans le prix de base. Les
+        pièces et vues supplémentaires sont facturées au-delà de ce seuil ;
+        les niveaux suivants bénéficient automatiquement d’une remise (−30 %).
       </p>
 
       <div className="space-y-3">
@@ -150,10 +150,10 @@ export function InteriorQuoteEditor({
           className="inline-flex items-center gap-1.5 rounded-lg bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent transition-all hover:bg-accent hover:text-accent-foreground disabled:opacity-40 disabled:hover:bg-accent/15 disabled:hover:text-accent"
         >
           <Plus className="h-3 w-3" />
-          Add floor
+          Ajouter un niveau
         </button>
         <p className="text-right text-xs text-muted-foreground">
-          {floors.length} {floors.length === 1 ? "floor" : "floors"}
+          {floors.length} {floors.length === 1 ? "niveau" : "niveaux"}
         </p>
       </div>
 
@@ -192,7 +192,7 @@ function FloorPanel({
   onSetRoomCameras: (roomIdx: number, n: number) => void;
   onRemoveFloor: () => void;
 }) {
-  const floorLabel = index === 0 ? "Floor 1" : `Floor ${index + 1}`;
+  const floorLabel = index === 0 ? "Niveau 1" : `Niveau ${index + 1}`;
   return (
     <div className="rounded-xl border border-border/60 bg-card/60 p-4">
       <div className="flex items-center justify-between gap-3">
@@ -200,7 +200,7 @@ function FloorPanel({
           {floorLabel}
           {index > 0 && (
             <span className="ml-2 text-[0.68rem] font-medium uppercase tracking-wider text-muted-foreground">
-              −30%
+              −30 %
             </span>
           )}
         </div>
@@ -208,7 +208,7 @@ function FloorPanel({
           <button
             type="button"
             onClick={onRemoveFloor}
-            aria-label={`Remove ${floorLabel}`}
+            aria-label={`Supprimer ${floorLabel}`}
             className="flex h-7 w-7 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors hover:bg-destructive/20"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -219,13 +219,13 @@ function FloorPanel({
       <div className="mt-3 space-y-1.5">
         {floor.rooms.length === 0 && (
           <p className="rounded-lg bg-background/40 px-3 py-3 text-center text-[0.72rem] text-muted-foreground">
-            No rooms yet - add the first one to see the calculation.
+            Aucune pièce pour l’instant — ajoutez la première pour voir le calcul.
           </p>
         )}
         {floor.rooms.map((room, rIdx) => (
           <RoomRow
             key={rIdx}
-            name={room.name || `Room ${rIdx + 1}`}
+            name={room.name || `Pièce ${rIdx + 1}`}
             cameras={room.cameras || 1}
             onCamerasChange={(n) => onSetRoomCameras(rIdx, n)}
             onRemove={() => onRemoveRoom(rIdx)}
@@ -238,7 +238,7 @@ function FloorPanel({
           className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-border/60 bg-transparent px-3 py-2 text-[0.72rem] font-medium text-muted-foreground transition-colors hover:border-accent/40 hover:bg-accent/5 hover:text-accent disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-muted-foreground"
         >
           <Plus className="h-3 w-3" />
-          Add room
+          Ajouter une pièce
         </button>
       </div>
 
@@ -270,7 +270,7 @@ function RoomRow({
       </span>
       <div className="flex flex-shrink-0 items-center gap-2">
         <CompactStepper
-          label="frames"
+          label="vues"
           value={cameras}
           min={1}
           max={MAX_CAMERAS_PER_ROOM}
@@ -279,7 +279,7 @@ function RoomRow({
         <button
           type="button"
           onClick={onRemove}
-          aria-label={`Remove ${name}`}
+          aria-label={`Supprimer ${name}`}
           className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -303,14 +303,14 @@ function FloorBreakdown({
   const rows: { label: string; value: string }[] = [
     {
       label: calc.isFirstFloor
-        ? "First floor price (includes 10 rooms + 10 frames)"
-        : "Additional floor price (-30%)",
+        ? "Prix du premier niveau (10 pièces + 10 vues incluses)"
+        : "Prix du niveau supplémentaire (−30 %)",
       value: formatPublicPrice(calc.baseCost, displayCurrency, pricingSettings),
     },
   ];
   if (calc.extraRoomsCost > 0) {
     rows.push({
-      label: `+${calc.extraRooms} extra room${calc.extraRooms === 1 ? "" : "s"} · ${formatPublicPrice(pricing?.extraRoomEur ?? 28, displayCurrency, pricingSettings)}/item`,
+      label: `+${calc.extraRooms} pièce${calc.extraRooms === 1 ? "" : "s"} suppl. · ${formatPublicPrice(pricing?.extraRoomEur ?? 28, displayCurrency, pricingSettings)}/unité`,
       value: formatPublicPrice(
         calc.extraRoomsCost,
         displayCurrency,
@@ -320,7 +320,7 @@ function FloorBreakdown({
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
-      label: `+${calc.extraCameras} extra frame${calc.extraCameras === 1 ? "" : "s"} · ${formatPublicPrice(pricing?.extraCameraEur ?? 10, displayCurrency, pricingSettings)}/item`,
+      label: `+${calc.extraCameras} vue${calc.extraCameras === 1 ? "" : "s"} suppl. · ${formatPublicPrice(pricing?.extraCameraEur ?? 10, displayCurrency, pricingSettings)}/unité`,
       value: formatPublicPrice(
         calc.extraCamerasCost,
         displayCurrency,
@@ -344,7 +344,7 @@ function FloorBreakdown({
       ))}
       <div className="mt-1.5 flex items-baseline justify-between gap-2 border-t border-border/40 pt-2 text-xs">
         <span className="font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-          Floor total
+          Total du niveau
         </span>
         <span className="text-sm font-bold text-foreground tabular-nums">
           {formatPublicPrice(
@@ -395,14 +395,14 @@ export function ItemTotal({
   return (
     <div className="space-y-2 rounded-xl bg-foreground/5 px-4 py-3 text-xs">
       <div className="flex items-baseline justify-between gap-2 text-muted-foreground">
-        <span>Subtotal</span>
+        <span>Sous-total</span>
         <span className="tabular-nums">
           {formatPublicPrice(preDiscountEur, displayCurrency, pricingSettings)}
         </span>
       </div>
       <div className="flex items-baseline justify-between gap-2 text-muted-foreground">
         <span className="min-w-0 truncate">
-          −{discount!.pct}%
+          −{discount!.pct} %
           <span className="ml-1.5 text-[0.7rem] font-normal text-muted-foreground">
             {discount!.reason}
           </span>
@@ -449,7 +449,7 @@ function CompactStepper({
           type="button"
           onClick={() => onChange(value - 1)}
           disabled={atMin}
-          aria-label={`Decrease ${label}`}
+          aria-label={`Diminuer ${label}`}
           className="flex h-7 w-7 items-center justify-center rounded-l-md transition-colors hover:bg-muted disabled:opacity-30"
         >
           <Minus className="h-3 w-3" />
@@ -461,7 +461,7 @@ function CompactStepper({
           type="button"
           onClick={() => onChange(value + 1)}
           disabled={atMax}
-          aria-label={`Increase ${label}`}
+          aria-label={`Augmenter ${label}`}
           className="flex h-7 w-7 items-center justify-center rounded-r-md transition-colors hover:bg-muted disabled:opacity-30"
         >
           <Plus className="h-3 w-3" />

@@ -71,7 +71,7 @@ export function RelatedUpsellCard({
                 : "bg-accent/15",
             )}
           >
-            &minus;{pct}%
+            &minus;{pct} %
           </span>
         )}
       </div>
@@ -89,7 +89,7 @@ export function RelatedUpsellCard({
           </div>
         ) : (
           <span className="text-sm text-muted-foreground">
-            from {formatPublicPrice(originalPrice, displayCurrency, pricingSettings)}
+            dès {formatPublicPrice(originalPrice, displayCurrency, pricingSettings)}
           </span>
         )}
       </div>
@@ -100,7 +100,7 @@ export function RelatedUpsellCard({
         onClick={handleAdd}
         className="mt-1 w-full rounded-md border border-foreground/20 bg-transparent px-2 py-1 text-xs font-medium text-foreground hover:bg-foreground/5 transition-colors"
       >
-        + Add
+        + Ajouter
       </button>
     </div>
   );

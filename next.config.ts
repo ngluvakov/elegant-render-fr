@@ -19,6 +19,14 @@ const nextConfig: NextConfig = {
       "./node_modules/@fontsource/noto-sans/files/noto-sans-latin-ext-400-normal.woff",
       "./node_modules/@fontsource/noto-sans/files/noto-sans-latin-ext-400-italic.woff",
       "./node_modules/@fontsource/noto-sans/files/noto-sans-latin-ext-700-normal.woff",
+      // sharp (AI Studio image processing) is already externalized by Next,
+      // but its linux-x64 binding dlopen()s libvips at runtime — a path the
+      // file-tracer can't follow, so libvips-cpp.so.* was left out of the
+      // Vercel function and sharp failed to load in production. Force-include
+      // both native packages so the .node binding and its libvips .so ship
+      // together. (Vercel runs linux-x64; other platforms are dev-only.)
+      "./node_modules/@img/sharp-linux-x64/**/*",
+      "./node_modules/@img/sharp-libvips-linux-x64/**/*",
     ],
   },
   async headers() {

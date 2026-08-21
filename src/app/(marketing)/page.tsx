@@ -24,14 +24,14 @@ import { FAQ_ITEMS } from "@/lib/content/site";
  */
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Architectural visualization",
+  title: "Visualisation architecturale",
   description: SEO.defaultDescription,
   twitterDescription: SEO.twitterDescription,
   path: "/",
   keywords: [
-    "architectural visualization Europe",
-    "photorealistic 3D renders",
-    "virtual staging for real estate",
+    "visualisation architecturale France",
+    "rendus 3D photoréalistes",
+    "home staging virtuel immobilier",
   ],
 });
 
@@ -67,24 +67,24 @@ export default async function Home() {
 
 const INTENT_COLUMNS = [
   {
-    title: "Architectural visualization",
-    text: "Realistic interior and exterior renders. The base price covers building the 3D model — every additional angle or room costs significantly less.",
+    title: "Visualisation architecturale",
+    text: "Des rendus d’intérieur et d’extérieur réalistes. Le prix de base couvre la construction du modèle 3D — chaque angle ou pièce supplémentaire coûte nettement moins.",
     href: "/pricing?group=interior#configurator",
   },
   {
-    title: "Virtual staging & renovation",
-    text: "Transform empty or dated spaces from photographs. The first image covers the design; each further image of the same room saves you up to 33%.",
+    title: "Home staging virtuel & rénovation",
+    text: "Transformez des espaces vides ou datés à partir de photos. La première image couvre la conception ; chaque image suivante de la même pièce vous fait économiser jusqu’à 33 %.",
     href: "/pricing?group=staging-renovation#configurator",
   },
   {
-    title: "Interactive plans & tours",
-    text: "From clear 2D/3D floor plans to immersive 360° tours. Order several outputs from the same model and the discounts apply to the whole project.",
+    title: "Plans & visites interactifs",
+    text: "Des plans 2D/3D lisibles aux visites 360° immersives. Commandez plusieurs livrables à partir du même modèle — les remises s’appliquent à l’ensemble du projet.",
     href: "/pricing?group=plans#configurator",
   },
 ] as const;
 
 /** Search-intent columns — the .rs SearchIntentSection with the approved
- * English copy, styled per the White Rook tokens. */
+ * copy (French localization), styled per the White Rook tokens. */
 function SearchIntentSection() {
   return (
     <section className="bg-background">
@@ -102,7 +102,7 @@ function SearchIntentSection() {
               {item.text}
             </p>
             <span className="font-mono text-xs uppercase tracking-[0.08em] text-foreground group-hover:underline">
-              See pricing →
+              Voir les tarifs →
             </span>
           </Link>
         ))}

@@ -83,7 +83,7 @@ type Service = {
    *  Replaces the old is360Embed boolean — each card carries its own URL
    *  now so different 360 cards can point at different collections. */
   embedSrc?: string;
-  /** Surface the "Before / after" pill in the corner. Used for the 6 pair
+  /** Surface the "Avant / après" pill in the corner. Used for the 6 pair
    *  cards (matches beforeSrc/afterSrc) but also leaves room for static
    *  cards that want the pill without the reveal. */
   isCompare?: boolean;
@@ -102,102 +102,102 @@ const ICON_MAP: Record<string, React.ElementType> = {
 };
 
 const FILTERS: { key: FilterKey; label: string }[] = [
-  { key: "sve", label: "All services" },
-  { key: "renderi", label: "Renders" },
-  { key: "osnove", label: "Floor plans" },
-  { key: "360", label: "360° and animations" },
-  { key: "nekretnine", label: "For property sales" },
+  { key: "sve", label: "Tous les services" },
+  { key: "renderi", label: "Rendus" },
+  { key: "osnove", label: "Plans" },
+  { key: "360", label: "360° et animations" },
+  { key: "nekretnine", label: "Pour la vente immobilière" },
 ];
 
 const SERVICES: Service[] = [
   {
-    name: "Interior renders",
+    name: "Rendus d’intérieur",
     slug: "interior-render",
     priceEur: 170,
     category: "renderi",
-    short: "Interior visualization before furnishing, renovation, or sale.",
-    audience: "For apartment owners, architects, designers, and smaller investors.",
-    includes: ["10 static renders + floor plan", "3D floor plan included", "3 revision rounds"],
+    short: "La visualisation d’intérieur avant ameublement, rénovation ou vente.",
+    audience: "Pour les propriétaires d’appartements, architectes, designers et petits investisseurs.",
+    includes: ["10 rendus statiques + plan", "Plan 3D inclus", "3 séries de révisions"],
     icon: "home",
-    badge: "Most requested",
+    badge: "Le plus demandé",
     imageSrc: "/artwork/listing-interior-static.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "360° interiors",
+    name: "Intérieurs 360°",
     slug: "interior-360-tour",
     priceEur: 295,
     category: "360",
-    short: "An interactive 360° tour of the space with additional static camera angles.",
-    audience: "For presenting apartments, villas, showrooms, and hospitality spaces.",
+    short: "Une visite 360° interactive de l’espace avec des angles de caméra statiques supplémentaires.",
+    audience: "Pour présenter appartements, villas, showrooms et espaces hôteliers.",
     includes: [
-      "10 interactive rooms in a 360° tour",
-      "10 static camera angles",
-      "Floor plan included",
+      "10 pièces interactives dans une visite 360°",
+      "10 angles de caméra statiques",
+      "Plan inclus",
     ],
     icon: "video",
-    badge: "Interactive",
+    badge: "Interactif",
     imageSrc: "",
     imagePosition: "50% 50%",
     embedSrc: KUULA_EMBED,
   },
   {
-    name: "Exterior renders",
+    name: "Rendus d’extérieur",
     slug: "exterior-renders",
     priceEur: 250,
     category: "renderi",
-    short: "A realistic view of a house, building, or facade with materials and surroundings.",
-    audience: "For private houses, smaller residential projects, and architectural presentations.",
-    includes: ["First view included", "Model and lighting scene", "Additional angles at a lower price"],
+    short: "Une vue réaliste d’une maison, d’un immeuble ou d’une façade avec matériaux et environnement.",
+    audience: "Pour les maisons individuelles, les petits projets résidentiels et les présentations d’architecture.",
+    includes: ["Première vue incluse", "Modèle et scène d’éclairage", "Angles supplémentaires à prix réduit"],
     icon: "building",
-    badge: "Exterior",
+    badge: "Extérieur",
     imageSrc: "/artwork/listing-exterior-static.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "360° exteriors",
+    name: "Extérieurs 360°",
     slug: "exterior-360",
     priceEur: 335,
     category: "360",
-    short: "A VR-ready exterior view with interactive viewpoints.",
-    audience: "For marketing the sale of houses, villas, and smaller developments.",
+    short: "Une vue extérieure prête pour la VR avec des points de vue interactifs.",
+    audience: "Pour la commercialisation de maisons, villas et petits programmes immobiliers.",
     includes: [
-      "1 interactive viewpoint included",
-      "Full 3D model of the building",
-      "Additional viewpoints per project",
+      "1 point de vue interactif inclus",
+      "Modèle 3D complet du bâtiment",
+      "Points de vue supplémentaires par projet",
     ],
     icon: "video",
-    badge: "VR ready",
+    badge: "Prêt pour la VR",
     imageSrc: "/artwork/listing-exterior-360.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "3D streetscape",
+    name: "Perspective de rue 3D",
     slug: "3d-streetscape",
     priceEur: 420,
     category: "renderi",
-    short: "Your building with the neighboring houses, modeled in 3D — viewed from the street (and from the air if needed).",
-    audience: "For buildings where the street, neighborhood, and plot context matters.",
+    short: "Votre bâtiment avec les maisons voisines, modélisé en 3D — vu depuis la rue (et du ciel si besoin).",
+    audience: "Pour les bâtiments où le contexte de la rue, du quartier et de la parcelle compte.",
     includes: [
-      "Full 3D model of the building + surroundings",
-      "First view included",
-      "Any angle (street or aerial)",
+      "Modèle 3D complet du bâtiment + environs",
+      "Première vue incluse",
+      "N’importe quel angle (rue ou aérien)",
     ],
     icon: "scan",
-    badge: "Streetscape",
+    badge: "Perspective de rue",
     imageSrc: "/artwork/listing-streetscape.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "Landscape design",
+    name: "Aménagement paysager",
     slug: "landscape-design",
     priceEur: 220,
     category: "renderi",
-    short: "A view of a yard, garden, park, or outdoor design with vegetation and terrain.",
-    audience: "For private houses, villas, and projects where the outdoor setting matters.",
-    includes: ["Terrain model", "Vegetation and planting", "First view included"],
+    short: "Une vue d’une cour, d’un jardin, d’un parc ou d’un aménagement extérieur avec végétation et terrain.",
+    audience: "Pour les maisons individuelles, les villas et les projets où le cadre extérieur compte.",
+    includes: ["Modèle du terrain", "Végétation et plantations", "Première vue incluse"],
     icon: "image",
-    badge: "Outdoor setting",
+    badge: "Cadre extérieur",
     imageSrc: "/artwork/listing-landscape-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-landscape-before.webp",
@@ -209,11 +209,11 @@ const SERVICES: Service[] = [
     slug: "photomontage",
     priceEur: 300,
     category: "renderi",
-    short: "Your future building blended into a real photo of the site — with the true surroundings and light.",
-    audience: "For permits, public hearings, and presentations where site accuracy matters.",
-    includes: ["Site analysis", "Perspective matching", "Final composite"],
+    short: "Votre futur bâtiment intégré dans une vraie photo du site — avec l’environnement et la lumière réels.",
+    audience: "Pour les permis, les enquêtes publiques et les présentations où la fidélité au site compte.",
+    includes: ["Analyse du site", "Calage de perspective", "Composite final"],
     icon: "image",
-    badge: "Real location",
+    badge: "Site réel",
     imageSrc: "/artwork/listing-photomontage-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-photomontage-before.webp",
@@ -221,83 +221,83 @@ const SERVICES: Service[] = [
     isCompare: true,
   },
   {
-    name: "3D floor plans",
+    name: "Plans 3D",
     slug: "3d-floor-plans",
     priceEur: 29,
     category: "osnove",
-    short: "A top-down 3D view of the room layout, furniture, and functional organization.",
-    audience: "For listings, apartment presentations, and easier understanding of the layout.",
-    includes: ["Complete layout", "Room labels", "Furnished version available"],
+    short: "Une vue 3D en plongée de la disposition des pièces, du mobilier et de l’organisation fonctionnelle.",
+    audience: "Pour les annonces, la présentation d’appartements et une lecture plus facile de la disposition.",
+    includes: ["Disposition complète", "Noms des pièces", "Version meublée disponible"],
     icon: "plans",
-    badge: "Clear layout",
+    badge: "Disposition claire",
     imageSrc: "/artwork/listing-3d-floor-plans.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "2D floor plans",
+    name: "Plans 2D",
     slug: "2d-floor-plans",
     priceEur: 20,
     category: "osnove",
-    short: "Clean, easy-to-read 2D floor plans for marketing materials, websites, and listings.",
-    audience: "For agents, apartment owners, and property sales presentations.",
-    includes: ["Colored floor plan", "Room names", "Style and furniture variants"],
+    short: "Des plans 2D propres et lisibles pour les supports marketing, les sites web et les annonces.",
+    audience: "Pour les agents, les propriétaires d’appartements et les présentations de vente.",
+    includes: ["Plan en couleurs", "Noms des pièces", "Variantes de style et de mobilier"],
     icon: "plans",
-    badge: "2D view",
+    badge: "Vue 2D",
     imageSrc: "/artwork/listing-floorplan-2d.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "3D site plans",
+    name: "Plans de masse 3D",
     slug: "site-plans",
     priceEur: 350,
     category: "osnove",
-    short: "An overview of the entire plot with buildings, access routes, greenery, and the wider spatial context.",
-    audience: "For houses, villas, smaller complexes, and project sales brochures.",
-    includes: ["Plot and buildings", "Access areas", "Seasonal variants available"],
+    short: "Une vue d’ensemble de la parcelle avec bâtiments, accès, espaces verts et contexte spatial élargi.",
+    audience: "Pour les maisons, villas, petits ensembles et brochures de vente de projets.",
+    includes: ["Parcelle et bâtiments", "Zones d’accès", "Variantes saisonnières disponibles"],
     icon: "plans",
-    badge: "Plot and context",
+    badge: "Parcelle et contexte",
     imageSrc: "/artwork/listing-siteplan.webp",
     imagePosition: "50% 50%",
   },
   {
-    name: "Architectural animation",
+    name: "Animation architecturale",
     slug: "architectural-animation",
     priceEur: 225,
     category: "360",
-    short: "Walkthrough and flythrough video for a stronger sales impression.",
-    audience: "For projects where a static view is not enough to show the space.",
-    includes: ["15 seconds minimum", "Priced per second", "Discounts for longer durations"],
+    short: "Vidéo de visite et de survol pour une impression de vente plus forte.",
+    audience: "Pour les projets où une vue statique ne suffit pas à montrer l’espace.",
+    includes: ["15 secondes minimum", "Facturée à la seconde", "Remises sur les durées plus longues"],
     icon: "video",
-    badge: "Video",
+    badge: "Vidéo",
     imageSrc: "",
     imagePosition: "50% 50%",
     videoSrc: "/artwork/listing-animation.mp4",
   },
   {
-    name: "VR tour",
+    name: "Visite en réalité virtuelle (VR)",
     slug: "vr-tour",
     priceEur: 20,
     category: "360",
-    short: "Web-based tours that link 360° views into an interactive experience.",
-    audience: "For advertising, property presentations, and remote sales.",
-    includes: ["Tour assembly", "Navigation through the space", "Branded version on request"],
+    short: "Des visites web qui relient des vues 360° en une expérience interactive.",
+    audience: "Pour la publicité, la présentation de biens et la vente à distance.",
+    includes: ["Assemblage de la visite", "Navigation dans l’espace", "Version à votre marque sur demande"],
     icon: "video",
-    badge: "Web experience",
+    badge: "Expérience web",
     imageSrc: "",
     imagePosition: "50% 50%",
     embedSrc:
       "https://kuula.co/share/collection/7kLnB?logo=1&info=0&fs=1&vr=1&sd=1&autorotate=0.04&autop=30&thumbs=1",
   },
   {
-    name: "Virtual staging",
+    name: "Home staging virtuel",
     slug: "virtual-staging",
     priceEur: 18,
     category: "nekretnine",
-    short: "Digital furnishing of an empty room based on an existing photo.",
-    audience: "For property owners, agents, and investors who want a better listing.",
-    includes: ["First styled image", "Additional angles per room", "Better rates for multiple rooms"],
+    short: "L’ameublement numérique d’une pièce vide à partir d’une photo existante.",
+    audience: "Pour les propriétaires, agents et investisseurs qui veulent une meilleure annonce.",
+    includes: ["Première image stylisée", "Angles supplémentaires par pièce", "Meilleurs tarifs pour plusieurs pièces"],
     icon: "sparkles",
-    badge: "Before and after",
+    badge: "Avant et après",
     imageSrc: "/artwork/listing-staging-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-staging-before.webp",
@@ -305,15 +305,15 @@ const SERVICES: Service[] = [
     isCompare: true,
   },
   {
-    name: "Virtual renovation",
+    name: "Rénovation virtuelle",
     slug: "virtual-renovation",
     priceEur: 66,
     category: "nekretnine",
-    short: "A view of how the space would look after renovation and new materials.",
-    audience: "For property buyers, owners, and designers who want a clear before-and-after scenario.",
-    includes: ["New look proposal", "Materials and finishes", "Multiple angles or rooms"],
+    short: "Un aperçu de l’espace après rénovation et nouveaux matériaux.",
+    audience: "Pour les acheteurs, propriétaires et designers qui veulent un scénario avant/après clair.",
+    includes: ["Proposition de nouvelle apparence", "Matériaux et finitions", "Plusieurs angles ou pièces"],
     icon: "sparkles",
-    badge: "Before and after",
+    badge: "Avant et après",
     imageSrc: "/artwork/listing-renovation-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-renovation-before.webp",
@@ -321,15 +321,15 @@ const SERVICES: Service[] = [
     isCompare: true,
   },
   {
-    name: "Day-to-dusk",
+    name: "Jour au crépuscule",
     slug: "day-to-dusk",
     priceEur: 10,
     category: "nekretnine",
-    short: "Turning a daytime exterior photo into a more striking dusk scene.",
-    audience: "For listings that need a stronger first impression.",
-    includes: ["Sky replacement", "Color and light grading", "Volume discount for multiple images"],
+    short: "La transformation d’une photo extérieure de jour en une scène de crépuscule plus saisissante.",
+    audience: "Pour les annonces qui ont besoin d’une première impression plus forte.",
+    includes: ["Remplacement du ciel", "Étalonnage des couleurs et de la lumière", "Remise de volume pour plusieurs images"],
     icon: "image",
-    badge: "Before and after",
+    badge: "Avant et après",
     imageSrc: "/artwork/listing-day-to-dusk-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-day-to-dusk-before.webp",
@@ -337,15 +337,15 @@ const SERVICES: Service[] = [
     isCompare: true,
   },
   {
-    name: "Item removal",
+    name: "Suppression d’objets",
     slug: "item-removal",
     priceEur: 12,
     category: "nekretnine",
-    short: "Digital removal of clutter and unwanted objects from a photo of the space.",
-    audience: "For preparing a property for listing, rental, or presentation.",
-    includes: ["Frame cleanup", "Background reconstruction", "Simple and complex edits"],
+    short: "La suppression numérique du désordre et des objets indésirables d’une photo de l’espace.",
+    audience: "Pour préparer un bien à l’annonce, à la location ou à la présentation.",
+    includes: ["Nettoyage du cadre", "Reconstruction de l’arrière-plan", "Retouches simples et complexes"],
     icon: "scan",
-    badge: "Before and after",
+    badge: "Avant et après",
     imageSrc: "/artwork/listing-item-removal-after.webp",
     imagePosition: "50% 50%",
     beforeSrc: "/artwork/listing-item-removal-before.webp",
@@ -356,20 +356,20 @@ const SERVICES: Service[] = [
 
 const SCENARIOS = [
   {
-    title: "I want to show a space that does not exist yet",
-    answer: "Interior or exterior renders are the best choice, with an aerial view if needed.",
+    title: "Je veux montrer un espace qui n’existe pas encore",
+    answer: "Les rendus d’intérieur ou d’extérieur sont le meilleur choix, avec une vue aérienne si besoin.",
   },
   {
-    title: "I have an empty apartment and want a better listing",
-    answer: "Virtual staging is the fastest way to make the space feel warmer without physical costs.",
+    title: "J’ai un appartement vide et je veux une meilleure annonce",
+    answer: "Le home staging virtuel est le moyen le plus rapide de rendre l’espace plus chaleureux, sans frais physiques.",
   },
   {
-    title: "Buyers cannot picture the layout of the apartment or house",
-    answer: "2D and 3D floor plans give the clearest picture of the layout at a glance.",
+    title: "Les acheteurs n’arrivent pas à se représenter la disposition de l’appartement ou de la maison",
+    answer: "Les plans 2D et 3D donnent l’image la plus claire de la disposition en un coup d’œil.",
   },
   {
-    title: "I need a more interactive presentation",
-    answer: "360° tours, 360° renders, and animations give a better sense of movement and space.",
+    title: "Il me faut une présentation plus interactive",
+    answer: "Les visites 360°, les rendus 360° et les animations donnent une meilleure sensation de mouvement et d’espace.",
   },
 ];
 
@@ -378,11 +378,11 @@ function serviceCardImageAlt(service: Service): string {
 }
 
 function serviceCardBeforeAlt(service: Service): string {
-  return `${service.name} - view before visual editing`;
+  return `${service.name} - vue avant la retouche visuelle`;
 }
 
 function serviceCardAfterAlt(service: Service): string {
-  return `${service.name} - result after visual editing`;
+  return `${service.name} - résultat après la retouche visuelle`;
 }
 
 // ─── Component ───────────────────────────────────────────
@@ -407,7 +407,7 @@ export function ServicesShowcase() {
         <div className="relative h-[420px] md:h-[500px]">
           <Image
             src={ARTWORK.hero}
-            alt="Elegant Render interior - a photorealistic example of architectural visualization"
+            alt="Intérieur Elegant Render - un exemple photoréaliste de visualisation architecturale"
             fill
             className="object-cover"
             priority
@@ -415,10 +415,10 @@ export function ServicesShowcase() {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10">
             <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-              Complete offering
+              Offre complète
             </p>
             <h1 className="mt-3 max-w-2xl font-heading text-4xl leading-tight text-foreground md:text-5xl">
-              Architectural visualization for every project and budget
+              La visualisation architecturale pour chaque projet et chaque budget
             </h1>
           </div>
         </div>
@@ -458,7 +458,7 @@ export function ServicesShowcase() {
               {service.embedSrc ? (
                 <div className="relative z-10 h-48 overflow-hidden bg-secondary/40">
                   <iframe
-                    title={`${service.name} — 360° preview`}
+                    title={`${service.name} — aperçu 360°`}
                     className="h-full w-full border-0"
                     src={service.embedSrc}
                     allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
@@ -499,10 +499,10 @@ export function ServicesShowcase() {
                   </div>
                   <div className="pointer-events-none absolute bottom-3 left-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
                     <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">
-                      Before
+                      Avant
                     </span>
                     <span className="bg-accent/12 px-2.5 py-1 text-accent">
-                      After
+                      Après
                     </span>
                   </div>
                 </BeforeAfterReveal>
@@ -522,8 +522,8 @@ export function ServicesShowcase() {
                   </div>
                   {service.isCompare && (
                     <div className="absolute bottom-3 left-3 flex overflow-hidden rounded-full border border-white/50 bg-white/90 text-[0.72rem] font-semibold uppercase tracking-wider shadow-sm backdrop-blur">
-                      <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">Before</span>
-                      <span className="bg-accent/12 px-2.5 py-1 text-accent">After</span>
+                      <span className="border-r border-border/20 px-2.5 py-1 text-muted-foreground">Avant</span>
+                      <span className="bg-accent/12 px-2.5 py-1 text-accent">Après</span>
                     </div>
                   )}
                 </div>
@@ -532,7 +532,7 @@ export function ServicesShowcase() {
               {/* Price bar */}
               <div className="flex items-center justify-between border-b border-border/30 bg-secondary/30 px-5 py-3">
                 <span className="text-xl font-bold text-foreground">
-                  From{" "}
+                  Dès{" "}
                   {formatPublicPrice(
                     service.priceEur,
                     displayCurrency,
@@ -540,7 +540,7 @@ export function ServicesShowcase() {
                   )}
                 </span>
                 <span className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
-                  Transparent pricing
+                  Prix transparents
                 </span>
               </div>
 
@@ -590,7 +590,7 @@ export function ServicesShowcase() {
                     }}
                     className="relative z-10 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground transition-colors duration-200 hover:text-accent"
                   >
-                    Request an estimate
+                    Demander un devis
                     <ChevronRight className="h-4 w-4" />
                   </QuickInquiryLink>
                 </div>
@@ -604,13 +604,14 @@ export function ServicesShowcase() {
       <section className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <div className="rounded-2xl border border-border/40 bg-card/80 p-8">
           <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-            How to choose
+            Comment choisir
           </p>
           <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-            Not sure which service you need?
+            Vous ne savez pas quel service il vous faut ?
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Just tell us your goal — we suggest the most practical service.
+            Dites-nous simplement votre objectif — nous vous proposons le
+            service le plus pratique.
           </p>
         </div>
         <div className="space-y-3">
@@ -643,27 +644,27 @@ export function ServicesShowcase() {
           <div className="relative h-full min-h-[320px]">
             <Image
               src={ARTWORK.floorplan}
-              alt="3D floor plan - a clear apartment plan for property marketing"
+              alt="Plan 3D - un plan d’appartement clair pour le marketing immobilier"
               fill
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6">
               <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                A simple process
+                Un processus simple
               </p>
               <h2 className="mt-3 font-heading text-3xl leading-tight text-foreground">
-                Easy to get started
+                Un démarrage facile
               </h2>
             </div>
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {[
-            { icon: Send, title: "1. Send your materials", text: "Photos, a plan, a sketch, or just a short description." },
-            { icon: BadgeDollarSign, title: "2. Receive a proposal", text: "A service recommendation, price, and scope that makes sense." },
-            { icon: Clock3, title: "3. Preview and revisions", text: "A visual draft, then fine-tuning." },
-            { icon: CheckCircle2, title: "4. Final for your listing", text: "Delivery ready for sale or presentation." },
+            { icon: Send, title: "1. Envoyez vos éléments", text: "Des photos, un plan, un croquis ou simplement une courte description." },
+            { icon: BadgeDollarSign, title: "2. Recevez une proposition", text: "Une recommandation de service, un prix et un périmètre cohérents." },
+            { icon: Clock3, title: "3. Aperçu et révisions", text: "Une ébauche visuelle, puis les ajustements." },
+            { icon: CheckCircle2, title: "4. Le final pour votre annonce", text: "Une livraison prête pour la vente ou la présentation." },
           ].map((step) => {
             const StepIcon = step.icon;
             return (
@@ -686,7 +687,7 @@ export function ServicesShowcase() {
             FAQ
           </p>
           <h2 className="font-heading text-3xl leading-tight text-foreground md:text-4xl">
-            Frequently asked questions
+            Questions fréquentes
           </h2>
         </div>
         <div className="space-y-3">
@@ -721,12 +722,12 @@ export function ServicesShowcase() {
         <div className="grid gap-8 lg:grid-cols-2">
           <div className="space-y-5">
             <h2 className="font-heading text-3xl leading-tight md:text-4xl">
-              Not sure exactly what you need?
+              Vous ne savez pas exactement ce qu’il vous faut ?
             </h2>
             <p className="max-w-lg text-base leading-relaxed text-white/70">
-              Send a short project description and you will receive a service
-              recommendation with an estimated price — free and with no
-              obligation.
+              Envoyez une courte description de votre projet et vous recevrez
+              une recommandation de service avec un prix estimé — gratuitement
+              et sans engagement.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
               <QuickInquiryLink
@@ -737,7 +738,7 @@ export function ServicesShowcase() {
                   sourceLabel: "Services final CTA",
                 }}
               >
-                Request an estimate
+                Demander un devis
                 <ArrowRight className="ml-2 h-4 w-4" />
               </QuickInquiryLink>
               <ButtonLink
@@ -746,21 +747,23 @@ export function ServicesShowcase() {
                 size="lg"
                 className="rounded-[4px] border-white/20 text-white hover:bg-white/10"
               >
-                See pricing
+                Voir les tarifs
               </ButtonLink>
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <span className="font-semibold text-white/85">Quick service selection</span>
+              <span className="font-semibold text-white/85">Choix rapide du service</span>
               <p className="mt-2 text-sm leading-relaxed text-white/60">
-                Just explain your goal — we suggest the most logical service.
+                Expliquez simplement votre objectif — nous vous proposons le
+                service le plus logique.
               </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <span className="font-semibold text-white/85">Transparent pricing</span>
+              <span className="font-semibold text-white/85">Prix transparents</span>
               <p className="mt-2 text-sm leading-relaxed text-white/60">
-                You can see the budget level of every service right on this page.
+                Vous voyez le niveau de budget de chaque service directement
+                sur cette page.
               </p>
             </div>
           </div>

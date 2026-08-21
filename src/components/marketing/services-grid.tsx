@@ -37,12 +37,12 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
           <div className="mx-auto max-w-2xl text-center">
             <p className="section-kicker">Services</p>
             <h2 className="mt-4 text-4xl leading-tight text-foreground md:text-5xl">
-              Everything you need to present a space clearly
+              Tout ce qu’il faut pour présenter un espace clairement
             </h2>
             <p className="mt-6 text-base leading-relaxed text-muted-foreground">
-              From single views to complete virtual tours. Every service is
-              clearly defined — you know upfront what you get and what it
-              costs.
+              De la vue unique à la visite virtuelle complète. Chaque service
+              est clairement défini — vous savez d’avance ce que vous recevez
+              et ce que cela coûte.
             </p>
           </div>
         )}
@@ -88,7 +88,7 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
                         {service.priceContext && (
                           <p className="text-[0.78rem] leading-6 text-muted-foreground">
                             <span className="font-semibold text-foreground">
-                              What you get:
+                              Ce que vous recevez :
                             </span>{" "}
                             {formatPublicPriceText(
                               service.priceContext,
@@ -99,7 +99,7 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
                         )}
                         <div className="mt-auto flex items-center justify-between pt-4">
                           <span className="text-sm font-medium text-foreground">
-                            from{" "}
+                            dès{" "}
                             {formatPublicPriceText(
                               firstVariant.priceLabel,
                               displayCurrency,
@@ -111,7 +111,7 @@ export async function ServicesGrid({ preview = false }: ServicesGridProps) {
                               variant="outline"
                               className="text-[10px] uppercase tracking-wider"
                             >
-                              Partner network
+                              Réseau de partenaires
                             </Badge>
                           )}
                         </div>

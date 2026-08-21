@@ -26,17 +26,17 @@ export function PayPalReceipt({
   payerEmail,
 }: PayPalReceiptProps) {
   const rows: Array<[string, string]> = [
-    ["Order number", orderNumber],
-    ...(amountLabel ? ([["Amount charged", amountLabel]] as Array<[string, string]>) : []),
-    ...(captureId ? ([["PayPal transaction id", captureId]] as Array<[string, string]>) : []),
-    ...(captureStatus ? ([["Status", captureStatus]] as Array<[string, string]>) : []),
-    ...(payerEmail ? ([["PayPal account", payerEmail]] as Array<[string, string]>) : []),
+    ["Numéro de commande", orderNumber],
+    ...(amountLabel ? ([["Montant débité", amountLabel]] as Array<[string, string]>) : []),
+    ...(captureId ? ([["Identifiant de transaction PayPal", captureId]] as Array<[string, string]>) : []),
+    ...(captureStatus ? ([["Statut", captureStatus]] as Array<[string, string]>) : []),
+    ...(payerEmail ? ([["Compte PayPal", payerEmail]] as Array<[string, string]>) : []),
   ];
 
   return (
     <div className="rounded-2xl border border-border/60 bg-card/60 p-6">
       <h2 className="text-sm font-semibold text-foreground">
-        Payment details
+        Détails du paiement
       </h2>
       <dl className="mt-4 space-y-2 text-sm">
         {rows.map(([label, value]) => (

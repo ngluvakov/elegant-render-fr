@@ -2,7 +2,8 @@
  * ModelFirst — "Model-first pricing" section per the design handoff: a dark
  * #0a0a0a panel (green mono eyebrow + display heading) next to a 2×2 grid of
  * white cards with mono indices, each a concrete saving from reusing the
- * 3D model. Copy is final English from docs/design-handoff/README.md.
+ * 3D model. Copy is the French localization of the final design-handoff
+ * copy (docs/design-handoff/README.md).
  *
  * Used on: / (home page).
  */
@@ -22,17 +23,18 @@ export async function ModelFirst() {
       <div className="mx-auto grid w-full max-w-[1280px] gap-6 px-6 py-20 sm:px-12 md:py-32 lg:grid-cols-[0.9fr_1.1fr]">
         <article className="flex flex-col justify-center rounded-[4px] bg-[#0a0a0a] p-8 sm:p-12">
           <p className="mb-5 font-mono text-xs font-medium uppercase tracking-[0.08em] text-accent">
-            More renders, lower price per render
+            Plus de rendus, prix par rendu plus bas
           </p>
           <h2 className="mb-5 text-pretty text-3xl font-medium leading-[1.1] tracking-[-0.02em] text-white md:text-[40px]">
-            We build the model once. Everything after it costs less.
+            Nous construisons le modèle une seule fois. Tout ce qui suit coûte
+            moins cher.
           </h2>
           <p className="text-[15px] leading-relaxed text-white/65">
-            Once we build the 3D model of your property, it becomes your
-            digital asset. Every further output from that model — extra
-            angles, animation, site plans — is priced at a fraction of the
-            first one. You always see how the price is formed before you
-            order.
+            Une fois le modèle 3D de votre bien construit, il devient votre
+            actif numérique. Chaque livrable supplémentaire issu de ce modèle —
+            angles additionnels, animation, plans de masse — est facturé à une
+            fraction du premier. Vous voyez toujours comment le prix se forme
+            avant de commander.
           </p>
         </article>
 

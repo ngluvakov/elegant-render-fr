@@ -15,40 +15,40 @@ import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 const PROOF_ITEMS = [
   {
-    title: "An interior ready to sell from the brochure",
-    service: "Interior renders",
-    price: "from €170",
-    timing: "first drafts in 3-5 working days",
-    body: "One order covers the whole floor: 10 static interior renders + the floor plan.",
+    title: "Un intérieur qui se vend dès la brochure",
+    service: "Rendus d’intérieur",
+    price: "dès €170",
+    timing: "premières ébauches sous 3-5 jours ouvrés",
+    body: "Une seule commande couvre tout l’étage : 10 rendus d’intérieur statiques + le plan.",
     href: "/pricing?group=interior&add=int-static&from=home-proof#configurator",
     image: "/artwork/expert-interior-renders.webp",
     imageAlt:
-      "Interior renders - a furnished interior ready to sell from the brochure",
+      "Rendus d’intérieur - un intérieur meublé qui se vend dès la brochure",
   },
   {
-    title: "An empty room becomes a listing buyers understand",
-    service: "Virtual staging",
-    price: "from €18",
-    timing: "a fast photo upgrade",
-    body: "A photo of an empty space gets furniture, style and atmosphere without physically furnishing the property.",
+    title: "Une pièce vide devient une annonce que les acheteurs comprennent",
+    service: "Home staging virtuel",
+    price: "dès €18",
+    timing: "une valorisation photo rapide",
+    body: "Une photo d’un espace vide reçoit mobilier, style et atmosphère — sans meubler physiquement le bien.",
     href: "/pricing?group=staging-renovation&add=vs-static&from=home-proof#configurator",
     before: "/artwork/expert-virtual-staging-hero-before.webp",
     after: "/artwork/expert-virtual-staging-hero-after.webp",
     beforeAlt:
-      "Virtual staging - an empty living room before digital staging",
+      "Home staging virtuel - un salon vide avant le staging numérique",
     afterAlt:
-      "Virtual staging - a furnished living room ready for a property listing",
+      "Home staging virtuel - un salon meublé prêt pour l’annonce immobilière",
   },
   {
-    title: "An exterior with a clear budget for extra angles",
-    service: "Exterior renders",
-    price: "from €250",
-    timing: "next angle from €48",
-    body: "The first shot covers building the 3D model of the property; every further camera from the same model costs significantly less.",
+    title: "Un extérieur avec un budget clair pour les angles supplémentaires",
+    service: "Rendus d’extérieur",
+    price: "dès €250",
+    timing: "angle suivant dès €48",
+    body: "La première vue couvre la construction du modèle 3D du bien ; chaque caméra supplémentaire issue du même modèle coûte nettement moins.",
     href: "/pricing?group=exterior-renders&add=ext-static&from=home-proof#configurator",
     image: "/artwork/expert-exterior-renders.webp",
     imageAlt:
-      "Exterior renders - a photorealistic exterior view of a building",
+      "Rendus d’extérieur - une vue extérieure photoréaliste d’un bâtiment",
   },
 ] as const;
 
@@ -65,11 +65,11 @@ export async function ResultsProof() {
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-              The result before the decision
+              Le résultat avant la décision
             </p>
             <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
-              Buyers don&apos;t have to imagine. They see the space, the price
-              and the next step.
+              Les acheteurs n’ont pas à imaginer. Ils voient l’espace, le prix
+              et la prochaine étape.
             </h2>
           </div>
           <Link
@@ -79,7 +79,7 @@ export async function ResultsProof() {
               "w-fit rounded-[4px]",
             )}
           >
-            Open the calculator
+            Ouvrir le calculateur
             <ArrowRight className="ml-1 h-4 w-4" />
           </Link>
         </div>
@@ -102,7 +102,7 @@ export async function ResultsProof() {
                   className="aspect-[4/3] w-full bg-secondary"
                 >
                   <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-[#0a0a0a]/55 px-2 py-1 font-mono text-[0.6rem] font-medium uppercase tracking-[0.08em] text-white/95">
-                    Before / after
+                    Avant / après
                   </span>
                 </BeforeAfterReveal>
               ) : (
@@ -147,7 +147,7 @@ export async function ResultsProof() {
                     href={item.href}
                     className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-[0.08em] text-foreground hover:underline"
                   >
-                    Get your estimate
+                    Obtenir votre devis
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                 </div>

@@ -17,21 +17,22 @@ export async function MarketingServicesShowcase() {
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="section-kicker">Service catalog</p>
+            <p className="section-kicker">Catalogue de services</p>
             <h2 className="mt-4 max-w-2xl text-3xl leading-tight text-foreground md:text-4xl">
-              All services in one place
+              Tous les services au même endroit
             </h2>
             <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
-              Browse the full card for every service — what&apos;s included,
-              what it costs and how it combines with other visuals. Detailed
-              prices and extra options live on the pricing page.
+              Parcourez la fiche complète de chaque service — ce qui est
+              inclus, ce que cela coûte et comment il se combine avec
+              d’autres visuels. Les prix détaillés et les options
+              supplémentaires se trouvent sur la page des tarifs.
             </p>
           </div>
           <Link
             href="/pricing"
             className="self-start font-mono text-xs uppercase tracking-[0.08em] text-foreground hover:underline md:self-end"
           >
-            Open the price list
+            Ouvrir les tarifs
           </Link>
         </div>
 

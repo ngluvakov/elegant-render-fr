@@ -58,7 +58,7 @@ type Props = {
   className?: string;
   /** Rendered behind the images (e.g. loader icon). */
   fallback?: ReactNode;
-  /** Rendered above the divider (e.g. "Pre / posle" badge). */
+  /** Rendered above the divider (e.g. "Avant / après" badge). */
   children?: ReactNode;
   /** Optional automatic demo replay. Used by the home page preview. */
   autoDemoIntervalMs?: number;
@@ -70,8 +70,8 @@ export function BeforeAfterReveal({
   beforeSrc,
   afterSrc,
   alt,
-  beforeAlt = `Before: ${alt}`,
-  afterAlt = `After: ${alt}`,
+  beforeAlt = `Avant : ${alt}`,
+  afterAlt = `Après : ${alt}`,
   sizes = "(max-width: 768px) 100vw, 55vw",
   className,
   fallback,
@@ -286,7 +286,7 @@ export function BeforeAfterReveal({
         Reversed slider order (site-wide, per request): the "after"/result
         renders as the base layer and the "before"/original as the --reveal
         overlay, so the before/after wipe runs the opposite way on every
-        slider. Alt text travels with its own image; the "Pre / posle" badge
+        slider. Alt text travels with its own image; the "Avant / après" badge
         is side-agnostic so nothing is mislabeled.
       */}
       <Image

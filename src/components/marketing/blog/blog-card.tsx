@@ -30,7 +30,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <time dateTime={post.date}>{formatBlogDate(post.date)}</time>
           <span aria-hidden>·</span>
-          <span>{estimateReadingMinutes(post)} min read</span>
+          <span>{estimateReadingMinutes(post)} min de lecture</span>
         </div>
         <h2 className="mt-3 text-xl font-semibold leading-snug text-foreground">
           {post.title}
@@ -39,7 +39,7 @@ export function BlogCard({ post }: { post: BlogPost }) {
           {post.excerpt}
         </p>
         <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent">
-          Read article
+          Lire l’article
           <ArrowUpRight className="h-4 w-4" />
         </span>
       </div>

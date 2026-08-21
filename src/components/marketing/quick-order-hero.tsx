@@ -69,8 +69,8 @@ const HERO_BEFORE_AFTER_DEMO_INTERVAL_MS = 10_000;
 
 // Quick-order picker list — de-duplicated by display name, keeping the first
 // occurrence. A master service and its dedicated split can share a name (e.g.
-// the "interior-renders" master and "interior-render" both read
-// "Interior render"); without this they'd appear twice in the picker.
+// the "interior-renders" master and the "interior-render" split share one
+// display name); without this they'd appear twice in the picker.
 const PICKER_SERVICES = SERVICES.filter(
   (service, index) =>
     SERVICES.findIndex((other) => other.name === service.name) === index,
@@ -123,11 +123,11 @@ export function QuickOrderHero() {
       beforeAlt: buildServiceImageAlt(selectedService, "before"),
       afterAlt: buildServiceImageAlt(selectedService, "after"),
       IconEl: ICON_MAP[selectedService.icon],
-      fromPriceText: `from ${priceText(selectedService.variants[0].priceLabel)}`,
+      fromPriceText: `dès ${priceText(selectedService.variants[0].priceLabel)}`,
       priceContext: selectedService.priceContext
         ? priceText(selectedService.priceContext)
         : undefined,
-      kicker: "Architectural visualization · delivered across the world",
+      kicker: "Visualisation architecturale · partout en France",
     }) as const,
     [selectedService, priceText],
   );
@@ -173,21 +173,21 @@ export function QuickOrderHero() {
             Desktop: 2 columns; left col stacks Hero → Minimum → Selected →
             Trust, right col is the sticky panel spanning all rows. */}
         <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,440px)]">
-          {/* Hero header: pill + title + description. @container so the h1
-              can size itself against this column's width (cqw units). */}
+          {/* Hero header: pill + title + description. @container kept for
+              layout parity with the .com build; the h1 no longer sizes in
+              cqw — it uses a vw clamp (see the comment on the h1). */}
           <div className="@container order-1 space-y-5 xl:col-start-1 xl:row-start-1">
             <span className="inline-flex rounded-full border border-border bg-secondary/70 px-4 py-2 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
               {view.kicker}
             </span>
-            {/* As large as the column allows while staying on ONE line: the
-                string measures 15.2em in Inter Tight 500, so 6.3cqw fills
-                ~96% of the container width at every viewport. nowrap guards
-                the single-line guarantee. */}
+            {/* The French headline can run longer than the English one, so it
+                wraps to 1–2 lines instead of forcing a single line. A clamp
+                keeps it large but bounded; text-wrap: balance evens the lines. */}
             <h1
-              style={{ fontSize: "6.3cqw" }}
-              className="whitespace-nowrap leading-[1.1] text-foreground"
+              style={{ fontSize: "clamp(1.9rem, 4.6vw, 3.1rem)", textWrap: "balance" }}
+              className="leading-[1.08] text-foreground"
             >
-              See your space before you decide.
+              Voyez votre espace avant de décider.
             </h1>
             <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
               {SITE.description}
@@ -200,7 +200,7 @@ export function QuickOrderHero() {
                   "rounded-[4px]",
                 )}
               >
-                See prices
+                Voir les tarifs
                 <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
               <QuickInquiryLink
@@ -212,20 +212,20 @@ export function QuickOrderHero() {
                   sourceLabel: "Homepage hero brief",
                 }}
               >
-                Send your space
+                Envoyer votre espace
               </QuickInquiryLink>
             </div>
           </div>
 
-          {/* "The minimum you need to start" — full column width, image > text on desktop */}
+          {/* "Le minimum pour démarrer" — full column width, image > text on desktop */}
           <div className="order-2 relative overflow-hidden rounded-lg border border-border bg-card p-6 transition-[border-color,box-shadow] duration-200 hover:border-[#d4d4d4] hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)] sm:p-8 lg:p-10 xl:col-start-1 xl:row-start-2">
               <div className="relative grid gap-6 md:grid-cols-[2fr_3fr] md:items-center md:gap-10">
                 <div>
                   <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                    The minimum you need to start
+                    Le minimum pour démarrer
                   </p>
                   <h2 className="mt-3 text-2xl leading-tight text-foreground md:text-3xl">
-                    What you send right away for{" "}
+                    Ce que vous envoyez dès le départ pour{" "}
                     <span>{view.shortName}</span>
                   </h2>
                   <p className="mt-4 text-sm leading-7 text-muted-foreground md:text-base">
@@ -243,7 +243,7 @@ export function QuickOrderHero() {
                   {view.priceContext && (
                     <p className="mt-3 text-[0.78rem] leading-6 text-muted-foreground">
                       <span className="font-semibold text-foreground">
-                        What you get:
+                        Ce que vous recevez :
                       </span>{" "}
                       {view.priceContext}
                     </p>
@@ -262,21 +262,21 @@ export function QuickOrderHero() {
                     demoReplayKey={`${view.beforeAsset}:${view.afterAsset}`}
                   >
                     <span className="pointer-events-none absolute right-2 top-2 rounded-full bg-[#0a0a0a]/55 px-2 py-1 font-mono text-[0.6rem] font-medium uppercase tracking-[0.08em] text-white/95">
-                      Before / after
+                      Avant / après
                     </span>
                     {view.objectAsset && (
                       <div className="pointer-events-none absolute left-3 top-3 flex flex-col items-center gap-1">
                         <div className="relative h-24 w-24 overflow-hidden rounded-none border-2 border-white/80 bg-white/40 md:h-32 md:w-32">
                           <Image
                             src={view.objectAsset}
-                            alt="The item we place into the photo"
+                            alt="L’objet que nous plaçons dans la photo"
                             fill
                             sizes="(max-width: 768px) 96px, 128px"
                             className="object-cover"
                           />
                         </div>
                         <span className="rounded-full bg-[#0a0a0a]/55 px-2 py-0.5 font-mono text-[0.6rem] font-medium uppercase tracking-[0.08em] text-white/95">
-                          Item
+                          Objet
                         </span>
                       </div>
                     )}
@@ -284,7 +284,7 @@ export function QuickOrderHero() {
                 ) : view.embedSrc ? (
                   <div className="relative aspect-[4/3] w-full overflow-hidden rounded-none border border-border bg-secondary md:aspect-[3/2]">
                     <iframe
-                      title={`${view.name} — 360 preview`}
+                      title={`${view.name} — aperçu 360`}
                       src={view.embedSrc}
                       className="h-full w-full border-0"
                       allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
@@ -326,7 +326,7 @@ export function QuickOrderHero() {
               <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                 <div className="lg:max-w-2xl">
                   <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-accent">
-                    Selected service
+                    Service sélectionné
                   </p>
                   <h2 className="mt-2 text-3xl text-white md:text-4xl">
                     {view.name}
@@ -343,7 +343,7 @@ export function QuickOrderHero() {
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 <div className="rounded-[4px] border border-white/10 bg-white/5 p-4">
                   <p className="font-mono text-xs uppercase tracking-[0.08em] text-white/65">
-                    Starting price
+                    Prix de départ
                   </p>
                   <p className="mt-2 font-mono text-2xl font-medium tabular-nums text-white">
                     {priceText(selectedService.variants[0].priceLabel)}
@@ -351,7 +351,7 @@ export function QuickOrderHero() {
                 </div>
                 <div className="rounded-[4px] border border-white/10 bg-white/5 p-4">
                   <p className="font-mono text-xs uppercase tracking-[0.08em] text-white/65">
-                    Pricing model
+                    Modèle tarifaire
                   </p>
                   <p className="mt-2 text-sm leading-6 text-white/85">
                     {priceText(selectedVariant.unitLabel)}
@@ -359,10 +359,10 @@ export function QuickOrderHero() {
                 </div>
                 <div className="rounded-[4px] border border-white/10 bg-white/5 p-4">
                   <p className="font-mono text-xs uppercase tracking-[0.08em] text-white/65">
-                    Revisions
+                    Révisions
                   </p>
                   <p className="mt-2 text-sm leading-6 text-white/85">
-                    3 rounds included
+                    3 séries incluses
                   </p>
                 </div>
               </div>
@@ -375,24 +375,25 @@ export function QuickOrderHero() {
             <div className="space-y-5">
               <div>
                 <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                  Quick estimate
+                  Devis rapide
                 </p>
                 <h2 className="mt-2 text-2xl leading-tight text-foreground">
-                  Pick a service, see what you get and what it costs.
+                  Choisissez un service, voyez ce que vous recevez et ce que cela coûte.
                 </h2>
               </div>
 
               <p className="rounded-[4px] border border-border bg-secondary px-4 py-3 text-sm leading-6 text-muted-foreground">
-                The primary flow is expert production: a hand-crafted render, a
-                clear starting price and included revisions. AI Studio sits
-                below for quick edits of an existing photo.
+                La voie principale est la production experte : un rendu réalisé
+                à la main, un prix de départ clair et des révisions incluses.
+                AI Studio se trouve plus bas pour des retouches rapides d’une
+                photo existante.
               </p>
 
               {/* SERVICE PICKER */}
               <div>
                 <div className="mb-2.5 flex items-center justify-between">
                   <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                    1. Pick a service
+                    1. Choisir un service
                     <span className="ml-1.5 text-muted-foreground/60">
                       · {PICKER_SERVICES.length}
                     </span>
@@ -401,7 +402,7 @@ export function QuickOrderHero() {
                     <button
                       type="button"
                       onClick={scrollServicesUp}
-                      aria-label="Scroll up"
+                      aria-label="Faire défiler vers le haut"
                       className="flex h-7 w-7 items-center justify-center rounded-[4px] border border-border bg-background/60 text-foreground/70 transition-colors duration-200 hover:bg-muted hover:text-foreground"
                     >
                       <ChevronUp className="h-3.5 w-3.5" />
@@ -409,7 +410,7 @@ export function QuickOrderHero() {
                     <button
                       type="button"
                       onClick={scrollServicesDown}
-                      aria-label="Scroll down"
+                      aria-label="Faire défiler vers le bas"
                       className="flex h-7 w-7 items-center justify-center rounded-[4px] border border-border bg-background/60 text-foreground/70 transition-colors duration-200 hover:bg-muted hover:text-foreground"
                     >
                       <ChevronDown className="h-3.5 w-3.5" />
@@ -452,7 +453,7 @@ export function QuickOrderHero() {
                               {service.shortName}
                             </p>
                             <p className="mt-0.5 font-mono text-[0.7rem] font-medium text-foreground">
-                              from {priceText(service.variants[0].priceLabel)}
+                              dès {priceText(service.variants[0].priceLabel)}
                             </p>
                             {service.priceContext && (
                               <p className="mt-0.5 line-clamp-2 text-[0.66rem] leading-4 text-muted-foreground">
@@ -478,7 +479,7 @@ export function QuickOrderHero() {
               {/* STEP 2 — variants */}
               <div>
                 <p className="mb-2.5 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                  2. Pricing model
+                  2. Modèle tarifaire
                 </p>
                 <div className="space-y-2">
                   {selectedService.variants.map((variant) => {
@@ -524,7 +525,7 @@ export function QuickOrderHero() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <p className="font-mono text-xs uppercase tracking-[0.08em] text-white/65">
-                      Order summary
+                      Récapitulatif de commande
                     </p>
                     <h3 className="mt-1 truncate text-lg text-white">
                       {selectedVariant.title}
@@ -535,7 +536,7 @@ export function QuickOrderHero() {
 
                 <div className="mt-3 rounded-[4px] border border-white/10 bg-white/5 p-3">
                   <p className="font-mono text-xs uppercase tracking-[0.08em] text-white/65">
-                    Base price
+                    Prix de base
                   </p>
                   <p className="mt-1 font-mono text-3xl font-medium tabular-nums text-accent">
                     {priceText(selectedVariant.priceLabel)}
@@ -547,7 +548,7 @@ export function QuickOrderHero() {
 
                 <div className="mt-3 text-[0.72rem] leading-5 text-white/80">
                   <p className="font-semibold text-white">
-                    What you get for this price:
+                    Ce que vous recevez pour ce prix :
                   </p>
                   <p className="mt-1 line-clamp-2 text-white/72">
                     {priceText(selectedVariant.included)}
@@ -562,7 +563,7 @@ export function QuickOrderHero() {
                       "rounded-[4px]",
                     )}
                   >
-                    Get your estimate
+                    Obtenir votre devis
                     <ArrowRight className="ml-1 h-3 w-3" />
                   </Link>
                   <Link
@@ -572,22 +573,23 @@ export function QuickOrderHero() {
                       "rounded-[4px] border-white/55 bg-transparent text-white hover:border-white hover:bg-white/10 hover:text-white",
                     )}
                   >
-                    Learn more
+                    En savoir plus
                   </Link>
                 </div>
               </div>
 
               <div className="rounded-lg border border-border bg-secondary p-4">
                 <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                  Quick photo edit
+                  Retouche photo rapide
                 </p>
                 <h3 className="mt-2 text-base font-semibold text-foreground">
-                  AI Studio is for existing photos, not a full render project.
+                  AI Studio est destiné aux photos existantes, pas à un projet
+                  de rendu complet.
                 </h3>
                 <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                  If you already have a photo and need cleanup, staging, a
-                  style change or a virtual renovation of the shot, start
-                  with{" "}
+                  Si vous avez déjà une photo et qu’il vous faut un nettoyage,
+                  un home staging, un changement de style ou une rénovation
+                  virtuelle de la vue, commencez par{" "}
                   <span className="font-semibold text-foreground">
                     {featuredAiTool.shortLabel.toLowerCase()}
                   </span>
@@ -597,7 +599,7 @@ export function QuickOrderHero() {
                   href="/ai-studio"
                   className="mt-3 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.08em] text-foreground hover:underline"
                 >
-                  Browse the AI tools
+                  Parcourir les outils IA
                   <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>

@@ -101,9 +101,9 @@ function BeforeAfterCard({
       <BeforeAfterReveal
         beforeSrc={beforeSrc!}
         afterSrc={afterSrc!}
-        alt={`After AI editing: ${label}`}
-        beforeAlt={`Before AI editing: ${label}`}
-        afterAlt={`After AI editing: ${label}`}
+        alt={`Après retouche IA : ${label}`}
+        beforeAlt={`Avant retouche IA : ${label}`}
+        afterAlt={`Après retouche IA : ${label}`}
         sizes="(max-width: 768px) 50vw, 25vw"
         autoDemoIntervalMs={7000}
         className="aspect-[4/3] bg-secondary"
@@ -111,9 +111,9 @@ function BeforeAfterCard({
           <Icon className="h-10 w-10 text-foreground/35" strokeWidth={1.5} />
         }
       >
-        {/* "Before / after" hint fades out once the card is being interacted with. */}
+        {/* "Avant / après" hint fades out once the card is being interacted with. */}
         <span className="pointer-events-none absolute right-2 top-2 rounded-full bg-foreground/55 px-2 py-1 font-mono text-xs font-medium uppercase tracking-[0.08em] text-background/95 opacity-90 transition-opacity duration-200 group-hover:opacity-0">
-          Before / after
+          Avant / après
         </span>
       </BeforeAfterReveal>
       <CardFooter
@@ -149,7 +149,7 @@ function FallbackCard({
         {imageSrc && (
           <Image
             src={imageSrc}
-            alt={`${label} - AI Studio tool example`}
+            alt={`${label} - exemple d’outil AI Studio`}
             fill
             sizes="(max-width: 768px) 50vw, 25vw"
             className="object-cover"
@@ -193,7 +193,7 @@ function CardFooter({
       </p>
       <div className="mt-auto flex items-baseline justify-between gap-2 pt-1">
         <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-          from{" "}
+          dès{" "}
           <span className="font-sans text-base font-bold normal-case tracking-normal text-foreground">
             {startingRsdLabel}
           </span>

@@ -2,7 +2,8 @@
  * PlatformPrinciples — the four-step ordering process per the design
  * handoff Process section: mono eyebrow + display heading, then four
  * columns with a 2px near-black border-top, mono step index, title and
- * text. Copy is final English from docs/design-handoff/README.md.
+ * text. Copy is the French localization of the final design-handoff copy
+ * (docs/design-handoff/README.md).
  *
  * Used on: / (home page).
  */
@@ -15,16 +16,16 @@ export function PlatformPrinciples() {
         <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
           <div className="max-w-[680px]">
             <p className="mb-4 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-              A clear ordering process
+              Un processus de commande clair
             </p>
             <h2 className="text-pretty text-3xl font-medium leading-[1.1] tracking-[-0.02em] text-foreground md:text-[44px]">
-              From estimate to final files — no guessing what happens next.
+              Du devis aux fichiers finaux — sans deviner ce qui vient ensuite.
             </h2>
           </div>
           <p className="max-w-[400px] text-[15px] leading-relaxed text-muted-foreground">
-            The calculator makes the decision easy. What follows stays short:
-            materials, first drafts, revisions and delivery through your
-            portal.
+            Le calculateur facilite la décision. La suite reste courte :
+            matériaux, premières ébauches, révisions et livraison via votre
+            espace client.
           </p>
         </div>
 

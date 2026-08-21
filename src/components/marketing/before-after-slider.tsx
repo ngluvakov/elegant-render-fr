@@ -15,7 +15,7 @@
  *    in `before-after-demo-animation.ts`.
  *  - Touch / coarse pointers: demo on entry, then scroll-driven reveal.
  *  - `prefers-reduced-motion: reduce`: static 50/50 split, no demo.
- *  - 2px white divider along the diagonal; JetBrains Mono BEFORE / AFTER
+ *  - 2px white divider along the diagonal; JetBrains Mono AVANT / APRÈS
  *    chips in rgba(10,10,10,0.55).
  *
  * Drives the `--reveal` CSS custom property directly on the DOM (no React
@@ -57,7 +57,7 @@ type Props = {
   sizes?: string;
   /** Classes for the outer media div — caller controls aspect ratio and bg. */
   className?: string;
-  /** Hide the mono BEFORE / AFTER chips (e.g. when the caller renders its own). */
+  /** Hide the mono AVANT / APRÈS chips (e.g. when the caller renders its own). */
   hideLabels?: boolean;
   /** Rendered above the divider (extra badges etc.). */
   children?: ReactNode;
@@ -67,8 +67,8 @@ export function BeforeAfterSlider({
   beforeSrc,
   afterSrc,
   alt,
-  beforeAlt = `Before: ${alt}`,
-  afterAlt = `After: ${alt}`,
+  beforeAlt = `Avant : ${alt}`,
+  afterAlt = `Après : ${alt}`,
   sizes = "(max-width: 768px) 100vw, 1200px",
   className,
   hideLabels = false,
@@ -258,10 +258,10 @@ export function BeforeAfterSlider({
       {!hideLabels && (
         <>
           <span className="pointer-events-none absolute left-6 top-5 bg-[rgba(10,10,10,0.55)] px-2.5 py-1.5 font-mono text-xs uppercase tracking-[0.08em] text-white">
-            Before
+            Avant
           </span>
           <span className="pointer-events-none absolute bottom-5 right-6 bg-[rgba(10,10,10,0.55)] px-2.5 py-1.5 font-mono text-xs uppercase tracking-[0.08em] text-white">
-            After
+            Après
           </span>
         </>
       )}
@@ -274,7 +274,7 @@ export function BeforeAfterSlider({
         max={POINTER_MAX}
         defaultValue={REST_REVEAL}
         onInput={onRangeInput}
-        aria-label="Compare before and after"
+        aria-label="Comparer l’avant et l’après"
         className="absolute inset-0 h-full w-full cursor-crosshair opacity-0 [@media(hover:none)]:pointer-events-none"
       />
     </div>

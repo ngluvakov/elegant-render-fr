@@ -144,7 +144,7 @@ function PanoramaTile({
       <button
         type="button"
         onClick={onOpen}
-        aria-label={`Open fullscreen: ${tile.alt}`}
+        aria-label={`Ouvrir en plein écran : ${tile.alt}`}
         className="absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-[4px] bg-background/85 text-foreground shadow-sm backdrop-blur-sm transition-colors duration-200 hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Maximize2 className="h-4 w-4" />
@@ -157,14 +157,14 @@ function PanoramaTile({
         <button
           type="button"
           onClick={onOpen}
-          aria-label={`Open 360° view: ${tile.alt}`}
+          aria-label={`Ouvrir la vue 360° : ${tile.alt}`}
           className="absolute inset-0 z-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         />
       )}
 
       {/* Caption / drag hint on hover */}
       <span className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-foreground/75 to-transparent px-3 pb-2.5 pt-10 font-mono text-xs font-medium uppercase tracking-[0.08em] text-white/90 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-        {active ? "Drag to look around" : tile.label}
+        {active ? "Faites glisser pour explorer" : tile.label}
       </span>
     </div>
   );
@@ -246,7 +246,7 @@ export function PortfolioGallery({ tiles }: { tiles: PortfolioTile[] }) {
               </>
             )}
             <Dialog.Close
-              aria-label="Close"
+              aria-label="Fermer"
               className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-[4px] bg-background/85 text-foreground shadow-sm backdrop-blur-sm transition-colors duration-200 hover:bg-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <X className="h-5 w-5" />

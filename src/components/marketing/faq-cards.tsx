@@ -1,6 +1,6 @@
 /**
  * FaqCards — homepage FAQ per the design handoff: #fafafa section, grid
- * 0.8fr/1.2fr — left heading "Before you ask", right five native
+ * 0.8fr/1.2fr — left heading "Avant de poser la question", right five native
  * `<details>` rows with 1px bottom borders and a mono "+" marker.
  *
  * Used on: / (home page).
@@ -22,14 +22,14 @@ export async function FaqCards() {
       <div className="mx-auto grid w-full max-w-[1280px] gap-10 px-6 py-16 sm:px-12 md:py-24 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
         <div>
           <p className="mb-4 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-            Frequent questions
+            Questions fréquentes
           </p>
           <h2 className="mb-4 text-pretty text-3xl font-medium leading-[1.1] tracking-[-0.02em] text-foreground md:text-[40px]">
-            Before you ask
+            Avant de poser la question
           </h2>
           <p className="text-[15px] leading-relaxed text-muted-foreground">
-            Anything else on your mind? Write to us — we reply within one
-            working day.
+            Autre chose en tête ? Écrivez-nous — nous répondons sous un jour
+            ouvré.
           </p>
         </div>
 

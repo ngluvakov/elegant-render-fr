@@ -46,6 +46,10 @@ function staticPayload() {
 }
 
 export const getPublishedPricingCatalog = cache(async function getPublishedPricingCatalog(): Promise<ResolvedPricingCatalog> {
+  // Preview mode (no database): render the marketing site from the static
+  // catalog. Set USE_STATIC_PRICING=1 in the environment. Unset it once a real
+  // database is connected so published pricing books take effect.
+  if (process.env.USE_STATIC_PRICING === "1") return getStaticPricingCatalog();
   try {
     if (!prisma.pricingBook) return getStaticPricingCatalog();
 

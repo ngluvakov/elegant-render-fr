@@ -1,24 +1,3 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/bitrix-reconcile",
-      "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/cron/quote-cleanup",
-      "schedule": "30 3 * * *"
-    },
-    {
-      "path": "/api/cron/outbox-processor",
-      "schedule": "* * * * *"
-    },
-    {
-      "path": "/api/cron/invoice-reconcile",
-      "schedule": "15 4 * * *"
-    },
-    {
-      "path": "/api/cron/paypal-reconcile",
-      "schedule": "*/15 * * * *"
-    }
-  ]
+  "buildCommand": "prisma generate && ( [ \"$USE_STATIC_PRICING\" = \"1\" ] || prisma migrate deploy ) && next build"
 }

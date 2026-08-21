@@ -48,7 +48,7 @@ export function BrandLogo({
     <span className={cn("inline-flex items-center", className)}>
       <Image
         src={LOGO_SRC[surface]}
-        alt="Elegant Render logo"
+        alt="Logo Elegant Render"
         width={LOGO_INTRINSIC.width}
         height={LOGO_INTRINSIC.height}
         priority
@@ -63,7 +63,7 @@ export function BrandLogo({
     <Link
       href="/"
       className="inline-flex items-center transition-opacity hover:opacity-80"
-      aria-label="Elegant Render — home"
+      aria-label="Elegant Render — accueil"
     >
       {content}
     </Link>

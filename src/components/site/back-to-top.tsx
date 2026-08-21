@@ -30,7 +30,7 @@ export function BackToTop() {
     <button
       type="button"
       onClick={scrollToTop}
-      aria-label="Back to top"
+      aria-label="Retour en haut de page"
       tabIndex={visible ? 0 : -1}
       className={`fixed bottom-5 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-background/90 text-foreground shadow-lg backdrop-blur transition-all duration-200 hover:bg-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:bottom-6 sm:left-6 sm:h-14 sm:w-14 ${
         visible

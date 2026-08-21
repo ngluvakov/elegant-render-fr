@@ -49,13 +49,13 @@ import { cn } from "@/lib/utils";
 
 const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
   { href: "/ai-studio", label: "AI Studio", pattern: "/ai-studio" },
-  { href: "/pricing", label: "Pricing", pattern: "/pricing" },
+  { href: "/pricing", label: "Tarifs", pattern: "/pricing" },
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Portfolio", pattern: "/portfolio" }]
     : []),
   { href: "/blog", label: "Blog", pattern: "/blog" },
   { href: "/faq", label: "FAQ", pattern: "/faq" },
-  { href: "/career", label: "Career", pattern: "/career" },
+  { href: "/career", label: "Carrières", pattern: "/career" },
   { href: "/contact", label: "Contact", pattern: "/contact" },
 ];
 
@@ -118,7 +118,7 @@ export function SiteHeader() {
         <Link
           href="/"
           className="flex h-20 items-center gap-3 text-foreground"
-          aria-label="Elegant Render — home"
+          aria-label="Elegant Render — accueil"
         >
           <Image
             src="/branding/er-logo-black.png"
@@ -165,7 +165,7 @@ export function SiteHeader() {
                         Services
                       </p>
                       <p className="mt-1 text-sm text-foreground">
-                        Everything from the official price list
+                        Toute l’offre de la grille tarifaire officielle
                       </p>
                     </div>
                     <NavigationMenuLink
@@ -177,7 +177,7 @@ export function SiteHeader() {
                         />
                       }
                     >
-                      View all
+                      Tout voir
                       <ArrowRight className="ml-1 inline h-3 w-3" />
                     </NavigationMenuLink>
                   </div>
@@ -223,7 +223,7 @@ export function SiteHeader() {
                                     {service.name}
                                   </span>
                                   <span className="text-xs font-medium text-muted-foreground">
-                                    from{" "}
+                                    dès{" "}
                                     {formatPublicPriceText(
                                       service.variants[0].priceLabel,
                                       displayCurrency,
@@ -268,20 +268,20 @@ export function SiteHeader() {
             href={isLoggedIn ? "/portal" : "/login"}
             className={SIGN_IN_CLASSES}
           >
-            {isLoggedIn ? "Portal" : "Sign in"}
+            {isLoggedIn ? "Espace client" : "Se connecter"}
           </Link>
           <QuickInquiryLink
             className={START_PROJECT_CLASSES}
             inquiry={{ source: "site-header", sourceLabel: "Header CTA" }}
           >
-            Start a project
+            Lancer un projet
           </QuickInquiryLink>
         </div>
 
         {/* Mobile trigger */}
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger
-            aria-label="Open menu"
+            aria-label="Ouvrir le menu"
             className="inline-flex h-9 w-9 items-center justify-center rounded-[4px] text-foreground transition-colors duration-200 hover:bg-secondary md:hidden"
           >
             <Menu className="h-5 w-5" />
@@ -290,7 +290,7 @@ export function SiteHeader() {
             side="right"
             className="flex flex-col gap-6 overflow-y-auto p-6"
           >
-            <SheetTitle className="sr-only">Main menu</SheetTitle>
+            <SheetTitle className="sr-only">Menu principal</SheetTitle>
             <Link
               href="/"
               onClick={() => setMobileOpen(false)}
@@ -334,7 +334,7 @@ export function SiteHeader() {
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center justify-between rounded-[4px] px-2 py-2 text-sm font-medium text-accent transition-colors duration-200 hover:bg-secondary"
                   >
-                    View all
+                    Tout voir
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                   {SERVICES.map((service) => (
@@ -346,7 +346,7 @@ export function SiteHeader() {
                     >
                       <span>{service.name}</span>
                       <span className="text-xs text-muted-foreground">
-                        from{" "}
+                        dès{" "}
                         {formatPublicPriceText(
                           service.variants[0].priceLabel,
                           displayCurrency,
@@ -379,7 +379,7 @@ export function SiteHeader() {
                 onClick={() => setMobileOpen(false)}
                 className={cn(SIGN_IN_CLASSES, "h-11 justify-center")}
               >
-                {isLoggedIn ? "Portal" : "Sign in"}
+                {isLoggedIn ? "Espace client" : "Se connecter"}
               </Link>
               <QuickInquiryLink
                 onClick={() => setMobileOpen(false)}
@@ -390,7 +390,7 @@ export function SiteHeader() {
                   sourceLabel: "Mobile header CTA",
                 }}
               >
-                Start a project
+                Lancer un projet
               </QuickInquiryLink>
             </div>
           </SheetContent>

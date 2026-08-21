@@ -15,7 +15,7 @@ export function ConsentSettingsLink({ className }: { className?: string }) {
       onClick={openConsentBanner}
       className={className}
     >
-      Cookie settings
+      Paramètres des cookies
     </button>
   );
 }

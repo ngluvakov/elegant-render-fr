@@ -31,23 +31,23 @@ import {
  * signals breadth and primary offerings.
  */
 const FOOTER_SERVICES: NavItem[] = [
-  { href: "/services/interior-renders", label: "Interior renders" },
-  { href: "/services/exterior-renders", label: "Exterior renders" },
-  { href: "/services/virtual-staging", label: "Virtual staging" },
-  { href: "/services/vr-tour", label: "360° tours & VR" },
-  { href: "/services/architectural-animation", label: "Architectural animation" },
-  { href: "/services/site-plans", label: "3D site plans" },
+  { href: "/services/interior-renders", label: "Rendus d’intérieur" },
+  { href: "/services/exterior-renders", label: "Rendus d’extérieur" },
+  { href: "/services/virtual-staging", label: "Home staging virtuel" },
+  { href: "/services/vr-tour", label: "Visites 360° & VR" },
+  { href: "/services/architectural-animation", label: "Animation architecturale" },
+  { href: "/services/site-plans", label: "Plans de masse 3D" },
 ];
 
 const COMPANY_LINKS: NavItem[] = [
-  { href: "/about", label: "About us" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/about", label: "À propos" },
+  { href: "/pricing", label: "Tarifs" },
   { href: "/ai-studio", label: "AI Studio" },
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Portfolio" }]
     : []),
   { href: "/blog", label: "Blog" },
-  { href: "/career", label: "Career" },
+  { href: "/career", label: "Carrières" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
 ];
@@ -65,7 +65,7 @@ export function SiteFooter() {
         {/* Main grid — brand block + three link columns */}
         <div className="grid gap-12 pb-16 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
-            <Link href="/" className="inline-block" aria-label="Elegant Render — home">
+            <Link href="/" className="inline-block" aria-label="Elegant Render — accueil">
               <Image
                 src="/branding/er-logo-white.png"
                 alt="Elegant Render"
@@ -75,8 +75,8 @@ export function SiteFooter() {
               />
             </Link>
             <p className="max-w-[300px] text-sm leading-relaxed text-white/55">
-              Hand-crafted architectural visualization with transparent
-              pricing, for homes and properties across Europe.
+              Visualisation architecturale réalisée à la main, aux tarifs
+              transparents, pour des logements et des biens partout en France.
             </p>
           </div>
 
@@ -94,7 +94,7 @@ export function SiteFooter() {
               ))}
               <li className="pt-1">
                 <Link href="/services" className={linkBase}>
-                  All services →
+                  Tous les services →
                 </Link>
               </li>
             </ul>
@@ -102,7 +102,7 @@ export function SiteFooter() {
 
           <nav aria-labelledby="footer-company">
             <p id="footer-company" className={labelBase}>
-              Company
+              Entreprise
             </p>
             <ul className="mt-4 grid gap-2.5">
               {COMPANY_LINKS.map((item) => (
@@ -117,7 +117,7 @@ export function SiteFooter() {
 
           <nav aria-labelledby="footer-legal">
             <p id="footer-legal" className={labelBase}>
-              Legal
+              Informations légales
             </p>
             <ul className="mt-4 grid gap-2.5">
               {NAV_LEGAL.map((item) => (
@@ -133,13 +133,13 @@ export function SiteFooter() {
 
         {/* Certificates strip */}
         <div className="border-t border-white/12 py-6">
-          <p className={labelBase}>Certificates & standards</p>
+          <p className={labelBase}>Certificats et normes</p>
           <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-3 text-xs text-white/55">
             {/* Badge has silver bevel + TÜV blue — wrap in a tight white
                 card so it reads cleanly on the dark surface. */}
             <Link
               href="/legal/certificates"
-              aria-label={`${CERTIFIER.name} certificate — certificates and standards`}
+              aria-label={`Certificat ${CERTIFIER.name} — certificats et normes`}
               className="inline-flex shrink-0 rounded-[4px] bg-white p-1.5 transition-opacity duration-200 hover:opacity-90"
             >
               <Image
@@ -160,7 +160,7 @@ export function SiteFooter() {
               href="/legal/certificates"
               className="ml-auto text-white/65 transition-colors duration-200 hover:text-white hover:underline"
             >
-              About the certificates →
+              À propos des certificats →
             </Link>
           </div>
         </div>
@@ -189,8 +189,8 @@ export function SiteFooter() {
               className="h-[26px] w-auto opacity-90"
             />
             <span className="text-[13px] text-white/50">
-              Elegant Render is part of White Rook DOO — 3D visualization
-              &amp; digital assets.
+              Elegant Render fait partie de White Rook DOO — visualisation 3D
+              &amp; actifs numériques.
             </span>
           </div>
           <div className="flex items-center gap-5">

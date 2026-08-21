@@ -25,12 +25,12 @@ type Props = {
 };
 
 export function PreFooterCta({
-  eyebrow = "Next step",
-  heading = "Open the calculator and see your price in minutes.",
-  body = "Pick a visualization type, set the parameters and see the exact price immediately — no packages, no fine print.",
-  ctaLabel = "Open the calculator",
+  eyebrow = "Prochaine étape",
+  heading = "Ouvrez le calculateur et obtenez votre prix en quelques minutes.",
+  body = "Choisissez un type de visualisation, définissez les paramètres et voyez immédiatement le prix exact — sans forfaits, sans conditions cachées.",
+  ctaLabel = "Ouvrir le calculateur",
   ctaHref = "/pricing#configurator",
-  secondaryLabel = "Or send a quick inquiry",
+  secondaryLabel = "Ou envoyez une demande rapide",
   inquirySource = {
     source: "pre-footer-cta",
     sourceLabel: "PreFooter quick inquiry",
@@ -38,7 +38,7 @@ export function PreFooterCta({
 }: Props) {
   return (
     <section
-      aria-label="Next step"
+      aria-label="Prochaine étape"
       className="mt-20 border-y border-border bg-background"
     >
       <div className="mx-auto w-full max-w-[1280px] px-6 py-14 sm:px-12 md:py-20">

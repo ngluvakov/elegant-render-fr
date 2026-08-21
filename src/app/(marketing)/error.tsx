@@ -18,19 +18,19 @@ export default function MarketingError({
 
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center">
-      <h2 className="text-2xl text-foreground">Something went wrong</h2>
+      <h2 className="text-2xl text-foreground">Une erreur est survenue</h2>
       <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-        An error occurred while loading this page. Try again — and if the
-        error keeps happening, reach us at{" "}
-        <a className="underline" href="mailto:info@elegantrender.com">
-          info@elegantrender.com
+        Le chargement de cette page a échoué. Réessayez — et si l’erreur
+        persiste, écrivez-nous à{" "}
+        <a className="underline" href="mailto:info@elegantrender.fr">
+          info@elegantrender.fr
         </a>
         .
       </p>
       <div className="flex gap-3">
-        <Button onClick={reset}>Try again</Button>
+        <Button onClick={reset}>Réessayer</Button>
         <ButtonLink href="/" variant="outline">
-          Back to the homepage
+          Retour à l’accueil
         </ButtonLink>
       </div>
     </div>

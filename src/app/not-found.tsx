@@ -4,9 +4,9 @@ import { SectionKicker } from "@/components/brand/section-kicker";
 import { ButtonLink } from "@/components/ui/button-link";
 
 export const metadata: Metadata = {
-  title: "404 — Page not found",
+  title: "404 — Page introuvable",
   description:
-    "Page not found. Return to the homepage or browse the Elegant Render services.",
+    "Page introuvable. Revenez à la page d’accueil ou parcourez les services d’Elegant Render.",
   robots: { index: false, follow: false },
 };
 
@@ -32,17 +32,17 @@ export default function NotFound() {
           404
         </p>
         <h1 className="mt-[-1rem] max-w-[18rem] text-3xl leading-tight text-foreground sm:mt-[-1.4rem] sm:max-w-2xl sm:text-6xl">
-          Page not found
+          Page introuvable
         </h1>
         <p className="mt-6 max-w-sm text-base leading-8 text-foreground/70 sm:max-w-xl sm:text-lg">
-          It looks like this link left the plan. Return to the homepage
-          or continue to the services overview.
+          Il semble que ce lien ne figure plus sur les plans. Revenez à la
+          page d’accueil ou consultez l’aperçu des services.
         </p>
 
         <div className="mt-10 flex w-full max-w-sm flex-col gap-3 sm:max-w-md sm:flex-row sm:justify-center">
           <ButtonLink href="/" size="lg" className="w-full gap-2 sm:w-auto">
             <Home aria-hidden size={18} />
-            Back to homepage
+            Retour à l’accueil
           </ButtonLink>
           <ButtonLink
             href="/services"
@@ -51,7 +51,7 @@ export default function NotFound() {
             className="w-full gap-2 sm:w-auto"
           >
             <Sparkles aria-hidden size={18} />
-            View services
+            Voir les services
           </ButtonLink>
         </div>
       </section>

@@ -47,9 +47,9 @@ export const metadata: Metadata = {
   creator: SITE.name,
   publisher: SITE.parentCompany,
   referrer: "strict-origin-when-cross-origin",
-  category: "Architecture visualization",
+  category: "Visualisation architecturale",
   classification:
-    "Architectural visualization, virtual staging, 3D rendering, AI real estate imagery",
+    "Visualisation architecturale, home staging virtuel, rendu 3D, imagerie immobilière par IA",
   keywords: [...SEO.keywords],
   metadataBase: new URL(SITE.url),
   alternates: {
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
         url: absoluteUrl(SEO.defaultImage),
         width: 1200,
         height: 630,
-        alt: `${SITE.name} architectural visualization`,
+        alt: `Visualisation architecturale ${SITE.name}`,
       },
     ],
   },

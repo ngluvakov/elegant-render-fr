@@ -127,17 +127,18 @@ export function ConsentBanner() {
         </div>
         <div className="min-w-0 flex-1">
           <h2 id="consent-banner-title" className="text-base font-medium text-foreground">
-            Cookies &amp; privacy
+            Cookies &amp; confidentialité
           </h2>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground sm:text-sm">
-            We use necessary cookies to run the site. Additional analytics,
-            marketing measurement and session recording are enabled only with
-            your consent, to help us improve the experience.{" "}
+            Nous utilisons des cookies nécessaires au fonctionnement du site.
+            Les statistiques, la mesure marketing et l’enregistrement de
+            session ne sont activés qu’avec votre consentement, pour nous
+            aider à améliorer l’expérience.{" "}
             <Link
               href="/legal/cookies"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              More about cookies
+              En savoir plus sur les cookies
             </Link>
             .
           </p>
@@ -146,7 +147,7 @@ export function ConsentBanner() {
           <button
             type="button"
             onClick={closeAndClear}
-            aria-label="Close"
+            aria-label="Fermer"
             className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
             <X className="h-3.5 w-3.5" />
@@ -157,26 +158,26 @@ export function ConsentBanner() {
       {view === "details" && (
         <div className="mt-5 space-y-3 border-t border-border/50 pt-4">
           <ConsentRow
-            label="Necessary"
-            description="Session, sign-in, storing your cookie choice. Always active."
+            label="Nécessaires"
+            description="Session, connexion, enregistrement de votre choix en matière de cookies. Toujours actifs."
             checked
             disabled
           />
           <ConsentRow
-            label="Analytics"
-            description="Anonymous usage statistics (PostHog, Google Analytics 4 / Tag Manager) and error reports (Sentry)."
+            label="Statistiques"
+            description="Statistiques d’utilisation anonymes (PostHog, Google Analytics 4 / Tag Manager) et rapports d’erreurs (Sentry)."
             checked={analytics}
             onChange={setAnalytics}
           />
           <ConsentRow
             label="Marketing"
-            description="Measuring campaigns, conversions and audiences for our marketing tools."
+            description="Mesure des campagnes, des conversions et des audiences pour nos outils marketing."
             checked={marketing}
             onChange={setMarketing}
           />
           <ConsentRow
-            label="Session recording"
-            description="Anonymous recordings of how the site is used — helps us find where buyers struggle."
+            label="Enregistrement de session"
+            description="Enregistrements anonymes de l’utilisation du site — pour repérer où les acheteurs rencontrent des difficultés."
             checked={recording}
             onChange={setRecording}
           />
@@ -191,14 +192,14 @@ export function ConsentBanner() {
               onClick={handleAcceptAll}
               className="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-colors duration-200 hover:bg-[#00c77e] active:bg-[#00b372] sm:flex-none"
             >
-              Accept all
+              Tout accepter
             </button>
             <button
               type="button"
               onClick={handleNecessaryOnly}
               className="inline-flex min-h-11 items-center justify-center rounded-[4px] border border-[#111111] bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-secondary sm:flex-none"
             >
-              Necessary only
+              Tout refuser
             </button>
             <button
               type="button"
@@ -206,7 +207,7 @@ export function ConsentBanner() {
               className="col-span-2 inline-flex min-h-10 items-center justify-center gap-1.5 rounded-[4px] px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors duration-200 hover:text-foreground sm:col-span-1 sm:text-sm"
             >
               <Settings className="h-3.5 w-3.5" />
-              Settings
+              Paramètres
             </button>
           </>
         )}
@@ -217,14 +218,14 @@ export function ConsentBanner() {
               onClick={handleSavePrefs}
               className="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition-colors duration-200 hover:bg-[#00c77e] active:bg-[#00b372] sm:flex-none"
             >
-              Save choices
+              Enregistrer mes choix
             </button>
             <button
               type="button"
               onClick={handleAcceptAll}
               className="inline-flex min-h-11 items-center justify-center rounded-[4px] border border-[#111111] bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-secondary sm:flex-none"
             >
-              Accept all
+              Tout accepter
             </button>
           </>
         )}

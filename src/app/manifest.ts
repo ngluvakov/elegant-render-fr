@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Elegant Render",
     short_name: "Elegant Render",
     description:
-      "Architectural visualization — renders, virtual staging and visual makeovers with transparent pricing",
+      "Visualisation architecturale — rendus, home staging virtuel et transformations visuelles à tarifs transparents",
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

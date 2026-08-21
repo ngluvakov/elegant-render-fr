@@ -207,7 +207,7 @@ export function formatBillingMoney(
 ): string {
   void _currency;
   const value = cents / 100;
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat("fr-FR", {
     style: "currency",
     currency: "EUR",
     minimumFractionDigits: value % 1 === 0 ? 0 : 2,

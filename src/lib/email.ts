@@ -3,7 +3,7 @@
  *
  * Exports sendVerificationEmail, sendPasswordResetEmail,
  * sendOrderConfirmationEmail, sendPortalAccessEmail, and the VR
- * inquiry pair — all branded HTML templates in English.
+ * inquiry pair — all branded HTML templates in French.
  *
  * Used by: server/actions/auth, server/actions/checkout,
  *          server/actions/payment, server/actions/vr-inquiry
@@ -67,7 +67,7 @@ async function send(args: {
 }
 
 function formatEmailEur(amount: number): string {
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat("fr-FR", {
     style: "currency",
     currency: "EUR",
     maximumFractionDigits: 0,
@@ -89,21 +89,21 @@ export async function sendVerificationEmail(
 
   await send({
     to,
-    subject: "Confirm your email address — Elegant Render",
+    subject: "Confirmez votre adresse e-mail — Elegant Render",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Welcome to Elegant Render</h2>
+        <h2 style="color: #1C1A19;">Bienvenue chez Elegant Render</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Click the button below to confirm your email address and activate your account.
+          Cliquez sur le bouton ci-dessous pour confirmer votre adresse e-mail et activer votre compte.
         </p>
         <a href="${url}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Confirm email
+          Confirmer l’adresse e-mail
         </a>
         <p style="color: #9ca3af; font-size: 13px;">
-          If you did not create an account, you can ignore this email.
+          Si vous n’êtes pas à l’origine de cette inscription, vous pouvez ignorer cet e-mail.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -117,23 +117,23 @@ export async function sendPasswordResetEmail(
 
   await send({
     to,
-    subject: "Reset your password — Elegant Render",
+    subject: "Réinitialisez votre mot de passe — Elegant Render",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Reset your password</h2>
+        <h2 style="color: #1C1A19;">Réinitialisez votre mot de passe</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          We received a request to change your password. Click the button
-          below to set a new one.
+          Nous avons reçu une demande de changement de votre mot de passe.
+          Cliquez sur le bouton ci-dessous pour en définir un nouveau.
         </p>
         <a href="${url}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Set a new password
+          Définir un nouveau mot de passe
         </a>
         <p style="color: #9ca3af; font-size: 13px;">
-          The link is valid for 1 hour. If you did not request a password
-          change, you can ignore this email.
+          Le lien est valable 1 heure. Si vous n’avez pas demandé de
+          changement de mot de passe, vous pouvez ignorer cet e-mail.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -151,24 +151,25 @@ export async function sendPortalAccessEmail(
 
   await send({
     to,
-    subject: `Access your order ${orderNumber} — Elegant Render`,
+    subject: `Accédez à votre commande ${orderNumber} — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Thank you for your order</h2>
+        <h2 style="color: #1C1A19;">Merci pour votre commande</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Your order <strong>${orderNumber}</strong> has been received.
-          Click the button below to open the portal and follow progress —
-          no password needed.
+          Votre commande <strong>${orderNumber}</strong> a bien été reçue.
+          Cliquez sur le bouton ci-dessous pour ouvrir l’espace client et
+          suivre l’avancement — sans mot de passe.
         </p>
         <a href="${url}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Open your order
+          Ouvrir votre commande
         </a>
         <p style="color: #9ca3af; font-size: 13px;">
-          The link is valid for 7 days and can be used only once — after
-          that you will be signed in and can set a password in the portal.
+          Le lien est valable 7 jours et ne peut être utilisé qu’une seule
+          fois — ensuite, votre session reste ouverte et vous pouvez définir
+          un mot de passe dans l’espace client.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -185,27 +186,27 @@ export async function sendOrderConfirmationEmail(
 
   await send({
     to,
-    subject: `Order confirmation ${orderNumber} — Elegant Render`,
+    subject: `Confirmation de commande ${orderNumber} — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Order received</h2>
+        <h2 style="color: #1C1A19;">Commande reçue</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Your order <strong>${orderNumber}</strong> has been received and paid.
+          Votre commande <strong>${orderNumber}</strong> a bien été reçue et payée.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; font-size: 14px;">
-            <strong>Order number:</strong> ${orderNumber}<br/>
-            <strong>Total:</strong> ${escapeHtml(totalLabel)}
+            <strong>Numéro de commande :</strong> ${orderNumber}<br/>
+            <strong>Total :</strong> ${escapeHtml(totalLabel)}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
-          You can follow the status of your order in the portal.
+          Vous pouvez suivre l’état de votre commande dans l’espace client.
         </p>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Open the portal
+          Ouvrir l’espace client
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -223,7 +224,7 @@ export type WithdrawalNoticeEmailArgs = {
 };
 
 function renderWithdrawalNotice(args: WithdrawalNoticeEmailArgs): string {
-  const receivedAt = args.receivedAt.toLocaleString("en-GB", {
+  const receivedAt = args.receivedAt.toLocaleString("fr-FR", {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -236,17 +237,17 @@ function renderWithdrawalNotice(args: WithdrawalNoticeEmailArgs): string {
   return `
     <div style="background:#f6f1ea; border-radius:8px; padding:16px; margin:16px 0;">
       <p style="margin:0; color:#1C1A19; line-height:1.7;">
-        <strong>Reference:</strong> ${escapeHtml(args.reference)}<br/>
-        <strong>Received:</strong> ${escapeHtml(receivedAt)}<br/>
-        <strong>Consumer:</strong> ${escapeHtml(args.consumerName)}<br/>
-        <strong>Email:</strong> ${escapeHtml(args.consumerEmail)}<br/>
-        <strong>Order number:</strong> ${escapeHtml(args.orderNumber)}
-        ${args.contractDate ? `<br/><strong>Contract date:</strong> ${escapeHtml(args.contractDate)}` : ""}
-        ${args.serviceDescription ? `<br/><strong>Service:</strong> ${escapeHtml(args.serviceDescription)}` : ""}
+        <strong>Référence :</strong> ${escapeHtml(args.reference)}<br/>
+        <strong>Reçue le :</strong> ${escapeHtml(receivedAt)}<br/>
+        <strong>Consommateur :</strong> ${escapeHtml(args.consumerName)}<br/>
+        <strong>E-mail :</strong> ${escapeHtml(args.consumerEmail)}<br/>
+        <strong>Numéro de commande :</strong> ${escapeHtml(args.orderNumber)}
+        ${args.contractDate ? `<br/><strong>Date du contrat :</strong> ${escapeHtml(args.contractDate)}` : ""}
+        ${args.serviceDescription ? `<br/><strong>Service :</strong> ${escapeHtml(args.serviceDescription)}` : ""}
       </p>
       ${
         args.message
-          ? `<p style="margin:14px 0 0; color:#1C1A19; white-space:pre-wrap;"><strong>Additional information:</strong><br/>${escapeHtml(args.message)}</p>`
+          ? `<p style="margin:14px 0 0; color:#1C1A19; white-space:pre-wrap;"><strong>Informations complémentaires :</strong><br/>${escapeHtml(args.message)}</p>`
           : ""
       }
     </div>
@@ -263,16 +264,17 @@ export async function sendWithdrawalNoticeAdminEmail(
 ) {
   await send({
     to: ADMIN_NOTIFY_EMAIL,
-    subject: `Contract withdrawal — ${args.orderNumber} — ${args.reference}`,
+    subject: `Rétractation de contrat — ${args.orderNumber} — ${args.reference}`,
     html: `
       <div style="font-family:sans-serif; max-width:640px; margin:0 auto;">
-        <h2 style="color:#1C1A19;">Online withdrawal notice received</h2>
+        <h2 style="color:#1C1A19;">Notification de rétractation en ligne reçue</h2>
         <p style="color:#6e665d; line-height:1.6;">
-          The consumer used the public withdrawal function and made the
-          following unambiguous statement: “I withdraw from the contract
-          identified below.” Review the order and apply the mandatory
-          withdrawal rules without treating this email as a discretionary
-          cancellation request.
+          Le consommateur a utilisé la fonction publique de rétractation et a
+          fait la déclaration dénuée d’ambiguïté suivante : « Je vous notifie
+          par la présente ma rétractation du contrat désigné ci-dessous. »
+          Examinez la commande et appliquez les règles impératives de
+          rétractation, sans traiter cet e-mail comme une simple demande
+          d’annulation discrétionnaire.
         </p>
         ${renderWithdrawalNotice(args)}
         <hr style="border:none; border-top:1px solid #d8cec4; margin:24px 0;" />
@@ -288,20 +290,21 @@ export async function sendWithdrawalNoticeCustomerEmail(
 ) {
   await send({
     to: args.consumerEmail,
-    subject: `Withdrawal notice received — ${args.reference}`,
+    subject: `Notification de rétractation reçue — ${args.reference}`,
     html: `
       <div style="font-family:sans-serif; max-width:560px; margin:0 auto;">
-        <h2 style="color:#1C1A19;">Your withdrawal notice was received</h2>
+        <h2 style="color:#1C1A19;">Votre notification de rétractation a bien été reçue</h2>
         <p style="color:#6e665d; line-height:1.6;">
-          We confirm that ${escapeHtml(IMPRINT.shortName)} received your
-          statement withdrawing from the contract identified below. Keep this
-          email as evidence of the content and time of your notice.
+          Nous confirmons que ${escapeHtml(IMPRINT.shortName)} a bien reçu
+          votre déclaration de rétractation du contrat désigné ci-dessous.
+          Conservez cet e-mail comme preuve du contenu et de la date de votre
+          notification.
         </p>
         ${renderWithdrawalNotice(args)}
         <p style="color:#6e665d; line-height:1.6;">
-          We will review the order status and contact you about the legal and
-          payment effects. This acknowledgement does not reduce any mandatory
-          consumer right.
+          Nous examinerons l’état de la commande et vous contacterons au sujet
+          des effets juridiques et financiers. Cet accusé de réception ne
+          restreint aucun droit impératif du consommateur.
         </p>
         <hr style="border:none; border-top:1px solid #d8cec4; margin:24px 0;" />
         <p style="color:#9ca3af; font-size:12px;">
@@ -331,27 +334,27 @@ export async function sendInvoiceIssuedEmail(args: {
 
   await send({
     to: args.to,
-    subject: `Invoice ${args.invoiceNumber} — Elegant Render`,
+    subject: `Facture ${args.invoiceNumber} — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Your invoice</h2>
+        <h2 style="color: #1C1A19;">Votre facture</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Attached is invoice <strong>${escapeHtml(args.invoiceNumber)}</strong> for the order you just paid.
+          Vous trouverez en pièce jointe la facture <strong>${escapeHtml(args.invoiceNumber)}</strong> correspondant à la commande que vous venez de régler.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; font-size: 14px;">
-            <strong>Invoice number:</strong> ${escapeHtml(args.invoiceNumber)}<br/>
-            <strong>Amount:</strong> ${escapeHtml(amountLabel)}
+            <strong>N° de facture :</strong> ${escapeHtml(args.invoiceNumber)}<br/>
+            <strong>Montant :</strong> ${escapeHtml(amountLabel)}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
-          You can follow the order status and download your files in the portal.
+          Vous pouvez suivre l’état de la commande et télécharger vos fichiers dans l’espace client.
         </p>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Open the portal
+          Ouvrir l’espace client
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
     attachments: [{ filename, content: args.pdfBuffer }],
@@ -372,7 +375,7 @@ export async function sendProformaIssuedEmail(args: {
   pdfBuffer: Buffer;
 }) {
   const filename = `proforma-${args.proformaNumber}.pdf`;
-  const dueDateLabel = args.dueDate.toLocaleDateString("en-GB", {
+  const dueDateLabel = args.dueDate.toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -382,26 +385,26 @@ export async function sendProformaIssuedEmail(args: {
 
   await send({
     to: args.to,
-    subject: `Proforma invoice ${args.proformaNumber} — Elegant Render`,
+    subject: `Facture proforma ${args.proformaNumber} — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Proforma invoice for payment</h2>
+        <h2 style="color: #1C1A19;">Facture proforma à régler</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Attached is proforma invoice <strong>${escapeHtml(args.proformaNumber)}</strong>.
-          Once your payment arrives we will issue the final invoice and start the work.
+          Vous trouverez en pièce jointe la facture proforma <strong>${escapeHtml(args.proformaNumber)}</strong>.
+          Dès réception de votre paiement, nous émettrons la facture définitive et commencerons le travail.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; font-size: 14px;">
-            <strong>Proforma number:</strong> ${escapeHtml(args.proformaNumber)}<br/>
-            <strong>Amount:</strong> ${escapeHtml(amountLabel)}<br/>
-            <strong>Payment due:</strong> ${dueDateLabel}
+            <strong>N° de proforma :</strong> ${escapeHtml(args.proformaNumber)}<br/>
+            <strong>Montant :</strong> ${escapeHtml(amountLabel)}<br/>
+            <strong>Échéance :</strong> ${dueDateLabel}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
-          Detailed payment instructions (IBAN, payment reference) are in the attached PDF.
+          Les instructions de paiement détaillées (IBAN, référence de paiement) figurent dans le PDF joint.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
     attachments: [{ filename, content: args.pdfBuffer }],
@@ -415,31 +418,32 @@ export async function sendInquiryConvertedEmail(args: {
 }) {
   const greeting = args.contactName ? ` ${args.contactName}` : "";
   const subjectLine = args.inquirySubject
-    ? `your inquiry "${args.inquirySubject}"`
-    : "your inquiry";
+    ? `votre demande « ${args.inquirySubject} »`
+    : "votre demande";
 
   await send({
     to: args.to,
-    subject: "We reviewed your inquiry — proforma invoice on its way",
+    subject: "Votre demande a été examinée — facture proforma en préparation",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Hello${escapeHtml(greeting)},</h2>
+        <h2 style="color: #1C1A19;">Bonjour${escapeHtml(greeting)},</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Thank you for getting in touch. We reviewed ${escapeHtml(subjectLine)}
-          and are preparing a proforma invoice with bank transfer instructions.
+          Merci de nous avoir contactés. Nous avons examiné ${escapeHtml(subjectLine)}
+          et préparons une facture proforma avec les instructions de virement bancaire.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          You will receive the proforma invoice in a separate email within the
-          next working day, with a PDF document and exact payment details
-          (IBAN, payment reference). Once your payment arrives we issue the
-          final invoice and start the work.
+          Vous recevrez la facture proforma dans un e-mail séparé d’ici le
+          prochain jour ouvré, avec un document PDF et les coordonnées de
+          paiement exactes (IBAN, référence de paiement). Dès réception de
+          votre paiement, nous émettons la facture définitive et commençons
+          le travail.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          If you have any questions in the meantime, simply reply to this
-          email — we respond the same day.
+          Si vous avez des questions d’ici là, répondez simplement à cet
+          e-mail — nous répondons le jour même.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -462,26 +466,26 @@ export async function sendAiCreditsExpiryReminderEmail(args: {
   daysLeft: 30 | 7;
 }) {
   const portalUrl = `${getAuthUrl()}/portal/ai-studio/credits`;
-  const dateLabel = args.expiresAt.toLocaleDateString("en-GB");
+  const dateLabel = args.expiresAt.toLocaleDateString("fr-FR");
 
   await send({
     to: args.to,
-    subject: `AI credits expire in ${args.daysLeft} days — Elegant Render`,
+    subject: `Vos crédits AI Studio expirent dans ${args.daysLeft} jours — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">AI credits expire soon</h2>
+        <h2 style="color: #1C1A19;">Vos crédits AI Studio expirent bientôt</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Your active AI Studio balance is <strong>${escapeHtml(args.creditsLabel)}</strong>
-          and is valid until <strong>${escapeHtml(dateLabel)}</strong>.
+          Votre solde AI Studio actif est de <strong>${escapeHtml(args.creditsLabel)}</strong>,
+          valable jusqu’au <strong>${escapeHtml(dateLabel)}</strong>.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          A new top-up extends the validity of your entire active balance for another 12 months.
+          Une nouvelle recharge prolonge la validité de l’ensemble de votre solde actif de 12 mois supplémentaires.
         </p>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Top up credits
+          Recharger les crédits
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -489,35 +493,35 @@ export async function sendAiCreditsExpiryReminderEmail(args: {
 
 function configToBullets(config: VrConfig): string {
   const items: string[] = [];
-  items.push(`<strong>Project:</strong> ${escapeHtml(config.projectName)}`);
-  items.push(`<strong>Experience type:</strong> ${config.experienceType}`);
-  items.push(`<strong>Target device:</strong> ${config.targetDevice}`);
+  items.push(`<strong>Projet :</strong> ${escapeHtml(config.projectName)}`);
+  items.push(`<strong>Type d’expérience :</strong> ${config.experienceType}`);
+  items.push(`<strong>Appareil cible :</strong> ${config.targetDevice}`);
   if (config.locomotion)
-    items.push(`<strong>Locomotion:</strong> ${config.locomotion}`);
+    items.push(`<strong>Locomotion :</strong> ${config.locomotion}`);
   if (config.dayNightMode)
-    items.push(`<strong>Day/Night:</strong> ${config.dayNightMode}`);
+    items.push(`<strong>Jour/Nuit :</strong> ${config.dayNightMode}`);
   const interactions: string[] = [];
-  if (config.doorInteraction) interactions.push("doors");
-  if (config.lightsInteraction) interactions.push("lights");
-  if (config.materialsInteraction) interactions.push("materials");
+  if (config.doorInteraction) interactions.push("portes");
+  if (config.lightsInteraction) interactions.push("éclairages");
+  if (config.materialsInteraction) interactions.push("matériaux");
   if (interactions.length > 0) {
-    items.push(`<strong>Interactions:</strong> ${interactions.join(", ")}`);
+    items.push(`<strong>Interactions :</strong> ${interactions.join(", ")}`);
   }
   if (config.extraFloorsCount > 0)
-    items.push(`<strong>Extra floors:</strong> ${config.extraFloorsCount}`);
+    items.push(`<strong>Étages supplémentaires :</strong> ${config.extraFloorsCount}`);
   if (config.interactiveTypeCount > 0)
     items.push(
-      `<strong>Interactive types (count):</strong> ${config.interactiveTypeCount}`,
+      `<strong>Types interactifs (nombre) :</strong> ${config.interactiveTypeCount}`,
     );
-  if (config.brandingEnabled) items.push(`<strong>Branding:</strong> yes`);
+  if (config.brandingEnabled) items.push(`<strong>Branding :</strong> oui`);
   if (config.description) {
     items.push(
-      `<strong>Description:</strong><br/>${escapeHtml(config.description).replace(/\n/g, "<br/>")}`,
+      `<strong>Description :</strong><br/>${escapeHtml(config.description).replace(/\n/g, "<br/>")}`,
     );
   }
   if (config.customInteractionDescription) {
     items.push(
-      `<strong>Custom interactions:</strong><br/>${escapeHtml(config.customInteractionDescription).replace(/\n/g, "<br/>")}`,
+      `<strong>Interactions personnalisées :</strong><br/>${escapeHtml(config.customInteractionDescription).replace(/\n/g, "<br/>")}`,
     );
   }
   return items.map((i) => `<li>${i}</li>`).join("\n");
@@ -545,27 +549,27 @@ export async function sendProjectInquiryAdminEmail(args: {
     to: ADMIN_NOTIFY_EMAIL,
     subject:
       unscanned > 0
-        ? `⚠ New inquiry (files not scanned) — ${args.contactName}`
-        : `New estimate inquiry — ${args.contactName}`,
+        ? `⚠ Nouvelle demande (fichiers non analysés) — ${args.contactName}`
+        : `Nouvelle demande de devis — ${args.contactName}`,
     html: `
       <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">New estimate inquiry</h2>
+        <h2 style="color: #1C1A19;">Nouvelle demande de devis</h2>
         ${
           unscanned > 0
             ? `<div style="background: #fdecea; border: 1px solid #e5b3ab; border-radius: 8px; padding: 12px 16px; margin: 16px 0; color: #8a2c1c; line-height: 1.6;">
-          <strong>⚠ ${unscanned} file(s) were not scanned</strong> because the antivirus
-          service was unavailable. The files are held in quarantine — check them manually
-          (or download them in a safe environment) before opening. The inquiry was still
-          saved so the lead is not lost.
+          <strong>⚠ ${unscanned} fichier(s) n’ont pas été analysés</strong> car le service
+          antivirus était indisponible. Les fichiers sont placés en quarantaine — vérifiez-les
+          manuellement (ou téléchargez-les dans un environnement sécurisé) avant de les ouvrir.
+          La demande a tout de même été enregistrée afin de ne pas perdre le contact.
         </div>`
             : ""
         }
         <p style="color: #6e665d; line-height: 1.6;">
-          ${escapeHtml(args.contactName)} sent a short brief and expects
-          a service proposal with pricing.
+          ${escapeHtml(args.contactName)} a envoyé un brief succinct et attend
+          une proposition de service chiffrée.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Contact:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Contact :</strong></p>
           <ul style="margin: 0; padding-left: 18px; color: #1C1A19; line-height: 1.6;">
             <li>${escapeHtml(args.contactName)}</li>
             <li><a href="mailto:${escapeHtml(args.email)}">${escapeHtml(args.email)}</a></li>
@@ -574,23 +578,23 @@ export async function sendProjectInquiryAdminEmail(args: {
           </ul>
         </div>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Brief:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Brief :</strong></p>
           <p style="margin: 0; color: #1C1A19; line-height: 1.7;">
-            ${args.serviceType ? `<strong>Service:</strong> ${escapeHtml(args.serviceType)}<br/>` : ""}
-            ${args.budget ? `<strong>Budget:</strong> ${escapeHtml(args.budget)}<br/>` : ""}
-            ${args.deadline ? `<strong>Deadline:</strong> ${escapeHtml(args.deadline)}<br/>` : ""}
-            ${args.sourceLabel ? `<strong>Source:</strong> ${escapeHtml(args.sourceLabel)}<br/>` : ""}
-            <strong>Files:</strong> ${args.fileCount}
+            ${args.serviceType ? `<strong>Service :</strong> ${escapeHtml(args.serviceType)}<br/>` : ""}
+            ${args.budget ? `<strong>Budget :</strong> ${escapeHtml(args.budget)}<br/>` : ""}
+            ${args.deadline ? `<strong>Délai :</strong> ${escapeHtml(args.deadline)}<br/>` : ""}
+            ${args.sourceLabel ? `<strong>Source :</strong> ${escapeHtml(args.sourceLabel)}<br/>` : ""}
+            <strong>Fichiers :</strong> ${args.fileCount}
           </p>
         </div>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Client message:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Message du client :</strong></p>
           <p style="margin: 0; color: #1C1A19; white-space: pre-wrap;">${escapeHtml(args.message)}</p>
         </div>
         <a href="${args.adminUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Open inquiry in the admin panel
+          Ouvrir la demande dans le panneau d’administration
         </a>
-        <p style="color: #9ca3af; font-size: 12px;">Inquiry ID: ${escapeHtml(args.inquiryId)}</p>
+        <p style="color: #9ca3af; font-size: 12px;">ID de la demande : ${escapeHtml(args.inquiryId)}</p>
       </div>
     `,
   });
@@ -602,24 +606,24 @@ export async function sendProjectInquiryCustomerEmail(args: {
 }) {
   await send({
     to: args.to,
-    subject: "Your inquiry has been received — Elegant Render",
+    subject: "Votre demande a bien été reçue — Elegant Render",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Thank you for your inquiry</h2>
+        <h2 style="color: #1C1A19;">Merci pour votre demande</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Hello ${escapeHtml(args.contactName)},
+          Bonjour ${escapeHtml(args.contactName)},
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          We received your project description. We will review the materials
-          and get back to you with a service proposal and an estimate,
-          usually within <strong>1 working day</strong>.
+          Nous avons bien reçu la description de votre projet. Nous examinerons
+          les éléments et reviendrons vers vous avec une proposition de service
+          et un devis, généralement sous <strong>1 jour ouvré</strong>.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          If you would like to add more references, you can reply directly
-          to this email.
+          Si vous souhaitez ajouter d’autres références, vous pouvez répondre
+          directement à cet e-mail.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -633,18 +637,18 @@ export async function sendAiCreditsGrantedEmail(args: {
   expiresAt: Date;
 }) {
   const portalUrl = `${getAuthUrl()}/portal/ai-studio`;
-  const dateLabel = args.expiresAt.toLocaleDateString("en-GB");
+  const dateLabel = args.expiresAt.toLocaleDateString("fr-FR");
 
   await send({
     to: args.to,
-    subject: `You received ${args.grantedLabel} AI credits — Elegant Render`,
+    subject: `Vous avez reçu ${args.grantedLabel} AI Studio — Elegant Render`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">We added AI credits to your account</h2>
+        <h2 style="color: #1C1A19;">Des crédits AI Studio ont été ajoutés à votre compte</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Our team granted you <strong>${escapeHtml(args.grantedLabel)}</strong>.
-          Your new active balance is <strong>${escapeHtml(args.balanceLabel)}</strong>
-          and is valid until <strong>${escapeHtml(dateLabel)}</strong>.
+          Notre équipe vous a accordé <strong>${escapeHtml(args.grantedLabel)}</strong>.
+          Votre nouveau solde actif est de <strong>${escapeHtml(args.balanceLabel)}</strong>,
+          valable jusqu’au <strong>${escapeHtml(dateLabel)}</strong>.
         </p>
         ${
           args.note
@@ -654,10 +658,10 @@ export async function sendAiCreditsGrantedEmail(args: {
             : ""
         }
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Open AI Studio
+          Ouvrir AI Studio
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -673,23 +677,23 @@ export async function sendFreeRevisionGrantedEmail(args: {
 
   await send({
     to: args.to,
-    subject: `Free revision approved — order ${args.orderNumber}`,
+    subject: `Révision gratuite approuvée — commande ${args.orderNumber}`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Your revision has been approved</h2>
+        <h2 style="color: #1C1A19;">Votre révision a été approuvée</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Our team approved a free revision on order
+          Notre équipe a approuvé une révision gratuite sur la commande
           <strong>${escapeHtml(args.orderNumber)}</strong>.
-          We are starting the work — you will be notified when it is ready for review.
+          Nous commençons le travail — nous vous préviendrons dès qu’elle sera prête pour votre validation.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; line-height: 1.6;"><em>${escapeHtml(args.note)}</em></p>
         </div>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Open order
+          Ouvrir la commande
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -733,14 +737,14 @@ export async function sendAdditionalChargeRequestedEmail(args: {
 
   await send({
     to: args.to,
-    subject: `Additional charge on order ${args.orderNumber} — ${totalLabel}`,
+    subject: `Frais supplémentaires sur la commande ${args.orderNumber} — ${totalLabel}`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Additional charge</h2>
+        <h2 style="color: #1C1A19;">Frais supplémentaires</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          An additional charge has been created on order
-          <strong>${escapeHtml(args.orderNumber)}</strong> for items outside
-          the original scope.
+          Des frais supplémentaires ont été créés sur la commande
+          <strong>${escapeHtml(args.orderNumber)}</strong> pour des éléments
+          hors du périmètre initial.
         </p>
         ${
           args.reason
@@ -753,17 +757,18 @@ export async function sendAdditionalChargeRequestedEmail(args: {
           ${linesHtml}
         </ul>
         <p style="color: #1C1A19; font-size: 16px; margin: 16px 0;">
-          <strong>Total due: ${escapeHtml(totalLabel)}</strong>
+          <strong>Total à régler : ${escapeHtml(totalLabel)}</strong>
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Open the order in the portal to review the items and complete the
-          payment. All payment options from your original order are available.
+          Ouvrez la commande dans l’espace client pour vérifier les éléments
+          et effectuer le paiement. Tous les moyens de paiement de votre
+          commande initiale sont disponibles.
         </p>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Open order and pay
+          Ouvrir la commande et payer
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -786,24 +791,24 @@ export async function sendAdditionalChargePaidEmail(args: {
 
   await send({
     to: args.to,
-    subject: `Additional charge paid — order ${args.orderNumber}`,
+    subject: `Frais supplémentaires payés — commande ${args.orderNumber}`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Payment received</h2>
+        <h2 style="color: #1C1A19;">Paiement reçu</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Thank you. Your payment for the additional charge on order
-          <strong>${escapeHtml(args.orderNumber)}</strong> has been received.
+          Merci. Votre paiement des frais supplémentaires sur la commande
+          <strong>${escapeHtml(args.orderNumber)}</strong> a bien été reçu.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19;">
-            <strong>Amount:</strong> ${escapeHtml(totalLabel)}
+            <strong>Montant :</strong> ${escapeHtml(totalLabel)}
           </p>
         </div>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Open order
+          Ouvrir la commande
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -821,16 +826,16 @@ export async function sendVrInquiryAdminEmail(args: {
   const adminUrl = `${getAuthUrl()}/portal/admin/vr-inquiries`;
   await send({
     to: ADMIN_NOTIFY_EMAIL,
-    subject: `New VR inquiry — ${args.contactName} (${args.productLabel})`,
+    subject: `Nouvelle demande VR — ${args.contactName} (${args.productLabel})`,
     html: `
       <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">New VR inquiry</h2>
+        <h2 style="color: #1C1A19;">Nouvelle demande VR</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          ${escapeHtml(args.contactName)} completed the consultation intake for
+          ${escapeHtml(args.contactName)} a rempli le formulaire de consultation pour
           <strong>${escapeHtml(args.productLabel)}</strong>.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Contact:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Contact :</strong></p>
           <ul style="margin: 0; padding-left: 18px; color: #1C1A19;">
             <li>${escapeHtml(args.contactName)}</li>
             <li><a href="mailto:${escapeHtml(args.email)}">${escapeHtml(args.email)}</a></li>
@@ -841,19 +846,19 @@ export async function sendVrInquiryAdminEmail(args: {
           args.message
             ? `
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Client message:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Message du client :</strong></p>
           <p style="margin: 0; color: #1C1A19; white-space: pre-wrap;">${escapeHtml(args.message)}</p>
         </div>`
             : ""
         }
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Configuration:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Configuration :</strong></p>
           <ul style="margin: 0; padding-left: 18px; color: #1C1A19; line-height: 1.6;">
             ${configToBullets(args.config)}
           </ul>
         </div>
         <a href="${adminUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Open inquiry in the admin panel
+          Ouvrir la demande dans le panneau d’administration
         </a>
       </div>
     `,
@@ -875,38 +880,40 @@ export async function sendVrProjectReadyEmail(args: {
   )}`;
   await send({
     to: args.to,
-    subject: `Your VR project is ready for payment — ${args.orderNumber}`,
+    subject: `Votre projet VR est prêt pour le paiement — ${args.orderNumber}`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Scope agreed</h2>
+        <h2 style="color: #1C1A19;">Périmètre validé</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Hello ${escapeHtml(args.contactName)},
+          Bonjour ${escapeHtml(args.contactName)},
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Thank you for the conversation — we defined the project scope and
-          prepared your order for payment.
+          Merci pour cet échange — nous avons défini le périmètre du projet
+          et préparé votre commande pour le paiement.
         </p>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
           <p style="margin: 0; color: #1C1A19; line-height: 1.7;">
-            <strong>Project:</strong> ${escapeHtml(args.projectName)}<br/>
-            <strong>Service:</strong> ${escapeHtml(args.productLabel)}<br/>
-            <strong>Order number:</strong> ${escapeHtml(args.orderNumber)}<br/>
-            <strong>Amount:</strong> ${formatEmailEur(args.priceEur)}
+            <strong>Projet :</strong> ${escapeHtml(args.projectName)}<br/>
+            <strong>Service :</strong> ${escapeHtml(args.productLabel)}<br/>
+            <strong>Numéro de commande :</strong> ${escapeHtml(args.orderNumber)}<br/>
+            <strong>Montant :</strong> ${formatEmailEur(args.priceEur)}
           </p>
         </div>
         <p style="color: #6e665d; line-height: 1.6;">
-          Click the button below to open the order and complete the payment.
-          The link signs you straight into the portal — no password needed.
+          Cliquez sur le bouton ci-dessous pour ouvrir la commande et
+          effectuer le paiement. Le lien vous connecte directement à
+          l’espace client — sans mot de passe.
         </p>
         <a href="${url}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Open and pay
+          Ouvrir et payer
         </a>
         <p style="color: #9ca3af; font-size: 13px;">
-          The link is valid for 7 days and can be used only once — after
-          that you will be signed in and can set a password in the portal.
+          Le lien est valable 7 jours et ne peut être utilisé qu’une seule
+          fois — ensuite, votre session reste ouverte et vous pouvez définir
+          un mot de passe dans l’espace client.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -914,7 +921,7 @@ export async function sendVrProjectReadyEmail(args: {
 
 // ─── PayPal — payment success / failure receipts ─────────
 //
-// Simple English receipts: order number, line items, EUR total, the
+// Simple French receipts: order number, line items, EUR total, the
 // charged amount/currency (when the buyer paid in a non-EUR
 // presentment currency) and the PayPal capture id. Amount labels are
 // pre-formatted strings supplied by the outbox loader.
@@ -951,25 +958,25 @@ function renderPaymentReceiptBlock(args: {
   captureId: string | null;
 }): string {
   return `
-    <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Order details</h3>
+    <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Détail de la commande</h3>
     <p style="margin:0 0 8px; color:#1C1A19; font-size:13px;">
-      <strong>Order number:</strong> ${escapeHtml(args.orderNumber)}
+      <strong>Numéro de commande :</strong> ${escapeHtml(args.orderNumber)}
     </p>
     ${renderPaymentLineItems(args.lineItems)}
     <p style="margin:8px 0 0; color:#1C1A19; font-size:14px;">
-      <strong>Total: ${escapeHtml(args.totalEurLabel)}</strong>
+      <strong>Total : ${escapeHtml(args.totalEurLabel)}</strong>
       ${
         args.chargedLabel
-          ? `<br/><span style="color:#6e665d; font-size:13px;">Charged: ${escapeHtml(args.chargedLabel)} — your invoice is issued in EUR.</span>`
+          ? `<br/><span style="color:#6e665d; font-size:13px;">Montant débité : ${escapeHtml(args.chargedLabel)} — votre facture est émise en EUR.</span>`
           : ""
       }
       ${
         args.captureId
-          ? `<br/><span style="color:#6e665d; font-size:13px;">PayPal transaction id: <span style="font-family:monospace;">${escapeHtml(args.captureId)}</span></span>`
+          ? `<br/><span style="color:#6e665d; font-size:13px;">ID de transaction PayPal : <span style="font-family:monospace;">${escapeHtml(args.captureId)}</span></span>`
           : ""
       }
     </p>
-    <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Merchant</h3>
+    <h3 style="color:#1C1A19; font-size:14px; margin:24px 0 8px;">Vendeur</h3>
     <p style="margin:0; color:#1C1A19; line-height:1.6; font-size:13px;">
       <strong>${escapeHtml(IMPRINT.shortName)}</strong><br/>
       ${escapeHtml(IMPRINT.legalName)}<br/>
@@ -993,26 +1000,26 @@ export async function sendPaymentSuccessEmail(args: {
 
   await send({
     to: args.to,
-    subject: `Payment received — order ${args.orderNumber}`,
+    subject: `Paiement reçu — commande ${args.orderNumber}`,
     html: `
       <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Payment received</h2>
+        <h2 style="color: #1C1A19;">Paiement reçu</h2>
         <p style="color: #1C1A19; line-height: 1.6; margin:0 0 16px;">
-          ${args.customerName ? `Hi ${escapeHtml(args.customerName)}, ` : ""}your
-          PayPal payment has been received — thank you.
+          ${args.customerName ? `Bonjour ${escapeHtml(args.customerName)}, ` : ""}votre
+          paiement PayPal a bien été reçu — merci.
         </p>
 
         ${renderPaymentReceiptBlock(args)}
 
         <p style="color: #6e665d; line-height: 1.6; margin-top:24px;">
-          You can follow the order status and download your documents in
-          the portal.
+          Vous pouvez suivre l’état de la commande et télécharger vos
+          documents dans l’espace client.
         </p>
         <a href="${portalUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 8px 0;">
-          Open your portal
+          Ouvrir votre espace client
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -1030,32 +1037,32 @@ export async function sendPaymentFailureEmail(args: {
 }) {
   await send({
     to: args.to,
-    subject: `Payment not completed — order ${args.orderNumber}`,
+    subject: `Paiement non abouti — commande ${args.orderNumber}`,
     html: `
       <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Payment not completed</h2>
+        <h2 style="color: #1C1A19;">Paiement non abouti</h2>
         <p style="color: #1C1A19; line-height: 1.6; margin:0 0 16px;">
-          ${args.customerName ? `Hi ${escapeHtml(args.customerName)}, ` : ""}your
-          PayPal payment did not go through — you have not been charged.
+          ${args.customerName ? `Bonjour ${escapeHtml(args.customerName)}, ` : ""}votre
+          paiement PayPal n’a pas abouti — aucun montant ne vous a été débité.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          Your order is saved and you can try again from your portal. If
-          PayPal declined the payment repeatedly, check your PayPal account
-          or try a different funding source.
+          Votre commande est enregistrée et vous pouvez réessayer depuis votre
+          espace client. Si PayPal a refusé le paiement à plusieurs reprises,
+          vérifiez votre compte PayPal ou essayez un autre moyen de paiement.
         </p>
         ${
           args.reason
-            ? `<p style="color:#6e665d; font-size:13px;">Provider status: <span style="font-family:monospace;">${escapeHtml(args.reason)}</span></p>`
+            ? `<p style="color:#6e665d; font-size:13px;">Statut du prestataire : <span style="font-family:monospace;">${escapeHtml(args.reason)}</span></p>`
             : ""
         }
 
         ${renderPaymentReceiptBlock({ ...args, captureId: null })}
 
         <a href="${args.retryUrl}" style="display: inline-block; background: #B88363; color: #fff; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 16px 0;">
-          Try again
+          Réessayer
         </a>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -1068,25 +1075,25 @@ export async function sendVrInquiryCustomerEmail(args: {
 }) {
   await send({
     to: args.to,
-    subject: `Your VR inquiry has been received — ${args.productLabel}`,
+    subject: `Votre demande VR a bien été reçue — ${args.productLabel}`,
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Thank you for your inquiry</h2>
+        <h2 style="color: #1C1A19;">Merci pour votre demande</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Hello ${escapeHtml(args.contactName)},
+          Bonjour ${escapeHtml(args.contactName)},
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          We received your inquiry for <strong>${escapeHtml(args.productLabel)}</strong>.
-          VR projects call for a conversation about scope, target devices and
-          technical details — we will get back to you within <strong>1 working day</strong>
-          to arrange a consultation.
+          Nous avons bien reçu votre demande concernant <strong>${escapeHtml(args.productLabel)}</strong>.
+          Les projets VR nécessitent un échange sur le périmètre, les appareils
+          cibles et les détails techniques — nous reviendrons vers vous sous
+          <strong>1 jour ouvré</strong> pour convenir d’une consultation.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          If you have additional files or references you would like to share
-          right away, simply reply to this email.
+          Si vous avez des fichiers ou références supplémentaires à partager
+          dès maintenant, répondez simplement à cet e-mail.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });
@@ -1124,22 +1131,22 @@ export async function sendJobApplicationAdminEmail(args: {
     to: ADMIN_NOTIFY_EMAIL,
     subject:
       unscanned > 0
-        ? `⚠ New job application (files not scanned) — ${args.fullName}`
-        : `New job application — ${args.fullName} (${args.position})`,
+        ? `⚠ Nouvelle candidature (fichiers non analysés) — ${args.fullName}`
+        : `Nouvelle candidature — ${args.fullName} (${args.position})`,
     html: `
       <div style="font-family: sans-serif; max-width: 640px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">New job application</h2>
+        <h2 style="color: #1C1A19;">Nouvelle candidature</h2>
         ${
           unscanned > 0
             ? `<div style="background: #fdecea; border: 1px solid #e5b3ab; border-radius: 8px; padding: 12px 16px; margin: 16px 0; color: #8a2c1c; line-height: 1.6;">
-          <strong>⚠ ${unscanned} file(s) were not scanned</strong> because the antivirus
-          service was unavailable. Check them manually (or download them in a safe
-          environment) before opening.
+          <strong>⚠ ${unscanned} fichier(s) n’ont pas été analysés</strong> car le service
+          antivirus était indisponible. Vérifiez-les manuellement (ou téléchargez-les dans un
+          environnement sécurisé) avant de les ouvrir.
         </div>`
             : ""
         }
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Candidate:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Candidat :</strong></p>
           <ul style="margin: 0; padding-left: 18px; color: #1C1A19; line-height: 1.6;">
             <li>${escapeHtml(args.fullName)}</li>
             <li><a href="mailto:${escapeHtml(args.email)}">${escapeHtml(args.email)}</a></li>
@@ -1150,39 +1157,39 @@ export async function sendJobApplicationAdminEmail(args: {
           </ul>
         </div>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Application:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Candidature :</strong></p>
           <p style="margin: 0; color: #1C1A19; line-height: 1.7;">
-            <strong>Position:</strong> ${escapeHtml(args.position)}<br/>
-            ${args.employmentType ? `<strong>Type:</strong> ${escapeHtml(args.employmentType)}<br/>` : ""}
-            ${args.availableFrom ? `<strong>Available from:</strong> ${escapeHtml(args.availableFrom)}<br/>` : ""}
-            ${args.expectedSalary ? `<strong>Expected salary:</strong> ${escapeHtml(args.expectedSalary)}<br/>` : ""}
-            ${args.experienceYears ? `<strong>Experience:</strong> ${escapeHtml(args.experienceYears)}<br/>` : ""}
-            ${args.education ? `<strong>Education:</strong> ${escapeHtml(args.education)}<br/>` : ""}
+            <strong>Poste :</strong> ${escapeHtml(args.position)}<br/>
+            ${args.employmentType ? `<strong>Type :</strong> ${escapeHtml(args.employmentType)}<br/>` : ""}
+            ${args.availableFrom ? `<strong>Disponible à partir du :</strong> ${escapeHtml(args.availableFrom)}<br/>` : ""}
+            ${args.expectedSalary ? `<strong>Prétentions salariales :</strong> ${escapeHtml(args.expectedSalary)}<br/>` : ""}
+            ${args.experienceYears ? `<strong>Expérience :</strong> ${escapeHtml(args.experienceYears)}<br/>` : ""}
+            ${args.education ? `<strong>Formation :</strong> ${escapeHtml(args.education)}<br/>` : ""}
           </p>
         </div>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Software:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Logiciels :</strong></p>
           <p style="margin: 0 0 12px 0; color: #1C1A19; line-height: 1.7;">${listOrDash(args.software, args.softwareOther)}</p>
-          <p style="margin: 0 0 8px 0;"><strong>3D skills:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Compétences 3D :</strong></p>
           <p style="margin: 0; color: #1C1A19; line-height: 1.7;">${listOrDash(args.skills, args.skillsOther)}</p>
         </div>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Cover letter:</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Lettre de motivation :</strong></p>
           <p style="margin: 0; color: #1C1A19; white-space: pre-wrap;">${escapeHtml(args.coverLetter)}</p>
         </div>
         <div style="background: #f6f1ea; border-radius: 8px; padding: 16px; margin: 16px 0;">
-          <p style="margin: 0 0 8px 0;"><strong>Attachments (links valid 30 days):</strong></p>
+          <p style="margin: 0 0 8px 0;"><strong>Pièces jointes (liens valables 30 jours) :</strong></p>
           <ul style="margin: 0; padding-left: 18px; color: #1C1A19; line-height: 1.6;">
             ${args.fileLinks
               .map((f) =>
                 f.url
                   ? `<li><a href="${escapeHtml(f.url)}">${escapeHtml(f.label)}: ${escapeHtml(f.fileName)}</a></li>`
-                  : `<li>${escapeHtml(f.label)}: ${escapeHtml(f.fileName)} (link unavailable — download from storage)</li>`,
+                  : `<li>${escapeHtml(f.label)}: ${escapeHtml(f.fileName)} (lien indisponible — à télécharger depuis le stockage)</li>`,
               )
               .join("")}
           </ul>
         </div>
-        <p style="color: #9ca3af; font-size: 12px;">Application ID: ${escapeHtml(args.applicationId)}</p>
+        <p style="color: #9ca3af; font-size: 12px;">ID de la candidature : ${escapeHtml(args.applicationId)}</p>
       </div>
     `,
   });
@@ -1195,26 +1202,26 @@ export async function sendJobApplicationCandidateEmail(args: {
 }) {
   await send({
     to: args.to,
-    subject: "Your application has been received — Elegant Render",
+    subject: "Votre candidature a bien été reçue — Elegant Render",
     html: `
       <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-        <h2 style="color: #1C1A19;">Thank you for applying</h2>
+        <h2 style="color: #1C1A19;">Merci pour votre candidature</h2>
         <p style="color: #6e665d; line-height: 1.6;">
-          Hello ${escapeHtml(args.fullName)},
+          Bonjour ${escapeHtml(args.fullName)},
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          We received your application for the
-          <strong>${escapeHtml(args.position)}</strong> position, along with
-          your CV and portfolio. Our team reviews every application — if your
-          profile matches what we are looking for, we will reach out to
-          schedule a conversation.
+          Nous avons bien reçu votre candidature pour le poste de
+          <strong>${escapeHtml(args.position)}</strong>, accompagnée de votre
+          CV et de votre portfolio. Notre équipe examine chaque candidature —
+          si votre profil correspond à ce que nous recherchons, nous vous
+          contacterons pour convenir d’un entretien.
         </p>
         <p style="color: #6e665d; line-height: 1.6;">
-          If you would like to add anything, you can reply directly to this
-          email.
+          Si vous souhaitez ajouter un élément, vous pouvez répondre
+          directement à cet e-mail.
         </p>
         <hr style="border: none; border-top: 1px solid #d8cec4; margin: 24px 0;" />
-        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — part of White Rook DOO</p>
+        <p style="color: #9ca3af; font-size: 12px;">Elegant Render — une marque de White Rook DOO</p>
       </div>
     `,
   });

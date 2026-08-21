@@ -24,7 +24,7 @@ export function buildInvoiceRecipient(
 ): InvoiceData["recipient"] {
   if (buyer.buyerType === "individual") {
     return {
-      name: buyer.user.name ?? buyer.user.email ?? "Kupac",
+      name: buyer.user.name ?? buyer.user.email ?? "Client",
       address: "-",
       countryCode: buyer.buyerCountryCode ?? null,
       email: buyer.user.email,
@@ -93,15 +93,15 @@ export function paymentMethodLabel(
 ): string {
   void isExport;
   if (provider === "wire_transfer") {
-    return "Bank transfer (SWIFT)";
+    return "Virement bancaire (SWIFT)";
   }
   if (provider === "card_mock") {
-    return "Card payment";
+    return "Paiement par carte";
   }
   if (provider === "paypal") {
     return "PayPal";
   }
-  return "Online payment";
+  return "Paiement en ligne";
 }
 
 export function buildInvoiceLineItem(args: {

@@ -72,7 +72,7 @@ export function buildInvoiceList(
       issuedAt: order.proformaIssuedAt,
       amountCents: order.billingTotalCents ?? orderAmountCents(order),
       currency: invoiceCurrencyForBuyer(order),
-      label: "Proforma invoice",
+      label: "Facture proforma",
       href: `/api/portal/proforma/${order.id}`,
     });
   }
@@ -85,7 +85,7 @@ export function buildInvoiceList(
       issuedAt: order.invoiceIssuedAt,
       amountCents: order.billingTotalCents ?? orderAmountCents(order),
       currency: invoiceCurrencyForBuyer(order),
-      label: "Order invoice",
+      label: "Facture de commande",
       href: `/api/portal/invoice/${order.id}`,
     });
   }
@@ -117,7 +117,7 @@ export function buildInvoiceList(
         charge.billingTotalCents ??
         invoiceGrossCentsFromEurCents(charge.totalCents, chargeBuyer),
       currency: invoiceCurrencyForBuyer(chargeBuyer),
-      label: `Additional charge invoice${reasonHint}`,
+      label: `Facture de frais supplémentaires${reasonHint}`,
       href: `/api/portal/charge-invoice/${charge.id}`,
     });
   }

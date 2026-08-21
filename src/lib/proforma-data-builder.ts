@@ -97,7 +97,7 @@ export function buildProformaDataForOrder(
 function buildRecipient(order: OrderForProforma): ProformaData["recipient"] {
   if (order.buyerType === "individual") {
     return {
-      name: order.user.name ?? order.user.email ?? "Kupac",
+      name: order.user.name ?? order.user.email ?? "Client",
       address: "—",
       countryCode: order.buyerCountryCode ?? null,
       email: order.user.email,

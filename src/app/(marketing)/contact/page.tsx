@@ -15,7 +15,7 @@ import {
 export const metadata: Metadata = createPublicMetadata({
   title: "Contact",
   description:
-    "Get in touch. Send a short project description and we usually reply the same working day.",
+    "Contactez-nous. Envoyez une courte description de votre projet — nous répondons généralement le jour même (jour ouvré).",
   path: "/contact",
 });
 
@@ -37,10 +37,10 @@ export default async function ContactPage() {
             path: "/contact",
             name: "Contact",
             description:
-              "Contact form for interior and exterior renders, 3D floor plans, virtual staging and AI real-estate photo editing.",
+              "Formulaire de contact pour rendus d’intérieur et d’extérieur, plans 3D, home staging virtuel et retouche photo immobilière par IA.",
           }),
           buildBreadcrumbJsonLd([
-            { name: "Home", path: "/" },
+            { name: "Accueil", path: "/" },
             { name: "Contact", path: "/contact" },
           ]),
           {
@@ -57,11 +57,12 @@ export default async function ContactPage() {
       />
       <p className="section-kicker">Contact</p>
       <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
-        Get in touch
+        Contactez-nous
       </h1>
       <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foreground/70">
-        Tell us what you need — the space, the scope and the deadline — and we
-        usually reply the same working day with a clear estimate.
+        Dites-nous ce dont vous avez besoin — l’espace, l’étendue du projet et
+        le délai — et nous répondons généralement le jour même (jour ouvré)
+        avec un devis clair.
       </p>
 
       <div className="mt-16 grid gap-12 lg:grid-cols-[1.3fr_1fr]">
@@ -84,7 +85,7 @@ export default async function ContactPage() {
         <aside className="space-y-8 rounded-xl border border-border/60 bg-secondary/30 p-8">
           <div>
             <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-              Direct contact
+              Contact direct
             </h2>
             <div className="mt-4 space-y-3">
               <a
@@ -107,31 +108,31 @@ export default async function ContactPage() {
           </div>
           <div>
             <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-              What to send
+              Quoi envoyer
             </h2>
             <ul className="mt-4 space-y-2 text-sm text-foreground/75">
-              <li>Floor plans (2D or PDF) if available</li>
-              <li>Photos of the current state</li>
-              <li>Style and mood references</li>
-              <li>Approximate scope and deadline</li>
+              <li>Plans (2D ou PDF) si disponibles</li>
+              <li>Photos de l’état actuel</li>
+              <li>Références de style et d’ambiance</li>
+              <li>Étendue approximative et délai souhaité</li>
             </ul>
           </div>
           <div>
             <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-              Behind the brand
+              Derrière la marque
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-foreground/75">
-              {SITE.name} is part of {SITE.parentCompany} — the umbrella
-              business entity with experience in 3D visualization and digital
-              architectural content.
+              {SITE.name} fait partie de {SITE.parentCompany} — l’entité
+              faîtière, forte d’une expérience en visualisation 3D et en
+              contenus architecturaux numériques.
             </p>
           </div>
         </aside>
       </div>
       </div>
       <PreFooterCta
-        heading="Prefer to see the price right away?"
-        body="Open the calculator and configure your visualization yourself — you see the price immediately, before sending any inquiry."
+        heading="Vous préférez voir le prix tout de suite ?"
+        body="Ouvrez le calculateur et configurez vous-même votre visualisation — le prix s’affiche immédiatement, avant même d’envoyer une demande."
       />
     </>
   );

@@ -108,7 +108,7 @@ export default async function ServiceDetailPage({
             description: service.description,
           }),
           buildBreadcrumbJsonLd([
-            { name: "Home", path: "/" },
+            { name: "Accueil", path: "/" },
             { name: "Services", path: "/services" },
             { name: service.name, path: `/services/${service.slug}` },
           ]),
@@ -181,7 +181,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
             className="inline-flex items-center gap-1 font-mono text-xs font-medium uppercase tracking-[0.08em] text-white/60 transition-colors duration-200 hover:text-white"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            All services
+            Tous les services
           </Link>
           <div className="mt-8 max-w-2xl">
             <p className="section-kicker text-white/60">
@@ -210,7 +210,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                   serviceType: service.name,
                 }}
               >
-                Send your project
+                Envoyer votre projet
               </QuickInquiryLink>
               <a
                 href={
@@ -221,10 +221,10 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                 className="inline-flex h-12 items-center rounded-[4px] border border-background/40 px-6 text-sm font-medium text-background transition duration-200 hover:border-background hover:bg-background/10"
               >
                 {service.detailVideoSrc
-                  ? "Watch the animation"
+                  ? "Voir l’animation"
                   : service.detailEmbedSrc
-                    ? "Try it live"
-                    : "See the portfolio"}
+                    ? "Essayer en direct"
+                    : "Voir le portfolio"}
               </a>
             </div>
           </div>
@@ -236,7 +236,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         <section className="bg-background py-16 md:py-24">
           <div className="mx-auto grid max-w-6xl gap-10 px-6 md:grid-cols-[1fr_1.3fr] md:items-center lg:px-10">
             <div>
-              <p className="section-kicker">The problem</p>
+              <p className="section-kicker">Le problème</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
                 {service.problemHeading}
               </h2>
@@ -271,9 +271,10 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         <section className="bg-secondary py-16 md:py-24">
           <div className="mx-auto max-w-5xl px-6 lg:px-10">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="section-kicker">Why this service</p>
+              <p className="section-kicker">Pourquoi ce service</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-                Three reasons clients choose Elegant Render.
+                Trois raisons pour lesquelles les clients choisissent Elegant
+                Render.
               </h2>
             </div>
             <div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -305,16 +306,16 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         <section id="demo" className="bg-background py-16 md:py-24">
           <div className="mx-auto max-w-5xl px-6 lg:px-10">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="section-kicker">Demo</p>
+              <p className="section-kicker">Démo</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
                 {service.detailVideoSrc
-                  ? "See the animation in motion."
-                  : "Open the panorama — click and drag to look around."}
+                  ? "Voyez l’animation en mouvement."
+                  : "Ouvrez le panorama — cliquez et faites glisser pour regarder autour de vous."}
               </h2>
               <p className="mt-4 text-base leading-7 text-muted-foreground">
                 {service.detailVideoSrc
-                  ? "The camera moves through the space and reveals the interior, exterior and context in a single narrative — the same format you receive for brochures and social media."
-                  : "The demo shows the exact interaction your buyer will have: rotation in every direction, transitions between viewpoints, and VR mode on supported devices."}
+                  ? "La caméra traverse l’espace et révèle l’intérieur, l’extérieur et le contexte en un seul récit — le format que vous recevez pour vos brochures et vos réseaux sociaux."
+                  : "La démo montre exactement l’interaction qu’aura votre acheteur : rotation dans toutes les directions, transitions entre les points de vue et mode VR sur les appareils compatibles."}
               </p>
             </div>
             <div className="mt-10 aspect-[16/9] overflow-hidden rounded-3xl border border-border/70 bg-secondary">
@@ -332,7 +333,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                 />
               ) : (
                 <iframe
-                  title={`${service.name} — interactive demo panorama`}
+                  title={`${service.name} — panorama de démonstration interactif`}
                   src={service.detailEmbedSrc}
                   className="h-full w-full border-0"
                   allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
@@ -342,7 +343,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
             </div>
             {!service.detailVideoSrc && (
               <p className="mt-4 text-center font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                Also opens in VR mode on Meta Quest devices
+                S’ouvre aussi en mode VR sur les casques Meta Quest
               </p>
             )}
           </div>
@@ -353,9 +354,9 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
       <section id="cene" className="bg-background py-16 md:py-24">
         <div className="mx-auto max-w-6xl px-6 lg:px-10">
           <div className="mx-auto max-w-2xl text-center">
-            <p className="section-kicker">Pricing</p>
+            <p className="section-kicker">Tarifs</p>
             <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-              {service.pricingLead?.heading ?? "Transparent pricing. No guesswork."}
+              {service.pricingLead?.heading ?? "Des tarifs transparents. Sans surprise."}
             </h2>
             <p className="mt-4 text-base leading-7 text-muted-foreground">
               {service.pricingLead
@@ -364,7 +365,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                     ctx.displayCurrency,
                     ctx.pricingSettings,
                   )
-                : "The base price covers building the 3D model and the first final render. Every additional angle from the same model is dramatically cheaper — because the model is already there."}
+                : "Le prix de base couvre la construction du modèle 3D et le premier rendu final. Chaque angle supplémentaire à partir du même modèle coûte nettement moins cher — car le modèle existe déjà."}
             </p>
           </div>
           {service.comparison && (
@@ -413,7 +414,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
               </div>
               <div>
                 <h3 className="font-heading text-xl text-foreground">
-                  How pricing works
+                  Comment fonctionnent les tarifs
                 </h3>
                 <p className="mt-2 text-sm leading-7 text-foreground/85">
                   {formatPublicPriceText(
@@ -433,9 +434,9 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
         <section className="bg-secondary py-16 md:py-24">
           <div className="mx-auto max-w-5xl px-6 lg:px-10">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="section-kicker">Process</p>
+              <p className="section-kicker">Processus</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-                From drawings to final visuals in four steps.
+                Des plans aux visuels finaux en quatre étapes.
               </h2>
             </div>
             <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -471,7 +472,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
             <div className="mx-auto max-w-2xl text-center">
               <p className="section-kicker">Portfolio</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-                Examples from recently delivered projects.
+                Des exemples de projets récemment livrés.
               </h2>
             </div>
             <div className="mt-12 grid gap-6 sm:grid-cols-2">
@@ -489,7 +490,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                     className="aspect-[16/9] w-full rounded-2xl border border-border/70 bg-secondary"
                   >
                     <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 font-mono text-[0.65rem] font-medium uppercase tracking-[0.08em] text-background/95">
-                      Before / after
+                      Avant / après
                     </span>
                   </BeforeAfterReveal>
                 ) : (
@@ -519,7 +520,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
             <div className="text-center">
               <p className="section-kicker">FAQ</p>
               <h2 className="mt-4 font-heading text-3xl leading-tight text-foreground md:text-4xl">
-                The questions that directly shape a buying decision.
+                Les questions qui pèsent directement sur une décision d’achat.
               </h2>
             </div>
             <div className="mt-10 divide-y divide-border/70 border-y border-border/70">
@@ -552,11 +553,11 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
       <section className="bg-foreground py-20 md:py-28">
         <div className="mx-auto max-w-3xl px-6 text-center lg:px-10">
           <h2 className="font-heading text-3xl leading-tight text-background md:text-4xl">
-            Ready to visualize your project?
+            Prêt à visualiser votre projet ?
           </h2>
           <p className="mt-4 text-base leading-7 text-background/80">
-            Send us your drawings and we return a precise estimate no later
-            than the next working day.
+            Envoyez-nous vos plans et nous vous retournons un devis précis au
+            plus tard le jour ouvré suivant.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <QuickInquiryLink
@@ -568,7 +569,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
                 serviceType: service.name,
               }}
             >
-              Send your project
+              Envoyer votre projet
             </QuickInquiryLink>
             <ButtonLink
               href="/pricing"
@@ -576,11 +577,11 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
               variant="outline"
               className="border-background/40 bg-transparent text-background hover:bg-background/10 hover:text-background"
             >
-              See pricing
+              Voir les tarifs
             </ButtonLink>
           </div>
           <p className="mt-6 font-mono text-xs font-medium uppercase tracking-[0.08em] text-white/60">
-            No obligation · Three revision rounds included
+            Sans engagement · Trois séries de révisions incluses
           </p>
         </div>
       </section>
@@ -659,7 +660,7 @@ function ProblemVisual({ ctx }: { ctx: RenderCtx }) {
         className="aspect-[4/3] w-full rounded-3xl border border-border/70 bg-secondary"
       >
         <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 font-mono text-[0.65rem] font-medium uppercase tracking-[0.08em] text-background/95">
-          Before / after
+          Avant / après
         </span>
       </BeforeAfterReveal>
     );
@@ -702,7 +703,7 @@ function PricingComparison({
   return (
     <div className="mx-auto mt-10 max-w-3xl overflow-hidden rounded-2xl border border-border bg-card">
       <div className="grid grid-cols-3 border-b border-border bg-secondary font-mono text-xs font-medium uppercase tracking-[0.08em]">
-        <div className="px-3 py-3 text-muted-foreground sm:px-4">Method</div>
+        <div className="px-3 py-3 text-muted-foreground sm:px-4">Méthode</div>
         <div className="px-3 py-3 text-foreground sm:px-4">{comparison.aLabel}</div>
         <div className="px-3 py-3 text-muted-foreground sm:px-4">
           {comparison.bLabel}
@@ -749,8 +750,8 @@ function PricingCard({
           {ctx.service.variants.length +
             (ctx.service.crossSellVariants?.length ?? 0) >
           1
-            ? "Our pick"
-            : "Complete service"}
+            ? "Notre choix"
+            : "Service complet"}
         </span>
       )}
       <h3 className="font-heading text-xl text-foreground">{variant.title}</h3>
@@ -787,7 +788,7 @@ function PricingCard({
         )}
       </div>
       <p className="mt-6 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-        Included in the price
+        Inclus dans le prix
       </p>
       <p className="mt-2 text-sm leading-6 text-foreground/85">
         {formatPublicPriceText(
@@ -799,7 +800,7 @@ function PricingCard({
       {variant.addOns.length > 0 && (
         <>
           <p className="mt-5 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-            Add-ons from the price list
+            Options de la grille tarifaire
           </p>
           <ul className="mt-2 space-y-2">
             {variant.addOns.map((addOn) => (
@@ -841,7 +842,7 @@ function PricingCard({
             variant={featured ? "accent" : "outline"}
             className="w-full justify-center"
           >
-            Get your estimate and order
+            Obtenir un devis et commander
           </ButtonLink>
         ) : (
           <QuickInquiryLink
@@ -854,7 +855,7 @@ function PricingCard({
               serviceType: ctx.service.name,
             }}
           >
-            Request an estimate
+            Demander un devis
           </QuickInquiryLink>
         )}
       </div>
@@ -893,7 +894,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
         className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        All services
+        Tous les services
       </Link>
 
       {service.detailBeforeAsset && service.detailAfterAsset ? (
@@ -908,13 +909,13 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
           className="mt-10 aspect-[16/9] w-full rounded-3xl border border-border bg-secondary"
         >
           <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/55 px-2.5 py-1 font-mono text-[0.65rem] font-medium uppercase tracking-[0.08em] text-background/95">
-            Before / after
+            Avant / après
           </span>
         </BeforeAfterReveal>
       ) : service.detailEmbedSrc ? (
         <div className="relative mt-10 aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border bg-secondary">
           <iframe
-            title={`${service.name} — 360° preview`}
+            title={`${service.name} — aperçu 360°`}
             src={service.detailEmbedSrc}
             className="h-full w-full border-0"
             allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
@@ -936,7 +937,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
 
       <div className="mt-10 flex flex-wrap items-center gap-3">
         <Badge variant="secondary">{CATEGORY_LABELS[service.category]}</Badge>
-        {service.outsourced && <Badge variant="outline">Partner network</Badge>}
+        {service.outsourced && <Badge variant="outline">Réseau de partenaires</Badge>}
       </div>
 
       <h1 className="mt-6 text-5xl leading-tight text-foreground md:text-6xl">
@@ -949,7 +950,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
       {service.forSegments && service.forSegments.length > 0 && (
         <div className="mt-6 flex flex-wrap items-center gap-2">
           <span className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-            Ideal for:
+            Idéal pour :
           </span>
           {service.forSegments.map((segment) => (
             <span
@@ -972,7 +973,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
 
       <div className="mt-10 rounded-2xl border border-border/70 bg-secondary/40 p-6 md:p-8">
         <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-          How pricing works
+          Comment fonctionnent les tarifs
         </p>
         <p className="mt-3 text-sm leading-7 text-foreground/85">
           {formatPublicPriceText(
@@ -985,7 +986,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
 
       <section className="mt-10 grid gap-4 md:grid-cols-3">
         <InfoBlock
-          title="When to use it"
+          title="Quand l’utiliser"
           text={formatPublicPriceText(
             service.highlight,
             ctx.displayCurrency,
@@ -993,7 +994,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
           )}
         />
         <InfoBlock
-          title="What to send"
+          title="Quoi envoyer"
           text={formatPublicPriceText(
             service.materials,
             ctx.displayCurrency,
@@ -1001,9 +1002,9 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
           )}
         />
         <InfoBlock
-          title="What you receive"
+          title="Ce que vous recevez"
           text={formatPublicPriceText(
-            `${service.variants[0].included} Additional scope is priced through the public add-ons from the price list.`,
+            `${service.variants[0].included} Toute étendue supplémentaire est facturée selon les options publiques de la grille tarifaire.`,
             ctx.displayCurrency,
             ctx.pricingSettings,
           )}
@@ -1012,7 +1013,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
 
       <section className="mt-14 space-y-6">
         <h2 className="text-2xl text-foreground md:text-3xl">
-          Available variants and pricing
+          Variantes disponibles et tarifs
         </h2>
 
         <div className="space-y-4">
@@ -1036,7 +1037,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
                 </div>
                 <div className="md:text-right">
                   <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                    Starting price
+                    Prix de départ
                   </p>
                   <p className="mt-1 text-3xl text-foreground md:text-4xl">
                     {formatPublicPriceText(
@@ -1058,7 +1059,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
               <div className="mt-6 space-y-4">
                 <div>
                   <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                    What this price includes
+                    Ce que ce prix inclut
                   </p>
                   <p className="mt-2 text-sm leading-6 text-foreground/85">
                     {formatPublicPriceText(
@@ -1071,7 +1072,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
 
                 <div>
                   <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                    Add-ons from the price list
+                    Options de la grille tarifaire
                   </p>
                   <ul className="mt-2 space-y-2">
                     {variant.addOns.map((addOn) => (
@@ -1115,16 +1116,16 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
             serviceType: service.name,
           }}
         >
-          Send your project
+          Envoyer votre projet
         </QuickInquiryLink>
         <ButtonLink href="/pricing" size="xl" variant="outline">
-          See pricing
+          Voir les tarifs
         </ButtonLink>
       </div>
     </article>
       <PreFooterCta
-        heading={`Ready to order — ${service.name.toLowerCase()}?`}
-        body="Open the calculator, set the parameters of your visualization and see the exact price right away."
+        heading={`Prêt à commander — ${service.name.toLowerCase()} ?`}
+        body="Ouvrez le calculateur, réglez les paramètres de votre visualisation et voyez le prix exact immédiatement."
       />
     </>
   );

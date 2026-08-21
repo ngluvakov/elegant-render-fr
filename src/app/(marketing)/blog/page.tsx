@@ -14,7 +14,7 @@ import {
 } from "@/lib/seo";
 
 const BLOG_DESCRIPTION =
-  "Advice, guides and insights on architectural visualization — virtual staging, renders, 2D and 3D floor plans and selling property through imagery.";
+  "Conseils, guides et analyses sur la visualisation architecturale — home staging virtuel, rendus 3D, plans 2D et 3D et vente immobilière par l’image.";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "Blog",
@@ -31,11 +31,11 @@ export default function BlogPage() {
         data={[
           buildWebPageJsonLd({
             path: "/blog",
-            name: `${SITE.name} Blog`,
+            name: `Blog ${SITE.name}`,
             description: BLOG_DESCRIPTION,
           }),
           buildBreadcrumbJsonLd([
-            { name: "Home", path: "/" },
+            { name: "Accueil", path: "/" },
             { name: "Blog", path: "/blog" },
           ]),
           buildBlogItemListJsonLd(posts),
@@ -45,7 +45,7 @@ export default function BlogPage() {
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
         <p className="section-kicker">Blog</p>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
-          Insights and advice on architectural visualization
+          Analyses et conseils sur la visualisation architecturale
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foreground/70">
           {BLOG_DESCRIPTION}
@@ -56,7 +56,7 @@ export default function BlogPage() {
         <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
           {posts.length === 0 ? (
             <p className="text-foreground/60">
-              The first articles are coming soon.
+              Les premiers articles arrivent bientôt.
             </p>
           ) : (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">

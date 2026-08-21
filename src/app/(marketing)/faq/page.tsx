@@ -18,18 +18,18 @@ import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 const FAQ_DESCRIPTION =
-  "Answers to the most common questions about architectural visualization, pricing, timelines, materials, revision rounds and AI real-estate photo editing.";
+  "Réponses aux questions les plus fréquentes sur la visualisation architecturale, les tarifs, les délais, les documents à fournir, les séries de révisions et la retouche photo immobilière par IA.";
 
 type FaqItem = { question: string; answer: string };
 type FaqGroup = { title: string; items: readonly FaqItem[] };
 
 const FAQ_GROUPS: readonly FaqGroup[] = [
   {
-    title: "General questions",
+    title: "Questions générales",
     items: FAQ_ITEMS,
   },
   {
-    title: "Services and pricing",
+    title: "Services et tarifs",
     items: SERVICES_PAGE_FAQS,
   },
   {
@@ -39,7 +39,7 @@ const FAQ_GROUPS: readonly FaqGroup[] = [
 ];
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Frequently asked questions",
+  title: "Questions fréquentes",
   description: FAQ_DESCRIPTION,
   path: "/faq",
 });
@@ -67,13 +67,13 @@ export default async function FaqPage() {
         data={[
           buildWebPageJsonLd({
             path: "/faq",
-            name: `Frequently asked questions — ${SITE.name}`,
+            name: `Questions fréquentes — ${SITE.name}`,
             description: FAQ_DESCRIPTION,
           }),
           buildBreadcrumbJsonLd([
-            { name: "Home", path: "/" },
+            { name: "Accueil", path: "/" },
             {
-              name: "Frequently asked questions",
+              name: "Questions fréquentes",
               path: "/faq",
             },
           ]),
@@ -83,11 +83,12 @@ export default async function FaqPage() {
       <main className="mx-auto w-full max-w-[min(96vw,1180px)] px-6 pb-24 pt-20 md:pt-28">
         <p className="section-kicker">Questions</p>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
-          Frequently asked questions
+          Questions fréquentes
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-          Short, specific answers about the process, timelines, pricing,
-          required materials and AI real-estate photo editing.
+          Des réponses courtes et concrètes sur le processus, les délais, les
+          tarifs, les documents à fournir et la retouche photo immobilière
+          par IA.
         </p>
 
         <div className="mt-14 space-y-14">
@@ -128,8 +129,8 @@ export default async function FaqPage() {
         </div>
       </main>
       <PreFooterCta
-        heading="Still have questions — or ready to start?"
-        body="If you didn't find your answer, open the calculator and build your configuration yourself, or send a quick inquiry and we reply the same working day."
+        heading="Encore des questions — ou prêt à vous lancer ?"
+        body="Si vous n’avez pas trouvé votre réponse, ouvrez le calculateur et composez vous-même votre configuration, ou envoyez une demande rapide — nous répondons le jour même (jour ouvré)."
       />
     </>
   );

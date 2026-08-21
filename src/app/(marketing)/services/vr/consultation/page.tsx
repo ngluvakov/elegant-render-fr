@@ -26,10 +26,10 @@ import {
 import { VrInquiryForm } from "./inquiry-form";
 
 const VR_CONSULTATION_DESCRIPTION =
-  "Request a consultation for a VR walkthrough. The team replies within 1 working day with a proposed scope and technical details.";
+  "Demandez une consultation pour une visite en réalité virtuelle (VR). L’équipe répond sous 1 jour ouvré avec une proposition de périmètre et les détails techniques.";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "VR consultation",
+  title: "Consultation VR",
   description: VR_CONSULTATION_DESCRIPTION,
   path: "/services/vr/consultation",
 });
@@ -85,29 +85,29 @@ export default async function VrConsultationPage({
         data={[
           buildWebPageJsonLd({
             path: "/services/vr/consultation",
-            name: "VR consultation",
+            name: "Consultation VR",
             description: VR_CONSULTATION_DESCRIPTION,
           }),
           buildBreadcrumbJsonLd([
-            { name: "Home", path: "/" },
+            { name: "Accueil", path: "/" },
             { name: "Services", path: "/services" },
-            { name: "VR consultation", path: "/services/vr/consultation" },
+            { name: "Consultation VR", path: "/services/vr/consultation" },
           ]),
           {
             "@context": "https://schema.org",
             "@type": "Service",
             "@id": `${absoluteUrl("/services/vr/consultation")}#service`,
-            name: "VR walkthrough consultation",
-            serviceType: "VR walkthrough",
+            name: "Consultation pour visite en réalité virtuelle (VR)",
+            serviceType: "Visite en réalité virtuelle",
             description: VR_CONSULTATION_DESCRIPTION,
             url: absoluteUrl("/services/vr/consultation"),
             provider: {
               "@id": SEO.organizationId,
             },
-            areaServed: ["RS", "EU", "Worldwide"],
+            areaServed: ["FR", "EU", "Worldwide"],
             offers: {
               "@type": "OfferCatalog",
-              name: "VR walkthrough options",
+              name: "Options de visite en réalité virtuelle",
               itemListElement: products.map((product) => ({
                 "@type": "Offer",
                 name: product.label,
@@ -126,17 +126,17 @@ export default async function VrConsultationPage({
           className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-3 w-3" />
-          Back to pricing
+          Retour aux tarifs
         </Link>
-        <p className="section-kicker mt-4">VR walkthrough</p>
+        <p className="section-kicker mt-4">Visite en réalité virtuelle</p>
         <h1 className="mt-4 max-w-3xl text-4xl leading-[1.1] text-foreground md:text-5xl">
-          Request a VR consultation
+          Demander une consultation VR
         </h1>
         <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-          VR projects call for a conversation about scope, target devices and
-          technical details before production begins. Fill in what you already
-          know — we reply within{" "}
-          <strong className="text-foreground">1 working day</strong>.
+          Les projets VR demandent un échange sur le périmètre, les appareils
+          cibles et les détails techniques avant le début de la production.
+          Renseignez ce que vous savez déjà — nous répondons sous{" "}
+          <strong className="text-foreground">1 jour ouvré</strong>.
         </p>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[1.5fr_1fr]">
@@ -151,24 +151,24 @@ export default async function VrConsultationPage({
           <aside className="space-y-6 self-start rounded-xl border border-border/60 bg-secondary/30 p-6">
             <div>
               <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                What the consultation includes
+                Ce que la consultation comprend
               </h2>
               <ul className="mt-4 space-y-2 text-sm text-foreground/80">
-                <li>A 30–45 minute call with the technical team</li>
-                <li>An assessment of scope and target devices</li>
-                <li>A proposal for interactive elements</li>
-                <li>A concrete estimate and timeline</li>
+                <li>Un appel de 30 à 45 minutes avec l’équipe technique</li>
+                <li>Une évaluation du périmètre et des appareils cibles</li>
+                <li>Une proposition d’éléments interactifs</li>
+                <li>Un devis concret et un calendrier</li>
               </ul>
             </div>
             <div>
               <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                Useful to have before the call
+                Utile à préparer avant l’appel
               </h2>
               <ul className="mt-4 space-y-2 text-sm text-foreground/80">
-                <li>Basic information about the property (number of rooms, m²)</li>
-                <li>References of VR experiences you like</li>
-                <li>A rough timeline and purpose (presentation, sales, training)</li>
-                <li>An existing 3D model if you have one</li>
+                <li>Les informations de base sur le bien (nombre de pièces, m²)</li>
+                <li>Des références d’expériences VR qui vous plaisent</li>
+                <li>Un calendrier approximatif et l’objectif (présentation, vente, formation)</li>
+                <li>Un modèle 3D existant si vous en avez un</li>
               </ul>
             </div>
           </aside>

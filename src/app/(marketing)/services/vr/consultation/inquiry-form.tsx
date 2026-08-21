@@ -130,12 +130,12 @@ export function VrInquiryForm({
           <Check className="h-5 w-5" />
         </div>
         <h2 className="mt-4 text-2xl font-semibold text-foreground">
-          Inquiry received
+          Demande reçue
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Thank you — check your email for a confirmation. The team replies
-          within <strong className="text-foreground">1 working day</strong> to
-          schedule the consultation.
+          Merci — vérifiez votre e-mail pour la confirmation. L’équipe répond
+          sous <strong className="text-foreground">1 jour ouvré</strong> pour
+          planifier la consultation.
         </p>
       </div>
     );
@@ -146,7 +146,7 @@ export function VrInquiryForm({
       {/* Product picker */}
       <section className="space-y-3">
         <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-          1. Choose the VR project type
+          1. Choisissez le type de projet VR
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
           {products.map((p) => {
@@ -171,14 +171,14 @@ export function VrInquiryForm({
                   {isActive && <Check className="h-4 w-4 text-accent" />}
                 </div>
                 <span className="text-[0.78rem] text-muted-foreground">
-                  From{" "}
+                  À partir de{" "}
                   {formatPublicPrice(
                     p.basePriceEur,
                     displayCurrency,
                     pricingSettings,
                   )}{" "}
                   —
-                  consultation before production
+                  consultation avant production
                 </span>
               </button>
             );
@@ -195,7 +195,7 @@ export function VrInquiryForm({
           <div className="space-y-2">
             <Label htmlFor="vri-name">
               <Pencil className="h-3 w-3 text-accent/60" />
-              Full name
+              Nom complet
             </Label>
             <Input
               id="vri-name"
@@ -209,7 +209,7 @@ export function VrInquiryForm({
           <div className="space-y-2">
             <Label htmlFor="vri-email">
               <Pencil className="h-3 w-3 text-accent/60" />
-              Email
+              E-mail
             </Label>
             <Input
               id="vri-email"
@@ -225,7 +225,7 @@ export function VrInquiryForm({
         <div className="space-y-2">
           <Label htmlFor="vri-phone">
             <Pencil className="h-3 w-3 text-accent/60" />
-            Phone (optional)
+            Téléphone (facultatif)
           </Label>
           <Input
             id="vri-phone"
@@ -241,12 +241,12 @@ export function VrInquiryForm({
       {/* Project basics */}
       <section className="space-y-4">
         <h2 className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-          3. Project basics
+          3. L’essentiel du projet
         </h2>
         <div className="space-y-2">
           <Label htmlFor="vri-pname">
             <Pencil className="h-3 w-3 text-accent/60" />
-            Project name
+            Nom du projet
           </Label>
           <Input
             id="vri-pname"
@@ -257,7 +257,7 @@ export function VrInquiryForm({
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="vri-etype">VR experience type</Label>
+            <Label htmlFor="vri-etype">Type d’expérience VR</Label>
             <select
               id="vri-etype"
               value={config.experienceType}
@@ -276,7 +276,7 @@ export function VrInquiryForm({
             </select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="vri-device">Target device</Label>
+            <Label htmlFor="vri-device">Appareil cible</Label>
             <select
               id="vri-device"
               value={config.targetDevice}
@@ -296,14 +296,14 @@ export function VrInquiryForm({
         <div className="space-y-2">
           <Label htmlFor="vri-desc">
             <Pencil className="h-3 w-3 text-accent/60" />
-            Project description
+            Description du projet
           </Label>
           <Textarea
             id="vri-desc"
             value={config.description ?? ""}
             onChange={(e) => patch({ description: e.target.value })}
             rows={5}
-            placeholder="Type of space, number of rooms/floors, purpose (presentation / sales / training), special requirements…"
+            placeholder="Type d’espace, nombre de pièces/étages, objectif (présentation / vente / formation), exigences particulières…"
             maxLength={2000}
           />
         </div>
@@ -313,14 +313,14 @@ export function VrInquiryForm({
       <section className="space-y-2">
         <Label htmlFor="vri-msg">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Additional message for the team (optional)
+          Message complémentaire pour l’équipe (facultatif)
         </Label>
         <Textarea
           id="vri-msg"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={3}
-          placeholder="Timeline, budget, what matters most to you, files you can send later…"
+          placeholder="Calendrier, budget, ce qui compte le plus pour vous, fichiers à envoyer plus tard…"
           maxLength={4000}
         />
       </section>
@@ -334,12 +334,12 @@ export function VrInquiryForm({
         >
           <div>
             <p className="text-sm font-semibold text-foreground">
-              Technical preferences (optional)
+              Préférences techniques (facultatif)
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              Locomotion, interactions, day/night, branding — fill these in if
-              you already know. No problem if you skip them; we settle the
-              details on the call.
+              Déplacement, interactions, jour/nuit, habillage de marque —
+              renseignez-les si vous savez déjà. Aucun problème si vous les
+              passez ; nous réglons les détails lors de l’appel.
             </p>
           </div>
           <ChevronDown
@@ -353,7 +353,7 @@ export function VrInquiryForm({
           <div className="mt-3 space-y-4 rounded-xl border border-border/40 bg-card/60 p-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="vri-loco">Locomotion (movement)</Label>
+                <Label htmlFor="vri-loco">Locomotion (déplacement)</Label>
                 <select
                   id="vri-loco"
                   value={config.locomotion ?? ""}
@@ -367,7 +367,7 @@ export function VrInquiryForm({
                   }
                   className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
-                  <option value="">— not sure yet —</option>
+                  <option value="">— pas encore décidé —</option>
                   {VR_LOCOMOTION.map((l) => (
                     <option key={l.id} value={l.id}>
                       {l.label}
@@ -376,7 +376,7 @@ export function VrInquiryForm({
                 </select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="vri-dn">Day / night</Label>
+                <Label htmlFor="vri-dn">Jour / nuit</Label>
                 <select
                   id="vri-dn"
                   value={config.dayNightMode ?? ""}
@@ -390,7 +390,7 @@ export function VrInquiryForm({
                   }
                   className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm text-foreground transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
-                  <option value="">— not sure yet —</option>
+                  <option value="">— pas encore décidé —</option>
                   {VR_DAY_NIGHT_MODES.map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.label}
@@ -407,14 +407,14 @@ export function VrInquiryForm({
               <div className="grid gap-2 sm:grid-cols-3">
                 {(
                   [
-                    { key: "doorInteraction", label: "Doors open" },
+                    { key: "doorInteraction", label: "Ouverture des portes" },
                     {
                       key: "lightsInteraction",
-                      label: "User turns lights on",
+                      label: "L’utilisateur allume la lumière",
                     },
                     {
                       key: "materialsInteraction",
-                      label: "Material switching",
+                      label: "Changement de matériaux",
                     },
                   ] as const
                 ).map((opt) => {
@@ -446,7 +446,7 @@ export function VrInquiryForm({
               className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-secondary/30 px-3 py-2"
             >
               <span className="text-[0.78rem] font-medium text-foreground">
-                White-label branding (your logo + colors)
+                Marque blanche (votre logo + vos couleurs)
               </span>
               <Switch
                 id="vri-brand"
@@ -467,11 +467,11 @@ export function VrInquiryForm({
       <div className="flex items-center justify-between gap-4 border-t border-border/40 pt-6">
         <p className="text-xs text-muted-foreground">
           {selectedProduct
-            ? `You are sending an inquiry for ${selectedProduct.label}`
-            : "You are sending a VR inquiry"}
+            ? `Vous envoyez une demande pour ${selectedProduct.label}`
+            : "Vous envoyez une demande VR"}
         </p>
         <Button type="submit" size="xl" variant="accent" disabled={pending}>
-          {pending ? "Sending…" : "Send an inquiry"}
+          {pending ? "Envoi…" : "Envoyer la demande"}
         </Button>
       </div>
     </form>

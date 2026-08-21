@@ -21,17 +21,17 @@ import { getPublicDisplayCurrency } from "@/lib/catalog/public-currency-server";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Pricing",
+  title: "Tarifs",
   description:
-    "A transparent price list for architectural visualization services. The first delivery from a model carries the full price; every subsequent view from the same model costs significantly less.",
+    "Une grille tarifaire transparente pour la visualisation architecturale. La première livraison à partir d’un modèle est au prix plein ; chaque vue suivante issue du même modèle coûte nettement moins.",
   path: "/pricing",
   image: "/artwork/pricing-card-interior.webp",
   imageAlt:
-    "Architectural visualization pricing - an interior render example and rendering services",
+    "Tarifs de visualisation architecturale - exemple de rendu d’intérieur et services de rendu",
   keywords: [
-    "3D render prices",
-    "architectural visualization price list",
-    "virtual staging price",
+    "prix rendu 3D",
+    "tarifs visualisation architecturale",
+    "prix home staging virtuel",
   ],
 });
 
@@ -50,27 +50,28 @@ export default async function PricingPage() {
         data={[
           buildWebPageJsonLd({
             path: "/pricing",
-            name: "Architectural visualization pricing",
+            name: "Tarifs de la visualisation architecturale",
             description:
-              "A transparent price list for renders, 3D floor plans, virtual staging, 360° virtual tours and AI credits.",
+              "Une grille tarifaire transparente pour les rendus, les plans 3D, le home staging virtuel, les visites virtuelles 360° et les crédits IA.",
           }),
           buildBreadcrumbJsonLd([
-            { name: "Home", path: "/" },
-            { name: "Pricing", path: "/pricing" },
+            { name: "Accueil", path: "/" },
+            { name: "Tarifs", path: "/pricing" },
           ]),
           buildOfferCatalogJsonLd(pricingCatalog.categories),
         ]}
       />
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
-        <p className="section-kicker">Pricing</p>
+        <p className="section-kicker">Tarifs</p>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
-          A price without guesswork
+          Un prix sans surprise
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-          We build the model once — you use it many times. The first delivery
-          from a model carries the full price, and every subsequent view costs
-          less because the core work is already done. Pick your services and
-          see the price immediately.
+          Nous construisons le modèle une fois — vous l’utilisez plusieurs
+          fois. La première livraison à partir d’un modèle est au prix plein,
+          et chaque vue suivante coûte moins cher, car l’essentiel du travail
+          est déjà fait. Choisissez vos services et voyez le prix
+          immédiatement.
         </p>
       </div>
 
@@ -166,9 +167,9 @@ export default async function PricingPage() {
       </section>
 
       <PreFooterCta
-        heading="Need to talk it through first?"
-        body="If you want a clear conversation about a larger project or a specific scope, send a short description and we usually reply the same working day."
-        ctaLabel="Open the project form"
+        heading="Besoin d’en parler d’abord ?"
+        body="Pour échanger clairement sur un projet plus important ou un périmètre précis, envoyez une courte description — nous répondons généralement le jour même (jour ouvré)."
+        ctaLabel="Ouvrir le formulaire de projet"
         ctaHref="/contact"
         inquirySource={{ source: "cene-pre-footer", sourceLabel: "Pricing pre-footer quick inquiry" }}
       />

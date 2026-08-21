@@ -18,15 +18,15 @@ import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 export const metadata: Metadata = createPublicMetadata({
   title: "Services",
   description:
-    "The full range of architectural visualization — renders, animations, 360° tours, virtual staging, and virtual renovation.",
+    "Toute la palette de la visualisation architecturale — rendus, animations, visites 360°, home staging virtuel et rénovation virtuelle.",
   path: "/services",
   image: "/artwork/elegant-render-services-triptych-1.webp",
   imageAlt:
-    "Elegant Render services - architectural visualization, renders, 360° tours, and virtual staging",
+    "Services Elegant Render - visualisation architecturale, rendus, visites 360° et home staging virtuel",
   keywords: [
-    "architectural visualization services",
-    "interior and exterior renders",
-    "virtual renovation",
+    "services de visualisation architecturale",
+    "rendus d’intérieur et d’extérieur",
+    "rénovation virtuelle",
   ],
 });
 
@@ -51,12 +51,12 @@ export default async function ServicesPage() {
         data={[
           buildWebPageJsonLd({
             path: "/services",
-            name: "Architectural visualization services",
+            name: "Services de visualisation architecturale",
             description:
-              "Interior and exterior renders, 3D floor plans, 360° tours, animations, virtual staging, and AI photo editing.",
+              "Rendus d’intérieur et d’extérieur, plans 3D, visites 360°, animations, home staging virtuel et retouche photo par IA.",
           }),
           buildBreadcrumbJsonLd([
-            { name: "Home", path: "/" },
+            { name: "Accueil", path: "/" },
             { name: "Services", path: "/services" },
           ]),
           buildServicesItemListJsonLd(),
@@ -68,8 +68,8 @@ export default async function ServicesPage() {
         <ServicesShowcase />
       </div>
       <PreFooterCta
-        heading="Ready to go — open the calculator and build your order."
-        body="Pick a visualization type, set the parameters, and see the exact price right away — no bundles, no fine print."
+        heading="Prêt à vous lancer — ouvrez le calculateur et composez votre commande."
+        body="Choisissez un type de visualisation, réglez les paramètres et voyez le prix exact immédiatement — sans forfaits imposés, sans clauses en petits caractères."
       />
     </>
   );

@@ -64,19 +64,19 @@ import {
 
 const AI_STUDIO_OG_IMAGE = "/artwork/ai-tool-virtual_staging-after.webp";
 const AI_STUDIO_IMAGE_ALT =
-  "AI Studio - virtual staging example of an empty space for a property listing";
+  "AI Studio - exemple de home staging virtuel d’un espace vide pour une annonce immobilière";
 
 export const metadata: Metadata = createPublicMetadata({
   title: "AI Studio",
   description:
-    "Fast AI editing for real estate photos: item removal, day-to-dusk, sky replacement, wall color change, virtual staging, furniture and decor insertion or replacement, renovation and redesign.",
+    "Retouche IA rapide pour photos immobilières : suppression d’objets, jour au crépuscule, remplacement du ciel, changement de couleur des murs, home staging virtuel, ajout ou remplacement de meubles et de déco, rénovation et redesign.",
   path: "/ai-studio",
   image: AI_STUDIO_OG_IMAGE,
   imageAlt: AI_STUDIO_IMAGE_ALT,
   keywords: [
-    "AI real estate photo editing",
-    "AI virtual staging",
-    "AI item removal",
+    "retouche photo immobilière IA",
+    "home staging virtuel IA",
+    "suppression d’objets IA",
   ],
 });
 
@@ -100,88 +100,88 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
   item_removal: {
     icon: Eraser,
     benefit:
-      "Clear the shot of clutter, people, vehicles or small distractions before the listing goes live.",
-    input: "Photo + what to remove",
-    output: "A clean photo",
+      "Débarrassez la photo du désordre, des personnes, des véhicules ou des petites distractions avant la mise en ligne de l’annonce.",
+    input: "Photo + ce qu’il faut supprimer",
+    output: "Une photo propre",
     prompt:
-      "Remove the bags and cables next to the wall. Keep the floor and shadows as natural as possible.",
+      "Supprimez les sacs et les câbles le long du mur. Gardez le sol et les ombres aussi naturels que possible.",
     beforeSrc: "/artwork/ai-tool-item_removal-before.webp",
     afterSrc: "/artwork/ai-tool-item_removal-after.webp",
   },
   day_to_dusk: {
     icon: Sun,
     benefit:
-      "Turn a daytime shot into an evening mood that makes a warmer first impression.",
-    input: "Photo + mood",
-    output: "A dusk or night shot",
+      "Transformez une photo de jour en ambiance de soirée pour une première impression plus chaleureuse.",
+    input: "Photo + ambiance",
+    output: "Une photo au crépuscule ou de nuit",
     prompt:
-      "Subtle blue hour, warm light in the windows, keep the facade color unchanged.",
+      "Heure bleue subtile, lumière chaude aux fenêtres, couleur de la façade inchangée.",
     beforeSrc: "/artwork/ai-tool-day_to_dusk-before.webp",
     afterSrc: "/artwork/ai-tool-day_to_dusk-after.webp",
   },
   sky_replacement: {
     icon: CloudSun,
     benefit:
-      "Keep a good shot, but swap a grey or blown-out sky for a better mood.",
-    input: "Exterior with visible sky",
-    output: "A photo with a better sky",
+      "Gardez une bonne photo, mais remplacez un ciel gris ou surexposé par une ambiance plus flatteuse.",
+    input: "Extérieur avec ciel visible",
+    output: "Une photo avec un meilleur ciel",
     prompt:
-      "Lightly clouded sky, keep the building color and facade exposure unchanged.",
+      "Ciel légèrement nuageux, couleur du bâtiment et exposition de la façade inchangées.",
     beforeSrc: "/artwork/ai-tool-sky_replacement-before.webp",
     afterSrc: "/artwork/ai-tool-sky_replacement-after.webp",
   },
   wall_color_change: {
     icon: Paintbrush,
     benefit:
-      "Test a new wall color before you actually repaint the space.",
-    input: "Photo + target color",
-    output: "A new wall color",
+      "Testez une nouvelle couleur de mur avant de repeindre réellement l’espace.",
+    input: "Photo + couleur souhaitée",
+    output: "Une nouvelle couleur de mur",
     prompt:
-      "Change only the wall behind the bed. The ceiling, trim and furniture stay the same.",
+      "Changez uniquement le mur derrière le lit. Le plafond, les moulures et le mobilier restent identiques.",
     beforeSrc: "/artwork/ai-tool-wall_color_change-before.webp",
     afterSrc: "/artwork/ai-tool-wall_color_change-after.webp",
   },
   virtual_staging: {
     icon: Sofa,
     benefit:
-      "Turn an empty space into a room buyers immediately understand and connect with.",
-    input: "Photo + room type + style",
-    output: "A furnished space",
+      "Transformez un espace vide en une pièce que les acheteurs comprennent et s’approprient immédiatement.",
+    input: "Photo + type de pièce + style",
+    output: "Un espace meublé",
     prompt:
-      "Living room, warm modern style, neutral palette, wood and light textiles.",
+      "Salon, style moderne chaleureux, palette neutre, bois et textiles clairs.",
     beforeSrc: "/artwork/ai-tool-virtual_staging-before.webp",
     afterSrc: "/artwork/ai-tool-virtual_staging-after.webp",
   },
   object_insertion: {
     icon: Armchair,
     benefit:
-      "Add a specific piece of furniture or decor, or replace an existing piece using several angles of the same model.",
-    input: "Interior + up to 5 angles of the piece",
-    output: "The piece added or replaced",
+      "Ajoutez un meuble ou un objet déco précis, ou remplacez une pièce existante à partir de plusieurs angles du même modèle.",
+    input: "Intérieur + jusqu’à 5 angles de l’objet",
+    output: "L’objet ajouté ou remplacé",
     prompt:
-      "Replace the existing armchair with the reference model. Keep the scale, light and shadow on the floor.",
+      "Remplacez le fauteuil existant par le modèle de référence. Conservez l’échelle, la lumière et l’ombre au sol.",
     beforeSrc: "/artwork/ai-tool-object_insertion-before.webp",
     afterSrc: "/artwork/ai-tool-object_insertion-after.webp",
   },
   virtual_renovation: {
     icon: Wand2,
     benefit:
-      "Show renovation potential before expensive decisions on materials and works.",
-    input: "Photo + what to change + style",
-    output: "A renovated variant",
+      "Montrez le potentiel de rénovation avant les décisions coûteuses sur les matériaux et les travaux.",
+    input: "Photo + ce qu’il faut changer + style",
+    output: "Une variante rénovée",
     prompt:
-      "Replace the floor with oak parquet, walls in warm white, keep the kitchen layout.",
+      "Remplacez le sol par du parquet en chêne, murs en blanc chaud, conservez l’agencement de la cuisine.",
     beforeSrc: "/artwork/ai-tool-virtual_renovation-before.webp",
     afterSrc: "/artwork/ai-tool-virtual_renovation-after.webp",
   },
   room_redesign: {
     icon: Palette,
     benefit:
-      "Change the style and mood of an existing room without a full 3D project.",
-    input: "Photo + room type + style",
-    output: "A new design variant",
+      "Changez le style et l’ambiance d’une pièce existante sans projet 3D complet.",
+    input: "Photo + type de pièce + style",
+    output: "Une nouvelle variante de design",
     prompt:
-      "Light Scandinavian style, less visual clutter, keep the windows and the basic layout.",
+      "Style scandinave clair, moins de surcharge visuelle, conservez les fenêtres et l’agencement de base.",
     beforeSrc: "/artwork/ai-tool-room_redesign-before.webp",
     afterSrc: "/artwork/ai-tool-room_redesign-after.webp",
   },
@@ -190,85 +190,85 @@ const toolDetails: Record<AiEditType, ToolDetail> = {
 const workflow = [
   {
     icon: Upload,
-    title: "Upload a photo",
-    text: "JPG, PNG or WebP up to 50 MB. Clear, wide shots work best.",
+    title: "Importez une photo",
+    text: "JPG, PNG ou WebP jusqu’à 50 Mo. Les photos nettes et larges donnent les meilleurs résultats.",
   },
   {
     icon: Sparkles,
-    title: "Pick an AI tool",
-    text: "From quick corrections to staging, furniture and decor replacement, renovation and redesign.",
+    title: "Choisissez un outil IA",
+    text: "Des corrections rapides au staging, en passant par le remplacement de meubles et de déco, la rénovation et le redesign.",
   },
   {
     icon: Brush,
-    title: "Add instructions",
-    text: "Write what to change, what to keep, and mark a mask if needed.",
+    title: "Ajoutez vos consignes",
+    text: "Écrivez ce qu’il faut changer, ce qu’il faut garder, et tracez un masque si nécessaire.",
   },
   {
     icon: ImageIcon,
-    title: "Download the result",
-    text: "Download the result or use it as a new input image.",
+    title: "Téléchargez le résultat",
+    text: "Téléchargez le résultat ou utilisez-le comme nouvelle image de départ.",
   },
 ];
 
 const heroProof = {
   beforeSrc: "/artwork/ai-tool-virtual_staging-before.webp",
   afterSrc: AI_STUDIO_OG_IMAGE,
-  title: "An empty space into a sales-ready shot",
-  text: "A before/after example from the AI Studio virtual staging tool.",
+  title: "D’un espace vide à une photo prête à vendre",
+  text: "Un exemple avant/après de l’outil de home staging virtuel d’AI Studio.",
 };
 
 const trustSignals = [
-  "A failed edit returns your credits",
-  `${AI_FREE_REGENERATIONS} free retry of the same edit type`,
-  `Files are stored for ${AI_FILE_RETENTION_DAYS} days`,
-  `Invoices issued by ${IMPRINT.shortName}`,
+  "Une retouche échouée vous rend vos crédits",
+  `${AI_FREE_REGENERATIONS} nouvel essai gratuit du même type de retouche`,
+  `Les fichiers sont conservés ${AI_FILE_RETENTION_DAYS} jours`,
+  `Factures émises par ${IMPRINT.shortName}`,
 ];
 
 const scenarios = [
   {
-    title: "Clean up the photo",
+    title: "Nettoyer la photo",
     text:
-      "Remove clutter, vehicles, people or small distractions. The space looks listing-ready without physical intervention.",
-    bestFor: "Agents, property owners, photographers",
+      "Supprimez le désordre, les véhicules, les personnes ou les petites distractions. L’espace paraît prêt pour l’annonce, sans intervention physique.",
+    bestFor: "Agents immobiliers, propriétaires, photographes",
     image: "/artwork/elegant-render-services-before-after-grid.webp",
   },
   {
-    title: "Furnish an empty space",
+    title: "Meubler un espace vide",
     text:
-      "Add furniture, decor and atmosphere in a chosen style so buyers immediately understand the room's purpose.",
-    bestFor: "Agencies, investors, owners who are selling",
+      "Ajoutez meubles, déco et atmosphère dans le style choisi pour que les acheteurs comprennent immédiatement la fonction de la pièce.",
+    bestFor: "Agences, investisseurs, propriétaires qui vendent",
     image: "/artwork/elegant-render-virtual-staging-scene.webp",
   },
   {
-    title: "Show renovation potential",
+    title: "Montrer le potentiel de rénovation",
     text:
-      "Test floors, walls, materials and mood before you make expensive decisions.",
-    bestFor: "Investors, designers, owners who are renovating",
+      "Testez sols, murs, matériaux et ambiance avant de prendre des décisions coûteuses.",
+    bestFor: "Investisseurs, designers, propriétaires qui rénovent",
     image: "/artwork/pricing-card-staging-renovation.webp",
   },
 ];
 
 const tips = [
-  "Upload a clear photo; the better the resolution, the better the result.",
-  "Write what must stay the same: windows, layout, floor, materials.",
-  "Do not ask for several unrelated things in one sentence.",
-  "For staging, state the room's purpose, style and color palette.",
-  "For adding or replacing furniture or decor, upload up to 5 angles of the same piece; for a replacement, mark the existing piece with a mask.",
-  "For renovation, separate materials, furniture and lighting.",
-  "For removing larger objects, use a mask in Advanced mode.",
-  "If the result is close, use it as a new input and ask for a small correction.",
+  "Importez une photo nette ; plus la résolution est bonne, meilleur est le résultat.",
+  "Écrivez ce qui doit rester identique : fenêtres, agencement, sol, matériaux.",
+  "Ne demandez pas plusieurs choses sans rapport dans une même phrase.",
+  "Pour le staging, précisez la fonction de la pièce, le style et la palette de couleurs.",
+  "Pour ajouter ou remplacer un meuble ou un objet déco, importez jusqu’à 5 angles du même objet ; pour un remplacement, marquez l’objet existant avec un masque.",
+  "Pour la rénovation, séparez matériaux, mobilier et éclairage.",
+  "Pour supprimer des objets plus grands, utilisez un masque en mode Avancé.",
+  "Si le résultat est proche, utilisez-le comme nouvelle image de départ et demandez une petite correction.",
 ];
 
 const creditPackages = [10, 25, 50, 100];
 
 const MOBILE_LABEL_BY_TOOL: Record<AiEditType, string> = {
-  item_removal: "Item removal",
-  day_to_dusk: "Day to dusk",
-  sky_replacement: "Sky",
-  wall_color_change: "Wall color",
+  item_removal: "Suppression",
+  day_to_dusk: "Crépuscule",
+  sky_replacement: "Ciel",
+  wall_color_change: "Couleur murs",
   virtual_staging: "Staging",
-  object_insertion: "Furniture/decor",
-  virtual_renovation: "Renovation",
+  object_insertion: "Meubles/déco",
+  virtual_renovation: "Rénovation",
   room_redesign: "Redesign",
 };
 
@@ -288,7 +288,7 @@ function toolStartingEur(
 }
 
 function publicTaxNote(displayCurrency: DisplayCurrency): string {
-  return `Prices are shown in ${displayCurrency}, VAT included.`;
+  return `Prix affichés en ${displayCurrency}, TVA incluse.`;
 }
 
 export default async function AiStudioLandingPage() {
@@ -308,19 +308,19 @@ export default async function AiStudioLandingPage() {
         data={[
           buildWebPageJsonLd({
             path: "/ai-studio",
-            name: "AI Studio for real estate photo editing",
+            name: "AI Studio pour la retouche photo immobilière",
             description:
-              "AI tools for item removal, day-to-dusk, sky replacement, virtual staging, furniture and decor insertion or replacement, renovation and room redesign.",
+              "Outils IA pour la suppression d’objets, le jour au crépuscule, le remplacement du ciel, le home staging virtuel, l’ajout ou le remplacement de meubles et de déco, la rénovation et le redesign de pièces.",
           }),
           buildBreadcrumbJsonLd([
-            { name: "Home", path: "/" },
+            { name: "Accueil", path: "/" },
             { name: "AI Studio", path: "/ai-studio" },
           ]),
           {
             "@context": "https://schema.org",
             "@type": "Service",
             name: "AI Studio",
-            serviceType: "AI real estate photo editing",
+            serviceType: "Retouche photo immobilière par IA",
             url: absoluteUrl("/ai-studio"),
             provider: {
               "@id": SEO.organizationId,
@@ -331,12 +331,12 @@ export default async function AiStudioLandingPage() {
               contentUrl: absoluteUrl(AI_STUDIO_OG_IMAGE),
               name: AI_STUDIO_IMAGE_ALT,
               caption:
-                "AI Studio shows how an empty interior photo becomes a sales-ready visual through virtual staging.",
+                "AI Studio montre comment la photo d’un intérieur vide devient un visuel prêt à vendre grâce au home staging virtuel.",
               inLanguage: SEO.htmlLang,
             },
             offers: {
               "@type": "OfferCatalog",
-              name: "AI tools",
+              name: "Outils IA",
               itemListElement: AI_EDIT_TYPES.map((item) => ({
                 "@type": "Offer",
                 name: item.label,
@@ -418,12 +418,12 @@ function HeroContent({
       <div>
         <p className="section-kicker">AI Studio</p>
         <h1 className="mt-4 max-w-3xl text-4xl leading-[1.08] text-foreground sm:text-5xl 2xl:text-6xl">
-          AI editing that turns your photo into a sales-ready visual
+          La retouche IA qui transforme votre photo en visuel prêt à vendre
         </h1>
         <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-          Upload a photo, pick a tool and get a finished visual for a listing,
-          a presentation or a quick idea check. Eight tools, from{" "}
-          {simpleStarting} per edit.
+          Importez une photo, choisissez un outil et obtenez un visuel fini
+          pour une annonce, une présentation ou une vérification rapide
+          d’idée. Huit outils, à partir de {simpleStarting} par retouche.
         </p>
 
         <div className="mt-5 flex flex-wrap gap-2 text-xs text-foreground/82">
@@ -433,7 +433,7 @@ function HeroContent({
               1,
               pricingSettings.aiCreditUnitsPerCredit,
             )}{" "}
-            · Complex ={" "}
+            · Complexe ={" "}
             {formatCreditsFromUnits(
               2,
               pricingSettings.aiCreditUnitsPerCredit,
@@ -445,9 +445,9 @@ function HeroContent({
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <CreditCheckoutButton label="Buy credits and start" />
+          <CreditCheckoutButton label="Acheter des crédits et commencer" />
           <ButtonLink href="/portal/ai-studio" variant="outline" size="lg">
-            Open AI Studio
+            Ouvrir AI Studio
             <ArrowRight className="h-4 w-4" />
           </ButtonLink>
         </div>
@@ -467,14 +467,14 @@ function HeroContent({
           beforeSrc={heroProof.beforeSrc}
           afterSrc={heroProof.afterSrc}
           alt={AI_STUDIO_IMAGE_ALT}
-          beforeAlt="AI Studio - an empty room before virtual staging"
+          beforeAlt="AI Studio - une pièce vide avant home staging virtuel"
           afterAlt={AI_STUDIO_IMAGE_ALT}
           sizes="(max-width: 768px) 100vw, 36vw"
           className="aspect-[4/3] bg-secondary"
           autoDemoIntervalMs={7000}
         >
           <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-foreground/60 px-2.5 py-1 font-mono text-xs font-medium uppercase tracking-[0.08em] text-background/95">
-            Before / after
+            Avant / après
           </span>
         </BeforeAfterReveal>
         <div className="p-4">
@@ -523,7 +523,7 @@ function ToolPickerGrid({
   return (
     <section className="pt-12 pb-2">
       <h2 className="mb-5 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-        What do you want to do?
+        Que voulez-vous faire ?
       </h2>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:grid-cols-3 2xl:grid-cols-4">
         {AI_EDIT_TYPES.map((item) => {
@@ -566,9 +566,9 @@ function WorkflowSection() {
     <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="max-w-2xl">
-          <p className="section-kicker">How it works</p>
+          <p className="section-kicker">Comment ça marche</p>
           <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
-            From photo to usable visual in four steps.
+            De la photo au visuel exploitable en quatre étapes.
           </h2>
         </div>
 
@@ -615,22 +615,22 @@ function ToolsSection({
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-3xl">
-            <p className="section-kicker">Tools</p>
+            <p className="section-kicker">Outils</p>
             <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
-              Eight AI edits for existing photos.
+              Huit retouches IA pour vos photos existantes.
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground">
-              Every tool has a clear scope: from quick photo clean-up to
-              staging, furniture and decor insertion or replacement, renovation
-              and room redesign. The example prompt under each tool shows how
-              to phrase your instruction.
+              Chaque outil a un périmètre clair : du simple nettoyage de photo
+              au staging, à l’ajout ou au remplacement de meubles et de déco,
+              à la rénovation et au redesign de pièces. L’exemple de consigne
+              sous chaque outil montre comment formuler votre demande.
             </p>
           </div>
           <Link
             href="/portal/ai-studio"
             className="inline-flex items-center gap-2 text-sm font-semibold text-accent hover:underline"
           >
-            Try it in the portal
+            Essayer dans l’espace client
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -640,9 +640,9 @@ function ToolsSection({
             const detail = toolDetails[item.id];
             const Icon = detail.icon;
             const capabilities = [
-              item.supportsMask !== false ? "Mask" : null,
+              item.supportsMask !== false ? "Masque" : null,
               item.supportsStyles ? "Style" : null,
-              item.supportsColor ? "Color" : null,
+              item.supportsColor ? "Couleur" : null,
             ].filter(Boolean);
 
             return (
@@ -656,7 +656,7 @@ function ToolsSection({
                   </div>
                   <div className="flex flex-wrap justify-end gap-1.5">
                     <span className="rounded-full bg-secondary px-2 py-1 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                      {item.complexity === "simple" ? "Simple" : "Complex"} ·{" "}
+                      {item.complexity === "simple" ? "Simple" : "Complexe"} ·{" "}
                       {formatCreditsFromUnits(
                         item.units,
                         pricingSettings.aiCreditUnitsPerCredit,
@@ -680,20 +680,20 @@ function ToolsSection({
                 <div className="mt-5 grid gap-2 text-xs text-muted-foreground">
                   <p>
                     <strong className="font-semibold text-foreground">
-                      Input:
+                      Entrée :
                     </strong>{" "}
                     {detail.input}
                   </p>
                   <p>
                     <strong className="font-semibold text-foreground">
-                      Output:
+                      Résultat :
                     </strong>{" "}
                     {detail.output}
                   </p>
                 </div>
 
                 <p className="mt-4 rounded-xl bg-secondary/50 px-3 py-2 text-xs leading-relaxed text-foreground/78">
-                  &ldquo;{detail.prompt}&rdquo;
+                  « {detail.prompt} »
                 </p>
               </article>
             );
@@ -709,9 +709,9 @@ function ScenarioSection() {
     <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="max-w-2xl">
-          <p className="section-kicker">Scenarios</p>
+          <p className="section-kicker">Scénarios</p>
           <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
-            The three most common reasons for AI editing.
+            Les trois raisons les plus courantes de recourir à la retouche IA.
           </h2>
         </div>
 
@@ -723,7 +723,7 @@ function ScenarioSection() {
             >
               <Image
                 src={item.image}
-                alt={`${item.title} - an AI Studio use case`}
+                alt={`${item.title} - un cas d’usage AI Studio`}
                 width={720}
                 height={460}
                 className="aspect-[4/3] w-full object-cover"
@@ -736,7 +736,7 @@ function ScenarioSection() {
                   {item.text}
                 </p>
                 <p className="mt-4 font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                  Best for: {item.bestFor}
+                  Idéal pour : {item.bestFor}
                 </p>
               </div>
             </article>
@@ -758,9 +758,9 @@ function ComparisonSection({
     <section className="bg-secondary/35 py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="max-w-2xl">
-          <p className="section-kicker">When to use which</p>
+          <p className="section-kicker">Lequel choisir</p>
           <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
-            AI Studio or a classic render?
+            AI Studio ou rendu classique ?
           </h2>
         </div>
 
@@ -768,13 +768,13 @@ function ComparisonSection({
           <ComparisonCard
             icon={Sparkles}
             title="AI Studio"
-            text="Fast editing of an existing photo. Ideal when you already have the shot and need a visual correction or improvement."
+            text="Retouche rapide d’une photo existante. Idéal quand vous avez déjà la photo et qu’il lui faut une correction ou une amélioration visuelle."
             items={[
-              "You already have a photo of the space",
-              "You need a quick visual check or to test an idea",
-              "You need a stronger property listing",
-              "You need an existing image cleaned up or styled",
-              `Price: from ${formatPublicPrice(
+              "Vous avez déjà une photo de l’espace",
+              "Vous voulez une vérification visuelle rapide ou tester une idée",
+              "Vous voulez une annonce immobilière plus convaincante",
+              "Vous voulez nettoyer ou styliser une image existante",
+              `Prix : à partir de ${formatPublicPrice(
                 toolStartingEur(
                   1,
                   pricingSettings.aiCreditTiers,
@@ -782,20 +782,20 @@ function ComparisonSection({
                 ),
                 displayCurrency,
                 pricingSettings,
-              )} per simple edit`,
+              )} par retouche simple`,
             ]}
             accent
           />
           <ComparisonCard
             icon={Layers3}
-            title="Classic render"
-            text="A hand-built 3D visual with full control over architecture, materials and camera angles."
+            title="Rendu classique"
+            text="Un visuel 3D construit à la main, avec un contrôle total de l’architecture, des matériaux et des angles de caméra."
             items={[
-              "The space does not exist yet",
-              "You need accurate architecture and dimensions",
-              "You need several controlled shots of the same scene",
-              "You need production-level detail",
-              "You need a complete sales campaign",
+              "L’espace n’existe pas encore",
+              "Vous avez besoin d’une architecture et de dimensions exactes",
+              "Vous avez besoin de plusieurs vues maîtrisées de la même scène",
+              "Vous avez besoin d’un niveau de détail professionnel",
+              "Vous avez besoin d’une campagne de vente complète",
             ]}
             link
           />
@@ -856,7 +856,7 @@ function ComparisonCard({
           href="/services"
           className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-accent hover:underline"
         >
-          See rendering services
+          Voir les services de rendu
           <ArrowRight className="h-4 w-4" />
         </Link>
       )}
@@ -876,27 +876,27 @@ function CreditsSection({
     <section className="py-10 md:py-14 lg:py-20">
       <div className="mx-auto grid w-full max-w-[min(96vw,1720px)] gap-8 px-6 lg:grid-cols-[0.75fr_1.25fr]">
         <div>
-          <p className="section-kicker">Credits</p>
+          <p className="section-kicker">Crédits</p>
           <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
-            Buy as many as you need.
+            Achetez-en autant que nécessaire.
           </h2>
           <p className="mt-4 text-sm leading-7 text-muted-foreground">
-            Credits stay valid for {pricingSettings.aiCreditExpiresAfterMonths} months
-            from your last top-up. Larger packages have a lower price per
-            credit, and the system automatically applies the best rate for
-            your chosen quantity. {publicTaxNote(displayCurrency)}
+            Les crédits restent valables {pricingSettings.aiCreditExpiresAfterMonths} mois
+            après votre dernier rechargement. Les packs plus grands ont un
+            prix par crédit plus bas, et le système applique automatiquement
+            le meilleur tarif pour la quantité choisie. {publicTaxNote(displayCurrency)}
           </p>
           <div className="mt-5 grid gap-2 text-sm text-foreground/82">
             <span className="inline-flex items-center gap-2">
               <Coins className="h-4 w-4 text-accent" />
-              Simple edit = 0.5 credits
+              Retouche simple = 0,5 crédit
             </span>
             <span className="inline-flex items-center gap-2">
               <Coins className="h-4 w-4 text-accent" />
-              Complex edit = 1 credit
+              Retouche complexe = 1 crédit
             </span>
           </div>
-          <CreditCheckoutButton className="mt-7" label="Buy credits" />
+          <CreditCheckoutButton className="mt-7" label="Acheter des crédits" />
         </div>
 
         <div>
@@ -915,7 +915,7 @@ function CreditsSection({
                   <p className="text-4xl font-bold text-foreground">
                     {credits}
                   </p>
-                  <p className="text-sm text-muted-foreground">credits</p>
+                  <p className="text-sm text-muted-foreground">crédits</p>
                   <p className="mt-5 text-2xl font-semibold text-foreground">
                     {formatPublicPriceFromCents(
                       purchase.totalCents,
@@ -929,7 +929,7 @@ function CreditsSection({
                       displayCurrency,
                       pricingSettings,
                     )}{" "}
-                    per credit
+                    par crédit
                   </p>
                 </div>
               );
@@ -952,7 +952,7 @@ function CreditsSection({
                     displayCurrency,
                     pricingSettings,
                   )}
-                  /credit
+                  /crédit
                 </span>
               );
             })}
@@ -968,9 +968,10 @@ function TipsSection() {
     <section className="bg-secondary/35 py-10 md:py-14 lg:py-20">
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6">
         <div className="max-w-2xl">
-          <p className="section-kicker">Tips</p>
+          <p className="section-kicker">Conseils</p>
           <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
-            For a better result, tell the AI what should stay the same.
+            Pour un meilleur résultat, dites à l’IA ce qui doit rester
+            identique.
           </h2>
         </div>
         <div className="mt-8 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -1000,7 +1001,7 @@ function FaqSection({
         <div className="max-w-2xl">
           <p className="section-kicker">FAQ</p>
           <h2 className="mt-3 text-4xl leading-tight text-foreground md:text-5xl">
-            Everything you need to know before your first edit.
+            Tout ce qu’il faut savoir avant votre première retouche.
           </h2>
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-2">
@@ -1032,23 +1033,23 @@ function FinalCtaSection() {
             AI Studio
           </p>
           <h2 className="mt-2 text-3xl leading-tight md:text-4xl">
-            Ready for your first photo edit?
+            Prêt pour votre première retouche photo ?
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-7 text-background/72">
-            Start with one clear photo. If you are not sure which tool is
-            right, start from the goal: clean up, furnish, renovate or change
-            the mood.
+            Commencez avec une photo nette. Si vous hésitez sur l’outil,
+            partez de l’objectif : nettoyer, meubler, rénover ou changer
+            l’ambiance.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <CreditCheckoutButton label="Buy credits and start" />
+          <CreditCheckoutButton label="Acheter des crédits et commencer" />
           <ButtonLink
             href="/portal/ai-studio"
             variant="outline"
             size="lg"
             className="border-background/30 text-background hover:bg-background/10"
           >
-            Open AI Studio
+            Ouvrir AI Studio
             <ArrowRight className="h-4 w-4" />
           </ButtonLink>
         </div>

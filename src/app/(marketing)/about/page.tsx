@@ -15,10 +15,10 @@ import {
   createPublicMetadata,
 } from "@/lib/seo";
 
-const ABOUT_DESCRIPTION = `${SITE.name} is the B2C sub-brand of ${SITE.parentCompany} for architectural visualization — with transparent pricing and a fast process.`;
+const ABOUT_DESCRIPTION = `${SITE.name} est la sous-marque B2C de ${SITE.parentCompany} dédiée à la visualisation architecturale — avec des prix transparents et un processus rapide.`;
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "About us",
+  title: "À propos",
   description: ABOUT_DESCRIPTION,
   path: "/about",
 });
@@ -30,86 +30,87 @@ export default function AboutPage() {
         data={[
           buildWebPageJsonLd({
             path: "/about",
-            name: `About us — ${SITE.name}`,
+            name: `À propos — ${SITE.name}`,
             description: ABOUT_DESCRIPTION,
           }),
           buildBreadcrumbJsonLd([
-            { name: "Home", path: "/" },
-            { name: "About us", path: "/about" },
+            { name: "Accueil", path: "/" },
+            { name: "À propos", path: "/about" },
           ]),
           buildOrganizationJsonLd(),
         ]}
       />
       <article className="mx-auto w-full max-w-3xl px-6 pb-20 pt-20 md:pt-28">
-        <p className="section-kicker">About us</p>
+        <p className="section-kicker">À propos</p>
         <h1 className="mt-4 text-5xl leading-[1.05] text-foreground md:text-6xl">
-          Architectural visualization with a human face
+          La visualisation architecturale à visage humain
         </h1>
 
         <div className="mt-12 space-y-6 text-lg leading-relaxed text-foreground/80">
           <p>
-            <strong>{SITE.name}</strong> is a dedicated sub-brand of{" "}
-            <strong>{SITE.parentCompany}</strong>, created with a clear goal: to
-            make architectural visualization more accessible, easier to
-            understand and more transparent for the wider B2C market.
+            <strong>{SITE.name}</strong> est une sous-marque dédiée de{" "}
+            <strong>{SITE.parentCompany}</strong>, créée avec un objectif
+            clair : rendre la visualisation architecturale plus accessible,
+            plus compréhensible et plus transparente pour le grand public.
           </p>
           <p>
-            Unlike traditional studios that communicate mostly through
-            portfolios and individual offers, Elegant Render builds trust on
-            three key promises: <strong>a clear price</strong>,{" "}
-            <strong>fast delivery</strong> and{" "}
-            <strong>handcrafted work at professional quality</strong>.
+            Contrairement aux studios traditionnels qui communiquent surtout
+            par portfolios et offres individuelles, Elegant Render fonde la
+            confiance sur trois promesses clés : <strong>un prix clair</strong>,{" "}
+            <strong>une livraison rapide</strong> et{" "}
+            <strong>un travail artisanal de qualité professionnelle</strong>.
           </p>
           <p>
-            We were never conceived as an elitist studio reserved for a narrow
-            circle of investors, but as an organized, visually appealing
-            service with clear pricing — for people who want to see their
-            space at its best, and more clearly, before they furnish, sell or
-            renovate it.
+            Nous n’avons jamais été conçus comme un studio élitiste réservé à
+            un cercle restreint d’investisseurs, mais comme un service
+            organisé, soigné visuellement et aux tarifs clairs — pour celles
+            et ceux qui veulent voir leur espace sous son meilleur jour, et
+            plus clairement, avant de l’aménager, de le vendre ou de le
+            rénover.
           </p>
         </div>
 
         <div className="mt-16 rounded-xl border border-border/60 bg-secondary/30 p-8">
           <h2 className="text-2xl text-foreground">
-            Part of the {SITE.parentCompany} system
+            Au sein du système {SITE.parentCompany}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-foreground/75">
-            {SITE.parentCompany} is the umbrella business entity and the
-            professional foundation, with experience in 3D visualization and
-            digital architectural content. Elegant Render is the
-            market-facing, more accessible and more direct channel for end
-            clients — every project is produced by the same team, to the same
-            quality standards.
+            {SITE.parentCompany} est l’entité faîtière et le socle
+            professionnel, avec une expérience en visualisation 3D et en
+            contenus architecturaux numériques. Elegant Render en est le canal
+            grand public, plus accessible et plus direct pour les clients
+            finaux — chaque projet est réalisé par la même équipe, selon les
+            mêmes standards de qualité.
           </p>
         </div>
 
         <div className="mt-6 rounded-xl border border-border/60 bg-secondary/30 p-8">
-          <h2 className="text-2xl text-foreground">Certificates and standards</h2>
+          <h2 className="text-2xl text-foreground">Certificats et normes</h2>
           <div className="mt-5 grid gap-6 md:grid-cols-[1fr_auto] md:items-start">
             <p className="text-base leading-relaxed text-foreground/75">
-              Our process is built on three international ISO standards,
-              certified by <strong>{CERTIFIER.name}</strong> —{" "}
+              Notre processus repose sur trois normes ISO internationales,
+              certifiées par <strong>{CERTIFIER.name}</strong> —{" "}
               {ISO_CERTIFICATIONS.map((cert, idx) => (
                 <span key={cert.id}>
                   <strong>{cert.code}</strong> ({cert.domain.toLowerCase()})
                   {idx < ISO_CERTIFICATIONS.length - 1
                     ? idx === ISO_CERTIFICATIONS.length - 2
-                      ? " and "
+                      ? " et "
                       : ", "
                     : ""}
                 </span>
               ))}
-              . More about each standard and about {CERTIFIER.name}:{" "}
+              . En savoir plus sur chaque norme et sur {CERTIFIER.name} :{" "}
               <Link
                 href="/legal/certificates"
                 className="text-foreground underline-offset-4 hover:underline"
               >
-                View certificates →
+                Voir les certificats →
               </Link>
             </p>
             <Link
               href="/legal/certificates"
-              aria-label={`${CERTIFIER.name} certificate — view details`}
+              aria-label={`Certificat ${CERTIFIER.name} — voir les détails`}
               className="self-center justify-self-center transition-opacity duration-200 hover:opacity-90 md:self-start md:justify-self-end"
             >
               <Image

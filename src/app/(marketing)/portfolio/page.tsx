@@ -9,7 +9,7 @@ import { SITE_FEATURES } from "@/lib/site-features";
 export const metadata: Metadata = createPublicMetadata({
   title: "Portfolio",
   description:
-    "A selection of our projects — interior and exterior renders, interactive 360° virtual tours, architectural animations, virtual staging, virtual renovation and 3D floor plans.",
+    "Une sélection de nos projets — rendus d’intérieur et d’extérieur, visites virtuelles 360° interactives, animations architecturales, home staging virtuel, rénovation virtuelle et plans 3D.",
   path: "/portfolio",
 });
 
@@ -23,14 +23,14 @@ export default function PortfolioPage() {
       <div className="mx-auto w-full max-w-[min(96vw,1720px)] px-6 pt-20 md:pt-28">
         <p className="section-kicker">Portfolio</p>
         <h1 className="mt-4 max-w-3xl text-5xl leading-[1.05] text-foreground md:text-6xl">
-          A selection of projects that show what we do
+          Une sélection de projets qui montrent ce que nous faisons
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-foreground/70">
-          Interiors, exteriors, interactive 360° virtual tours and
-          architectural animations. Click a 360° view to spin it with your
-          mouse, or an animation to play it — all built on the same principle:
-          a warm atmosphere, a legible layout and a realistic impression of
-          the space.
+          Intérieurs, extérieurs, visites virtuelles 360° interactives et
+          animations architecturales. Cliquez sur une vue 360° pour la faire
+          pivoter à la souris, ou sur une animation pour la lancer — le tout
+          repose sur le même principe : une atmosphère chaleureuse, une
+          composition lisible et une impression réaliste de l’espace.
         </p>
       </div>
 

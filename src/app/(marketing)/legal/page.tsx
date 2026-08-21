@@ -6,56 +6,56 @@ import { SITE } from "@/lib/content/site";
 import { createPublicMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Legal information",
-  description: `Company, privacy, cookie, consumer-rights, delivery, refund, complaints, and certification information for ${SITE.name}.`,
+  title: "Informations légales",
+  description: `Informations sur la société, la confidentialité, les cookies, les droits des consommateurs, la livraison, les remboursements, les réclamations et les certifications pour ${SITE.name}.`,
   path: "/legal",
 });
 
 const LEGAL_PAGES = [
   {
     href: "/legal/imprint",
-    title: "Imprint",
-    description: "The service provider, registered company details, contact information, and supervisory authorities.",
+    title: "Mentions légales",
+    description: "Le prestataire, les informations d’immatriculation de la société, les coordonnées et les autorités de contrôle.",
   },
   {
     href: "/legal/terms",
-    title: "Terms of service",
-    description: "The contract terms for estimates, orders, digital deliverables, accounts, payments, and licences.",
+    title: "Conditions générales de vente (CGV)",
+    description: "Les conditions contractuelles applicables aux devis, commandes, livrables numériques, comptes, paiements et licences.",
   },
   {
     href: "/legal/privacy",
-    title: "Privacy policy",
-    description: "What personal data we process, why, where it goes, how long it is kept, and your regional rights.",
+    title: "Politique de confidentialité",
+    description: "Quelles données personnelles nous traitons, pourquoi, où elles vont, combien de temps elles sont conservées, et vos droits régionaux.",
   },
   {
     href: "/legal/cookies",
-    title: "Cookie policy",
-    description: "The current inventory of browser storage, analytics, advertising measurement, and replay tools.",
+    title: "Politique relative aux cookies",
+    description: "L’inventaire actuel du stockage navigateur, des outils d’analyse, de mesure publicitaire et de relecture de session.",
   },
   {
     href: "/legal/withdrawal",
-    title: "Withdrawal right",
-    description: "EU and EEA consumer withdrawal information, the model notice, and the online withdrawal function.",
+    title: "Droit de rétractation",
+    description: "Informations sur la rétractation pour les consommateurs de l’UE et de l’EEE, le modèle d’avis et la fonction de rétractation en ligne.",
   },
   {
     href: "/legal/refunds",
-    title: "Refunds policy",
-    description: "Refund handling before and after production, payment-provider timing, and mandatory consumer remedies.",
+    title: "Remboursements",
+    description: "Le traitement des remboursements avant et après production, les délais des prestataires de paiement et les recours impératifs des consommateurs.",
   },
   {
     href: "/legal/complaints",
-    title: "Complaints procedure",
-    description: "How to make and escalate a complaint and what information helps us resolve it.",
+    title: "Procédure de réclamation",
+    description: "Comment déposer une réclamation, comment exercer un recours et quelles informations nous aident à la résoudre.",
   },
   {
     href: "/legal/delivery",
-    title: "Digital delivery",
-    description: "Delivery channels, timing, formats, access, and what happens if a delivery is delayed.",
+    title: "Livraison numérique",
+    description: "Canaux de livraison, délais, formats, accès et marche à suivre en cas de retard de livraison.",
   },
   {
     href: "/legal/certificates",
-    title: "Certificates and standards",
-    description: "Our ISO 9001, ISO/IEC 27001, and ISO 50001 certifications and verification material.",
+    title: "Certificats et normes",
+    description: "Nos certifications ISO 9001, ISO/IEC 27001 et ISO 50001 et les documents de vérification.",
   },
 ] as const;
 
@@ -63,14 +63,16 @@ export default function LegalIndexPage() {
   return (
     <>
       <article className="mx-auto w-full max-w-5xl px-6 pb-24 pt-20 md:pt-28">
-        <SectionKicker>Legal</SectionKicker>
+        <SectionKicker>Légal</SectionKicker>
         <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">
-          Legal information
+          Informations légales
         </h1>
         <p className="mt-6 max-w-3xl text-base leading-relaxed text-foreground/70">
-          Company disclosures, service terms, privacy information, and consumer
-          rights for {SITE.name}. Mandatory rights in your country apply even
-          when a policy below provides a narrower contractual rule.
+          Informations sur la société, conditions de service, informations de
+          confidentialité et droits des consommateurs pour {SITE.name}. Les
+          droits impératifs en vigueur dans votre pays s’appliquent même
+          lorsqu’une politique ci-dessous prévoit une règle contractuelle plus
+          restrictive.
         </p>
 
         <div className="mt-12 grid gap-5 md:grid-cols-2">

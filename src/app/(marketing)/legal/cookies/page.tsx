@@ -9,8 +9,8 @@ import { createPublicMetadata } from "@/lib/seo";
 const LAST_UPDATED = "2026-08-05";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Cookie policy",
-  description: `Cookies and similar technologies used by ${SITE.name}, including necessary storage, analytics, marketing measurement, payment tools, and session replay.`,
+  title: "Politique relative aux cookies",
+  description: `Cookies et technologies similaires utilisés par ${SITE.name}, y compris le stockage nécessaire, l’analyse d’audience, la mesure marketing, les outils de paiement et la relecture de session.`,
   path: "/legal/cookies",
 });
 
@@ -27,88 +27,88 @@ const NECESSARY_AND_FUNCTIONAL: CookieEntry[] = [
     name: "authjs.session-token / __Secure-authjs.session-token",
     storage: "Cookie",
     provider: "Elegant Render (Auth.js)",
-    purpose: "Keeps an authenticated account signed in and protects portal routes.",
-    retention: "Until logout or session expiry; normally up to 30 days",
+    purpose: "Maintient la connexion d’un compte authentifié et protège les routes de l’espace client.",
+    retention: "Jusqu’à la déconnexion ou l’expiration de la session ; normalement 30 jours au plus",
   },
   {
     name: "authjs.csrf-token / __Host-authjs.csrf-token",
     storage: "Cookie",
     provider: "Elegant Render (Auth.js)",
-    purpose: "Protects authentication requests against cross-site request forgery.",
-    retention: "Browser session or authentication-flow expiry",
+    purpose: "Protège les requêtes d’authentification contre la falsification de requêtes intersites.",
+    retention: "Session du navigateur ou expiration du flux d’authentification",
   },
   {
     name: "authjs.callback-url / __Secure-authjs.callback-url",
     storage: "Cookie",
     provider: "Elegant Render (Auth.js)",
-    purpose: "Returns you to the intended page after authentication.",
-    retention: "Browser session or authentication-flow expiry",
+    purpose: "Vous ramène à la page souhaitée après l’authentification.",
+    retention: "Session du navigateur ou expiration du flux d’authentification",
   },
   {
     name: "er-consent",
     storage: "localStorage",
     provider: "Elegant Render",
-    purpose: "Stores the categories you accepted or refused and the decision time.",
-    retention: "Until you change the choice or clear browser storage",
+    purpose: "Enregistre les catégories que vous avez acceptées ou refusées ainsi que la date de la décision.",
+    retention: "Jusqu’à ce que vous modifiiez votre choix ou effaciez le stockage du navigateur",
   },
   {
-    name: "er-checkout-quote and er-checkout-withdrawal-waived-at",
+    name: "er-checkout-quote et er-checkout-withdrawal-waived-at",
     storage: "sessionStorage",
     provider: "Elegant Render",
-    purpose: "Carries the selected estimate and withdrawal choice into checkout.",
-    retention: "Browser-tab session; cleared after checkout where possible",
+    purpose: "Transporte le devis sélectionné et le choix de rétractation vers le paiement.",
+    retention: "Session de l’onglet du navigateur ; effacé après le paiement lorsque cela est possible",
   },
   {
-    name: "er-chat-* and er-chat-proposal",
+    name: "er-chat-* et er-chat-proposal",
     storage: "sessionStorage + localStorage",
     provider: "Elegant Render",
-    purpose: "Keeps chat state, a pseudonymous chat session ID, and a proposed estimate while you navigate the site.",
-    retention: "Messages and UI state: browser-tab session; session ID: until browser storage is cleared",
+    purpose: "Conserve l’état du chat, un identifiant de session de chat pseudonyme et un devis proposé pendant votre navigation sur le site.",
+    retention: "Messages et état de l’interface : session de l’onglet ; identifiant de session : jusqu’à l’effacement du stockage du navigateur",
   },
   {
-    name: "Turnstile security data (names may vary)",
-    storage: "Cookie + script request",
+    name: "Données de sécurité Turnstile (les noms peuvent varier)",
+    storage: "Cookie + requête de script",
     provider: "Cloudflare",
-    purpose: "Checks public forms for automated abuse when Turnstile is enabled.",
-    retention: "Controlled by Cloudflare and limited to the security purpose",
+    purpose: "Vérifie que les formulaires publics ne font pas l’objet d’abus automatisés lorsque Turnstile est activé.",
+    retention: "Contrôlée par Cloudflare et limitée à la finalité de sécurité",
   },
   {
-    name: "PayPal SDK and checkout cookies",
-    storage: "Cookie + script request",
+    name: "Cookies du SDK et du paiement PayPal",
+    storage: "Cookie + requête de script",
     provider: "PayPal",
-    purpose: "Provides payment controls, fraud prevention, approval, and payment-status handling after you open PayPal checkout.",
-    retention: "Controlled by PayPal; varies by cookie, account, and funding source",
+    purpose: "Fournit les contrôles de paiement, la prévention de la fraude, l’approbation et le suivi du statut du paiement après l’ouverture du paiement PayPal.",
+    retention: "Contrôlée par PayPal ; varie selon le cookie, le compte et la source de financement",
   },
 ];
 
 const ANALYTICS: CookieEntry[] = [
   {
-    name: "Vercel Web Analytics and Speed Insights",
-    storage: "Measurement request; designed to operate without a cross-site advertising profile",
+    name: "Vercel Web Analytics et Speed Insights",
+    storage: "Requête de mesure ; conçue pour fonctionner sans profil publicitaire intersites",
     provider: "Vercel",
-    purpose: "Measures aggregate page usage and real-user performance.",
-    retention: "Under the Vercel project configuration and provider retention rules",
+    purpose: "Mesure l’utilisation agrégée des pages et les performances réelles des utilisateurs.",
+    retention: "Selon la configuration du projet Vercel et les règles de conservation du prestataire",
   },
   {
-    name: "ph_* and provider-generated identifiers",
+    name: "ph_* et identifiants générés par le prestataire",
     storage: "Cookie + localStorage",
     provider: "PostHog",
-    purpose: "Measures product usage, journeys, and conversion funnels after analytics consent.",
-    retention: "Up to 12 months unless deleted sooner or the provider configuration changes",
+    purpose: "Mesure l’utilisation du produit, les parcours et les tunnels de conversion après consentement à l’analyse.",
+    retention: "Jusqu’à 12 mois, sauf suppression anticipée ou modification de la configuration du prestataire",
   },
   {
-    name: "_ga and _ga_*",
+    name: "_ga et _ga_*",
     storage: "Cookie",
     provider: "Google Analytics 4",
-    purpose: "Distinguishes visits and measures traffic and page usage after analytics consent.",
-    retention: "Up to 24 months unless deleted sooner or the tag configuration changes",
+    purpose: "Distingue les visites et mesure le trafic et l’utilisation des pages après consentement à l’analyse.",
+    retention: "Jusqu’à 24 mois, sauf suppression anticipée ou modification de la configuration des balises",
   },
   {
-    name: "Sentry error and performance context",
-    storage: "Script request + browser session storage where used",
+    name: "Contexte d’erreurs et de performance Sentry",
+    storage: "Requête de script + stockage de session du navigateur le cas échéant",
     provider: "Sentry (Functional Software, Inc.)",
-    purpose: "Diagnoses browser errors and performance problems after analytics consent. Server-side security and error logs can also be processed independently of browser consent where necessary.",
-    retention: "According to the Sentry project configuration and incident needs",
+    purpose: "Diagnostique les erreurs et les problèmes de performance du navigateur après consentement à l’analyse. Les journaux de sécurité et d’erreurs côté serveur peuvent aussi être traités indépendamment du consentement du navigateur lorsque cela est nécessaire.",
+    retention: "Selon la configuration du projet Sentry et les besoins liés aux incidents",
   },
 ];
 
@@ -117,32 +117,32 @@ const MARKETING: CookieEntry[] = [
     name: "Google Tag Manager",
     storage: "Script + dataLayer",
     provider: "Google",
-    purpose: "Loads only the tags permitted by your analytics and marketing choices. Tag Manager does not itself create an advertising profile, but tags configured inside it may use identifiers.",
-    retention: "During page load; downstream tag retention is listed separately",
+    purpose: "Ne charge que les balises autorisées par vos choix d’analyse et de marketing. Tag Manager ne crée pas lui-même de profil publicitaire, mais les balises configurées en son sein peuvent utiliser des identifiants.",
+    retention: "Pendant le chargement de la page ; la conservation des balises en aval est indiquée séparément",
   },
   {
-    name: "Google Ads and conversion identifiers, including _gcl_* where configured",
-    storage: "Cookie + script request",
+    name: "Identifiants Google Ads et de conversion, y compris _gcl_* le cas échéant",
+    storage: "Cookie + requête de script",
     provider: "Google",
-    purpose: "Attributes inquiries and paid orders to advertising and measures campaign performance after marketing consent.",
-    retention: "Depends on the enabled Google tag and campaign configuration",
+    purpose: "Attribue les demandes et les commandes payées à la publicité et mesure la performance des campagnes après consentement marketing.",
+    retention: "Dépend de la balise Google activée et de la configuration de la campagne",
   },
 ];
 
 const RECORDING: CookieEntry[] = [
   {
-    name: "PostHog session recording data",
-    storage: "Cookie + localStorage + browser recording requests",
+    name: "Données d’enregistrement de session PostHog",
+    storage: "Cookie + localStorage + requêtes d’enregistrement du navigateur",
     provider: "PostHog",
-    purpose: "Records masked or redacted interaction sessions to find usability problems after separate recording consent.",
-    retention: "Up to 12 months unless deleted sooner or the provider configuration changes",
+    purpose: "Enregistre des sessions d’interaction masquées ou caviardées afin d’identifier des problèmes d’ergonomie, après un consentement distinct à l’enregistrement.",
+    retention: "Jusqu’à 12 mois, sauf suppression anticipée ou modification de la configuration du prestataire",
   },
   {
-    name: "Sentry Replay session data",
-    storage: "sessionStorage or IndexedDB + recording requests",
+    name: "Données de session Sentry Replay",
+    storage: "sessionStorage ou IndexedDB + requêtes d’enregistrement",
     provider: "Sentry (Functional Software, Inc.)",
-    purpose: "Captures replay context around technical errors after separate recording consent.",
-    retention: "According to the Sentry Replay project configuration; normally no more than 30 days",
+    purpose: "Capture le contexte de relecture autour des erreurs techniques, après un consentement distinct à l’enregistrement.",
+    retention: "Selon la configuration du projet Sentry Replay ; normalement 30 jours au plus",
   },
 ];
 
@@ -150,91 +150,100 @@ export default function CookiePolicyPage() {
   return (
     <>
       <article className="mx-auto w-full max-w-4xl px-6 pb-24 pt-20 md:pt-28">
-        <SectionKicker>Legal</SectionKicker>
+        <SectionKicker>Légal</SectionKicker>
         <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">
-          Cookie policy
+          Politique relative aux cookies
         </h1>
         <p className="mt-6 text-base text-foreground/60">
-          Last updated: {formatDate(LAST_UPDATED)}
+          Dernière mise à jour : {formatDate(LAST_UPDATED)}
         </p>
 
-        <Section title="1. Scope">
+        <Section title="1. Champ d’application">
           <p>
-            This policy covers cookies and similar browser technologies used by
-            {` ${SITE.name}`}, including localStorage, sessionStorage, pixels,
-            scripts, SDKs, IndexedDB, and measurement requests. Names can vary
-            by browser, secure-domain prefix, provider release, and tag
-            configuration, so the tables describe both known names and their
-            functions.
+            La présente politique couvre les cookies et les technologies de
+            navigateur similaires utilisés par
+            {` ${SITE.name}`}, y compris localStorage, sessionStorage, les
+            pixels, scripts, SDK, IndexedDB et les requêtes de mesure. Les noms
+            peuvent varier selon le navigateur, le préfixe de domaine
+            sécurisé, la version du prestataire et la configuration des
+            balises ; les tableaux décrivent donc à la fois les noms connus et
+            leurs fonctions.
           </p>
         </Section>
 
-        <Section title="2. Your choices">
+        <Section title="2. Vos choix">
+          {/* TODO(legal-review): Verify this consent model against CNIL cookie guidance: parity between accept and refuse actions on the banner, the recommended consent re-collection interval (CNIL recommends 6 months, max 13 months), retention of consent/refusal proof, and whether any analytics tool is intended to rely on the CNIL audience-measurement exemption (art. 82 loi Informatique et Libertés) instead of consent. */}
           <p>
-            Necessary technologies support a service you request, security,
-            sign-in, checkout, and storing your choice. Where permitted, they
-            operate without consent. Optional analytics, marketing, and session
-            recording are controlled separately and are off until you opt in
-            where consent is required.
+            Les technologies nécessaires prennent en charge un service que vous
+            demandez, la sécurité, la connexion, le paiement et
+            l’enregistrement de votre choix. Lorsque cela est permis, elles
+            fonctionnent sans consentement. Les outils facultatifs d’analyse,
+            de marketing et d’enregistrement de session sont contrôlés
+            séparément et restent désactivés tant que vous n’avez pas donné
+            votre accord, lorsque le consentement est requis.
           </p>
           <p>
-            Reopen <ConsentSettingsLink className="underline-offset-4 hover:underline" />{" "}
-            at any time. Withdrawing consent stops new optional browser
-            collection on this site but does not reverse processing that already
-            occurred. You can also clear site data in your browser; doing so may
-            sign you out, remove your estimate, clear chat state, or reset your
-            consent choice.
+            Rouvrez <ConsentSettingsLink className="underline-offset-4 hover:underline" />{" "}
+            à tout moment. Le retrait du consentement met fin à toute nouvelle
+            collecte facultative par le navigateur sur ce site, mais n’annule
+            pas les traitements déjà effectués. Vous pouvez aussi effacer les
+            données du site dans votre navigateur ; cela peut vous
+            déconnecter, supprimer votre devis, effacer l’état du chat ou
+            réinitialiser votre choix de consentement.
           </p>
         </Section>
 
         <CookieTable
-          title="3. Necessary and functional technologies"
-          subtitle="Used to provide features you request, protect forms and accounts, complete checkout, and remember privacy choices. PayPal and Turnstile data is triggered only when the related feature is used and configured."
+          title="3. Technologies nécessaires et fonctionnelles"
+          subtitle="Utilisées pour fournir les fonctionnalités que vous demandez, protéger les formulaires et les comptes, finaliser le paiement et mémoriser les choix de confidentialité. Les données PayPal et Turnstile ne sont déclenchées que lorsque la fonctionnalité correspondante est utilisée et configurée."
           rows={NECESSARY_AND_FUNCTIONAL}
         />
 
         <CookieTable
-          title="4. Analytics and performance"
-          subtitle="Browser analytics and performance tools that are consent-gated where required. Limited server-side logs and aggregate, cookieless measurements may operate for security and reliability where the law permits."
+          title="4. Analyse d’audience et performance"
+          subtitle="Outils d’analyse et de performance du navigateur soumis au consentement lorsque celui-ci est requis. Des journaux limités côté serveur et des mesures agrégées, sans cookies, peuvent fonctionner à des fins de sécurité et de fiabilité lorsque la loi le permet."
           rows={ANALYTICS}
         />
 
         <CookieTable
-          title="5. Marketing measurement"
-          subtitle="Used only after marketing consent and only when the relevant tag is configured. LinkedIn tracking is not currently active in the production code covered by this policy."
+          title="5. Mesure marketing"
+          subtitle="Utilisée uniquement après consentement marketing et uniquement lorsque la balise concernée est configurée. Le suivi LinkedIn n’est actuellement pas actif dans le code de production couvert par la présente politique."
           rows={MARKETING}
         />
 
         <CookieTable
-          title="6. Session recording"
-          subtitle="Used only after separate session-recording consent. Recording configurations are intended to mask sensitive fields, but you should still avoid entering unnecessary sensitive information."
+          title="6. Enregistrement de session"
+          subtitle="Utilisé uniquement après un consentement distinct à l’enregistrement de session. Les configurations d’enregistrement sont conçues pour masquer les champs sensibles, mais évitez néanmoins de saisir des informations sensibles inutiles."
           rows={RECORDING}
         />
 
-        <Section title="7. Browser privacy signals">
+        <Section title="7. Signaux de confidentialité du navigateur">
           <p>
-            You can always use our cookie settings to refuse optional tracking.
-            Some browsers also send Global Privacy Control or other preference
-            signals. Where a signal creates a legally binding opt-out and our
-            technology can recognise it, we treat it as an opt-out from sale,
-            sharing, and targeted advertising. Browser “Do Not Track” signals
-            do not have one consistent legal or technical meaning, so cookie
-            settings remain the reliable control on this site.
+            Vous pouvez toujours utiliser nos paramètres de cookies pour
+            refuser le suivi facultatif. Certains navigateurs envoient
+            également le signal Global Privacy Control ou d’autres signaux de
+            préférence. Lorsqu’un signal crée un refus juridiquement
+            contraignant et que notre technologie peut le reconnaître, nous le
+            traitons comme un refus de la vente, du partage et de la publicité
+            ciblée. Les signaux « Do Not Track » des navigateurs n’ont pas de
+            signification juridique ou technique unique ; les paramètres de
+            cookies restent donc le contrôle fiable sur ce site.
           </p>
         </Section>
 
-        <Section title="8. More information">
+        <Section title="8. Plus d’informations">
           <p>
-            The{" "}
+            La{" "}
             <Link
               href="/legal/privacy"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              privacy policy
+              politique de confidentialité
             </Link>{" "}
-            explains the personal data, legal bases, recipients, international
-            transfers, retention rules, and rights connected with these tools.
-            Questions can be sent to{" "}
+            explique les données personnelles, les bases légales, les
+            destinataires, les transferts internationaux, les règles de
+            conservation et les droits liés à ces outils. Vos questions peuvent
+            être envoyées à{" "}
             <a
               href={`mailto:${IMPRINT.privacyEmail}`}
               className="text-foreground underline-offset-4 hover:underline"
@@ -286,11 +295,11 @@ function CookieTable({
         <table className="w-full min-w-[760px] border-collapse text-left text-sm">
           <thead className="bg-secondary/60 text-foreground/80">
             <tr>
-              <th className="px-3 py-3">Name</th>
-              <th className="px-3 py-3">Storage</th>
-              <th className="px-3 py-3">Provider</th>
-              <th className="px-3 py-3">Purpose</th>
-              <th className="px-3 py-3">Retention</th>
+              <th className="px-3 py-3">Nom</th>
+              <th className="px-3 py-3">Stockage</th>
+              <th className="px-3 py-3">Prestataire</th>
+              <th className="px-3 py-3">Finalité</th>
+              <th className="px-3 py-3">Conservation</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/50 text-foreground/70">
@@ -313,7 +322,7 @@ function CookieTable({
 }
 
 function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00Z`).toLocaleDateString("en-GB", {
+  return new Date(`${value}T00:00:00Z`).toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

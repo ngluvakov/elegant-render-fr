@@ -29,7 +29,7 @@ export function WithdrawalForm() {
   );
 
   if (state.status === "success") {
-    const receivedAt = new Date(state.receivedAt).toLocaleString("en-GB", {
+    const receivedAt = new Date(state.receivedAt).toLocaleString("fr-FR", {
       day: "2-digit",
       month: "long",
       year: "numeric",
@@ -43,17 +43,17 @@ export function WithdrawalForm() {
         role="status"
         className="rounded-xl border border-accent/40 bg-accent/8 p-6 text-foreground"
       >
-        <h3 className="text-xl">Withdrawal notice received</h3>
+        <h3 className="text-xl">Avis de rétractation reçu</h3>
         <dl className="mt-4 grid gap-2 text-sm sm:grid-cols-[140px_1fr]">
-          <dt className="font-semibold">Reference</dt>
+          <dt className="font-semibold">Référence</dt>
           <dd className="font-mono">{state.reference}</dd>
-          <dt className="font-semibold">Received</dt>
+          <dt className="font-semibold">Reçu le</dt>
           <dd>{receivedAt}</dd>
         </dl>
         <p className="mt-4 text-sm leading-relaxed text-foreground/70">
           {state.confirmationSent
-            ? "We sent a durable copy of the notice to the email address you provided. Keep it with your order records."
-            : "The notice reached our team, but the confirmation email could not be delivered. Save this reference and contact info@elegantrender.com if you need another copy."}
+            ? "Nous avons envoyé une copie durable de l’avis à l’adresse e-mail indiquée. Conservez-la avec les documents de votre commande."
+            : "L’avis est parvenu à notre équipe, mais l’e-mail de confirmation n’a pas pu être remis. Conservez cette référence et contactez info@elegantrender.fr si vous avez besoin d’une autre copie."}
         </p>
       </div>
     );
@@ -78,7 +78,7 @@ export function WithdrawalForm() {
         className="space-y-5"
       >
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Consumer name" htmlFor="withdrawal-name">
+          <Field label="Nom du consommateur" htmlFor="withdrawal-name">
             <input
               id="withdrawal-name"
               name="consumerName"
@@ -90,7 +90,7 @@ export function WithdrawalForm() {
               className={inputClass}
             />
           </Field>
-          <Field label="Email for confirmation" htmlFor="withdrawal-email">
+          <Field label="E-mail pour la confirmation" htmlFor="withdrawal-email">
             <input
               id="withdrawal-email"
               name="consumerEmail"
@@ -101,7 +101,7 @@ export function WithdrawalForm() {
               className={inputClass}
             />
           </Field>
-          <Field label="Order number or contract reference" htmlFor="withdrawal-order">
+          <Field label="Numéro de commande ou référence du contrat" htmlFor="withdrawal-order">
             <input
               id="withdrawal-order"
               name="orderNumber"
@@ -113,7 +113,7 @@ export function WithdrawalForm() {
               className={inputClass}
             />
           </Field>
-          <Field label="Contract date (optional)" htmlFor="withdrawal-date">
+          <Field label="Date du contrat (facultatif)" htmlFor="withdrawal-date">
             <input
               id="withdrawal-date"
               name="contractDate"
@@ -123,30 +123,30 @@ export function WithdrawalForm() {
           </Field>
         </div>
 
-        <Field label="Service (optional)" htmlFor="withdrawal-service">
+        <Field label="Service (facultatif)" htmlFor="withdrawal-service">
           <input
             id="withdrawal-service"
             name="serviceDescription"
             type="text"
             maxLength={200}
-            placeholder="For example, interior render or AI Studio credits"
+            placeholder="Par exemple, rendu d’intérieur ou crédits AI Studio"
             className={inputClass}
           />
         </Field>
 
-        <Field label="Additional information (optional)" htmlFor="withdrawal-message">
+        <Field label="Informations complémentaires (facultatif)" htmlFor="withdrawal-message">
           <textarea
             id="withdrawal-message"
             name="message"
             rows={4}
             maxLength={1200}
-            placeholder="Add information that helps us identify the contract. You do not need to give a reason."
+            placeholder="Ajoutez des informations qui nous aident à identifier le contrat. Vous n’avez pas à donner de motif."
             className={inputClass}
           />
         </Field>
 
         <div className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
-          <label htmlFor="withdrawal-company-website">Company website</label>
+          <label htmlFor="withdrawal-company-website">Site web de l’entreprise</label>
           <input
             id="withdrawal-company-website"
             name="companyWebsite"
@@ -160,7 +160,7 @@ export function WithdrawalForm() {
           type="submit"
           className="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-foreground px-5 py-2.5 text-sm font-medium text-background transition hover:bg-foreground/80"
         >
-          Review withdrawal
+          Vérifier la rétractation
         </button>
       </form>
     );
@@ -175,15 +175,15 @@ export function WithdrawalForm() {
 
       <div className="rounded-lg border border-border/60 bg-background/70 p-5">
         <p className="font-medium text-foreground">
-          I withdraw from the contract identified below.
+          Je me rétracte du contrat identifié ci-dessous.
         </p>
         <dl className="mt-4 grid gap-3 text-sm leading-relaxed sm:grid-cols-[180px_1fr]">
-          <ReviewRow label="Consumer" value={draft.consumerName} />
-          <ReviewRow label="Confirmation email" value={draft.consumerEmail} />
-          <ReviewRow label="Order or contract" value={draft.orderNumber} />
-          {draft.contractDate && <ReviewRow label="Contract date" value={draft.contractDate} />}
+          <ReviewRow label="Consommateur" value={draft.consumerName} />
+          <ReviewRow label="E-mail de confirmation" value={draft.consumerEmail} />
+          <ReviewRow label="Commande ou contrat" value={draft.orderNumber} />
+          {draft.contractDate && <ReviewRow label="Date du contrat" value={draft.contractDate} />}
           {draft.serviceDescription && <ReviewRow label="Service" value={draft.serviceDescription} />}
-          {draft.message && <ReviewRow label="Additional information" value={draft.message} />}
+          {draft.message && <ReviewRow label="Informations complémentaires" value={draft.message} />}
         </dl>
       </div>
 
@@ -194,8 +194,9 @@ export function WithdrawalForm() {
       )}
 
       <p className="text-sm leading-relaxed text-foreground/65">
-        Select Confirm withdrawal to send this unambiguous statement. The
-        server records the receipt time and sends a copy to the email above.
+        Sélectionnez « Confirmer la rétractation » pour envoyer cette
+        déclaration dénuée d’ambiguïté. Le serveur enregistre l’heure de
+        réception et envoie une copie à l’adresse e-mail ci-dessus.
       </p>
 
       <div className="flex flex-wrap gap-3">
@@ -204,7 +205,7 @@ export function WithdrawalForm() {
           disabled={pending}
           className="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-foreground px-5 py-2.5 text-sm font-medium text-background transition hover:bg-foreground/80 disabled:cursor-wait disabled:opacity-60"
         >
-          {pending ? "Sending…" : "Confirm withdrawal"}
+          {pending ? "Envoi…" : "Confirmer la rétractation"}
         </button>
         <button
           type="button"
@@ -212,7 +213,7 @@ export function WithdrawalForm() {
           onClick={() => setDraft(null)}
           className="inline-flex min-h-11 items-center justify-center rounded-[4px] border border-border px-5 py-2.5 text-sm font-medium text-foreground transition hover:bg-secondary disabled:opacity-60"
         >
-          Edit details
+          Modifier les informations
         </button>
       </div>
     </form>

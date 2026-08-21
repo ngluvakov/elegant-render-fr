@@ -8,8 +8,8 @@ import { createPublicMetadata } from "@/lib/seo";
 const LAST_UPDATED = "2026-08-05";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Digital delivery",
-  description: `How ${SITE.name} delivers renders, animations, AI Studio files, and other digital project outputs.`,
+  title: "Livraison numérique",
+  description: `Comment ${SITE.name} livre les rendus, animations, fichiers AI Studio et autres livrables numériques de projet.`,
   path: "/legal/delivery",
 });
 
@@ -17,36 +17,38 @@ export default function DeliveryPage() {
   return (
     <>
       <article className="mx-auto w-full max-w-3xl px-6 pb-24 pt-20 md:pt-28">
-        <SectionKicker>Legal</SectionKicker>
+        <SectionKicker>Légal</SectionKicker>
         <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">
-          Digital delivery
+          Livraison numérique
         </h1>
         <p className="mt-6 text-base text-foreground/60">
-          Last updated:{" "}
-          {new Date(LAST_UPDATED).toLocaleDateString("en-GB", {
+          Dernière mise à jour :{" "}
+          {new Date(LAST_UPDATED).toLocaleDateString("fr-FR", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
           })}
         </p>
 
-        <Section title="1. Delivery format">
+        <Section title="1. Format de livraison">
           <p>
-            {SITE.name} delivers digital content only. There is no physical
-            shipping. Deliverables may include static renders, 360 virtual tour
-            assets, animations, AI Studio outputs, floor plans, site plans, and
-            related project files.
+            {SITE.name} livre exclusivement du contenu numérique. Il n’y a
+            aucune expédition physique. Les livrables peuvent comprendre des
+            rendus statiques, des éléments de visite virtuelle 360°, des
+            animations, des résultats AI Studio, des plans d’étage, des plans
+            de masse et des fichiers de projet associés.
           </p>
         </Section>
 
-        <Section title="2. Where files are delivered">
+        <Section title="2. Où les fichiers sont livrés">
           <p>
-            Finished files are normally delivered through the customer portal
-            under the relevant order number. We may also send download links or
-            attachments by email when that is more practical for the project.
+            Les fichiers finaux sont normalement livrés via l’espace client,
+            sous le numéro de commande concerné. Nous pouvons aussi envoyer des
+            liens de téléchargement ou des pièces jointes par e-mail lorsque
+            cela est plus pratique pour le projet.
           </p>
           <p>
-            Portal access is available at{" "}
+            L’espace client est accessible à l’adresse{" "}
             <Link
               href="/portal"
               className="text-foreground underline-offset-4 hover:underline"
@@ -57,56 +59,64 @@ export default function DeliveryPage() {
           </p>
         </Section>
 
-        <Section title="3. Delivery timing">
+        <Section title="3. Délais de livraison">
           <p>
-            Standard timelines are shown on service pages or confirmed in your
-            estimate. Production usually starts after payment is complete and we
-            have a usable brief, source files, references, and any required
-            clarifications.
+            Les délais standard sont indiqués sur les pages de services ou
+            confirmés dans votre devis. La production commence généralement
+            après le paiement complet et la réception d’un brief exploitable,
+            des fichiers sources, des références et des éventuelles
+            clarifications requises.
           </p>
           <p>
-            If delivery is delayed because required information is missing, the
-            brief changes, a third-party service is unavailable, or a force
-            majeure event occurs, we will provide a written update and a
-            realistic revised timeline.
+            Si la livraison est retardée parce que des informations requises
+            manquent, que le brief change, qu’un service tiers est indisponible
+            ou qu’un cas de force majeure survient, nous fournirons une mise à
+            jour écrite et un nouveau délai réaliste.
           </p>
+          {/* TODO(legal-review): Verify this paragraph against the French rules on failure to supply digital content or a digital service (art. L224-25-10 ff. Code de la consommation, transposing Directive (EU) 2019/770) — French law defines the notice-and-termination mechanism more precisely than this generic wording. */}
           <p>
-            If we fail to supply digital content or a digital service when
-            required, mandatory consumer law may allow you to require supply and,
-            in defined circumstances, terminate the contract. Contact us with
-            the order number so we can investigate promptly.
-          </p>
-        </Section>
-
-        <Section title="4. Standard file types">
-          <p>
-            Static renders are usually supplied as JPG or PNG files, commonly up
-            to 4K unless a different output is confirmed. Animations are usually
-            supplied as MP4 or MOV. Other formats can be agreed in the order
-            notes or estimate where technically available.
+            Si nous ne fournissons pas un contenu ou un service numérique au
+            moment requis, le droit impératif de la consommation peut vous
+            permettre d’en exiger la fourniture et, dans des cas définis, de
+            résoudre le contrat. Contactez-nous en indiquant le numéro de
+            commande afin que nous puissions enquêter rapidement.
           </p>
         </Section>
 
-        <Section title="5. Worldwide access">
+        <Section title="4. Types de fichiers standard">
           <p>
-            Digital delivery is available worldwide, subject to platform,
-            payment, sanctions, and export-control restrictions that may apply
-            to either party or the payment provider.
+            Les rendus statiques sont généralement fournis au format JPG ou
+            PNG, le plus souvent jusqu’en 4K, sauf confirmation d’un autre
+            format de sortie. Les animations sont généralement fournies au
+            format MP4 ou MOV. D’autres formats peuvent être convenus dans les
+            notes de commande ou le devis lorsqu’ils sont techniquement
+            disponibles.
           </p>
         </Section>
 
-        <Section title="6. Access and retention">
+        <Section title="5. Accès mondial">
           <p>
-            Download completed work promptly and keep your own backup. AI Studio
-            inputs and outputs are available for 30 days. Retention for bespoke
-            project deliverables can vary with the order, revision period, and
-            support needs; it is not a permanent cloud-storage service.
+            La livraison numérique est disponible dans le monde entier, sous
+            réserve des restrictions de plateforme, de paiement, de sanctions
+            et de contrôle des exportations pouvant s’appliquer à l’une des
+            parties ou au prestataire de paiement.
           </p>
         </Section>
 
-        <Section title="7. Delivery questions">
+        <Section title="6. Accès et conservation">
           <p>
-            Questions about delivery can be sent to{" "}
+            Téléchargez rapidement les travaux terminés et conservez votre
+            propre sauvegarde. Les entrées et sorties d’AI Studio sont
+            disponibles pendant 30 jours. La conservation des livrables de
+            projet sur mesure peut varier selon la commande, la période de
+            révision et les besoins d’assistance ; il ne s’agit pas d’un
+            service de stockage cloud permanent.
+          </p>
+        </Section>
+
+        <Section title="7. Questions sur la livraison">
+          <p>
+            Les questions relatives à la livraison peuvent être envoyées à{" "}
             <a
               href={`mailto:${IMPRINT.email}`}
               className="text-foreground underline-offset-4 hover:underline"

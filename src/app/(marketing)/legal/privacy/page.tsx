@@ -9,8 +9,8 @@ import { createPublicMetadata } from "@/lib/seo";
 const LAST_UPDATED = "2026-08-05";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Privacy policy",
-  description: `How ${SITE.name} collects, uses, shares, protects, and retains personal data, and how people worldwide can exercise their privacy rights.`,
+  title: "Politique de confidentialité",
+  description: `Comment ${SITE.name} collecte, utilise, partage, protège et conserve les données personnelles, et comment chacun, où qu’il se trouve, peut exercer ses droits en matière de vie privée.`,
   path: "/legal/privacy",
 });
 
@@ -24,74 +24,75 @@ type ProcessingActivity = {
 
 const PROCESSING_ACTIVITIES: ProcessingActivity[] = [
   {
-    activity: "Website, security, and fraud prevention",
-    data: "IP address, request time, device and browser details, consent state, security events, error logs, and rate-limit identifiers.",
+    activity: "Site web, sécurité et prévention de la fraude",
+    data: "Adresse IP, heure de la requête, informations sur l’appareil et le navigateur, état du consentement, événements de sécurité, journaux d’erreurs et identifiants de limitation de débit.",
     purposeAndBasis:
-      "Provide and secure the site, prevent abuse, investigate faults, and protect accounts. The basis is performance of the service and our legitimate interests in security and reliability.",
+      "Fournir et sécuriser le site, prévenir les abus, analyser les incidents et protéger les comptes. La base est l’exécution du service et nos intérêts légitimes en matière de sécurité et de fiabilité.",
     recipients:
-      "Vercel, Sentry, Upstash, Cloudflare Turnstile when enabled, and our authorised technical team.",
+      "Vercel, Sentry, Upstash, Cloudflare Turnstile lorsqu’il est activé, et notre équipe technique autorisée.",
     retention:
-      "For the shortest period needed to diagnose and secure the service, subject to provider settings and a longer period when an incident, legal claim, or audit requires it.",
+      "Pendant la durée la plus courte nécessaire au diagnostic et à la sécurisation du service, selon la configuration des prestataires, et plus longtemps lorsqu’un incident, une action en justice ou un audit l’exige.",
   },
   {
-    activity: "Inquiries and estimates",
-    data: "Name, email, phone, company, country, project brief, budget, deadline, source page, messages, and uploaded plans, photos, or references.",
+    activity: "Demandes et devis",
+    data: "Nom, e-mail, téléphone, société, pays, brief du projet, budget, échéance, page d’origine, messages, ainsi que les plans, photos ou références importés.",
     purposeAndBasis:
-      "Answer inquiries, prepare an estimate, assess source material, and follow up on requested services. The basis is steps at your request before a contract and our legitimate interest in managing genuine inquiries.",
+      "Répondre aux demandes, préparer un devis, évaluer les documents sources et donner suite aux services demandés. La base est l’exécution de mesures précontractuelles prises à votre demande et notre intérêt légitime à gérer les demandes sérieuses.",
     recipients:
-      "Our team, hosting and storage providers, Resend, Bitrix24, Cloudmersive for file scanning, and professional advisers where needed.",
+      "Notre équipe, les prestataires d’hébergement et de stockage, Resend, Bitrix24, Cloudmersive pour l’analyse des fichiers, et des conseillers professionnels si nécessaire.",
     retention:
-      "Until the inquiry is resolved and afterwards for a period reasonably needed for follow-up, record keeping, and possible claims. Unused draft estimates expire after 30 days.",
+      "Jusqu’à la résolution de la demande, puis pendant une durée raisonnablement nécessaire au suivi, à la tenue des dossiers et aux éventuelles réclamations. Les devis provisoires non utilisés expirent après 30 jours.",
   },
   {
-    activity: "Accounts and authentication",
-    data: "Name, email, phone, password hash, authentication tokens, Google account identifiers when Google sign-in is used, account activity, and portal preferences.",
+    activity: "Comptes et authentification",
+    data: "Nom, e-mail, téléphone, empreinte du mot de passe, jetons d’authentification, identifiants de compte Google lorsque la connexion Google est utilisée, activité du compte et préférences de l’espace client.",
     purposeAndBasis:
-      "Create and operate the account, authenticate you, provide portal access, and keep an audit trail. The basis is contract performance and our legitimate interests in account security and accountability.",
+      "Créer et gérer le compte, vous authentifier, fournir l’accès à l’espace client et conserver une piste d’audit. La base est l’exécution du contrat et nos intérêts légitimes en matière de sécurité des comptes et de traçabilité.",
     recipients:
-      "Our managed database and hosting providers, Auth.js infrastructure, Google when you choose Google sign-in, Resend, and authorised administrators.",
+      "Nos prestataires de base de données gérée et d’hébergement, l’infrastructure Auth.js, Google lorsque vous choisissez la connexion Google, Resend et les administrateurs autorisés.",
     retention:
-      "For the life of the account. After a valid deletion request, data is deleted or anonymised within 30 days unless it must be retained for accounting, security, dispute, or legal reasons.",
+      "Pendant la durée de vie du compte. Après une demande de suppression valable, les données sont supprimées ou anonymisées sous 30 jours, sauf si elles doivent être conservées pour des raisons comptables, de sécurité, de litige ou juridiques.",
   },
   {
-    activity: "Orders, billing, payments, and delivery",
-    data: "Buyer and billing details, tax or VAT identifiers, order contents, prices, payment status, PayPal order and capture references, payer email and country returned by PayPal, invoices, messages, revisions, and deliverables.",
+    activity: "Commandes, facturation, paiements et livraison",
+    data: "Coordonnées de l’acheteur et de facturation, identifiants fiscaux ou de TVA, contenu des commandes, prix, statut du paiement, références de commande et de capture PayPal, e-mail et pays du payeur communiqués par PayPal, factures, messages, révisions et livrables.",
     purposeAndBasis:
-      "Form and perform the contract, collect payment, issue invoices, deliver work, manage revisions and refunds, and comply with accounting, tax, sanctions, and legal duties.",
+      "Former et exécuter le contrat, encaisser le paiement, émettre les factures, livrer le travail, gérer les révisions et les remboursements, et respecter les obligations comptables, fiscales, de sanctions et légales.",
     recipients:
-      "Our team, PayPal, Resend, Bitrix24, Plutos when invoice sync is enabled, accountants, auditors, banks, advisers, and competent authorities where required.",
+      "Notre équipe, PayPal, Resend, Bitrix24, Plutos lorsque la synchronisation des factures est activée, les comptables, auditeurs, banques, conseillers et autorités compétentes lorsque cela est requis.",
     retention:
-      "Operational records are kept for the contract and support period. Invoices, payment evidence, and related accounting records may be kept for up to 10 years, or longer where applicable law or a live claim requires it.",
+      "Les données opérationnelles sont conservées pendant la durée du contrat et de l’assistance. Les factures, preuves de paiement et pièces comptables associées peuvent être conservées jusqu’à 10 ans, ou plus longtemps lorsque la loi applicable ou une réclamation en cours l’exige.",
   },
   {
-    activity: "Project files and AI Studio",
-    data: "Plans, photographs, images, prompts, masks, reference images, configuration choices, generated outputs, file metadata, and provider response identifiers.",
+    activity: "Fichiers de projet et AI Studio",
+    data: "Plans, photographies, images, prompts, masques, images de référence, choix de configuration, résultats générés, métadonnées de fichiers et identifiants de réponse des prestataires.",
     purposeAndBasis:
-      "Create the requested render or image edit, scan files for malware, provide download history, support revisions, and troubleshoot failed generations. The basis is contract performance and our legitimate interests in service security and quality.",
+      "Créer le rendu ou la retouche d’image demandés, analyser les fichiers contre les logiciels malveillants, fournir l’historique de téléchargement, prendre en charge les révisions et diagnostiquer les générations en échec. La base est l’exécution du contrat et nos intérêts légitimes en matière de sécurité et de qualité du service.",
     recipients:
-      "Supabase storage, Cloudmersive, OpenAI and Google Gemini depending on the AI engine selected, and authorised production staff.",
+      "Le stockage Supabase, Cloudmersive, OpenAI et Google Gemini selon le moteur d’IA sélectionné, et le personnel de production autorisé.",
     retention:
-      "AI Studio input and output files are available for 30 days. Other project files are kept for delivery, agreed revisions, support, and any necessary legal record, then deleted or archived under access controls.",
+      "Les fichiers d’entrée et de sortie d’AI Studio sont disponibles pendant 30 jours. Les autres fichiers de projet sont conservés pour la livraison, les révisions convenues, l’assistance et toute conservation légale nécessaire, puis supprimés ou archivés sous contrôle d’accès.",
   },
   {
-    activity: "Analytics, advertising measurement, and session replay",
-    data: "Page views, clicks, navigation, device information, account or pseudonymous identifiers, campaign data, and masked interaction recordings. Advertising click identifiers may be processed when the corresponding tool is enabled.",
+    activity: "Analyse d’audience, mesure publicitaire et relecture de session",
+    data: "Pages vues, clics, navigation, informations sur l’appareil, identifiants de compte ou pseudonymes, données de campagne et enregistrements d’interactions masqués. Des identifiants de clic publicitaires peuvent être traités lorsque l’outil correspondant est activé.",
     purposeAndBasis:
-      "Measure and improve the service, diagnose difficult flows, attribute campaigns, and measure advertising. Optional browser analytics, advertising, and replay use consent where required. Limited server-side service events and aggregate, cookieless performance measurements may rely on legitimate interests where permitted.",
+      "Mesurer et améliorer le service, diagnostiquer les parcours difficiles, attribuer les campagnes et mesurer la publicité. Les outils facultatifs d’analyse navigateur, de publicité et de relecture reposent sur le consentement lorsque celui-ci est requis. Des événements de service limités côté serveur et des mesures de performance agrégées, sans cookies, peuvent reposer sur l’intérêt légitime lorsque cela est permis.",
     recipients:
-      "Vercel Web Analytics and Speed Insights, PostHog, Google Analytics and Tag Manager, Sentry, and advertising providers enabled in our tag configuration.",
+      "Vercel Web Analytics et Speed Insights, PostHog, Google Analytics et Tag Manager, Sentry, ainsi que les prestataires publicitaires activés dans notre configuration de balises.",
     retention:
-      "According to the consent category and provider configuration described in the cookie policy. You can withdraw optional consent at any time.",
+      "Selon la catégorie de consentement et la configuration des prestataires décrites dans la politique relative aux cookies. Vous pouvez retirer votre consentement facultatif à tout moment.",
   },
   {
-    activity: "Support, complaints, withdrawal, and privacy requests",
-    data: "Contact details, order number, request content, identity evidence where necessary, correspondence, timestamps, and the outcome of the request.",
+    activity:
+      "Assistance, réclamations, rétractation et demandes relatives à la vie privée",
+    data: "Coordonnées, numéro de commande, contenu de la demande, justificatifs d’identité si nécessaire, correspondance, horodatages et issue de la demande.",
     purposeAndBasis:
-      "Respond, verify the requester, keep evidence of the request and our response, and establish or defend legal claims. The basis is contract performance, legal obligations, and legitimate interests in accountable dispute handling.",
+      "Répondre, vérifier l’identité du demandeur, conserver la preuve de la demande et de notre réponse, et constater, exercer ou défendre des droits en justice. La base est l’exécution du contrat, les obligations légales et l’intérêt légitime à un traitement responsable des litiges.",
     recipients:
-      "Our authorised team, email and hosting providers, legal advisers, insurers, payment providers, and regulators or courts where required.",
+      "Notre équipe autorisée, les prestataires d’e-mail et d’hébergement, les conseillers juridiques, assureurs, prestataires de paiement, et les régulateurs ou tribunaux lorsque cela est requis.",
     retention:
-      "For the time needed to complete the request and for the applicable complaint or limitation period. Evidence of a contract withdrawal may be retained with the order record.",
+      "Pendant la durée nécessaire au traitement de la demande et pendant le délai de réclamation ou de prescription applicable. La preuve d’une rétractation peut être conservée avec le dossier de la commande.",
   },
 ];
 
@@ -101,44 +102,49 @@ export default function PrivacyPolicyPage() {
   return (
     <>
       <article className="mx-auto w-full max-w-4xl px-6 pb-24 pt-20 md:pt-28">
-        <SectionKicker>Legal</SectionKicker>
+        <SectionKicker>Légal</SectionKicker>
         <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">
-          Privacy policy
+          Politique de confidentialité
         </h1>
         <p className="mt-6 text-base text-foreground/60">
-          Last updated: {formatDate(LAST_UPDATED)}
+          Dernière mise à jour : {formatDate(LAST_UPDATED)}
         </p>
         <p className="mt-6 max-w-3xl text-base leading-relaxed text-foreground/75">
-          This policy explains how {IMPRINT.shortName}, the operator of{" "}
-          {SITE.name}, handles personal data when you visit the site, contact
-          us, request an estimate, place an order, use the portal or AI Studio,
-          or exercise a legal right. It is intended for an international
-          audience and applies alongside any mandatory privacy law in your
-          location.
+          La présente politique explique comment {IMPRINT.shortName},
+          exploitant de {SITE.name}, traite les données personnelles lorsque
+          vous visitez le site, nous contactez, demandez un devis, passez
+          commande, utilisez l’espace client ou AI Studio, ou exercez un droit
+          légal. Elle s’adresse à un public international et s’applique
+          parallèlement à toute loi impérative sur la protection de la vie
+          privée en vigueur là où vous vous trouvez.
         </p>
 
-        <Section title="1. Who is responsible for your data">
+        <Section title="1. Qui est responsable de vos données">
           <p>
-            The controller is {IMPRINT.legalName}, {IMPRINT.street},{" "}
-            {IMPRINT.postalCode} {IMPRINT.city}, {IMPRINT.country}. Company
-            number: {IMPRINT.registryNumber}. Tax ID: {IMPRINT.taxId}.
+            Le responsable du traitement est {IMPRINT.legalName},{" "}
+            {IMPRINT.street}, {IMPRINT.postalCode} {IMPRINT.city},{" "}
+            {IMPRINT.country}. Numéro d’immatriculation :{" "}
+            {IMPRINT.registryNumber}. Identifiant fiscal : {IMPRINT.taxId}.
           </p>
           <p>
-            Privacy questions and requests can be sent to{" "}
+            Les questions et demandes relatives à la vie privée peuvent être
+            adressées à{" "}
             <a
               href={`mailto:${IMPRINT.privacyEmail}`}
               className="text-foreground underline-offset-4 hover:underline"
             >
               {IMPRINT.privacyEmail}
             </a>
-            . This is our privacy contact; we have not appointed a data
-            protection officer because our present processing does not require
-            one.
+            . Il s’agit de notre point de contact vie privée ; nous n’avons
+            pas désigné de délégué à la protection des données, car nos
+            traitements actuels ne l’exigent pas.
           </p>
+          {/* TODO(legal-review): IMPRINT.euRepresentative is currently null. For a controller established outside the EU that targets people in France, an article 27 GDPR representative in the Union is likely mandatory — a lawyer should verify this, and the DPO assessment above, under RGPD/CNIL practice. */}
           {euRepresentative && (
             <p>
-              Our representative in the European Union for GDPR article 27 is{" "}
-              {euRepresentative.name}, {euRepresentative.address}. Contact:{" "}
+              Notre représentant dans l’Union européenne au titre de
+              l’article 27 du RGPD est {euRepresentative.name},{" "}
+              {euRepresentative.address}. Contact :{" "}
               <a
                 href={`mailto:${euRepresentative.email}`}
                 className="text-foreground underline-offset-4 hover:underline"
@@ -150,27 +156,28 @@ export default function PrivacyPolicyPage() {
           )}
         </Section>
 
-        <Section title="2. Where data comes from">
-          <p>We receive personal data:</p>
+        <Section title="2. D’où proviennent les données">
+          <p>Nous recevons des données personnelles :</p>
           <ul className="list-disc space-y-2 pl-5">
-            <li>directly from you in forms, checkout, the portal, uploads, email, and support messages;</li>
-            <li>automatically from your browser, device, and our security and analytics tools;</li>
-            <li>from services you choose, including Google sign-in and PayPal;</li>
-            <li>from a customer, colleague, architect, agent, or company that includes you in a project; and</li>
-            <li>from public or official sources used to verify company, tax, VAT, sanctions, or payment information.</li>
+            <li>directement de vous, via les formulaires, le paiement, l’espace client, les fichiers importés, les e-mails et les messages d’assistance ;</li>
+            <li>automatiquement depuis votre navigateur, votre appareil et nos outils de sécurité et d’analyse ;</li>
+            <li>des services que vous choisissez, notamment la connexion Google et PayPal ;</li>
+            <li>d’un client, d’un collègue, d’un architecte, d’un agent ou d’une société qui vous associe à un projet ; et</li>
+            <li>de sources publiques ou officielles utilisées pour vérifier des informations de société, fiscales, de TVA, de sanctions ou de paiement.</li>
           </ul>
           <p>
-            If we receive your data from someone else, we provide this notice
-            at the first appropriate contact or within the period required by
-            applicable law, unless an exception applies.
+            Si nous recevons vos données d’un tiers, nous fournissons la
+            présente information lors du premier contact approprié ou dans le
+            délai requis par la loi applicable, sauf exception.
           </p>
         </Section>
 
-        <Section title="3. What we process, why, and for how long">
+        <Section title="3. Ce que nous traitons, pourquoi et pendant combien de temps">
           <p>
-            The entries below connect each activity with its data, purpose,
-            legal basis, recipients, and retention rule. More than one legal
-            basis can apply when an activity serves distinct purposes.
+            Les fiches ci-dessous relient chaque activité à ses données, sa
+            finalité, sa base légale, ses destinataires et sa règle de
+            conservation. Plusieurs bases légales peuvent s’appliquer
+            lorsqu’une activité sert des finalités distinctes.
           </p>
           <div className="mt-6 space-y-5">
             {PROCESSING_ACTIVITIES.map((entry) => (
@@ -179,204 +186,238 @@ export default function PrivacyPolicyPage() {
           </div>
         </Section>
 
-        <Section title="4. When information is required">
+        <Section title="4. Quand les informations sont requises">
           <p>
-            Identity, contact, billing, order, payment, and usable project
-            information marked as required are necessary to enter into or
-            perform a contract. If you do not provide them, we may be unable to
-            prepare an estimate, accept payment, create an invoice, or deliver
-            the service. Optional fields, optional cookies, and marketing
-            choices can be refused without losing access to the core service.
+            Les informations d’identité, de contact, de facturation, de
+            commande, de paiement et de projet marquées comme requises sont
+            nécessaires à la conclusion ou à l’exécution d’un contrat. Si vous
+            ne les fournissez pas, nous pouvons être dans l’impossibilité de
+            préparer un devis, d’accepter un paiement, d’émettre une facture ou
+            de fournir le service. Les champs facultatifs, les cookies
+            facultatifs et les choix marketing peuvent être refusés sans perdre
+            l’accès au service principal.
           </p>
         </Section>
 
-        <Section title="5. Project files and information about other people">
+        <Section title="5. Fichiers de projet et informations concernant d’autres personnes">
           <p>
-            Plans, photographs, property files, and correspondence can contain
-            personal data about occupants, owners, employees, or other people.
-            Please share only what the project needs, remove unnecessary
-            personal details, and make sure you have authority to provide the
-            material. Unless it is essential and agreed with us first, do not
-            upload identity documents, financial credentials, medical data, or
-            other sensitive information.
+            Les plans, photographies, fichiers immobiliers et correspondances
+            peuvent contenir des données personnelles concernant des occupants,
+            propriétaires, salariés ou d’autres personnes. Ne partagez que ce
+            dont le projet a besoin, supprimez les détails personnels inutiles
+            et assurez-vous d’être autorisé à fournir les documents. Sauf
+            nécessité et accord préalable avec nous, n’importez pas de
+            documents d’identité, d’identifiants financiers, de données
+            médicales ni d’autres informations sensibles.
           </p>
           <p>
-            We do not use private customer project files to train our own
-            general-purpose AI models. When you choose an AI Studio engine, the
-            selected inputs and prompt are sent to that provider to produce the
-            requested result under the provider terms and business settings in
-            force for our account.
-          </p>
-        </Section>
-
-        <Section title="6. Sharing and independent controllers">
-          <p>
-            We disclose personal data only as needed for the purposes above: to
-            contracted service providers, authorised staff and production
-            partners, accountants and professional advisers, payment and
-            identity providers, and public authorities where law requires it.
-            Providers that process data for us must be bound by appropriate
-            confidentiality, security, and data-protection terms.
-          </p>
-          <p>
-            PayPal, Google sign-in, advertising networks, tax authorities, and
-            some professional advisers may act as independent controllers for
-            their own purposes. Their privacy notices apply to that separate
-            processing. If the business is reorganised, financed, sold, or
-            merged, relevant data may be disclosed under confidentiality and
-            transferred with the affected business, subject to applicable law.
+            Nous n’utilisons pas les fichiers de projet privés de nos clients
+            pour entraîner nos propres modèles d’IA à usage général. Lorsque
+            vous choisissez un moteur AI Studio, les entrées sélectionnées et
+            le prompt sont transmis à ce prestataire pour produire le résultat
+            demandé, dans le cadre des conditions et des paramètres
+            professionnels en vigueur pour notre compte.
           </p>
         </Section>
 
-        <Section title="7. International data transfers">
+        <Section title="6. Partage et responsables de traitement indépendants">
           <p>
-            We are established in Serbia and use providers in Serbia, the
-            European Economic Area, the United Kingdom, the United States, and
-            other countries. Your data may therefore be processed outside your
-            country. Serbia is not currently covered by an EU adequacy decision.
+            Nous ne divulguons les données personnelles que dans la mesure
+            nécessaire aux finalités ci-dessus : aux prestataires de services
+            sous contrat, au personnel autorisé et aux partenaires de
+            production, aux comptables et conseillers professionnels, aux
+            prestataires de paiement et d’identité, et aux autorités publiques
+            lorsque la loi l’exige. Les prestataires qui traitent des données
+            pour notre compte doivent être liés par des engagements appropriés
+            de confidentialité, de sécurité et de protection des données.
           </p>
           <p>
-            Where EEA, UK, Swiss, Serbian, or other transfer rules require a
-            mechanism, we use the mechanism appropriate to the transfer, such
-            as an adequacy decision, approved Standard Contractual Clauses,
-            contractual safeguards, and supplementary technical or
-            organisational measures. You can ask our privacy contact for
-            information about the safeguard relevant to your data.
+            PayPal, la connexion Google, les réseaux publicitaires, les
+            autorités fiscales et certains conseillers professionnels peuvent
+            agir en qualité de responsables de traitement indépendants pour
+            leurs propres finalités. Leurs politiques de confidentialité
+            s’appliquent à ces traitements distincts. En cas de
+            réorganisation, de financement, de cession ou de fusion de
+            l’entreprise, les données concernées peuvent être divulguées sous
+            confidentialité et transférées avec l’activité concernée, sous
+            réserve de la loi applicable.
           </p>
         </Section>
 
-        <Section title="8. Cookies and tracking choices">
+        <Section title="7. Transferts internationaux de données">
           <p>
-            Necessary storage supports sign-in, security, checkout, and your
-            privacy choices. Optional browser analytics, marketing measurement,
-            and session replay are disabled until the relevant consent is given
-            where consent is required. See the{" "}
+            Nous sommes établis en Serbie et faisons appel à des prestataires
+            en Serbie, dans l’Espace économique européen, au Royaume-Uni, aux
+            États-Unis et dans d’autres pays. Vos données peuvent donc être
+            traitées en dehors de votre pays. La Serbie ne fait actuellement
+            pas l’objet d’une décision d’adéquation de l’UE.
+          </p>
+          <p>
+            Lorsque les règles de transfert de l’EEE, du Royaume-Uni, de la
+            Suisse, de la Serbie ou d’autres pays exigent un mécanisme, nous
+            utilisons le mécanisme adapté au transfert, tel qu’une décision
+            d’adéquation, des clauses contractuelles types approuvées, des
+            garanties contractuelles et des mesures techniques ou
+            organisationnelles supplémentaires. Vous pouvez demander à notre
+            contact vie privée des informations sur la garantie applicable à
+            vos données.
+          </p>
+        </Section>
+
+        <Section title="8. Cookies et choix en matière de suivi">
+          <p>
+            Le stockage nécessaire prend en charge la connexion, la sécurité,
+            le paiement et vos choix de confidentialité. Les outils facultatifs
+            d’analyse navigateur, de mesure marketing et de relecture de
+            session sont désactivés tant que le consentement correspondant n’a
+            pas été donné, lorsque celui-ci est requis. Consultez la{" "}
             <Link
               href="/legal/cookies"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              cookie policy
+              politique relative aux cookies
             </Link>{" "}
-            or open <ConsentSettingsLink className="underline-offset-4 hover:underline" />.
+            ou ouvrez <ConsentSettingsLink className="underline-offset-4 hover:underline" />.
           </p>
           <p>
-            We do not sell personal information for money. Optional disclosures
-            to advertising providers can be treated as “sharing”, targeted
-            advertising, or cross-context behavioural advertising under some
-            US privacy laws. You can opt out by keeping the Marketing category
-            off or withdrawing it in cookie settings.
-          </p>
-        </Section>
-
-        <Section title="9. Security">
-          <p>
-            We use access controls, role-based permissions, encrypted
-            transport, password hashing, malware scanning, logging, backups,
-            supplier controls, and incident procedures designed to protect data.
-            Our management systems include ISO/IEC 27001:2022 certification.
-            No online system is risk-free, so please use a strong password and
-            contact us promptly if you suspect unauthorised account access.
+            Nous ne vendons pas d’informations personnelles contre
+            rémunération. Les divulgations facultatives à des prestataires
+            publicitaires peuvent être qualifiées de « partage », de publicité
+            ciblée ou de publicité comportementale intercontextes au sens de
+            certaines lois américaines sur la vie privée. Vous pouvez vous y
+            opposer en laissant la catégorie Marketing désactivée ou en la
+            retirant dans les paramètres des cookies.
           </p>
         </Section>
 
-        <Section title="10. Your privacy rights">
+        <Section title="9. Sécurité">
           <p>
-            Depending on your location and the processing, you may have rights
-            to know or access data, receive a copy, correct it, delete it,
-            restrict or object to processing, portability, withdraw consent,
-            opt out of sale, sharing, or targeted advertising, limit certain
-            sensitive-data uses, appeal a refusal, and complain to a regulator.
-            These rights are not absolute; for example, we can retain invoice
-            data that law requires us to keep.
+            Nous utilisons des contrôles d’accès, des permissions par rôle, le
+            chiffrement des échanges, le hachage des mots de passe, l’analyse
+            antivirus, la journalisation, des sauvegardes, des contrôles des
+            fournisseurs et des procédures d’incident conçus pour protéger les
+            données. Nos systèmes de management sont notamment certifiés
+            ISO/IEC 27001:2022. Aucun système en ligne n’est sans risque ;
+            utilisez donc un mot de passe robuste et contactez-nous rapidement
+            si vous soupçonnez un accès non autorisé à votre compte.
+          </p>
+        </Section>
+
+        <Section title="10. Vos droits en matière de vie privée">
+          <p>
+            Selon votre localisation et le traitement concerné, vous pouvez
+            disposer du droit de connaître ou de consulter les données, d’en
+            recevoir une copie, de les rectifier, de les supprimer, de limiter
+            le traitement ou de vous y opposer, du droit à la portabilité, du
+            droit de retirer votre consentement, de refuser la vente, le
+            partage ou la publicité ciblée, de limiter certains usages de
+            données sensibles, de faire appel d’un refus et de déposer une
+            réclamation auprès d’un régulateur. Ces droits ne sont pas
+            absolus ; nous pouvons par exemple conserver les données de
+            facturation que la loi nous impose de garder.
           </p>
           <p>
-            Email{" "}
+            Écrivez à{" "}
             <a
               href={`mailto:${IMPRINT.privacyEmail}?subject=Privacy%20request`}
               className="text-foreground underline-offset-4 hover:underline"
             >
               {IMPRINT.privacyEmail}
             </a>{" "}
-            with “Privacy request” in the subject. Account holders can also
-            export account data or request deletion from the portal profile. We
-            may verify your identity, authority, and jurisdiction before acting.
-            You may use an authorised agent where the law permits it. We do not
-            discriminate against anyone for exercising a privacy right.
+            en indiquant « Privacy request » en objet. Les titulaires d’un
+            compte peuvent également exporter les données du compte ou demander
+            leur suppression depuis le profil de l’espace client. Nous pouvons
+            vérifier votre identité, votre habilitation et votre juridiction
+            avant d’agir. Vous pouvez recourir à un mandataire autorisé lorsque
+            la loi le permet. Nous n’exerçons aucune discrimination à
+            l’encontre de quiconque exerce un droit relatif à la vie privée.
           </p>
         </Section>
 
-        <Section title="11. Regional information">
+        <Section title="11. Informations régionales">
+          {/* TODO(legal-review): There is no France-specific entry in this regional list (the English build has none). A lawyer should verify whether the CNIL should be expressly named as the complaint authority for users in France, alongside or instead of the generic EEA entry. */}
           <ul className="list-disc space-y-3 pl-5">
             <li>
-              <strong>Serbia:</strong> rights arise under the Serbian Law on
-              Personal Data Protection. You may complain to the{" "}
+              <strong>Serbie :</strong> les droits découlent de la loi serbe
+              sur la protection des données personnelles. Vous pouvez adresser
+              une réclamation au{" "}
               <ExternalLink href="https://www.poverenik.rs/en/">
-                Commissioner for Information of Public Importance and Personal
-                Data Protection
+                Commissaire à l’information d’importance publique et à la
+                protection des données personnelles
               </ExternalLink>
               .
             </li>
             <li>
-              <strong>EEA:</strong> the GDPR rights described above apply when
-              the GDPR covers our processing. You may complain to the authority
-              where you live, work, or believe an infringement occurred. The{" "}
+              <strong>EEE :</strong> les droits du RGPD décrits ci-dessus
+              s’appliquent lorsque le RGPD couvre nos traitements. Vous pouvez
+              adresser une réclamation à l’autorité du lieu où vous vivez,
+              travaillez ou estimez qu’une violation s’est produite. Le{" "}
               <ExternalLink href="https://www.edpb.europa.eu/about-edpb/about-edpb/members_en">
-                EDPB lists national supervisory authorities
+                CEPD publie la liste des autorités de contrôle nationales
               </ExternalLink>
               .
             </li>
             <li>
-              <strong>United Kingdom:</strong> UK GDPR rights apply when UK law
-              covers our processing. Complaints can be made to the{" "}
-              <ExternalLink href="https://ico.org.uk/make-a-complaint/data-protection-complaints/">
-                Information Commissioner&apos;s Office
+              <strong>Royaume-Uni :</strong> les droits du RGPD britannique
+              s’appliquent lorsque le droit du Royaume-Uni couvre nos
+              traitements. Les réclamations peuvent être adressées à
+              l’<ExternalLink href="https://ico.org.uk/make-a-complaint/data-protection-complaints/">
+                Information Commissioner’s Office
               </ExternalLink>
               .
             </li>
             <li>
-              <strong>United States:</strong> residents of states with
-              comprehensive privacy laws may make the access, correction,
-              deletion, portability, opt-out, limitation, or appeal requests
-              provided by their law. Our privacy contact is the designated
-              request method. We do not knowingly sell or share data of people
-              under 16.
+              <strong>États-Unis :</strong> les résidents des États dotés de
+              lois générales sur la vie privée peuvent formuler les demandes
+              d’accès, de rectification, de suppression, de portabilité,
+              d’opposition, de limitation ou d’appel prévues par leur loi.
+              Notre contact vie privée est le canal de demande désigné. Nous ne
+              vendons ni ne partageons sciemment les données de personnes de
+              moins de 16 ans.
             </li>
             <li>
-              <strong>Other regions:</strong> if privacy law in your country
-              gives you an additional right, contact us and identify your
-              country. We will apply the right where that law governs our
-              processing.
+              <strong>Autres régions :</strong> si la loi sur la vie privée de
+              votre pays vous confère un droit supplémentaire, contactez-nous
+              en précisant votre pays. Nous appliquerons ce droit lorsque cette
+              loi régit nos traitements.
             </li>
           </ul>
         </Section>
 
-        <Section title="12. Children">
+        <Section title="12. Enfants">
+          {/* TODO(legal-review): The age threshold of 16 is carried over from the English build. In France the age of digital consent under the RGPD is 15 (loi Informatique et Libertés, art. 45) — a lawyer should verify whether the references to "under 16" here and in section 11 need adjusting for France. */}
           <p>
-            The service is intended for adults and business users, not children.
-            We do not knowingly create accounts for or collect data directly
-            from anyone under 16. A parent or guardian who believes a child has
-            provided data should contact us so we can investigate and delete it
-            where appropriate.
+            Le service est destiné aux adultes et aux utilisateurs
+            professionnels, non aux enfants. Nous ne créons pas sciemment de
+            comptes pour des personnes de moins de 16 ans et ne collectons pas
+            sciemment de données directement auprès d’elles. Un parent ou
+            tuteur qui pense qu’un enfant a fourni des données doit nous
+            contacter afin que nous puissions vérifier la situation et
+            supprimer les données le cas échéant.
           </p>
         </Section>
 
-        <Section title="13. Automated processing">
+        <Section title="13. Traitements automatisés">
           <p>
-            AI tools generate images from the instructions and files you choose,
-            and security tools can flag suspicious requests or files. We do not
-            make decisions based solely on automated processing that produce
-            legal or similarly significant effects for you. PayPal and other
-            independent providers may make their own fraud, identity, or payment
-            decisions under their notices.
+            Les outils d’IA génèrent des images à partir des instructions et
+            des fichiers que vous choisissez, et les outils de sécurité peuvent
+            signaler des requêtes ou fichiers suspects. Nous ne prenons pas de
+            décisions fondées exclusivement sur un traitement automatisé
+            produisant des effets juridiques ou des effets similaires
+            significatifs à votre égard. PayPal et d’autres prestataires
+            indépendants peuvent prendre leurs propres décisions en matière de
+            fraude, d’identité ou de paiement conformément à leurs politiques.
           </p>
         </Section>
 
-        <Section title="14. Changes to this policy">
+        <Section title="14. Modifications de la présente politique">
           <p>
-            We update this policy when our services, providers, or legal duties
-            change. The date at the top shows the latest revision. If a change
-            materially affects how we use existing data, we will provide a
-            prominent notice or contact affected users where required.
+            Nous mettons à jour la présente politique lorsque nos services, nos
+            prestataires ou nos obligations légales évoluent. La date figurant
+            en haut de page indique la dernière révision. Si une modification
+            affecte substantiellement l’utilisation des données existantes,
+            nous publierons un avis bien visible ou contacterons les
+            utilisateurs concernés lorsque cela est requis.
           </p>
         </Section>
       </article>
@@ -390,13 +431,13 @@ function ProcessingCard({ entry }: { entry: ProcessingActivity }) {
     <section className="rounded-xl border border-border/60 bg-secondary/25 p-6">
       <h3 className="text-xl text-foreground">{entry.activity}</h3>
       <dl className="mt-5 grid gap-4 text-sm leading-relaxed sm:grid-cols-[150px_1fr]">
-        <dt className="font-semibold text-foreground/80">Data</dt>
+        <dt className="font-semibold text-foreground/80">Données</dt>
         <dd>{entry.data}</dd>
-        <dt className="font-semibold text-foreground/80">Purpose and basis</dt>
+        <dt className="font-semibold text-foreground/80">Finalité et base</dt>
         <dd>{entry.purposeAndBasis}</dd>
-        <dt className="font-semibold text-foreground/80">Recipients</dt>
+        <dt className="font-semibold text-foreground/80">Destinataires</dt>
         <dd>{entry.recipients}</dd>
-        <dt className="font-semibold text-foreground/80">Retention</dt>
+        <dt className="font-semibold text-foreground/80">Conservation</dt>
         <dd>{entry.retention}</dd>
       </dl>
     </section>
@@ -434,7 +475,7 @@ function ExternalLink({ href, children }: { href: string; children: React.ReactN
 }
 
 function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00Z`).toLocaleDateString("en-GB", {
+  return new Date(`${value}T00:00:00Z`).toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

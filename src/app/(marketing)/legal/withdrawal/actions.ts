@@ -71,7 +71,7 @@ export async function submitWithdrawalNotice(
   if (field(formData, "affirmation", 20) !== "withdraw") {
     return {
       status: "error",
-      message: "Review the notice and use the Confirm withdrawal button.",
+      message: "Relisez l’avis et utilisez le bouton « Confirmer la rétractation ».",
     };
   }
 
@@ -83,16 +83,16 @@ export async function submitWithdrawalNotice(
   const message = field(formData, "message", 1200);
 
   if (consumerName.length < 2) {
-    return { status: "error", message: "Enter the consumer's full name." };
+    return { status: "error", message: "Saisissez le nom complet du consommateur." };
   }
   if (!validEmail(consumerEmail)) {
-    return { status: "error", message: "Enter a valid email address." };
+    return { status: "error", message: "Saisissez une adresse e-mail valide." };
   }
   if (orderNumber.length < 3) {
-    return { status: "error", message: "Enter the order number or contract reference." };
+    return { status: "error", message: "Saisissez le numéro de commande ou la référence du contrat." };
   }
   if (!validContractDate(contractDate)) {
-    return { status: "error", message: "Enter a valid contract date." };
+    return { status: "error", message: "Saisissez une date de contrat valide." };
   }
 
   const receivedAt = new Date();
@@ -118,7 +118,7 @@ export async function submitWithdrawalNotice(
     return {
       status: "error",
       message:
-        "We could not record the online notice. Email info@elegantrender.com now and keep a copy of your sent message.",
+        "Nous n’avons pas pu enregistrer l’avis en ligne. Écrivez immédiatement à info@elegantrender.fr et conservez une copie de votre message envoyé.",
     };
   }
 

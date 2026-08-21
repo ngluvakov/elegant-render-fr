@@ -9,28 +9,28 @@ import {
 } from "@/lib/content/site";
 import { createPublicMetadata } from "@/lib/seo";
 
-const CERTIFICATES_DESCRIPTION = `${SITE.name} works under ISO 9001:2015, ISO/IEC 27001:2022, and ISO 50001:2018 standards certified by ${CERTIFIER.name}.`;
+const CERTIFICATES_DESCRIPTION = `${SITE.name} travaille selon les normes ISO 9001:2015, ISO/IEC 27001:2022 et ISO 50001:2018, certifiées par ${CERTIFIER.name}.`;
 
 const CERTIFICATE_COPY: Record<string, { domain: string; description: string }> = {
   "iso-9001": {
-    domain: "Quality management",
+    domain: "Management de la qualité",
     description:
-      "ISO 9001:2015 covers quality management for service delivery. It supports a consistent workflow from receiving project files to revision rounds and final render delivery.",
+      "La norme ISO 9001:2015 couvre le management de la qualité pour la fourniture de services. Elle soutient un flux de travail cohérent, de la réception des fichiers de projet aux cycles de révision et à la livraison des rendus finaux.",
   },
   "iso-27001": {
-    domain: "Information security",
+    domain: "Sécurité de l’information",
     description:
-      "ISO/IEC 27001:2022 covers information security management. It supports controlled access, incident handling, retention procedures, and secure treatment of customer files.",
+      "La norme ISO/IEC 27001:2022 couvre le management de la sécurité de l’information. Elle soutient le contrôle des accès, la gestion des incidents, les procédures de conservation et le traitement sécurisé des fichiers des clients.",
   },
   "iso-50001": {
-    domain: "Energy management",
+    domain: "Management de l’énergie",
     description:
-      "ISO 50001:2018 covers energy management. It supports measured, documented improvements in energy use across production and operations.",
+      "La norme ISO 50001:2018 couvre le management de l’énergie. Elle soutient des améliorations mesurées et documentées de la consommation d’énergie dans la production et les opérations.",
   },
 };
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Certificates and standards",
+  title: "Certificats et normes",
   description: CERTIFICATES_DESCRIPTION,
   path: "/legal/certificates",
 });
@@ -39,9 +39,9 @@ export default function CertificatesPage() {
   return (
     <>
       <article className="mx-auto w-full max-w-3xl px-6 pb-20 pt-20 md:pt-28">
-        <SectionKicker>Legal</SectionKicker>
+        <SectionKicker>Légal</SectionKicker>
         <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">
-          Certificates and standards
+          Certificats et normes
         </h1>
 
         <div className="mt-10 flex justify-center rounded-2xl border border-border/60 bg-card/60 p-6 md:p-10">
@@ -58,21 +58,22 @@ export default function CertificatesPage() {
 
         <div className="mt-10 space-y-6 text-base leading-relaxed text-foreground/75">
           <p>
-            {SITE.name} works under three international ISO standards certified
-            by <strong>{CERTIFIER.name}</strong>. They cover delivery quality,
-            information security, and energy management.
+            {SITE.name} travaille selon trois normes ISO internationales
+            certifiées par <strong>{CERTIFIER.name}</strong>. Elles couvrent la
+            qualité de la fourniture, la sécurité de l’information et le
+            management de l’énergie.
           </p>
           <p className="text-sm text-foreground/65">
-            The combined certificate uses ID{" "}
-            <strong className="text-foreground/85">9000025319</strong>. The
-            original document is available{" "}
+            Le certificat combiné porte l’identifiant{" "}
+            <strong className="text-foreground/85">9000025319</strong>. Le
+            document original est disponible{" "}
             <a
               href={CERTIFIER.badgeAsset.pdfSrc}
               target="_blank"
               rel="noreferrer"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              as a PDF
+              au format PDF
             </a>
             .
           </p>
@@ -97,14 +98,14 @@ export default function CertificatesPage() {
                 </p>
                 <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-foreground/60">
                   <span>
-                    Issued by:{" "}
+                    Délivré par :{" "}
                     <strong className="text-foreground/80">
                       {CERTIFIER.name}
                     </strong>
                   </span>
                   {cert.certNumber && (
                     <span className="text-foreground/55">
-                      Certificate number: {cert.certNumber}
+                      Numéro de certificat : {cert.certNumber}
                     </span>
                   )}
                   {cert.verifyUrl && (
@@ -114,7 +115,7 @@ export default function CertificatesPage() {
                       rel="noreferrer"
                       className="text-foreground underline-offset-4 hover:underline"
                     >
-                      Verify certificate
+                      Vérifier le certificat
                     </a>
                   )}
                 </div>
@@ -125,15 +126,16 @@ export default function CertificatesPage() {
 
         <div className="mt-16 rounded-xl border border-border/60 bg-secondary/30 p-8">
           <h2 className="text-2xl text-foreground">
-            About the certification body
+            À propos de l’organisme de certification
           </h2>
           <p className="mt-2 text-sm text-foreground/55">
-            International certification and audit body
+            Organisme international de certification et d’audit
           </p>
           <p className="mt-4 text-base leading-relaxed text-foreground/75">
-            {CERTIFIER.name} is an international certification body. Its
-            certificates rely on independent audits and ongoing management
-            systems rather than a one-time declaration.
+            {CERTIFIER.name} est un organisme de certification international.
+            Ses certificats reposent sur des audits indépendants et des
+            systèmes de management suivis dans la durée, et non sur une
+            déclaration ponctuelle.
           </p>
         </div>
       </article>

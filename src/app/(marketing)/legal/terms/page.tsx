@@ -8,8 +8,8 @@ import { createPublicMetadata } from "@/lib/seo";
 const LAST_UPDATED = "2026-08-05";
 
 export const metadata: Metadata = createPublicMetadata({
-  title: "Terms of service",
-  description: `Terms for ordering architectural renders, virtual staging, day-to-dusk, photomontage, AI Studio, and related digital services from ${SITE.name}.`,
+  title: "Conditions générales de vente (CGV)",
+  description: `Conditions applicables à la commande de rendus architecturaux, de home staging virtuel, de retouches jour au crépuscule, de photomontages, d’AI Studio et d’autres services numériques auprès de ${SITE.name}.`,
   path: "/legal/terms",
 });
 
@@ -17,34 +17,37 @@ export default function TermsPage() {
   return (
     <>
       <article className="mx-auto w-full max-w-3xl px-6 pb-24 pt-20 md:pt-28">
-        <SectionKicker>Legal</SectionKicker>
+        <SectionKicker>Légal</SectionKicker>
         <h1 className="mt-4 text-5xl leading-tight text-foreground md:text-6xl">
-          Terms of service
+          Conditions générales de vente
         </h1>
         <p className="mt-6 text-base text-foreground/60">
-          Last updated:{" "}
-          {new Date(LAST_UPDATED).toLocaleDateString("en-GB", {
+          Dernière mise à jour :{" "}
+          {new Date(LAST_UPDATED).toLocaleDateString("fr-FR", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
           })}
         </p>
         <p className="mt-6 text-base leading-relaxed text-foreground/75">
-          These terms apply when you use {SITE.name} or order digital services
-          from {IMPRINT.shortName}. They are written for international customers
-          and should be read together with our privacy, refunds, withdrawal,
-          complaints, delivery, and cookie notices.
+          Les présentes conditions s’appliquent lorsque vous utilisez{" "}
+          {SITE.name} ou commandez des services numériques auprès de{" "}
+          {IMPRINT.shortName}. Elles sont rédigées pour une clientèle
+          internationale et doivent être lues conjointement avec nos politiques
+          de confidentialité, de remboursement, de rétractation, de
+          réclamation, de livraison et de cookies.
         </p>
 
-        <Section title="1. Service provider">
+        <Section title="1. Prestataire">
           <p>
-            {SITE.name} is operated by {IMPRINT.legalName}, trading as{" "}
-            {IMPRINT.shortName}, registered at {IMPRINT.street},{" "}
-            {IMPRINT.postalCode} {IMPRINT.city}, Serbia. The company number is{" "}
-            {IMPRINT.registryNumber} and the tax ID is {IMPRINT.taxId}.
+            {SITE.name} est exploité par {IMPRINT.legalName}, exerçant sous le
+            nom commercial {IMPRINT.shortName}, dont le siège est situé{" "}
+            {IMPRINT.street}, {IMPRINT.postalCode} {IMPRINT.city}, Serbie. Le
+            numéro d’immatriculation est {IMPRINT.registryNumber} et
+            l’identifiant fiscal est {IMPRINT.taxId}.
           </p>
           <p>
-            You can contact us at{" "}
+            Vous pouvez nous contacter à l’adresse{" "}
             <a
               href={`mailto:${IMPRINT.email}`}
               className="text-foreground underline-offset-4 hover:underline"
@@ -57,243 +60,280 @@ export default function TermsPage() {
 
         <Section title="2. Services">
           <p>
-            We create bespoke digital deliverables, including interior and
-            exterior renders, 360 virtual tours, architectural animations, 2D
-            and 3D floor plans, site plans, virtual staging, virtual renovation,
-            day-to-dusk edits, photomontage, item removal, and AI Studio image
-            processing.
+            Nous créons des livrables numériques sur mesure, notamment des
+            rendus d’intérieur et d’extérieur, des visites virtuelles 360°, des
+            animations architecturales, des plans 2D et 3D, des plans de masse,
+            du home staging virtuel, de la rénovation virtuelle, des retouches
+            jour au crépuscule, des photomontages, de la suppression d’objets
+            et du traitement d’images AI Studio.
           </p>
           <p>
-            Each order is based on the selected service, the details you submit,
-            the files you upload, and any written instructions confirmed in the
-            checkout, portal, or email conversation.
-          </p>
-        </Section>
-
-        <Section title="3. Ordering and account access">
-          <p>
-            You place an order through the checkout or through a manual estimate
-            that we confirm in writing. We may create or use a portal account so
-            you can upload files, follow progress, request revision rounds, and
-            download deliverables.
-          </p>
-          <p>
-            You are responsible for providing accurate contact, billing, and
-            project information. If files, dimensions, access details, or
-            references are missing, deadlines can move until the missing
-            information is supplied.
-          </p>
-          <p>
-            You must be at least 18 years old and legally able to enter into the
-            contract, or place the order with the authority of the person or
-            organisation you represent. Keep account credentials and one-time
-            access links confidential and tell us promptly about suspected
-            unauthorised access.
+            Chaque commande repose sur le service sélectionné, les informations
+            que vous soumettez, les fichiers que vous importez et toute
+            instruction écrite confirmée lors du paiement, dans l’espace client
+            ou par échange d’e-mails.
           </p>
         </Section>
 
-        <Section title="4. Prices and payment">
+        <Section title="3. Commande et accès au compte">
           <p>
-            Public prices are displayed for guidance and may be shown in the
-            visitor&apos;s local currency. Invoices are issued in EUR unless a
-            different written arrangement is agreed. PayPal may show and process
-            the transaction in the currency presented at checkout.
+            Vous passez commande via le processus de paiement ou via un devis
+            établi manuellement que nous confirmons par écrit. Nous pouvons
+            créer ou utiliser un compte de l’espace client afin que vous
+            puissiez importer des fichiers, suivre l’avancement, demander des
+            cycles de révision et télécharger les livrables.
           </p>
           <p>
-            Payment is due before production starts unless we agree otherwise in
-            writing. PayPal payments are subject to PayPal&apos;s own terms, fraud
-            checks, funding-source rules, and processing status.
-          </p>
-        </Section>
-
-        <Section title="5. Customer materials and rights">
-          <p>
-            You confirm that you have the right to provide all plans, photos,
-            models, references, logos, text, and other materials you upload or
-            send to us. You remain responsible for third-party rights in those
-            materials.
+            Vous êtes responsable de l’exactitude des informations de contact,
+            de facturation et de projet fournies. Si des fichiers, dimensions,
+            informations d’accès ou références manquent, les délais peuvent
+            être décalés jusqu’à ce que les informations manquantes soient
+            fournies.
           </p>
           <p>
-            You grant us the limited rights needed to review, process, store,
-            transform, and deliver the materials for your project and related
-            support. We do not claim ownership of your original files.
+            Vous devez être âgé d’au moins 18 ans et juridiquement capable de
+            conclure le contrat, ou passer la commande avec l’autorisation de
+            la personne ou de l’organisation que vous représentez. Gardez
+            confidentiels vos identifiants de compte et vos liens d’accès à
+            usage unique, et signalez-nous rapidement tout soupçon d’accès non
+            autorisé.
           </p>
         </Section>
 
-        <Section title="6. Delivery and revision rounds">
+        <Section title="4. Prix et paiement">
           <p>
-            Delivery is digital only. Typical timelines are listed on service
-            pages or confirmed in your estimate. Timelines begin when payment is
-            complete and the project brief is usable.
+            Les prix publics sont affichés à titre indicatif et peuvent être
+            présentés dans la devise locale du visiteur. Les factures sont
+            émises en EUR, sauf accord écrit différent. PayPal peut afficher et
+            traiter la transaction dans la devise présentée au moment du
+            paiement.
           </p>
           <p>
-            Included revision rounds cover reasonable adjustments within the
-            agreed scope. New rooms, new viewpoints, new design directions,
-            missing source material, or a different service may require a new
-            estimate.
+            Le paiement est exigible avant le début de la production, sauf
+            accord écrit contraire. Les paiements PayPal sont soumis aux
+            propres conditions de PayPal, à ses contrôles antifraude, à ses
+            règles relatives aux sources de financement et à son statut de
+            traitement.
+          </p>
+        </Section>
+
+        <Section title="5. Documents du client et droits">
+          <p>
+            Vous confirmez que vous disposez du droit de fournir l’ensemble des
+            plans, photos, modèles, références, logos, textes et autres
+            documents que vous importez ou nous envoyez. Vous restez
+            responsable des droits des tiers sur ces documents.
           </p>
           <p>
-            See the{" "}
+            Vous nous accordez les droits limités nécessaires pour examiner,
+            traiter, stocker, transformer et livrer les documents dans le cadre
+            de votre projet et de l’assistance associée. Nous ne revendiquons
+            aucun droit de propriété sur vos fichiers d’origine.
+          </p>
+        </Section>
+
+        <Section title="6. Livraison et cycles de révision">
+          <p>
+            La livraison est exclusivement numérique. Les délais habituels sont
+            indiqués sur les pages de services ou confirmés dans votre devis.
+            Les délais courent à compter du paiement complet et de la réception
+            d’un brief exploitable.
+          </p>
+          <p>
+            Les cycles de révision inclus couvrent des ajustements raisonnables
+            dans le périmètre convenu. De nouvelles pièces, de nouveaux points
+            de vue, de nouvelles directions créatives, des documents sources
+            manquants ou un service différent peuvent nécessiter un nouveau
+            devis.
+          </p>
+          <p>
+            Consultez la{" "}
             <Link
               href="/legal/delivery"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              delivery notice
+              politique de livraison
             </Link>{" "}
-            for more detail.
+            pour plus de détails.
           </p>
         </Section>
 
-        <Section title="7. Withdrawal right for consumers">
+        <Section title="7. Droit de rétractation des consommateurs">
+          {/* TODO(legal-review): This clause mirrors the EU Consumer Rights Directive wording from the English build. A lawyer should verify it against the French transposition in the Code de la consommation (art. L221-18 ff., L221-25, L221-28 1° and 13°) and adjust the mandatory pre-contractual information wording if French law requires different or additional statements. */}
           <p>
-            EU and EEA consumers generally have a 14-day right of withdrawal
-            for eligible distance service contracts. If you expressly ask us to
-            start during that period and later withdraw before completion, a
-            proportionate amount can remain payable where the legal conditions
-            are met. For services, the right is lost after full performance only
-            when the required prior express consent and acknowledgement were
-            given. For digital content, different rules can cause the right to
-            be lost when supply begins, but only after the required express
-            consent, acknowledgement, and durable-medium confirmation.
+            Les consommateurs de l’UE et de l’EEE disposent en règle générale
+            d’un droit de rétractation de 14 jours pour les contrats de service
+            à distance éligibles. Si vous nous demandez expressément de
+            commencer pendant cette période puis vous rétractez avant la
+            complète exécution, un montant proportionnel peut rester dû lorsque
+            les conditions légales sont réunies. Pour les services, le droit
+            n’est perdu après la pleine exécution que si le consentement exprès
+            préalable et la reconnaissance requis ont été donnés. Pour le
+            contenu numérique, des règles différentes peuvent entraîner la
+            perte du droit dès le début de la fourniture, mais uniquement après
+            le consentement exprès, la reconnaissance et la confirmation sur un
+            support durable exigés par la loi.
           </p>
           <p>
-            The detailed notice, model notice, and online withdrawal function
-            are available on the{" "}
+            La notice détaillée, le modèle d’avis et la fonction de
+            rétractation en ligne sont disponibles sur la{" "}
             <Link
               href="/legal/withdrawal#online-withdrawal"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              withdrawal page
+              page de rétractation
             </Link>
             .
           </p>
         </Section>
 
-        <Section title="8. Refunds and complaints">
+        <Section title="8. Remboursements et réclamations">
           <p>
-            Refund handling depends on project status, delivered work, and the
-            reason for the request. PayPal refunds are returned through PayPal
-            to the original funding source where possible.
+            Le traitement des remboursements dépend du statut du projet, du
+            travail livré et du motif de la demande. Les remboursements PayPal
+            sont restitués via PayPal vers la source de financement d’origine
+            lorsque cela est possible.
           </p>
           <p>
-            See our{" "}
+            Consultez notre{" "}
             <Link
               href="/legal/refunds"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              refunds policy
+              politique de remboursement
             </Link>{" "}
-            and{" "}
+            et notre{" "}
             <Link
               href="/legal/complaints"
               className="text-foreground underline-offset-4 hover:underline"
             >
-              complaints procedure
+              procédure de réclamation
             </Link>
             .
           </p>
+          {/* TODO(legal-review): Verify whether French law requires the "garantie légale de conformité" for digital content and digital services (art. L224-25-1 ff. Code de la consommation) to be referenced here by name, and whether a mandatory standardized notice about the legal guarantee must accompany these terms. */}
           <p>
-            These policies do not replace mandatory remedies for a digital
-            service or digital content that is not supplied, is defective, or
-            does not conform to the contract. Where applicable, consumers may
-            require conformity, a proportionate price reduction, or termination
-            under the conditions of the law that protects them.
+            Ces politiques ne remplacent pas les recours impératifs applicables
+            à un service numérique ou à un contenu numérique non fourni,
+            défectueux ou non conforme au contrat. Le cas échéant, les
+            consommateurs peuvent exiger la mise en conformité, une réduction
+            proportionnelle du prix ou la résolution du contrat dans les
+            conditions prévues par la loi qui les protège.
           </p>
         </Section>
 
-        <Section title="9. Acceptable use">
+        <Section title="9. Utilisation acceptable">
           <p>
-            You must not use the service to request unlawful, misleading,
-            infringing, abusive, or discriminatory content. We may refuse or
-            stop work where a project would violate law, platform rules,
-            third-party rights, or our production standards.
+            Vous ne devez pas utiliser le service pour demander des contenus
+            illicites, trompeurs, contrefaisants, abusifs ou discriminatoires.
+            Nous pouvons refuser ou interrompre le travail lorsqu’un projet
+            violerait la loi, les règles des plateformes, les droits de tiers
+            ou nos standards de production.
           </p>
         </Section>
 
-        <Section title="10. AI Studio and automated outputs">
+        <Section title="10. AI Studio et résultats automatisés">
           <p>
-            AI Studio can produce unexpected, inaccurate, or visually
-            inconsistent results. You must review an output before publishing or
-            relying on it, especially where it depicts a property feature,
-            product, boundary, view, or planning outcome. AI output is a visual
-            concept, not proof of an existing condition or professional advice.
+            AI Studio peut produire des résultats inattendus, inexacts ou
+            visuellement incohérents. Vous devez vérifier un résultat avant de
+            le publier ou de vous y fier, en particulier lorsqu’il représente
+            une caractéristique d’un bien, un produit, une limite de propriété,
+            une vue ou une décision d’urbanisme. Un résultat généré par IA est
+            un concept visuel, non la preuve d’une situation existante ni un
+            conseil professionnel.
           </p>
           <p>
-            Do not submit unlawful material, identity documents, confidential
-            material you are not authorised to share, or content that violates
-            another person&apos;s privacy or intellectual-property rights.
-          </p>
-        </Section>
-
-        <Section title="11. Intellectual property in deliverables">
-          <p>
-            After full payment, you may use the final deliverables for the
-            project purpose described in the order, including property marketing,
-            presentations, listings, websites, and investor materials, unless a
-            narrower licence is agreed in writing.
-          </p>
-          <p>
-            Working files, production scenes, prompts, intermediate drafts,
-            internal methods, and reusable assets remain our production
-            materials unless expressly transferred in writing.
+            Ne soumettez pas de contenus illicites, de documents d’identité, de
+            documents confidentiels que vous n’êtes pas autorisé à partager, ni
+            de contenus portant atteinte à la vie privée ou aux droits de
+            propriété intellectuelle d’autrui.
           </p>
         </Section>
 
-        <Section title="12. Liability">
+        <Section title="11. Propriété intellectuelle des livrables">
           <p>
-            Our deliverables are visual communication assets. They are not
-            architectural plans, engineering documentation, building permits,
-            safety instructions, or a substitute for professional technical
-            advice.
+            Après paiement intégral, vous pouvez utiliser les livrables finaux
+            pour la finalité du projet décrite dans la commande, y compris le
+            marketing immobilier, les présentations, les annonces, les sites
+            web et les documents destinés aux investisseurs, sauf si une
+            licence plus restreinte est convenue par écrit.
           </p>
           <p>
-            We are responsible for providing the ordered digital service with
-            reasonable care and skill. To the fullest extent allowed by law, we
-            are not liable for indirect loss, lost profit, lost opportunity, or
-            decisions made from materials that were supplied to us incorrectly
-            or incompletely.
-          </p>
-          <p>
-            Nothing in these terms excludes or limits liability that cannot
-            legally be excluded, including mandatory consumer remedies or
-            liability for fraud, wilful misconduct, or death or personal injury
-            caused by negligence where applicable law prohibits exclusion.
+            Les fichiers de travail, scènes de production, prompts, ébauches
+            intermédiaires, méthodes internes et ressources réutilisables
+            demeurent nos éléments de production, sauf transfert exprès convenu
+            par écrit.
           </p>
         </Section>
 
-        <Section title="13. Changes, suspension, and termination">
+        <Section title="12. Responsabilité">
           <p>
-            We may update site features and these terms for legal, security, or
-            operational reasons. Changes do not retroactively remove rights from
-            an accepted order. We may suspend access or stop work when reasonably
-            necessary to address non-payment, security risk, unlawful use, or a
-            material breach, and will provide notice where practical and lawful.
+            Nos livrables sont des supports de communication visuelle. Ce ne
+            sont ni des plans d’architecte, ni de la documentation
+            d’ingénierie, ni des permis de construire, ni des consignes de
+            sécurité, ni un substitut à un conseil technique professionnel.
+          </p>
+          {/* TODO(legal-review): Liability limitations toward consumers are strictly framed in France (clauses abusives, art. R212-1 Code de la consommation). A lawyer should verify that this clause, translated as-is from the English build, remains enforceable and properly carves out the mandatory guarantees for French consumers. */}
+          <p>
+            Nous sommes responsables de la fourniture du service numérique
+            commandé avec un soin et une compétence raisonnables. Dans toute la
+            mesure permise par la loi, nous ne sommes pas responsables des
+            pertes indirectes, du manque à gagner, des opportunités perdues ni
+            des décisions prises sur la base de documents qui nous ont été
+            fournis de manière incorrecte ou incomplète.
+          </p>
+          <p>
+            Rien dans les présentes conditions n’exclut ni ne limite une
+            responsabilité qui ne peut être légalement exclue, y compris les
+            recours impératifs des consommateurs ou la responsabilité en cas de
+            fraude, de faute intentionnelle, ou de décès ou de dommage corporel
+            causé par une négligence, lorsque la loi applicable en interdit
+            l’exclusion.
           </p>
         </Section>
 
-        <Section title="14. Governing law and consumer protections">
+        <Section title="13. Modifications, suspension et résiliation">
           <p>
-            These terms are governed by the law of Serbia. If you are a consumer
-            habitually resident in the European Union, this choice of law does
-            not deprive you of mandatory consumer protections that cannot be
-            contractually waived under the law of your country of residence, in
-            line with article 6 of Regulation (EC) No 593/2008 (Rome I).
+            Nous pouvons mettre à jour les fonctionnalités du site et les
+            présentes conditions pour des raisons juridiques, de sécurité ou
+            opérationnelles. Les modifications ne suppriment pas
+            rétroactivement les droits attachés à une commande acceptée. Nous
+            pouvons suspendre l’accès ou interrompre le travail lorsque cela
+            est raisonnablement nécessaire pour traiter un défaut de paiement,
+            un risque de sécurité, une utilisation illicite ou une violation
+            substantielle, et nous en donnerons notification lorsque cela est
+            possible et licite.
           </p>
         </Section>
 
-        <Section title="15. Alternative dispute resolution">
+        <Section title="14. Droit applicable et protection des consommateurs">
+          {/* TODO(legal-review): The choice of Serbian law with the Rome I art. 6 carve-out is translated unchanged from the English build. A lawyer should verify how this reads for French consumers — the mandatory provisions of the Code de la consommation apply regardless of the chosen law — and whether French consumer-information rules require an express statement to that effect. */}
           <p>
-            We prefer to resolve complaints directly and in writing. If a
-            dispute cannot be resolved, EU consumers may contact a competent
-            consumer authority or alternative dispute resolution body in their
-            country of residence. We are not generally obliged to participate in
-            a particular alternative dispute resolution procedure unless
-            mandatory law requires it or we agree in writing.
+            Les présentes conditions sont régies par le droit serbe. Si vous
+            êtes un consommateur résidant habituellement dans l’Union
+            européenne, ce choix de loi ne vous prive pas des protections
+            impératives des consommateurs auxquelles il ne peut être dérogé par
+            contrat en vertu du droit de votre pays de résidence, conformément
+            à l’article 6 du règlement (CE) n° 593/2008 (Rome I).
+          </p>
+        </Section>
+
+        <Section title="15. Règlement extrajudiciaire des litiges">
+          {/* TODO(legal-review): France requires professionals contracting with consumers to guarantee recourse to a consumer mediator (médiateur de la consommation, art. L612-1 ff. Code de la consommation) and to state the mediator's identity and contact details. The current text, translated from the English build, states the opposite default (no obligation to participate in ADR). A lawyer must verify whether this obligation applies to a Serbian provider targeting France and, if so, a mediator must be designated and named here. */}
+          <p>
+            Nous préférons résoudre les réclamations directement et par écrit.
+            Si un litige ne peut être résolu, les consommateurs de l’UE peuvent
+            contacter une autorité de protection des consommateurs compétente
+            ou un organisme de règlement extrajudiciaire des litiges dans leur
+            pays de résidence. Nous ne sommes en principe pas tenus de
+            participer à une procédure particulière de règlement
+            extrajudiciaire des litiges, sauf si une loi impérative l’exige ou
+            si nous l’acceptons par écrit.
           </p>
           <p>
-            The European Commission&apos;s online dispute resolution platform was
-            closed on 20 July 2025, so we do not link to it or use it for new
-            complaints.
+            La plateforme de règlement en ligne des litiges de la Commission
+            européenne a été fermée le 20 juillet 2025 ; nous n’y renvoyons
+            donc pas et ne l’utilisons pas pour les nouvelles réclamations.
           </p>
         </Section>
       </article>

@@ -32,7 +32,7 @@ export function ForgotPasswordForm() {
       <div className="space-y-2">
         <Label htmlFor="email">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Email
+          Adresse e-mail
         </Label>
         <Input
           id="email"
@@ -50,7 +50,7 @@ export function ForgotPasswordForm() {
         className="w-full"
         disabled={pending}
       >
-        {pending ? "Sending..." : "Send link"}
+        {pending ? "Envoi…" : "Envoyer le lien"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
@@ -58,7 +58,7 @@ export function ForgotPasswordForm() {
           href="/login"
           className="font-medium text-foreground hover:text-accent"
         >
-          Back to login
+          Retour à la connexion
         </Link>
       </p>
     </form>

@@ -10,9 +10,9 @@ import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import type { BuyerInfoState } from "./checkout-context";
 
 export const metadata: Metadata = {
-  title: "Checkout",
+  title: "Paiement",
   description:
-    "Complete your order, confirm your details and pay securely through PayPal.",
+    "Finalisez votre commande, confirmez vos coordonnées et payez en toute sécurité via PayPal.",
   robots: NO_INDEX_ROBOTS,
 };
 
@@ -54,9 +54,9 @@ export default async function CheckoutPage() {
   return (
     <div className="mx-auto w-full max-w-3xl px-6 py-16 md:py-24">
       <div className="mb-10 text-center">
-        <SectionKicker align="center">Checkout</SectionKicker>
+        <SectionKicker align="center">Paiement</SectionKicker>
         <h1 className="mt-4 text-3xl text-foreground md:text-4xl">
-          Complete your order
+          Finalisez votre commande
         </h1>
       </div>
 

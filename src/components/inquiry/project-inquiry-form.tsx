@@ -133,7 +133,7 @@ export function ProjectInquiryForm({
         const body = (await urlRes.json().catch(() => null)) as
           | { error?: string }
           | null;
-        throw new Error(body?.error ?? "Could not generate an upload link");
+        throw new Error(body?.error ?? "Impossible de générer un lien d’importation");
       }
 
       const { signedUrl, storagePath } = (await urlRes.json()) as {
@@ -150,7 +150,7 @@ export function ProjectInquiryForm({
         body: file,
       });
 
-      if (!uploadRes.ok) throw new Error("Upload failed");
+      if (!uploadRes.ok) throw new Error("L’importation a échoué");
 
       setFiles((prev) => [
         ...prev,
@@ -168,7 +168,7 @@ export function ProjectInquiryForm({
           item.file === file
             ? {
                 ...item,
-                error: err instanceof Error ? err.message : "Something went wrong",
+                error: err instanceof Error ? err.message : "Une erreur est survenue",
               }
             : item,
         ),
@@ -184,21 +184,21 @@ export function ProjectInquiryForm({
       if (file.size > PROJECT_INQUIRY_MAX_FILE_BYTES) {
         setUploading((prev) => [
           ...prev,
-          { file, error: "File is larger than 50MB" },
+          { file, error: "Le fichier dépasse 50 Mo" },
         ]);
         return;
       }
       if (!isAllowedProjectInquiryMimeType(file.type)) {
         setUploading((prev) => [
           ...prev,
-          { file, error: "Allowed formats are JPG, PNG, WebP, TIFF and PDF" },
+          { file, error: "Formats acceptés : JPG, PNG, WebP, TIFF et PDF" },
         ]);
         return;
       }
       if (nextTotal + file.size > PROJECT_INQUIRY_MAX_TOTAL_BYTES) {
         setUploading((prev) => [
           ...prev,
-          { file, error: "Total size exceeds 100MB" },
+          { file, error: "La taille totale dépasse 100 Mo" },
         ]);
         return;
       }
@@ -211,7 +211,7 @@ export function ProjectInquiryForm({
     event.preventDefault();
     if (pending) return;
     if (uploading.some((file) => !file.error)) {
-      setResult({ kind: "error", message: "Please wait for the upload to finish." });
+      setResult({ kind: "error", message: "Veuillez attendre la fin de l’importation." });
       return;
     }
 
@@ -280,11 +280,11 @@ export function ProjectInquiryForm({
           <Check className="h-5 w-5" />
         </div>
         <h2 className="mt-4 text-2xl font-semibold text-foreground">
-          Inquiry received
+          Demande bien reçue
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Thank you. We will review the brief and materials, then get back to
-          you with a service proposal and an estimate.
+          Merci. Nous étudierons votre brief et vos documents, puis
+          reviendrons vers vous avec une proposition de service et un devis.
         </p>
         {mode === "contact" && (
           <Button
@@ -293,7 +293,7 @@ export function ProjectInquiryForm({
             className="mt-5"
             onClick={resetForAnother}
           >
-            Send another inquiry
+            Envoyer une autre demande
           </Button>
         )}
       </div>
@@ -325,7 +325,7 @@ export function ProjectInquiryForm({
         <div className="space-y-2">
           <Label htmlFor={`${mode}-inquiry-name`}>
             <Pencil className="h-3 w-3 text-accent/60" />
-            Full name
+            Nom complet
           </Label>
           <Input
             id={`${mode}-inquiry-name`}
@@ -339,7 +339,7 @@ export function ProjectInquiryForm({
         <div className="space-y-2">
           <Label htmlFor={`${mode}-inquiry-email`}>
             <Pencil className="h-3 w-3 text-accent/60" />
-            Email
+            Adresse e-mail
           </Label>
           <Input
             id={`${mode}-inquiry-email`}
@@ -357,7 +357,7 @@ export function ProjectInquiryForm({
         <div className="space-y-2">
           <Label htmlFor={`${mode}-inquiry-phone`}>
             <Pencil className="h-3 w-3 text-accent/60" />
-            Phone (optional)
+            Téléphone (facultatif)
           </Label>
           <Input
             id={`${mode}-inquiry-phone`}
@@ -369,14 +369,14 @@ export function ProjectInquiryForm({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor={`${mode}-inquiry-service`}>Project type</Label>
+          <Label htmlFor={`${mode}-inquiry-service`}>Type de projet</Label>
           <select
             id={`${mode}-inquiry-service`}
             value={serviceType}
             onChange={(event) => setServiceType(event.target.value)}
             className="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           >
-            <option value="">Select if you already know</option>
+            <option value="">Sélectionnez si vous le savez déjà</option>
             {PROJECT_INQUIRY_SERVICE_TYPES.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -391,7 +391,7 @@ export function ProjectInquiryForm({
           <div className="space-y-2">
             <Label htmlFor="contact-inquiry-company">
               <Pencil className="h-3 w-3 text-accent/60" />
-              Company (optional)
+              Société (facultatif)
             </Label>
             <Input
               id="contact-inquiry-company"
@@ -402,22 +402,22 @@ export function ProjectInquiryForm({
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="contact-inquiry-budget">Approximate budget</Label>
+              <Label htmlFor="contact-inquiry-budget">Budget approximatif</Label>
               <Input
                 id="contact-inquiry-budget"
                 value={budget}
                 onChange={(event) => setBudget(event.target.value)}
-                placeholder="e.g. an approximate budget or a range..."
+                placeholder="ex. un budget approximatif ou une fourchette…"
                 maxLength={80}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="contact-inquiry-deadline">Deadline</Label>
+              <Label htmlFor="contact-inquiry-deadline">Délai souhaité</Label>
               <Input
                 id="contact-inquiry-deadline"
                 value={deadline}
                 onChange={(event) => setDeadline(event.target.value)}
-                placeholder="e.g. this week, by the end of the month..."
+                placeholder="ex. cette semaine, d’ici la fin du mois…"
                 maxLength={80}
               />
             </div>
@@ -428,14 +428,14 @@ export function ProjectInquiryForm({
       <div className="space-y-2">
         <Label htmlFor={`${mode}-inquiry-message`}>
           <Pencil className="h-3 w-3 text-accent/60" />
-          Project description
+          Description du projet
         </Label>
         <Textarea
           id={`${mode}-inquiry-message`}
           value={message}
           onChange={(event) => setMessage(event.target.value)}
           rows={mode === "contact" ? 7 : 4}
-          placeholder="Type of space, what you want to achieve, how many views/rooms you have, your deadline and links to references..."
+          placeholder="Type d’espace, objectif recherché, nombre de vues/pièces, votre délai et des liens vers vos références…"
           required
           maxLength={4000}
         />
@@ -462,10 +462,10 @@ export function ProjectInquiryForm({
         >
           <Upload className="mb-3 h-7 w-7 text-muted-foreground/55" />
           <p className="text-sm font-medium text-foreground">
-            Attach floor plans, photos or references
+            Joignez vos plans, photos ou références
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            JPG, PNG, WebP, TIFF, PDF · max 100MB total
+            JPG, PNG, WebP, TIFF, PDF · 100 Mo max au total
           </p>
           <input
             ref={inputRef}
@@ -481,7 +481,7 @@ export function ProjectInquiryForm({
         </div>
 
         <p className="text-right text-xs text-muted-foreground">
-          {formatInquiryFileSize(totalUploaded)} / 100 MB
+          {formatInquiryFileSize(totalUploaded)} / 100 Mo
         </p>
 
         {(uploading.length > 0 || files.length > 0) && (
@@ -501,7 +501,7 @@ export function ProjectInquiryForm({
                       item.error ? "text-destructive" : "text-accent"
                     }`}
                   >
-                    {item.error ?? "Uploading..."}
+                    {item.error ?? "Importation…"}
                   </p>
                 </div>
                 <span className="text-xs text-muted-foreground">
@@ -531,7 +531,7 @@ export function ProjectInquiryForm({
                     )
                   }
                   className="rounded p-1 text-muted-foreground transition-colors hover:text-destructive"
-                  aria-label="Remove file from inquiry"
+                  aria-label="Retirer le fichier de la demande"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -555,8 +555,8 @@ export function ProjectInquiryForm({
 
       <div className="flex flex-col gap-3 border-t border-border/40 pt-5 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs leading-relaxed text-muted-foreground">
-          By submitting this form you agree that we process your details to
-          prepare a response.
+          En envoyant ce formulaire, vous acceptez que nous traitions vos
+          coordonnées afin de préparer notre réponse.
         </p>
         <Button
           type="submit"
@@ -564,7 +564,7 @@ export function ProjectInquiryForm({
           variant="accent"
           disabled={pending || (turnstileEnabled && !turnstileToken)}
         >
-          {pending ? "Sending..." : "Send an inquiry"}
+          {pending ? "Envoi…" : "Envoyer la demande"}
         </Button>
       </div>
     </form>

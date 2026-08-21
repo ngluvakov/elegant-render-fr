@@ -77,28 +77,30 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
       {completed ? (
         <div className="rounded-lg border border-accent/30 bg-accent/5 p-6 md:p-8">
           <p className="text-xs font-semibold uppercase tracking-wider text-accent">
-            Payment received
+            Paiement reçu
           </p>
           <h1 className="mt-2 text-2xl font-semibold text-foreground">
-            Your payment has been received — thank you.
+            Votre paiement a bien été reçu — merci.
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            A confirmation with your invoice is on its way to your email.
-            You can follow the order status in your portal.
+            Une confirmation accompagnée de votre facture arrive dans votre
+            boîte e-mail. Vous pouvez suivre l’état de la commande dans votre
+            espace client.
           </p>
         </div>
       ) : (
         <div className="rounded-lg border border-border/60 bg-card/60 p-6 md:p-8">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Payment processing
+            Paiement en cours
           </p>
           <h1 className="mt-2 text-2xl font-semibold text-foreground">
-            Your payment is processing.
+            Votre paiement est en cours de traitement.
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            PayPal confirms eCheck payments within a few days — we&apos;ll
-            email you as soon as it clears. Your order is saved and nothing
-            else is needed from you right now.
+            PayPal confirme les paiements par eCheck sous quelques jours —
+            nous vous écrirons dès que le paiement sera validé. Votre commande
+            est enregistrée et aucune action n’est requise de votre part pour
+            le moment.
           </p>
         </div>
       )}
@@ -116,13 +118,13 @@ export default async function CheckoutSuccessPage({ searchParams }: PageProps) {
           href={`/portal/orders/${order.id}`}
           className={buttonVariants({ variant: "accent", size: "lg" })}
         >
-          Open the order in your portal
+          Ouvrir la commande dans votre espace client
         </Link>
         <Link
           href="/portal"
           className={buttonVariants({ variant: "outline", size: "lg" })}
         >
-          Go to portal
+          Accéder à l’espace client
         </Link>
       </div>
     </main>

@@ -98,7 +98,7 @@ export function StepDetails() {
     setError("");
 
     if (!acceptedTerms || !waiveWithdrawal) {
-      setError("Please confirm both checkboxes below to continue.");
+      setError("Veuillez cocher les deux cases ci-dessous pour continuer.");
       return;
     }
     if (buyerError) {
@@ -113,12 +113,12 @@ export function StepDetails() {
       let uid = userId;
       if (!uid) {
         if (!name.trim() || !email.trim()) {
-          setError("Please enter your name and email.");
+          setError("Veuillez saisir votre nom et votre adresse e-mail.");
           return;
         }
         const userResult = await ensureCheckoutUser(name.trim(), email.trim());
         if (userResult.error || !userResult.userId) {
-          setError(userResult.error ?? "Could not create your account.");
+          setError(userResult.error ?? "Impossible de créer votre compte.");
           return;
         }
         uid = userResult.userId;
@@ -158,7 +158,7 @@ export function StepDetails() {
       }
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Something went wrong. Please try again.",
+        err instanceof Error ? err.message : "Une erreur est survenue. Veuillez réessayer.",
       );
     } finally {
       setPending(false);
@@ -172,7 +172,7 @@ export function StepDetails() {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Identity */}
       <div className="rounded-lg border border-border/60 bg-card/80 p-6 md:p-8">
-        <h2 className="text-xl font-semibold text-foreground">Your details</h2>
+        <h2 className="text-xl font-semibold text-foreground">Vos coordonnées</h2>
 
         {error && (
           <div
@@ -185,7 +185,7 @@ export function StepDetails() {
 
         {initiallySignedIn ? (
           <p className="mt-3 text-sm text-muted-foreground">
-            Ordering as{" "}
+            Vous commandez en tant que{" "}
             <strong className="text-foreground">
               {customerName || customerEmail}
             </strong>
@@ -194,14 +194,15 @@ export function StepDetails() {
         ) : (
           <>
             <p className="mt-2 text-sm text-muted-foreground">
-              Enter your name and email so we can reach you about the
-              project. An account is created automatically.
+              Saisissez votre nom et votre adresse e-mail pour que nous
+              puissions vous contacter au sujet du projet. Un compte est créé
+              automatiquement.
             </p>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="checkout-name">
                   <Pencil className="h-3 w-3 text-accent/60" />
-                  Full name
+                  Nom complet
                 </Label>
                 <Input
                   id="checkout-name"
@@ -214,7 +215,7 @@ export function StepDetails() {
               <div className="space-y-2">
                 <Label htmlFor="checkout-email">
                   <Pencil className="h-3 w-3 text-accent/60" />
-                  Email
+                  Adresse e-mail
                 </Label>
                 <Input
                   id="checkout-email"
@@ -232,7 +233,7 @@ export function StepDetails() {
         {needsIndividualCountry && !businessOpen && (
           <div className="mt-4 max-w-xs">
             <CountrySelect
-              label="Country"
+              label="Pays"
               value={individualCountry}
               onChange={setIndividualCountry}
             />
@@ -242,7 +243,7 @@ export function StepDetails() {
 
       {/* Order summary */}
       <div className="rounded-lg border border-border/60 bg-card/80 p-6 md:p-8">
-        <h2 className="text-xl font-semibold text-foreground">Order summary</h2>
+        <h2 className="text-xl font-semibold text-foreground">Récapitulatif de la commande</h2>
 
         <div className="mt-5 space-y-3">
           {calculation.items.map((item) => (
@@ -283,8 +284,8 @@ export function StepDetails() {
           </div>
           <p className="mt-1.5 text-xs text-muted-foreground">
             {displayCurrency === "EUR"
-              ? "Charged in EUR; your invoice is issued in EUR."
-              : `Total in ${displayCurrency} — you are charged in ${displayCurrency}; your invoice is issued in EUR.`}
+              ? "Montant débité en EUR ; votre facture est émise en EUR."
+              : `Total en ${displayCurrency} — le débit est effectué en ${displayCurrency} ; votre facture est émise en EUR.`}
           </p>
         </div>
 
@@ -292,14 +293,14 @@ export function StepDetails() {
         <div className="mt-6">
           <Label htmlFor="checkout-note">
             <Pencil className="h-3 w-3 text-accent/60" />
-            Note (optional)
+            Remarque (facultatif)
           </Label>
           <Textarea
             id="checkout-note"
             value={customerNote}
             onChange={(e) => setCustomerNote(e.target.value)}
             rows={3}
-            placeholder="Deadline, style, special requests…"
+            placeholder="Délai, style, demandes particulières…"
             className="mt-2"
           />
         </div>
@@ -316,10 +317,11 @@ export function StepDetails() {
           />
           <span>
             <span className="block text-sm font-semibold text-foreground">
-              I&apos;m buying as a business (get a VAT invoice)
+              J’achète en tant que professionnel (facture avec TVA)
             </span>
             <span className="mt-0.5 block text-xs text-muted-foreground">
-              The invoice is issued to your company. VAT ID is optional.
+              La facture est établie au nom de votre société. Le numéro de TVA
+              est facultatif.
             </span>
           </span>
         </label>
@@ -327,28 +329,28 @@ export function StepDetails() {
         {businessOpen && (
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <Field
-              label="Company name"
+              label="Raison sociale"
               required
               value={buyerInfo.companyName}
               onChange={(v) => updateBuyer({ companyName: v })}
             />
             <Field
-              label="Company address"
+              label="Adresse de la société"
               required
               value={buyerInfo.companyAddress}
               onChange={(v) => updateBuyer({ companyAddress: v })}
             />
             <CountrySelect
-              label="Country"
+              label="Pays"
               required
               value={businessCountry}
               onChange={setBusinessCountry}
             />
             <div>
               <Field
-                label="VAT ID / Tax ID (optional)"
+                label="N° de TVA intracommunautaire / identifiant fiscal (facultatif)"
                 value={buyerInfo.companyTaxId}
-                hint="e.g. DE123456789"
+                hint="ex. FR12345678901"
                 onChange={(v) =>
                   updateBuyer({
                     companyTaxId: v.toUpperCase().replace(/[^A-Z0-9]/g, ""),
@@ -379,14 +381,14 @@ export function StepDetails() {
             aria-required
           />
           <span className="text-xs leading-relaxed text-muted-foreground">
-            I agree to the{" "}
+            J’accepte les{" "}
             <a
               href="/legal/terms"
               target="_blank"
               rel="noreferrer"
               className="text-accent underline"
             >
-              Terms of Service
+              Conditions générales de vente
             </a>
             .
           </span>
@@ -403,8 +405,9 @@ export function StepDetails() {
             aria-required
           />
           <span className="text-xs leading-relaxed text-muted-foreground">
-            I ask you to start work immediately and acknowledge that I lose
-            my 14-day right of withdrawal once delivery begins.
+            Je demande l’exécution immédiate de la prestation et reconnais
+            perdre mon droit de rétractation de 14 jours dès le début de la
+            livraison.
           </span>
         </label>
       </div>
@@ -416,7 +419,7 @@ export function StepDetails() {
           size="lg"
           disabled={submitDisabled}
         >
-          {pending ? "Creating order…" : "Continue to payment"}
+          {pending ? "Création de la commande…" : "Continuer vers le paiement"}
         </Button>
       </div>
     </form>
@@ -445,7 +448,7 @@ function CountrySelect({
         onChange={(e) => onChange(e.target.value)}
         className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
       >
-        <option value="">— Select —</option>
+        <option value="">— Sélectionner —</option>
         {COUNTRIES.map((c) =>
           c.code === "" ? (
             <option key="separator" disabled>

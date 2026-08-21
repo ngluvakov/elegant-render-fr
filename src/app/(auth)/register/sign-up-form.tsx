@@ -24,7 +24,7 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
 
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-border" />
-        <span className="text-xs text-muted-foreground">or with email</span>
+        <span className="text-xs text-muted-foreground">ou par e-mail</span>
         <div className="h-px flex-1 bg-border" />
       </div>
 
@@ -39,7 +39,7 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
       <div className="space-y-2">
         <Label htmlFor="name">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Full name
+          Nom complet
         </Label>
         <Input
           id="name"
@@ -52,7 +52,7 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
       <div className="space-y-2">
         <Label htmlFor="email">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Email
+          Adresse e-mail
         </Label>
         <Input
           id="email"
@@ -66,7 +66,7 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
       <div className="space-y-2">
         <Label htmlFor="password">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Password
+          Mot de passe
         </Label>
         <Input
           id="password"
@@ -76,17 +76,17 @@ export function SignUpForm({ callbackUrl }: { callbackUrl: string }) {
           required
           minLength={8}
         />
-        <p className="text-xs text-muted-foreground">At least 8 characters</p>
+        <p className="text-xs text-muted-foreground">8 caractères minimum</p>
       </div>
 
       <Button type="submit" variant="accent" size="lg" className="w-full" disabled={pending}>
-        {pending ? "Creating..." : "Create account"}
+        {pending ? "Création du compte…" : "Créer un compte"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
+        Vous avez déjà un compte ?{" "}
         <Link href={signInHref} className="font-medium text-foreground hover:text-accent">
-          Log in
+          Se connecter
         </Link>
       </p>
     </form>

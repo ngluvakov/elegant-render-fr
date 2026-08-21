@@ -66,7 +66,7 @@ export function CompanyVatVerifier({
             key: ready.key,
             result: {
               status: "error",
-              message: "Network error — our team will verify manually.",
+              message: "Erreur réseau — notre équipe vérifiera manuellement.",
             },
           });
         }
@@ -86,7 +86,7 @@ export function CompanyVatVerifier({
     return (
       <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-muted-foreground">
         <Loader2 className="h-3 w-3 animate-spin" />
-        Checking the VAT ID through VIES…
+        Vérification du numéro de TVA via VIES…
       </p>
     );
   }
@@ -95,7 +95,7 @@ export function CompanyVatVerifier({
     return (
       <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-muted-foreground">
         <CheckCircle2 className="h-3 w-3" />
-        VIES confirmed the VAT ID
+        Numéro de TVA confirmé par VIES
         {result.verifiedName ? (
           <span className="text-muted-foreground">
             {" "}
@@ -110,8 +110,9 @@ export function CompanyVatVerifier({
     return (
       <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-destructive">
         <ShieldAlert className="h-3 w-3" />
-        VIES reports this VAT ID as not valid. You can continue and our
-        team will verify it, or correct it if it's a typo.
+        VIES indique que ce numéro de TVA n’est pas valide. Vous pouvez
+        continuer — notre équipe le vérifiera — ou le corriger s’il s’agit
+        d’une faute de frappe.
       </p>
     );
   }
@@ -120,7 +121,7 @@ export function CompanyVatVerifier({
     return (
       <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-muted-foreground">
         <AlertCircle className="h-3 w-3" />
-        Country is outside the EU — the VIES check does not apply.
+        Pays hors Union européenne — la vérification VIES ne s’applique pas.
       </p>
     );
   }
@@ -138,7 +139,7 @@ export function CompanyVatVerifier({
   return (
     <p className="mt-1.5 inline-flex items-center gap-1.5 text-[0.72rem] text-muted-foreground">
       <AlertCircle className="h-3 w-3" />
-      VIES is unavailable right now — our team will verify manually.
+      VIES est indisponible pour le moment — notre équipe vérifiera manuellement.
     </p>
   );
 }

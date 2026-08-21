@@ -11,9 +11,9 @@ import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { AutoSubmitMagicLink } from "./auto-submit";
 
 export const metadata: Metadata = {
-  title: "Portal access",
+  title: "Accès à l’espace client",
   description:
-    "Secure magic-link access to the Elegant Render portal from an email message.",
+    "Accès sécurisé à l’espace client Elegant Render via le lien reçu par e-mail.",
   robots: NO_INDEX_ROBOTS,
 };
 
@@ -29,15 +29,15 @@ export default async function PortalAccessPage({
   if (!token) {
     return (
       <div className="mx-auto max-w-md py-20 text-center">
-        <h1 className="text-2xl text-foreground">Link is not valid</h1>
+        <h1 className="text-2xl text-foreground">Ce lien n’est pas valide</h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Open the newest email or request a new link.
+          Ouvrez l’e-mail le plus récent ou demandez un nouveau lien.
         </p>
         <Link
           href="/login"
           className="mt-6 inline-block text-sm text-accent underline-offset-4 hover:underline"
         >
-          Go to login
+          Aller à la connexion
         </Link>
       </div>
     );
@@ -45,9 +45,9 @@ export default async function PortalAccessPage({
 
   return (
     <div className="mx-auto max-w-md py-20 text-center">
-      <h1 className="text-2xl text-foreground">Signing you in...</h1>
+      <h1 className="text-2xl text-foreground">Connexion en cours…</h1>
       <p className="mt-3 text-sm text-muted-foreground">
-        One moment - we are redirecting you to your order.
+        Un instant — nous vous redirigeons vers votre commande.
       </p>
 
       <form action={magicLinkSignInAction} className="mt-8">
@@ -59,7 +59,7 @@ export default async function PortalAccessPage({
             type="submit"
             className="rounded-lg bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground"
           >
-            Access portal
+            Accéder à l’espace client
           </button>
         </noscript>
       </form>

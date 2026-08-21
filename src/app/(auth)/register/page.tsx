@@ -6,8 +6,8 @@ import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { SignUpForm } from "./sign-up-form";
 
 export const metadata: Metadata = {
-  title: "Register",
-  description: "Create an Elegant Render account for free.",
+  title: "Inscription",
+  description: "Créez gratuitement votre compte Elegant Render.",
   robots: NO_INDEX_ROBOTS,
 };
 
@@ -31,11 +31,11 @@ export default async function RegisterPage({
       <div className="w-full max-w-md">
         <div className="text-center">
           <h1 className="text-3xl text-foreground md:text-4xl">
-            Register
+            Inscription
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Create an account to order, track projects, and communicate with
-            the team.
+            Créez un compte pour commander, suivre vos projets et échanger
+            avec l’équipe.
           </p>
         </div>
         <SignUpForm callbackUrl={callbackUrl} />

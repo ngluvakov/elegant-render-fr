@@ -3,8 +3,8 @@ import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { ResetPasswordForm } from "./reset-password-form";
 
 export const metadata: Metadata = {
-  title: "New password",
-  description: "Set a new password for your account.",
+  title: "Nouveau mot de passe",
+  description: "Définissez un nouveau mot de passe pour votre compte.",
   robots: NO_INDEX_ROBOTS,
 };
 
@@ -21,9 +21,9 @@ export default async function ResetPasswordPage({
     return (
       <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
         <div className="w-full max-w-md text-center">
-          <h1 className="text-3xl text-foreground">Invalid link</h1>
+          <h1 className="text-3xl text-foreground">Lien invalide</h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            The password reset link is invalid or has expired.
+            Le lien de réinitialisation est invalide ou a expiré.
           </p>
         </div>
       </div>
@@ -35,10 +35,10 @@ export default async function ResetPasswordPage({
       <div className="w-full max-w-md">
         <div className="text-center">
           <h1 className="text-3xl text-foreground md:text-4xl">
-            New password
+            Nouveau mot de passe
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Enter a new password for your account.
+            Saisissez un nouveau mot de passe pour votre compte.
           </p>
         </div>
         <ResetPasswordForm token={token} />

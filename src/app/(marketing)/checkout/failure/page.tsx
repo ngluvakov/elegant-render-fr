@@ -59,15 +59,16 @@ export default async function CheckoutFailurePage({ searchParams }: PageProps) {
     <main className="mx-auto max-w-3xl space-y-8 px-4 py-12">
       <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-6 md:p-8">
         <p className="text-xs font-semibold uppercase tracking-wider text-destructive">
-          Payment not completed
+          Paiement non abouti
         </p>
         <h1 className="mt-2 text-2xl font-semibold text-foreground">
-          The payment did not go through — you have not been charged.
+          Le paiement n’a pas abouti — vous n’avez pas été débité.
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Your order is saved and you can try again from your portal. If
-          PayPal declined the payment repeatedly, check your PayPal account
-          or try a different funding source.
+          Votre commande est enregistrée et vous pouvez réessayer depuis
+          votre espace client. Si PayPal a refusé le paiement à plusieurs
+          reprises, vérifiez votre compte PayPal ou essayez un autre moyen
+          de paiement.
         </p>
       </div>
 
@@ -84,13 +85,13 @@ export default async function CheckoutFailurePage({ searchParams }: PageProps) {
           href={`/portal/orders/${order.id}`}
           className={buttonVariants({ variant: "accent", size: "lg" })}
         >
-          Try again from your portal
+          Réessayer depuis votre espace client
         </Link>
         <Link
           href="/checkout"
           className={buttonVariants({ variant: "outline", size: "lg" })}
         >
-          Back to checkout
+          Retour au paiement
         </Link>
       </div>
     </main>

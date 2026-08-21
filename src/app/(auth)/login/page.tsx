@@ -6,8 +6,8 @@ import { NO_INDEX_ROBOTS } from "@/lib/seo";
 import { SignInForm } from "./sign-in-form";
 
 export const metadata: Metadata = {
-  title: "Login",
-  description: "Log in to your Elegant Render account.",
+  title: "Connexion",
+  description: "Connectez-vous à votre compte Elegant Render.",
   robots: NO_INDEX_ROBOTS,
 };
 
@@ -33,9 +33,9 @@ export default async function LoginPage({
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
       <div className="w-full max-w-md">
         <div className="text-center">
-          <h1 className="text-3xl text-foreground md:text-4xl">Login</h1>
+          <h1 className="text-3xl text-foreground md:text-4xl">Connexion</h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Log in to track orders and communicate with the team.
+            Connectez-vous pour suivre vos commandes et échanger avec l’équipe.
           </p>
         </div>
         <SignInForm callbackUrl={callbackUrl} />

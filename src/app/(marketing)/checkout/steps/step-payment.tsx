@@ -97,7 +97,7 @@ export function StepPayment() {
   if (!orderId) {
     return (
       <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-6 text-sm text-destructive">
-        The order has not been created yet. Go back to the previous step.
+        La commande n’a pas encore été créée. Revenez à l’étape précédente.
       </div>
     );
   }
@@ -133,14 +133,14 @@ export function StepPayment() {
   return (
     <div className="space-y-6">
       <div className="rounded-lg border border-border/60 bg-card/80 p-6 md:p-8">
-        <h2 className="text-xl font-semibold text-foreground">Payment</h2>
+        <h2 className="text-xl font-semibold text-foreground">Paiement</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Total to pay:{" "}
+          Total à payer :{" "}
           <strong className="text-foreground">{amountLabel}</strong>
           {displayCurrency !== "EUR" && (
             <span className="text-muted-foreground">
               {" "}
-              — charged in {displayCurrency}; invoice issued in EUR.
+              — débit en {displayCurrency} ; facture émise en EUR.
             </span>
           )}
         </p>
@@ -166,15 +166,15 @@ export function StepPayment() {
         </div>
 
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          You pay securely through PayPal — with your PayPal balance or a
-          card, no PayPal account required.
+          Vous payez en toute sécurité via PayPal — avec votre solde PayPal
+          ou une carte bancaire, sans compte PayPal obligatoire.
         </p>
 
         {SHOW_MOCK_CARD && (
           <div className="mt-6 border-t border-border/40 pt-5">
             <p className="rounded-lg bg-secondary/60 px-4 py-2.5 text-xs text-muted-foreground">
-              Development only: simulate a successful payment without
-              contacting PayPal.
+              Développement uniquement : simulation d’un paiement réussi sans
+              contacter PayPal.
             </p>
             <Button
               variant="outline"
@@ -183,14 +183,14 @@ export function StepPayment() {
               onClick={handleMockCard}
               disabled={cardPending}
             >
-              {cardPending ? "Processing…" : `Pay ${amountLabel} (mock)`}
+              {cardPending ? "Traitement…" : `Payer ${amountLabel} (simulation)`}
             </Button>
           </div>
         )}
       </div>
 
       <Button variant="outline" onClick={() => setStep(0)}>
-        Back to details
+        Retour aux coordonnées
       </Button>
     </div>
   );

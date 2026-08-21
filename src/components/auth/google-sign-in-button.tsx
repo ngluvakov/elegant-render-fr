@@ -39,7 +39,7 @@ export function GoogleSignInButton({
           fill="#EA4335"
         />
       </svg>
-      Nastavite sa Google
+      Continuer avec Google
     </Button>
   );
 }

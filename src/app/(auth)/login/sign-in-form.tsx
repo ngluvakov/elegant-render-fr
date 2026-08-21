@@ -24,7 +24,7 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
 
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-border" />
-        <span className="text-xs text-muted-foreground">or with email</span>
+        <span className="text-xs text-muted-foreground">ou par e-mail</span>
         <div className="h-px flex-1 bg-border" />
       </div>
 
@@ -39,7 +39,7 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
       <div className="space-y-2">
         <Label htmlFor="email">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Email
+          Adresse e-mail
         </Label>
         <Input
           id="email"
@@ -54,13 +54,13 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
         <div className="flex items-center justify-between">
           <Label htmlFor="password">
             <Pencil className="h-3 w-3 text-accent/60" />
-            Password
+            Mot de passe
           </Label>
           <Link
             href="/forgot-password"
             className="text-xs text-muted-foreground hover:text-accent"
           >
-            Forgot your password?
+            Mot de passe oublié ?
           </Link>
         </div>
         <Input
@@ -74,13 +74,13 @@ export function SignInForm({ callbackUrl }: { callbackUrl: string }) {
       </div>
 
       <Button type="submit" variant="accent" size="lg" className="w-full" disabled={pending}>
-        {pending ? "Logging in..." : "Log in"}
+        {pending ? "Connexion…" : "Se connecter"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        Do not have an account?{" "}
+        Pas encore de compte ?{" "}
         <Link href={registrationHref} className="font-medium text-foreground hover:text-accent">
-          Register
+          Créer un compte
         </Link>
       </p>
     </form>

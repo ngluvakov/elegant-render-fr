@@ -26,8 +26,8 @@ import { StepDetails } from "./steps/step-details";
 import { StepPayment } from "./steps/step-payment";
 
 const STEPS = [
-  { label: "Details", short: "1" },
-  { label: "Payment", short: "2" },
+  { label: "Coordonnées", short: "1" },
+  { label: "Paiement", short: "2" },
 ];
 
 function WizardInner() {
@@ -160,12 +160,12 @@ function SuccessScreen({
         )}
       </div>
       <h2 className="text-3xl text-foreground">
-        {processing ? "Your payment is processing" : "Payment received"}
+        {processing ? "Votre paiement est en cours de traitement" : "Paiement reçu"}
       </h2>
       <p className="mt-4 text-muted-foreground">
         {processing
-          ? "PayPal confirms eCheck payments within a few days — we'll email you as soon as it clears. Your order is saved and nothing else is needed from you right now."
-          : "Thank you for your order. We've sent a confirmation to"}
+          ? "PayPal confirme les paiements par eCheck sous quelques jours — nous vous écrirons dès que le paiement sera validé. Votre commande est enregistrée et aucune action n’est requise de votre part pour le moment."
+          : "Merci pour votre commande. Nous avons envoyé une confirmation à"}
         {!processing && (
           <>
             {" "}
@@ -178,8 +178,8 @@ function SuccessScreen({
         <div className="mt-8">
           <OrderFileUpload
             orderId={orderId}
-            title="Upload your plans now — or later from your portal"
-            description="Floor plans, photos and style references help us start right away. You can always add them from your portal."
+            title="Importez vos plans maintenant — ou plus tard depuis votre espace client"
+            description="Plans, photos et références de style nous permettent de démarrer sans attendre. Vous pourrez toujours les ajouter depuis votre espace client."
           />
         </div>
       )}
@@ -193,43 +193,43 @@ function SuccessScreen({
             <div className="flex-1">
               {linkState === "sending" && (
                 <p className="text-sm text-muted-foreground">
-                  Sending your portal access link…
+                  Envoi de votre lien d’accès à l’espace client…
                 </p>
               )}
               {linkState === "sent" && (
                 <>
                   <p className="text-sm font-semibold text-foreground">
-                    One-click portal access
+                    Accès à l’espace client en un clic
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    We've sent a link to{" "}
+                    Nous avons envoyé un lien à{" "}
                     <strong className="text-foreground">{customerEmail}</strong>.
-                    Clicking it signs you in automatically — no password
-                    needed.
+                    Un clic suffit pour vous connecter automatiquement — sans
+                    mot de passe.
                   </p>
                   <button
                     type="button"
                     onClick={resend}
                     className="mt-3 text-xs text-accent underline-offset-4 hover:underline"
                   >
-                    Send again
+                    Renvoyer
                   </button>
                 </>
               )}
               {linkState === "error" && (
                 <>
                   <p className="text-sm font-semibold text-destructive">
-                    Email not sent
+                    E-mail non envoyé
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {errorMsg || "Try again in a few seconds."}
+                    {errorMsg || "Réessayez dans quelques secondes."}
                   </p>
                   <button
                     type="button"
                     onClick={resend}
                     className="mt-3 text-xs text-accent underline-offset-4 hover:underline"
                   >
-                    Try again
+                    Réessayer
                   </button>
                 </>
               )}
@@ -240,10 +240,10 @@ function SuccessScreen({
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
         <ButtonLink href={orderHref} variant="accent" size="lg">
-          {initiallySignedIn ? "Open your order" : "Open your portal"}
+          {initiallySignedIn ? "Ouvrir votre commande" : "Ouvrir votre espace client"}
         </ButtonLink>
         <ButtonLink href="/pricing" variant="outline" size="lg">
-          New order
+          Nouvelle commande
         </ButtonLink>
       </div>
     </div>
@@ -289,7 +289,7 @@ export function CheckoutWizard({
   if (!quoteItems) {
     return (
       <div className="py-20 text-center text-muted-foreground">
-        Loading…
+        Chargement…
       </div>
     );
   }

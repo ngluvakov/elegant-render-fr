@@ -5,8 +5,8 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { NO_INDEX_ROBOTS } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Email verification",
-  description: "Confirm your email address and activate your Elegant Render account.",
+  title: "Vérification de l’e-mail",
+  description: "Confirmez votre adresse e-mail et activez votre compte Elegant Render.",
   robots: NO_INDEX_ROBOTS,
 };
 
@@ -23,9 +23,9 @@ export default async function VerifyEmailPage({
     return (
       <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-6 py-16">
         <div className="w-full max-w-md text-center">
-          <h1 className="text-3xl text-foreground">Invalid link</h1>
+          <h1 className="text-3xl text-foreground">Lien invalide</h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            The verification link is invalid.
+            Le lien de vérification est invalide.
           </p>
         </div>
       </div>
@@ -39,19 +39,19 @@ export default async function VerifyEmailPage({
       <div className="w-full max-w-md text-center">
         {result.success ? (
           <>
-            <h1 className="text-3xl text-foreground">Email confirmed</h1>
+            <h1 className="text-3xl text-foreground">Adresse e-mail confirmée</h1>
             <p className="mt-3 text-sm text-muted-foreground">
               {result.message}
             </p>
             <div className="mt-6">
               <ButtonLink href="/portal" variant="accent" size="lg">
-                Go to portal
+                Accéder à l’espace client
               </ButtonLink>
             </div>
           </>
         ) : (
           <>
-            <h1 className="text-3xl text-foreground">Error</h1>
+            <h1 className="text-3xl text-foreground">Erreur</h1>
             <p className="mt-3 text-sm text-muted-foreground">
               {result.error}
             </p>
@@ -60,7 +60,7 @@ export default async function VerifyEmailPage({
                 href="/login"
                 className="font-medium text-foreground hover:text-accent"
               >
-                Back to login
+                Retour à la connexion
               </Link>
             </p>
           </>

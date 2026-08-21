@@ -28,7 +28,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
       <div className="space-y-2">
         <Label htmlFor="password">
           <Pencil className="h-3 w-3 text-accent/60" />
-          New password
+          Nouveau mot de passe
         </Label>
         <Input
           id="password"
@@ -38,7 +38,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
           required
           minLength={8}
         />
-        <p className="text-xs text-muted-foreground">At least 8 characters</p>
+        <p className="text-xs text-muted-foreground">8 caractères minimum</p>
       </div>
 
       <Button
@@ -48,7 +48,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
         className="w-full"
         disabled={pending}
       >
-        {pending ? "Saving..." : "Set new password"}
+        {pending ? "Enregistrement…" : "Définir le mot de passe"}
       </Button>
     </form>
   );

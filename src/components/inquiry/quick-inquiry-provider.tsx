@@ -53,11 +53,11 @@ export function QuickInquiryProvider({ children }: { children: ReactNode }) {
           className="w-[min(100vw,36rem)] max-w-[36rem] overflow-y-auto p-0 sm:max-w-[36rem]"
         >
           <SheetHeader className="border-b border-border/50 p-6">
-            <SheetTitle className="text-2xl">Quick inquiry</SheetTitle>
+            <SheetTitle className="text-2xl">Demande rapide</SheetTitle>
             <SheetDescription className="leading-relaxed">
-              Send a short description and your materials. We reply with a
-              service proposal and an estimate, with no need to go through the
-              configurator yourself.
+              Envoyez une courte description et vos documents. Nous vous
+              répondons avec une proposition de service et un devis, sans que
+              vous ayez à passer par le configurateur.
             </SheetDescription>
           </SheetHeader>
           <div className="p-6">

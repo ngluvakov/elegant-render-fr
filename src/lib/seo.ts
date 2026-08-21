@@ -15,32 +15,33 @@ import {
 } from "@/lib/content/site";
 
 const DEFAULT_OG_IMAGE = "/og-image.jpg";
-const DEFAULT_META_TITLE = `${SITE.name} — Architectural visualization`;
+const DEFAULT_META_TITLE = `${SITE.name} — Visualisation architecturale`;
 const DEFAULT_META_DESCRIPTION =
-  "Hand-crafted 3D interior and exterior renders, virtual staging and visual makeovers for homes and properties — with prices you can see up front.";
+  "Rendus 3D d’intérieur et d’extérieur réalisés à la main, home staging virtuel et transformations visuelles pour maisons et biens immobiliers — avec des prix affichés dès le départ.";
 const DEFAULT_TWITTER_DESCRIPTION =
-  "Photorealistic 3D renders, virtual staging and visual makeovers — with transparent pricing.";
+  "Rendus 3D photoréalistes, home staging virtuel et transformations visuelles — avec des prix transparents.";
 const OG_IMAGE_SIZE = { width: 1200, height: 630 };
 const SOCIAL_TITLE_MAX_LENGTH = 60;
 const SOCIAL_DESCRIPTION_MAX_LENGTH = 155;
 const DISCOVERY_KEYWORDS = [
-  "architectural visualization studio",
-  "3D rendering services",
-  "photorealistic interior renders",
-  "exterior renders",
-  "virtual staging",
-  "virtual renovation",
-  "real estate renders Europe",
-  "floor plan rendering",
-  "360 virtual tour",
-  "architectural animation",
-  "day-to-dusk editing",
-  "AI real estate photo editing",
+  "studio de visualisation architecturale",
+  "service de rendu 3D",
+  "perspective 3D immobilier",
+  "rendu 3D intérieur photoréaliste",
+  "rendu 3D extérieur",
+  "home staging virtuel",
+  "rénovation virtuelle",
+  "rendu 3D immobilier France",
+  "plan 3D maison",
+  "visite virtuelle 360°",
+  "animation architecturale",
+  "photo crépuscule immobilier",
+  "retouche photo immobilière IA",
 ];
 
 export const SEO = {
-  htmlLang: "en",
-  locale: "en_US",
+  htmlLang: "fr-FR",
+  locale: "fr_FR",
   defaultTitle: DEFAULT_META_TITLE,
   defaultDescription: DEFAULT_META_DESCRIPTION,
   twitterDescription: DEFAULT_TWITTER_DESCRIPTION,
@@ -131,10 +132,10 @@ export function canonicalUrl(path = "/"): string {
 
 export function buildLanguageAlternates(path = "/"): Record<string, string> {
   const canonical = canonicalUrl(path);
-  // Cross-domain sr link to elegantrender.rs is intentionally omitted for
-  // now — flagged separately; add it here once the pairing is signed off.
+  // Cross-domain alternates to the .com/.de siblings are intentionally
+  // omitted for now — add them here once the pairing is signed off.
   return {
-    en: canonical,
+    fr: canonical,
     "x-default": canonical,
   };
 }
@@ -162,7 +163,7 @@ export function createPublicMetadata({
   description,
   path = "/",
   image = DEFAULT_OG_IMAGE,
-  imageAlt = `${SITE.name} architectural visualization`,
+  imageAlt = `${SITE.name} — visualisation architecturale`,
   keywords,
   twitterDescription,
   noIndex = false,
@@ -187,9 +188,9 @@ export function createPublicMetadata({
     creator: SITE.name,
     publisher: SITE.parentCompany,
     referrer: "strict-origin-when-cross-origin",
-    category: "Architecture visualization",
+    category: "Visualisation architecturale",
     classification:
-      "Architectural visualization, virtual staging, 3D rendering, AI real estate imagery",
+      "Visualisation architecturale, home staging virtuel, rendu 3D, imagerie immobilière par IA",
     keywords: mergeKeywords(keywords),
     alternates: {
       canonical,
@@ -237,16 +238,16 @@ export function buildWebSiteJsonLd() {
       "@id": SEO.organizationId,
     },
     about: [
-      "Architectural visualization",
-      "3D rendering",
-      "Virtual staging",
-      "AI real estate photo editing",
+      "Visualisation architecturale",
+      "Rendu 3D",
+      "Home staging virtuel",
+      "Retouche photo immobilière par IA",
     ],
     audience: [
       {
         "@type": "Audience",
         audienceType:
-          "Property owners, real estate agents, architects, designers and developers",
+          "Propriétaires, agents immobiliers, architectes, designers et promoteurs",
       },
     ],
     hasPart: [
@@ -257,7 +258,7 @@ export function buildWebSiteJsonLd() {
         url: `${SITE.url}/llms.txt`,
         encodingFormat: "text/plain",
         description:
-          "Concise AI-readable overview of public pages, services and citation rules.",
+          "Aperçu concis, lisible par les IA, des pages publiques, des services et des règles de citation.",
       },
       {
         "@type": "CreativeWork",
@@ -266,7 +267,7 @@ export function buildWebSiteJsonLd() {
         url: `${SITE.url}/llms-full.txt`,
         encodingFormat: "text/plain",
         description:
-          "Detailed AI-readable profile with services, prices, FAQ answers and rules for AI systems.",
+          "Profil détaillé, lisible par les IA, avec les services, les prix, les réponses de la FAQ et les règles pour les systèmes d’IA.",
       },
     ],
   };
@@ -362,20 +363,16 @@ export function buildServiceJsonLd(service: Service) {
     },
     areaServed: [
       {
+        "@type": "Country",
+        name: "France",
+      },
+      {
         "@type": "AdministrativeArea",
         name: "Europe",
       },
       {
-        "@type": "Country",
-        name: "United Kingdom",
-      },
-      {
-        "@type": "Country",
-        name: "United States",
-      },
-      {
         "@type": "Place",
-        name: "Worldwide",
+        name: "Monde entier",
       },
     ],
     ...(service.forSegments?.length
@@ -395,7 +392,7 @@ export function buildServiceJsonLd(service: Service) {
     offers: {
       "@type": "OfferCatalog",
       "@id": `${serviceUrl}#offers`,
-      name: `${service.name} — variants`,
+      name: `${service.name} — variantes`,
       itemListElement: service.variants.map((variant) => ({
         "@type": "Offer",
         name: variant.title,
@@ -423,7 +420,7 @@ export function buildServicesItemListJsonLd(services: Service[] = SERVICES) {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Elegant Render services",
+    name: "Services Elegant Render",
     url: absoluteUrl("/services"),
     itemListElement: services.map((service, index) => ({
       "@type": "ListItem",
@@ -442,9 +439,9 @@ export function buildOfferCatalogJsonLd(
     "@context": "https://schema.org",
     "@type": "OfferCatalog",
     "@id": `${absoluteUrl("/pricing")}#offer-catalog`,
-    name: "Elegant Render price list",
+    name: "Grille tarifaire Elegant Render",
     description:
-      "Base prices for architectural visualization are in EUR.",
+      "Les prix de base de la visualisation architecturale sont en euros.",
     url: absoluteUrl("/pricing"),
     provider: {
       "@id": SEO.organizationId,
@@ -487,9 +484,9 @@ export function buildOrderingHowToJsonLd() {
     "@context": "https://schema.org",
     "@type": "HowTo",
     "@id": `${SITE.url}/#ordering-howto`,
-    name: "How to order architectural visualization",
+    name: "Comment commander une visualisation architecturale",
     description:
-      "The Elegant Render process: get your estimate, send your materials, receive first drafts and finalize through revisions.",
+      "Le processus Elegant Render : obtenez votre devis, envoyez vos documents, recevez les premières versions et finalisez par les révisions.",
     inLanguage: SEO.htmlLang,
     provider: {
       "@id": SEO.organizationId,
@@ -511,7 +508,7 @@ export function buildHomeJsonLd(
     buildWebSiteJsonLd(),
     buildWebPageJsonLd({
       path: "/",
-      name: `${SITE.name} — architectural visualization`,
+      name: `${SITE.name} — visualisation architecturale`,
       description: SEO.defaultDescription,
     }),
     buildServicesItemListJsonLd(SERVICES.filter((service) => service.featured)),

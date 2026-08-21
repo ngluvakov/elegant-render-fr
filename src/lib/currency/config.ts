@@ -57,7 +57,7 @@ export type CurrencyRule = {
 };
 
 export const CURRENCY_RULES: Record<ChargeCurrency, CurrencyRule> = {
-  EUR: { code: "EUR", minorUnits: 2, roundUpIncrement: 1, ending: "increment", locale: "en-IE" },
+  EUR: { code: "EUR", minorUnits: 2, roundUpIncrement: 1, ending: "increment", locale: "fr-FR" },
   USD: { code: "USD", minorUnits: 2, roundUpIncrement: 10, ending: "nine", locale: "en-US" },
   GBP: { code: "GBP", minorUnits: 2, roundUpIncrement: 10, ending: "nine", locale: "en-GB" },
   CHF: { code: "CHF", minorUnits: 2, roundUpIncrement: 10, ending: "nine", locale: "de-CH" },

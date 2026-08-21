@@ -2,11 +2,11 @@
  * site.ts — Site-wide content constants (branding, navigation, copy).
  *
  * Exports SITE, NAV_MAIN, NAV_LEGAL, TRUST_SIGNALS, PLATFORM_PRINCIPLES,
- * ORDERING_STEPS, FAQ_ITEMS — all static English-language content for the
- * international (elegantrender.com) deployment.
+ * ORDERING_STEPS, FAQ_ITEMS — all static French-language content for the
+ * French (elegantrender.fr) deployment.
  *
- * Copy source of truth: docs/design-handoff/README.md (final English copy,
- * verbatim) and docs/copy-glossary.md for everything else.
+ * Copy source of truth: the English elegantrender.com build, translated to
+ * French (formal "vous"), with geo-targeting adapted to France.
  *
  * Used by: layout.tsx, site-header, site-footer, marketing pages,
  *          legal pages, robots.ts, sitemap.ts
@@ -16,10 +16,8 @@ import { SITE_FEATURES } from "@/lib/site-features";
 // Canonical site URL used by absoluteUrl(), robots.ts, sitemap.ts,
 // and the JSON-LD Organization schema below. Env-driven with a
 // fallback so the production build always resolves a real URL even
-// if NEXT_PUBLIC_SITE_URL isn't set. Setting the env var explicitly
-// is useful for non-prod environments (preview branches that should
-// look at a different host) without touching code.
-const DEFAULT_SITE_URL = "https://elegantrender.com";
+// if NEXT_PUBLIC_SITE_URL isn't set.
+const DEFAULT_SITE_URL = "https://elegantrender.fr";
 
 function normalizeSiteUrl(value: string): string {
   try {
@@ -41,11 +39,11 @@ export const SITE = {
   name: "Elegant Render",
   longName: "Elegant Render Platform",
   parentCompany: "White Rook DOO",
-  tagline: "A beautiful image, a clear price, an easier decision.",
+  tagline: "Une belle image, un prix clair, une décision plus simple.",
   description:
-    "Hand-crafted renders, virtual staging and visual makeovers for homes and properties — with prices you can see up front. A beautiful image, a clear price, an easier decision.",
+    "Des rendus réalisés à la main, du home staging virtuel et des transformations visuelles pour maisons et biens immobiliers — avec des prix affichés dès le départ. Une belle image, un prix clair, une décision plus simple.",
   url: RESOLVED_SITE_URL,
-  email: "info@elegantrender.com",
+  email: "info@elegantrender.fr",
   instagram: "https://www.instagram.com/elegantrender",
 } as const;
 
@@ -69,26 +67,21 @@ export const IMPRINT = {
   street: "JNA 25",
   postalCode: "26210",
   city: "Kovačica",
-  country: "Serbia",
+  country: "Serbie",
   taxId: "110339214", // PIB (tax ID)
   registryNumber: "21339393", // MB (company registry number)
   activityCode: "7410", // Specialized design activities
   foundedAt: "2017-11-22",
-  size: "Small enterprise",
-  email: "info@elegantrender.com",
-  privacyEmail: "info@elegantrender.com",
+  size: "Petite entreprise",
+  email: "info@elegantrender.fr",
+  privacyEmail: "info@elegantrender.fr",
   euRepresentative: null as null | {
     name: string;
     address: string;
     email: string;
   },
   // Bank account info that lands on proforma invoice PDFs as the
-  // payment instruction. Currently a placeholder — fill in real
-  // values when wire-transfer flow goes live (you can leave any
-  // single field empty and the PDF will skip its row).
-  // PayPal-only billing (owner decision 2026-07-07): no wire-transfer
-  // account. Populate these only if a wire-transfer offer flow is ever
-  // activated — proforma PDFs skip every empty row.
+  // payment instruction. PayPal-only billing: no wire-transfer account.
   bank: {
     name: "",
     iban: "",
@@ -102,10 +95,10 @@ export function formatAddress(): string {
 }
 
 export const TRUST_SIGNALS = [
-  "No packages outside the price list — every price comes straight from the official price list.",
-  "You know exactly what you pay and what you get — no hidden costs, no fine print.",
-  "Three revision rounds are included in every project, so the final result matches your vision.",
-  "Certified by TÜV Rheinland — ISO 9001:2015, ISO/IEC 27001:2022, ISO 50001:2018.",
+  "Aucun forfait en dehors de la grille tarifaire — chaque prix provient directement de la grille tarifaire officielle.",
+  "Vous savez exactement ce que vous payez et ce que vous recevez — pas de frais cachés, pas de clauses en petits caractères.",
+  "Trois séries de révisions sont incluses dans chaque projet, pour que le résultat final corresponde à votre vision.",
+  "Certifié par TÜV Rheinland — ISO 9001:2015, ISO/IEC 27001:2022, ISO 50001:2018.",
 ] as const;
 
 export type IsoCertification = {
@@ -119,12 +112,10 @@ export type IsoCertification = {
 
 export const CERTIFIER = {
   name: "TÜV Rheinland",
-  fullName: "TÜV Rheinland — German certification body",
+  fullName: "TÜV Rheinland — organisme de certification allemand",
   description:
-    "TÜV Rheinland is one of the world's oldest and most respected certification bodies, headquartered in Cologne and present in over 50 countries. Its certificates are considered an industry reference and require regular independent audits — not a one-off declaration, but a continuously maintained system.",
+    "TÜV Rheinland est l’un des organismes de certification les plus anciens et les plus respectés au monde, dont le siège est à Cologne et qui est présent dans plus de 50 pays. Ses certificats font référence dans le secteur et exigent des audits indépendants réguliers — non pas une déclaration ponctuelle, mais un système entretenu en continu.",
   // Combined Testmark badge issued for all three standards under a single ID.
-  // Source: hi-res CMYK PNG/PDF from TÜV's certification package, converted
-  // to sRGB WebP for web (1600px wide, ~65KB).
   badgeAsset: {
     src: "/legal/tuv-rheinland-certified.webp",
     pdfSrc: "/legal/tuv-rheinland-certified.pdf",
@@ -135,61 +126,59 @@ export const CERTIFIER = {
 } as const;
 
 const TUV_RHEINLAND_CERT_ID = "9000025319";
-// Certipedia is TÜV Rheinland's public certificate registry. The URL on
-// the badge QR code resolves here for all three standards (combined cert).
-const TUV_RHEINLAND_VERIFY_URL = `https://www.certipedia.com/quality_marks/${TUV_RHEINLAND_CERT_ID}?locale=en`;
+// Certipedia is TÜV Rheinland's public certificate registry.
+const TUV_RHEINLAND_VERIFY_URL = `https://www.certipedia.com/quality_marks/${TUV_RHEINLAND_CERT_ID}?locale=fr`;
 
 export const ISO_CERTIFICATIONS: IsoCertification[] = [
   {
     id: "iso-9001",
     code: "ISO 9001:2015",
-    domain: "Quality management",
+    domain: "Management de la qualité",
     description:
-      "The standard that defines requirements for a quality management system across processes and service delivery. Our workflow — from receiving materials, through revisions, to delivering final renders — is aligned with this standard, which means predictable quality and a consistent result on every project.",
+      "La norme qui définit les exigences d’un système de management de la qualité, des processus jusqu’à la prestation de service. Notre méthode de travail — de la réception des documents aux révisions, jusqu’à la livraison des rendus finaux — est alignée sur cette norme, ce qui signifie une qualité prévisible et un résultat constant sur chaque projet.",
     certNumber: TUV_RHEINLAND_CERT_ID,
     verifyUrl: TUV_RHEINLAND_VERIFY_URL,
   },
   {
     id: "iso-27001",
     code: "ISO/IEC 27001:2022",
-    domain: "Information security",
+    domain: "Sécurité de l’information",
     description:
-      "The standard for information security management. Your files (floor plans, photos and personal data in the portal) are handled under certified procedures: controlled access, encryption in transit, defined retention and incident response processes. This standard is also the basis of our GDPR compliance.",
+      "La norme du management de la sécurité de l’information. Vos fichiers (plans, photos et données personnelles dans le portail) sont traités selon des procédures certifiées : accès contrôlé, chiffrement en transit, durées de conservation définies et processus de réponse aux incidents. Cette norme est aussi le socle de notre conformité au RGPD.",
     certNumber: TUV_RHEINLAND_CERT_ID,
     verifyUrl: TUV_RHEINLAND_VERIFY_URL,
   },
   {
     id: "iso-50001",
     code: "ISO 50001:2018",
-    domain: "Energy management",
+    domain: "Management de l’énergie",
     description:
-      "The standard for systematic energy-efficiency management. Our render capacity and internal infrastructure track and optimize energy consumption, reducing the environmental footprint of digital architectural production.",
+      "La norme du management systématique de l’efficacité énergétique. Notre capacité de rendu et notre infrastructure interne suivent et optimisent la consommation d’énergie, réduisant ainsi l’empreinte environnementale de la production architecturale numérique.",
     certNumber: TUV_RHEINLAND_CERT_ID,
     verifyUrl: TUV_RHEINLAND_VERIFY_URL,
   },
 ];
 
 /**
- * The four ordering-process steps — copy per the design handoff Process
- * section (final English, verbatim). Rendered on the homepage Process
+ * The four ordering-process steps — rendered on the homepage Process
  * section and in the HowTo JSON-LD.
  */
 export const PLATFORM_PRINCIPLES = [
   {
-    title: "1. Get your estimate",
-    text: "Pick a service and see the starting price immediately — and exactly what it includes.",
+    title: "1. Obtenez votre devis",
+    text: "Choisissez un service et voyez immédiatement le prix de départ — et exactement ce qu’il comprend.",
   },
   {
-    title: "2. Send your materials",
-    text: "The form asks only for what we need to start: floor plans, photos, style references and a short goal.",
+    title: "2. Envoyez vos documents",
+    text: "Le formulaire ne demande que ce dont nous avons besoin pour commencer : plans, photos, références de style et un objectif en quelques mots.",
   },
   {
-    title: "3. Receive first drafts",
-    text: "For standard projects, first drafts arrive in 3–5 working days, with clear communication through the portal.",
+    title: "3. Recevez les premières versions",
+    text: "Pour les projets standards, les premières versions arrivent sous 3 à 5 jours ouvrés, avec une communication claire via le portail.",
   },
   {
-    title: "4. Finalize through revisions",
-    text: "Three revision rounds are included. Then you download the final files and project documentation.",
+    title: "4. Finalisez par les révisions",
+    text: "Trois séries de révisions sont incluses. Vous téléchargez ensuite les fichiers finaux et la documentation du projet.",
   },
 ] as const;
 
@@ -198,58 +187,57 @@ export type NavItem = { href: string; label: string };
 export const NAV_MAIN: NavItem[] = [
   { href: "/ai-studio", label: "AI Studio" },
   { href: "/services", label: "Services" },
-  { href: "/pricing", label: "Pricing" },
+  { href: "/pricing", label: "Tarifs" },
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Portfolio" }]
     : []),
-  { href: "/about", label: "About us" },
+  { href: "/about", label: "À propos" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
 ];
 
 const STRUCTURED_DATA_DESCRIPTION =
-  "Professional architectural visualization — 3D interior and exterior renders, virtual staging and virtual renovation.";
+  "Visualisation architecturale professionnelle — rendus 3D d’intérieur et d’extérieur, home staging virtuel et rénovation virtuelle.";
 
 export const NAV_LEGAL: NavItem[] = [
-  { href: "/legal", label: "Legal information" },
-  { href: "/legal/imprint", label: "Imprint" },
-  { href: "/legal/terms", label: "Terms of service" },
-  { href: "/legal/privacy", label: "Privacy policy" },
-  { href: "/legal/cookies", label: "Cookie policy" },
-  { href: "/legal/withdrawal#online-withdrawal", label: "Withdraw from a contract" },
-  { href: "/legal/refunds", label: "Refunds policy" },
-  { href: "/legal/complaints", label: "Complaints procedure" },
-  { href: "/legal/delivery", label: "Digital delivery" },
-  { href: "/legal/certificates", label: "Certificates and standards" },
+  { href: "/legal", label: "Informations légales" },
+  { href: "/legal/imprint", label: "Mentions légales" },
+  { href: "/legal/terms", label: "CGV" },
+  { href: "/legal/privacy", label: "Politique de confidentialité" },
+  { href: "/legal/cookies", label: "Politique relative aux cookies" },
+  { href: "/legal/withdrawal#online-withdrawal", label: "Droit de rétractation" },
+  { href: "/legal/refunds", label: "Remboursements" },
+  { href: "/legal/complaints", label: "Procédure de réclamation" },
+  { href: "/legal/delivery", label: "Livraison numérique" },
+  { href: "/legal/certificates", label: "Certificats et normes" },
 ];
 
-// Four concrete model-first savings examples — copy per the design handoff
-// "Model-first pricing" section (final English, verbatim). The ModelFirst
-// component renders this list as the 2×2 card grid next to the dark panel.
+// Four concrete model-first savings examples — rendered as the 2×2 card grid
+// next to the dark panel.
 export const ORDERING_STEPS = [
   {
     step: "01",
-    title: "A new camera angle",
+    title: "Un nouvel angle de vue",
     description:
-      "Exteriors start at €250 including the full 3D model. Each additional angle of the same building costs 81% less.",
+      "Les rendus d’extérieur commencent à 250 €, modèle 3D complet inclus. Chaque angle supplémentaire du même bâtiment coûte 81 % de moins.",
   },
   {
     step: "02",
-    title: "More floors",
+    title: "Étages supplémentaires",
     description:
-      "The first interior floor covers up to 10 rooms. Every further floor in the same building gets an automatic 30% discount.",
+      "Le premier étage en intérieur couvre jusqu’à 10 pièces. Chaque étage supplémentaire du même bâtiment bénéficie d’une remise automatique de 30 %.",
   },
   {
     step: "03",
     title: "Animation",
     description:
-      "If we already built the model on a previous project, the per-second animation price drops by 33%.",
+      "Si nous avons déjà construit le modèle lors d’un projet précédent, le prix par seconde d’animation baisse de 33 %.",
   },
   {
     step: "04",
-    title: "Residential buildings",
+    title: "Immeubles résidentiels",
     description:
-      "For developers: the first apartment type is full price, and every further type gets a progressive discount of up to 44%.",
+      "Pour les promoteurs : le premier type d’appartement est au plein tarif, et chaque type supplémentaire bénéficie d’une remise progressive pouvant atteindre 44 %.",
   },
 ] as const;
 
@@ -258,95 +246,95 @@ export const HOW_IT_WORKS = ORDERING_STEPS;
 
 export const FAQ_ITEMS = [
   {
-    question: "How long does one render take?",
+    question: "Combien de temps prend un rendu ?",
     answer:
-      "For standard projects — say, a single-room interior — first drafts arrive within 3 to 5 working days. For larger projects you get an exact timeline with the quote, before any work starts.",
+      "Pour les projets standards — par exemple l’intérieur d’une seule pièce — les premières versions arrivent sous 3 à 5 jours ouvrés. Pour les projets plus importants, vous recevez un calendrier précis avec le devis, avant le début du travail.",
   },
   {
-    question: "Does the price include revisions?",
+    question: "Le prix comprend-il les révisions ?",
     answer:
-      "Yes. While the industry standard is 1–2 rounds, we include 3 revision rounds in the base price. We want you fully happy with the result.",
+      "Oui. Alors que le standard du secteur est de 1 à 2 séries, nous incluons 3 séries de révisions dans le prix de base. Nous voulons que vous soyez pleinement satisfait du résultat.",
   },
   {
-    question: "What materials should I send you?",
+    question: "Quels documents dois-je vous envoyer ?",
     answer:
-      "Floor plans (2D or PDF), photos of the current state, and style or mood references are the most useful. The order form lets you upload everything at once.",
+      "Les plans (2D ou PDF), les photos de l’état actuel et des références de style ou d’ambiance sont les plus utiles. Le formulaire de commande vous permet de tout importer en une seule fois.",
   },
   {
-    question: "Do you issue invoices and work under contract?",
+    question: "Émettez-vous des factures et travaillez-vous sous contrat ?",
     answer:
-      "Yes. Elegant Render is part of White Rook DOO and operates under EU-compatible invoicing. Every project comes with proper documentation.",
+      "Oui. Elegant Render fait partie de White Rook DOO et applique une facturation compatible avec les règles de l’UE. Chaque projet s’accompagne d’une documentation en bonne et due forme.",
   },
   {
-    question: "What if my project is bigger than usual?",
+    question: "Et si mon projet est plus grand que la moyenne ?",
     answer:
-      "For residential buildings and large development projects we apply progressive discounts — for example on repeated apartment types. Send us an inquiry and you'll get a precise calculation.",
+      "Pour les immeubles résidentiels et les grands projets immobiliers, nous appliquons des remises progressives — par exemple sur les types d’appartements répétés. Envoyez-nous une demande et vous recevrez un calcul précis.",
   },
 ] as const;
 
 export const SERVICES_PAGE_FAQS = [
   {
-    question: "How do I know which service I need?",
+    question: "Comment savoir quel service me convient ?",
     answer:
-      "Send us photos, a floor plan or a short description of your goal. Based on that we suggest the most logical service and a price range.",
+      "Envoyez-nous des photos, un plan ou une courte description de votre objectif. Sur cette base, nous vous proposons le service le plus logique et une fourchette de prix.",
   },
   {
-    question: "Are the prices final?",
+    question: "Les prix sont-ils définitifs ?",
     answer:
-      "The page shows starting prices. The final price depends on scope, number of views, level of detail and input materials.",
+      "La page affiche des prix de départ. Le prix final dépend de l’étendue du projet, du nombre de vues, du niveau de détail et des documents fournis.",
   },
   {
-    question: "How many revision rounds are included?",
+    question: "Combien de séries de révisions sont incluses ?",
     answer:
-      "Three revision rounds are included in the base price of every service, unless the scope of the project changes.",
+      "Trois séries de révisions sont incluses dans le prix de base de chaque service, sauf si l’étendue du projet change.",
   },
   {
-    question: "Do you only work locally?",
+    question: "Travaillez-vous uniquement en local ?",
     answer:
-      "Elegant Render delivers across Europe and beyond. The entire process — from estimate to final files — runs online through your project portal.",
+      "Elegant Render livre partout en France et au-delà. L’ensemble du processus — du devis aux fichiers finaux — se déroule en ligne via votre portail de projet.",
   },
 ] as const;
 
 export const AI_STUDIO_FAQS = [
   {
-    question: "Does AI Studio produce a 3D render?",
+    question: "AI Studio produit-il un rendu 3D ?",
     answer:
-      "No. AI Studio edits existing photographs. If the space doesn't exist yet or you need a fully controlled architectural view, a classic render is the better choice.",
+      "Non. AI Studio retouche des photographies existantes. Si l’espace n’existe pas encore ou si vous avez besoin d’une vue architecturale entièrement contrôlée, un rendu classique est le meilleur choix.",
   },
   {
-    question: "When should I use a mask?",
+    question: "Quand dois-je utiliser un masque ?",
     answer:
-      "Use a mask when you want the edit to affect only part of the image: a larger object, a specific wall, part of the floor or one zone of the room.",
+      "Utilisez un masque lorsque la retouche ne doit concerner qu’une partie de l’image : un objet volumineux, un mur précis, une partie du sol ou une zone de la pièce.",
   },
   {
-    question: "What is the difference between staging, renovation and redesign?",
+    question: "Quelle est la différence entre staging, rénovation et redesign ?",
     answer:
-      "Staging adds furniture to an empty space. Renovation changes the materials and elements of the space. Redesign changes the style and atmosphere of an existing room.",
+      "Le staging ajoute des meubles dans un espace vide. La rénovation modifie les matériaux et les éléments de l’espace. Le redesign change le style et l’atmosphère d’une pièce existante.",
   },
   {
-    question: "When do I use furniture/decor insertion or replacement?",
+    question: "Quand utiliser l’insertion ou le remplacement de meubles/décoration ?",
     answer:
-      "When you have a photo of the space and separate images of a specific piece of furniture, decor, lighting, plant, artwork or appliance. You can add several angles of the same model/color/material, and for replacement you mark the existing piece with a mask.",
+      "Lorsque vous avez une photo de l’espace et des images séparées d’un meuble, d’un objet de décoration, d’un luminaire, d’une plante, d’une œuvre d’art ou d’un appareil précis. Vous pouvez ajouter plusieurs angles du même modèle/de la même couleur/du même matériau, et pour un remplacement, vous marquez l’élément existant avec un masque.",
   },
   {
-    question: "Can I process a result again?",
+    question: "Puis-je retravailler un résultat ?",
     answer:
-      "Yes. A result can become the new input image for a small correction or further editing. If you continue the same edit type, the system currently allows one free retry.",
+      "Oui. Un résultat peut devenir la nouvelle image d’entrée pour une petite correction ou une retouche supplémentaire. Si vous poursuivez le même type de retouche, le système autorise actuellement un nouvel essai gratuit.",
   },
   {
-    question: "What if the edit fails?",
+    question: "Que se passe-t-il si la retouche échoue ?",
     answer:
-      "If the system fails to complete the edit, the charged credits are returned to your AI Studio balance. If the result isn't good enough, continue editing from the result and use the available free retry for the same edit type.",
+      "Si le système ne parvient pas à terminer la retouche, les crédits débités sont recrédités sur votre solde AI Studio. Si le résultat n’est pas assez bon, poursuivez la retouche à partir du résultat et utilisez l’essai gratuit disponible pour le même type de retouche.",
   },
   {
-    question: "How long are files available?",
+    question: "Combien de temps les fichiers restent-ils disponibles ?",
     answer:
-      "AI Studio files are stored for 30 days. During that period you can download the result from your history or use it as a new input image.",
+      "Les fichiers AI Studio sont conservés pendant 30 jours. Pendant cette période, vous pouvez télécharger le résultat depuis votre historique ou l’utiliser comme nouvelle image d’entrée.",
   },
   {
-    question: "Do I get an invoice for credit purchases?",
+    question: "Recevrai-je une facture pour les achats de crédits ?",
     answer:
-      "Yes. Elegant Render is part of White Rook DOO and issues proper documentation for credit purchases based on the buyer's details.",
+      "Oui. Elegant Render fait partie de White Rook DOO et délivre une documentation en bonne et due forme pour les achats de crédits, sur la base des coordonnées de l’acheteur.",
   },
 ] as const;
 
@@ -379,7 +367,7 @@ export function buildOrganizationJsonLd() {
         "@type": "ContactPoint",
         contactType: "customer support",
         email: SITE.email,
-        availableLanguage: ["en"],
+        availableLanguage: ["fr"],
       },
     ],
     sameAs: [SITE.instagram],
@@ -397,14 +385,14 @@ export function buildOrganizationJsonLd() {
         closes: "17:00",
       },
     ],
-    areaServed: ["EU", "GB", "US", "Worldwide"],
+    areaServed: ["FR", "EU", "Worldwide"],
     currenciesAccepted: "EUR",
     priceRange: "€€",
     serviceType: [
-      "Architectural visualization",
-      "3D rendering",
-      "Virtual staging",
-      "AI real estate photo editing",
+      "Visualisation architecturale",
+      "Rendu 3D",
+      "Home staging virtuel",
+      "Retouche photo immobilière par IA",
     ],
     parentOrganization: {
       "@type": "Organization",

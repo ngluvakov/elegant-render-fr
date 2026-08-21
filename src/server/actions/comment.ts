@@ -23,14 +23,14 @@ export async function createCommentAction(
   body: string,
 ): Promise<CommentResult> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "You are not signed in." };
+  if (!session?.user?.id) return { error: "Vous n’êtes pas connecté." };
 
-  if (!body.trim()) return { error: "The message cannot be empty." };
+  if (!body.trim()) return { error: "Le message ne peut pas être vide." };
 
   // Verify ownership
   const order = await prisma.order.findUnique({ where: { id: orderId } });
   if (!order || order.userId !== session.user.id) {
-    return { error: "Order not found." };
+    return { error: "Commande introuvable." };
   }
 
   const comment = await prisma.orderComment.create({

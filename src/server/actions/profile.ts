@@ -37,7 +37,7 @@ export async function updateProfileAction(
   formData: FormData,
 ): Promise<ProfileState> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "You are not signed in." };
+  if (!session?.user?.id) return { error: "Vous n’êtes pas connecté." };
 
   const name = formData.get("name") as string;
   const phone = (formData.get("phone") as string) || null;
@@ -58,7 +58,7 @@ export async function updateProfileAction(
   const companyAddress = ((formData.get("billingCompanyAddress") as string) || "")
     .trim();
 
-  if (!name) return { error: "Name is required." };
+  if (!name) return { error: "Le nom est requis." };
 
   const buyerError = validateBuyerInfo({
     buyerType: billingBuyerType,
@@ -84,7 +84,7 @@ export async function updateProfileAction(
 
   if (newPassword) {
     if (newPassword.length < 8) {
-      return { error: "The new password must be at least 8 characters long." };
+      return { error: "Le nouveau mot de passe doit contenir au moins 8 caractères." };
     }
     data.passwordHash = await bcrypt.hash(newPassword, 12);
   }
@@ -126,17 +126,17 @@ export type DeletionState = {
  */
 export async function requestAccountDeletion(): Promise<DeletionState> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "You are not signed in." };
+  if (!session?.user?.id) return { error: "Vous n’êtes pas connecté." };
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { email: true, name: true, deletionRequestedAt: true },
   });
-  if (!user) return { error: "User not found." };
+  if (!user) return { error: "Utilisateur introuvable." };
   if (user.deletionRequestedAt) {
     return {
       error:
-        "A deletion request is already registered. Track its status on your profile page.",
+        "Une demande de suppression est déjà enregistrée. Suivez son statut sur votre page de profil.",
     };
   }
 
@@ -162,14 +162,14 @@ export async function requestAccountDeletion(): Promise<DeletionState> {
 
 export async function cancelAccountDeletion(): Promise<DeletionState> {
   const session = await auth();
-  if (!session?.user?.id) return { error: "You are not signed in." };
+  if (!session?.user?.id) return { error: "Vous n’êtes pas connecté." };
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { deletionRequestedAt: true, email: true },
   });
   if (!user?.deletionRequestedAt) {
-    return { error: "There is no active deletion request." };
+    return { error: "Il n’y a pas de demande de suppression active." };
   }
 
   await prisma.user.update({

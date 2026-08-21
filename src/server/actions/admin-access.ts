@@ -17,7 +17,7 @@ import {
 export async function saveUserAdminAccess(formData: FormData) {
   const actor = await requirePermission("ADMIN_MANAGE");
   const userId = text(formData, "userId");
-  if (!userId) throw new Error("User not found.");
+  if (!userId) throw new Error("Utilisateur introuvable.");
 
   const preset = normalizePreset(text(formData, "preset"));
   const permissions =
@@ -29,7 +29,7 @@ export async function saveUserAdminAccess(formData: FormData) {
     actor.id === userId &&
     !hasAdminPermission(permissions, "ADMIN_MANAGE")
   ) {
-    throw new Error("You cannot remove your own admin access permission.");
+    throw new Error("Vous ne pouvez pas retirer votre propre permission d’accès administrateur.");
   }
 
   const before = await prisma.user.findUnique({

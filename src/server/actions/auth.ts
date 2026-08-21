@@ -45,16 +45,16 @@ export async function signUpAction(
   const callbackUrl = sanitizeAuthCallback(formData.get("callbackUrl"));
 
   if (!name || !email || !password) {
-    return { error: "All fields are required." };
+    return { error: "Tous les champs sont requis." };
   }
 
   if (password.length < 8) {
-    return { error: "The password must be at least 8 characters long." };
+    return { error: "Le mot de passe doit contenir au moins 8 caractères." };
   }
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    return { error: "An account with this email address already exists." };
+    return { error: "Un compte avec cette adresse e-mail existe déjà." };
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
@@ -104,7 +104,7 @@ export async function signInAction(
   const callbackUrl = sanitizeAuthCallback(formData.get("callbackUrl"));
 
   if (!email || !password) {
-    return { error: "Email and password are required." };
+    return { error: "L’adresse e-mail et le mot de passe sont requis." };
   }
 
   try {
@@ -114,7 +114,7 @@ export async function signInAction(
       redirect: false,
     });
   } catch {
-    return { error: "Incorrect email or password." };
+    return { error: "Adresse e-mail ou mot de passe incorrect." };
   }
 
   redirect(callbackUrl);
@@ -129,7 +129,7 @@ export async function forgotPasswordAction(
   const email = (formData.get("email") as string)?.trim().toLowerCase();
 
   if (!email) {
-    return { error: "Email address is required." };
+    return { error: "L’adresse e-mail est requise." };
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
@@ -138,7 +138,7 @@ export async function forgotPasswordAction(
   if (!user) {
     return {
       success: true,
-      message: "If the account exists, we sent a password reset link.",
+      message: "Si le compte existe, nous avons envoyé un lien de réinitialisation du mot de passe.",
     };
   }
 
@@ -154,12 +154,12 @@ export async function forgotPasswordAction(
   try {
     await sendPasswordResetEmail(email, token);
   } catch {
-    return { error: "Failed to send the email. Please try again." };
+    return { error: "L’envoi de l’e-mail a échoué. Veuillez réessayer." };
   }
 
   return {
     success: true,
-    message: "If the account exists, we sent a password reset link.",
+    message: "Si le compte existe, nous avons envoyé un lien de réinitialisation du mot de passe.",
   };
 }
 
@@ -173,11 +173,11 @@ export async function resetPasswordAction(
   const password = formData.get("password") as string;
 
   if (!token || !password) {
-    return { error: "All fields are required." };
+    return { error: "Tous les champs sont requis." };
   }
 
   if (password.length < 8) {
-    return { error: "The password must be at least 8 characters long." };
+    return { error: "Le mot de passe doit contenir au moins 8 caractères." };
   }
 
   const verificationToken = await prisma.verificationToken.findUnique({
@@ -185,7 +185,7 @@ export async function resetPasswordAction(
   });
 
   if (!verificationToken || verificationToken.expires < new Date()) {
-    return { error: "The link has expired or is invalid. Request a new one." };
+    return { error: "Le lien a expiré ou n’est pas valide. Demandez-en un nouveau." };
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
@@ -213,7 +213,7 @@ export async function requestPortalAccessAction(
   orderId: string,
 ): Promise<AuthState> {
   if (!orderId) {
-    return { error: "Order not found." };
+    return { error: "Commande introuvable." };
   }
 
   const order = await prisma.order.findUnique({
@@ -222,7 +222,7 @@ export async function requestPortalAccessAction(
   });
 
   if (!order || !order.user.email) {
-    return { error: "Order not found." };
+    return { error: "Commande introuvable." };
   }
 
   const token = generateToken();
@@ -251,7 +251,7 @@ export async function requestPortalAccessAction(
 
   return {
     success: true,
-    message: "We sent a portal access link to your email.",
+    message: "Nous avons envoyé un lien d’accès à l’espace client à votre adresse e-mail.",
   };
 }
 
@@ -285,7 +285,7 @@ export async function verifyEmailAction(token: string): Promise<AuthState> {
   });
 
   if (!verificationToken || verificationToken.expires < new Date()) {
-    return { error: "The verification link has expired or is invalid." };
+    return { error: "Le lien de vérification a expiré ou n’est pas valide." };
   }
 
   await prisma.user.update({
@@ -302,5 +302,5 @@ export async function verifyEmailAction(token: string): Promise<AuthState> {
     },
   });
 
-  return { success: true, message: "Your email has been confirmed." };
+  return { success: true, message: "Votre adresse e-mail a été confirmée." };
 }

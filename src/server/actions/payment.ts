@@ -148,7 +148,7 @@ export async function finishSuccessfulPayment(
       orderId,
       "closed",
       undefined,
-      "AI credits activated — order closed",
+      "Crédits IA activés — commande clôturée",
     );
   }
 
@@ -191,21 +191,21 @@ export async function createPayPalOrderAction(
   orderId: string,
 ): Promise<PaymentResult> {
   const order = await prisma.order.findUnique({ where: { id: orderId } });
-  if (!order) return { error: "Order was not found." };
+  if (!order) return { error: "La commande est introuvable." };
 
   // Guest checkout has no session (knowing the fresh orderId is the
   // capability), but when a session exists it must belong to the
   // order's owner.
   const session = await auth();
   if (session?.user?.id && session.user.id !== order.userId) {
-    return { error: "You do not have access to this order." };
+    return { error: "Vous n’avez pas accès à cette commande." };
   }
 
   if (order.paymentStatus === "completed" || order.status === "paid") {
-    return { error: "This order has already been paid." };
+    return { error: "Cette commande a déjà été payée." };
   }
   if (order.status !== "draft" && order.status !== "awaiting_payment") {
-    return { error: "This order is not in a payable state." };
+    return { error: "Cette commande n’est pas dans un état permettant le paiement." };
   }
 
   const identifier = await getServerActionIdentifier();
@@ -225,7 +225,7 @@ export async function createPayPalOrderAction(
       level: "error",
       extra: { orderId, chargedCurrency: order.chargedCurrency },
     });
-    return { error: "Order has no charge snapshot. Please contact us." };
+    return { error: "Cette commande n’a pas de montant enregistré. Veuillez nous contacter." };
   }
 
   try {
@@ -262,7 +262,7 @@ export async function createPayPalOrderAction(
       currency: order.chargedCurrency,
       referenceId: order.orderNumber,
       customId: order.id,
-      description: "Elegant Render — architectural visualization",
+      description: "Elegant Render — visualisation architecturale",
       requestId: `order:${order.id}:${attempt}`,
     });
 
@@ -277,7 +277,7 @@ export async function createPayPalOrderAction(
       },
     });
     if (persisted.count === 0) {
-      return { error: "This order has already been paid." };
+      return { error: "Cette commande a déjà été payée." };
     }
 
     if (order.status === "draft") {
@@ -286,7 +286,7 @@ export async function createPayPalOrderAction(
           orderId,
           "awaiting_payment",
           undefined,
-          "PayPal payment started",
+          "Paiement PayPal démarré",
         );
       } catch (err) {
         Sentry.captureException(err, {
@@ -303,7 +303,7 @@ export async function createPayPalOrderAction(
       extra: { orderId },
     });
     return {
-      error: "Could not start the PayPal payment. Please try again.",
+      error: "Impossible de démarrer le paiement PayPal. Veuillez réessayer.",
     };
   }
 }
@@ -313,11 +313,11 @@ export async function capturePayPalOrderAction(
   paypalOrderId: string,
 ): Promise<PaymentResult> {
   const order = await prisma.order.findUnique({ where: { id: orderId } });
-  if (!order) return { error: "Order was not found." };
+  if (!order) return { error: "La commande est introuvable." };
 
   const session = await auth();
   if (session?.user?.id && session.user.id !== order.userId) {
-    return { error: "You do not have access to this order." };
+    return { error: "Vous n’avez pas accès à cette commande." };
   }
 
   // Pre-flight idempotency: already settled (double click, or a
@@ -331,7 +331,7 @@ export async function capturePayPalOrderAction(
   // Only capture the PayPal order we created for this Order — a
   // client-supplied foreign id must never complete someone's payment.
   if (order.paymentProvider !== "paypal" || order.paymentId !== paypalOrderId) {
-    return { error: "Payment reference mismatch. Please refresh and try again." };
+    return { error: "La référence de paiement ne correspond pas. Actualisez la page et réessayez." };
   }
 
   try {
@@ -362,7 +362,7 @@ export async function capturePayPalOrderAction(
     }
 
     if (result.captureStatus !== "COMPLETED") {
-      return { error: "PayPal did not complete the payment. You have not been charged." };
+      return { error: "PayPal n’a pas finalisé le paiement. Vous n’avez pas été débité." };
     }
 
     // Amount check — fail-closed. PayPal captures the created order's
@@ -385,7 +385,7 @@ export async function capturePayPalOrderAction(
         },
       });
       return {
-        error: "Payment amount mismatch — our team has been notified.",
+        error: "Le montant du paiement ne correspond pas — notre équipe a été informée.",
       };
     }
 
@@ -421,10 +421,10 @@ export async function capturePayPalOrderAction(
           orderId,
           "awaiting_payment",
           undefined,
-          "PayPal payment started",
+          "Paiement PayPal démarré",
         );
       }
-      await transitionOrder(orderId, "paid", undefined, "PayPal payment captured");
+      await transitionOrder(orderId, "paid", undefined, "Paiement PayPal capturé");
     } catch (err) {
       // Status-machine hiccups must not fail a captured payment.
       Sentry.captureException(err, {
@@ -442,7 +442,7 @@ export async function capturePayPalOrderAction(
       extra: { orderId, paypalOrderId },
     });
     return {
-      error: "The payment could not be confirmed. Please try again.",
+      error: "Le paiement n’a pas pu être confirmé. Veuillez réessayer.",
     };
   }
 }
@@ -453,7 +453,7 @@ export async function mockCardPaymentAction(
   orderId: string,
 ): Promise<PaymentResult> {
   const order = await prisma.order.findUnique({ where: { id: orderId } });
-  if (!order) return { error: "Order was not found." };
+  if (!order) return { error: "La commande est introuvable." };
 
   // Idempotency guard 1: pre-flight. Run before the "valid status"
   // check so a double-clicked already-paid order returns success
@@ -465,7 +465,7 @@ export async function mockCardPaymentAction(
   }
 
   if (order.status !== "draft" && order.status !== "awaiting_payment") {
-    return { error: "This order is not in a payable state." };
+    return { error: "Cette commande n’est pas dans un état permettant le paiement." };
   }
 
   try {
@@ -492,7 +492,7 @@ export async function mockCardPaymentAction(
       return paymentSuccessResult(orderId, "mock_card_race");
     }
 
-    await transitionOrder(orderId, "paid", undefined, "Card payment confirmed (test)");
+    await transitionOrder(orderId, "paid", undefined, "Paiement par carte confirmé (test)");
 
     await finishSuccessfulPayment(orderId);
 
@@ -503,7 +503,7 @@ export async function mockCardPaymentAction(
       extra: { orderId },
     });
     return {
-      error: `Error: ${err instanceof Error ? err.message : "Unknown error"}`,
+      error: `Erreur : ${err instanceof Error ? err.message : "erreur inconnue"}`,
     };
   }
 }

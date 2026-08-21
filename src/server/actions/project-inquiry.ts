@@ -107,7 +107,7 @@ function validateFiles(
 ): ProjectInquiryFileInput[] | { error: string } {
   if (!files?.length) return [];
   if (files.length > 12) {
-    return { error: "You can attach up to 12 files." };
+    return { error: "Vous pouvez joindre jusqu’à 12 fichiers." };
   }
 
   let total = 0;
@@ -121,16 +121,16 @@ function validateFiles(
     const fileSize = Number(file.fileSize);
 
     if (!fileName || !mimeType || !storagePath || !Number.isFinite(fileSize)) {
-      return { error: "One of the attached files is invalid." };
+      return { error: "L’un des fichiers joints n’est pas valide." };
     }
     if (fileSize <= 0 || fileSize > PROJECT_INQUIRY_MAX_FILE_BYTES) {
-      return { error: "One of the files exceeds the 50MB limit." };
+      return { error: "L’un des fichiers dépasse la limite de 50 Mo." };
     }
     if (!isAllowedProjectInquiryMimeType(mimeType)) {
-      return { error: "Supported file types are JPG, PNG, WebP, TIFF and PDF." };
+      return { error: "Les types de fichiers pris en charge sont JPG, PNG, WebP, TIFF et PDF." };
     }
     if (!storagePath.startsWith(`inquiries/${draftId}/`)) {
-      return { error: "The attached file path is invalid." };
+      return { error: "Le chemin du fichier joint n’est pas valide." };
     }
     if (seen.has(storagePath)) continue;
     seen.add(storagePath);
@@ -139,7 +139,7 @@ function validateFiles(
   }
 
   if (total > PROJECT_INQUIRY_MAX_TOTAL_BYTES) {
-    return { error: "The total size of the files exceeds 100MB." };
+    return { error: "La taille totale des fichiers dépasse 100 Mo." };
   }
 
   return cleaned;
@@ -161,7 +161,7 @@ export async function submitProjectInquiry(
   if (!limit.ok) return { error: rateLimitMessage(limit.retryAfterSeconds) };
 
   if (!input || typeof input !== "object") {
-    return { error: "Invalid request." };
+    return { error: "Requête non valide." };
   }
 
   // Honeypot: a hidden `company_website` field that no human sees. If a bot
@@ -178,21 +178,21 @@ export async function submitProjectInquiry(
     (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
   const captcha = await verifyTurnstile(input.turnstileToken, ip);
   if (!captcha.ok) {
-    return { error: "Captcha verification failed. Please try again." };
+    return { error: "La vérification du captcha a échoué. Veuillez réessayer." };
   }
 
   const draftId = cleanRequired(input.draftId, 80);
-  if (!validDraftId(draftId)) return { error: "Invalid inquiry draft." };
+  if (!validDraftId(draftId)) return { error: "Brouillon de demande non valide." };
 
   const contactName = cleanRequired(input.contactName, 120);
-  if (contactName.length < 2) return { error: "Name is required." };
+  if (contactName.length < 2) return { error: "Le nom est requis." };
 
   const email = cleanRequired(input.email, 200).toLowerCase();
-  if (!validEmail(email)) return { error: "Email address is invalid." };
+  if (!validEmail(email)) return { error: "L’adresse e-mail n’est pas valide." };
 
   const message = cleanRequired(input.message, 4000);
   if (message.length < 8) {
-    return { error: "Add at least a short project description." };
+    return { error: "Ajoutez au moins une brève description du projet." };
   }
 
   const files = validateFiles(input.files, draftId);
@@ -342,7 +342,7 @@ async function assertAdmin(): Promise<{ ok: true } | { error: string }> {
     await requirePermission("INQUIRIES_MANAGE");
     return { ok: true };
   } catch {
-    return { error: "You do not have access." };
+    return { error: "Vous n’y avez pas accès." };
   }
 }
 
@@ -352,7 +352,7 @@ export async function updateProjectInquiryStatus(
 ): Promise<{ ok: true } | { error: string }> {
   const admin = await assertAdmin();
   if ("error" in admin) return admin;
-  if (!VALID_STATUSES.includes(status)) return { error: "Unknown status." };
+  if (!VALID_STATUSES.includes(status)) return { error: "Statut inconnu." };
 
   await prisma.projectInquiry.update({
     where: { id: inquiryId },
@@ -382,7 +382,7 @@ export async function retryProjectInquiryBitrixSync(
       error:
         err instanceof Error
           ? err.message
-          : "Bitrix sync failed this time. Please try again.",
+          : "La synchronisation Bitrix a échoué cette fois. Veuillez réessayer.",
     };
   }
 }

@@ -71,7 +71,7 @@ export async function refundPayPalPaymentAction(
           orderId,
           "refunded",
           admin.id,
-          "PayPal refund issued",
+          "Remboursement PayPal émis",
         );
       } catch (err) {
         Sentry.captureException(err, {

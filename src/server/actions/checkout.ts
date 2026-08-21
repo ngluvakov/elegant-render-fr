@@ -23,7 +23,7 @@ export async function ensureCheckoutUser(
   email: string,
 ): Promise<CheckoutUserResult> {
   if (!name || !email) {
-    return { error: "Name and email are required." };
+    return { error: "Le nom et l’adresse e-mail sont requis." };
   }
 
   const normalizedEmail = email.trim().toLowerCase();
@@ -34,7 +34,7 @@ export async function ensureCheckoutUser(
   if (existing) {
     if (existing.passwordHash) {
       return {
-        error: "An account with this email already exists. Sign in to continue.",
+        error: "Un compte avec cette adresse e-mail existe déjà. Connectez-vous pour continuer.",
         isExisting: true,
       };
     }

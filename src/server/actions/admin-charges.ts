@@ -44,7 +44,7 @@ export async function adminCreateCharge(args: {
   await requirePermission("FINANCE_MANAGE");
 
   if (!args.items.length) {
-    return { error: "There must be at least one item." };
+    return { error: "Il doit y avoir au moins un article." };
   }
 
   const normalized = args.items.map((item) => {
@@ -60,13 +60,13 @@ export async function adminCreateCharge(args: {
   });
 
   for (const item of normalized) {
-    if (!item.label) return { error: "Every item must have a name." };
-    if (!item.kind) return { error: "The item type is required." };
+    if (!item.label) return { error: "Chaque article doit avoir un nom." };
+    if (!item.kind) return { error: "Le type d’article est requis." };
     if (item.amountCents <= 0) {
-      return { error: `The price of item "${item.label}" must be greater than zero.` };
+      return { error: `Le prix de l’article « ${item.label} » doit être supérieur à zéro.` };
     }
     if (item.quantity < 1) {
-      return { error: `The quantity for "${item.label}" must be at least 1.` };
+      return { error: `La quantité pour « ${item.label} » doit être d’au moins 1.` };
     }
   }
 
@@ -103,7 +103,7 @@ export async function adminCreateCharge(args: {
     }),
     getPublishedPricingCatalog(),
   ]);
-  if (!order) return { error: "Order not found." };
+  if (!order) return { error: "Commande introuvable." };
 
   const reason = args.reason?.trim() || null;
   const userHasBillingProfile = Boolean(order.user.billingCountryCode);
@@ -247,9 +247,9 @@ export async function adminCancelCharge(args: {
     where: { id: args.chargeId },
     select: { id: true, status: true, orderId: true },
   });
-  if (!charge) return { error: "Charge not found." };
+  if (!charge) return { error: "Supplément introuvable." };
   if (charge.status !== "pending") {
-    return { error: "Only charges in 'pending' status can be cancelled." };
+    return { error: "Seuls les suppléments au statut « pending » peuvent être annulés." };
   }
 
   await prisma.orderCharge.update({

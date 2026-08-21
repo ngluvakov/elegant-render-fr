@@ -73,14 +73,14 @@ export async function markWireTransferPaid(
         orderId,
         "awaiting_payment",
         admin.id,
-        "Proforma active — awaiting payment",
+        "Proforma active — en attente de paiement",
       );
     }
     await transitionOrder(
       orderId,
       "paid",
       admin.id,
-      "Payment against proforma received",
+      "Paiement de la proforma reçu",
     );
 
     // Same hook as card payments: applies AI credits, transitions

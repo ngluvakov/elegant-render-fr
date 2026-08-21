@@ -217,14 +217,14 @@ function composeCustomerNote(inquiry: {
   sourceLabel: string | null;
   sourcePath: string | null;
 }): string {
-  const parts: string[] = [`From inquiry #${inquiry.id}.`];
+  const parts: string[] = [`Créée à partir de la demande n°${inquiry.id}.`];
 
-  if (inquiry.serviceType) parts.push(`Service type: ${inquiry.serviceType}.`);
-  if (inquiry.budget) parts.push(`Budget: ${inquiry.budget}.`);
-  if (inquiry.deadline) parts.push(`Deadline: ${inquiry.deadline}.`);
+  if (inquiry.serviceType) parts.push(`Type de service : ${inquiry.serviceType}.`);
+  if (inquiry.budget) parts.push(`Budget : ${inquiry.budget}.`);
+  if (inquiry.deadline) parts.push(`Échéance : ${inquiry.deadline}.`);
   if (inquiry.sourceLabel || inquiry.sourcePath) {
     parts.push(
-      `Source: ${inquiry.sourceLabel ?? inquiry.sourcePath ?? "—"}.`,
+      `Source : ${inquiry.sourceLabel ?? inquiry.sourcePath ?? "—"}.`,
     );
   }
 

@@ -115,7 +115,7 @@ function validateFiles(
 ): JobApplicationFileInput[] | { error: string } {
   if (!files?.length) return [];
   if (files.length > 1 + JOB_APPLICATION_MAX_PORTFOLIO_FILES) {
-    return { error: "Attach one CV and up to 3 portfolio files." };
+    return { error: "Joignez un CV et jusqu’à 3 fichiers de portfolio." };
   }
 
   let total = 0;
@@ -130,16 +130,16 @@ function validateFiles(
     const storagePath = cleanRequired(file.storagePath, 500);
     const fileSize = Number(file.fileSize);
     if (!fileName || !mimeType || !storagePath || !Number.isFinite(fileSize)) {
-      return { error: "One of the files is invalid." };
+      return { error: "L’un des fichiers n’est pas valide." };
     }
     if (fileSize <= 0 || fileSize > JOB_APPLICATION_MAX_FILE_BYTES) {
-      return { error: "One of the files is larger than 50MB." };
+      return { error: "L’un des fichiers dépasse 50 Mo." };
     }
     if (!isAllowedJobApplicationMimeType(mimeType)) {
-      return { error: "Allowed file types are PDF, DOC, DOCX, ZIP, JPG, PNG and WebP." };
+      return { error: "Les types de fichiers autorisés sont PDF, DOC, DOCX, ZIP, JPG, PNG et WebP." };
     }
     if (!storagePath.startsWith(`jobs/${draftId}/`)) {
-      return { error: "One of the files is invalid." };
+      return { error: "L’un des fichiers n’est pas valide." };
     }
     if (seen.has(storagePath)) continue;
     seen.add(storagePath);
@@ -148,9 +148,9 @@ function validateFiles(
     cleaned.push({ kind, fileName, fileSize, mimeType, storagePath });
   }
 
-  if (cvCount > 1) return { error: "Attach a single CV file." };
+  if (cvCount > 1) return { error: "Joignez un seul fichier CV." };
   if (total > JOB_APPLICATION_MAX_TOTAL_BYTES) {
-    return { error: "The total size of the files exceeds 100MB." };
+    return { error: "La taille totale des fichiers dépasse 100 Mo." };
   }
 
   return cleaned;
@@ -164,7 +164,7 @@ export async function submitJobApplication(
   if (!limit.ok) return { error: rateLimitMessage(limit.retryAfterSeconds) };
 
   if (!input || typeof input !== "object") {
-    return { error: "Invalid request." };
+    return { error: "Requête non valide." };
   }
 
   // Honeypot — same contract as project inquiries: reject silently so a
@@ -177,30 +177,30 @@ export async function submitJobApplication(
     (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? null;
   const captcha = await verifyTurnstile(input.turnstileToken, ip);
   if (!captcha.ok) {
-    return { error: "Captcha verification failed. Please try again." };
+    return { error: "La vérification du captcha a échoué. Veuillez réessayer." };
   }
 
   const draftId = cleanRequired(input.draftId, 80);
-  if (!validDraftId(draftId)) return { error: "Invalid application draft." };
+  if (!validDraftId(draftId)) return { error: "Brouillon de candidature non valide." };
 
   const fullName = cleanRequired(input.fullName, 120);
-  if (fullName.length < 2) return { error: "Name is required." };
+  if (fullName.length < 2) return { error: "Le nom est requis." };
 
   const email = cleanRequired(input.email, 200).toLowerCase();
-  if (!validEmail(email)) return { error: "Email address is invalid." };
+  if (!validEmail(email)) return { error: "L’adresse e-mail n’est pas valide." };
 
   const position = cleanRequired(input.position, 120);
-  if (!position) return { error: "Choose the position you are applying for." };
+  if (!position) return { error: "Choisissez le poste auquel vous postulez." };
 
   const coverLetter = cleanRequired(input.coverLetter, 6000);
   if (coverLetter.length < 8) {
-    return { error: "Tell us at least briefly why you are applying." };
+    return { error: "Expliquez-nous au moins brièvement pourquoi vous postulez." };
   }
 
   const files = validateFiles(input.files, draftId);
   if ("error" in files) return files;
   if (!files.some((file) => file.kind === "cv")) {
-    return { error: "Please attach your CV." };
+    return { error: "Veuillez joindre votre CV." };
   }
 
   // Same AV policy as inquiries (ISO 27001 A.8.7): an infected file always

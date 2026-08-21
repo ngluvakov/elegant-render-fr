@@ -67,7 +67,7 @@ export async function applyPurchasedAiCreditsForOrder(orderId: string) {
         units,
         balanceAfterUnits: user.aiCreditBalanceUnits,
         amountCents,
-        note: "AI Studio credit purchase",
+        note: "Achat de crédits AI Studio",
       },
     });
 

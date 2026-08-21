@@ -34,7 +34,7 @@ export async function requireAdmin() {
 
 export async function adminCreateComment(orderId: string, body: string) {
   const admin = await requirePermission("PROJECTS_MANAGE");
-  if (!body.trim()) return { error: "The message cannot be empty." };
+  if (!body.trim()) return { error: "Le message ne peut pas être vide." };
 
   const comment = await prisma.orderComment.create({
     data: {
@@ -92,7 +92,7 @@ export async function adminTransitionOrder(
 
     return { success: true };
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Error" };
+    return { error: err instanceof Error ? err.message : "Erreur" };
   }
 }
 
@@ -144,8 +144,8 @@ export async function adminGrantAiCredits(args: {
 
   const units = Math.floor(args.units);
   const note = args.note.trim();
-  if (units <= 0) return { error: "The quantity must be greater than zero." };
-  if (!note) return { error: "A note is required." };
+  if (units <= 0) return { error: "La quantité doit être supérieure à zéro." };
+  if (!note) return { error: "Une note est requise." };
 
   // Same expiry semantics as a credit purchase: a grant resets the
   // user's expireAt to 12 months from now and clears any prior
@@ -175,7 +175,7 @@ export async function adminGrantAiCredits(args: {
         type: "adjustment",
         units,
         balanceAfterUnits: user.aiCreditBalanceUnits,
-        note: `Admin grant: ${note}`,
+        note: `Attribution admin : ${note}`,
       },
     });
 
@@ -242,7 +242,7 @@ export async function adminGrantFreeRevision(args: {
   const admin = await requirePermission("PROJECTS_MANAGE");
 
   const note = args.note.trim();
-  if (!note) return { error: "A reason is required." };
+  if (!note) return { error: "Un motif est requis." };
 
   const order = await prisma.order.findUnique({
     where: { id: args.orderId },
@@ -254,7 +254,7 @@ export async function adminGrantFreeRevision(args: {
       user: { select: { email: true } },
     },
   });
-  if (!order) return { error: "Order not found." };
+  if (!order) return { error: "Commande introuvable." };
 
   const fullNote = `${FREE_REVISION_NOTE_PREFIX} ${note}`;
   const reopenable: OrderStatus[] = ["delivered", "revision_requested"];
@@ -275,11 +275,11 @@ export async function adminGrantFreeRevision(args: {
       });
     } else {
       return {
-        error: `A free revision cannot be granted in status "${order.status}".`,
+        error: `Une révision gratuite ne peut pas être accordée au statut « ${order.status} ».`,
       };
     }
   } catch (err) {
-    return { error: err instanceof Error ? err.message : "Error" };
+    return { error: err instanceof Error ? err.message : "Erreur" };
   }
 
   if (order.user.email) {

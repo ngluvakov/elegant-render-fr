@@ -278,7 +278,7 @@ export async function listAiStudioGenerations(
       cursor: input.cursor,
       message: err instanceof Error ? err.message : String(err),
     });
-    return { error: "AI generations are currently unavailable." };
+    return { error: "Les générations IA sont momentanément indisponibles." };
   }
 }
 
@@ -297,7 +297,7 @@ export async function deleteAiStudioGeneration(
   if (generation.status === "queued" || generation.status === "processing") {
     return {
       error:
-        "The generation is still in progress. Wait for it to finish or fail before deleting.",
+        "La génération est encore en cours. Attendez qu’elle se termine ou échoue avant de la supprimer.",
     };
   }
 
@@ -351,31 +351,31 @@ export async function startAiStudioGeneration(
       : "insert";
 
   if (!ownsAiStudioPath(userId, input.inputStoragePath)) {
-    return { error: "The input image is not available for this account." };
+    return { error: "L’image d’entrée n’est pas disponible pour ce compte." };
   }
   if (referenceImages.length > AI_STUDIO_MAX_REFERENCE_IMAGES) {
-    return { error: "You can add at most 5 images of the same piece per generation." };
+    return { error: "Vous pouvez ajouter au maximum 5 images du même objet par génération." };
   }
   for (const reference of referenceImages) {
     if (!ownsAiStudioPath(userId, reference.storagePath)) {
-      return { error: "The furniture/decor image is not available for this account." };
+      return { error: "L’image de meuble/décoration n’est pas disponible pour ce compte." };
     }
   }
   if (input.maskStoragePath && !ownsAiStudioPath(userId, input.maskStoragePath)) {
-    return { error: "The mask is not available for this account." };
+    return { error: "Le masque n’est pas disponible pour ce compte." };
   }
 
   const editDef = getAiEditType(input.editType);
   if (editDef.requiresReferenceImage && referenceImages.length === 0) {
-    return { error: "Add an image of the furniture or decor you want to insert into the interior." };
+    return { error: "Ajoutez une image du meuble ou de l’élément de décoration que vous souhaitez insérer dans l’intérieur." };
   }
   if (!editDef.requiresReferenceImage && referenceImages.length > 0) {
-    return { error: "A reference image of the piece is only available for the add or replace furniture/decor tool." };
+    return { error: "Une image de référence de l’objet n’est disponible que pour l’outil d’ajout ou de remplacement de meubles/décoration." };
   }
   if (objectMode === "replace" && !input.maskStoragePath) {
     return {
       error:
-        "For a replacement, mark the existing piece we are replacing. The mask does not have to be perfect.",
+        "Pour un remplacement, marquez l’objet existant à remplacer. Le masque n’a pas besoin d’être parfait.",
     };
   }
 
@@ -448,9 +448,9 @@ export async function startAiStudioGeneration(
     const parent = await prisma.aiGeneration.findFirst({
       where: { id: input.parentGenerationId, userId },
     });
-    if (!parent) return { error: "The previous generation was not found." };
+    if (!parent) return { error: "La génération précédente est introuvable." };
     if (parent.status !== "completed" || !parent.resultStoragePath) {
-      return { error: "The previous generation is not finished yet." };
+      return { error: "La génération précédente n’est pas encore terminée." };
     }
 
     // Free retry is gated ONLY by edit type matching the paid root.
@@ -462,7 +462,7 @@ export async function startAiStudioGeneration(
       const root = await prisma.aiGeneration.findFirst({
         where: { id: paidGenerationId, userId },
       });
-      if (!root) return { error: "The original paid generation was not found." };
+      if (!root) return { error: "La génération payante d’origine est introuvable." };
       rootCoveredUnits = root.coveredUnits;
 
       // Filename continuity: only inherit the root when the input file
@@ -618,7 +618,7 @@ export async function startAiStudioGeneration(
     userId,
     units: unitsToCharge,
     generationId: generation.id,
-    note: `AI Studio: ${editDef.label}`,
+    note: `AI Studio : ${editDef.label}`,
   });
 
   if (spend.error) {
@@ -659,7 +659,7 @@ export async function getAiStudioGenerationStatus(
       aiCreditsExpireAt: true,
     },
   });
-  if (!user) return { error: "User not found." };
+  if (!user) return { error: "Utilisateur introuvable." };
   const canViewAllGenerations = hasAdminPermission(
     normalizeAdminPermissions(user.adminPermissions, { isAdmin: user.isAdmin }),
     "USAGE_VIEW",
@@ -692,7 +692,7 @@ export async function processAiStudioGenerationJob(generationId: string) {
     await runGenerationProcessing(claimed);
   } catch (err) {
     const rawMessage =
-      err instanceof Error ? err.message : "The AI generation failed.";
+      err instanceof Error ? err.message : "La génération IA a échoué.";
     console.error("[AI Studio] Generation failed", {
       generationId: claimed.id,
       provider: claimed.provider,
@@ -836,7 +836,7 @@ async function runGenerationProcessing(generation: AiGeneration) {
       error: err,
     });
     throw new Error(
-      "The AI result could not be safely merged with the original. Your credit was refunded; try again or choose another engine.",
+      "Le résultat IA n’a pas pu être fusionné en toute sécurité avec l’original. Votre crédit a été remboursé ; réessayez ou choisissez un autre moteur.",
     );
   }
 
@@ -1005,7 +1005,7 @@ async function failIfAttemptsExhausted(generationId: string) {
 
   await failAiGeneration(
     generation,
-    "The AI generation failed after several attempts. Your credit was refunded.",
+    "La génération IA a échoué après plusieurs tentatives. Votre crédit a été remboursé.",
   );
 }
 
@@ -1029,7 +1029,7 @@ async function failAiGeneration(generation: AiGeneration, message: string) {
       userId: generation.userId,
       units: generation.unitsCharged,
       generationId: generation.id,
-      note: `AI Studio refund: ${getAiEditType(generation.editType).label}`,
+      note: `Remboursement AI Studio : ${getAiEditType(generation.editType).label}`,
     });
   }
 
@@ -1369,7 +1369,7 @@ async function downloadStorageFile(storagePath: string) {
     .download(storagePath);
 
   if (error || !data) {
-    throw new Error(error?.message ?? "File not found.");
+    throw new Error(error?.message ?? "Fichier introuvable.");
   }
 
   return {

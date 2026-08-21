@@ -33,7 +33,7 @@ export async function checkPublicVat(input: {
   const number = String(input.vatNumber ?? "").trim();
 
   if (!country || !number) {
-    return { status: "error", message: "Country code and VAT number are required." };
+    return { status: "error", message: "Le code pays et le numéro de TVA sont requis." };
   }
 
   if (!isViesCountry(country)) {

@@ -121,7 +121,7 @@ export async function finishSuccessfulChargePayment(
   provider: "paypal" | "card_mock",
 ): Promise<ChargePaymentResult> {
   const charge = await loadChargeForPayment(chargeId);
-  if (!charge) return { error: "Charge was not found." };
+  if (!charge) return { error: "Le supplément est introuvable." };
 
   const result = await prisma.orderCharge.updateMany({
     where: { id: chargeId, paymentStatus: { not: "completed" } },
@@ -182,15 +182,15 @@ export async function createPayPalChargeAction(
   chargeId: string,
 ): Promise<ChargePaymentResult> {
   const charge = await loadChargeForPayment(chargeId);
-  if (!charge) return { error: "Charge was not found." };
-  if (charge.status === "cancelled") return { error: "This charge has been cancelled." };
+  if (!charge) return { error: "Le supplément est introuvable." };
+  if (charge.status === "cancelled") return { error: "Ce supplément a été annulé." };
   if (charge.status === "paid" || charge.paymentStatus === "completed") {
-    return { error: "This charge has already been paid." };
+    return { error: "Ce supplément a déjà été payé." };
   }
 
   const session = await auth();
   if (session?.user?.id && session.user.id !== charge.order.userId) {
-    return { error: "You do not have access to this charge." };
+    return { error: "Vous n’avez pas accès à ce supplément." };
   }
 
   const identifier = await getServerActionIdentifier();
@@ -211,7 +211,7 @@ export async function createPayPalChargeAction(
       level: "error",
       extra: { chargeId, chargedCurrency: charge.chargedCurrency },
     });
-    return { error: "Charge has no charge snapshot. Please contact us." };
+    return { error: "Ce supplément n’a pas de montant enregistré. Veuillez nous contacter." };
   }
 
   try {
@@ -241,7 +241,7 @@ export async function createPayPalChargeAction(
       currency: charge.chargedCurrency,
       referenceId: `${charge.order.orderNumber}-CHG-${charge.id.slice(-6).toUpperCase()}`,
       customId: charge.id,
-      description: "Elegant Render — additional charge",
+      description: "Elegant Render — supplément",
       requestId: `charge:${charge.id}:${attempt}`,
     });
 
@@ -254,7 +254,7 @@ export async function createPayPalChargeAction(
       },
     });
     if (persisted.count === 0) {
-      return { error: "This charge has already been paid." };
+      return { error: "Ce supplément a déjà été payé." };
     }
 
     return { paypalOrderId };
@@ -264,7 +264,7 @@ export async function createPayPalChargeAction(
       extra: { chargeId },
     });
     return {
-      error: "Could not start the PayPal payment. Please try again.",
+      error: "Impossible de démarrer le paiement PayPal. Veuillez réessayer.",
     };
   }
 }
@@ -274,11 +274,11 @@ export async function capturePayPalChargeAction(
   paypalOrderId: string,
 ): Promise<ChargePaymentResult> {
   const charge = await loadChargeForPayment(chargeId);
-  if (!charge) return { error: "Charge was not found." };
+  if (!charge) return { error: "Le supplément est introuvable." };
 
   const session = await auth();
   if (session?.user?.id && session.user.id !== charge.order.userId) {
-    return { error: "You do not have access to this charge." };
+    return { error: "Vous n’avez pas accès à ce supplément." };
   }
 
   // Pre-flight idempotency: already captured (double click, retried
@@ -288,7 +288,7 @@ export async function capturePayPalChargeAction(
   }
 
   if (charge.paymentProvider !== "paypal" || charge.paymentId !== paypalOrderId) {
-    return { error: "Payment reference mismatch. Please refresh and try again." };
+    return { error: "La référence de paiement ne correspond pas. Actualisez la page et réessayez." };
   }
 
   try {
@@ -319,7 +319,7 @@ export async function capturePayPalChargeAction(
     }
 
     if (result.captureStatus !== "COMPLETED") {
-      return { error: "PayPal did not complete the payment. You have not been charged." };
+      return { error: "PayPal n’a pas finalisé le paiement. Vous n’avez pas été débité." };
     }
 
     // Amount check — fail-closed (see capturePayPalOrderAction).
@@ -339,7 +339,7 @@ export async function capturePayPalChargeAction(
         },
       });
       return {
-        error: "Payment amount mismatch — our team has been notified.",
+        error: "Le montant du paiement ne correspond pas — notre équipe a été informée.",
       };
     }
 
@@ -352,7 +352,7 @@ export async function capturePayPalChargeAction(
       extra: { chargeId, paypalOrderId },
     });
     return {
-      error: "The payment could not be confirmed. Please try again.",
+      error: "Le paiement n’a pas pu être confirmé. Veuillez réessayer.",
     };
   }
 }
@@ -363,8 +363,8 @@ export async function mockCardChargePaymentAction(
   chargeId: string,
 ): Promise<ChargePaymentResult> {
   const charge = await loadChargeForPayment(chargeId);
-  if (!charge) return { error: "Charge was not found." };
-  if (charge.status === "cancelled") return { error: "This charge has been cancelled." };
+  if (!charge) return { error: "Le supplément est introuvable." };
+  if (charge.status === "cancelled") return { error: "Ce supplément a été annulé." };
 
   if (charge.paymentStatus === "completed" || charge.status === "paid") {
     return { success: true, status: "completed" };
@@ -390,7 +390,7 @@ export async function mockCardChargePaymentAction(
       extra: { chargeId },
     });
     return {
-      error: `Error: ${err instanceof Error ? err.message : "Unknown error"}`,
+      error: `Erreur : ${err instanceof Error ? err.message : "erreur inconnue"}`,
     };
   }
 }

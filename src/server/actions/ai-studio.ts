@@ -200,7 +200,7 @@ type GenerationOptions = {
 export async function getAiStudioState() {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) return { error: "You are not signed in." };
+  if (!userId) return { error: "Vous n’êtes pas connecté." };
 
   await expireAiCreditsIfNeeded(userId);
 
@@ -236,7 +236,7 @@ export async function listAiStudioGenerations(
 ): Promise<AiStudioGenerationListResult> {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) return { error: "You are not signed in." };
+  if (!userId) return { error: "Vous n’êtes pas connecté." };
 
   await expireAiCreditsIfNeeded(userId);
 
@@ -287,13 +287,13 @@ export async function deleteAiStudioGeneration(
 ): Promise<AiStudioDeleteGenerationResult> {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) return { error: "You are not signed in." };
+  if (!userId) return { error: "Vous n’êtes pas connecté." };
 
   const generation = await prisma.aiGeneration.findFirst({
     where: { id: generationId, userId },
     include: { referenceImages: true },
   });
-  if (!generation) return { error: "AI generation not found." };
+  if (!generation) return { error: "Génération IA introuvable." };
   if (generation.status === "queued" || generation.status === "processing") {
     return {
       error:
@@ -339,7 +339,7 @@ export async function startAiStudioGeneration(
 ): Promise<AiStudioStartResult> {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) return { error: "You are not signed in." };
+  if (!userId) return { error: "Vous n’êtes pas connecté." };
   // Engine selection is internal — pickEngineForBilling resolves it once
   // the free-vs-paid decision is made further down. No client input.
   let provider: AiImageProvider = pickEngineForBilling(false).provider;
@@ -646,7 +646,7 @@ export async function getAiStudioGenerationStatus(
 ): Promise<AiStudioStatusResult> {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) return { error: "You are not signed in." };
+  if (!userId) return { error: "Vous n’êtes pas connecté." };
 
   await expireAiCreditsIfNeeded(userId);
 
@@ -671,7 +671,7 @@ export async function getAiStudioGenerationStatus(
       ...(canViewAllGenerations ? {} : { userId }),
     },
   });
-  if (!generation) return { error: "AI generation not found." };
+  if (!generation) return { error: "Génération IA introuvable." };
 
   return {
     generation: await signGeneration(generation),

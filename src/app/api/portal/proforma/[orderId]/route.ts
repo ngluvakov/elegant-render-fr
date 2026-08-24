@@ -47,7 +47,7 @@ export async function GET(
   }
   if (!order.proformaPdfPath || !order.proformaNumber) {
     return NextResponse.json(
-      { error: "Proforma not yet issued" },
+      { error: "Facture proforma pas encore émise." },
       { status: 404 },
     );
   }

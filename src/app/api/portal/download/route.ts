@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   const orderId = searchParams.get("orderId");
 
   if (!storagePath || !orderId) {
-    return NextResponse.json({ error: "Missing params" }, { status: 400 });
+    return NextResponse.json({ error: "Paramètres manquants." }, { status: 400 });
   }
 
   // Verify ownership

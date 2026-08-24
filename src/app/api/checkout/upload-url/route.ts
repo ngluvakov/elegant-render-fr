@@ -27,19 +27,19 @@ export async function POST(request: Request) {
   const { orderId, fileName, mimeType, fileSize } = await request.json();
 
   if (!orderId || !fileName || !mimeType || !fileSize) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    return NextResponse.json({ error: "Champs manquants." }, { status: 400 });
   }
 
   if (fileSize > MAX_FILE_SIZE) {
     return NextResponse.json(
-      { error: "File is too large (max 50MB)" },
+      { error: "Le fichier est trop volumineux (50 Mo max)." },
       { status: 400 },
     );
   }
 
   if (!ALLOWED_TYPES.includes(mimeType)) {
     return NextResponse.json(
-      { error: "File type not allowed" },
+      { error: "Type de fichier non autorisé." },
       { status: 400 },
     );
   }

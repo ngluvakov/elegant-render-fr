@@ -22,7 +22,7 @@ export async function GET(_request: Request, { params }: GenerationRouteContext)
 
   return NextResponse.json(result, {
     status: result.error
-      ? result.error === "You are not signed in."
+      ? result.error === "Vous n’êtes pas connecté."
         ? 401
         : 404
       : 200,
@@ -38,9 +38,9 @@ export async function DELETE(
 
   return NextResponse.json(result, {
     status: result.error
-      ? result.error === "You are not signed in."
+      ? result.error === "Vous n’êtes pas connecté."
         ? 401
-        : result.error === "AI generation not found."
+        : result.error === "Génération IA introuvable."
           ? 404
           : 400
       : 200,

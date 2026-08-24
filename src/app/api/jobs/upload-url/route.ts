@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   const { draftId, fileName, mimeType, fileSize } = await request.json();
 
   if (!draftId || !fileName || !mimeType || !fileSize) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    return NextResponse.json({ error: "Champs manquants." }, { status: 400 });
   }
 
   const safeDraftId = String(draftId);
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     size > JOB_APPLICATION_MAX_FILE_BYTES
   ) {
     return NextResponse.json(
-      { error: "File is too large (max 50MB)" },
+      { error: "Le fichier est trop volumineux (50 Mo max)." },
       { status: 400 },
     );
   }

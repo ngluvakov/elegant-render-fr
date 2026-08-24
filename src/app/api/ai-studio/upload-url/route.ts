@@ -10,25 +10,25 @@ export async function POST(request: Request) {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) {
-    return NextResponse.json({ error: "You are not signed in." }, { status: 401 });
+    return NextResponse.json({ error: "Vous n’êtes pas connecté." }, { status: 401 });
   }
 
   const { fileName, mimeType, fileSize, purpose } = await request.json();
 
   if (!fileName || !mimeType || !fileSize) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    return NextResponse.json({ error: "Champs manquants." }, { status: 400 });
   }
 
   if (fileSize > MAX_FILE_SIZE) {
     return NextResponse.json(
-      { error: "File is too large (max 50MB)" },
+      { error: "Le fichier est trop volumineux (50 Mo max)." },
       { status: 400 },
     );
   }
 
   if (!ALLOWED_TYPES.includes(mimeType)) {
     return NextResponse.json(
-      { error: "Allowed file types are JPG, PNG, and WebP." },
+      { error: "Formats acceptés : JPG, PNG et WebP." },
       { status: 400 },
     );
   }

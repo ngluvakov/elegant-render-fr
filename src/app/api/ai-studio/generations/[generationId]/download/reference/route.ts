@@ -22,7 +22,7 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) {
-    return NextResponse.json({ error: "You are not signed in." }, { status: 401 });
+    return NextResponse.json({ error: "Vous n’êtes pas connecté." }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
@@ -30,7 +30,7 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
     select: { isAdmin: true, adminPermissions: true },
   });
   if (!user) {
-    return NextResponse.json({ error: "User not found." }, { status: 404 });
+    return NextResponse.json({ error: "Utilisateur introuvable." }, { status: 404 });
   }
 
   const canViewAllGenerations = hasAdminPermission(
@@ -56,12 +56,12 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
 
   if (!generation?.referenceStoragePath) {
     return NextResponse.json(
-      { error: "Reference image not found." },
+      { error: "Image de référence introuvable." },
       { status: 404 },
     );
   }
   if (generation.expiresAt <= new Date()) {
-    return NextResponse.json({ error: "The file has expired." }, { status: 410 });
+    return NextResponse.json({ error: "Le fichier a expiré." }, { status: 410 });
   }
 
   const { data, error } = await getSupabaseAdmin().storage

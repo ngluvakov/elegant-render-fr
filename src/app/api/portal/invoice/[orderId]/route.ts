@@ -47,7 +47,7 @@ export async function GET(
   }
   if (!order.invoicePdfPath || !order.invoiceNumber) {
     return NextResponse.json(
-      { error: "Invoice not yet issued" },
+      { error: "Facture pas encore émise." },
       { status: 404 },
     );
   }

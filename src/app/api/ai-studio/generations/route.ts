@@ -75,7 +75,7 @@ export async function GET(request: Request) {
 
   return NextResponse.json(result, {
     status: result.error
-      ? result.error === "You are not signed in."
+      ? result.error === "Vous n’êtes pas connecté."
         ? 401
         : 400
       : 200,
@@ -87,11 +87,11 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
   }
   const parsed = generateInputSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ error: "Requête invalide." }, { status: 400 });
   }
   const result = await startAiStudioGeneration(parsed.data);
 
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json(result, {
     status: result.error
-      ? result.error === "You are not signed in."
+      ? result.error === "Vous n’êtes pas connecté."
         ? 401
         : 400
       : 202,

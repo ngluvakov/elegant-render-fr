@@ -33,12 +33,12 @@ import {
 } from "@/lib/admin-permissions";
 
 const CLIENT_NAV = [
-  { href: "/portal", label: "Overview", icon: LayoutDashboard, exact: true },
-  { href: "/portal/orders", label: "Orders", icon: ShoppingBag, exact: false },
-  { href: "/portal/finance", label: "Finance", icon: ReceiptText, exact: false },
+  { href: "/portal", label: "Vue d’ensemble", icon: LayoutDashboard, exact: true },
+  { href: "/portal/orders", label: "Commandes", icon: ShoppingBag, exact: false },
+  { href: "/portal/finance", label: "Finances", icon: ReceiptText, exact: false },
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
-  { href: "/portal/ai-creations", label: "AI creations", icon: Images, exact: false },
-  { href: "/portal/profile", label: "Profile", icon: User, exact: true },
+  { href: "/portal/ai-creations", label: "Créations IA", icon: Images, exact: false },
+  { href: "/portal/profile", label: "Profil", icon: User, exact: true },
 ];
 
 const ADMIN_NAV: Array<{
@@ -51,7 +51,7 @@ const ADMIN_NAV: Array<{
   { href: "/portal/admin", label: "Admin", icon: Shield, exact: true },
   {
     href: "/portal/admin/analytics",
-    label: "Analytics",
+    label: "Statistiques",
     icon: BarChart3,
     exact: false,
     permission: "ANALYTICS_VIEW",
@@ -59,74 +59,74 @@ const ADMIN_NAV: Array<{
   { href: "/portal/ai-studio", label: "AI Studio", icon: ImageIcon, exact: false },
   {
     href: "/portal/ai-creations",
-    label: "AI creations",
+    label: "Créations IA",
     icon: Images,
     exact: false,
   },
   {
     href: "/portal/admin/inquiries",
-    label: "Inquiries",
+    label: "Demandes",
     icon: Inbox,
     exact: false,
     permission: "INQUIRIES_MANAGE",
   },
   {
     href: "/portal/admin/vr-inquiries",
-    label: "VR inquiries",
+    label: "Demandes VR",
     icon: Headphones,
     exact: false,
     permission: "INQUIRIES_MANAGE",
   },
   {
     href: "/portal/admin/ai-studio",
-    label: "AI generations",
+    label: "Générations IA",
     icon: ImageIcon,
     exact: false,
     permission: "USAGE_VIEW",
   },
   {
     href: "/portal/admin/chat-feedback",
-    label: "AI requests",
+    label: "Requêtes IA",
     icon: MessageSquareWarning,
     exact: false,
     permission: "ANALYTICS_VIEW",
   },
   {
     href: "/portal/admin/users",
-    label: "Users",
+    label: "Utilisateurs",
     icon: User,
     exact: false,
     permission: "USERS_VIEW",
   },
   {
     href: "/portal/admin/finance/pricebook",
-    label: "Pricebook",
+    label: "Grille tarifaire",
     icon: ReceiptText,
     exact: false,
     permission: "FINANCE_MANAGE",
   },
   {
     href: "/portal/admin/finance/export",
-    label: "Invoice export",
+    label: "Export de factures",
     icon: ReceiptText,
     exact: false,
     permission: "FINANCE_VIEW",
   },
   {
     href: "/portal/admin/revisions",
-    label: "Revisions",
+    label: "Révisions",
     icon: Shield,
     exact: false,
     permission: "AUDIT_VIEW",
   },
   {
     href: "/portal/admin/outbox",
-    label: "Outbox",
+    label: "Boîte d’envoi",
     icon: MessageSquareWarning,
     exact: false,
     permission: "SYSTEM_MANAGE",
   },
-  { href: "/portal/profile", label: "Profile", icon: User, exact: true },
+  { href: "/portal/profile", label: "Profil", icon: User, exact: true },
 ];
 
 type PortalSidebarProps = {
@@ -189,7 +189,7 @@ export function PortalSidebar({
           className="flex items-center gap-3 rounded-[4px] px-3 py-2 text-xs text-white/50 transition-colors hover:text-white"
         >
           <ExternalLink className="h-3.5 w-3.5" />
-          Back to site
+          Retour au site
         </Link>
 
         {/* User info + sign out */}
@@ -208,7 +208,7 @@ export function PortalSidebar({
           <form action={signOutAction}>
             <button
               type="submit"
-              aria-label="Log out"
+              aria-label="Se déconnecter"
               className="rounded-[4px] p-1.5 text-white/50 transition-colors hover:bg-white/10 hover:text-white"
             >
               <LogOut className="h-3.5 w-3.5" />

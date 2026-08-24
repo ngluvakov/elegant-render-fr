@@ -230,14 +230,14 @@ export function ItemConfigPanel({
               {isConfigured ? (
                 <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold text-foreground">
                   <span className="h-1 w-1 rounded-full bg-accent" />
-                  Configured
+                  Configuré
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 rounded bg-amber-100 px-2 py-0.5 text-[0.72rem] font-bold uppercase tracking-wider text-amber-700">
                   <span className="relative flex h-2 w-2">
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-600" />
                   </span>
-                  Details needed
+                  Détails requis
                 </span>
               )}
             </div>
@@ -282,7 +282,7 @@ export function ItemConfigPanel({
             {!confirmDelete ? (
               <button
                 type="button"
-                aria-label="Remove item"
+                aria-label="Retirer l’élément"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -294,7 +294,7 @@ export function ItemConfigPanel({
               </button>
             ) : (
               <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in slide-in-from-right-1 duration-150">
-                <span className="px-1.5 text-[0.72rem] font-semibold">Remove?</span>
+                <span className="px-1.5 text-[0.72rem] font-semibold">Retirer ?</span>
                 <button
                   type="button"
                   disabled={deletePending}
@@ -502,7 +502,7 @@ function NonInteriorBody({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Error");
+        if (!urlRes.ok) throw new Error("Erreur");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -527,8 +527,8 @@ function NonInteriorBody({
 
   const formatSize = (b: number) =>
     b < 1024 * 1024
-      ? `${(b / 1024).toFixed(0)} KB`
-      : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+      ? `${(b / 1024).toFixed(0)} Ko`
+      : `${(b / (1024 * 1024)).toFixed(1)} Mo`;
 
   return (
     <>
@@ -540,10 +540,10 @@ function NonInteriorBody({
         <div className="flex items-center gap-2">
               <Settings2 className="h-3.5 w-3.5 text-accent" />
               <span className="text-xs font-medium text-foreground">
-                Advanced settings
+                Paramètres avancés
               </span>
               <span className="text-[0.72rem] text-muted-foreground">
-                · references, room details, technical notes
+                · références, détails des pièces, notes techniques
               </span>
             </div>
             <Switch
@@ -557,13 +557,13 @@ function NonInteriorBody({
           <div className="space-y-2">
             <Label htmlFor={`note-${item.id}`} className="text-xs">
               <Pencil className="h-3 w-3 text-accent/60" />
-              Project description for this item
+              Description du projet pour cet élément
             </Label>
             <Textarea
               id={`note-${item.id}`}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Describe what you want - style, atmosphere, special requirements..."
+              placeholder="Décrivez ce que vous souhaitez — style, ambiance, exigences particulières…"
               rows={3}
               className="resize-none text-sm"
             />
@@ -571,14 +571,14 @@ function NonInteriorBody({
 
           {/* Simple mode: file upload */}
           <div className="space-y-2">
-            <Label className="text-xs">Plans and photos</Label>
+            <Label className="text-xs">Plans et photos</Label>
             <div
               onClick={() => inputRef.current?.click()}
               className="flex cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-border/40 px-4 py-4 transition-colors hover:border-accent/40"
             >
               <Upload className="mr-2 h-4 w-4 text-muted-foreground/50" />
               <span className="text-xs text-muted-foreground">
-                Drag or click - plans, photos, sketches
+                Glissez ou cliquez — plans, photos, croquis
               </span>
               <input
                 ref={inputRef}
@@ -617,7 +617,7 @@ function NonInteriorBody({
                 >
                   <FileUp className="h-3 w-3 text-accent" />
                   <span className="flex-1 truncate text-foreground">{name}</span>
-                  <span className="text-accent">Uploading...</span>
+                  <span className="text-accent">Import en cours…</span>
                 </div>
               ))}
             </div>
@@ -629,13 +629,13 @@ function NonInteriorBody({
               <div className="space-y-2">
                 <Label htmlFor={`style-${item.id}`} className="text-xs">
                   <Pencil className="h-3 w-3 text-accent/60" />
-                  Style references and atmosphere
+                  Références de style et ambiance
                 </Label>
                 <Textarea
                   id={`style-${item.id}`}
                   value={styleDesc}
                   onChange={(e) => setStyleDesc(e.target.value)}
-                  placeholder="Describe the desired style - modern, Scandinavian, minimalist, warm..."
+                  placeholder="Décrivez le style souhaité — moderne, scandinave, minimaliste, chaleureux…"
                   rows={2}
                   className="resize-none text-sm"
                 />
@@ -645,7 +645,7 @@ function NonInteriorBody({
                 >
                   <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/40" />
                   <span className="text-[0.72rem] text-muted-foreground">
-                    Upload inspiration images (mood board)
+                    Importez des images d’inspiration (mood board)
                   </span>
                   <input
                     ref={refInputRef}
@@ -666,13 +666,13 @@ function NonInteriorBody({
               <div className="space-y-2">
                 <Label htmlFor={`rooms-${item.id}`} className="text-xs">
                   <Pencil className="h-3 w-3 text-accent/60" />
-                  Room-by-room details
+                  Détails pièce par pièce
                 </Label>
                 <Textarea
                   id={`rooms-${item.id}`}
                   value={roomDetails}
                   onChange={(e) => setRoomDetails(e.target.value)}
-                  placeholder="Living room: light tones, wooden floor&#10;Bedroom: dark walls, warm colours&#10;Kitchen: modern, white cabinets"
+                  placeholder="Séjour : tons clairs, parquet&#10;Chambre : murs sombres, couleurs chaudes&#10;Cuisine : moderne, façades blanches"
                   rows={4}
                   className="resize-none text-sm"
                 />
@@ -681,13 +681,13 @@ function NonInteriorBody({
               <div className="space-y-2">
                 <Label htmlFor={`tech-${item.id}`} className="text-xs">
                   <Pencil className="h-3 w-3 text-accent/60" />
-                  Technical notes
+                  Notes techniques
                 </Label>
                 <Textarea
                   id={`tech-${item.id}`}
                   value={techNotes}
                   onChange={(e) => setTechNotes(e.target.value)}
-                  placeholder="Delivery format, resolution, special requirements..."
+                  placeholder="Format de livraison, résolution, exigences particulières…"
                   rows={2}
                   className="resize-none text-sm"
                 />
@@ -698,7 +698,8 @@ function NonInteriorBody({
           {/* Save button */}
           <div className="flex items-center justify-between">
             <p className="text-[0.72rem] text-muted-foreground">
-              Files are saved automatically. Click save for descriptions and settings.
+              Les fichiers sont enregistrés automatiquement. Cliquez sur
+              Enregistrer pour les descriptions et les réglages.
             </p>
             <Button
               variant="accent"
@@ -708,12 +709,12 @@ function NonInteriorBody({
             >
               {saved ? (
                 <>
-                  <Check className="mr-1 h-3 w-3" /> Saved
+                  <Check className="mr-1 h-3 w-3" /> Enregistré
                 </>
               ) : saving ? (
-                "Saving..."
+                "Enregistrement…"
               ) : (
-                "Save"
+                "Enregistrer"
               )}
             </Button>
           </div>

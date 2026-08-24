@@ -75,8 +75,8 @@ type ItemFile = {
 
 function formatSize(b: number) {
   return b < 1024 * 1024
-    ? `${(b / 1024).toFixed(0)} KB`
-    : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+    ? `${(b / 1024).toFixed(0)} Ko`
+    : `${(b / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
 type FileKind = "source" | "material-spec" | "reference";
@@ -171,7 +171,7 @@ export function FloorplanConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Error");
+        if (!urlRes.ok) throw new Error("Erreur");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -214,7 +214,7 @@ export function FloorplanConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Remove file"
+                aria-label="Supprimer le fichier"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -282,7 +282,7 @@ export function FloorplanConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Saved
+              Enregistré
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
@@ -404,7 +404,7 @@ export function FloorplanConfigSection({
             disabled={!editable}
             className="w-full rounded-md bg-secondary/40 px-2.5 py-1.5 text-sm text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
           >
-            <option value="">Select...</option>
+            <option value="">Sélectionner…</option>
             {FP_FURNITURE_STYLES.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.label}
@@ -452,7 +452,7 @@ export function FloorplanConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Uploading...</span>
+              <span className="text-accent">Import en cours…</span>
             </div>
           ))}
         </div>
@@ -466,7 +466,7 @@ export function FloorplanConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Advanced settings
+            Paramètres avancés
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
             · viewing angle, labels, materials
@@ -505,7 +505,7 @@ export function FloorplanConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">Select...</option>
+                  <option value="">Sélectionner…</option>
                   {FP_CAMERA_ANGLES.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.label}
@@ -531,7 +531,7 @@ export function FloorplanConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">Select...</option>
+                  <option value="">Sélectionner…</option>
                   {FP_WALL_DISPLAYS.map((w) => (
                     <option key={w.id} value={w.id}>
                       {w.label}
@@ -557,7 +557,7 @@ export function FloorplanConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">Select...</option>
+                  <option value="">Sélectionner…</option>
                   {FP_BACKGROUNDS.map((b) => (
                     <option key={b.id} value={b.id}>
                       {b.label}
@@ -720,7 +720,7 @@ export function FloorplanConfigSection({
               disabled={!editable}
               className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
             >
-              <option value="">Select...</option>
+              <option value="">Sélectionner…</option>
               {FP_FURNITURE_STYLES.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.label}

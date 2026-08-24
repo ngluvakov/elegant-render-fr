@@ -88,7 +88,7 @@ export function AddServiceDialog({
             open ? "rotate-45" : "group-hover:rotate-90",
           )}
         />
-        {open ? "Close" : "Add a service to this draft"}
+        {open ? "Fermer" : "Ajouter un service à ce brouillon"}
       </button>
 
       <Collapsible open={open} className="w-full">
@@ -151,12 +151,12 @@ export function AddServiceDialog({
                         {adding === prod.id ? (
                           <>
                             <Check className="h-3 w-3 animate-pulse" />
-                            Adding...
+                            Ajout…
                           </>
                         ) : (
                           <>
                             <Plus className="h-3 w-3" />
-                            Add
+                            Ajouter
                           </>
                         )}
                       </button>
@@ -168,7 +168,7 @@ export function AddServiceDialog({
 
           {!activeCat && (
             <p className="mt-4 text-center text-sm text-muted-foreground">
-              Choose a category
+              Choisissez une catégorie
             </p>
           )}
         </div>

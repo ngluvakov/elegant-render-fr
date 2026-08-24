@@ -41,7 +41,7 @@ export function DeleteOrderButton({
     return (
       <button
         type="button"
-        aria-label={`Delete draft ${orderNumber}`}
+        aria-label={`Supprimer le brouillon ${orderNumber}`}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -68,10 +68,10 @@ export function DeleteOrderButton({
         className,
       )}
     >
-      <span className="px-1.5 text-[0.72rem] font-semibold">Delete?</span>
+      <span className="px-1.5 text-[0.72rem] font-semibold">Supprimer ?</span>
       <button
         type="button"
-        aria-label="Confirm deletion"
+        aria-label="Confirmer la suppression"
         disabled={pending}
         onClick={handleDelete}
         className="inline-flex h-7 w-7 items-center justify-center rounded-sm transition-colors hover:bg-destructive hover:text-white disabled:opacity-50"
@@ -80,7 +80,7 @@ export function DeleteOrderButton({
       </button>
       <button
         type="button"
-        aria-label="Cancel"
+        aria-label="Annuler"
         onClick={() => setConfirming(false)}
         className="inline-flex h-7 w-7 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       >

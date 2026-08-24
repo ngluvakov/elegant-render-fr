@@ -10,12 +10,12 @@ import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 
 const SECTION_NAMES: Record<string, string> = {
-  "/portal": "Overview",
-  "/portal/admin/analytics": "Analytics",
+  "/portal": "Vue d’ensemble",
+  "/portal/admin/analytics": "Statistiques",
   "/portal/admin": "Admin",
-  "/portal/orders": "Orders",
+  "/portal/orders": "Commandes",
   "/portal/ai-studio": "AI Studio",
-  "/portal/profile": "Profile",
+  "/portal/profile": "Profil",
 };
 
 type PortalTopbarProps = {
@@ -30,7 +30,7 @@ export function PortalTopbar({
   const pathname = usePathname();
 
   // Find matching section name
-  let sectionName = "Portal";
+  let sectionName = "Espace client";
   for (const [path, name] of Object.entries(SECTION_NAMES)) {
     if (pathname === path || (path !== "/portal" && pathname.startsWith(path))) {
       sectionName = name;
@@ -47,7 +47,7 @@ export function PortalTopbar({
         <button
           type="button"
           onClick={onMenuClick}
-          aria-label="Open menu"
+          aria-label="Ouvrir le menu"
           className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden"
         >
           <Menu className="h-5 w-5" />
@@ -59,7 +59,7 @@ export function PortalTopbar({
         {isOrderDetail && (
           <>
             <span className="text-muted-foreground/40">/</span>
-            <span className="text-muted-foreground">Details</span>
+            <span className="text-muted-foreground">Détails</span>
           </>
         )}
       </div>

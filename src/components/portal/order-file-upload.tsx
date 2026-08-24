@@ -35,8 +35,8 @@ type UploadingFile = {
 
 export function OrderFileUpload({
   orderId,
-  title = "Project files",
-  description = "Upload floor plans, photos and style references. Supported formats: JPG, PNG, WebP, TIFF, PDF.",
+  title = "Fichiers du projet",
+  description = "Importez plans, photos et références de style. Formats pris en charge : JPG, PNG, WebP, TIFF, PDF.",
 }: {
   orderId: string;
   title?: string;
@@ -55,7 +55,7 @@ export function OrderFileUpload({
       if (totalUploaded + totalUploading + file.size > MAX_TOTAL_BYTES) {
         setUploading((prev) => [
           ...prev,
-          { file, progress: 0, error: "Total size exceeds 100MB" },
+          { file, progress: 0, error: "La taille totale dépasse 100 Mo" },
         ]);
         return;
       }
@@ -77,7 +77,7 @@ export function OrderFileUpload({
 
         if (!urlRes.ok) {
           const { error } = await urlRes.json();
-          throw new Error(error || "Could not create an upload link");
+          throw new Error(error || "Impossible de créer un lien d’import");
         }
 
         const { signedUrl, storagePath } = await urlRes.json();
@@ -115,7 +115,7 @@ export function OrderFileUpload({
         setUploading((prev) =>
           prev.map((u) =>
             u.file === file
-              ? { ...u, error: err instanceof Error ? err.message : "Upload failed" }
+              ? { ...u, error: err instanceof Error ? err.message : "Échec de l’import" }
               : u,
           ),
         );
@@ -135,8 +135,8 @@ export function OrderFileUpload({
   };
 
   const formatSize = (bytes: number) => {
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} Ko`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
   };
 
   return (
@@ -149,7 +149,7 @@ export function OrderFileUpload({
       <div
         role="button"
         tabIndex={0}
-        aria-label="Upload files — drag them here or press Enter to browse"
+        aria-label="Importer des fichiers — glissez-les ici ou appuyez sur Entrée pour parcourir"
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
@@ -168,10 +168,10 @@ export function OrderFileUpload({
       >
         <Upload className="mb-3 h-8 w-8 text-muted-foreground/50" />
         <p className="text-sm font-medium text-foreground">
-          Drag files here
+          Glissez vos fichiers ici
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          or click to browse · 100MB total max
+          ou cliquez pour parcourir · 100 Mo max au total
         </p>
         <input
           ref={inputRef}
@@ -184,7 +184,7 @@ export function OrderFileUpload({
       </div>
 
       <p className="mt-3 text-right text-xs text-muted-foreground">
-        {formatSize(totalUploaded)} / 100 MB
+        {formatSize(totalUploaded)} / 100 Mo
       </p>
 
       {/* In-flight uploads */}
@@ -207,7 +207,7 @@ export function OrderFileUpload({
                       aria-valuenow={u.progress}
                       aria-valuemin={0}
                       aria-valuemax={100}
-                      aria-label={`Uploading: ${u.file.name}`}
+                      aria-label={`Import en cours : ${u.file.name}`}
                       className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted"
                     >
                       <div
@@ -216,7 +216,7 @@ export function OrderFileUpload({
                       />
                     </div>
                     <span className="min-w-14 text-right text-xs tabular-nums text-accent">
-                      {u.progress < 100 ? `${u.progress}%` : "Scanning…"}
+                      {u.progress < 100 ? `${u.progress}%` : "Analyse…"}
                     </span>
                   </div>
                 )}
@@ -227,7 +227,7 @@ export function OrderFileUpload({
               {u.error && (
                 <button
                   type="button"
-                  aria-label={`Remove ${u.file.name}`}
+                  aria-label={`Retirer ${u.file.name}`}
                   onClick={() =>
                     setUploading((prev) => prev.filter((x) => x.file !== u.file))
                   }

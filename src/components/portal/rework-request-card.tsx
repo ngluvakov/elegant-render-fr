@@ -34,12 +34,13 @@ export function ReworkRequestCard({ orderId }: { orderId: string }) {
       <div className="flex items-center gap-2">
         <RefreshCcw className="h-4 w-4 text-muted-foreground" />
         <h3 className="text-sm font-semibold text-foreground">
-          Request revisions
+          Demander des révisions
         </h3>
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
-        The price includes 3 revision rounds. Describe the requested changes in
-        the messages above, then click the button below.
+        Le prix comprend 3 séries de révisions. Décrivez les modifications
+        souhaitées dans les messages ci-dessus, puis cliquez sur le bouton
+        ci-dessous.
       </p>
       {error && (
         <p className="mt-2 text-xs text-destructive">{error}</p>
@@ -51,7 +52,7 @@ export function ReworkRequestCard({ orderId }: { orderId: string }) {
         onClick={handleRework}
         disabled={pending}
       >
-        {pending ? "Sending..." : "Request revision"}
+        {pending ? "Envoi…" : "Demander une révision"}
       </Button>
     </div>
   );

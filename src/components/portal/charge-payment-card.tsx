@@ -51,7 +51,7 @@ export function ChargePaymentCard({
       <div className="rounded-xl border border-border bg-secondary/50 p-4 text-center">
         <Check className="mx-auto h-6 w-6 text-muted-foreground" />
         <p className="mt-2 text-xs font-semibold text-foreground">
-          Payment received
+          Paiement reçu
         </p>
       </div>
     );
@@ -62,11 +62,11 @@ export function ChargePaymentCard({
       <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center">
         <Clock className="mx-auto h-6 w-6 text-accent" />
         <p className="mt-2 text-xs font-semibold text-foreground">
-          Payment processing
+          Paiement en cours de traitement
         </p>
         <p className="mt-1 text-[0.72rem] text-muted-foreground">
-          PayPal confirms eCheck payments within a few days — we&apos;ll
-          email you as soon as it clears.
+          PayPal confirme les paiements par eCheck sous quelques jours — nous
+          vous enverrons un e-mail dès que le paiement sera validé.
         </p>
       </div>
     );
@@ -81,7 +81,7 @@ export function ChargePaymentCard({
       )}
 
       <p className="mb-3 text-xs text-muted-foreground">
-        Amount due:{" "}
+        Montant à régler :{" "}
         <strong className="text-foreground">{amountLabel}</strong>
       </p>
 

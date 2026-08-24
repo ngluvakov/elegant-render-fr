@@ -18,7 +18,7 @@ export function NewDraftButton() {
     start(async () => {
       const res = await createEmptyDraft();
       if (res.error || !res.orderId) {
-        alert(res.error ?? "Error creating draft.");
+        alert(res.error ?? "Erreur lors de la création du brouillon.");
         return;
       }
       router.push(`/portal/orders/${res.orderId}`);
@@ -37,7 +37,7 @@ export function NewDraftButton() {
       ) : (
         <Plus className="h-4 w-4 transition-transform group-hover:rotate-90" />
       )}
-      {pending ? "Creating..." : "New draft"}
+      {pending ? "Création…" : "Nouveau brouillon"}
     </button>
   );
 }

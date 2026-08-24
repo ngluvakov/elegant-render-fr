@@ -78,8 +78,8 @@ type ItemFile = {
 
 function formatSize(b: number) {
   return b < 1024 * 1024
-    ? `${(b / 1024).toFixed(0)} KB`
-    : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+    ? `${(b / 1024).toFixed(0)} Ko`
+    : `${(b / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
 type FileKind = "source" | "reference" | "material-spec" | "extra-angle";
@@ -173,7 +173,7 @@ export function RenovationConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Error");
+        if (!urlRes.ok) throw new Error("Erreur");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -216,7 +216,7 @@ export function RenovationConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Remove file"
+                aria-label="Supprimer le fichier"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -280,7 +280,7 @@ export function RenovationConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Saved
+              Enregistré
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
@@ -411,7 +411,7 @@ export function RenovationConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Uploading...</span>
+              <span className="text-accent">Import en cours…</span>
             </div>
           ))}
         </div>
@@ -425,7 +425,7 @@ export function RenovationConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Advanced settings
+            Paramètres avancés
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
             · materials, structure, details
@@ -532,7 +532,7 @@ export function RenovationConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">Select...</option>
+                  <option value="">Sélectionner…</option>
                   {RENO_FLOOR_MATERIALS.map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.label}
@@ -562,7 +562,7 @@ export function RenovationConfigSection({
                   disabled={!editable}
                   className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                 >
-                  <option value="">Select...</option>
+                  <option value="">Sélectionner…</option>
                   {RENO_WALL_MATERIALS.map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.label}
@@ -610,7 +610,7 @@ export function RenovationConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">Select...</option>
+                <option value="">Sélectionner…</option>
                 {RENO_FURNITURE_STYLES.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.label}

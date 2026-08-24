@@ -65,7 +65,7 @@ export function OrderDetailHero({
         className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
-        Orders
+        Commandes
       </Link>
 
       <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -85,15 +85,15 @@ export function OrderDetailHero({
             </p>
           )}
           <p className="mt-2 text-xs text-muted-foreground">
-            Created{" "}
-            {createdAt.toLocaleDateString("en-GB", {
+            Créée le{" "}
+            {createdAt.toLocaleDateString("fr-FR", {
               day: "numeric",
               month: "long",
               year: "numeric",
             })}
             {" · "}
-            Updated{" "}
-            {updatedAt.toLocaleDateString("en-GB", {
+            Mise à jour le{" "}
+            {updatedAt.toLocaleDateString("fr-FR", {
               day: "numeric",
               month: "short",
             })}
@@ -114,7 +114,7 @@ export function OrderDetailHero({
             {savingsEur > 0 && (
               <p className="text-xs font-semibold text-muted-foreground">
                 −{formatPublicPrice(savingsEur, displayCurrency, pricingSettings)}{" "}
-                saved
+                économisés
               </p>
             )}
           </div>

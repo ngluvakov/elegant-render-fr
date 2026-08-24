@@ -16,11 +16,12 @@ export function SetPasswordBanner() {
         </div>
         <div>
           <p className="text-sm font-semibold text-foreground">
-            Set a password for faster access
+            Définissez un mot de passe pour un accès plus rapide
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Next time, you will be able to log in directly without waiting for
-            an email link. Magic links stylel work if you skip this.
+            La prochaine fois, vous pourrez vous connecter directement, sans
+            attendre de lien par e-mail. Les liens magiques continueront de
+            fonctionner si vous passez cette étape.
           </p>
         </div>
       </div>
@@ -28,7 +29,7 @@ export function SetPasswordBanner() {
         href="/portal/profile#password"
         className="inline-flex shrink-0 items-center justify-center rounded-lg border border-accent/40 bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-accent/10"
       >
-        Set password
+        Définir un mot de passe
       </Link>
     </div>
   );

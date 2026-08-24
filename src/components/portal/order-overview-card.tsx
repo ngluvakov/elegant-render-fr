@@ -31,7 +31,7 @@ type OrderOverviewCardProps = {
 export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
   const firstItem = order.items[0];
   const accent = statusAccent(order.status);
-  const title = order.projectName ?? firstItem?.productLabel ?? "Order";
+  const title = order.projectName ?? firstItem?.productLabel ?? "Commande";
   const total = order.billingCurrency && order.billingTotalCents != null
     ? formatBillingMoney(order.billingTotalCents, order.billingCurrency)
     : formatEur((order.totalCents ?? order.totalEur * 100) / 100);
@@ -53,7 +53,7 @@ export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
             <p className="mt-0.5 text-xs text-muted-foreground">
               {firstItem.productLabel} · {firstItem.categoryLabel}
               {order.items.length > 1 &&
-                ` + ${order.items.length - 1} ${order.items.length - 1 === 1 ? "item" : "items"}`}
+                ` + ${order.items.length - 1} ${order.items.length - 1 === 1 ? "élément" : "éléments"}`}
             </p>
           )}
         </div>
@@ -64,14 +64,14 @@ export function OrderOverviewCard({ order }: OrderOverviewCardProps) {
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           <span>{total}</span>
           <span>
-            {order.updatedAt.toLocaleDateString("en-GB", {
+            {order.updatedAt.toLocaleDateString("fr-FR", {
               day: "numeric",
               month: "short",
             })}
           </span>
         </div>
         <span className="flex items-center gap-1 text-xs font-medium text-accent opacity-0 transition-opacity group-hover:opacity-100">
-          Open <ArrowRight className="h-3 w-3" />
+          Ouvrir <ArrowRight className="h-3 w-3" />
         </span>
       </div>
     </Link>

@@ -53,15 +53,15 @@ export function CommentThread({
     return (
       <EmptyState
         icon={MessageSquare}
-        heading="No messages"
-        description="Start a conversation with the team using the field below."
+        heading="Aucun message"
+        description="Engagez la conversation avec l’équipe via le champ ci-dessous."
       />
     );
   }
 
   const formatTime = (date: Date) => {
     const d = new Date(date);
-    return d.toLocaleDateString("en-GB", {
+    return d.toLocaleDateString("fr-FR", {
       day: "numeric",
       month: "short",
       hour: "2-digit",
@@ -74,7 +74,7 @@ export function CommentThread({
       {comments.map((comment) => {
         const isClient = comment.role === "client";
         const authorName = isClient
-          ? comment.author?.name ?? "You"
+          ? comment.author?.name ?? "Vous"
           : "Elegant Render";
 
         return (

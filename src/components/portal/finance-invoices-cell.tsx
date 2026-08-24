@@ -17,7 +17,7 @@ export function FinanceInvoicesCell({
   if (invoices.length === 0) {
     return (
       <span className="text-[0.78rem] text-muted-foreground">
-        {status === "completed" ? "Invoice is being prepared" : "After payment"}
+        {status === "completed" ? "Facture en préparation" : "Après le paiement"}
       </span>
     );
   }
@@ -32,7 +32,7 @@ export function FinanceInvoicesCell({
         className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-3 py-1.5 text-[0.78rem] font-medium text-background transition hover:opacity-90"
       >
         <Download className="h-3.5 w-3.5" />
-        {inv.kind === "proforma" ? "Proforma" : "Invoice"}
+        {inv.kind === "proforma" ? "Proforma" : "Facture"}
       </a>
     );
   }
@@ -79,7 +79,7 @@ export function FinanceInvoicesCell({
 }
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString("en-GB", {
+  return date.toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

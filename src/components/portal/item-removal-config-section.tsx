@@ -71,8 +71,8 @@ type ItemFile = {
 
 function formatSize(b: number) {
   return b < 1024 * 1024
-    ? `${(b / 1024).toFixed(0)} KB`
-    : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+    ? `${(b / 1024).toFixed(0)} Ko`
+    : `${(b / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
 type FileKind = "source" | "annotated" | "background-ref";
@@ -169,7 +169,7 @@ export function ItemRemovalConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Error");
+        if (!urlRes.ok) throw new Error("Erreur");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -212,7 +212,7 @@ export function ItemRemovalConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Remove file"
+                aria-label="Supprimer le fichier"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -280,7 +280,7 @@ export function ItemRemovalConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Saved
+              Enregistré
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
@@ -296,7 +296,7 @@ export function ItemRemovalConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Room name / images
+          Nom de la pièce / des images
         </Label>
         <input
           id={`name-${itemId}`}
@@ -313,14 +313,14 @@ export function ItemRemovalConfigSection({
       <div className="space-y-1">
         <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
           <Camera className="h-3 w-3 text-accent/60" />
-          Number of photos
+          Nombre de photos
         </Label>
         <div className="inline-flex items-center rounded-md bg-secondary/40">
           <button
             type="button"
             disabled={!editable || config.photoCount <= 1}
             onClick={decPhotos}
-            aria-label="Decrease number of photos"
+            aria-label="Diminuer le nombre de photos"
             className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
           >
             <Minus className="h-3.5 w-3.5" />
@@ -332,13 +332,13 @@ export function ItemRemovalConfigSection({
             type="button"
             disabled={!editable || config.photoCount >= 200}
             onClick={incPhotos}
-            aria-label="Increase number of photos"
+            aria-label="Augmenter le nombre de photos"
             className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
           >
             <Plus className="h-3.5 w-3.5" />
           </button>
           <span className="ml-2 text-[0.7rem] text-muted-foreground">
-            1 included, +{formatPrice(additionalPriceEur)} each additional
+            1 incluse, +{formatPrice(additionalPriceEur)} par photo supplémentaire
           </span>
         </div>
       </div>
@@ -347,14 +347,14 @@ export function ItemRemovalConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          What should be removed?
+          Que faut-il supprimer ?
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Boxes in the corner, pictures on the wall, old sofa, wall cables..."
+          placeholder="Cartons dans le coin, cadres au mur, vieux canapé, câbles apparents…"
           rows={3}
           className="resize-none text-sm"
         />
@@ -362,10 +362,10 @@ export function ItemRemovalConfigSection({
 
       {/* Source upload */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Original photos</Label>
+        <Label className="text-xs">Photos d’origine</Label>
         {renderUploadZone(
           sourceInputRef,
-          "Drag photos of the space",
+          "Glissez les photos de l’espace",
           "image/*",
           "source",
         )}
@@ -381,7 +381,7 @@ export function ItemRemovalConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Uploading...</span>
+              <span className="text-accent">Import en cours…</span>
             </div>
           ))}
         </div>
@@ -395,10 +395,10 @@ export function ItemRemovalConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Advanced settings
+            Paramètres avancés
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · marking, reconstruction, details
+            · marquage, reconstruction, détails
           </span>
         </div>
         <Switch
@@ -414,17 +414,17 @@ export function ItemRemovalConfigSection({
           {/* 2.1 Annotation & retention */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Precise marking
+              Marquage précis
             </p>
 
             <div className="space-y-1.5">
               <Label className="text-[0.7rem]">
                 <Highlighter className="h-3 w-3 text-accent/60" />
-                Upload marked sketches
+                Importer des croquis annotés
               </Label>
               {renderUploadZone(
                 annotatedInputRef,
-                "Images with circled elements to remove",
+                "Images avec les éléments à supprimer entourés",
                 "image/*",
                 "annotated",
               )}
@@ -433,14 +433,14 @@ export function ItemRemovalConfigSection({
 
             <div className="space-y-1">
               <Label htmlFor={`keep-${itemId}`} className="text-[0.7rem]">
-                What must stay?
+                Que faut-il conserver ?
               </Label>
               <Textarea
                 id={`keep-${itemId}`}
                 value={config.itemsToKeep ?? ""}
                 onChange={(e) => patch({ itemsToKeep: e.target.value })}
                 disabled={!editable}
-                placeholder="Built-in wardrobe, fireplace, specific lamp..."
+                placeholder="Placard intégré, cheminée, luminaire particulier…"
                 rows={2}
                 className="resize-none text-[0.78rem]"
               />
@@ -452,14 +452,14 @@ export function ItemRemovalConfigSection({
             <div className="space-y-3 rounded-md border border-border/30 bg-card/60 p-3">
               <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
                 <Hammer className="h-3 w-3 text-accent/60" />
-                Background reconstruction
+                Reconstruction de l’arrière-plan
               </p>
               <div className="space-y-1">
                 <Label
                   htmlFor={`bg-desc-${itemId}`}
                   className="text-[0.7rem]"
                 >
-                  What is behind the item?
+                  Qu’y a-t-il derrière l’objet ?
                 </Label>
                 <Textarea
                   id={`bg-desc-${itemId}`}
@@ -468,7 +468,7 @@ export function ItemRemovalConfigSection({
                     patch({ backgroundDescription: e.target.value })
                   }
                   disabled={!editable}
-                  placeholder="Wood flooring and a white wall continue; there is a window behind the sofa; stone below the clock..."
+                  placeholder="Le parquet et le mur blanc se prolongent ; une fenêtre derrière le canapé ; de la pierre sous l’horloge…"
                   rows={2}
                   className="resize-none text-[0.78rem]"
                 />
@@ -476,11 +476,11 @@ export function ItemRemovalConfigSection({
               <div className="space-y-1.5">
                 <Label className="text-[0.7rem]">
                   <ImageIcon className="h-3 w-3 text-accent/60" />
-                  Background references
+                  Références d’arrière-plan
                 </Label>
                 {renderUploadZone(
                   bgRefInputRef,
-                  "Image of the same room from another angle showing an empty wall / floor",
+                  "Image de la même pièce sous un autre angle montrant un mur / sol nu",
                   "image/*",
                   "background-ref",
                 )}
@@ -495,11 +495,11 @@ export function ItemRemovalConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Additional options
+            Options supplémentaires
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            After cleaning the space, you can additionally order virtual
-            staging as a separate service (static staging).
+            Une fois l’espace nettoyé, vous pouvez commander en plus un home
+            staging virtuel en tant que service séparé (staging statique).
           </p>
         </div>
 
@@ -511,10 +511,11 @@ export function ItemRemovalConfigSection({
             <Sparkles className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                I want virtual staging
+                Je souhaite un home staging virtuel
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Mark the intent - order the vs-static item separately
+                Indique votre intention — le service vs-static se commande
+                séparément
               </span>
             </div>
           </div>
@@ -538,7 +539,7 @@ export function ItemRemovalConfigSection({
               className="text-[0.7rem]"
             >
               <Sofa className="h-3 w-3 text-accent/60" />
-              Style za staging
+              Style de staging
             </Label>
             <select
               id={`stage-style-${itemId}`}
@@ -553,7 +554,7 @@ export function ItemRemovalConfigSection({
               disabled={!editable}
               className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
             >
-              <option value="">Select...</option>
+              <option value="">Sélectionner…</option>
               {VS_FURNITURE_STYLES.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.label}
@@ -561,8 +562,9 @@ export function ItemRemovalConfigSection({
               ))}
             </select>
             <p className="mt-1 text-[0.62rem] text-muted-foreground">
-              We save this choice as information - order the
-              "Static staging" (vs-static) service separately from pricing.
+              Nous enregistrons ce choix à titre d’information — commandez le
+              service « Staging statique » (vs-static) séparément depuis la
+              page Tarifs.
             </p>
           </div>
         </Collapsible>

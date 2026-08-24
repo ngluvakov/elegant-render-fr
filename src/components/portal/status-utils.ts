@@ -5,16 +5,16 @@
  * Used on: StatusTracker, OrderDetailHero, OrderOverviewCard, OrdersFilterBar.
  */
 export const STATUS_LABELS: Record<string, string> = {
-  draft: "Draft",
-  awaiting_payment: "Awaiting payment",
-  paid: "Paid",
-  in_progress: "In progress",
-  in_review: "Ready for review",
-  revision_requested: "Revisions requested",
-  delivered: "Delivered",
-  closed: "Closed",
-  cancelled: "Cancelled",
-  refunded: "Refunded",
+  draft: "Brouillon",
+  awaiting_payment: "En attente de paiement",
+  paid: "Payée",
+  in_progress: "En production",
+  in_review: "À valider",
+  revision_requested: "Révisions demandées",
+  delivered: "Livrée",
+  closed: "Clôturée",
+  cancelled: "Annulée",
+  refunded: "Remboursée",
 };
 
 export function statusLabel(status: string): string {
@@ -42,13 +42,13 @@ export function statusAccent(status: string): string {
 }
 
 export const STATUS_STEPS = [
-  { key: "draft", label: "Order" },
-  { key: "paid", label: "Payment" },
+  { key: "draft", label: "Commande" },
+  { key: "paid", label: "Paiement" },
   { key: "in_progress", label: "Production" },
-  { key: "in_review", label: "Review" },
-  { key: "revision_requested", label: "Revision" },
-  { key: "delivered", label: "Delivery" },
-  { key: "closed", label: "Closed" },
+  { key: "in_review", label: "Validation" },
+  { key: "revision_requested", label: "Révision" },
+  { key: "delivered", label: "Livraison" },
+  { key: "closed", label: "Clôture" },
 ] as const;
 
 // Customer-friendly explanation for each order status. The `tone` drives
@@ -63,63 +63,63 @@ export const STATUS_GUIDANCE: Record<
   { title: string; description: string; tone: StatusTone }
 > = {
   draft: {
-    title: "Prepare items for payment",
+    title: "Préparez les éléments pour le paiement",
     description:
-      "Complete every item (name, number of frames, description, files). When everything is ready, click \"Continue to payment\" in the summary card.",
+      "Complétez chaque élément (nom, nombre de vues, description, fichiers). Quand tout est prêt, cliquez sur « Continuer vers le paiement » dans la carte de récapitulatif.",
     tone: "action",
   },
   awaiting_payment: {
-    title: "Complete payment",
+    title: "Finalisez le paiement",
     description:
-      "Items are locked. As soon as we receive payment, our team starts production. First drafts arrive within 24-48 hours.",
+      "Les éléments sont verrouillés. Dès réception du paiement, notre équipe lance la production. Les premières ébauches arrivent sous 24 à 48 heures.",
     tone: "action",
   },
   paid: {
-    title: "Payment received",
+    title: "Paiement reçu",
     description:
-      "Thank you. Our team has started preparing the project. We send first drafts within 24-48 hours.",
+      "Merci. Notre équipe a commencé la préparation du projet. Nous envoyons les premières ébauches sous 24 à 48 heures.",
     tone: "info",
   },
   in_progress: {
-    title: "The team is working on your project",
+    title: "L’équipe travaille sur votre projet",
     description:
-      "We will notify you as soon as drafts are ready for review. In the meantime, you can add notes and files to individual items.",
+      "Nous vous préviendrons dès que des ébauches seront prêtes à être validées. En attendant, vous pouvez ajouter des notes et des fichiers aux différents éléments.",
     tone: "info",
   },
   in_review: {
-    title: "Review is with you",
+    title: "À vous de valider",
     description:
-      "Our team has sent the first renders. Review the files and reply: approve them or request revisions. You have up to 5 working days.",
+      "Notre équipe a envoyé les premiers rendus. Examinez les fichiers et répondez : approuvez-les ou demandez des révisions. Vous disposez de 5 jours ouvrés.",
     tone: "action",
   },
   revision_requested: {
-    title: "The team is working on revisions",
+    title: "L’équipe travaille sur les révisions",
     description:
-      "Your revision request has been received. Estimated turnaround for the new version: 2-3 working days. We will notify you when it is ready.",
+      "Votre demande de révision a bien été reçue. Délai estimé pour la nouvelle version : 2 à 3 jours ouvrés. Nous vous préviendrons dès qu’elle sera prête.",
     tone: "info",
   },
   delivered: {
-    title: "Final files are ready",
+    title: "Les fichiers finaux sont prêts",
     description:
-      "Download the delivered files from the \"Delivered files\" section. Thank you for choosing Elegant Render. Use this order as a reference for future discounts.",
+      "Téléchargez les fichiers livrés depuis la section « Fichiers livrés ». Merci d’avoir choisi Elegant Render. Vous pourrez référencer cette commande pour bénéficier de remises sur vos prochains projets.",
     tone: "info",
   },
   closed: {
-    title: "Project closed",
+    title: "Projet clôturé",
     description:
-      "The order has been archived. On your next order, you can reference it and receive a discount because the model has already been built.",
+      "La commande a été archivée. Lors de votre prochaine commande, vous pourrez la référencer et bénéficier d’une remise, car le modèle 3D existe déjà.",
     tone: "info",
   },
   cancelled: {
-    title: "Order cancelled",
+    title: "Commande annulée",
     description:
-      "This order is no longer active. If you think this is an error, contact us through chat or email.",
+      "Cette commande n’est plus active. Si vous pensez qu’il s’agit d’une erreur, contactez-nous par chat ou par e-mail.",
     tone: "alert",
   },
   refunded: {
-    title: "Funds refunded",
+    title: "Fonds remboursés",
     description:
-      "The order has been cancelled and the funds returned. If you have questions or want to order again, contact us.",
+      "La commande a été annulée et les fonds vous ont été restitués. Pour toute question, ou pour commander à nouveau, contactez-nous.",
     tone: "alert",
   },
 };

@@ -70,8 +70,8 @@ type ItemFile = {
 
 function formatSize(b: number) {
   return b < 1024 * 1024
-    ? `${(b / 1024).toFixed(0)} KB`
-    : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+    ? `${(b / 1024).toFixed(0)} Ko`
+    : `${(b / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
 type FileKind = "source" | "reference";
@@ -161,7 +161,7 @@ export function DtdConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Error");
+        if (!urlRes.ok) throw new Error("Erreur");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -204,7 +204,7 @@ export function DtdConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Remove file"
+                aria-label="Supprimer le fichier"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -256,7 +256,7 @@ export function DtdConfigSection({
           <CloudMoon className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.projectName || "Property"}
+              {config.projectName || "Bien"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
               {config.photoCount} photo{config.photoCount === 1 ? "" : "s"} ·{" "}
@@ -269,7 +269,7 @@ export function DtdConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Saved
+              Enregistré
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
@@ -285,7 +285,7 @@ export function DtdConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Project / property name
+          Nom du projet / du bien
         </Label>
         <input
           id={`name-${itemId}`}
@@ -303,14 +303,14 @@ export function DtdConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Camera className="h-3 w-3 text-accent/60" />
-            Number of photos
+            Nombre de photos
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.photoCount <= 1}
               onClick={decPhotos}
-              aria-label="Decrease number of photos"
+              aria-label="Diminuer le nombre de photos"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -322,13 +322,13 @@ export function DtdConfigSection({
               type="button"
               disabled={!editable || config.photoCount >= 200}
               onClick={incPhotos}
-              aria-label="Increase number of photos"
+              aria-label="Augmenter le nombre de photos"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 included, +{formatPrice(DTD_PHOTO_EUR)} each additional
+              1 incluse, +{formatPrice(DTD_PHOTO_EUR)} par photo supplémentaire
             </span>
           </div>
         </div>
@@ -339,7 +339,7 @@ export function DtdConfigSection({
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
             <CloudMoon className="h-3 w-3 text-accent/60" />
-            Desired atmosphere (sky)
+            Ambiance souhaitée (ciel)
           </Label>
           <select
             id={`sky-${itemId}`}
@@ -363,14 +363,14 @@ export function DtdConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Description and notes
+          Description et notes
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Special lighting requirements (for example, keep the pool lights on)..."
+          placeholder="Exigences particulières d’éclairage (par exemple, garder l’éclairage de la piscine allumé)…"
           rows={3}
           className="resize-none text-sm"
         />
@@ -378,10 +378,10 @@ export function DtdConfigSection({
 
       {/* Source photos */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Daytime photos</Label>
+        <Label className="text-xs">Photos de jour</Label>
         {renderUploadZone(
           sourceInputRef,
-          "Drag several images at once",
+          "Glissez plusieurs images à la fois",
           "image/*",
           "source",
         )}
@@ -397,7 +397,7 @@ export function DtdConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Uploading...</span>
+              <span className="text-accent">Import en cours…</span>
             </div>
           ))}
         </div>
@@ -411,10 +411,10 @@ export function DtdConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Advanced settings
+            Paramètres avancés
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · lighting, shadows, details
+            · éclairage, ombres, détails
           </span>
         </div>
         <Switch
@@ -430,7 +430,7 @@ export function DtdConfigSection({
           {/* 2.1 Lighting */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Lighting control
+              Contrôle de l’éclairage
             </p>
             <div className="space-y-1">
               <Label
@@ -438,7 +438,7 @@ export function DtdConfigSection({
                 className="text-[0.7rem]"
               >
                 <Lightbulb className="h-3 w-3 text-accent/60" />
-                Interior lighting
+                Éclairage intérieur
               </Label>
               <select
                 id={`int-light-${itemId}`}
@@ -453,7 +453,7 @@ export function DtdConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">Select...</option>
+                <option value="">Sélectionner…</option>
                 {DTD_INTERIOR_LIGHTS.map((l) => (
                   <option key={l.id} value={l.id}>
                     {l.label}
@@ -463,7 +463,7 @@ export function DtdConfigSection({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Exterior lighting</Label>
+              <Label className="text-[0.7rem]">Éclairage extérieur</Label>
               <div className="grid gap-1.5 sm:grid-cols-2">
                 {DTD_EXTERIOR_LIGHTING_OPTIONS.map((o) => (
                   <label
@@ -502,7 +502,7 @@ export function DtdConfigSection({
           {/* 2.2 Photo corrections */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Photo corrections
+              Corrections de la photo
             </p>
 
             <label
@@ -513,10 +513,10 @@ export function DtdConfigSection({
                 <Sun className="h-3.5 w-3.5 text-accent" />
                 <div>
                   <span className="block text-[0.78rem] font-medium text-foreground">
-                    Removing harsh daytime shadows
+                    Suppression des ombres dures de jour
                   </span>
                   <span className="block text-[0.7rem] text-muted-foreground">
-                    Complex correction of strong facade shadows
+                    Correction complexe des ombres marquées sur la façade
                   </span>
                 </div>
               </div>
@@ -541,7 +541,7 @@ export function DtdConfigSection({
                 className="text-[0.7rem]"
               >
                 <Wand2 className="h-3 w-3 text-accent/60" />
-                Color correction (color grading)
+                Correction colorimétrique (color grading)
               </Label>
               <select
                 id={`grade-${itemId}`}
@@ -556,7 +556,7 @@ export function DtdConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">Select...</option>
+                <option value="">Sélectionner…</option>
                 {DTD_COLOR_GRADES.map((g) => (
                   <option key={g.id} value={g.id}>
                     {g.label}
@@ -569,14 +569,14 @@ export function DtdConfigSection({
           {/* 2.3 References */}
           <div className="space-y-1.5">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Reference
+              Référence
             </p>
             <Label className="text-[0.7rem]">
-              Sky / atmosphere references
+              Références de ciel / d’ambiance
             </Label>
             {renderUploadZone(
               refInputRef,
-              "Images of the desired sky or atmosphere",
+              "Images du ciel ou de l’ambiance souhaités",
               "image/*",
               "reference",
             )}
@@ -589,10 +589,10 @@ export function DtdConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Additional options
+            Options supplémentaires
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Rush delivery with priority processing.
+            Livraison express avec traitement prioritaire.
           </p>
         </div>
 
@@ -604,10 +604,10 @@ export function DtdConfigSection({
             <Zap className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                Rush delivery (24h)
+                Livraison express (24 h)
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Priority processing and delivery within 24 hours
+                Traitement prioritaire et livraison sous 24 heures
               </span>
             </div>
           </div>

@@ -64,8 +64,8 @@ type ItemFile = {
 
 function formatSize(b: number) {
   return b < 1024 * 1024
-    ? `${(b / 1024).toFixed(0)} KB`
-    : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+    ? `${(b / 1024).toFixed(0)} Ko`
+    : `${(b / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
 type FileKind = "source" | "drone-photo";
@@ -157,7 +157,7 @@ export function ExtAerialConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Error");
+        if (!urlRes.ok) throw new Error("Erreur");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -200,7 +200,7 @@ export function ExtAerialConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Remove file"
+                aria-label="Supprimer le fichier"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -251,11 +251,11 @@ export function ExtAerialConfigSection({
           <Camera className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.complexName || "Complex"}
+              {config.complexName || "Complexe"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {config.cameraCount} aerial camera
-              {config.cameraCount === 1 ? "" : "s"}
+              {config.cameraCount} caméra{config.cameraCount === 1 ? "" : "s"}{" "}
+              aérienne{config.cameraCount === 1 ? "" : "s"}
             </p>
           </div>
         </div>
@@ -263,7 +263,7 @@ export function ExtAerialConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Saved
+              Enregistré
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
@@ -275,7 +275,7 @@ export function ExtAerialConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`name-${itemId}`} className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Object / complex name
+          Nom du bâtiment / complexe
         </Label>
         <input
           id={`name-${itemId}`}
@@ -292,14 +292,14 @@ export function ExtAerialConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Camera className="h-3 w-3 text-accent/60" />
-            Number of aerial cameras
+            Nombre de caméras aériennes
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.cameraCount <= 1}
               onClick={dec}
-              aria-label="Decrease number of cameras"
+              aria-label="Diminuer le nombre de caméras"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -311,20 +311,20 @@ export function ExtAerialConfigSection({
               type="button"
               disabled={!editable || config.cameraCount >= 30}
               onClick={inc}
-              aria-label="Increase number of cameras"
+              aria-label="Augmenter le nombre de caméras"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 included, +{formatPrice(48)} each additional
+              1 incluse, +{formatPrice(48)} par caméra supplémentaire
             </span>
           </div>
         </div>
 
         <div className="space-y-1">
           <Label htmlFor={`view-${itemId}`} className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
-            Aerial view type
+            Type de vue aérienne
           </Label>
           <select
             id={`view-${itemId}`}
@@ -341,21 +341,21 @@ export function ExtAerialConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Project description
+          Description du projet
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Object description, plot boundaries, wider surroundings..."
+          placeholder="Description du bâtiment, limites de la parcelle, environnement élargi…"
           rows={3}
           className="resize-none text-sm"
         />
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-xs">Site plan and drawings</Label>
+        <Label className="text-xs">Plan de masse et dessins</Label>
         {renderUploadZone(sourceInputRef, "PDF, DWG, CAD, images", "image/*,application/pdf,.dwg,.dxf", "source")}
         {renderFileList(sourceFiles)}
       </div>
@@ -366,7 +366,7 @@ export function ExtAerialConfigSection({
             <div key={name} className="flex items-center gap-2 rounded bg-accent/5 px-2.5 py-1.5 text-[0.7rem]">
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Uploading...</span>
+              <span className="text-accent">Import en cours…</span>
             </div>
           ))}
         </div>
@@ -378,9 +378,9 @@ export function ExtAerialConfigSection({
       >
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
-          <span className="text-[0.7rem] font-medium text-foreground">Advanced settings</span>
+          <span className="text-[0.7rem] font-medium text-foreground">Paramètres avancés</span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · time of day, surroundings, boundaries
+            · moment de la journée, environnement, limites
           </span>
         </div>
         <Switch id={`adv-${itemId}`} checked={advanced} onCheckedChange={setAdvanced} disabled={!editable} />
@@ -390,7 +390,7 @@ export function ExtAerialConfigSection({
         <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
-              <Label htmlFor={`tod-${itemId}`} className="text-[0.7rem]">Time of day</Label>
+              <Label htmlFor={`tod-${itemId}`} className="text-[0.7rem]">Moment de la journée</Label>
               <select
                 id={`tod-${itemId}`}
                 value={config.timeOfDay ?? ""}
@@ -398,12 +398,12 @@ export function ExtAerialConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">Select...</option>
+                <option value="">Sélectionner…</option>
                 {TIMES_OF_DAY.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <Label htmlFor={`season-${itemId}`} className="text-[0.7rem]">Season</Label>
+              <Label htmlFor={`season-${itemId}`} className="text-[0.7rem]">Saison</Label>
               <select
                 id={`season-${itemId}`}
                 value={config.season ?? ""}
@@ -411,7 +411,7 @@ export function ExtAerialConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">Select...</option>
+                <option value="">Sélectionner…</option>
                 {SEASONS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>
             </div>
@@ -419,7 +419,7 @@ export function ExtAerialConfigSection({
 
           <div className="space-y-1">
             <Label htmlFor={`env-rep-${itemId}`} className="text-[0.7rem]">
-              Wider surroundings view
+              Représentation des environs
             </Label>
             <select
               id={`env-rep-${itemId}`}
@@ -434,7 +434,7 @@ export function ExtAerialConfigSection({
               disabled={!editable}
               className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
             >
-              <option value="">Select...</option>
+              <option value="">Sélectionner…</option>
               {ENV_REPRESENTATIONS.map((e) => <option key={e.id} value={e.id}>{e.label}</option>)}
             </select>
           </div>
@@ -447,10 +447,10 @@ export function ExtAerialConfigSection({
               <MapPin className="h-3 w-3 text-accent" />
               <div>
                 <span className="block text-[0.78rem] font-medium text-foreground">
-                  Plot boundary marking
+                  Marquage des limites de parcelle
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  Show plot boundary lines on the render
+                  Afficher les limites de la parcelle sur le rendu
                 </span>
               </div>
             </div>
@@ -465,11 +465,11 @@ export function ExtAerialConfigSection({
           <Collapsible open={showDroneUpload}>
             <div className="space-y-1.5 rounded-md bg-card/60 p-2.5">
               <Label className="text-[0.7rem]">
-                Drone photos (for matching)
+                Photos de drone (pour l’intégration)
               </Label>
               {renderUploadZone(
                 droneInputRef,
-                "Existing drone photos of the location",
+                "Photos de drone existantes du site",
                 "image/*",
                 "drone-photo",
               )}

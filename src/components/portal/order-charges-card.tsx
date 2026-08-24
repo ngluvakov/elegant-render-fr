@@ -34,9 +34,9 @@ export type ChargeView = {
 };
 
 function statusLabel(status: ChargeView["status"]): string {
-  if (status === "pending") return "Awaiting payment";
-  if (status === "paid") return "Paid";
-  return "Cancelled";
+  if (status === "pending") return "En attente de paiement";
+  if (status === "paid") return "Payé";
+  return "Annulé";
 }
 
 function statusAccent(status: ChargeView["status"]): string {
@@ -57,12 +57,12 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
       <div className="flex items-center gap-1.5">
         <Receipt className="h-3.5 w-3.5 text-accent" />
         <h3 className="text-sm font-semibold text-foreground">
-          Additional charges
+          Frais supplémentaires
         </h3>
       </div>
       <p className="mt-1 text-xs text-muted-foreground">
-        Items outside the original order scope. Payment is available through the
-        same options as the original order.
+        Prestations hors du périmètre de la commande initiale. Le paiement
+        s’effectue via les mêmes options que la commande initiale.
       </p>
 
       <div className="mt-4 space-y-4">
@@ -109,7 +109,7 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
           <div className="space-y-2">
             {pending.length > 0 && (
               <p className="text-[0.68rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                History
+                Historique
               </p>
             )}
             {history.map((charge) => (
@@ -124,7 +124,7 @@ export function OrderChargesCard({ charges }: { charges: ChargeView[] }) {
                     </Badge>
                     <p className="mt-1 text-[0.68rem] text-muted-foreground">
                       {(charge.paidAt ?? charge.createdAt).toLocaleDateString(
-                        "en-GB",
+                        "fr-FR",
                         { day: "numeric", month: "short", year: "numeric" },
                       )}
                     </p>

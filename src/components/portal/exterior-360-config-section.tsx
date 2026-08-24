@@ -74,8 +74,8 @@ type ItemFile = {
 
 function formatSize(b: number) {
   return b < 1024 * 1024
-    ? `${(b / 1024).toFixed(0)} KB`
-    : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+    ? `${(b / 1024).toFixed(0)} Ko`
+    : `${(b / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
 type FileKind = "source" | "reference" | "location-photo";
@@ -179,7 +179,7 @@ export function Ext360ConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Error");
+        if (!urlRes.ok) throw new Error("Erreur");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -222,7 +222,7 @@ export function Ext360ConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Remove file"
+                aria-label="Supprimer le fichier"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -273,10 +273,10 @@ export function Ext360ConfigSection({
           <Compass className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.modelName || "Object"}
+              {config.modelName || "Bâtiment"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {config.hotspotCount} hotspot{config.hotspotCount === 1 ? "" : "ova"}
+              {config.hotspotCount} hotspot{config.hotspotCount === 1 ? "" : "s"}
             </p>
           </div>
         </div>
@@ -284,7 +284,7 @@ export function Ext360ConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Saved
+              Enregistré
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
@@ -310,7 +310,7 @@ export function Ext360ConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`name-${itemId}`} className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Object / model name
+          Nom du bâtiment / modèle
         </Label>
         <input
           id={`name-${itemId}`}
@@ -327,12 +327,12 @@ export function Ext360ConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Compass className="h-3 w-3 text-accent/60" />
-            Number of 360 hotspots
+            Nombre de hotspots 360
             <HelpTip>
-              <strong>Hotspot</strong> - one 360° viewing point where
-              the user can look in every direction. More hotspots =
-              more points from which the property can be viewed (for example,
-              entrance, yard, terrace).
+              <strong>Hotspot</strong> — un point de vue 360° depuis lequel
+              l’utilisateur peut regarder dans toutes les directions. Plus de
+              hotspots = plus de points depuis lesquels découvrir le bien (par
+              exemple entrée, cour, terrasse).
             </HelpTip>
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
@@ -340,7 +340,7 @@ export function Ext360ConfigSection({
               type="button"
               disabled={!editable || config.hotspotCount <= 1}
               onClick={dec}
-              aria-label="Decrease number of hotspots"
+              aria-label="Diminuer le nombre de hotspots"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -352,20 +352,20 @@ export function Ext360ConfigSection({
               type="button"
               disabled={!editable || config.hotspotCount >= 30}
               onClick={inc}
-              aria-label="Increase number of hotspots"
+              aria-label="Augmenter le nombre de hotspots"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              {formatPriceText("1 included, +€48 (€53 from the 4th)")}
+              {formatPriceText("1 inclus, +€48 (€53 à partir du 4e)")}
             </span>
           </div>
         </div>
 
         <div className="space-y-1">
           <Label htmlFor={`style-${itemId}`} className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
-            Architectural style
+            Style architectural
           </Label>
           <select
             id={`style-${itemId}`}
@@ -376,7 +376,7 @@ export function Ext360ConfigSection({
             disabled={!editable}
             className="w-full rounded-md bg-secondary/40 px-2.5 py-1.5 text-sm text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
           >
-            <option value="">Select...</option>
+            <option value="">Sélectionner…</option>
             {ARCH_STYLES.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
           </select>
         </div>
@@ -389,12 +389,12 @@ export function Ext360ConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <ImageIcon className="h-3 w-3 text-accent/60" />
-          Render type
+          Type de rendu
           <HelpTip>
-            <strong>Photomontage</strong> — 3D model composited into a 360°
-            panoramic photo of the real location. You send us
-            the panoramic photo, and we match the building with the right light and
-            surroundings.
+            <strong>Photomontage</strong> — le modèle 3D est intégré dans une
+            photo panoramique 360° du site réel. Vous nous envoyez la photo
+            panoramique et nous calons le bâtiment avec la lumière et
+            l’environnement adaptés.
           </HelpTip>
         </Label>
         <select
@@ -414,18 +414,18 @@ export function Ext360ConfigSection({
         </select>
         {config.renderingMode === "photomontage" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
-            + Photomontage: {formatPrice(50)} (matching the 3D model into the 360° panoramic
-            location photo)
+            + Photomontage : {formatPrice(50)} (intégration du modèle 3D dans
+            la photo panoramique 360° du site)
           </p>
         )}
       </div>
 
       <Collapsible open={config.renderingMode === "photomontage"}>
         <div className="space-y-1.5 rounded-md border border-border/30 bg-secondary/20 p-3">
-          <Label className="text-xs">360° location photo</Label>
+          <Label className="text-xs">Photo 360° du site</Label>
           {renderUploadZone(
             locationPhotoInputRef,
-            "Equirectangular location panorama for matching",
+            "Panorama équirectangulaire du site pour l’intégration",
             "image/*",
             "location-photo",
           )}
@@ -436,21 +436,21 @@ export function Ext360ConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Project description
+          Description du projet
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Facade, material, and hotspot position description..."
+          placeholder="Description de la façade, des matériaux et de la position des hotspots…"
           rows={3}
           className="resize-none text-sm"
         />
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-xs">Plans, sections, and facades</Label>
+        <Label className="text-xs">Plans, coupes et façades</Label>
         {renderUploadZone(sourceInputRef, "PDF, DWG, CAD, images", "image/*,application/pdf,.dwg,.dxf", "source")}
         {renderFileList(sourceFiles)}
       </div>
@@ -461,7 +461,7 @@ export function Ext360ConfigSection({
             <div key={name} className="flex items-center gap-2 rounded bg-accent/5 px-2.5 py-1.5 text-[0.7rem]">
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Uploading...</span>
+              <span className="text-accent">Import en cours…</span>
             </div>
           ))}
         </div>
@@ -473,9 +473,9 @@ export function Ext360ConfigSection({
       >
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
-          <span className="text-[0.7rem] font-medium text-foreground">Advanced settings</span>
+          <span className="text-[0.7rem] font-medium text-foreground">Paramètres avancés</span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · time of day, season, surroundings
+            · moment de la journée, saison, environnement
           </span>
         </div>
         <Switch id={`adv-${itemId}`} checked={advanced} onCheckedChange={setAdvanced} disabled={!editable} />
@@ -485,7 +485,7 @@ export function Ext360ConfigSection({
         <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
-              <Label htmlFor={`tod-${itemId}`} className="text-[0.7rem]">Time of day</Label>
+              <Label htmlFor={`tod-${itemId}`} className="text-[0.7rem]">Moment de la journée</Label>
               <select
                 id={`tod-${itemId}`}
                 value={config.timeOfDay ?? ""}
@@ -493,12 +493,12 @@ export function Ext360ConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">Select...</option>
+                <option value="">Sélectionner…</option>
                 {TIMES_OF_DAY.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <Label htmlFor={`season-${itemId}`} className="text-[0.7rem]">Season</Label>
+              <Label htmlFor={`season-${itemId}`} className="text-[0.7rem]">Saison</Label>
               <select
                 id={`season-${itemId}`}
                 value={config.season ?? ""}
@@ -506,12 +506,12 @@ export function Ext360ConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">Select...</option>
+                <option value="">Sélectionner…</option>
                 {SEASONS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <Label htmlFor={`weather-${itemId}`} className="text-[0.7rem]">Atmosphere / weather</Label>
+              <Label htmlFor={`weather-${itemId}`} className="text-[0.7rem]">Ambiance / météo</Label>
               <select
                 id={`weather-${itemId}`}
                 value={config.weather ?? ""}
@@ -519,12 +519,12 @@ export function Ext360ConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">Select...</option>
+                <option value="">Sélectionner…</option>
                 {WEATHER.map((w) => <option key={w.id} value={w.id}>{w.label}</option>)}
               </select>
             </div>
             <div className="space-y-1">
-              <Label htmlFor={`env-${itemId}`} className="text-[0.7rem]">Surroundings type</Label>
+              <Label htmlFor={`env-${itemId}`} className="text-[0.7rem]">Type d’environnement</Label>
               <select
                 id={`env-${itemId}`}
                 value={config.environment ?? ""}
@@ -532,15 +532,15 @@ export function Ext360ConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">Select...</option>
+                <option value="">Sélectionner…</option>
                 {ENVIRONMENTS.map((e) => <option key={e.id} value={e.id}>{e.label}</option>)}
               </select>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-[0.7rem]">Material references</Label>
-            {renderUploadZone(refInputRef, "Facade, roof, and path images", "image/*", "reference")}
+            <Label className="text-[0.7rem]">Références de matériaux</Label>
+            {renderUploadZone(refInputRef, "Images de façade, toiture et allées", "image/*", "reference")}
             {renderFileList(referenceFiles)}
           </div>
         </div>

@@ -75,7 +75,7 @@ export function ProjectNameEditor({
   return (
     <div className="mt-1 space-y-1.5">
       <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground/80">
-        Project name
+        Nom du projet
       </p>
       <div
         onClick={() => inputRef.current?.focus()}
@@ -115,7 +115,7 @@ export function ProjectNameEditor({
         {savedAt && (
           <span className="inline-flex flex-shrink-0 items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
             <Check className="h-3 w-3" />
-            <span className="hidden sm:inline">Saved</span>
+            <span className="hidden sm:inline">Enregistré</span>
           </span>
         )}
       </div>

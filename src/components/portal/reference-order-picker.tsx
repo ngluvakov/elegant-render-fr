@@ -59,12 +59,12 @@ export function ReferenceOrderPicker({
           <Link2 className="h-4 w-4 text-accent" />
           <div>
             <p className="text-sm font-semibold text-foreground">
-              Previous project
+              Projet précédent
             </p>
             <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
               {current
-                ? "Reusing model-first discounts from referenced order"
-                : "If you have a previous order with us, link it to receive discounts on services that share the model."}
+                ? "Les remises liées au modèle de la commande référencée s’appliquent."
+                : "Si vous avez déjà commandé chez nous, liez la commande pour bénéficier de remises sur les services qui partagent le même modèle 3D."}
             </p>
           </div>
         </div>
@@ -78,7 +78,7 @@ export function ReferenceOrderPicker({
               type="button"
               onClick={() => handleSelect(null)}
               disabled={pending}
-              aria-label="Remove reference"
+              aria-label="Retirer la référence"
               className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/60 transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
             >
               <X className="h-3.5 w-3.5" />
@@ -91,7 +91,7 @@ export function ReferenceOrderPicker({
             className="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-accent hover:bg-accent/15"
           >
             <Link2 className="h-3 w-3" />
-            Link previous project
+            Lier un projet précédent
           </button>
         )}
       </div>
@@ -111,7 +111,7 @@ export function ReferenceOrderPicker({
             >
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-foreground">
-                  {o.projectName ?? "Order"}
+                  {o.projectName ?? "Commande"}
                 </p>
                 <p className="text-[0.72rem] text-muted-foreground">
                   {o.orderNumber} · {o.status}
@@ -125,7 +125,7 @@ export function ReferenceOrderPicker({
             onClick={() => setOpen(false)}
             className="mt-2 w-full rounded-lg px-3 py-1.5 text-[0.72rem] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
-            Cancel
+            Annuler
           </button>
         </div>
       )}

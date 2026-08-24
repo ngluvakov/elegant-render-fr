@@ -115,8 +115,8 @@ type FloorFile = {
 
 function formatSize(b: number) {
   return b < 1024 * 1024
-    ? `${(b / 1024).toFixed(0)} KB`
-    : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+    ? `${(b / 1024).toFixed(0)} Ko`
+    : `${(b / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
 // ─── FloorPanel ──────────────────────────────────────────────────────────
@@ -206,7 +206,7 @@ function FloorPanel({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Error");
+        if (!urlRes.ok) throw new Error("Erreur");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -459,7 +459,7 @@ function FloorPanel({
                     disabled={!editable}
                     className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                   >
-                    <option value="">Select...</option>
+                    <option value="">Sélectionner…</option>
                     {ROOM_STYLES.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.label}
@@ -654,7 +654,7 @@ function FloorPanel({
                     {editable && (
                       <button
                         type="button"
-                        aria-label="Remove file"
+                        aria-label="Supprimer le fichier"
                         onClick={() => handleFileDelete(f.id)}
                         className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                       >
@@ -674,7 +674,7 @@ function FloorPanel({
                   >
                     <FileUp className="h-3 w-3 text-accent" />
                     <span className="flex-1 truncate text-foreground">{name}</span>
-                    <span className="text-accent">Uploading...</span>
+                    <span className="text-accent">Import en cours…</span>
                   </div>
                 ))}
               </div>
@@ -706,7 +706,7 @@ function FloorPanel({
                     disabled={!editable}
                     className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                   >
-                    <option value="">Select...</option>
+                    <option value="">Sélectionner…</option>
                     {TIMES_OF_DAY.map((t) => (
                       <option key={t.id} value={t.id}>
                         {t.label}
@@ -731,7 +731,7 @@ function FloorPanel({
                     disabled={!editable}
                     className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
                   >
-                    <option value="">Select...</option>
+                    <option value="">Sélectionner…</option>
                     {SEASONS.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.label}
@@ -793,7 +793,7 @@ function FloorPanel({
                         {editable && (
                           <button
                             type="button"
-                            aria-label="Remove file"
+                            aria-label="Supprimer le fichier"
                             onClick={() => handleFileDelete(f.id)}
                             className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                           >
@@ -1076,7 +1076,7 @@ export function InteriorConfigSection({
           {savedAt && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Saved
+              Enregistré
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">

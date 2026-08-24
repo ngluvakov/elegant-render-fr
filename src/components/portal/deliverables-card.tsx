@@ -25,18 +25,19 @@ export function DeliverablesCard({ files, orderId }: DeliverablesCardProps) {
     return (
       <div className="rounded-lg border border-border/40 bg-card/60 p-5">
         <h3 className="text-sm font-semibold text-foreground">
-          Ready to download
+          Fichiers livrés
         </h3>
         <p className="mt-3 text-center text-xs text-muted-foreground">
-          No final files are ready yet. They will appear here when available.
+          Aucun fichier final n’est encore prêt. Ils apparaîtront ici dès
+          qu’ils seront disponibles.
         </p>
       </div>
     );
   }
 
   const formatSize = (bytes: number) => {
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} Ko`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
   };
 
   return (
@@ -44,7 +45,7 @@ export function DeliverablesCard({ files, orderId }: DeliverablesCardProps) {
       <div className="flex items-center gap-2">
         <Download className="h-4 w-4 text-muted-foreground" />
         <h3 className="text-sm font-semibold text-foreground">
-          Ready to download
+          Fichiers livrés
         </h3>
       </div>
 
@@ -61,7 +62,7 @@ export function DeliverablesCard({ files, orderId }: DeliverablesCardProps) {
               </p>
               <p className="text-[0.72rem] text-muted-foreground">
                 {formatSize(file.fileSize)} ·{" "}
-                {file.uploadedAt.toLocaleDateString("en-GB", {
+                {file.uploadedAt.toLocaleDateString("fr-FR", {
                   day: "numeric",
                   month: "short",
                 })}

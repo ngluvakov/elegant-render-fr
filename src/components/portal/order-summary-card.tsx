@@ -37,7 +37,7 @@ export function OrderSummaryCard({
   return (
     <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <h3 className="text-sm font-semibold text-foreground">
-        Order summary
+        Récapitulatif de la commande
       </h3>
 
       {/* Items */}
@@ -83,7 +83,7 @@ export function OrderSummaryCard({
       {sourceFiles.length > 0 && (
         <div className="mt-4 border-t border-border/30 pt-3">
           <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-            Attached materials ({sourceFiles.length})
+            Fichiers joints ({sourceFiles.length})
           </p>
           <div className="mt-2 space-y-1">
             {sourceFiles.map((f) => (

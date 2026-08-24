@@ -38,7 +38,7 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
 
         if (!urlRes.ok) {
           const { error } = await urlRes.json();
-          throw new Error(error || "Error");
+          throw new Error(error || "Erreur");
         }
 
         const { signedUrl, storagePath } = await urlRes.json();
@@ -63,7 +63,7 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
         setUploading((prev) =>
           prev.map((u) =>
             u.file === file
-              ? { ...u, error: err instanceof Error ? err.message : "Error" }
+              ? { ...u, error: err instanceof Error ? err.message : "Erreur" }
               : u,
           ),
         );
@@ -79,16 +79,17 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
   return (
     <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <h3 className="text-sm font-semibold text-foreground">
-        Send revisions / additional materials
+        Envoyer des révisions / documents complémentaires
       </h3>
       <p className="mt-1 text-xs text-muted-foreground">
-        Add photos, references, or corrected plans for this project.
+        Ajoutez des photos, des références ou des plans corrigés pour ce
+        projet.
       </p>
 
       <div
         role="button"
         tabIndex={0}
-        aria-label="Upload files - drag them here or press Enter to choose"
+        aria-label="Importer des fichiers — glissez-les ici ou appuyez sur Entrée pour parcourir"
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={(e) => { e.preventDefault(); setDragOver(false); handleFiles(e.dataTransfer.files); }}
@@ -105,7 +106,7 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
       >
         <Upload className="mb-2 h-5 w-5 text-muted-foreground/50" />
         <p className="text-xs text-muted-foreground">
-          Drag or click
+          Glissez ou cliquez
         </p>
         <input
           ref={inputRef}
@@ -137,7 +138,7 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
                     aria-valuenow={u.progress}
                     aria-valuemin={0}
                     aria-valuemax={100}
-                    aria-label={`Uploading: ${u.file.name}`}
+                    aria-label={`Import en cours : ${u.file.name}`}
                     className="block h-1 w-16 overflow-hidden rounded-full bg-muted"
                   >
                     <span
@@ -146,7 +147,7 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
                     />
                   </span>
                   <span className="min-w-10 text-right text-[0.72rem] tabular-nums text-accent">
-                    {u.progress < 100 ? `${u.progress}%` : "Checking..."}
+                    {u.progress < 100 ? `${u.progress}%` : "Vérification…"}
                   </span>
                 </span>
               )}

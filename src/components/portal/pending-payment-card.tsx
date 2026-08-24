@@ -57,10 +57,10 @@ export function PendingPaymentCard({
       <div className="rounded-lg border border-border bg-secondary/50 p-6 text-center">
         <Check className="mx-auto h-6 w-6 text-muted-foreground" />
         <p className="mt-2 text-sm font-semibold text-foreground">
-          Payment received
+          Paiement reçu
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Thank you — refreshing the order…
+          Merci — actualisation de la commande…
         </p>
       </div>
     );
@@ -71,11 +71,11 @@ export function PendingPaymentCard({
       <div className="rounded-lg border border-accent/30 bg-accent/5 p-6 text-center">
         <Clock className="mx-auto h-6 w-6 text-accent" />
         <p className="mt-2 text-sm font-semibold text-foreground">
-          Your payment is processing
+          Votre paiement est en cours de traitement
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
-          PayPal confirms eCheck payments within a few days — we&apos;ll
-          email you as soon as it clears.
+          PayPal confirme les paiements par eCheck sous quelques jours — nous
+          vous enverrons un e-mail dès que le paiement sera validé.
         </p>
       </div>
     );
@@ -86,14 +86,14 @@ export function PendingPaymentCard({
       <div className="flex items-center gap-2">
         <AlertCircle className="h-4 w-4 text-accent" />
         <h3 className="text-sm font-semibold text-foreground">
-          Awaiting payment
+          En attente de paiement
         </h3>
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
-        This order has not been paid yet. Total:{" "}
+        Cette commande n’a pas encore été réglée. Total :{" "}
         <strong className="text-foreground">{amountLabel}</strong>
         {currency !== "EUR" && (
-          <span> — charged in {currency}; invoice issued in EUR.</span>
+          <span> — débité en {currency} ; facture émise en EUR.</span>
         )}
       </p>
 
@@ -141,8 +141,8 @@ export function PendingPaymentCard({
         />
       </div>
       <p className="mt-3 text-center text-[0.72rem] text-muted-foreground">
-        You pay securely through PayPal — with your PayPal balance or a
-        card, no PayPal account required.
+        Vous payez en toute sécurité via PayPal — avec votre solde PayPal ou
+        une carte bancaire, sans compte PayPal requis.
       </p>
     </div>
   );

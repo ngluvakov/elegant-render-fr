@@ -73,8 +73,8 @@ type ItemFile = {
 
 function formatSize(b: number) {
   return b < 1024 * 1024
-    ? `${(b / 1024).toFixed(0)} KB`
-    : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+    ? `${(b / 1024).toFixed(0)} Ko`
+    : `${(b / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
 type FileKind = "source" | "logo";
@@ -164,7 +164,7 @@ export function Floorplan2dConfigSection({
             fileSize: file.size,
           }),
         });
-        if (!urlRes.ok) throw new Error("Error");
+        if (!urlRes.ok) throw new Error("Erreur");
         const { signedUrl, storagePath } = await urlRes.json();
         await fetch(signedUrl, {
           method: "PUT",
@@ -207,7 +207,7 @@ export function Floorplan2dConfigSection({
             {editable && (
               <button
                 type="button"
-                aria-label="Remove file"
+                aria-label="Supprimer le fichier"
                 onClick={() => handleFileDelete(f.id)}
                 className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
               >
@@ -266,11 +266,11 @@ export function Floorplan2dConfigSection({
           <FileImage className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.projectName || "Floor plan"}
+              {config.projectName || "Plan"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {config.levels} level{config.levels === 1 ? "" : "s"} ·{" "}
-              {config.displayType === "furnished" ? "furnished" : "empty"} ·{" "}
+              {config.levels} niveau{config.levels === 1 ? "" : "x"} ·{" "}
+              {config.displayType === "furnished" ? "meublé" : "vide"} ·{" "}
               {FP2D_DISPLAY_STYLES.find((s) => s.id === config.displayStyle)
                 ?.label ?? config.displayStyle}
             </p>
@@ -280,7 +280,7 @@ export function Floorplan2dConfigSection({
           {savedAt && Date.now() - savedAt < 2500 && (
             <span className="inline-flex items-center gap-1 text-[0.72rem] font-medium text-muted-foreground animate-in fade-in duration-200">
               <Check className="h-3 w-3" />
-              Saved
+              Enregistré
             </span>
           )}
           <p className="text-base font-bold text-foreground tabular-nums">
@@ -296,7 +296,7 @@ export function Floorplan2dConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Plan / floor name
+          Nom du plan / de l’étage
         </Label>
         <input
           id={`name-${itemId}`}
@@ -314,14 +314,14 @@ export function Floorplan2dConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Layers className="h-3 w-3 text-accent/60" />
-            Number of levels (floors)
+            Nombre de niveaux (étages)
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.levels <= 1}
               onClick={decLevels}
-              aria-label="Decrease number of levels"
+              aria-label="Diminuer le nombre de niveaux"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -333,13 +333,13 @@ export function Floorplan2dConfigSection({
               type="button"
               disabled={!editable || config.levels >= 30}
               onClick={incLevels}
-              aria-label="Increase number of levels"
+              aria-label="Augmenter le nombre de niveaux"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              {formatPriceText("1 included, +€12 for the second, then +€10 each additional")}
+              {formatPriceText("1 inclus, +€12 pour le deuxième, puis +€10 par niveau supplémentaire")}
             </span>
           </div>
         </div>
@@ -349,7 +349,7 @@ export function Floorplan2dConfigSection({
             htmlFor={`style-${itemId}`}
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
-            Display style (colors and textures)
+            Style d’affichage (couleurs et textures)
           </Label>
           <select
             id={`style-${itemId}`}
@@ -374,7 +374,7 @@ export function Floorplan2dConfigSection({
           htmlFor={`disp-type-${itemId}`}
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
-          Display type (furniture)
+          Type d’affichage (mobilier)
         </Label>
         <select
           id={`disp-type-${itemId}`}
@@ -393,7 +393,7 @@ export function Floorplan2dConfigSection({
         </select>
         {config.displayType === "furnished" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
-            + Overlay furniture: {formatPrice(6)}
+            + Mobilier en surimpression : {formatPrice(6)}
           </p>
         )}
       </div>
@@ -402,14 +402,14 @@ export function Floorplan2dConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Description and notes
+          Description et notes
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Special requirements for layout, room purpose, or colors..."
+          placeholder="Exigences particulières d’agencement, d’usage des pièces ou de couleurs…"
           rows={3}
           className="resize-none text-sm"
         />
@@ -417,10 +417,10 @@ export function Floorplan2dConfigSection({
 
       {/* Source files */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Plans and sketches</Label>
+        <Label className="text-xs">Plans et croquis</Label>
         {renderUploadZone(
           sourceInputRef,
-          "PDF, DWG, CAD, hand sketches with dimensions",
+          "PDF, DWG, CAD, croquis à la main avec cotes",
           "image/*,application/pdf,.dwg,.dxf",
           "source",
         )}
@@ -436,7 +436,7 @@ export function Floorplan2dConfigSection({
             >
               <FileUp className="h-3 w-3 text-accent" />
               <span className="flex-1 truncate text-foreground">{name}</span>
-              <span className="text-accent">Uploading...</span>
+              <span className="text-accent">Import en cours…</span>
             </div>
           ))}
         </div>
@@ -450,10 +450,10 @@ export function Floorplan2dConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Advanced settings
+            Paramètres avancés
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · labels, dimensions, branding
+            · libellés, cotes, branding
           </span>
         </div>
         <Switch
@@ -469,7 +469,7 @@ export function Floorplan2dConfigSection({
           {/* 2.1 Labels & technical */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Labels and technical details
+              Libellés et détails techniques
             </p>
             <div className="space-y-1.5">
               <label
@@ -477,7 +477,7 @@ export function Floorplan2dConfigSection({
                 className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-card/60 px-3 py-2"
               >
                 <span className="text-[0.78rem] text-foreground">
-                  Show room names
+                  Afficher les noms des pièces
                 </span>
                 <Switch
                   id={`labels-${itemId}`}
@@ -491,7 +491,7 @@ export function Floorplan2dConfigSection({
                 className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-card/60 px-3 py-2"
               >
                 <span className="text-[0.78rem] text-foreground">
-                  Show area (m²) and dimensions
+                  Afficher la surface (m²) et les cotes
                 </span>
                 <Switch
                   id={`dims-${itemId}`}
@@ -506,7 +506,7 @@ export function Floorplan2dConfigSection({
               >
                 <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                   <Compass className="h-3.5 w-3.5 text-accent" />
-                  Add orientation marker (north)
+                  Ajouter le repère d’orientation (nord)
                 </span>
                 <Switch
                   id={`compass-${itemId}`}
@@ -520,7 +520,7 @@ export function Floorplan2dConfigSection({
             <div className="space-y-1">
               <Label htmlFor={`lang-${itemId}`} className="text-[0.7rem]">
                 <Languages className="h-3 w-3 text-accent/60" />
-                Jezik oznaka
+                Langue des libellés
               </Label>
               <select
                 id={`lang-${itemId}`}
@@ -535,7 +535,7 @@ export function Floorplan2dConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">Select...</option>
+                <option value="">Sélectionner…</option>
                 {FP2D_LABEL_LANGUAGES.map((l) => (
                   <option key={l.id} value={l.id}>
                     {l.label}
@@ -548,7 +548,7 @@ export function Floorplan2dConfigSection({
           {/* 2.2 Branding & export */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Branding and export
+              Branding et export
             </p>
 
             <label
@@ -557,7 +557,7 @@ export function Floorplan2dConfigSection({
             >
               <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                 <Sparkles className="h-3.5 w-3.5 text-accent" />
-                Add logo and contact details to the floor plan
+                Ajouter le logo et les coordonnées sur le plan
               </span>
               <Switch
                 id={`branding-${itemId}`}
@@ -578,7 +578,7 @@ export function Floorplan2dConfigSection({
                   <Label className="text-[0.7rem]">Logo (PNG / SVG / JPG)</Label>
                   {renderUploadZone(
                     logoInputRef,
-                    "Upload the company logo",
+                    "Importer le logo de l’entreprise",
                     "image/*",
                     "logo",
                   )}
@@ -588,7 +588,7 @@ export function Floorplan2dConfigSection({
                 <div className="space-y-1">
                   <Label htmlFor={`brand-color-${itemId}`} className="text-[0.7rem]">
                     <Palette className="h-3 w-3 text-accent/60" />
-                    Primary brand color (HEX)
+                    Couleur principale de la marque (HEX)
                   </Label>
                   <input
                     id={`brand-color-${itemId}`}
@@ -607,7 +607,7 @@ export function Floorplan2dConfigSection({
             </Collapsible>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Delivery format</Label>
+              <Label className="text-[0.7rem]">Format de livraison</Label>
               <div className="grid gap-1.5 sm:grid-cols-2">
                 {FP2D_DELIVERY_FORMAT_OPTIONS.map((o) => (
                   <label
@@ -630,7 +630,7 @@ export function Floorplan2dConfigSection({
                 ))}
               </div>
               <p className="mt-0.5 text-[0.62rem] text-muted-foreground">
-                At least one format must be selected.
+                Au moins un format doit être sélectionné.
               </p>
             </div>
           </div>
@@ -641,11 +641,11 @@ export function Floorplan2dConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Additional variants
+            Variantes supplémentaires
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Order the same layout with another style or an identical floor plan with
-            different room names.
+            Commandez le même agencement dans un autre style, ou un plan
+            identique avec d’autres noms de pièces.
           </p>
         </div>
 
@@ -658,10 +658,10 @@ export function Floorplan2dConfigSection({
             <Palette className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                Additional style variant
+                Variante de style supplémentaire
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Same layout in another colour palette or style
+                Même agencement dans une autre palette ou un autre style
               </span>
             </div>
           </div>
@@ -688,7 +688,7 @@ export function Floorplan2dConfigSection({
         <Collapsible open={config.variantEnabled}>
           <div className="space-y-1 rounded-md border border-border/30 bg-background/40 p-3">
             <Label htmlFor={`vstyle-${itemId}`} className="text-[0.7rem]">
-              Style for the second variant
+              Style de la deuxième variante
             </Label>
             <select
               id={`vstyle-${itemId}`}
@@ -703,7 +703,7 @@ export function Floorplan2dConfigSection({
               disabled={!editable}
               className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
             >
-              <option value="">Select...</option>
+              <option value="">Sélectionner…</option>
               {FP2D_DISPLAY_STYLES.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.label}
@@ -722,10 +722,10 @@ export function Floorplan2dConfigSection({
             <Copy className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                Duplikat plans
+                Plan dupliqué
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Identical plan with different room names
+                Plan identique avec d’autres noms de pièces
               </span>
             </div>
           </div>

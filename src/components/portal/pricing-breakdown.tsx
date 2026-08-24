@@ -34,8 +34,8 @@ export function PricingBreakdown({
   rows,
   total: totalOverride,
   extras = [],
-  baseLabel = "Price",
-  title = "Price breakdown",
+  baseLabel = "Prix",
+  title = "Détail du prix",
 }: Props) {
   const { formatPrice } = useOrderCurrency();
   const extrasTotal = extras.reduce((s, e) => s + e.rsd, 0);
@@ -50,7 +50,7 @@ export function PricingBreakdown({
         label: a.billableQty > 1 ? `${a.label} × ${a.billableQty}` : a.label,
         value: a.totalEur,
         sub: a.isVolumeRate
-          ? `volume price ${formatPrice(a.unitPriceEur)}/item`
+          ? `tarif dégressif ${formatPrice(a.unitPriceEur)}/unité`
           : undefined,
       })),
     ];

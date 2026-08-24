@@ -16,7 +16,7 @@ export function ActivityFeed({ events }: { events: ActivityEvent[] }) {
   if (events.length === 0) {
     return (
       <p className="py-4 text-sm text-muted-foreground">
-        No recent activity.
+        Aucune activité récente.
       </p>
     );
   }
@@ -35,7 +35,7 @@ export function ActivityFeed({ events }: { events: ActivityEvent[] }) {
             </p>
           </div>
           <p className="flex-shrink-0 text-[0.72rem] text-muted-foreground">
-            {event.createdAt.toLocaleDateString("en-GB", {
+            {event.createdAt.toLocaleDateString("fr-FR", {
               day: "numeric",
               month: "short",
               hour: "2-digit",

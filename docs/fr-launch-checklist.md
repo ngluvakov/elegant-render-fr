@@ -100,3 +100,22 @@ Run `git log --oneline main..fr-translation` for the authoritative list.
    the CRM/accounting system, and some back CRM filters. One Serbian leftover
    (`"Kupac"` → `Client`) was fixed in `plutos/source.ts` so the books match
    the PDF; `"Klijent"` in `bitrix/sync-contact.ts` was left alone.
+
+4. **Two euro formats coexist, on purpose.**
+   - *Public prices* (`formatPublicPrice`, and `formatPublicPriceText` which
+     rewrites `€NNN` tokens inside marketing and chat copy) render French
+     style — `250 €` — because `CURRENCY_RULES.EUR.locale` is now `fr-FR`.
+   - *Portal and admin surfaces* still render `€250` via `formatCents`
+     (`src/lib/ai-studio/catalog.ts`) → `formatEur`
+     (`src/lib/catalog/calculate.ts`).
+
+   `formatCents` was **deliberately left alone**: its `€NNN` output is also
+   what the chatbot system prompt embeds, and `formatPublicPriceText` matches
+   exactly that shape (`/€\s?(\d+…)/`) to convert prices into a non-EUR
+   visitor's currency. Flipping it to `250 €` would silently stop that
+   conversion and show euros to every visitor.
+
+   To finish the job properly: add a separate French display formatter for the
+   portal/admin surfaces (about ten call sites) and keep `formatCents` as the
+   token format for the chat/conversion pipeline. Not done here because it is
+   a structural change, not a translation, and it touches the pricing path.

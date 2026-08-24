@@ -44,7 +44,7 @@ export const PUBLIC_SERBIA_VAT_RATE = readPublicNumber(
   FALLBACK_SERBIA_VAT_RATE,
 );
 
-const eurFormatter = new Intl.NumberFormat("en-GB", {
+const eurFormatter = new Intl.NumberFormat("fr-FR", {
   style: "currency",
   currency: "EUR",
   maximumFractionDigits: 0,

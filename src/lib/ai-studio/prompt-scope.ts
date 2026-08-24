@@ -18,10 +18,10 @@ type TermGroup = {
 const EXTRA_STYLE_TERMS: TermGroup[] = [
   { label: "Hamptons", terms: ["hamptons", "hampton", "hampton's"] },
   { label: "Japandi", terms: ["japandi"] },
-  { label: "Mediteranski", terms: ["mediterranean", "mediteran", "mediteranski"] },
-  { label: "Boho", terms: ["boho", "bohemian", "boemski"] },
-  { label: "Minimalist", terms: ["minimalist", "minimalisticki"] },
-  { label: "Rustic", terms: ["rustic", "rustikal"] },
+  { label: "Méditerranéen", terms: ["mediterranean", "mediterraneen", "mediterranee"] },
+  { label: "Boho", terms: ["boho", "bohemian", "boheme"] },
+  { label: "Minimaliste", terms: ["minimalist", "minimaliste"] },
+  { label: "Rustique", terms: ["rustic", "rustique"] },
 ];
 
 const STYLE_TERMS: TermGroup[] = [
@@ -33,7 +33,7 @@ const STYLE_TERMS: TermGroup[] = [
       style.label.replace(/\s+/g, "-"),
       style.label.replace(/\s+/g, " "),
       ...(style.id === "industrial-urban"
-        ? ["industrial", "industrijski"]
+        ? ["industrial", "industriel"]
         : []),
     ],
   })),
@@ -43,62 +43,62 @@ const STYLE_TERMS: TermGroup[] = [
 const SERVICE_SCOPE_TERMS: Record<AiEditType, TermGroup[]> = {
   item_removal: [
     {
-      label: "virtuelno opremanje",
-      terms: ["opremi", "opremanje", "furnish", "staging", "stage", "dodaj namestaj", "add furniture"],
+      label: "du home staging virtuel",
+      terms: ["meubler", "meublez", "furnish", "staging", "stage", "ajouter des meubles", "ajoutez des meubles", "add furniture"],
     },
     {
-      label: "renovacija/redizajn",
-      terms: ["renovir", "renovate", "renovation", "redesign", "redizajn", "promeni stil", "change style"],
+      label: "une rénovation/un redesign",
+      terms: ["renov", "renovate", "renovation", "redesign", "changer le style", "changez le style", "change style"],
     },
     {
-      label: "promena materijala",
-      terms: ["replace floor", "promeni pod", "zameni pod", "new flooring", "nova kuhinja", "new kitchen"],
+      label: "un changement de matériaux",
+      terms: ["replace floor", "changer le sol", "changez le sol", "remplacer le sol", "remplacez le sol", "new flooring", "nouvelle cuisine", "new kitchen"],
     },
   ],
   day_to_dusk: [
     {
-      label: "opremanje/renovacija",
-      terms: ["opremi", "furnish", "staging", "renovir", "renovate", "redesign", "redizajn", "dodaj namestaj"],
+      label: "du home staging/de la rénovation",
+      terms: ["meubler", "meublez", "furnish", "staging", "renov", "renovate", "redesign", "ajouter des meubles", "ajoutez des meubles", "add furniture"],
     },
   ],
   sky_replacement: [
     {
-      label: "opremanje/renovacija",
-      terms: ["opremi", "furnish", "staging", "renovir", "renovate", "redesign", "redizajn", "dodaj namestaj"],
+      label: "du home staging/de la rénovation",
+      terms: ["meubler", "meublez", "furnish", "staging", "renov", "renovate", "redesign", "ajouter des meubles", "ajoutez des meubles", "add furniture"],
     },
   ],
   wall_color_change: [
     {
-      label: "opremanje/renovacija",
-      terms: ["opremi", "furnish", "staging", "renovir", "renovate", "redesign", "redizajn", "dodaj namestaj"],
+      label: "du home staging/de la rénovation",
+      terms: ["meubler", "meublez", "furnish", "staging", "renov", "renovate", "redesign", "ajouter des meubles", "ajoutez des meubles", "add furniture"],
     },
   ],
   virtual_staging: [
     {
-      label: "renovacija",
-      terms: ["renovir", "renovate", "replace floor", "promeni pod", "rusenje", "sruši zid", "remove wall"],
+      label: "une rénovation",
+      terms: ["renov", "renovate", "replace floor", "changer le sol", "changez le sol", "remplacer le sol", "remplacez le sol", "abattre le mur", "abattez le mur", "casser le mur", "demolir", "remove wall", "supprimer le mur", "supprimez le mur"],
     },
   ],
   object_insertion: [
     {
-      label: "virtuelno opremanje cele prostorije",
-      terms: ["opremi celu", "furnish the room", "stage the room", "staging cele", "dodaj sav namestaj"],
+      label: "du home staging de toute la pièce",
+      terms: ["meubler toute la piece", "meubler la piece entiere", "meublez toute la piece", "furnish the room", "stage the room", "ajouter tous les meubles", "ajoutez tous les meubles"],
     },
     {
-      label: "renovacija/redizajn",
-      terms: ["renovir", "renovate", "renovation", "redesign", "redizajn", "promeni stil", "change style"],
+      label: "une rénovation/un redesign",
+      terms: ["renov", "renovate", "renovation", "redesign", "changer le style", "changez le style", "change style"],
     },
   ],
   virtual_renovation: [
     {
-      label: "uklanjanje sitnih elemenata",
-      terms: ["remove clutter only", "samo ukloni", "only remove", "ukloni samo"],
+      label: "uniquement une suppression d’objets",
+      terms: ["remove clutter only", "only remove", "supprime uniquement", "supprimez uniquement", "uniquement supprimer", "seulement supprimer", "juste supprimer"],
     },
   ],
   room_redesign: [
     {
-      label: "uklanjanje sitnih elemenata",
-      terms: ["remove clutter only", "samo ukloni", "only remove", "ukloni samo"],
+      label: "uniquement une suppression d’objets",
+      terms: ["remove clutter only", "only remove", "supprime uniquement", "supprimez uniquement", "uniquement supprimer", "seulement supprimer", "juste supprimer"],
     },
   ],
 };
@@ -117,7 +117,7 @@ export function validateAiPromptScope({
 
   for (const group of SERVICE_SCOPE_TERMS[editType]) {
     if (containsAny(normalizedPrompt, group.terms)) {
-      return `Prompt traži ${group.label}, što nije deo izabrane usluge "${edit.label}". Izaberite odgovarajuću AI obradu ili uklonite taj deo prompta.`;
+      return `Le prompt demande ${group.label}, ce qui ne fait pas partie du service sélectionné « ${edit.label} ». Choisissez l’outil IA correspondant ou retirez cette partie du prompt.`;
     }
   }
 
@@ -148,8 +148,8 @@ function findStyleConflict(
       continue;
     }
 
-    const selectedLabel = selected?.label ?? "Bez stila";
-    return `Prompt traži stil "${group.label}", ali izabrani stil je "${selectedLabel}". Stil se bira kroz kontrolu u AI Studiju; promenite stil tamo ili uklonite konflikt iz prompta.`;
+    const selectedLabel = selected?.label ?? "Aucun style";
+    return `Le prompt demande le style « ${group.label} », mais le style sélectionné est « ${selectedLabel} ». Le style se choisit via le contrôle dédié dans AI Studio ; changez-le à cet endroit ou retirez le conflit du prompt.`;
   }
 
   return null;

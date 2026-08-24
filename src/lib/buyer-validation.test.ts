@@ -11,7 +11,7 @@ describe("validateBuyerInfo", () => {
   it("rejects an individual without a country", () => {
     expect(
       validateBuyerInfo({ buyerType: "individual", buyerCountryCode: null }),
-    ).toMatch(/country/i);
+    ).toMatch(/pays de facturation/i);
   });
 
   it("normalizes lowercase letters in the country code", () => {
@@ -39,14 +39,14 @@ describe("validateBuyerInfo", () => {
           buyerCountryCode: "DE",
           companyAddress: "Address 1",
         }),
-      ).toMatch(/Company name/);
+      ).toMatch(/nom de l’entreprise/i);
       expect(
         validateBuyerInfo({
           buyerType: "business",
           buyerCountryCode: "DE",
           companyName: "Firm",
         }),
-      ).toMatch(/address/i);
+      ).toMatch(/adresse de l’entreprise/i);
     });
 
     it("rejects a business without a country", () => {
@@ -56,7 +56,7 @@ describe("validateBuyerInfo", () => {
           companyName: "Firm",
           companyAddress: "Address 1",
         }),
-      ).toMatch(/country/i);
+      ).toMatch(/pays de facturation/i);
     });
 
     it("uses companyCountryCode as the country fallback", () => {
@@ -78,11 +78,11 @@ describe("validateBuyerInfo", () => {
 
     it("rejects an EU VAT ID with a bad format (VIES prefix)", () => {
       expect(validateBuyerInfo({ ...base, companyTaxId: "DE123" })).toMatch(
-        /VAT ID/,
+        /numéro de TVA/i,
       );
       expect(
         validateBuyerInfo({ ...base, companyTaxId: "FR 12-34" }),
-      ).toMatch(/VAT ID/);
+      ).toMatch(/numéro de TVA/i);
     });
 
     it("accepts a non-EU tax number in free format", () => {

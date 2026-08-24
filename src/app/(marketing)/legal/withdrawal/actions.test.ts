@@ -65,7 +65,7 @@ describe("submitWithdrawalNotice", () => {
 
     expect(result).toEqual({
       status: "error",
-      message: "Enter a valid email address.",
+      message: "Saisissez une adresse e-mail valide.",
     });
     expect(mocks.sendAdmin).not.toHaveBeenCalled();
     expect(mocks.recordAuditLog).not.toHaveBeenCalled();
@@ -79,7 +79,7 @@ describe("submitWithdrawalNotice", () => {
 
     expect(result).toEqual({
       status: "error",
-      message: "Enter a valid contract date.",
+      message: "Saisissez une date de contrat valide.",
     });
     expect(mocks.sendAdmin).not.toHaveBeenCalled();
   });

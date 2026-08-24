@@ -32,7 +32,7 @@ const STORAGE_KEY_SESSION_ID = "er-chat-session-id";
 const WELCOME_MESSAGE: ChatMessage = {
   role: "assistant",
   content:
-    "Hi, I'm the Elegant Render assistant. Describe your project or ask me anything — I'll help you choose the right service.",
+    "Bonjour, je suis l’assistant Elegant Render. Décrivez votre projet ou posez-moi vos questions — je vous aide à choisir le service adapté.",
 };
 
 function loadMessages(): ChatMessage[] {
@@ -245,7 +245,7 @@ export function ChatWidget() {
             updated[updated.length - 1] = {
               role: "assistant",
               content:
-                "Sorry, something went wrong. Please try again or reach us via the [Contact](/contact) page.",
+                "Désolé, une erreur est survenue. Veuillez réessayer ou nous joindre via la page [Contact](/contact).",
             };
             return updated;
           });
@@ -272,7 +272,7 @@ export function ChatWidget() {
             ? "bg-foreground text-background"
             : "bg-accent text-accent-foreground",
         )}
-        aria-label={open ? "Close assistant" : "Open assistant"}
+        aria-label={open ? "Fermer l’assistant" : "Ouvrir l’assistant"}
       >
         {open ? (
           <X className="h-5 w-5" />
@@ -302,7 +302,7 @@ export function ChatWidget() {
             )}
           >
             {missingItems.length > 0
-              ? "Needed before processing"
+              ? "À fournir avant traitement"
               : activeTip?.label ?? "AI Studio"}
           </p>
           {activeTip && (
@@ -332,7 +332,7 @@ export function ChatWidget() {
               type="button"
               onClick={dismissGuide}
               className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-              aria-label="Hide assistant tips"
+              aria-label="Masquer les conseils de l’assistant"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -350,10 +350,10 @@ export function ChatWidget() {
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">
-                Elegant Render assistant
+                Assistant Elegant Render
               </p>
               <p className="text-[0.72rem] text-muted-foreground">
-                Help choosing a service
+                Aide au choix d’un service
               </p>
             </div>
           </div>

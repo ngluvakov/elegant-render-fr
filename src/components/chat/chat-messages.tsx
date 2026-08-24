@@ -202,7 +202,7 @@ function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
   return (
     <div className="mt-3 rounded-xl border border-accent/20 bg-accent/5 p-3">
       <p className="mb-2 text-[0.72rem] font-semibold uppercase tracking-wider text-accent">
-        Suggested services
+        Services suggérés
       </p>
       <div className="space-y-1.5">
         {primary.map((item) => (
@@ -229,7 +229,7 @@ function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
       {related.length > 0 && (
         <div className="mt-2 border-t border-accent/10 pt-2">
           <p className="mb-1 text-[0.68rem] font-medium text-foreground/60">
-            Pairs well with this:
+            Se combine bien avec :
           </p>
           <div className="flex flex-wrap gap-1.5">
             {related.map((item) => (
@@ -254,7 +254,7 @@ function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
         className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
       >
         <ShoppingCart className="h-3.5 w-3.5" />
-        {isOnCene ? "Add to configurator" : "View on the pricing page"}
+        {isOnCene ? "Ajouter au configurateur" : "Voir sur la page des tarifs"}
         <ArrowRight className="h-3 w-3" />
       </button>
     </div>

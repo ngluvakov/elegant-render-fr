@@ -26,300 +26,302 @@ type ChatGuideRule = ChatGuideTip & {
   when?: (context: AssistantGuideContext) => boolean;
 };
 
+// NOTE: hand-written prices below intentionally keep the `€NN` prefix form —
+// formatPublicPriceText only rewrites that pattern into the display currency.
 const GENERAL_TIPS: ChatGuideTip[] = [
   {
     id: "model-reuse",
-    label: "Smarter budget",
+    label: "Budget plus malin",
     body:
-      "If you are already planning a render, the same 3D model can make an animation, 360 or VR cheaper.",
+      "Si vous prévoyez déjà un rendu, le même modèle 3D peut rendre une animation, une visite 360 ou la VR moins chères.",
   },
   {
     id: "better-input",
-    label: "Better results",
+    label: "De meilleurs résultats",
     body:
-      "Floor plans, photographs and style references usually reduce the number of revision rounds.",
+      "Plans, photographies et références de style réduisent généralement le nombre de séries de révisions.",
   },
   {
     id: "missing-details",
-    label: "Before you submit",
+    label: "Avant d’envoyer",
     body:
-      "Add the number of rooms, floors and views plus the deadline before you submit the project.",
+      "Ajoutez le nombre de pièces, d’étages et de vues ainsi que le délai avant d’envoyer le projet.",
   },
 ];
 
 const PRICING_TIPS: ChatGuideTip[] = [
   {
     id: "animation-active",
-    label: "Cheaper animation",
+    label: "Animation moins chère",
     body:
-      "Animation is cheapest with an active 3D project: €15/sec drops to €8/sec.",
+      "L’animation est la moins chère avec un projet 3D actif : €15/s passe à €8/s.",
   },
   {
     id: "vr-existing-model",
-    label: "VR with a model",
+    label: "VR avec un modèle",
     body:
-      "VR with an existing model starts at €1500; standalone VR from €3000.",
+      "La VR avec un modèle existant démarre à €1500 ; la VR seule à partir de €3000.",
   },
   {
     id: "interior-included",
-    label: "Use the full package",
+    label: "Utilisez tout le forfait",
     body:
-      "The interior package includes 10 rooms and 10 renders. Fewer rooms? Point the remaining views at the key spaces.",
+      "Le forfait intérieur comprend 10 pièces et 10 rendus. Moins de pièces ? Orientez les vues restantes vers les espaces clés.",
   },
   {
     id: "wrong-service-choice",
-    label: "Choosing a service",
+    label: "Choisir un service",
     body:
-      "If you are not sure what you need, describe the goal. Sometimes adding a service is cheaper than ordering the wrong format.",
+      "Si vous hésitez sur le service qu’il vous faut, décrivez votre objectif. Ajouter un service coûte parfois moins cher que commander le mauvais format.",
   },
 ];
 
 const AI_STUDIO_ROUTE_TIPS: ChatGuideTip[] = [
   {
     id: "ai-tool-choice",
-    label: "Choosing an AI tool",
+    label: "Choisir un outil IA",
     body:
-      "Simple tools are for quick corrections; advanced tools work better when you change a larger part of the space.",
+      "Les outils simples servent aux corrections rapides ; les outils avancés fonctionnent mieux quand vous modifiez une plus grande partie de l’espace.",
   },
   {
     id: "ai-credit-logic",
-    label: "Credits",
+    label: "Crédits",
     body:
-      "Simple edits use 0.5 credits, complex ones 1 credit. A larger pack lowers the price per credit.",
+      "Les retouches simples utilisent 0,5 crédit, les complexes 1 crédit. Un pack plus grand réduit le prix par crédit.",
   },
   {
     id: "ai-instruction",
-    label: "Clear AI instructions",
+    label: "Des instructions IA claires",
     body:
-      "For AI edits, write down what may change and what must stay the same.",
+      "Pour les retouches IA, notez ce qui peut changer et ce qui doit rester identique.",
   },
   {
     id: "ai-object-reference",
-    label: "Item as reference",
+    label: "Un objet comme référence",
     body:
-      "To add or replace furniture/decor you need a photo of the space and one or more images of the exact item you are inserting.",
+      "Pour ajouter ou remplacer meubles/déco, il faut une photo de l’espace et une ou plusieurs images de l’objet exact à insérer.",
   },
 ];
 
 const CREDIT_TIPS: ChatGuideTip[] = [
   {
     id: "credit-tier",
-    label: "Price per credit",
+    label: "Prix par crédit",
     body:
-      "If you plan a series of edits, a larger pack lowers the price per credit and stays valid for 12 months.",
+      "Si vous prévoyez une série de retouches, un pack plus grand réduit le prix par crédit et reste valable 12 mois.",
   },
   {
     id: "credit-simple-complex",
-    label: "Planning your edits",
+    label: "Planifier vos retouches",
     body:
-      "Quick corrections usually use 0.5 credits, while staging, renovation and redesign use 1 credit.",
+      "Les corrections rapides utilisent généralement 0,5 crédit ; le home staging, la rénovation et le relooking utilisent 1 crédit.",
   },
 ];
 
 const ORDER_ROUTE_TIPS: ChatGuideTip[] = [
   {
     id: "order-source-files",
-    label: "Files help",
+    label: "Les fichiers aident",
     body:
-      "The most useful uploads are floor plans, photos of the current state, sketches and material references.",
+      "Les imports les plus utiles sont les plans, les photos de l’état actuel, les croquis et les références de matériaux.",
   },
   {
     id: "order-instructions",
-    label: "Better instructions",
+    label: "De meilleures instructions",
     body:
-      "Adding a short project goal helps the first result land closer to what you want.",
+      "Un court objectif de projet aide le premier résultat à se rapprocher de ce que vous voulez.",
   },
   {
     id: "order-camera-priority",
-    label: "View priorities",
+    label: "Priorités des vues",
     body:
-      "Tell us which angles you most want to sell or explain.",
+      "Indiquez-nous les angles qui doivent le plus vendre ou expliquer votre projet.",
   },
 ];
 
 const SERVICE_ROUTE_TIPS: ChatGuideTip[] = [
   {
     id: "service-materials",
-    label: "Before ordering",
+    label: "Avant de commander",
     body:
-      "For this service, prepare floor plans, photographs, style references and a short list of priorities in advance.",
+      "Pour ce service, préparez à l’avance plans, photographies, références de style et une courte liste de priorités.",
   },
   {
     id: "service-scope",
-    label: "Project scope",
+    label: "Périmètre du projet",
     body:
-      "A clear number of rooms, floors, views or hotspots prevents choosing the wrong package.",
+      "Un nombre clair de pièces, d’étages, de vues ou de hotspots évite de choisir le mauvais forfait.",
   },
 ];
 
 const PORTFOLIO_TIPS: ChatGuideTip[] = [
   {
     id: "portfolio-reference",
-    label: "Save a reference",
+    label: "Gardez une référence",
     body:
-      "If you want a result similar to one of our projects, save the reference and note exactly what you like about it.",
+      "Si vous voulez un résultat proche d’un de nos projets, enregistrez la référence et notez précisément ce qui vous plaît.",
   },
   {
     id: "portfolio-style",
-    label: "Style is deliberate",
+    label: "Un style assumé",
     body:
-      "The most useful references show the light, materials and atmosphere you want.",
+      "Les références les plus utiles montrent la lumière, les matériaux et l’atmosphère que vous recherchez.",
   },
 ];
 
 const CONTACT_TIPS: ChatGuideTip[] = [
   {
     id: "contact-short-brief",
-    label: "Short brief",
+    label: "Brief court",
     body:
-      "Basic details, a deadline and the project goal are enough. We can clarify the rest without pressure.",
+      "Les informations de base, un délai et l’objectif du projet suffisent. Nous précisons le reste sans pression.",
   },
 ];
 
 const ABOUT_TIPS: ChatGuideTip[] = [
   {
     id: "about-white-rook",
-    label: "Who is behind the brand",
+    label: "Qui est derrière la marque",
     body:
-      "Elegant Render is a B2C sub-brand of White Rook DOO, with the same team and a clearer process for end customers.",
+      "Elegant Render est une sous-marque B2C de White Rook DOO, avec la même équipe et un processus plus clair pour les clients finaux.",
   },
   {
     id: "about-certificates",
     label: "Certifications",
     body:
-      "The process relies on ISO 9001, ISO/IEC 27001 and ISO 50001 certifications verified by TUV Rheinland.",
+      "Le processus s’appuie sur les certifications ISO 9001, ISO/IEC 27001 et ISO 50001 vérifiées par TÜV Rheinland.",
   },
 ];
 
 const FAQ_ROUTE_TIPS: ChatGuideTip[] = [
   {
     id: "faq-answer-scope",
-    label: "Quick answers",
+    label: "Réponses rapides",
     body:
-      "Ask specifically about timing, materials, revisions, pricing or AI edits and you will get the shortest relevant answer.",
+      "Posez une question précise sur les délais, les fichiers, les révisions, les tarifs ou les retouches IA et vous obtiendrez la réponse la plus courte et pertinente.",
   },
   {
     id: "faq-next-step",
-    label: "Next step",
+    label: "Étape suivante",
     body:
-      "If the answer depends on project scope, the fastest next step is a description plus floor plans/photos via a quick inquiry.",
+      "Si la réponse dépend du périmètre du projet, le plus rapide est d’envoyer une description plus plans/photos via une demande rapide.",
   },
 ];
 
 const CONTEXT_TIPS: ChatGuideRule[] = [
   {
     id: "ai-before-upload",
-    label: "Before uploading",
+    label: "Avant l’import",
     body:
-      "Upload a clear photograph. Wide shots work best for staging and renovation; for adding or replacing furniture/decor, also include separate images of that item.",
+      "Importez une photographie nette. Les plans larges conviennent le mieux au home staging et à la rénovation ; pour ajouter ou remplacer meubles/déco, joignez aussi des images séparées de cet objet.",
     pages: ["ai_studio"],
     stages: ["before_upload"],
     priority: 100,
   },
   {
     id: "ai-after-upload",
-    label: "Before generating",
+    label: "Avant de générer",
     body:
-      "Before generating, write down what must stay the same: walls, windows, layout, materials.",
+      "Avant de générer, notez ce qui doit rester identique : murs, fenêtres, agencement, matériaux.",
     pages: ["ai_studio"],
     stages: ["after_upload", "ready_to_generate"],
     priority: 95,
   },
   {
     id: "ai-virtual-staging",
-    label: "Virtual staging",
+    label: "Home staging virtuel",
     body:
-      "State the room's purpose, style, palette and anything you do not want to appear in the space.",
+      "Indiquez la fonction de la pièce, le style, la palette et ce que vous ne voulez pas voir apparaître dans l’espace.",
     pages: ["ai_studio"],
     editTypes: ["virtual_staging"],
     priority: 90,
   },
   {
     id: "ai-object-insertion",
-    label: "Furniture/decor in interiors",
+    label: "Meubles/déco en intérieur",
     body:
-      "The first item image is the main one. Additional angles must show the same model/color/material. A mask is recommended for adding and required for replacing.",
+      "La première image de l’objet est la principale. Les angles supplémentaires doivent montrer le même modèle/couleur/matériau. Le masque est recommandé pour ajouter et obligatoire pour remplacer.",
     pages: ["ai_studio"],
     editTypes: ["object_insertion"],
     priority: 90,
   },
   {
     id: "ai-renovation-redesign",
-    label: "Renovation",
+    label: "Rénovation",
     body:
-      "Separate materials, furniture and lighting. AI understands the request better when it is not all in one sentence.",
+      "Séparez matériaux, mobilier et éclairage. L’IA comprend mieux la demande quand tout n’est pas dans une seule phrase.",
     pages: ["ai_studio"],
     editTypes: ["virtual_renovation", "room_redesign"],
     priority: 90,
   },
   {
     id: "ai-item-removal",
-    label: "Item removal",
+    label: "Suppression d’objets",
     body:
-      "If you are removing a larger item, an advanced mask helps keep the background more natural.",
+      "Si vous supprimez un objet volumineux, un masque avancé aide à garder un arrière-plan plus naturel.",
     pages: ["ai_studio"],
     editTypes: ["item_removal"],
     priority: 90,
   },
   {
     id: "ai-wall-color",
-    label: "Wall color",
+    label: "Couleur des murs",
     body:
-      "When changing walls, note whether the ceiling, floor and furniture should stay untouched.",
+      "Quand vous changez les murs, précisez si le plafond, le sol et les meubles doivent rester intacts.",
     pages: ["ai_studio"],
     editTypes: ["wall_color_change"],
     priority: 90,
   },
   {
     id: "ai-no-credits",
-    label: "Credits",
+    label: "Crédits",
     body:
-      "Simple edits use 0.5 credits, complex ones 1 credit. A larger pack lowers the price per credit.",
+      "Les retouches simples utilisent 0,5 crédit, les complexes 1 crédit. Un pack plus grand réduit le prix par crédit.",
     pages: ["ai_studio"],
     stages: ["no_credits"],
     priority: 110,
   },
   {
     id: "ai-result-loop",
-    label: "Almost there?",
+    label: "Presque bon ?",
     body:
-      "If the result is close, use it as the new input image and ask only for a small correction.",
+      "Si le résultat est proche, utilisez-le comme nouvelle image d’entrée et demandez seulement une petite correction.",
     pages: ["ai_studio"],
     stages: ["has_result"],
     priority: 105,
   },
   {
     id: "order-missing-data",
-    label: "Waiting for details",
+    label: "En attente de détails",
     body:
-      "These items are waiting for a description or files. Add at least a floor plan, photographs and a short project goal.",
+      "Ces éléments attendent une description ou des fichiers. Ajoutez au moins un plan, des photographies et un court objectif de projet.",
     pages: ["order_detail"],
     stages: ["missing_order_data"],
     priority: 110,
   },
   {
     id: "order-interior-rooms",
-    label: "Interior",
+    label: "Intérieur",
     body:
-      "If you have fewer than 10 rooms, use the remaining views for the living room, kitchen or master bedroom.",
+      "Si vous avez moins de 10 pièces, utilisez les vues restantes pour le salon, la cuisine ou la chambre principale.",
     pages: ["order_detail"],
     productIds: ["int-static", "interior-static"],
     priority: 95,
   },
   {
     id: "order-360-interior",
-    label: "360 interior",
+    label: "Intérieur 360",
     body:
-      "For each room, list the hotspot priorities and the static views that must exist.",
+      "Pour chaque pièce, listez les priorités de hotspots et les vues statiques indispensables.",
     pages: ["order_detail"],
     productIds: ["int-360", "interior-360"],
     priority: 95,
   },
   {
     id: "order-exterior-sides",
-    label: "Exterior",
+    label: "Extérieur",
     body:
-      "Tell us which sides of the building matter most. A new angle from an unmodeled side may require additional geometry.",
+      "Indiquez les faces du bâtiment qui comptent le plus. Un nouvel angle depuis un côté non modélisé peut demander de la géométrie supplémentaire.",
     pages: ["order_detail"],
     productIds: [
       "ext-static",
@@ -335,16 +337,16 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
     id: "order-animation-path",
     label: "Animation",
     body:
-      "Describe the start, end and pace of the camera. If an active model already exists, the animation is significantly cheaper.",
+      "Décrivez le départ, l’arrivée et le rythme de la caméra. Si un modèle actif existe déjà, l’animation est nettement moins chère.",
     pages: ["order_detail"],
     productIds: ["anim", "animation-from-scratch", "tour-assembly"],
     priority: 94,
   },
   {
     id: "order-staging-renovation",
-    label: "Staging and renovation",
+    label: "Home staging et rénovation",
     body:
-      "Add style references and what should not change. That is often more valuable than a long general instruction.",
+      "Ajoutez des références de style et ce qui ne doit pas changer. C’est souvent plus utile qu’une longue instruction générale.",
     pages: ["order_detail"],
     productIds: [
       "vs-static",
@@ -358,9 +360,9 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
   },
   {
     id: "order-files-needed",
-    label: "Files",
+    label: "Fichiers",
     body:
-      "The most useful uploads are floor plans, photos of the current state, sketches and material references.",
+      "Les imports les plus utiles sont les plans, les photos de l’état actuel, les croquis et les références de matériaux.",
     pages: ["order_detail"],
     priority: 70,
     when: (context) => context.hasFiles === false,
@@ -368,18 +370,18 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
   // ── Pricing (/pricing) — cart-aware purchase advice ──────────
   {
     id: "pricing-empty-cart",
-    label: "Start from the goal",
+    label: "Partez de l’objectif",
     body:
-      "Pick a service from the table and the price is calculated instantly. If you are not sure what you need, ask me here.",
+      "Choisissez un service dans le tableau et le prix se calcule instantanément. Si vous hésitez sur le bon choix, posez-moi la question ici.",
     pages: ["pricing"],
     priority: 100,
     when: (context) => !(context.productIds && context.productIds.length),
   },
   {
     id: "pricing-exterior-second-view",
-    label: "A second view costs less",
+    label: "Une deuxième vue coûte moins cher",
     body:
-      "You have an exterior in the cart — a second view from the same model (360 or aerial) costs significantly less because the model is already built.",
+      "Vous avez un extérieur dans le panier — une deuxième vue du même modèle (360 ou aérienne) coûte nettement moins cher, car le modèle est déjà construit.",
     pages: ["pricing"],
     productIds: ["ext-static", "exterior-static"],
     priority: 96,
@@ -392,18 +394,18 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
   },
   {
     id: "pricing-animation-active",
-    label: "Animation with your model",
+    label: "Animation avec votre modèle",
     body:
-      "Animation is significantly cheaper with an active 3D model than from scratch. If you are already ordering a render, add it in the same order.",
+      "L’animation est nettement moins chère avec un modèle 3D actif que partie de zéro. Si vous commandez déjà un rendu, ajoutez-la à la même commande.",
     pages: ["pricing"],
     productIds: ["anim", "animation-from-scratch"],
     priority: 95,
   },
   {
     id: "pricing-model-first-discount",
-    label: "The model is built once",
+    label: "Le modèle se construit une seule fois",
     body:
-      "More views from the same model = a lower price per view. The first delivery carries the full amount; each following one is cheaper.",
+      "Plus de vues du même modèle = un prix par vue plus bas. La première livraison porte le montant complet ; chaque suivante est moins chère.",
     pages: ["pricing"],
     priority: 94,
     when: (context) =>

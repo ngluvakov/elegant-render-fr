@@ -1,6 +1,6 @@
 export function sanitizeAiStudioError(message?: string | null): string {
   const text = message?.trim();
-  if (!text) return "The AI generation failed. Please try again.";
+  if (!text) return "La génération IA a échoué. Veuillez réessayer.";
 
   const lower = text.toLowerCase();
   if (
@@ -8,7 +8,7 @@ export function sanitizeAiStudioError(message?: string | null): string {
     lower.includes("rate limit") ||
     lower.includes("resource_exhausted")
   ) {
-    return "The AI engine has no available quota for this generation right now. Choose another engine or try again a little later.";
+    return "Le moteur IA n’a pas de quota disponible pour cette génération en ce moment. Choisissez un autre moteur ou réessayez un peu plus tard.";
   }
 
   if (
@@ -17,14 +17,14 @@ export function sanitizeAiStudioError(message?: string | null): string {
     lower.includes("unauthorized") ||
     lower.includes("not authorized")
   ) {
-    return "The AI engine is not properly configured for the selected model.";
+    return "Le moteur IA n’est pas correctement configuré pour le modèle sélectionné.";
   }
 
   if (
     lower.includes("gemini image generation failed") ||
     lower.includes("openai image edit failed")
   ) {
-    return "The AI provider could not process the image. Check the image and the prompt, then try again.";
+    return "Le fournisseur IA n’a pas pu traiter l’image. Vérifiez l’image et les instructions, puis réessayez.";
   }
 
   return text.length > 280 ? `${text.slice(0, 280)}...` : text;

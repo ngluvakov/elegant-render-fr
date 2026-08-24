@@ -202,7 +202,7 @@ const DISPOSABLE_EMAIL_DOMAINS = [
 const MAX_KEYWORD_WEIGHT = 3;
 const MAX_LINK_WEIGHT = 3;
 
-/** Strip diacritics for robust term matching (Latin accents, Serbian). */
+/** Strip diacritics for robust term matching (French, Latin accents, Serbian). */
 function stripDiacritics(s: string): string {
   return s
     .replace(/[àáâãäåāă]/g, "a")
@@ -210,6 +210,9 @@ function stripDiacritics(s: string): string {
     .replace(/[ìíîïī]/g, "i")
     .replace(/[òóôõöō]/g, "o")
     .replace(/[ùúûüū]/g, "u")
+    .replace(/ç/g, "c")
+    .replace(/œ/g, "oe")
+    .replace(/æ/g, "ae")
     .replace(/[čć]/g, "c")
     .replace(/š/g, "s")
     .replace(/ž/g, "z")

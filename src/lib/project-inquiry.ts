@@ -23,15 +23,15 @@ export type ProjectInquirySource = {
 };
 
 export const PROJECT_INQUIRY_SERVICE_TYPES = [
-  "Not sure yet",
-  "Interior renders",
-  "Exterior renders",
-  "360 tours and animations",
-  "Virtual staging",
-  "Virtual renovation",
-  "2D/3D floor plans",
-  "AI photo editing",
-  "Larger project / multiple services",
+  "Je ne sais pas encore",
+  "Rendus d’intérieur",
+  "Rendus d’extérieur",
+  "Visites 360° et animations",
+  "Home staging virtuel",
+  "Rénovation virtuelle",
+  "Plans 2D/3D",
+  "Retouche photo par IA",
+  "Projet plus vaste / plusieurs services",
 ] as const;
 
 export function isAllowedProjectInquiryMimeType(mimeType: string): boolean {

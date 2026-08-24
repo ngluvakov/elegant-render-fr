@@ -129,12 +129,12 @@ export function rateLimitMessage(
   retryAfterSeconds: number,
 ): string {
   if (retryAfterSeconds < 60) {
-    return `Too many requests in a short period. Try again in ${retryAfterSeconds} seconds.`;
+    return `Trop de requêtes en peu de temps. Veuillez réessayer dans ${retryAfterSeconds} ${retryAfterSeconds === 1 ? "seconde" : "secondes"}.`;
   }
   const minutes = Math.ceil(retryAfterSeconds / 60);
   if (minutes < 60) {
-    return `Too many requests. Try again in ${minutes} ${minutes === 1 ? "minute" : "minutes"}.`;
+    return `Trop de requêtes. Veuillez réessayer dans ${minutes} ${minutes === 1 ? "minute" : "minutes"}.`;
   }
   const hours = Math.ceil(minutes / 60);
-  return `Too many requests. Try again in ${hours} ${hours === 1 ? "hour" : "hours"}.`;
+  return `Trop de requêtes. Veuillez réessayer dans ${hours} ${hours === 1 ? "heure" : "heures"}.`;
 }

@@ -9,9 +9,10 @@
  *
  * The goal is NOT auto-rejection (a false positive must never lose a real
  * lead), but to surface spam to the top of attention and keep staff wary of
- * links and attachments. The site is an English arch-viz B2C — a legit
+ * links and attachments. The site is a French arch-viz B2C — a legit
  * inquiry almost never contains links or SEO/marketing jargon, so those are
- * strong signals.
+ * strong signals. Keyword lists carry both French and English patterns
+ * (spam reaching .fr arrives in either language).
  *
  * The bot signals that caught the 2026-07 wave (random name token, Gmail
  * dot-trick address) are language-neutral and unchanged from the .rs
@@ -78,9 +79,35 @@ const DOMAIN_TERMS = [
   "dusk", // day-to-dusk
   "photomontage",
   "vr",
+  // French equivalents (matched on diacritic-stripped lowercase text,
+  // so accents are written out): a legit French inquiry mentions the
+  // space or the render in these words.
+  "rendu",
+  "interieur",
+  "exterieur",
+  "appartement",
+  "maison",
+  "projet",
+  "etage",
+  "piece",
+  "cuisine",
+  "salle de bain",
+  "chambre",
+  "salon",
+  "espace",
+  "batiment",
+  "immeuble",
+  "terrain",
+  "amenagement",
+  "meubl", // meuble / meubler / meublee
+  "visite",
+  "crepuscule",
+  "surface",
+  "perspective",
+  "maquette",
 ];
 
-// English/Russian marketing and scam phrases. Each unique hit +1
+// English/French/Russian marketing and scam phrases. Each unique hit +1
 // (total contribution capped at MAX_KEYWORD_WEIGHT).
 const SPAM_KEYWORDS = [
   "seo",
@@ -125,6 +152,33 @@ const SPAM_KEYWORDS = [
   "dear owner",
   "sponsorship",
   "collaboration opportunity",
+  // French marketing/scam phrases. The haystack is lowercased but NOT
+  // diacritic-stripped, so accented and unaccented spellings are both
+  // listed where they differ.
+  "référencement",
+  "referencement",
+  "netlinking",
+  "article invité",
+  "article invite",
+  "création de site",
+  "creation de site",
+  "conception de site",
+  "agence web",
+  "développement web",
+  "developpement web",
+  "marketing digital",
+  "augmentez votre",
+  "boostez votre",
+  "visité votre site",
+  "visite votre site",
+  "meilleur prix",
+  "prix imbattable",
+  "gagner de l'argent",
+  "gagner de l’argent",
+  "travail à domicile",
+  "travail a domicile",
+  "opportunité de collaboration",
+  "opportunite de collaboration",
 ];
 
 // Known disposable / one-shot email domains.
@@ -202,10 +256,10 @@ function nameSpamSignal(name: string): { weight: number; reason: string | null }
 
   // A single long token with many case transitions = bot handle.
   if (single && letters.length >= 10 && transitions >= 4) {
-    return { weight: 3, reason: "name is a random string (bot)" };
+    return { weight: 3, reason: "le nom est une chaîne aléatoire (bot)" };
   }
   if (noVowel || /\d/.test(trimmed) || transitions >= 4) {
-    return { weight: 1, reason: "name looks random" };
+    return { weight: 1, reason: "le nom semble aléatoire" };
   }
   return { weight: 0, reason: null };
 }
@@ -245,8 +299,8 @@ export function scoreInquiry(input: SpamSignalInput): SpamResult {
     score += w;
     reasons.push(
       linkCount === 1
-        ? "contains a link in the message"
-        : `contains ${linkCount} links in the message`,
+        ? "contient un lien dans le message"
+        : `contient ${linkCount} liens dans le message`,
     );
   }
 
@@ -256,27 +310,27 @@ export function scoreInquiry(input: SpamSignalInput): SpamResult {
     const w = Math.min(matchedKeywords.length, MAX_KEYWORD_WEIGHT);
     score += w;
     reasons.push(
-      `marketing/spam keywords: ${matchedKeywords.slice(0, 4).join(", ")}`,
+      `mots-clés marketing/spam : ${matchedKeywords.slice(0, 4).join(", ")}`,
     );
   }
 
-  // 3) Russian text — neither English nor Serbian Latin/Cyrillic uses ы/э/ъ/ё.
+  // 3) Russian text — neither French nor English uses Cyrillic ы/э/ъ/ё.
   if (/[ыэъёЫЭЪЁ]/.test(message)) {
     score += 2;
-    reasons.push("Russian text (Cyrillic ы/э/ъ/ё)");
+    reasons.push("texte en russe (cyrillique ы/э/ъ/ё)");
   }
 
   // 4) Disposable email domain.
   const domain = emailDomain(email);
   if (domain && DISPOSABLE_EMAIL_DOMAINS.includes(domain)) {
     score += 2;
-    reasons.push(`disposable email domain (${domain})`);
+    reasons.push(`domaine e-mail jetable (${domain})`);
   }
 
   // 4b) Gmail dot-trick (bot dedup evasion).
   if (gmailDotTrick(email)) {
     score += 2;
-    reasons.push("gmail dot-trick in address (bot)");
+    reasons.push("astuce des points Gmail dans l’adresse (bot)");
   }
 
   // 5) The message mentions ANOTHER email address (spammers drop a contact
@@ -287,7 +341,7 @@ export function scoreInquiry(input: SpamSignalInput): SpamResult {
   );
   if (otherEmail) {
     score += 1;
-    reasons.push("another email address in the message body");
+    reasons.push("une autre adresse e-mail dans le corps du message");
   }
 
   // 6) Random/bot name.
@@ -301,11 +355,11 @@ export function scoreInquiry(input: SpamSignalInput): SpamResult {
   const hasDomainTerm = DOMAIN_TERMS.some((t) => messageNoDia.includes(t));
   if (linkCount > 0 && !hasDomainTerm) {
     score += 1;
-    reasons.push("link without any render/space-related term");
+    reasons.push("lien sans aucun terme lié au rendu ou à l’espace");
   }
   if (linkCount > 0 && !phone) {
     score += 1;
-    reasons.push("link with phone omitted");
+    reasons.push("lien avec téléphone non renseigné");
   }
 
   const level: SpamLevel =
@@ -322,10 +376,10 @@ export function scoreInquiry(input: SpamSignalInput): SpamResult {
 export function spamLevelLabel(level: SpamLevel): string {
   switch (level) {
     case "likely_spam":
-      return "Likely spam";
+      return "Spam probable";
     case "suspicious":
-      return "Suspicious";
+      return "Suspect";
     default:
-      return "Clean";
+      return "Sain";
   }
 }

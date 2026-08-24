@@ -26,15 +26,15 @@ const keptGroup = (label: string, base: string): PortfolioTile[] =>
   Array.from({ length: 4 }, (_, i) => ({
     kind: "image" as const,
     src: `${A}/${base}-0${i + 1}.webp`,
-    alt: `${label} — example ${i + 1}, Elegant Render`,
+    alt: `${label} — exemple ${i + 1}, Elegant Render`,
     label,
   }));
 
 const KEPT: PortfolioTile[] = [
-  ...keptGroup("Interior renders", "portfolio-interior-static"),
+  ...keptGroup("Rendus d’intérieur", "portfolio-interior-static"),
   // "Aerial renders" — fresh, cache-safe files for tiles 01 (aerial
   // montage), 03 and 04; tile 02 keeps the built version.
-  ...keptGroup("Aerial renders", "portfolio-aerial").map(
+  ...keptGroup("Rendus aériens", "portfolio-aerial").map(
     (tile, i): PortfolioTile => {
       const src =
         i === 0
@@ -46,143 +46,143 @@ const KEPT: PortfolioTile[] = [
               : tile.src;
       const alt =
         i === 0
-          ? "Aerial render of a residential complex in golden light — Aerial renders, Elegant Render"
+          ? "Rendu aérien d’un complexe résidentiel en lumière dorée — Rendus aériens, Elegant Render"
           : tile.alt;
-      return { kind: "image", src, alt, label: "Aerial renders" };
+      return { kind: "image", src, alt, label: "Rendus aériens" };
     },
   ),
-  ...keptGroup("3D streetscape", "portfolio-streetscape"),
-  ...keptGroup("Landscape design", "portfolio-landscape-design"),
-  ...keptGroup("Render in a site photo", "portfolio-photomontage"),
-  ...keptGroup("Day-to-dusk", "portfolio-day-to-dusk"),
+  ...keptGroup("Perspective de rue 3D", "portfolio-streetscape"),
+  ...keptGroup("Aménagement paysager", "portfolio-landscape-design"),
+  ...keptGroup("Rendu dans une photo du site", "portfolio-photomontage"),
+  ...keptGroup("Jour au crépuscule", "portfolio-day-to-dusk"),
   // "3D site plan" — tile 01 uses a fresh, cache-safe file.
-  ...keptGroup("3D site plan", "portfolio-3d-site-plan").map(
+  ...keptGroup("Plan de masse 3D", "portfolio-3d-site-plan").map(
     (tile, i): PortfolioTile =>
       i === 0
         ? {
             kind: "image",
             src: `${A}/portfolio-3d-site-plan-01-v2.webp`,
             alt: tile.alt,
-            label: "3D site plan",
+            label: "Plan de masse 3D",
           }
         : tile,
   ),
-  { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-apartment.webp`, alt: "3D floor plan of a one-bedroom apartment, Elegant Render", label: "3D floor plans" },
-  { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-open-concept.webp`, alt: "3D floor plan of an open-concept one-bedroom apartment, Elegant Render", label: "3D floor plans" },
-  { kind: "image", src: `${A}/portfolio-3d-floor-plans-duplex-two-levels.webp`, alt: "3D floor plan of a two-level duplex, Elegant Render", label: "3D floor plans" },
-  { kind: "image", src: `${A}/portfolio-3d-floor-plans-house-with-garage.webp`, alt: "3D floor plan of a house with a garage, Elegant Render", label: "3D floor plans" },
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-apartment.webp`, alt: "Plan 3D d’un appartement d’une chambre, Elegant Render", label: "Plans 3D" },
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-one-bedroom-open-concept.webp`, alt: "Plan 3D d’un appartement d’une chambre à espace ouvert, Elegant Render", label: "Plans 3D" },
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-duplex-two-levels.webp`, alt: "Plan 3D d’un duplex sur deux niveaux, Elegant Render", label: "Plans 3D" },
+  { kind: "image", src: `${A}/portfolio-3d-floor-plans-house-with-garage.webp`, alt: "Plan 3D d’une maison avec garage, Elegant Render", label: "Plans 3D" },
 ];
 
 /** New interior renders (interior-01..19.webp). */
 const INTERIOR_ALT = [
-  "Bathroom — interior render, Elegant Render",
-  "Living room — interior render, Elegant Render",
-  "Kitchen — interior render, Elegant Render",
-  "Bedroom — interior render, Elegant Render",
-  "Basement pool — interior render, Elegant Render",
-  "Sauna — interior render, Elegant Render",
-  "Master bedroom — interior render, Elegant Render",
-  "Bathroom — interior render, Elegant Render",
-  "Living and dining room — interior render, Elegant Render",
-  "Living room of a two-bedroom apartment — interior render, Elegant Render",
-  "Media room — interior render, Elegant Render",
-  "Dining room — interior render, Elegant Render",
-  "Massage room — interior render, Elegant Render",
-  "Virtually staged space — interior render, Elegant Render",
-  "Upstairs bedroom — interior render, Elegant Render",
-  "Kitchen — interior render, Elegant Render",
-  "Living room — interior render, Elegant Render",
-  "Bedroom — interior render, Elegant Render",
-  "Hallway and living room — interior render, Elegant Render",
+  "Salle de bain — rendu d’intérieur, Elegant Render",
+  "Salon — rendu d’intérieur, Elegant Render",
+  "Cuisine — rendu d’intérieur, Elegant Render",
+  "Chambre — rendu d’intérieur, Elegant Render",
+  "Piscine en sous-sol — rendu d’intérieur, Elegant Render",
+  "Sauna — rendu d’intérieur, Elegant Render",
+  "Chambre principale — rendu d’intérieur, Elegant Render",
+  "Salle de bain — rendu d’intérieur, Elegant Render",
+  "Salon et salle à manger — rendu d’intérieur, Elegant Render",
+  "Salon d’un appartement de deux chambres — rendu d’intérieur, Elegant Render",
+  "Salle multimédia — rendu d’intérieur, Elegant Render",
+  "Salle à manger — rendu d’intérieur, Elegant Render",
+  "Salle de massage — rendu d’intérieur, Elegant Render",
+  "Espace en home staging virtuel — rendu d’intérieur, Elegant Render",
+  "Chambre à l’étage — rendu d’intérieur, Elegant Render",
+  "Cuisine — rendu d’intérieur, Elegant Render",
+  "Salon — rendu d’intérieur, Elegant Render",
+  "Chambre — rendu d’intérieur, Elegant Render",
+  "Entrée et salon — rendu d’intérieur, Elegant Render",
 ];
 const NEW_INTERIOR: PortfolioTile[] = INTERIOR_ALT.map((alt, i) => ({
   kind: "image",
   src: `${P}/interior-${nn(i)}.webp`,
   alt,
-  label: "Interior renders",
+  label: "Rendus d’intérieur",
 }));
 
 /** New exterior renders (exterior-*.webp; 07 intentionally omitted). */
 const EXTERIOR: { n: string; alt: string; file?: string }[] = [
-  { n: "01", alt: "Front facade — exterior render, Elegant Render" },
+  { n: "01", alt: "Façade avant — rendu d’extérieur, Elegant Render" },
   {
     n: "02",
-    alt: "Exterior render — landscaped yard with a children's playground, a garden and mountain views, Elegant Render",
+    alt: "Rendu d’extérieur — cour paysagée avec aire de jeux pour enfants, jardin et vue sur les montagnes, Elegant Render",
     file: "exterior-gossau-playground.webp",
   },
-  { n: "03", alt: "Side view of the building — exterior render, Elegant Render" },
-  { n: "04", alt: "Aerial view of a complex — exterior render, Elegant Render" },
-  { n: "05", alt: "Front facade — exterior render, Elegant Render" },
-  { n: "06", alt: "Terraced residential building on a slope — exterior render, Elegant Render" },
-  { n: "08", alt: "Residential complex — exterior render, Elegant Render" },
-  { n: "09", alt: "Night view — exterior render, Elegant Render" },
-  { n: "10", alt: "Front view of the building — exterior render, Elegant Render" },
-  { n: "11", alt: "Front facade of the building — exterior render, Elegant Render" },
-  { n: "12", alt: "Side view of the building — exterior render, Elegant Render" },
-  { n: "13", alt: "Residential building — exterior render, Elegant Render" },
-  { n: "14", alt: "Rear facade — exterior render, Elegant Render" },
+  { n: "03", alt: "Vue latérale du bâtiment — rendu d’extérieur, Elegant Render" },
+  { n: "04", alt: "Vue aérienne d’un complexe — rendu d’extérieur, Elegant Render" },
+  { n: "05", alt: "Façade avant — rendu d’extérieur, Elegant Render" },
+  { n: "06", alt: "Immeuble résidentiel en terrasses à flanc de pente — rendu d’extérieur, Elegant Render" },
+  { n: "08", alt: "Complexe résidentiel — rendu d’extérieur, Elegant Render" },
+  { n: "09", alt: "Vue de nuit — rendu d’extérieur, Elegant Render" },
+  { n: "10", alt: "Vue avant du bâtiment — rendu d’extérieur, Elegant Render" },
+  { n: "11", alt: "Façade avant du bâtiment — rendu d’extérieur, Elegant Render" },
+  { n: "12", alt: "Vue latérale du bâtiment — rendu d’extérieur, Elegant Render" },
+  { n: "13", alt: "Immeuble résidentiel — rendu d’extérieur, Elegant Render" },
+  { n: "14", alt: "Façade arrière — rendu d’extérieur, Elegant Render" },
 ];
 const NEW_EXTERIOR: PortfolioTile[] = EXTERIOR.map(({ n, alt, file }) => ({
   kind: "image",
   src: `${P}/${file ?? `exterior-${n}.webp`}`,
   alt,
-  label: "Exterior renders",
+  label: "Rendus d’extérieur",
 }));
 
 /** 3D floor plans — original "3D floor plans" set (osnova-01..04.webp). */
 const OSNOVA: { file: string; alt: string }[] = [
-  { file: "3d-floor-plan-01", alt: "3D floor plan from a bird's-eye perspective, Elegant Render" },
-  { file: "3d-floor-plan-02", alt: "3D floor plan of an apartment, Elegant Render" },
-  { file: "3d-floor-plan-03", alt: "3D floor plan of an A-frame house, Elegant Render" },
+  { file: "3d-floor-plan-01", alt: "Plan 3D en vue aérienne, Elegant Render" },
+  { file: "3d-floor-plan-02", alt: "Plan 3D d’un appartement, Elegant Render" },
+  { file: "3d-floor-plan-03", alt: "Plan 3D d’une maison en A, Elegant Render" },
   // osnova-04 replaced by the "Levi stan" duplex 3D floor plan (fresh,
   // cache-safe filename so the CDN serves the new bytes).
   {
     file: "3d-floor-plan-duplex-left-unit",
-    alt: "3D floor plan of a duplex apartment — left unit, Elegant Render",
+    alt: "Plan 3D d’un duplex — logement de gauche, Elegant Render",
   },
 ];
 const NEW_OSNOVA: PortfolioTile[] = OSNOVA.map(({ file, alt }) => ({
   kind: "image",
   src: `${P}/${file}.webp`,
   alt,
-  label: "3D floor plans",
+  label: "Plans 3D",
 }));
 
 /** More 3D floor plans (3d-floor-plan-space-01..04.webp), shown under "3D floor plans". */
 const OSNOVA_PROSTORA_ALT = [
-  "3D floor plan from a bird's-eye perspective, Elegant Render",
-  "3D floor plan of a ground floor, Elegant Render",
-  "3D floor plan of the first and second floor, Elegant Render",
-  "3D floor plan with a garage, Elegant Render",
+  "Plan 3D en vue aérienne, Elegant Render",
+  "Plan 3D d’un rez-de-chaussée, Elegant Render",
+  "Plan 3D du premier et du deuxième étage, Elegant Render",
+  "Plan 3D avec garage, Elegant Render",
 ];
 const NEW_OSNOVA_PROSTORA: PortfolioTile[] = OSNOVA_PROSTORA_ALT.map((alt, i) => ({
   kind: "image",
   src: `${P}/3d-floor-plan-space-${nn(i)}.webp`,
   alt,
-  label: "3D floor plans",
+  label: "Plans 3D",
 }));
 
 /** Interactive 360 panoramas (360-01..19): thumb .webp + full -full.jpg. */
 const PANO_META: { label: string; alt: string }[] = [
-  { label: "Interior 360 tour", alt: "360 tour — living room, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — kitchen and living area, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — bedroom, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — bathroom, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — living area, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — pool, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — spa, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — sauna, Elegant Render" },
-  { label: "Exterior 360 tour", alt: "360 tour — rooftop terrace, Elegant Render" },
-  { label: "Exterior 360 tour", alt: "360 tour — exterior, Elegant Render" },
-  { label: "Exterior 360 tour", alt: "360 tour — villa exterior, Elegant Render" },
-  { label: "Exterior 360 tour", alt: "360 tour — exterior, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — living area, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — main hall, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — living room, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — interior, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — café, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — bedroom, Elegant Render" },
-  { label: "Interior 360 tour", alt: "360 tour — living and dining room, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — salon, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — cuisine et pièce de vie, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — chambre, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — salle de bain, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — pièce de vie, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — piscine, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — spa, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — sauna, Elegant Render" },
+  { label: "Visite 360° extérieure", alt: "Visite 360° — toit-terrasse, Elegant Render" },
+  { label: "Visite 360° extérieure", alt: "Visite 360° — extérieur, Elegant Render" },
+  { label: "Visite 360° extérieure", alt: "Visite 360° — extérieur d’une villa, Elegant Render" },
+  { label: "Visite 360° extérieure", alt: "Visite 360° — extérieur, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — pièce de vie, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — hall principal, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — salon, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — intérieur, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — café, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — chambre, Elegant Render" },
+  { label: "Visite 360° intérieure", alt: "Visite 360° — salon et salle à manger, Elegant Render" },
 ];
 const PANORAMAS: PortfolioTile[] = PANO_META.map((m, i) => ({
   kind: "panorama",
@@ -194,21 +194,21 @@ const PANORAMAS: PortfolioTile[] = PANO_META.map((m, i) => ({
 
 /** Architectural animations (video-01..08.mp4 + poster .webp). */
 const VIDEO_ALT = [
-  "Animation — A-frame house, Elegant Render",
-  "Animation — second floor, Elegant Render",
-  "Animation — apartment floor plan, Elegant Render",
-  "Animation — walkthrough of an apartment, Elegant Render",
-  "Animation — residential building, Elegant Render",
-  "Animation — interior, Elegant Render",
-  "Animation — ground floor, Elegant Render",
-  "Animation — A-frame house, Elegant Render",
+  "Animation — maison en A, Elegant Render",
+  "Animation — deuxième étage, Elegant Render",
+  "Animation — plan d’appartement, Elegant Render",
+  "Animation — visite virtuelle d’un appartement, Elegant Render",
+  "Animation — immeuble résidentiel, Elegant Render",
+  "Animation — intérieur, Elegant Render",
+  "Animation — rez-de-chaussée, Elegant Render",
+  "Animation — maison en A, Elegant Render",
 ];
 const VIDEOS: PortfolioTile[] = VIDEO_ALT.map((alt, i) => ({
   kind: "video",
   src: `${P}/video-${nn(i)}.webp`,
   full: `${P}/video-${nn(i)}.mp4`,
   alt,
-  label: "Architectural animation",
+  label: "Animation architecturale",
 }));
 
 /**

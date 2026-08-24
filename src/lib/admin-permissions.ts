@@ -25,28 +25,28 @@ export type AdminPreset =
   | "custom";
 
 export const ADMIN_PERMISSION_LABELS: Record<AdminPermission, string> = {
-  PROJECTS_VIEW: "Pregled projekata",
-  PROJECTS_MANAGE: "Upravljanje projektima",
-  INQUIRIES_MANAGE: "Upravljanje upitima",
-  FINANCE_VIEW: "Pregled finansija",
-  FINANCE_MANAGE: "Upravljanje finansijama",
-  USERS_VIEW: "Pregled korisnika",
-  USERS_MANAGE: "Upravljanje korisnicima",
-  AI_CREDITS_MANAGE: "AI krediti",
-  USAGE_VIEW: "Uvid u upotrebu",
-  ANALYTICS_VIEW: "Analitika",
-  AUDIT_VIEW: "Revizije",
-  SYSTEM_MANAGE: "Sistem",
-  ADMIN_MANAGE: "Admin pristupi",
+  PROJECTS_VIEW: "Consultation des projets",
+  PROJECTS_MANAGE: "Gestion des projets",
+  INQUIRIES_MANAGE: "Gestion des demandes",
+  FINANCE_VIEW: "Consultation des finances",
+  FINANCE_MANAGE: "Gestion des finances",
+  USERS_VIEW: "Consultation des utilisateurs",
+  USERS_MANAGE: "Gestion des utilisateurs",
+  AI_CREDITS_MANAGE: "Crédits IA",
+  USAGE_VIEW: "Suivi de l’utilisation",
+  ANALYTICS_VIEW: "Statistiques",
+  AUDIT_VIEW: "Journal d’audit",
+  SYSTEM_MANAGE: "Système",
+  ADMIN_MANAGE: "Accès administrateurs",
 };
 
 export const ADMIN_PRESET_LABELS: Record<AdminPreset, string> = {
-  none: "Bez admin pristupa",
-  project: "Project Admin",
-  finance: "Finance Admin",
-  user_ops: "User Ops Admin",
-  super: "Super Admin",
-  custom: "Custom",
+  none: "Sans accès admin",
+  project: "Admin projets",
+  finance: "Admin finances",
+  user_ops: "Admin utilisateurs",
+  super: "Super admin",
+  custom: "Personnalisé",
 };
 
 export const ADMIN_PRESET_PERMISSIONS: Record<

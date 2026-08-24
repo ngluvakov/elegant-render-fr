@@ -36,24 +36,24 @@ export type JobApplicationFileInput = {
 };
 
 export const JOB_POSITIONS = [
-  "3D Artist",
-  "Project Manager",
-  "Other",
+  "Artiste 3D",
+  "Chef de projet",
+  "Autre",
 ] as const;
 
 export const JOB_EMPLOYMENT_TYPES = [
-  "Full-time",
-  "Part-time",
-  "Freelance / contract",
-  "Internship",
+  "Temps plein",
+  "Temps partiel",
+  "Freelance / prestation",
+  "Stage",
 ] as const;
 
 export const JOB_EXPERIENCE_LEVELS = [
-  "Less than 1 year",
-  "1–3 years",
-  "3–5 years",
-  "5–10 years",
-  "10+ years",
+  "Moins d’un an",
+  "1–3 ans",
+  "3–5 ans",
+  "5–10 ans",
+  "Plus de 10 ans",
 ] as const;
 
 /** 3D and adjacent software the candidate can tick on the application. */
@@ -78,17 +78,17 @@ export const JOB_SOFTWARE = [
   "Substance Designer",
   "After Effects",
   "Premiere Pro",
-  "AI image tools (Midjourney, SD…)",
+  "Outils d’image IA (Midjourney, SD…)",
 ] as const;
 
 /** What the candidate can actually do in 3D. */
 export const JOB_3D_SKILLS = [
-  "Modeling",
-  "Sculpting",
-  "UV unwrapping",
+  "Modélisation",
+  "Sculpture",
+  "Dépliage UV",
   "Animation",
   "Rigging",
-  "Simulation (cloth, fluids, particles)",
+  "Simulation (tissus, fluides, particules)",
 ] as const;
 
 export function formatJobFileSize(bytes: number): string {

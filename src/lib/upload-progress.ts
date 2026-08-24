@@ -25,11 +25,11 @@ export function putFileWithProgress(
         onProgress(100);
         resolve();
       } else {
-        reject(new Error("Upload failed"));
+        reject(new Error("Échec de l’importation"));
       }
     };
-    xhr.onerror = () => reject(new Error("Upload failed"));
-    xhr.onabort = () => reject(new Error("Upload je prekinut"));
+    xhr.onerror = () => reject(new Error("Échec de l’importation"));
+    xhr.onabort = () => reject(new Error("Importation interrompue"));
     xhr.send(file);
   });
 }

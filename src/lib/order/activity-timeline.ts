@@ -32,16 +32,16 @@ export type TimelineEntry = {
 };
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
-  draft: "Draft",
-  awaiting_payment: "Awaiting payment",
-  paid: "Paid",
-  in_progress: "In progress",
-  in_review: "In review",
-  revision_requested: "Revision requested",
-  delivered: "Delivered",
-  closed: "Closed",
-  cancelled: "Cancelled",
-  refunded: "Refunded",
+  draft: "Brouillon",
+  awaiting_payment: "En attente de paiement",
+  paid: "Payée",
+  in_progress: "En production",
+  in_review: "À valider",
+  revision_requested: "Révisions demandées",
+  delivered: "Livrée",
+  closed: "Clôturée",
+  cancelled: "Annulée",
+  refunded: "Remboursée",
 };
 
 export async function buildOrderActivityTimeline(
@@ -65,8 +65,8 @@ export async function buildOrderActivityTimeline(
       at: ev.createdAt,
       source: "status",
       label: ev.fromStatus
-        ? `Status: ${STATUS_LABELS[ev.fromStatus]} → ${STATUS_LABELS[ev.toStatus]}`
-        : `Status: ${STATUS_LABELS[ev.toStatus]}`,
+        ? `Statut : ${STATUS_LABELS[ev.fromStatus]} → ${STATUS_LABELS[ev.toStatus]}`
+        : `Statut : ${STATUS_LABELS[ev.toStatus]}`,
       detail: ev.note ?? undefined,
       tone: statusTone(ev.toStatus),
     });
@@ -115,41 +115,41 @@ function mapAuditAction(row: {
   switch (row.action) {
     case "invoice.issued":
       return {
-        label: "Invoice issued",
+        label: "Facture émise",
         detail: metaString("invoiceNumber"),
         tone: "success",
       };
     case "invoice.error":
       return {
-        label: "Invoice issuing failed",
+        label: "Échec de l’émission de la facture",
         detail: metaString("errorReason"),
         tone: "danger",
       };
     case "invoice.retry_requested":
       return {
-        label: "Invoice issuing retry started",
+        label: "Nouvelle tentative d’émission de la facture",
         detail: metaString("existingInvoiceNumber")
-          ? `Existing number: ${metaString("existingInvoiceNumber")}`
+          ? `Numéro existant : ${metaString("existingInvoiceNumber")}`
           : undefined,
         tone: "warning",
       };
     case "proforma.issued":
       return {
-        label: "Proforma invoice issued",
+        label: "Facture proforma émise",
         detail: metaString("proformaNumber"),
         tone: "success",
       };
     case "proforma.error":
       return {
-        label: "Proforma invoice issuing failed",
+        label: "Échec de l’émission de la facture proforma",
         detail: metaString("errorReason"),
         tone: "danger",
       };
     case "payment.wire_received":
       return {
-        label: "Wire payment recorded for proforma",
+        label: "Paiement par virement enregistré pour la proforma",
         detail: metaString("proformaNumber")
-          ? `Proforma: ${metaString("proformaNumber")}`
+          ? `Proforma : ${metaString("proformaNumber")}`
           : undefined,
         tone: "success",
       };
@@ -163,7 +163,7 @@ function mapAuditAction(row: {
           : status === "invalid"
             ? "danger"
             : "neutral";
-      const label = `VIES VAT check: ${status ?? "?"}`;
+      const label = `Vérification TVA VIES : ${status ?? "?"}`;
       const idText =
         country && number ? `${country}${number}` : country ?? number ?? "";
       const verifiedName = metaString("name");
@@ -176,20 +176,20 @@ function mapAuditAction(row: {
     }
     case "order.created_with_buyer_info":
       return {
-        label: "Order created",
+        label: "Commande créée",
         detail: metaString("buyerType"),
         tone: "neutral",
       };
     case "order.deliverable_upload":
       return {
-        label: "Delivered file added",
+        label: "Fichier livré ajouté",
         detail: metaString("fileName"),
         tone: "success",
       };
     case "order.free_revision_grant": {
       const reason = metaString("reason");
       return {
-        label: "Free revision approved",
+        label: "Révision gratuite approuvée",
         detail: reason,
         tone: "success",
       };
@@ -200,8 +200,8 @@ function mapAuditAction(row: {
       // completeness if ever the audit shape changes.
       const seeded = metaNumber("itemsSeeded");
       return {
-        label: "Converted from inquiry",
-        detail: typeof seeded === "number" ? `Items: ${seeded}` : undefined,
+        label: "Créée à partir d’une demande",
+        detail: typeof seeded === "number" ? `Éléments : ${seeded}` : undefined,
         tone: "neutral",
       };
     }

@@ -51,16 +51,16 @@ export function validateBuyerInfo(input: BuyerInfoInput): string | null {
     "";
 
   if (!buyerCountry || !isValidCountryCode(buyerCountry)) {
-    return "Please select a billing country.";
+    return "Veuillez sélectionner un pays de facturation.";
   }
 
   if (input.buyerType === "individual") return null;
 
   const name = input.companyName?.trim() ?? "";
-  if (!name) return "Company name is required.";
+  if (!name) return "Le nom de l’entreprise est requis.";
 
   const address = input.companyAddress?.trim() ?? "";
-  if (!address) return "Company address is required.";
+  if (!address) return "L’adresse de l’entreprise est requise.";
 
   const taxId = input.companyTaxId?.trim().toUpperCase() ?? "";
   // VAT ID is optional — non-EU companies may not have one, and an
@@ -70,7 +70,7 @@ export function validateBuyerInfo(input: BuyerInfoInput): string | null {
   if (taxId) {
     const prefix = taxId.slice(0, 2);
     if (isViesCountry(prefix) && !isValidVatId(taxId)) {
-      return "VAT ID must start with a two-letter country prefix followed by 6–12 characters (e.g. DE123456789).";
+      return "Le numéro de TVA doit commencer par un préfixe pays de deux lettres, suivi de 6 à 12 caractères (ex. FR12345678901).";
     }
   }
 

@@ -271,7 +271,7 @@ export async function enforceCleanScan(input: {
       reason: "infected",
       threats: result.threats,
       userError:
-        "The file was rejected because the antivirus scanner found potential threats. If you believe this is a mistake, contact us at info@elegantrender.com.",
+        "Le fichier a été refusé : l’analyse antivirus a détecté des menaces potentielles. Si vous pensez qu’il s’agit d’une erreur, contactez-nous à info@elegantrender.fr.",
     };
   } catch (err) {
     if (err instanceof FileScanUnavailableError) {
@@ -310,7 +310,7 @@ export async function enforceCleanScan(input: {
         reason: "scan_error",
         threats: [],
         userError:
-          "We cannot check the file right now. Try again in a few minutes.",
+          "Nous ne pouvons pas vérifier le fichier pour le moment. Veuillez réessayer dans quelques minutes.",
       };
     }
     throw err;

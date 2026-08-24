@@ -105,8 +105,8 @@ export function itemRemovalProductLabel(
   productId: ItemRemovalProductId,
 ): string {
   return productId === "ir-simple"
-    ? "Simple removal"
-    : "Complex removal";
+    ? "Suppression simple"
+    : "Suppression complexe";
 }
 
 export function itemRemovalAdditionalPriceEur(

@@ -13,9 +13,9 @@
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const FP_DISPLAY_TYPES = [
-  { id: "unfurnished", label: "Unfurnished plan (walls and fixtures only)" },
-  { id: "furnished", label: "Furnished plan" },
-  { id: "both", label: "Both variants (furnished + unfurnished)" },
+  { id: "unfurnished", label: "Plan non meublé (murs et équipements fixes uniquement)" },
+  { id: "furnished", label: "Plan meublé" },
+  { id: "both", label: "Les deux variantes (meublé + non meublé)" },
 ] as const;
 export type FpDisplayTypeId = (typeof FP_DISPLAY_TYPES)[number]["id"];
 export const FP_DISPLAY_TYPE_IDS = FP_DISPLAY_TYPES.map(
@@ -23,11 +23,11 @@ export const FP_DISPLAY_TYPE_IDS = FP_DISPLAY_TYPES.map(
 ) as FpDisplayTypeId[];
 
 export const FP_FURNITURE_STYLES = [
-  { id: "modern", label: "Modern" },
-  { id: "scandinavian", label: "Scandinavian" },
-  { id: "industrial", label: "Industrial" },
-  { id: "minimalist", label: "Minimalist" },
-  { id: "classic", label: "Classic / Traditional" },
+  { id: "modern", label: "Moderne" },
+  { id: "scandinavian", label: "Scandinave" },
+  { id: "industrial", label: "Industriel" },
+  { id: "minimalist", label: "Minimaliste" },
+  { id: "classic", label: "Classique / Traditionnel" },
 ] as const;
 export type FpFurnitureStyleId =
   (typeof FP_FURNITURE_STYLES)[number]["id"];
@@ -36,9 +36,9 @@ export const FP_FURNITURE_STYLE_IDS = FP_FURNITURE_STYLES.map(
 ) as FpFurnitureStyleId[];
 
 export const FP_CAMERA_ANGLES = [
-  { id: "top-down", label: "Top-down (bird's-eye view)" },
-  { id: "isometric", label: "Isometric (45°, best depth)" },
-  { id: "perspective", label: "Perspective (more dramatic angle)" },
+  { id: "top-down", label: "Vue de dessus (à vol d’oiseau)" },
+  { id: "isometric", label: "Isométrique (45°, meilleure profondeur)" },
+  { id: "perspective", label: "Perspective (angle plus spectaculaire)" },
 ] as const;
 export type FpCameraAngleId = (typeof FP_CAMERA_ANGLES)[number]["id"];
 export const FP_CAMERA_ANGLE_IDS = FP_CAMERA_ANGLES.map(
@@ -46,8 +46,8 @@ export const FP_CAMERA_ANGLE_IDS = FP_CAMERA_ANGLES.map(
 ) as FpCameraAngleId[];
 
 export const FP_WALL_DISPLAYS = [
-  { id: "solid", label: "Solid walls (cut at height)" },
-  { id: "transparent", label: "Transparent / Glass walls" },
+  { id: "solid", label: "Murs pleins (coupés à hauteur)" },
+  { id: "transparent", label: "Murs transparents / en verre" },
 ] as const;
 export type FpWallDisplayId = (typeof FP_WALL_DISPLAYS)[number]["id"];
 export const FP_WALL_DISPLAY_IDS = FP_WALL_DISPLAYS.map(
@@ -55,9 +55,9 @@ export const FP_WALL_DISPLAY_IDS = FP_WALL_DISPLAYS.map(
 ) as FpWallDisplayId[];
 
 export const FP_BACKGROUNDS = [
-  { id: "white", label: "White (clean, for print)" },
-  { id: "dark", label: "Dark / Black (luxury look)" },
-  { id: "transparent", label: "Transparent (PNG without background)" },
+  { id: "white", label: "Blanc (épuré, pour impression)" },
+  { id: "dark", label: "Sombre / Noir (aspect haut de gamme)" },
+  { id: "transparent", label: "Transparent (PNG sans fond)" },
 ] as const;
 export type FpBackgroundId = (typeof FP_BACKGROUNDS)[number]["id"];
 export const FP_BACKGROUND_IDS = FP_BACKGROUNDS.map(
@@ -88,7 +88,7 @@ export type FloorplanConfig = {
 
 export function defaultFloorplanConfig(): FloorplanConfig {
   return {
-    projectName: "Floor plan 1",
+    projectName: "Plan 1",
     levels: 1,
     displayType: "unfurnished",
     showRoomLabels: false,
@@ -132,7 +132,7 @@ export function sanitizeFloorplanConfig(c: FloorplanConfig): FloorplanConfig {
   );
   return {
     projectName:
-      String(c.projectName ?? "").trim().slice(0, 100) || "Floor plan 1",
+      String(c.projectName ?? "").trim().slice(0, 100) || "Plan 1",
     levels: clampCount(c.levels, 1, 30),
     displayType,
     ...(isFurnished && furnitureStyleId

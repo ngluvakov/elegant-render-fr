@@ -11,12 +11,12 @@ export type StagingProductId = "vs-static" | "vs-360";
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const VS_FURNITURE_STYLES = [
-  { id: "modern", label: "Modern / Contemporary" },
-  { id: "scandinavian", label: "Scandinavian" },
-  { id: "minimalist", label: "Minimalist" },
-  { id: "industrial", label: "Industrial" },
-  { id: "classic", label: "Classic / Traditional" },
-  { id: "boho", label: "Boho / Eclectic" },
+  { id: "modern", label: "Moderne / Contemporain" },
+  { id: "scandinavian", label: "Scandinave" },
+  { id: "minimalist", label: "Minimaliste" },
+  { id: "industrial", label: "Industriel" },
+  { id: "classic", label: "Classique / Traditionnel" },
+  { id: "boho", label: "Bohème / Éclectique" },
 ] as const;
 export type VsFurnitureStyleId =
   (typeof VS_FURNITURE_STYLES)[number]["id"];
@@ -25,12 +25,12 @@ export const VS_FURNITURE_STYLE_IDS = VS_FURNITURE_STYLES.map(
 ) as VsFurnitureStyleId[];
 
 export const VS_ROOM_PURPOSES = [
-  { id: "living-room", label: "Living room" },
-  { id: "bedroom", label: "Bedroom" },
-  { id: "kids-room", label: "Kids' room" },
-  { id: "dining-room", label: "Dining room" },
-  { id: "office", label: "Home office / Office" },
-  { id: "open-space", label: "Open space" },
+  { id: "living-room", label: "Salon" },
+  { id: "bedroom", label: "Chambre" },
+  { id: "kids-room", label: "Chambre d’enfant" },
+  { id: "dining-room", label: "Salle à manger" },
+  { id: "office", label: "Bureau à domicile / Bureau" },
+  { id: "open-space", label: "Espace ouvert" },
 ] as const;
 export type VsRoomPurposeId =
   (typeof VS_ROOM_PURPOSES)[number]["id"];
@@ -39,19 +39,19 @@ export const VS_ROOM_PURPOSE_IDS = VS_ROOM_PURPOSES.map(
 ) as VsRoomPurposeId[];
 
 export const VS_MOODS = [
-  { id: "airy", label: "Light and airy" },
-  { id: "cozy", label: "Warm and cozy" },
-  { id: "moody", label: "Luxurious and moody" },
-  { id: "neutral", label: "Neutral / Commercial" },
+  { id: "airy", label: "Lumineux et aéré" },
+  { id: "cozy", label: "Chaleureux et cosy" },
+  { id: "moody", label: "Luxueux et feutré" },
+  { id: "neutral", label: "Neutre / Commercial" },
 ] as const;
 export type VsMoodId = (typeof VS_MOODS)[number]["id"];
 export const VS_MOOD_IDS = VS_MOODS.map((m) => m.id) as VsMoodId[];
 
 export const VS_TARGET_AUDIENCES = [
-  { id: "young-couples", label: "Young couples / Professionals" },
-  { id: "families", label: "Families with children" },
-  { id: "students", label: "Students" },
-  { id: "luxury", label: "Luxury buyers" },
+  { id: "young-couples", label: "Jeunes couples / Actifs" },
+  { id: "families", label: "Familles avec enfants" },
+  { id: "students", label: "Étudiants" },
+  { id: "luxury", label: "Acheteurs haut de gamme" },
 ] as const;
 export type VsTargetAudienceId =
   (typeof VS_TARGET_AUDIENCES)[number]["id"];
@@ -84,7 +84,7 @@ export type StagingConfig = {
 
 export function defaultStagingConfig(): StagingConfig {
   return {
-    roomName: "Living room",
+    roomName: "Salon",
     furnitureStyle: "modern",
     roomPurpose: "living-room",
     lightingCorrection: false,
@@ -129,7 +129,7 @@ export function sanitizeStagingConfig(c: StagingConfig): StagingConfig {
   );
   return {
     roomName:
-      String(c.roomName ?? "").trim().slice(0, 100) || "Living room",
+      String(c.roomName ?? "").trim().slice(0, 100) || "Salon",
     furnitureStyle,
     roomPurpose,
     ...((d) => (d ? { description: d } : {}))(
@@ -177,7 +177,7 @@ export function addOnQuantitiesFor(
 // ─── Per-product copy ─────────────────────────────────────────────────
 
 export function stagingProductLabel(productId: StagingProductId): string {
-  return productId === "vs-static" ? "Static staging" : "360 staging";
+  return productId === "vs-static" ? "Home staging statique" : "Home staging 360";
 }
 
 export function angleNoun(

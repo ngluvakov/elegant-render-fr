@@ -21,8 +21,8 @@ const VR_SUFFIX = {
 } as const;
 
 const VR_PRODUCT_LABELS = {
-  "vr-existing": "VR walkthrough (existing model)",
-  "vr-standalone": "VR walkthrough (standalone)",
+  "vr-existing": "Visite VR (modèle existant)",
+  "vr-standalone": "Visite VR (autonome)",
 } as const;
 
 const VR_BASE_PRICE = {
@@ -43,9 +43,9 @@ export const VR_INTERACTIVE_EUR = 200;
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const VR_EXPERIENCE_TYPES = [
-  { id: "exterior", label: "Exterior (free movement around the building)" },
-  { id: "interior", label: "Interior (movement through rooms)" },
-  { id: "complex", label: "Complex (exterior + interior)" },
+  { id: "exterior", label: "Extérieur (déplacement libre autour du bâtiment)" },
+  { id: "interior", label: "Intérieur (déplacement à travers les pièces)" },
+  { id: "complex", label: "Complexe (extérieur + intérieur)" },
 ] as const;
 export type VrExperienceTypeId =
   (typeof VR_EXPERIENCE_TYPES)[number]["id"];
@@ -54,9 +54,9 @@ export const VR_EXPERIENCE_TYPE_IDS = VR_EXPERIENCE_TYPES.map(
 ) as VrExperienceTypeId[];
 
 export const VR_TARGET_DEVICES = [
-  { id: "meta-quest", label: "Meta Quest 2 / 3 / Pro (standalone VR)" },
-  { id: "pc-vr", label: "PC VR (tethered, higher graphics quality)" },
-  { id: "web-vr", label: "Web VR (in the browser, lower quality)" },
+  { id: "meta-quest", label: "Meta Quest 2 / 3 / Pro (VR autonome)" },
+  { id: "pc-vr", label: "PC VR (filaire, meilleure qualité graphique)" },
+  { id: "web-vr", label: "Web VR (dans le navigateur, qualité moindre)" },
 ] as const;
 export type VrTargetDeviceId =
   (typeof VR_TARGET_DEVICES)[number]["id"];
@@ -65,9 +65,9 @@ export const VR_TARGET_DEVICE_IDS = VR_TARGET_DEVICES.map(
 ) as VrTargetDeviceId[];
 
 export const VR_LOCOMOTION = [
-  { id: "teleport", label: "Teleportation (best against motion sickness)" },
-  { id: "smooth", label: "Free walking (smooth locomotion)" },
-  { id: "guided", label: "Guided tour (on rails)" },
+  { id: "teleport", label: "Téléportation (idéale contre le mal des transports)" },
+  { id: "smooth", label: "Marche libre (déplacement fluide)" },
+  { id: "guided", label: "Visite guidée (sur rails)" },
 ] as const;
 export type VrLocomotionId = (typeof VR_LOCOMOTION)[number]["id"];
 export const VR_LOCOMOTION_IDS = VR_LOCOMOTION.map(
@@ -75,9 +75,9 @@ export const VR_LOCOMOTION_IDS = VR_LOCOMOTION.map(
 ) as VrLocomotionId[];
 
 export const VR_DAY_NIGHT_MODES = [
-  { id: "daylight", label: "Daylight" },
-  { id: "night", label: "Night lighting" },
-  { id: "dynamic", label: "Dynamic (user switches day / night)" },
+  { id: "daylight", label: "Lumière du jour" },
+  { id: "night", label: "Éclairage nocturne" },
+  { id: "dynamic", label: "Dynamique (l’utilisateur bascule jour / nuit)" },
 ] as const;
 export type VrDayNightModeId =
   (typeof VR_DAY_NIGHT_MODES)[number]["id"];
@@ -110,7 +110,7 @@ export type VrConfig = {
 
 export function defaultVrConfig(): VrConfig {
   return {
-    projectName: "VR presentation 1",
+    projectName: "Présentation VR 1",
     experienceType: "interior",
     targetDevice: "meta-quest",
     movementRestrictions: false,
@@ -154,7 +154,7 @@ export function sanitizeVrConfig(c: VrConfig): VrConfig {
   return {
     projectName:
       String(c.projectName ?? "").trim().slice(0, 100) ||
-      "VR presentation 1",
+      "Présentation VR 1",
     experienceType,
     targetDevice,
     ...((d) => (d ? { description: d } : {}))(

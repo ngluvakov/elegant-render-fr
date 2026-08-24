@@ -17,13 +17,13 @@ import { TIME_OF_DAY_IDS, SEASON_IDS } from "./interior-config";
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const LANDSCAPE_STYLES = [
-  { id: "modern-minimalist", label: "Modern / Minimalist" },
-  { id: "mediterranean", label: "Mediterranean" },
-  { id: "english-garden", label: "English garden" },
-  { id: "wild", label: "Natural / Wild" },
+  { id: "modern-minimalist", label: "Moderne / Minimaliste" },
+  { id: "mediterranean", label: "Méditerranéen" },
+  { id: "english-garden", label: "Jardin à l’anglaise" },
+  { id: "wild", label: "Naturel / Sauvage" },
   { id: "tropical", label: "Tropical" },
-  { id: "japanese-garden", label: "Japanese garden" },
-  { id: "traditional", label: "Traditional" },
+  { id: "japanese-garden", label: "Jardin japonais" },
+  { id: "traditional", label: "Traditionnel" },
 ] as const;
 export type LandscapeStyleId = (typeof LANDSCAPE_STYLES)[number]["id"];
 export const LANDSCAPE_STYLE_IDS = LANDSCAPE_STYLES.map(
@@ -31,9 +31,9 @@ export const LANDSCAPE_STYLE_IDS = LANDSCAPE_STYLES.map(
 ) as LandscapeStyleId[];
 
 export const VEGETATION_AGES = [
-  { id: "newly-planted", label: "Newly planted (young saplings)" },
-  { id: "medium-growth", label: "Medium growth (1-3 years)" },
-  { id: "mature", label: "Mature (fully grown)" },
+  { id: "newly-planted", label: "Plantation récente (jeunes plants)" },
+  { id: "medium-growth", label: "Croissance moyenne (1-3 ans)" },
+  { id: "mature", label: "Mature (pleine croissance)" },
 ] as const;
 export type VegetationAgeId = (typeof VEGETATION_AGES)[number]["id"];
 export const VEGETATION_AGE_IDS = VEGETATION_AGES.map(
@@ -41,10 +41,10 @@ export const VEGETATION_AGE_IDS = VEGETATION_AGES.map(
 ) as VegetationAgeId[];
 
 export const TOPOGRAPHIES = [
-  { id: "flat", label: "Flat terrain" },
-  { id: "gentle-slope", label: "Gentle slope" },
-  { id: "steep-slope", label: "Steep slope / Cascades" },
-  { id: "terraced", label: "Terraced terrain with retaining walls" },
+  { id: "flat", label: "Terrain plat" },
+  { id: "gentle-slope", label: "Pente douce" },
+  { id: "steep-slope", label: "Pente raide / Cascades" },
+  { id: "terraced", label: "Terrain en terrasses avec murs de soutènement" },
 ] as const;
 export type TopographyId = (typeof TOPOGRAPHIES)[number]["id"];
 export const TOPOGRAPHY_IDS = TOPOGRAPHIES.map(
@@ -52,12 +52,12 @@ export const TOPOGRAPHY_IDS = TOPOGRAPHIES.map(
 ) as TopographyId[];
 
 export const PATH_MATERIALS = [
-  { id: "stamped-concrete", label: "Stamped concrete" },
-  { id: "pavers", label: "Pavers / Paving" },
-  { id: "natural-stone", label: "Natural stone" },
-  { id: "wood-decking", label: "Wood decking" },
-  { id: "gravel", label: "Gravel" },
-  { id: "combined", label: "Combined" },
+  { id: "stamped-concrete", label: "Béton imprimé" },
+  { id: "pavers", label: "Pavés / Dallage" },
+  { id: "natural-stone", label: "Pierre naturelle" },
+  { id: "wood-decking", label: "Terrasse en bois" },
+  { id: "gravel", label: "Gravier" },
+  { id: "combined", label: "Combiné" },
 ] as const;
 export type PathMaterialId = (typeof PATH_MATERIALS)[number]["id"];
 export const PATH_MATERIAL_IDS = PATH_MATERIALS.map(
@@ -65,19 +65,19 @@ export const PATH_MATERIAL_IDS = PATH_MATERIALS.map(
 ) as PathMaterialId[];
 
 export const FENCES = [
-  { id: "masonry", label: "Masonry fence" },
-  { id: "wire-panel", label: "Wire / Panel fence" },
-  { id: "wooden", label: "Wooden fence" },
-  { id: "hedge", label: "Hedge" },
-  { id: "no-fence", label: "No fence (open)" },
+  { id: "masonry", label: "Clôture maçonnée" },
+  { id: "wire-panel", label: "Clôture grillagée / à panneaux" },
+  { id: "wooden", label: "Clôture en bois" },
+  { id: "hedge", label: "Haie" },
+  { id: "no-fence", label: "Sans clôture (ouvert)" },
 ] as const;
 export type FenceId = (typeof FENCES)[number]["id"];
 export const FENCE_IDS = FENCES.map((f) => f.id) as FenceId[];
 
 export const AERIAL_ENV_REPS = [
-  { id: "3d", label: "3D modeled surroundings" },
-  { id: "photomontage", label: "Integration into a drone photograph" },
-  { id: "abstract", label: "Abstract surroundings" },
+  { id: "3d", label: "Environnement modélisé en 3D" },
+  { id: "photomontage", label: "Intégration dans une photographie de drone" },
+  { id: "abstract", label: "Environnement abstrait" },
 ] as const;
 export type AerialEnvRepId = (typeof AERIAL_ENV_REPS)[number]["id"];
 export const AERIAL_ENV_REP_IDS = AERIAL_ENV_REPS.map(
@@ -87,10 +87,10 @@ export const AERIAL_ENV_REP_IDS = AERIAL_ENV_REPS.map(
 // ─── Checkbox groups ──────────────────────────────────────────────────
 
 export const WATER_FEATURE_OPTIONS = [
-  { key: "pool", label: "Pool" },
-  { key: "pond", label: "Decorative pond" },
-  { key: "fountain", label: "Fountain" },
-  { key: "stream", label: "Stream" },
+  { key: "pool", label: "Piscine" },
+  { key: "pond", label: "Bassin décoratif" },
+  { key: "fountain", label: "Fontaine" },
+  { key: "stream", label: "Ruisseau" },
 ] as const;
 export type WaterFeatures = {
   pool: boolean;
@@ -100,10 +100,10 @@ export type WaterFeatures = {
 };
 
 export const STRUCTURE_OPTIONS = [
-  { key: "pergola", label: "Gazebo / Pergola" },
-  { key: "summerKitchen", label: "Outdoor kitchen / Barbecue" },
-  { key: "firePit", label: "Fire pit" },
-  { key: "playground", label: "Children's playground" },
+  { key: "pergola", label: "Kiosque / Pergola" },
+  { key: "summerKitchen", label: "Cuisine d’été / Barbecue" },
+  { key: "firePit", label: "Foyer extérieur" },
+  { key: "playground", label: "Aire de jeux pour enfants" },
 ] as const;
 export type Structures = {
   pergola: boolean;
@@ -113,10 +113,10 @@ export type Structures = {
 };
 
 export const EXTERIOR_LIGHTING_OPTIONS = [
-  { key: "ground", label: "Ground / Recessed lighting" },
-  { key: "wall", label: "Wall lamps" },
-  { key: "spotlights", label: "Tree spotlights" },
-  { key: "ambient", label: "Ambient (string lights / bollards)" },
+  { key: "ground", label: "Éclairage au sol / encastré" },
+  { key: "wall", label: "Appliques murales" },
+  { key: "spotlights", label: "Projecteurs pour arbres" },
+  { key: "ambient", label: "Ambiance (guirlandes lumineuses / bornes)" },
 ] as const;
 export type ExteriorLighting = {
   ground: boolean;
@@ -161,7 +161,7 @@ export function defaultExteriorLighting(): ExteriorLighting {
 
 export function defaultLandscapeConfig(): LandscapeConfig {
   return {
-    projectName: "Landscape 1",
+    projectName: "Paysage 1",
     cameraCount: 1,
     waterFeatures: defaultWaterFeatures(),
     structures: defaultStructures(),
@@ -203,7 +203,7 @@ function sanitizeBooleans<T extends Record<string, boolean>>(
 export function sanitizeLandscapeConfig(c: LandscapeConfig): LandscapeConfig {
   return {
     projectName:
-      String(c.projectName ?? "").trim().slice(0, 100) || "Landscape 1",
+      String(c.projectName ?? "").trim().slice(0, 100) || "Paysage 1",
     cameraCount: clampCount(c.cameraCount, 1, 30),
     ...((s) => (s ? { styleId: s } : {}))(
       pickFromAllowlist<LandscapeStyleId>(c.styleId, LANDSCAPE_STYLE_IDS),

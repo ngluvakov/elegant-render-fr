@@ -11,51 +11,51 @@
 export const ROOM_STYLES = [
   {
     id: "industrial-urban",
-    label: "Industrial / urban",
+    label: "Industriel / urbain",
     description:
-      "Raw textures — brick, steel, concrete. High ceilings, exposed installations.",
+      "Textures brutes — brique, acier, béton. Hauts plafonds, installations apparentes.",
     image: "/styles/industrial-urban.webp",
   },
   {
     id: "scandinavian",
-    label: "Scandinavian",
+    label: "Scandinave",
     description:
-      "Light neutral colors, white wood, minimalism. Clean and functional.",
+      "Couleurs neutres claires, bois blanc, minimalisme. Épuré et fonctionnel.",
     image: "/styles/scandinavian.webp",
   },
   {
     id: "farmhouse",
-    label: "Farmhouse",
+    label: "Campagne / ferme",
     description:
-      "Rustic elements, weathered wood, warm textiles. Homely and comfortable.",
+      "Éléments rustiques, bois patiné, textiles chaleureux. Accueillant et confortable.",
     image: "/styles/farmhouse.webp",
   },
   {
     id: "modern",
-    label: "Modern",
+    label: "Moderne",
     description:
-      "Clean lines, neutral colors, minimal decoration. Strict and orderly.",
+      "Lignes épurées, couleurs neutres, décoration minimale. Rigoureux et ordonné.",
     image: "/styles/modern.webp",
   },
   {
     id: "contemporary",
-    label: "Contemporary",
+    label: "Contemporain",
     description:
-      "Current trends, mixed textures and materials. Elegant without rigid rules.",
+      "Tendances actuelles, textures et matériaux mélangés. Élégant sans règles rigides.",
     image: "/styles/contemporary.webp",
   },
   {
     id: "mid-century",
     label: "Mid-century",
     description:
-      "1950s-60s retro. Organic wood, geometric shapes, warm accents.",
+      "Rétro années 1950-60. Bois organique, formes géométriques, accents chaleureux.",
     image: "/styles/mid-century.webp",
   },
   {
     id: "coastal",
-    label: "Coastal",
+    label: "Bord de mer",
     description:
-      "Mediterranean — white, sand and blue, light fabrics, maximum daylight.",
+      "Méditerranéen — blanc, sable et bleu, tissus légers, lumière naturelle maximale.",
     image: "/styles/coastal.webp",
   },
 ] as const;
@@ -63,20 +63,20 @@ export type RoomStyleId = (typeof ROOM_STYLES)[number]["id"];
 export const ROOM_STYLE_IDS = ROOM_STYLES.map((s) => s.id) as RoomStyleId[];
 
 export const TIMES_OF_DAY = [
-  { id: "morning", label: "Morning" },
-  { id: "midday", label: "Midday" },
-  { id: "afternoon", label: "Afternoon" },
-  { id: "evening", label: "Evening" },
-  { id: "night", label: "Night" },
+  { id: "morning", label: "Matin" },
+  { id: "midday", label: "Midi" },
+  { id: "afternoon", label: "Après-midi" },
+  { id: "evening", label: "Soirée" },
+  { id: "night", label: "Nuit" },
 ] as const;
 export type TimeOfDayId = (typeof TIMES_OF_DAY)[number]["id"];
 export const TIME_OF_DAY_IDS = TIMES_OF_DAY.map((t) => t.id) as TimeOfDayId[];
 
 export const SEASONS = [
-  { id: "spring", label: "Spring" },
-  { id: "summer", label: "Summer" },
-  { id: "autumn", label: "Autumn" },
-  { id: "winter", label: "Winter" },
+  { id: "spring", label: "Printemps" },
+  { id: "summer", label: "Été" },
+  { id: "autumn", label: "Automne" },
+  { id: "winter", label: "Hiver" },
 ] as const;
 export type SeasonId = (typeof SEASONS)[number]["id"];
 export const SEASON_IDS = SEASONS.map((s) => s.id) as SeasonId[];
@@ -215,7 +215,7 @@ export function makeFloorId(): string {
 export function newFloor(index: number): InteriorFloor {
   return {
     id: makeFloorId(),
-    name: index === 0 ? "Floor 1" : `Floor ${index + 1}`,
+    name: index === 0 ? "Niveau 1" : `Niveau ${index + 1}`,
     rooms: [],
     description: "",
   };

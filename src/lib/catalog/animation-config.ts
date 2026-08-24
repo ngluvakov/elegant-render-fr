@@ -35,24 +35,24 @@ export const ANIM_SOURCE_MODES: ReadonlyArray<{
 }> = [
   {
     id: "scratch",
-    label: "Animation (from scratch)",
-    shortLabel: "From scratch",
+    label: "Animation (à partir de zéro)",
+    shortLabel: "À partir de zéro",
     perSecondEur: 15,
-    description: "We build the 3D model and the animation — starting from sketches/photo references.",
+    description: "Nous construisons le modèle 3D et l’animation — à partir de croquis ou de références photo.",
   },
   {
     id: "existing",
-    label: "Animation (existing model)",
-    shortLabel: "Existing model",
+    label: "Animation (modèle existant)",
+    shortLabel: "Modèle existant",
     perSecondEur: 10,
-    description: "You already have a 3D model — we create the animation from it.",
+    description: "Vous disposez déjà d’un modèle 3D — nous créons l’animation à partir de celui-ci.",
   },
   {
     id: "active",
-    label: "Animation (active project)",
-    shortLabel: "Active project",
+    label: "Animation (projet en cours)",
+    shortLabel: "Projet en cours",
     perSecondEur: 8,
-    description: "You have an active render project with us — we use the same model.",
+    description: "Vous avez un projet de rendu en cours chez nous — nous utilisons le même modèle.",
   },
 ];
 
@@ -92,18 +92,18 @@ export function animTierDiscountPct(seconds: number): number {
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const ANIM_TYPES = [
-  { id: "exterior", label: "Exterior (flythrough)" },
-  { id: "interior", label: "Interior (walkthrough)" },
-  { id: "combined", label: "Combined (exterior + interior)" },
+  { id: "exterior", label: "Extérieur (survol)" },
+  { id: "interior", label: "Intérieur (visite)" },
+  { id: "combined", label: "Combiné (extérieur + intérieur)" },
 ] as const;
 export type AnimTypeId = (typeof ANIM_TYPES)[number]["id"];
 export const ANIM_TYPE_IDS = ANIM_TYPES.map((t) => t.id) as AnimTypeId[];
 
 export const ANIM_TIMES_OF_DAY = [
-  { id: "daylight", label: "Daylight (sunny)" },
-  { id: "golden-hour", label: "Golden hour (sunset)" },
-  { id: "dusk-night", label: "Dusk / Night (lights on)" },
-  { id: "overcast", label: "Overcast / Moody" },
+  { id: "daylight", label: "Jour (ensoleillé)" },
+  { id: "golden-hour", label: "Heure dorée (coucher de soleil)" },
+  { id: "dusk-night", label: "Crépuscule / Nuit (éclairages allumés)" },
+  { id: "overcast", label: "Couvert / Atmosphérique" },
 ] as const;
 export type AnimTimeOfDayId = (typeof ANIM_TIMES_OF_DAY)[number]["id"];
 export const ANIM_TIME_OF_DAY_IDS = ANIM_TIMES_OF_DAY.map(
@@ -111,17 +111,17 @@ export const ANIM_TIME_OF_DAY_IDS = ANIM_TIMES_OF_DAY.map(
 ) as AnimTimeOfDayId[];
 
 export const ANIM_SEASONS = [
-  { id: "summer-spring", label: "Summer / Spring (green)" },
-  { id: "autumn", label: "Autumn (yellow leaves)" },
-  { id: "winter", label: "Winter (snow)" },
+  { id: "summer-spring", label: "Été / Printemps (verdure)" },
+  { id: "autumn", label: "Automne (feuilles jaunes)" },
+  { id: "winter", label: "Hiver (neige)" },
 ] as const;
 export type AnimSeasonId = (typeof ANIM_SEASONS)[number]["id"];
 export const ANIM_SEASON_IDS = ANIM_SEASONS.map((s) => s.id) as AnimSeasonId[];
 
 export const ANIM_CAMERA_SPEEDS = [
-  { id: "slow", label: "Slow / cinematic (focus on details)" },
-  { id: "medium", label: "Medium (standard walkthrough)" },
-  { id: "fast", label: "Fast / dynamic (overview of the whole space)" },
+  { id: "slow", label: "Lente / cinématique (accent sur les détails)" },
+  { id: "medium", label: "Moyenne (visite standard)" },
+  { id: "fast", label: "Rapide / dynamique (vue d’ensemble de l’espace)" },
 ] as const;
 export type AnimCameraSpeedId =
   (typeof ANIM_CAMERA_SPEEDS)[number]["id"];
@@ -130,10 +130,10 @@ export const ANIM_CAMERA_SPEED_IDS = ANIM_CAMERA_SPEEDS.map(
 ) as AnimCameraSpeedId[];
 
 export const ANIM_MUSIC_MOODS = [
-  { id: "no-music", label: "No music" },
-  { id: "relaxing", label: "Relaxing / Ambient" },
-  { id: "dynamic", label: "Dynamic / Modern" },
-  { id: "corporate", label: "Corporate / Presentation" },
+  { id: "no-music", label: "Sans musique" },
+  { id: "relaxing", label: "Relaxante / Ambiante" },
+  { id: "dynamic", label: "Dynamique / Moderne" },
+  { id: "corporate", label: "Corporate / Présentation" },
 ] as const;
 export type AnimMusicMoodId = (typeof ANIM_MUSIC_MOODS)[number]["id"];
 export const ANIM_MUSIC_MOOD_IDS = ANIM_MUSIC_MOODS.map(
@@ -143,10 +143,10 @@ export const ANIM_MUSIC_MOOD_IDS = ANIM_MUSIC_MOODS.map(
 // ─── Checkbox groups ──────────────────────────────────────────────────
 
 export const ANIM_FOCUS_AREA_OPTIONS = [
-  { key: "architecture", label: "Architecture / Facade" },
-  { key: "interior", label: "Interior design" },
-  { key: "landscape", label: "Landscape / Yard" },
-  { key: "amenities", label: "Complex amenities (pools, parks)" },
+  { key: "architecture", label: "Architecture / Façade" },
+  { key: "interior", label: "Design d’intérieur" },
+  { key: "landscape", label: "Paysage / Cour" },
+  { key: "amenities", label: "Équipements du complexe (piscines, parcs)" },
 ] as const;
 export type AnimFocusAreas = {
   architecture: boolean;
@@ -156,9 +156,9 @@ export type AnimFocusAreas = {
 };
 
 export const ANIM_SCENE_ELEMENT_OPTIONS = [
-  { key: "people", label: "Moving people (3D silhouettes)" },
-  { key: "cars", label: "Moving cars" },
-  { key: "waterTrees", label: "Animated water / trees in the wind" },
+  { key: "people", label: "Personnages en mouvement (silhouettes 3D)" },
+  { key: "cars", label: "Voitures en mouvement" },
+  { key: "waterTrees", label: "Eau animée / arbres dans le vent" },
 ] as const;
 export type AnimSceneElements = {
   people: boolean;

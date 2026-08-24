@@ -12,9 +12,9 @@
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const FP2D_DISPLAY_STYLES = [
-  { id: "black-white", label: "Black and white (technical)" },
-  { id: "colorized", label: "Colorized (each room a different color)" },
-  { id: "textured", label: "Textured (realistic floors — wood, tiles)" },
+  { id: "black-white", label: "Noir et blanc (technique)" },
+  { id: "colorized", label: "Colorisé (une couleur par pièce)" },
+  { id: "textured", label: "Texturé (sols réalistes — bois, carrelage)" },
 ] as const;
 export type Fp2dDisplayStyleId =
   (typeof FP2D_DISPLAY_STYLES)[number]["id"];
@@ -23,8 +23,8 @@ export const FP2D_DISPLAY_STYLE_IDS = FP2D_DISPLAY_STYLES.map(
 ) as Fp2dDisplayStyleId[];
 
 export const FP2D_DISPLAY_TYPES = [
-  { id: "unfurnished", label: "Unfurnished plan (walls and fixtures only)" },
-  { id: "furnished", label: "Furnished (with 2D furniture icons)" },
+  { id: "unfurnished", label: "Plan non meublé (murs et équipements fixes uniquement)" },
+  { id: "furnished", label: "Meublé (avec pictogrammes de mobilier 2D)" },
 ] as const;
 export type Fp2dDisplayTypeId =
   (typeof FP2D_DISPLAY_TYPES)[number]["id"];
@@ -33,10 +33,10 @@ export const FP2D_DISPLAY_TYPE_IDS = FP2D_DISPLAY_TYPES.map(
 ) as Fp2dDisplayTypeId[];
 
 export const FP2D_LABEL_LANGUAGES = [
-  { id: "serbian", label: "Serbian" },
-  { id: "english", label: "English" },
-  { id: "german", label: "German" },
-  { id: "bilingual", label: "Bilingual (Serbian / English)" },
+  { id: "serbian", label: "Serbe" },
+  { id: "english", label: "Anglais" },
+  { id: "german", label: "Allemand" },
+  { id: "bilingual", label: "Bilingue (serbe / anglais)" },
 ] as const;
 export type Fp2dLabelLanguageId =
   (typeof FP2D_LABEL_LANGUAGES)[number]["id"];
@@ -45,9 +45,9 @@ export const FP2D_LABEL_LANGUAGE_IDS = FP2D_LABEL_LANGUAGES.map(
 ) as Fp2dLabelLanguageId[];
 
 export const FP2D_DELIVERY_FORMAT_OPTIONS = [
-  { key: "pdf", label: "PDF (vector)" },
-  { key: "svg", label: "SVG (vector for web)" },
-  { key: "png", label: "PNG (high resolution)" },
+  { key: "pdf", label: "PDF (vectoriel)" },
+  { key: "svg", label: "SVG (vectoriel pour le web)" },
+  { key: "png", label: "PNG (haute résolution)" },
   { key: "jpg", label: "JPG (standard)" },
 ] as const;
 export type Fp2dDeliveryFormats = {
@@ -87,7 +87,7 @@ export function defaultDeliveryFormats(): Fp2dDeliveryFormats {
 
 export function defaultFloorplan2dConfig(): Floorplan2dConfig {
   return {
-    projectName: "Floor plan 1",
+    projectName: "Plan 1",
     levels: 1,
     displayStyle: "colorized",
     displayType: "unfurnished",
@@ -178,7 +178,7 @@ export function sanitizeFloorplan2dConfig(
   );
   return {
     projectName:
-      String(c.projectName ?? "").trim().slice(0, 100) || "Floor plan 1",
+      String(c.projectName ?? "").trim().slice(0, 100) || "Plan 1",
     levels: clampCount(c.levels, 1, 30),
     displayStyle,
     displayType,

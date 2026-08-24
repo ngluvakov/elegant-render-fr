@@ -16,32 +16,32 @@ import { defaultTourAssembly, sanitizeTourAssembly } from "./tour-assembly";
 // ─── Shared exterior vocabularies ──────────────────────────────────────
 
 export const ARCH_STYLES = [
-  { id: "modern", label: "Modern" },
-  { id: "contemporary", label: "Contemporary" },
-  { id: "traditional", label: "Traditional" },
-  { id: "minimalist", label: "Minimalist" },
-  { id: "industrial", label: "Industrial" },
-  { id: "mediterranean", label: "Mediterranean" },
-  { id: "alpine", label: "Alpine" },
+  { id: "modern", label: "Moderne" },
+  { id: "contemporary", label: "Contemporain" },
+  { id: "traditional", label: "Traditionnel" },
+  { id: "minimalist", label: "Minimaliste" },
+  { id: "industrial", label: "Industriel" },
+  { id: "mediterranean", label: "Méditerranéen" },
+  { id: "alpine", label: "Alpin" },
 ] as const;
 export type ArchStyleId = (typeof ARCH_STYLES)[number]["id"];
 export const ARCH_STYLE_IDS = ARCH_STYLES.map((s) => s.id) as ArchStyleId[];
 
 export const WEATHER = [
-  { id: "sunny", label: "Sunny" },
-  { id: "overcast", label: "Overcast" },
-  { id: "rain", label: "Rain" },
-  { id: "fog", label: "Fog" },
-  { id: "snow", label: "Snow" },
+  { id: "sunny", label: "Ensoleillé" },
+  { id: "overcast", label: "Couvert" },
+  { id: "rain", label: "Pluie" },
+  { id: "fog", label: "Brouillard" },
+  { id: "snow", label: "Neige" },
 ] as const;
 export type WeatherId = (typeof WEATHER)[number]["id"];
 export const WEATHER_IDS = WEATHER.map((w) => w.id) as WeatherId[];
 
 export const ENVIRONMENTS = [
-  { id: "urban", label: "Urban (city)" },
-  { id: "suburban", label: "Suburban (residential)" },
-  { id: "nature", label: "Nature (forest / mountain)" },
-  { id: "coast", label: "Coast (waterfront)" },
+  { id: "urban", label: "Urbain (ville)" },
+  { id: "suburban", label: "Périurbain (résidentiel)" },
+  { id: "nature", label: "Nature (forêt / montagne)" },
+  { id: "coast", label: "Littoral (bord de l’eau)" },
 ] as const;
 export type EnvironmentId = (typeof ENVIRONMENTS)[number]["id"];
 export const ENVIRONMENT_IDS = ENVIRONMENTS.map((e) => e.id) as EnvironmentId[];
@@ -49,10 +49,10 @@ export const ENVIRONMENT_IDS = ENVIRONMENTS.map((e) => e.id) as EnvironmentId[];
 // ─── Rendering mode (ext-static + ext-360) ────────────────────────────
 
 export const RENDERING_MODES = [
-  { id: "standard", label: "Standard render (synthetic surroundings)" },
+  { id: "standard", label: "Rendu standard (environnement synthétique)" },
   {
     id: "photomontage",
-    label: "Photomontage (integration into a site photograph)",
+    label: "Photomontage (intégration dans une photographie du site)",
   },
 ] as const;
 export type RenderingModeId = (typeof RENDERING_MODES)[number]["id"];
@@ -63,17 +63,17 @@ export const RENDERING_MODE_IDS = RENDERING_MODES.map(
 // ─── Aerial-specific vocabularies ─────────────────────────────────────
 
 export const AERIAL_VIEWS = [
-  { id: "birds-eye", label: "Bird's-eye view (high)" },
-  { id: "semi-aerial", label: "Semi-aerial (medium height)" },
-  { id: "drone", label: "Drone view (low)" },
+  { id: "birds-eye", label: "Vue à vol d’oiseau (haute)" },
+  { id: "semi-aerial", label: "Semi-aérienne (hauteur moyenne)" },
+  { id: "drone", label: "Vue drone (basse)" },
 ] as const;
 export type AerialViewId = (typeof AERIAL_VIEWS)[number]["id"];
 export const AERIAL_VIEW_IDS = AERIAL_VIEWS.map((a) => a.id) as AerialViewId[];
 
 export const ENV_REPRESENTATIONS = [
-  { id: "3d", label: "3D modeled surroundings" },
-  { id: "photomontage", label: "Integration into a drone photograph" },
-  { id: "abstract", label: "Abstract (white massing)" },
+  { id: "3d", label: "Environnement modélisé en 3D" },
+  { id: "photomontage", label: "Intégration dans une photographie de drone" },
+  { id: "abstract", label: "Abstrait (volumes blancs)" },
 ] as const;
 export type EnvRepId = (typeof ENV_REPRESENTATIONS)[number]["id"];
 export const ENV_REP_IDS = ENV_REPRESENTATIONS.map((e) => e.id) as EnvRepId[];
@@ -111,7 +111,7 @@ export type ExtStaticConfig = {
 
 export function defaultExtStaticConfig(): ExtStaticConfig {
   return {
-    modelName: "Building 1",
+    modelName: "Bâtiment 1",
     cameraCount: 1,
     renderingMode: "standard",
   };
@@ -122,7 +122,7 @@ export function sanitizeExtStaticConfig(
 ): ExtStaticConfig {
   return {
     modelName:
-      String(c.modelName ?? "").trim().slice(0, 80) || "Building 1",
+      String(c.modelName ?? "").trim().slice(0, 80) || "Bâtiment 1",
     cameraCount: clampCount(c.cameraCount, 1, 30),
     renderingMode:
       pickFromAllowlist<RenderingModeId>(
@@ -179,7 +179,7 @@ export type Ext360Config = {
 
 export function defaultExt360Config(): Ext360Config {
   return {
-    modelName: "Building 1",
+    modelName: "Bâtiment 1",
     hotspotCount: 1,
     renderingMode: "standard",
     tourAssembly: defaultTourAssembly(),
@@ -189,7 +189,7 @@ export function defaultExt360Config(): Ext360Config {
 export function sanitizeExt360Config(c: Ext360Config): Ext360Config {
   return {
     modelName:
-      String(c.modelName ?? "").trim().slice(0, 80) || "Building 1",
+      String(c.modelName ?? "").trim().slice(0, 80) || "Bâtiment 1",
     hotspotCount: clampCount(c.hotspotCount, 1, 30),
     renderingMode:
       pickFromAllowlist<RenderingModeId>(
@@ -245,7 +245,7 @@ export type ExtAerialConfig = {
 
 export function defaultExtAerialConfig(): ExtAerialConfig {
   return {
-    complexName: "Complex 1",
+    complexName: "Complexe 1",
     cameraCount: 1,
     aerialView: "semi-aerial",
     showParcelBoundaries: false,
@@ -259,7 +259,7 @@ export function sanitizeExtAerialConfig(
     pickFromAllowlist<AerialViewId>(c.aerialView, AERIAL_VIEW_IDS) ?? "birds-eye";
   return {
     complexName:
-      String(c.complexName ?? "").trim().slice(0, 80) || "Complex 1",
+      String(c.complexName ?? "").trim().slice(0, 80) || "Complexe 1",
     cameraCount: clampCount(c.cameraCount, 1, 30),
     aerialView,
     ...((d) => (d ? { description: d } : {}))(

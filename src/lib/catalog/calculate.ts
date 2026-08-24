@@ -296,7 +296,7 @@ function calculateAiCreditItem(
   return {
     instanceId: item.instanceId,
     productId: AI_CREDIT_PRODUCT_ID,
-    productLabel: "AI Studio credits",
+    productLabel: "Crédits AI Studio",
     categoryLabel: "AI Studio",
     kind: "ai_credits",
     basePriceEur: totalEur,
@@ -418,7 +418,7 @@ export function resolveDiscount(
       ? Math.max(rule.discountPct, Math.min(55, rule.discountPct + 5))
       : rule.discountPct;
     const reason = hasActive
-      ? `${rule.reason} (aktivan projekat — dodatni popust)`
+      ? `${rule.reason} (projet en cours — remise supplémentaire)`
       : rule.reason;
     if (!best || pct > best.pct) {
       best = { pct, reason };

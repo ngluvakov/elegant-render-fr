@@ -11,9 +11,9 @@ import { TIME_OF_DAY_IDS, SEASON_IDS } from "./interior-config";
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const SP_ANGLE_TYPES = [
-  { id: "top-down", label: "Straight top-down view (2D feel)" },
-  { id: "isometric", label: "Isometric (45°)" },
-  { id: "birds-eye", label: "Bird's-eye view (angled aerial)" },
+  { id: "top-down", label: "Vue de dessus verticale (esprit 2D)" },
+  { id: "isometric", label: "Isométrique (45°)" },
+  { id: "birds-eye", label: "Vue à vol d’oiseau (aérienne inclinée)" },
 ] as const;
 export type SpAngleTypeId = (typeof SP_ANGLE_TYPES)[number]["id"];
 export const SP_ANGLE_TYPE_IDS = SP_ANGLE_TYPES.map(
@@ -21,19 +21,19 @@ export const SP_ANGLE_TYPE_IDS = SP_ANGLE_TYPES.map(
 ) as SpAngleTypeId[];
 
 export const SP_ENV_REPS = [
-  { id: "parcel-only", label: "Plot only (no surroundings)" },
-  { id: "abstract", label: "Abstract surroundings (white block buildings around)" },
-  { id: "3d", label: "3D modeled surroundings (realistic)" },
-  { id: "photomontage", label: "Integration into a drone photograph" },
+  { id: "parcel-only", label: "Parcelle seule (sans environs)" },
+  { id: "abstract", label: "Environnement abstrait (volumes blancs autour)" },
+  { id: "3d", label: "Environnement modélisé en 3D (réaliste)" },
+  { id: "photomontage", label: "Intégration dans une photographie de drone" },
 ] as const;
 export type SpEnvRepId = (typeof SP_ENV_REPS)[number]["id"];
 export const SP_ENV_REP_IDS = SP_ENV_REPS.map((e) => e.id) as SpEnvRepId[];
 
 export const SP_LANDSCAPE_STYLES = [
-  { id: "minimalist", label: "Minimalist (grass and basic trees only)" },
-  { id: "lush", label: "Lush / Wooded" },
-  { id: "urban", label: "Urban (more concrete / plazas)" },
-  { id: "per-plan", label: "According to the provided landscape plan" },
+  { id: "minimalist", label: "Minimaliste (pelouse et arbres simples uniquement)" },
+  { id: "lush", label: "Luxuriant / Boisé" },
+  { id: "urban", label: "Urbain (plus de béton / places)" },
+  { id: "per-plan", label: "Selon le plan paysager fourni" },
 ] as const;
 export type SpLandscapeStyleId =
   (typeof SP_LANDSCAPE_STYLES)[number]["id"];
@@ -44,9 +44,9 @@ export const SP_LANDSCAPE_STYLE_IDS = SP_LANDSCAPE_STYLES.map(
 // ─── Checkbox groups ──────────────────────────────────────────────────
 
 export const SP_TRAFFIC_OPTIONS = [
-  { key: "vehiclesParked", label: "Cars in parking lots" },
-  { key: "vehiclesMoving", label: "Moving vehicles on streets" },
-  { key: "pedestrians", label: "Pedestrians on paths" },
+  { key: "vehiclesParked", label: "Voitures sur les parkings" },
+  { key: "vehiclesMoving", label: "Véhicules en mouvement dans les rues" },
+  { key: "pedestrians", label: "Piétons sur les cheminements" },
 ] as const;
 export type SpTraffic = {
   vehiclesParked: boolean;
@@ -55,10 +55,10 @@ export type SpTraffic = {
 };
 
 export const SP_AMENITY_OPTIONS = [
-  { key: "playgrounds", label: "Children's playgrounds" },
-  { key: "sports", label: "Sports courts" },
-  { key: "water", label: "Pools / Water features" },
-  { key: "parks", label: "Parks / Plazas" },
+  { key: "playgrounds", label: "Aires de jeux pour enfants" },
+  { key: "sports", label: "Terrains de sport" },
+  { key: "water", label: "Piscines / Plans d’eau" },
+  { key: "parks", label: "Parcs / Places" },
 ] as const;
 export type SpAmenities = {
   playgrounds: boolean;
@@ -105,7 +105,7 @@ export function defaultAmenities(): SpAmenities {
 
 export function defaultSiteplanConfig(): SiteplanConfig {
   return {
-    projectName: "Site plan 1",
+    projectName: "Plan de masse 1",
     buildingCount: 1,
     angleCount: 1,
     angleType: "isometric",
@@ -165,7 +165,7 @@ export function sanitizeSiteplanConfig(c: SiteplanConfig): SiteplanConfig {
   );
   return {
     projectName:
-      String(c.projectName ?? "").trim().slice(0, 100) || "Site plan 1",
+      String(c.projectName ?? "").trim().slice(0, 100) || "Plan de masse 1",
     buildingCount: clampCount(c.buildingCount, 1, 100),
     angleCount: clampCount(c.angleCount, 1, 30),
     angleType,

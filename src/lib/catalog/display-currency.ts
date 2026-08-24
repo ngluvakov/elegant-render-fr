@@ -152,9 +152,9 @@ export function formatPublicPriceText(
 }
 
 const sharedCommercialTerms = [
-  "Every project includes three revision rounds at no extra charge.",
-  "If a shot requires additional geometry that is not visible from the primary view, a one-off +25% modelling surcharge applies; after that, all shots are billed at the standard rate.",
-  "Larger projects and residential complexes qualify for progressive discounts. Get in touch and we will prepare a tailored quote.",
+  "Chaque projet comprend trois séries de révisions sans frais supplémentaires.",
+  "Si une vue nécessite une géométrie supplémentaire non visible depuis la vue principale, un supplément de modélisation unique de +25 % s’applique ; ensuite, toutes les vues sont facturées au tarif standard.",
+  "Les projets de grande envergure et les ensembles résidentiels bénéficient de remises progressives. Contactez-nous et nous préparerons un devis sur mesure.",
 ];
 
 export function getPublicPricingTerms(
@@ -162,32 +162,32 @@ export function getPublicPricingTerms(
 ): PublicPricingTerms {
   if (currency === "EUR") {
     return {
-      title: "Pricing notes",
+      title: "Notes tarifaires",
       badge: "EUR",
-      lead: "Prices are shown and charged in euros.",
+      lead: "Les prix sont affichés et facturés en euros.",
       bullets: [
-        "Prices are listed in EUR — you pay exactly the amount shown.",
-        "The final quote and invoice use the same EUR amount.",
-        "Your country is used for invoice details, not to change the price.",
+        "Les prix sont indiqués en EUR — vous payez exactement le montant affiché.",
+        "Le devis final et la facture reprennent le même montant en EUR.",
+        "Votre pays sert aux informations de facturation, pas à modifier le prix.",
         ...sharedCommercialTerms,
       ],
-      ctaLabel: "Request a quote",
-      shortNote: "All prices are in EUR.",
+      ctaLabel: "Demander un devis",
+      shortNote: "Tous les prix sont en EUR.",
     };
   }
 
   return {
-    title: "Pricing notes",
+    title: "Notes tarifaires",
     badge: currency,
-    lead: `Prices are shown in ${currency}, converted from our EUR price list.`,
+    lead: `Les prix sont affichés en ${currency}, convertis depuis notre grille tarifaire en EUR.`,
     bullets: [
-      `Prices are shown in ${currency}, converted from our EUR price list at a fixed rate.`,
-      `You are charged in ${currency} — the amount shown is the amount you pay.`,
-      "Your invoice is issued in EUR.",
+      `Les prix sont affichés en ${currency}, convertis depuis notre grille tarifaire en EUR à taux fixe.`,
+      `Le paiement s’effectue en ${currency} — le montant affiché est celui que vous payez.`,
+      "Votre facture est émise en EUR.",
       ...sharedCommercialTerms,
     ],
-    ctaLabel: "Request a quote",
-    shortNote: `Prices shown and charged in ${currency}; invoices are issued in EUR.`,
+    ctaLabel: "Demander un devis",
+    shortNote: `Prix affichés et facturés en ${currency} ; les factures sont émises en EUR.`,
   };
 }
 

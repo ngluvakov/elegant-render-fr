@@ -10,12 +10,12 @@
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const RENO_ROOM_TYPES = [
-  { id: "bathroom", label: "Bathroom" },
-  { id: "kitchen", label: "Kitchen" },
-  { id: "living-room", label: "Living room" },
-  { id: "bedroom", label: "Bedroom" },
-  { id: "facade", label: "Exterior / Facade" },
-  { id: "commercial", label: "Commercial space" },
+  { id: "bathroom", label: "Salle de bain" },
+  { id: "kitchen", label: "Cuisine" },
+  { id: "living-room", label: "Salon" },
+  { id: "bedroom", label: "Chambre" },
+  { id: "facade", label: "Extérieur / Façade" },
+  { id: "commercial", label: "Local commercial" },
 ] as const;
 export type RenoRoomTypeId = (typeof RENO_ROOM_TYPES)[number]["id"];
 export const RENO_ROOM_TYPE_IDS = RENO_ROOM_TYPES.map(
@@ -23,23 +23,23 @@ export const RENO_ROOM_TYPE_IDS = RENO_ROOM_TYPES.map(
 ) as RenoRoomTypeId[];
 
 export const RENO_SCOPES = [
-  { id: "cosmetic", label: "Cosmetic (paint and furniture only)" },
-  { id: "partial", label: "Partial (floor / tile replacement)" },
+  { id: "cosmetic", label: "Cosmétique (peinture et mobilier uniquement)" },
+  { id: "partial", label: "Partielle (remplacement du sol / du carrelage)" },
   {
     id: "complete",
-    label: "Complete (wall demolition, new installations)",
+    label: "Complète (démolition de cloisons, nouvelles installations)",
   },
 ] as const;
 export type RenoScopeId = (typeof RENO_SCOPES)[number]["id"];
 export const RENO_SCOPE_IDS = RENO_SCOPES.map((s) => s.id) as RenoScopeId[];
 
 export const RENO_FLOOR_MATERIALS = [
-  { id: "keep-existing", label: "Keep existing" },
-  { id: "parquet-light", label: "Parquet / Laminate (light wood)" },
-  { id: "parquet-dark", label: "Parquet / Laminate (dark wood)" },
-  { id: "tiles-marble", label: "Tiles (marble / stone)" },
-  { id: "tiles-concrete", label: "Tiles (concrete / industrial)" },
-  { id: "carpet", label: "Carpet" },
+  { id: "keep-existing", label: "Conserver l’existant" },
+  { id: "parquet-light", label: "Parquet / Stratifié (bois clair)" },
+  { id: "parquet-dark", label: "Parquet / Stratifié (bois foncé)" },
+  { id: "tiles-marble", label: "Carrelage (marbre / pierre)" },
+  { id: "tiles-concrete", label: "Carrelage (béton / industriel)" },
+  { id: "carpet", label: "Moquette" },
 ] as const;
 export type RenoFloorMaterialId =
   (typeof RENO_FLOOR_MATERIALS)[number]["id"];
@@ -48,12 +48,12 @@ export const RENO_FLOOR_MATERIAL_IDS = RENO_FLOOR_MATERIALS.map(
 ) as RenoFloorMaterialId[];
 
 export const RENO_WALL_MATERIALS = [
-  { id: "keep-existing", label: "Keep existing" },
-  { id: "paint-white", label: "Paint (white / neutral)" },
-  { id: "paint-dark", label: "Paint (dark / accent)" },
-  { id: "wallpaper", label: "Wallpaper" },
-  { id: "wood-paneling", label: "Wood paneling" },
-  { id: "stone-brick", label: "Decorative stone / brick" },
+  { id: "keep-existing", label: "Conserver l’existant" },
+  { id: "paint-white", label: "Peinture (blanc / neutre)" },
+  { id: "paint-dark", label: "Peinture (foncée / accent)" },
+  { id: "wallpaper", label: "Papier peint" },
+  { id: "wood-paneling", label: "Lambris bois" },
+  { id: "stone-brick", label: "Pierre décorative / brique" },
 ] as const;
 export type RenoWallMaterialId =
   (typeof RENO_WALL_MATERIALS)[number]["id"];
@@ -62,12 +62,12 @@ export const RENO_WALL_MATERIAL_IDS = RENO_WALL_MATERIALS.map(
 ) as RenoWallMaterialId[];
 
 export const RENO_FURNITURE_STYLES = [
-  { id: "modern", label: "Modern / Contemporary" },
-  { id: "scandinavian", label: "Scandinavian" },
-  { id: "minimalist", label: "Minimalist" },
-  { id: "industrial", label: "Industrial" },
-  { id: "classic", label: "Classic / Traditional" },
-  { id: "keep-existing", label: "Keep existing furniture" },
+  { id: "modern", label: "Moderne / Contemporain" },
+  { id: "scandinavian", label: "Scandinave" },
+  { id: "minimalist", label: "Minimaliste" },
+  { id: "industrial", label: "Industriel" },
+  { id: "classic", label: "Classique / Traditionnel" },
+  { id: "keep-existing", label: "Conserver le mobilier existant" },
 ] as const;
 export type RenoFurnitureStyleId =
   (typeof RENO_FURNITURE_STYLES)[number]["id"];
@@ -102,7 +102,7 @@ export type RenovationConfig = {
 
 export function defaultRenovationConfig(): RenovationConfig {
   return {
-    roomName: "Bathroom 1",
+    roomName: "Salle de bain 1",
     roomType: "bathroom",
     scope: "complete",
     wallChangesEnabled: false,
@@ -141,7 +141,7 @@ export function sanitizeRenovationConfig(
   const variantEnabled = Boolean(c.variantEnabled);
   return {
     roomName:
-      String(c.roomName ?? "").trim().slice(0, 100) || "Bathroom 1",
+      String(c.roomName ?? "").trim().slice(0, 100) || "Salle de bain 1",
     roomType,
     scope,
     ...((d) => (d ? { description: d } : {}))(

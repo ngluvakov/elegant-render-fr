@@ -8,10 +8,10 @@
 // ─── Vocabularies ──────────────────────────────────────────────────────
 
 export const DTD_SKY_MOODS = [
-  { id: "golden-hour", label: "Golden hour (warm / sunset)" },
-  { id: "dramatic-dusk", label: "Dramatic dusk (purple / blue)" },
-  { id: "clear-night", label: "Clear night (dark blue, with stars)" },
-  { id: "overcast-dusk", label: "Overcast dusk (moody)" },
+  { id: "golden-hour", label: "Heure dorée (chaude / coucher de soleil)" },
+  { id: "dramatic-dusk", label: "Crépuscule spectaculaire (violet / bleu)" },
+  { id: "clear-night", label: "Nuit claire (bleu profond, étoilée)" },
+  { id: "overcast-dusk", label: "Crépuscule couvert (atmosphérique)" },
 ] as const;
 export type DtdSkyMoodId = (typeof DTD_SKY_MOODS)[number]["id"];
 export const DTD_SKY_MOOD_IDS = DTD_SKY_MOODS.map(
@@ -19,9 +19,9 @@ export const DTD_SKY_MOOD_IDS = DTD_SKY_MOODS.map(
 ) as DtdSkyMoodId[];
 
 export const DTD_INTERIOR_LIGHTS = [
-  { id: "warm-yellow", label: "Warm yellow light (cozy)" },
-  { id: "neutral-white", label: "Neutral white light" },
-  { id: "cool", label: "Cool light (modern)" },
+  { id: "warm-yellow", label: "Lumière jaune chaude (cosy)" },
+  { id: "neutral-white", label: "Lumière blanche neutre" },
+  { id: "cool", label: "Lumière froide (moderne)" },
 ] as const;
 export type DtdInteriorLightId =
   (typeof DTD_INTERIOR_LIGHTS)[number]["id"];
@@ -30,9 +30,9 @@ export const DTD_INTERIOR_LIGHT_IDS = DTD_INTERIOR_LIGHTS.map(
 ) as DtdInteriorLightId[];
 
 export const DTD_COLOR_GRADES = [
-  { id: "natural", label: "Natural (sky replacement only)" },
-  { id: "cinematic", label: "Cinematic (boosted contrast and colors)" },
-  { id: "warm", label: "Warm (emphasized sunset)" },
+  { id: "natural", label: "Naturel (remplacement du ciel uniquement)" },
+  { id: "cinematic", label: "Cinématique (contraste et couleurs renforcés)" },
+  { id: "warm", label: "Chaud (coucher de soleil accentué)" },
 ] as const;
 export type DtdColorGradeId = (typeof DTD_COLOR_GRADES)[number]["id"];
 export const DTD_COLOR_GRADE_IDS = DTD_COLOR_GRADES.map(
@@ -42,10 +42,10 @@ export const DTD_COLOR_GRADE_IDS = DTD_COLOR_GRADES.map(
 // ─── Boolean group ────────────────────────────────────────────────────
 
 export const DTD_EXTERIOR_LIGHTING_OPTIONS = [
-  { key: "street", label: "Turn on street lighting" },
-  { key: "facade", label: "Turn on facade lights" },
-  { key: "pool", label: "Turn on pool / yard lights" },
-  { key: "carHeadlights", label: "Turn on car headlights" },
+  { key: "street", label: "Allumer l’éclairage public" },
+  { key: "facade", label: "Allumer les éclairages de façade" },
+  { key: "pool", label: "Allumer les éclairages de piscine / de cour" },
+  { key: "carHeadlights", label: "Allumer les phares des voitures" },
 ] as const;
 export type DtdExteriorLighting = {
   street: boolean;
@@ -77,7 +77,7 @@ export function defaultExteriorLighting(): DtdExteriorLighting {
 
 export function defaultDtdConfig(): DtdConfig {
   return {
-    projectName: "Property 1",
+    projectName: "Bien 1",
     photoCount: 1,
     skyMood: "golden-hour",
     exteriorLighting: defaultExteriorLighting(),
@@ -122,7 +122,7 @@ export function sanitizeDtdConfig(c: DtdConfig): DtdConfig {
     "golden-hour";
   return {
     projectName:
-      String(c.projectName ?? "").trim().slice(0, 100) || "Property 1",
+      String(c.projectName ?? "").trim().slice(0, 100) || "Bien 1",
     photoCount: clampCount(c.photoCount, 1, 200),
     skyMood,
     ...((d) => (d ? { description: d } : {}))(

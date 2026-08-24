@@ -68,7 +68,7 @@ export async function GET(_request: Request, { params }: DownloadRouteContext) {
 
   if (error || !data) {
     return NextResponse.json(
-      { error: error?.message ?? "File not found." },
+      { error: error?.message ?? "Fichier introuvable." },
       { status: 404 },
     );
   }

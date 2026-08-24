@@ -46,7 +46,7 @@ export async function expireAiCreditsIfNeeded(userId: string) {
         type: "expiry",
         units: -user.aiCreditBalanceUnits,
         balanceAfterUnits: 0,
-        note: "AI Studio credits expired",
+        note: "Crédits AI Studio expirés",
       },
     }),
   ]);
@@ -87,9 +87,9 @@ export async function spendAiCreditUnits({
         where: { id: userId },
         select: { aiCreditBalanceUnits: true },
       });
-      if (!user) return { error: "User not found." };
+      if (!user) return { error: "Utilisateur introuvable." };
       return {
-        error: "You do not have enough AI credits.",
+        error: "Vous n’avez pas assez de crédits IA.",
         balanceAfterUnits: user.aiCreditBalanceUnits,
       };
     }
@@ -98,7 +98,7 @@ export async function spendAiCreditUnits({
       where: { id: userId },
       select: { aiCreditBalanceUnits: true },
     });
-    if (!updated) return { error: "User not found." };
+    if (!updated) return { error: "Utilisateur introuvable." };
 
     await tx.aiCreditTransaction.create({
       data: {
@@ -107,7 +107,7 @@ export async function spendAiCreditUnits({
         type: "spend",
         units: -units,
         balanceAfterUnits: updated.aiCreditBalanceUnits,
-        note: note ?? "AI Studio generation",
+        note: note ?? "Génération AI Studio",
       },
     });
 
@@ -154,7 +154,7 @@ export async function refundAiCreditUnits({
         type: "refund",
         units,
         balanceAfterUnits: user.aiCreditBalanceUnits,
-        note: note ?? "AI Studio refund for a failed generation",
+        note: note ?? "Remboursement AI Studio pour une génération échouée",
       },
     });
 

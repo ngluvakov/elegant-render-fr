@@ -52,7 +52,7 @@ async function expireStaleCreditBalances(now: Date) {
           type: "expiry",
           units: -user.aiCreditBalanceUnits,
           balanceAfterUnits: 0,
-          note: "AI Studio krediti istekli",
+          note: "Crédits AI Studio expirés",
         },
       }),
     ]);

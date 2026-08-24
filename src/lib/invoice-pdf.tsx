@@ -1,7 +1,7 @@
 /**
  * invoice-pdf.tsx — Server-side PDF rendering for issued invoices.
  *
- * Single English export-invoice layout (EUR) shared by both buyer
+ * Single French export-invoice layout (EUR) shared by both buyer
  * types ({individual, business}); business recipients additionally
  * show their tax ID and country.
  *
@@ -212,26 +212,26 @@ function formatDate(date: Date, locale: "sr-Latn-RS" | "en-GB"): string {
   });
 }
 
-const ENGLISH_STRINGS = {
-  title: "INVOICE",
-  issuer: "Issuer",
-  recipient: "Recipient",
-  issueDate: "Issue date",
-  serviceDate: "Service date",
-  description: "Description",
-  qty: "Qty",
-  unitNet: "Unit net",
-  vat: "VAT",
-  lineTotal: "Net total",
-  subtotal: "Subtotal",
-  vatTotal: "VAT",
-  grand: "Total due",
-  paymentLabel: "Payment method",
+const FRENCH_STRINGS = {
+  title: "FACTURE",
+  issuer: "Émetteur",
+  recipient: "Client",
+  issueDate: "Date d’émission",
+  serviceDate: "Date de prestation",
+  description: "Désignation",
+  qty: "Qté",
+  unitNet: "P.U. HT",
+  vat: "TVA",
+  lineTotal: "Montant HT",
+  subtotal: "Total HT",
+  vatTotal: "TVA",
+  grand: "Total TTC",
+  paymentLabel: "Mode de règlement",
 } as const;
 
 const STRINGS = {
-  individual: ENGLISH_STRINGS,
-  business: ENGLISH_STRINGS,
+  individual: FRENCH_STRINGS,
+  business: FRENCH_STRINGS,
 } as const;
 
 export async function renderInvoicePdf(data: InvoiceData): Promise<Buffer> {
@@ -269,7 +269,7 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.h1}>{t.title}</Text>
-            <Text style={styles.number}>No. {data.invoiceNumber}</Text>
+            <Text style={styles.number}>N° de facture {data.invoiceNumber}</Text>
           </View>
           <View style={styles.metaCol}>
             <View style={styles.metaPair}>
@@ -300,12 +300,12 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
             <Text style={styles.partyName}>{data.recipient.name}</Text>
             <Text style={styles.partyText}>{data.recipient.address}</Text>
             {data.recipient.taxId && data.buyerType === "business" && (
-              <Text style={styles.partyMono}>Tax ID {data.recipient.taxId}</Text>
+              <Text style={styles.partyMono}>Identifiant fiscal {data.recipient.taxId}</Text>
             )}
             {data.recipient.countryCode &&
               data.buyerType === "business" && (
                 <Text style={styles.partyText}>
-                  Country: {data.recipient.countryCode}
+                  Pays : {data.recipient.countryCode}
                 </Text>
               )}
             {data.recipient.email && (
@@ -360,7 +360,7 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
         ) : (
           <View style={styles.totalsRow}>
             <Text style={styles.totalsLabel}>{t.vatTotal}</Text>
-            <Text style={styles.totalsLabel}>— (reverse charge)</Text>
+            <Text style={styles.totalsLabel}>— (autoliquidation)</Text>
           </View>
         )}
         <View style={styles.grandTotal}>
@@ -379,7 +379,7 @@ function InvoiceDocument({ data }: { data: InvoiceData }) {
           ))}
           <Text style={styles.paymentLine}>
             <Text style={{ fontFamily: PDF_FONT_FAMILY, fontWeight: 700 }}>
-              {t.paymentLabel}:{" "}
+              {t.paymentLabel} :{" "}
             </Text>
             {data.paymentMethod}
           </Text>

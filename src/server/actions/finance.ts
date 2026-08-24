@@ -419,7 +419,7 @@ function boolValue(formData: FormData, key: string): boolean {
 function numberValue(formData: FormData, key: string): number {
   const parsed = Number(text(formData, key).replace(",", "."));
   if (!Number.isFinite(parsed) || parsed < 0) {
-    throw new Error(`Invalid numeric value: ${key}`);
+    throw new Error(`Valeur numérique invalide : ${key}`);
   }
   return parsed;
 }
@@ -446,7 +446,7 @@ function jsonValue<T>(raw: string, fallback: T): T {
   try {
     return JSON.parse(raw) as T;
   } catch {
-    throw new Error("The JSON setting is invalid.");
+    throw new Error("Le paramètre JSON n’est pas valide.");
   }
 }
 
@@ -457,9 +457,9 @@ function normalizeVisualPatch(
     return {
       kind: "product",
       productId: requiredText(patch.productId, "productId"),
-      label: requiredText(patch.label, "Name"),
-      unitLabel: requiredText(patch.unitLabel, "Unit label"),
-      basePriceEur: positiveNumber(patch.basePriceEur, "Base price"),
+      label: requiredText(patch.label, "Nom"),
+      unitLabel: requiredText(patch.unitLabel, "Libellé d’unité"),
+      basePriceEur: positiveNumber(patch.basePriceEur, "Prix de base"),
       includes: patch.includes
         .map((item) => item.trim())
         .filter(Boolean)
@@ -473,14 +473,14 @@ function normalizeVisualPatch(
       kind: "addon",
       productId: requiredText(patch.productId, "productId"),
       addOnId: requiredText(patch.addOnId, "addOnId"),
-      label: requiredText(patch.label, "Add-on name"),
+      label: requiredText(patch.label, "Nom de l’option"),
       description: patch.description.trim(),
-      priceEur: nonNegativeNumber(patch.priceEur, "Add-on price"),
-      includedQty: nonNegativeInteger(patch.includedQty, "Included quantity"),
+      priceEur: nonNegativeNumber(patch.priceEur, "Prix de l’option"),
+      includedQty: nonNegativeInteger(patch.includedQty, "Quantité incluse"),
       maxQty:
         patch.maxQty === null
           ? null
-          : positiveInteger(patch.maxQty, "Maximum quantity"),
+          : positiveInteger(patch.maxQty, "Quantité maximale"),
       volumeRules: normalizeVolumeRules(patch.volumeRules),
     };
   }
@@ -489,27 +489,27 @@ function normalizeVisualPatch(
     return {
       kind: "discount",
       productId: requiredText(patch.productId, "productId"),
-      ruleIndex: nonNegativeInteger(patch.ruleIndex, "Discount rule index"),
-      discountPct: percent(patch.discountPct, "Discount"),
-      reason: requiredText(patch.reason, "Discount reason"),
+      ruleIndex: nonNegativeInteger(patch.ruleIndex, "Indice de la règle de remise"),
+      discountPct: percent(patch.discountPct, "Remise"),
+      reason: requiredText(patch.reason, "Motif de la remise"),
     };
   }
 
   if (patch.kind === "duration") {
-    const minSeconds = positiveInteger(patch.minSeconds, "Minimum seconds");
+    const minSeconds = positiveInteger(patch.minSeconds, "Durée minimale en secondes");
     const defaultSeconds = positiveInteger(
       patch.defaultSeconds,
-      "Default seconds",
+      "Durée par défaut en secondes",
     );
     const maxSeconds =
       patch.maxSeconds === null
         ? null
-        : positiveInteger(patch.maxSeconds, "Maximum seconds");
+        : positiveInteger(patch.maxSeconds, "Durée maximale en secondes");
     if (defaultSeconds < minSeconds) {
-      throw new Error("The default duration cannot be shorter than the minimum.");
+      throw new Error("La durée par défaut ne peut pas être inférieure à la durée minimale.");
     }
     if (maxSeconds !== null && maxSeconds < defaultSeconds) {
-      throw new Error("The maximum duration cannot be shorter than the default duration.");
+      throw new Error("La durée maximale ne peut pas être inférieure à la durée par défaut.");
     }
     return {
       kind: "duration",
@@ -518,7 +518,7 @@ function normalizeVisualPatch(
       minSeconds,
       defaultSeconds,
       maxSeconds,
-      perSecondEur: positiveNumber(patch.perSecondEur, "Price per second"),
+      perSecondEur: positiveNumber(patch.perSecondEur, "Prix par seconde"),
       discountTiers: normalizeDurationTiers(patch.discountTiers),
     };
   }
@@ -531,21 +531,21 @@ function normalizeVisualPatch(
 
 function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
   return {
-    serbiaVatRate: percentRatio(settings.serbiaVatRate, "Serbia VAT rate"),
+    serbiaVatRate: percentRatio(settings.serbiaVatRate, "Taux de TVA serbe"),
     aiCreditUnitsPerCredit: positiveInteger(
       settings.aiCreditUnitsPerCredit,
-      "AI units per credit",
+      "Unités IA par crédit",
     ),
     aiCreditExpiresAfterMonths: positiveInteger(
       settings.aiCreditExpiresAfterMonths,
-      "AI expiry months",
+      "Mois avant expiration des crédits IA",
     ),
     aiCreditTiers: settings.aiCreditTiers
       .map((tier) => ({
-        minCredits: positiveInteger(tier.minCredits, "Minimum credits"),
+        minCredits: positiveInteger(tier.minCredits, "Nombre minimal de crédits"),
         centsPerCredit: positiveInteger(
           tier.centsPerCredit,
-          "Price per credit in cents",
+          "Prix par crédit en centimes",
         ),
       }))
       .sort((a, b) => b.minCredits - a.minCredits),
@@ -553,89 +553,89 @@ function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
       interior: {
         firstFloorEur: positiveNumber(
           settings.specialPricing.interior.firstFloorEur,
-          "Interior first floor",
+          "Intérieur — premier niveau",
         ),
         extraFloorEur: positiveNumber(
           settings.specialPricing.interior.extraFloorEur,
-          "Interior extra floor",
+          "Intérieur — niveau supplémentaire",
         ),
         includedRooms: nonNegativeInteger(
           settings.specialPricing.interior.includedRooms,
-          "Interior included rooms",
+          "Intérieur — pièces incluses",
         ),
         includedCameras: nonNegativeInteger(
           settings.specialPricing.interior.includedCameras,
-          "Interior included cameras",
+          "Intérieur — caméras incluses",
         ),
         extraRoomEur: positiveNumber(
           settings.specialPricing.interior.extraRoomEur,
-          "Interior extra room charge",
+          "Intérieur — supplément par pièce",
         ),
         extraCameraEur: positiveNumber(
           settings.specialPricing.interior.extraCameraEur,
-          "Interior extra camera charge",
+          "Intérieur — supplément par caméra",
         ),
       },
       tour360: {
         firstFloorEur: positiveNumber(
           settings.specialPricing.tour360.firstFloorEur,
-          "360 first floor",
+          "360 — premier niveau",
         ),
         extraFloorEur: positiveNumber(
           settings.specialPricing.tour360.extraFloorEur,
-          "360 extra floor",
+          "360 — niveau supplémentaire",
         ),
         includedHotspots: nonNegativeInteger(
           settings.specialPricing.tour360.includedHotspots,
-          "360 included hotspots",
+          "360 — hotspots inclus",
         ),
         includedCameras: nonNegativeInteger(
           settings.specialPricing.tour360.includedCameras,
-          "360 included cameras",
+          "360 — caméras incluses",
         ),
         extraHotspotEur: positiveNumber(
           settings.specialPricing.tour360.extraHotspotEur,
-          "360 extra hotspot charge",
+          "360 — supplément par hotspot",
         ),
         extraCameraEur: positiveNumber(
           settings.specialPricing.tour360.extraCameraEur,
-          "360 extra camera charge",
+          "360 — supplément par caméra",
         ),
         assembly: {
           baseEur: nonNegativeNumber(
             settings.specialPricing.tour360.assembly.baseEur,
-            "Tour assembly base",
+            "Assemblage de la visite — base",
           ),
           freeHotspotThreshold: nonNegativeInteger(
             settings.specialPricing.tour360.assembly.freeHotspotThreshold,
-            "Tour assembly free hotspot threshold",
+            "Assemblage de la visite — seuil de hotspots gratuits",
           ),
           floorPlanNavEur: nonNegativeNumber(
             settings.specialPricing.tour360.assembly.floorPlanNavEur,
-            "Tour floor plan navigation",
+            "Visite — navigation par plan",
           ),
           whiteLabelEur: nonNegativeNumber(
             settings.specialPricing.tour360.assembly.whiteLabelEur,
-            "Tour white-label",
+            "Visite — marque blanche",
           ),
         },
       },
       tourAssembly: {
         baseEur: nonNegativeNumber(
           settings.specialPricing.tourAssembly.baseEur,
-          "Tour assembly base",
+          "Assemblage de la visite — base",
         ),
         freeHotspotThreshold: nonNegativeInteger(
           settings.specialPricing.tourAssembly.freeHotspotThreshold,
-          "Tour assembly free hotspot threshold",
+          "Assemblage de la visite — seuil de hotspots gratuits",
         ),
         floorPlanNavEur: nonNegativeNumber(
           settings.specialPricing.tourAssembly.floorPlanNavEur,
-          "Tour floor plan navigation",
+          "Visite — navigation par plan",
         ),
         whiteLabelEur: nonNegativeNumber(
           settings.specialPricing.tourAssembly.whiteLabelEur,
-          "Tour white-label",
+          "Visite — marque blanche",
         ),
       },
     },
@@ -645,8 +645,8 @@ function normalizeSettingsPatch(settings: PricingSettings): PricingSettings {
 function normalizeVolumeRules(rules: VolumeRule[]): VolumeRule[] {
   return rules
     .map((rule) => ({
-      afterQty: nonNegativeInteger(rule.afterQty, "Volume threshold"),
-      priceEur: nonNegativeNumber(rule.priceEur, "Volume price"),
+      afterQty: nonNegativeInteger(rule.afterQty, "Seuil de volume"),
+      priceEur: nonNegativeNumber(rule.priceEur, "Prix de volume"),
     }))
     .sort((a, b) => a.afterQty - b.afterQty);
 }
@@ -656,32 +656,32 @@ function normalizeDurationTiers(
 ): DurationConfig["discountTiers"] {
   return tiers
     .map((tier) => ({
-      minSec: positiveInteger(tier.minSec, "Duration min"),
+      minSec: positiveInteger(tier.minSec, "Durée min"),
       maxSec:
         tier.maxSec === null || tier.maxSec === undefined
           ? Infinity
-          : positiveInteger(tier.maxSec, "Duration max"),
-      discountPct: percent(tier.discountPct, "Duration discount"),
+          : positiveInteger(tier.maxSec, "Durée max"),
+      discountPct: percent(tier.discountPct, "Remise sur la durée"),
     }))
     .sort((a, b) => a.minSec - b.minSec);
 }
 
 function requiredText(value: string, label: string): string {
   const trimmed = value.trim();
-  if (!trimmed) throw new Error(`${label} is a required field.`);
+  if (!trimmed) throw new Error(`Le champ « ${label} » est obligatoire.`);
   return trimmed;
 }
 
 function nonNegativeNumber(value: number, label: string): number {
   if (!Number.isFinite(value) || value < 0) {
-    throw new Error(`${label} must be 0 or greater.`);
+    throw new Error(`La valeur « ${label} » doit être supérieure ou égale à 0.`);
   }
   return value;
 }
 
 function positiveNumber(value: number, label: string): number {
   if (!Number.isFinite(value) || value <= 0) {
-    throw new Error(`${label} must be greater than zero.`);
+    throw new Error(`La valeur « ${label} » doit être supérieure à zéro.`);
   }
   return value;
 }
@@ -696,14 +696,14 @@ function positiveInteger(value: number, label: string): number {
 
 function percent(value: number, label: string): number {
   if (!Number.isFinite(value) || value < 0 || value > 100) {
-    throw new Error(`${label} must be between 0 and 100.`);
+    throw new Error(`La valeur « ${label} » doit être comprise entre 0 et 100.`);
   }
   return Math.round(value);
 }
 
 function percentRatio(value: number, label: string): number {
   if (!Number.isFinite(value) || value < 0 || value > 1) {
-    throw new Error(`${label} must be a decimal between 0 and 1.`);
+    throw new Error(`La valeur « ${label} » doit être un nombre décimal compris entre 0 et 1.`);
   }
   return value;
 }

@@ -150,7 +150,7 @@ export async function ensureDraftPricingBook(
   return prisma.$transaction(async (tx) => {
     const book = await tx.pricingBook.create({
       data: {
-        name: published ? `Draft - ${published.name}` : "Draft cenovnik",
+        name: published ? `Brouillon - ${published.name}` : "Brouillon de grille tarifaire",
         status: "draft",
         createdById: actorId,
         catalogJson: payload.catalogJson,
@@ -195,7 +195,7 @@ export async function clonePublishedPricingToDraft(
     });
     const book = await tx.pricingBook.create({
       data: {
-        name: `Draft - ${published.name}`,
+        name: `Brouillon - ${published.name}`,
         status: "draft",
         createdById: actorId,
         catalogJson: encodePricingCatalog(
@@ -238,7 +238,7 @@ export async function publishDraftPricingBook(
     const published = await tx.pricingBook.update({
       where: { id: draft.id },
       data: {
-        name: draft.name.replace(/^Draft -\s*/i, ""),
+        name: draft.name.replace(/^(?:Draft|Brouillon) -\s*/i, ""),
         status: "published",
         publishedAt: now,
         publishedById: actorId,

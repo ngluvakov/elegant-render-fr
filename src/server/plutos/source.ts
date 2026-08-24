@@ -63,7 +63,7 @@ async function loadOrderSource(
     buyer: {
       name: isBusiness
         ? order.companyName ?? "-"
-        : order.user.name ?? order.user.email ?? "Kupac",
+        : order.user.name ?? order.user.email ?? "Client",
       email: order.user.email,
       countryCode: isBusiness ? order.companyCountryCode : order.buyerCountryCode,
       address: isBusiness ? order.companyAddress : order.buyerAddress,
@@ -135,7 +135,7 @@ async function loadChargeSource(
     buyer: {
       name: isBusiness
         ? companyName ?? "-"
-        : order.user.name ?? order.user.email ?? "Kupac",
+        : order.user.name ?? order.user.email ?? "Client",
       email: order.user.email,
       countryCode: isBusiness ? companyCountryCode : buyerCountryCode,
       address: isBusiness ? companyAddress : null,

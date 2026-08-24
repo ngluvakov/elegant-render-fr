@@ -1,10 +1,10 @@
 /**
  * proforma-pdf.tsx — Server-side PDF for the proforma invoice.
  *
- * Single English export layout (EUR) shared by both buyer types
+ * Single French export layout (EUR) shared by both buyer types
  * ({individual, business}), mirroring invoice-pdf.tsx but with key
  * legal differences:
- *   - Header reads PROFORMA INVOICE
+ *   - Header reads FACTURE PROFORMA
  *   - Explicit note that the document is NOT a tax invoice — it's a
  *     payment instruction. The legal invoice comes after the funds
  *     land (issued via the existing invoice pipeline).
@@ -232,35 +232,35 @@ function formatDate(date: Date, locale: "sr-Latn-RS" | "en-GB"): string {
   });
 }
 
-const ENGLISH_STRINGS = {
-  title: "PROFORMA INVOICE",
-  issuer: "Issuer",
-  recipient: "Recipient",
-  issueDate: "Issue date",
-  dueDate: "Payment due",
-  description: "Description",
-  qty: "Qty",
-  unitNet: "Unit net",
-  vat: "VAT",
-  lineTotal: "Net total",
-  subtotal: "Subtotal",
-  vatTotal: "VAT",
-  grand: "Total due",
-  bankTitle: "Payment instructions",
-  bankAccount: "Account",
+const FRENCH_STRINGS = {
+  title: "FACTURE PROFORMA",
+  issuer: "Émetteur",
+  recipient: "Client",
+  issueDate: "Date d’émission",
+  dueDate: "Échéance",
+  description: "Désignation",
+  qty: "Qté",
+  unitNet: "P.U. HT",
+  vat: "TVA",
+  lineTotal: "Montant HT",
+  subtotal: "Total HT",
+  vatTotal: "TVA",
+  grand: "Total TTC",
+  bankTitle: "Instructions de paiement",
+  bankAccount: "Compte",
   bankIban: "IBAN",
   bankSwift: "SWIFT/BIC",
-  bankBankName: "Bank",
-  bankReference: "Reference",
+  bankBankName: "Banque",
+  bankReference: "Référence",
   legal:
-    "This is a proforma invoice — not a tax document. The final invoice will be issued upon receipt of payment. Reverse charge — VAT is not charged on this document (Place of supply outside the Republic of Serbia, Art. 24/25 of the Serbian VAT Act, ZPDV).",
+    "Ce document est une facture proforma — il ne constitue pas une facture au sens fiscal. La facture définitive sera émise à réception du paiement. Autoliquidation — la TVA n’est pas facturée sur ce document (lieu de prestation situé hors de la République de Serbie, art. 24/25 de la loi serbe sur la TVA, ZPDV).",
   draft:
-    "PROFORMA INVOICE — please remit payment as instructed below. The final invoice is issued upon receipt of funds.",
+    "FACTURE PROFORMA — merci d’effectuer le paiement selon les instructions ci-dessous. La facture définitive est émise à réception des fonds.",
 } as const;
 
 const STRINGS = {
-  individual: ENGLISH_STRINGS,
-  business: ENGLISH_STRINGS,
+  individual: FRENCH_STRINGS,
+  business: FRENCH_STRINGS,
 } as const;
 
 export async function renderProformaPdf(data: ProformaData): Promise<Buffer> {
@@ -295,7 +295,7 @@ function ProformaDocument({ data }: { data: ProformaData }) {
         <View style={styles.headerRow}>
           <View>
             <Text style={styles.h1}>{t.title}</Text>
-            <Text style={styles.number}>No. {data.proformaNumber}</Text>
+            <Text style={styles.number}>N° de proforma {data.proformaNumber}</Text>
           </View>
           <View style={styles.metaCol}>
             <View style={styles.metaPair}>
@@ -330,12 +330,12 @@ function ProformaDocument({ data }: { data: ProformaData }) {
             <Text style={styles.partyName}>{data.recipient.name}</Text>
             <Text style={styles.partyText}>{data.recipient.address}</Text>
             {data.recipient.taxId && data.buyerType === "business" && (
-              <Text style={styles.partyMono}>Tax ID {data.recipient.taxId}</Text>
+              <Text style={styles.partyMono}>Identifiant fiscal {data.recipient.taxId}</Text>
             )}
             {data.recipient.countryCode &&
               data.buyerType === "business" && (
                 <Text style={styles.partyText}>
-                  Country: {data.recipient.countryCode}
+                  Pays : {data.recipient.countryCode}
                 </Text>
               )}
             {data.recipient.email && (
@@ -390,7 +390,7 @@ function ProformaDocument({ data }: { data: ProformaData }) {
         ) : (
           <View style={styles.totalsRow}>
             <Text style={styles.totalsLabel}>{t.vatTotal}</Text>
-            <Text style={styles.totalsLabel}>— (reverse charge)</Text>
+            <Text style={styles.totalsLabel}>— (autoliquidation)</Text>
           </View>
         )}
         <View style={styles.grandTotal}>

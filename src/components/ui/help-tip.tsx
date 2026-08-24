@@ -17,7 +17,7 @@ type Props = {
   label?: string;
 };
 
-export function HelpTip({ children, className, label = "Help" }: Props) {
+export function HelpTip({ children, className, label = "Aide" }: Props) {
   return (
     <Tooltip.Root>
       <Tooltip.Trigger

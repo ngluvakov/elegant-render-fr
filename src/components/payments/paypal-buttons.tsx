@@ -59,7 +59,7 @@ export function PayPalButtons({
   useEffect(() => {
     const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
     if (!clientId) {
-      onError("PayPal is not configured (missing client id).");
+      onError("PayPal n’est pas configuré (identifiant client manquant).");
       return;
     }
 
@@ -74,7 +74,7 @@ export function PayPalButtons({
       clientId,
     )}&currency=${encodeURIComponent(currency)}&intent=capture&disable-funding=credit,paylater`;
     script.onload = () => setLoaded(true);
-    script.onerror = () => onError("The PayPal SDK failed to load. Please refresh and try again.");
+    script.onerror = () => onError("Le SDK PayPal n’a pas pu se charger. Veuillez actualiser la page et réessayer.");
     document.head.appendChild(script);
   }, [currency, onError]);
 
@@ -84,7 +84,7 @@ export function PayPalButtons({
 
     const paypal = (window as unknown as { paypal?: PayPalNamespace }).paypal;
     if (!paypal?.Buttons) {
-      onError("The PayPal SDK failed to initialize. Please refresh and try again.");
+      onError("Le SDK PayPal n’a pas pu s’initialiser. Veuillez actualiser la page et réessayer.");
       return;
     }
 
@@ -100,7 +100,7 @@ export function PayPalButtons({
         createOrder: async () => {
           const result = await createAction();
           if (result.error || !result.paypalOrderId) {
-            const message = result.error ?? "Could not start the PayPal payment.";
+            const message = result.error ?? "Impossible de démarrer le paiement PayPal.";
             onError(message);
             throw new Error(message);
           }
@@ -122,7 +122,7 @@ export function PayPalButtons({
           onSuccess();
         },
         onError: (err: Error) => {
-          onError(err?.message || "PayPal reported an error. You have not been charged.");
+          onError(err?.message || "PayPal a signalé une erreur. Aucun montant n’a été débité.");
         },
       })
       .render(containerRef.current);
@@ -133,7 +133,7 @@ export function PayPalButtons({
       <div ref={containerRef} />
       {!loaded && (
         <p className="py-4 text-center text-sm text-muted-foreground">
-          Loading PayPal…
+          Chargement de PayPal…
         </p>
       )}
     </div>

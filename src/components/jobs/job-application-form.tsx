@@ -48,6 +48,40 @@ function createDraftId(): string {
 const SELECT_CLASS =
   "h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm text-foreground outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
+// French display labels for the fixed option keys defined in
+// src/lib/job-application.ts. The submitted option values stay English —
+// only the visible label is localized.
+const POSITION_LABELS: Record<string, string> = {
+  "3D Artist": "Artiste 3D",
+  "Project Manager": "Chef de projet",
+  Other: "Autre",
+};
+
+const EMPLOYMENT_TYPE_LABELS: Record<string, string> = {
+  "Full-time": "Temps plein",
+  "Part-time": "Temps partiel",
+  "Freelance / contract": "Freelance / contrat",
+  Internship: "Stage",
+};
+
+const EXPERIENCE_LEVEL_LABELS: Record<string, string> = {
+  "Less than 1 year": "Moins d’un an",
+  "1–3 years": "1–3 ans",
+  "3–5 years": "3–5 ans",
+  "5–10 years": "5–10 ans",
+  "10+ years": "10 ans et plus",
+};
+
+const SKILL_LABELS: Record<string, string> = {
+  Modeling: "Modélisation",
+  Sculpting: "Sculpture",
+  "UV unwrapping": "Dépliage UV",
+  Animation: "Animation",
+  Rigging: "Rigging",
+  "Simulation (cloth, fluids, particles)":
+    "Simulation (tissus, fluides, particules)",
+};
+
 function SectionKicker({ children }: { children: React.ReactNode }) {
   return (
     <p className="font-mono text-xs font-medium uppercase tracking-[0.08em] text-muted-foreground">
@@ -61,11 +95,13 @@ function ChecklistGrid({
   selected,
   onToggle,
   idPrefix,
+  labels,
 }: {
   options: readonly string[];
   selected: string[];
   onToggle: (label: string) => void;
   idPrefix: string;
+  labels?: Record<string, string>;
 }) {
   return (
     <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
@@ -89,7 +125,7 @@ function ChecklistGrid({
               checked={checked}
               onChange={() => onToggle(label)}
             />
-            {label}
+            {labels?.[label] ?? label}
           </label>
         );
       })}
@@ -181,7 +217,7 @@ export function JobApplicationForm() {
         const body = (await urlRes.json().catch(() => null)) as
           | { error?: string }
           | null;
-        throw new Error(body?.error ?? "Could not generate an upload link");
+        throw new Error(body?.error ?? "Impossible de générer un lien d’importation");
       }
 
       const { signedUrl, storagePath } = (await urlRes.json()) as {
@@ -195,7 +231,7 @@ export function JobApplicationForm() {
         body: file,
       });
 
-      if (!uploadRes.ok) throw new Error("Upload failed");
+      if (!uploadRes.ok) throw new Error("L’importation a échoué");
 
       setFiles((prev) => [
         // A new CV replaces the previous one; portfolio files accumulate.
@@ -216,7 +252,7 @@ export function JobApplicationForm() {
             ? {
                 ...item,
                 error:
-                  err instanceof Error ? err.message : "Something went wrong",
+                  err instanceof Error ? err.message : "Une erreur s’est produite",
               }
             : item,
         ),
@@ -239,28 +275,28 @@ export function JobApplicationForm() {
       ) {
         setUploading((prev) => [
           ...prev,
-          { kind, file, error: "Up to 3 portfolio files" },
+          { kind, file, error: "3 fichiers de portfolio maximum" },
         ]);
         return;
       }
       if (file.size > JOB_APPLICATION_MAX_FILE_BYTES) {
         setUploading((prev) => [
           ...prev,
-          { kind, file, error: "File is larger than 50MB" },
+          { kind, file, error: "Le fichier dépasse 50 Mo" },
         ]);
         return;
       }
       if (!isAllowedJobApplicationMimeType(file.type)) {
         setUploading((prev) => [
           ...prev,
-          { kind, file, error: "Allowed formats: PDF, DOC, DOCX, ZIP, JPG, PNG, WebP" },
+          { kind, file, error: "Formats acceptés : PDF, DOC, DOCX, ZIP, JPG, PNG, WebP" },
         ]);
         return;
       }
       if (nextTotal + file.size > JOB_APPLICATION_MAX_TOTAL_BYTES) {
         setUploading((prev) => [
           ...prev,
-          { kind, file, error: "Total size exceeds 100MB" },
+          { kind, file, error: "La taille totale dépasse 100 Mo" },
         ]);
         return;
       }
@@ -278,19 +314,19 @@ export function JobApplicationForm() {
     if (uploading.some((item) => !item.error)) {
       setResult({
         kind: "error",
-        message: "Please wait for the upload to finish.",
+        message: "Veuillez attendre la fin de l’importation.",
       });
       return;
     }
     if (!cvFile) {
-      setResult({ kind: "error", message: "Please attach your CV." });
+      setResult({ kind: "error", message: "Veuillez joindre votre CV." });
       return;
     }
     if (!consent) {
       setResult({
         kind: "error",
         message:
-          "Please confirm you agree to the processing of your application.",
+          "Veuillez confirmer que vous acceptez le traitement de votre candidature.",
       });
       return;
     }
@@ -337,13 +373,13 @@ export function JobApplicationForm() {
           <Check className="h-5 w-5" />
         </div>
         <h2 className="mt-4 text-2xl font-semibold text-foreground">
-          Application received
+          Candidature reçue
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Thank you for applying. We review every application — if your
-          profile matches what we are looking for, we will get in touch to
-          schedule a conversation. A confirmation is on its way to your
-          inbox.
+          Merci pour votre candidature. Nous examinons chaque dossier — si
+          votre profil correspond à ce que nous recherchons, nous vous
+          contacterons pour convenir d’un entretien. Une confirmation est en
+          route vers votre boîte mail.
         </p>
       </div>
     );
@@ -373,10 +409,10 @@ export function JobApplicationForm() {
 
       {/* 01 — Personal details */}
       <section className="space-y-4">
-        <SectionKicker>01 — Personal details</SectionKicker>
+        <SectionKicker>01 — Coordonnées</SectionKicker>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="job-name">Full name *</Label>
+            <Label htmlFor="job-name">Nom complet *</Label>
             <Input
               id="job-name"
               value={fullName}
@@ -387,7 +423,7 @@ export function JobApplicationForm() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="job-email">Email *</Label>
+            <Label htmlFor="job-email">E-mail *</Label>
             <Input
               id="job-email"
               type="email"
@@ -401,7 +437,7 @@ export function JobApplicationForm() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="job-phone">Phone (optional)</Label>
+            <Label htmlFor="job-phone">Téléphone (facultatif)</Label>
             <Input
               id="job-phone"
               type="tel"
@@ -412,7 +448,7 @@ export function JobApplicationForm() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="job-location">City and country (optional)</Label>
+            <Label htmlFor="job-location">Ville et pays (facultatif)</Label>
             <Input
               id="job-location"
               value={location}
@@ -424,7 +460,7 @@ export function JobApplicationForm() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="job-linkedin">LinkedIn (optional)</Label>
+            <Label htmlFor="job-linkedin">LinkedIn (facultatif)</Label>
             <Input
               id="job-linkedin"
               value={linkedinUrl}
@@ -435,13 +471,13 @@ export function JobApplicationForm() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="job-portfolio-url">
-              Portfolio link (optional)
+              Lien vers votre portfolio (facultatif)
             </Label>
             <Input
               id="job-portfolio-url"
               value={portfolioUrl}
               onChange={(event) => setPortfolioUrl(event.target.value)}
-              placeholder="Behance, ArtStation, your website…"
+              placeholder="Behance, ArtStation, votre site web…"
               maxLength={300}
             />
           </div>
@@ -450,10 +486,10 @@ export function JobApplicationForm() {
 
       {/* 02 — Position */}
       <section className="space-y-4">
-        <SectionKicker>02 — Position</SectionKicker>
+        <SectionKicker>02 — Poste</SectionKicker>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="job-position">Position you are applying for *</Label>
+            <Label htmlFor="job-position">Poste visé *</Label>
             <select
               id="job-position"
               value={position}
@@ -461,26 +497,26 @@ export function JobApplicationForm() {
               required
               className={SELECT_CLASS}
             >
-              <option value="">Select a position</option>
+              <option value="">Sélectionnez un poste</option>
               {JOB_POSITIONS.map((item) => (
                 <option key={item} value={item}>
-                  {item}
+                  {POSITION_LABELS[item] ?? item}
                 </option>
               ))}
             </select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="job-employment">Employment type</Label>
+            <Label htmlFor="job-employment">Type de contrat</Label>
             <select
               id="job-employment"
               value={employmentType}
               onChange={(event) => setEmploymentType(event.target.value)}
               className={SELECT_CLASS}
             >
-              <option value="">Select if you have a preference</option>
+              <option value="">Sélectionnez si vous avez une préférence</option>
               {JOB_EMPLOYMENT_TYPES.map((item) => (
                 <option key={item} value={item}>
-                  {item}
+                  {EMPLOYMENT_TYPE_LABELS[item] ?? item}
                 </option>
               ))}
             </select>
@@ -488,22 +524,22 @@ export function JobApplicationForm() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="job-available">Earliest start date</Label>
+            <Label htmlFor="job-available">Disponibilité</Label>
             <Input
               id="job-available"
               value={availableFrom}
               onChange={(event) => setAvailableFrom(event.target.value)}
-              placeholder="e.g. immediately, from 1 October…"
+              placeholder="par ex. immédiatement, dès le 1er octobre…"
               maxLength={80}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="job-salary">Expected salary (optional)</Label>
+            <Label htmlFor="job-salary">Prétentions salariales (facultatif)</Label>
             <Input
               id="job-salary"
               value={expectedSalary}
               onChange={(event) => setExpectedSalary(event.target.value)}
-              placeholder="e.g. a monthly range in EUR"
+              placeholder="par ex. une fourchette mensuelle en EUR"
               maxLength={80}
             />
           </div>
@@ -512,38 +548,38 @@ export function JobApplicationForm() {
 
       {/* 03 — Experience */}
       <section className="space-y-4">
-        <SectionKicker>03 — Experience</SectionKicker>
+        <SectionKicker>03 — Expérience</SectionKicker>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="job-experience">Years of 3D experience</Label>
+            <Label htmlFor="job-experience">Années d’expérience en 3D</Label>
             <select
               id="job-experience"
               value={experienceYears}
               onChange={(event) => setExperienceYears(event.target.value)}
               className={SELECT_CLASS}
             >
-              <option value="">Select</option>
+              <option value="">Sélectionnez</option>
               {JOB_EXPERIENCE_LEVELS.map((item) => (
                 <option key={item} value={item}>
-                  {item}
+                  {EXPERIENCE_LEVEL_LABELS[item] ?? item}
                 </option>
               ))}
             </select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="job-education">Education (optional)</Label>
+            <Label htmlFor="job-education">Formation (facultatif)</Label>
             <Input
               id="job-education"
               value={education}
               onChange={(event) => setEducation(event.target.value)}
-              placeholder="School / university, field of study…"
+              placeholder="École / université, domaine d’études…"
               maxLength={240}
             />
           </div>
         </div>
         <div className="space-y-2">
           <Label htmlFor="job-cover">
-            Cover letter — why you, and why Elegant Render? *
+            Lettre de motivation — pourquoi vous, et pourquoi Elegant Render ? *
           </Label>
           <Textarea
             id="job-cover"
@@ -552,7 +588,7 @@ export function JobApplicationForm() {
             required
             rows={6}
             maxLength={6000}
-            placeholder="A few sentences about your background, the work you are most proud of, and what you want to work on."
+            placeholder="Quelques phrases sur votre parcours, vos réalisations les plus marquantes et ce sur quoi vous souhaitez travailler."
           />
         </div>
       </section>
@@ -562,7 +598,7 @@ export function JobApplicationForm() {
         <SectionKicker>04 — CV &amp; portfolio</SectionKicker>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label>CV / resume * (PDF, DOC, DOCX)</Label>
+            <Label>CV * (PDF, DOC, DOCX)</Label>
             <input
               ref={cvInputRef}
               type="file"
@@ -580,7 +616,7 @@ export function JobApplicationForm() {
               onClick={() => cvInputRef.current?.click()}
             >
               <FileUp className="mr-2 h-4 w-4" />
-              {cvFile ? "Replace CV" : "Attach your CV"}
+              {cvFile ? "Remplacer le CV" : "Joindre votre CV"}
             </Button>
             {cvFile && (
               <div className="flex items-center justify-between gap-3 rounded-[4px] border border-border bg-secondary/50 px-3 py-2 text-sm">
@@ -593,7 +629,7 @@ export function JobApplicationForm() {
                 </span>
                 <button
                   type="button"
-                  aria-label="Remove CV"
+                  aria-label="Supprimer le CV"
                   onClick={() => removeFile(cvFile.storagePath)}
                   className="text-muted-foreground transition-colors duration-200 hover:text-foreground"
                 >
@@ -604,8 +640,8 @@ export function JobApplicationForm() {
           </div>
           <div className="space-y-2">
             <Label>
-              Portfolio files (optional, up to {JOB_APPLICATION_MAX_PORTFOLIO_FILES} — PDF,
-              ZIP, images)
+              Fichiers portfolio (facultatif, jusqu’à{" "}
+              {JOB_APPLICATION_MAX_PORTFOLIO_FILES} — PDF, ZIP, images)
             </Label>
             <input
               ref={portfolioInputRef}
@@ -625,7 +661,7 @@ export function JobApplicationForm() {
               onClick={() => portfolioInputRef.current?.click()}
             >
               <FileUp className="mr-2 h-4 w-4" />
-              Attach portfolio files
+              Joindre des fichiers portfolio
             </Button>
             {portfolioFiles.map((file) => (
               <div
@@ -641,7 +677,7 @@ export function JobApplicationForm() {
                 </span>
                 <button
                   type="button"
-                  aria-label={`Remove ${file.fileName}`}
+                  aria-label={`Supprimer ${file.fileName}`}
                   onClick={() => removeFile(file.storagePath)}
                   className="text-muted-foreground transition-colors duration-200 hover:text-foreground"
                 >
@@ -665,7 +701,7 @@ export function JobApplicationForm() {
               >
                 <span className="truncate">{item.file.name}</span>
                 <span className="shrink-0 text-xs">
-                  {item.error ?? "Uploading…"}
+                  {item.error ?? "Importation…"}
                 </span>
               </li>
             ))}
@@ -675,10 +711,11 @@ export function JobApplicationForm() {
 
       {/* 05 — Software */}
       <section className="space-y-4">
-        <SectionKicker>05 — Software you work in</SectionKicker>
+        <SectionKicker>05 — Logiciels que vous utilisez</SectionKicker>
         <p className="text-sm text-muted-foreground">
-          Tick everything you can use in production — no penalty for a short
-          list, we care about what you do well.
+          Cochez tout ce que vous maîtrisez en production — une liste courte
+          n’est pas un problème, ce qui nous intéresse, c’est ce que vous
+          faites bien.
         </p>
         <ChecklistGrid
           idPrefix="job-software"
@@ -687,12 +724,12 @@ export function JobApplicationForm() {
           onToggle={toggle(setSoftware)}
         />
         <div className="space-y-2">
-          <Label htmlFor="job-software-other">Other software (optional)</Label>
+          <Label htmlFor="job-software-other">Autres logiciels (facultatif)</Label>
           <Input
             id="job-software-other"
             value={softwareOther}
             onChange={(event) => setSoftwareOther(event.target.value)}
-            placeholder="Anything we missed"
+            placeholder="Ce que nous aurions oublié"
             maxLength={240}
           />
         </div>
@@ -700,20 +737,21 @@ export function JobApplicationForm() {
 
       {/* 06 — 3D skills */}
       <section className="space-y-4">
-        <SectionKicker>06 — What you can do in 3D</SectionKicker>
+        <SectionKicker>06 — Ce que vous savez faire en 3D</SectionKicker>
         <ChecklistGrid
           idPrefix="job-skill"
           options={JOB_3D_SKILLS}
+          labels={SKILL_LABELS}
           selected={skills}
           onToggle={toggle(setSkills)}
         />
         <div className="space-y-2">
-          <Label htmlFor="job-skills-other">Other skills (optional)</Label>
+          <Label htmlFor="job-skills-other">Autres compétences (facultatif)</Label>
           <Input
             id="job-skills-other"
             value={skillsOther}
             onChange={(event) => setSkillsOther(event.target.value)}
-            placeholder="Anything we missed"
+            placeholder="Ce que nous aurions oublié"
             maxLength={240}
           />
         </div>
@@ -733,8 +771,8 @@ export function JobApplicationForm() {
             className="mt-0.5 h-4 w-4 shrink-0 accent-accent"
           />
           <span>
-            I agree that White Rook DOO processes the data and files in this
-            application for recruitment purposes. *
+            J’accepte que White Rook DOO traite les données et les fichiers
+            de cette candidature à des fins de recrutement. *
           </span>
         </label>
 
@@ -745,7 +783,7 @@ export function JobApplicationForm() {
         )}
 
         <Button type="submit" disabled={pending} className="w-full sm:w-auto">
-          {pending ? "Sending…" : "Submit application"}
+          {pending ? "Envoi en cours…" : "Envoyer la candidature"}
         </Button>
 
         {/* Cloudflare Turnstile sits below the submit button (owner request);

@@ -119,3 +119,27 @@ Run `git log --oneline main..fr-translation` for the authoritative list.
    portal/admin surfaces (about ten call sites) and keep `formatCents` as the
    token format for the chat/conversion pipeline. Not done here because it is
    a structural change, not a translation, and it touches the pricing path.
+
+5. **The domain is not registered yet — and `.fr` has an eligibility rule.**
+   As of this writing `elegantrender.fr` has no DNS record at all, and only
+   `elegantrender.com` and `elegantrender.rs` sit on the Vercel account.
+
+   AFNIC (the `.fr` registry) restricts `.fr` to registrants established in
+   the **EU/EEA + Switzerland**. White Rook DOO is registered in **Serbia**,
+   which is outside that area, so the company may not be able to hold the
+   domain directly. Usual ways around it: register through a registrar that
+   offers a **local-presence / trustee service**, or hold the domain under an
+   EU-based entity or an EU-resident person. **Verify the current rule with
+   the registrar before planning the launch** — everything else on this list
+   depends on having the domain.
+
+   `.de` has a comparable constraint: DENIC requires the administrative
+   contact (admin-c) to have a **German address** when the holder is abroad.
+   The same question therefore applies to the German clone.
+
+6. **Preview builds are non-indexable on purpose.** While
+   `USE_STATIC_PRICING=1` is set, `robots.txt` returns `Disallow: /` and every
+   page carries `noindex, nofollow` — otherwise the `*.vercel.app` copy would
+   be indexed and compete with the real domain (its canonical URLs point at
+   vercel.app). Removing `USE_STATIC_PRICING` at go-live flips both back on;
+   check `/robots.txt` and the `<meta name="robots">` tag right after.

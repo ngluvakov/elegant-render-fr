@@ -39,7 +39,7 @@ export function AdminRetryInvoiceButton({ orderId }: Props) {
         disabled={pending}
         className="inline-flex items-center gap-1.5 rounded-md border border-foreground bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-foreground hover:text-background disabled:opacity-50"
       >
-        {pending ? "Trying..." : "Try issuing invoice again"}
+        {pending ? "Nouvelle tentative…" : "Relancer l’émission de la facture"}
       </button>
       {error && (
         <p className="text-[0.78rem] text-destructive">{error}</p>
@@ -49,10 +49,10 @@ export function AdminRetryInvoiceButton({ orderId }: Props) {
 }
 
 function humanReason(reason: string): string {
-  if (reason === "not_admin") return "You are not an admin.";
-  if (reason === "order_not_found") return "Order was not found.";
-  if (reason === "not_paid") return "Order is not paid.";
+  if (reason === "not_admin") return "Vous n’avez pas les droits d’administrateur.";
+  if (reason === "order_not_found") return "Commande introuvable.";
+  if (reason === "not_paid") return "La commande n’est pas payée.";
   if (reason === "no_billable_items")
-    return "Order has no billable items.";
-  return `Error: ${reason}`;
+    return "La commande ne contient aucun article facturable.";
+  return `Erreur : ${reason}`;
 }

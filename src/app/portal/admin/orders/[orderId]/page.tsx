@@ -30,9 +30,9 @@ import {
 import { loadPlutosSyncSnapshot } from "@/server/plutos/snapshot";
 
 export const metadata: Metadata = {
-  title: "Admin - Order details",
+  title: "Détail de commande — Admin",
   description:
-    "Admin order details, items, status, payments, and operational actions.",
+    "Détail administrateur de la commande : articles, statut, paiements et actions opérationnelles.",
   robots: { index: false, follow: false },
 };
 
@@ -113,7 +113,7 @@ export default async function AdminOrderDetailPage({
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
-        Admin panel
+        Admin
       </Link>
 
       {/* Hero */}
@@ -123,10 +123,10 @@ export default async function AdminOrderDetailPage({
             {order.orderNumber}
           </p>
           <h1 className="mt-1 font-heading text-2xl text-foreground md:text-3xl">
-            {order.projectName ?? order.items[0]?.productLabel ?? "Order"}
+            {order.projectName ?? order.items[0]?.productLabel ?? "Commande"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Client: <strong className="text-foreground">{order.user.name}</strong>{" "}
+            Client : <strong className="text-foreground">{order.user.name}</strong>{" "}
             ({order.user.email})
             {order.user.phone && ` · ${order.user.phone}`}
           </p>
@@ -207,7 +207,7 @@ export default async function AdminOrderDetailPage({
 
           {order.comments.length === 0 && (
             <p className="py-4 text-sm text-muted-foreground">
-              No messages.
+              Aucun message.
             </p>
           )}
 
@@ -225,10 +225,10 @@ export default async function AdminOrderDetailPage({
                   <span className={`text-[0.72rem] font-semibold uppercase tracking-wider ${
                     comment.role === "team" ? "text-muted-foreground" : "text-foreground"
                   }`}>
-                    {comment.role === "team" ? "Team" : comment.author?.name ?? "Client"}
+                    {comment.role === "team" ? "Équipe" : comment.author?.name ?? "Client"}
                   </span>
                   <span className="text-[0.62rem] text-muted-foreground/60">
-                    {comment.createdAt.toLocaleDateString("en-GB", {
+                    {comment.createdAt.toLocaleDateString("fr-FR", {
                       day: "numeric",
                       month: "short",
                       hour: "2-digit",
@@ -262,7 +262,7 @@ export default async function AdminOrderDetailPage({
           {deliverableFiles.length > 0 && (
             <div className="rounded-lg border border-border bg-secondary/50 p-5">
               <h3 className="text-sm font-semibold text-foreground">
-                Delivered files ({deliverableFiles.length})
+                Fichiers livrés ({deliverableFiles.length})
               </h3>
               <div className="mt-3 space-y-2">
                 {deliverableFiles.map((f) => (
@@ -281,7 +281,7 @@ export default async function AdminOrderDetailPage({
           {sourceFiles.length > 0 && (
             <div className="rounded-lg border border-border/40 bg-card/60 p-5">
               <h3 className="text-sm font-semibold text-foreground">
-                Client files ({sourceFiles.length})
+                Fichiers du client ({sourceFiles.length})
               </h3>
               <div className="mt-3 space-y-2">
                 {sourceFiles.map((f) => (
@@ -299,7 +299,7 @@ export default async function AdminOrderDetailPage({
           {/* Items */}
           <div className="rounded-lg border border-border/40 bg-card/60 p-5">
             <h3 className="text-sm font-semibold text-foreground">
-              Items ({order.items.length})
+              Articles ({order.items.length})
             </h3>
             <div className="mt-3 space-y-2">
               {order.items.map((item) => (
@@ -334,7 +334,7 @@ export default async function AdminOrderDetailPage({
           {/* Customer note */}
           {order.customerNote && (
             <div className="rounded-lg border border-border/40 bg-card/60 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Client note</h3>
+              <h3 className="text-sm font-semibold text-foreground">Note du client</h3>
               <p className="mt-2 text-xs text-foreground/80">{order.customerNote}</p>
             </div>
           )}
@@ -346,20 +346,20 @@ export default async function AdminOrderDetailPage({
           {order.sourceInquiry && (
             <div className="rounded-lg border border-border bg-secondary/50 p-5">
               <h3 className="text-sm font-semibold text-foreground">
-                From inquiry
+                Demande d’origine
               </h3>
               <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
                 <div className="flex flex-wrap gap-x-2">
-                  <dt className="w-20 text-muted-foreground">Type:</dt>
+                  <dt className="w-20 text-muted-foreground">Type :</dt>
                   <dd className="text-foreground">
                     {order.sourceInquiry.serviceType ?? "—"}
                   </dd>
                 </div>
                 <div className="flex flex-wrap gap-x-2">
-                  <dt className="w-20 text-muted-foreground">Received:</dt>
+                  <dt className="w-20 text-muted-foreground">Reçue le :</dt>
                   <dd className="text-foreground">
                     {new Date(order.sourceInquiry.createdAt).toLocaleString(
-                      "en-GB",
+                      "fr-FR",
                       {
                         day: "2-digit",
                         month: "2-digit",
@@ -372,9 +372,9 @@ export default async function AdminOrderDetailPage({
                 </div>
                 {order.sourceInquiry._count.files > 0 && (
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-20 text-muted-foreground">Files:</dt>
+                    <dt className="w-20 text-muted-foreground">Fichiers :</dt>
                     <dd className="text-foreground">
-                      {order.sourceInquiry._count.files} attached to inquiry
+                      {order.sourceInquiry._count.files} joint(s) à la demande
                     </dd>
                   </div>
                 )}
@@ -383,7 +383,7 @@ export default async function AdminOrderDetailPage({
                 href={`/portal/admin/inquiries?highlight=${order.sourceInquiry.id}`}
                 className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-secondary"
               >
-                Open inquiry
+                Ouvrir la demande
               </Link>
             </div>
           )}
@@ -394,33 +394,33 @@ export default async function AdminOrderDetailPage({
               type label appears so the absence of company info is
               visually clear at a glance. */}
           <div className="rounded-lg border border-border/40 bg-card/60 p-5">
-            <h3 className="text-sm font-semibold text-foreground">Buyer type</h3>
+            <h3 className="text-sm font-semibold text-foreground">Type d’acheteur</h3>
             <p className="mt-2 text-xs uppercase tracking-wider text-muted-foreground">
-              {order.buyerType === "business" ? "Business" : "Individual"}
+              {order.buyerType === "business" ? "Entreprise" : "Particulier"}
             </p>
             {order.buyerType !== "individual" && (
               <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
                 {order.companyName && (
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Name:</dt>
+                    <dt className="w-24 text-muted-foreground">Raison sociale :</dt>
                     <dd className="font-medium text-foreground">{order.companyName}</dd>
                   </div>
                 )}
                 {order.companyAddress && (
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Address:</dt>
+                    <dt className="w-24 text-muted-foreground">Adresse :</dt>
                     <dd className="text-foreground">{order.companyAddress}</dd>
                   </div>
                 )}
                 {order.companyTaxId && (
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">VAT ID:</dt>
+                    <dt className="w-24 text-muted-foreground">N° de TVA :</dt>
                     <dd className="font-mono text-foreground">{order.companyTaxId}</dd>
                   </div>
                 )}
                 {order.companyCountryCode && (
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Country:</dt>
+                    <dt className="w-24 text-muted-foreground">Pays :</dt>
                     <dd className="font-mono text-foreground">{order.companyCountryCode}</dd>
                   </div>
                 )}
@@ -438,11 +438,11 @@ export default async function AdminOrderDetailPage({
                   {order.vatVerifiedAt ? (
                     <div className="space-y-2">
                       <div className="inline-flex items-center gap-1.5 rounded-full border border-border bg-accent/10 px-3 py-1 text-[0.72rem] font-medium text-foreground">
-                        ✓ VIES verified{" "}
+                        ✓ Vérifié via VIES{" "}
                         <span className="font-normal text-muted-foreground">
                           ·{" "}
                           {new Date(order.vatVerifiedAt).toLocaleDateString(
-                            "en-GB",
+                            "fr-FR",
                             {
                               day: "2-digit",
                               month: "2-digit",
@@ -454,11 +454,11 @@ export default async function AdminOrderDetailPage({
                       {order.vatVerifiedName &&
                         order.vatVerifiedName !== order.companyName && (
                           <p className="text-[0.72rem] text-muted-foreground">
-                            VIES name:{" "}
+                            Nom VIES :{" "}
                             <span className="text-foreground">
                               {order.vatVerifiedName}
                             </span>{" "}
-                            (differs from the entered value)
+                            (diffère de la valeur saisie)
                           </p>
                         )}
                       {canManageFinance && (
@@ -468,8 +468,9 @@ export default async function AdminOrderDetailPage({
                   ) : (
                     <div className="space-y-2">
                       <p className="text-[0.78rem] text-muted-foreground">
-                        VAT ID has not been verified through VIES. Before issuing
-                        an export invoice, verification is recommended.
+                        Le numéro de TVA n’a pas été vérifié via VIES. Avant
+                        d’émettre une facture à l’export, la vérification est
+                        recommandée.
                       </p>
                       {canManageFinance && (
                         <AdminVerifyVatButton orderId={order.id} />
@@ -484,36 +485,36 @@ export default async function AdminOrderDetailPage({
               button appears only for completed PayPal payments with a
               capture id (that's what PayPal refunds). */}
           <div className="rounded-lg border border-border/40 bg-card/60 p-5">
-            <h3 className="text-sm font-semibold text-foreground">Payment</h3>
+            <h3 className="text-sm font-semibold text-foreground">Paiement</h3>
             <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
               <div className="flex flex-wrap gap-x-2">
-                <dt className="w-24 text-muted-foreground">Provider:</dt>
+                <dt className="w-24 text-muted-foreground">Prestataire :</dt>
                 <dd className="text-foreground">
                   {order.paymentProvider ?? "—"}
                 </dd>
               </div>
               <div className="flex flex-wrap gap-x-2">
-                <dt className="w-24 text-muted-foreground">Status:</dt>
+                <dt className="w-24 text-muted-foreground">Statut :</dt>
                 <dd className="text-foreground">{order.paymentStatus}</dd>
               </div>
               {order.chargedAmountMinor != null &&
                 isChargeCurrency(order.chargedCurrency) && (
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Charged:</dt>
+                    <dt className="w-24 text-muted-foreground">Montant débité :</dt>
                     <dd className="text-foreground">
                       {formatChargeAmount(
                         order.chargedAmountMinor,
                         order.chargedCurrency,
                       )}
                       {order.chargedFxRate
-                        ? ` (rate ${Number(order.chargedFxRate)})`
+                        ? ` (taux ${Number(order.chargedFxRate)})`
                         : ""}
                     </dd>
                   </div>
                 )}
               {order.paypalCaptureId && (
                 <div className="flex flex-wrap gap-x-2">
-                  <dt className="w-24 text-muted-foreground">Capture:</dt>
+                  <dt className="w-24 text-muted-foreground">Capture :</dt>
                   <dd className="font-mono text-foreground">
                     {order.paypalCaptureId}
                     {order.paypalCaptureStatus
@@ -524,7 +525,7 @@ export default async function AdminOrderDetailPage({
               )}
               {order.paypalPayerEmail && (
                 <div className="flex flex-wrap gap-x-2">
-                  <dt className="w-24 text-muted-foreground">Payer:</dt>
+                  <dt className="w-24 text-muted-foreground">Payeur :</dt>
                   <dd className="text-foreground">{order.paypalPayerEmail}</dd>
                 </div>
               )}
@@ -545,21 +546,21 @@ export default async function AdminOrderDetailPage({
               to online_payment is a separate (currently manual) admin
               concern. */}
           <div className="rounded-lg border border-border/40 bg-card/60 p-5">
-            <h3 className="text-sm font-semibold text-foreground">Proforma</h3>
+            <h3 className="text-sm font-semibold text-foreground">Facture proforma</h3>
             {order.proformaNumber && order.proformaIssuedAt ? (
               <>
                 <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Number:</dt>
+                    <dt className="w-24 text-muted-foreground">Numéro :</dt>
                     <dd className="font-mono text-foreground">
                       {order.proformaNumber}
                     </dd>
                   </div>
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Issued:</dt>
+                    <dt className="w-24 text-muted-foreground">Émise le :</dt>
                     <dd className="text-foreground">
                       {new Date(order.proformaIssuedAt).toLocaleString(
-                        "en-GB",
+                        "fr-FR",
                         {
                           day: "2-digit",
                           month: "2-digit",
@@ -571,11 +572,11 @@ export default async function AdminOrderDetailPage({
                     </dd>
                   </div>
                   <div className="flex flex-wrap gap-x-2">
-                    <dt className="w-24 text-muted-foreground">Method:</dt>
+                    <dt className="w-24 text-muted-foreground">Mode de règlement :</dt>
                     <dd className="text-foreground">
                       {order.paymentMethod === "wire_transfer"
-                        ? "Invoice payment (bank transfer)"
-                        : "Online payment"}
+                        ? "Virement bancaire (SWIFT)"
+                        : "Paiement en ligne"}
                     </dd>
                   </div>
                 </dl>
@@ -586,7 +587,7 @@ export default async function AdminOrderDetailPage({
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-secondary"
                   >
-                    Download PDF
+                    Télécharger le PDF
                   </a>
                   {canManageFinance && (
                     <AdminProformaButton orderId={order.id} alreadyIssued />
@@ -601,8 +602,9 @@ export default async function AdminOrderDetailPage({
             ) : (
               <>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Proforma has not been issued. Preview the PDF to check the
-                  details before sending it to the buyer by email.
+                  La facture proforma n’a pas encore été émise. Prévisualisez le
+                  PDF pour vérifier les informations avant de l’envoyer au client
+                  par e-mail.
                 </p>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <a
@@ -611,7 +613,7 @@ export default async function AdminOrderDetailPage({
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-secondary"
                   >
-                    PDF preview
+                    Aperçu du PDF
                   </a>
                   {canManageFinance && (
                     <AdminProformaButton
@@ -631,12 +633,13 @@ export default async function AdminOrderDetailPage({
           {order.paymentStatus === "completed" && !order.invoiceNumber && (
             <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-5">
               <h3 className="text-sm font-semibold text-foreground">
-                Invoice - not issued
+                Facture — non émise
               </h3>
               <p className="mt-2 text-xs text-muted-foreground">
-                The order is paid, but the final invoice was not generated
-                because the post-payment hook failed. Try again; the operation
-                is idempotent and will not duplicate the invoice.
+                La commande est payée, mais la facture définitive n’a pas été
+                générée car le hook post-paiement a échoué. Relancez
+                l’opération ; elle est idempotente et ne créera pas de facture
+                en double.
               </p>
               <div className="mt-3">
                 {canManageFinance && (
@@ -650,16 +653,16 @@ export default async function AdminOrderDetailPage({
               has run; for unpaid orders the section is hidden. */}
           {order.invoiceNumber && order.invoiceIssuedAt && (
             <div className="rounded-lg border border-border/40 bg-card/60 p-5">
-              <h3 className="text-sm font-semibold text-foreground">Invoice</h3>
+              <h3 className="text-sm font-semibold text-foreground">Facture</h3>
               <dl className="mt-3 space-y-1.5 text-xs leading-relaxed">
                 <div className="flex flex-wrap gap-x-2">
-                  <dt className="w-24 text-muted-foreground">Number:</dt>
+                  <dt className="w-24 text-muted-foreground">Numéro :</dt>
                   <dd className="font-mono text-foreground">{order.invoiceNumber}</dd>
                 </div>
                 <div className="flex flex-wrap gap-x-2">
-                  <dt className="w-24 text-muted-foreground">Issued:</dt>
+                  <dt className="w-24 text-muted-foreground">Émise le :</dt>
                   <dd className="text-foreground">
-                    {new Date(order.invoiceIssuedAt).toLocaleString("en-GB", {
+                    {new Date(order.invoiceIssuedAt).toLocaleString("fr-FR", {
                       day: "2-digit",
                       month: "2-digit",
                       year: "numeric",
@@ -675,7 +678,7 @@ export default async function AdminOrderDetailPage({
                 rel="noreferrer"
                 className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-[0.78rem] font-medium text-background transition hover:opacity-90"
               >
-                Download PDF
+                Télécharger le PDF
               </a>
               {orderPlutosSync && (
                 <AdminPlutosSyncPanel

@@ -33,7 +33,7 @@ export function AdminFreeRevisionPanel({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!note.trim()) {
-      setError("Reason is required.");
+      setError("Le motif est obligatoire.");
       return;
     }
     setPending(true);
@@ -58,17 +58,17 @@ export function AdminFreeRevisionPanel({
         <div>
           <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
             <Gift className="h-3.5 w-3.5 text-accent" />
-            Free revision
+            Révision offerte
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
             {willReopen
-              ? "Returns the order to work without a charge. The client receives an email."
-              : "Records a note about the free change. The client receives an email."}
+              ? "Renvoie la commande en production sans frais. Le client reçoit un e-mail."
+              : "Enregistre une note concernant la modification offerte. Le client reçoit un e-mail."}
           </p>
         </div>
         {!open && (
           <Button variant="accent" size="sm" onClick={() => setOpen(true)}>
-            Approve free revision
+            Accorder une révision offerte
           </Button>
         )}
       </div>
@@ -76,11 +76,11 @@ export function AdminFreeRevisionPanel({
       {open && (
         <form onSubmit={handleSubmit} className="mt-4 space-y-3">
           <div>
-            <Label className="text-xs">Reason (client sees this in the email)</Label>
+            <Label className="text-xs">Motif (le client le verra dans l’e-mail)</Label>
             <Textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="e.g. Approved after a phone conversation - adjust the door color."
+              placeholder="Ex. : accordée après échange téléphonique — ajuster la couleur de la porte."
               rows={2}
               className="mt-1 resize-none"
             />
@@ -88,7 +88,7 @@ export function AdminFreeRevisionPanel({
           {error && <p className="text-xs text-destructive">{error}</p>}
           <div className="flex gap-2">
             <Button type="submit" variant="accent" size="sm" disabled={pending}>
-              {pending ? "Sending..." : "Confirm free revision"}
+              {pending ? "Envoi en cours…" : "Confirmer la révision offerte"}
             </Button>
             <Button
               type="button"
@@ -100,7 +100,7 @@ export function AdminFreeRevisionPanel({
               }}
               disabled={pending}
             >
-              Cancel
+              Annuler
             </Button>
           </div>
         </form>

@@ -40,8 +40,8 @@ export function AdminRefundButton({ orderId }: Props) {
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-[0.78rem] text-muted-foreground">
-            This refunds the full captured amount through PayPal and marks
-            the order refunded.
+            Cette action rembourse l’intégralité du montant encaissé via
+            PayPal et marque la commande comme remboursée.
           </span>
           <button
             type="button"
@@ -49,7 +49,7 @@ export function AdminRefundButton({ orderId }: Props) {
             disabled={pending}
             className="inline-flex items-center gap-1.5 rounded-md bg-destructive px-3 py-1.5 text-[0.78rem] font-medium text-white transition hover:opacity-90 disabled:opacity-50"
           >
-            {pending ? "Refunding..." : "Refund payment"}
+            {pending ? "Remboursement…" : "Rembourser le paiement"}
           </button>
           <button
             type="button"
@@ -60,7 +60,7 @@ export function AdminRefundButton({ orderId }: Props) {
             disabled={pending}
             className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-secondary disabled:opacity-50"
           >
-            Cancel
+            Annuler
           </button>
         </div>
         {error && (
@@ -76,18 +76,18 @@ export function AdminRefundButton({ orderId }: Props) {
       onClick={() => setConfirming(true)}
       className="inline-flex items-center gap-1.5 rounded-md border border-destructive/40 bg-card px-3 py-1.5 text-[0.78rem] font-medium text-destructive transition hover:bg-destructive hover:text-white"
     >
-      Refund via PayPal
+      Rembourser via PayPal
     </button>
   );
 }
 
 function humanReason(reason: string): string {
-  if (reason === "not_admin") return "You do not have finance permissions.";
-  if (reason === "order_not_found") return "Order was not found.";
-  if (reason === "not_paypal") return "This order was not paid through PayPal.";
+  if (reason === "not_admin") return "Vous n’avez pas les droits finance.";
+  if (reason === "order_not_found") return "Commande introuvable.";
+  if (reason === "not_paypal") return "Cette commande n’a pas été réglée via PayPal.";
   if (reason === "not_completed")
-    return "Only completed payments can be refunded.";
+    return "Seuls les paiements finalisés peuvent être remboursés.";
   if (reason === "no_capture_id")
-    return "No PayPal capture id on this order — refund it from the PayPal dashboard.";
-  return `Error: ${reason}`;
+    return "Aucun identifiant de capture PayPal sur cette commande — effectuez le remboursement depuis le tableau de bord PayPal.";
+  return `Erreur : ${reason}`;
 }

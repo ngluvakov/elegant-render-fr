@@ -27,7 +27,7 @@ type Props = {
   compact?: boolean;
 };
 
-const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
   day: "2-digit",
   month: "2-digit",
   year: "numeric",
@@ -65,7 +65,7 @@ export function AdminPlutosSyncPanel({
         }
         router.refresh();
       } catch {
-        setFeedback("The request could not be completed. Try again.");
+        setFeedback("La demande n’a pas pu aboutir. Veuillez réessayer.");
       } finally {
         setPendingAction(null);
       }
@@ -78,8 +78,8 @@ export function AdminPlutosSyncPanel({
   );
   const requestLabel =
     sync.queueStatus === "failed" || sync.lastError
-      ? "Retry sync"
-      : "Send to Plutos";
+      ? "Relancer la synchronisation"
+      : "Envoyer vers Plutos";
 
   return (
     <div
@@ -96,7 +96,7 @@ export function AdminPlutosSyncPanel({
             <Badge className={state.tone}>{state.label}</Badge>
             {sync.status && (
               <span className="text-[0.72rem] text-muted-foreground">
-                Document: {humanStatus(sync.status)}
+                Document : {humanStatus(sync.status)}
               </span>
             )}
           </div>
@@ -105,12 +105,12 @@ export function AdminPlutosSyncPanel({
           </p>
           {sync.number && (
             <p className="mt-1 font-mono text-[0.7rem] text-muted-foreground">
-              Plutos number: {sync.number}
+              Numéro Plutos : {sync.number}
             </p>
           )}
           {sync.sefStatus && (
             <p className="mt-1 text-[0.7rem] text-muted-foreground">
-              SEF: {humanStatus(sync.sefStatus)}
+              SEF : {humanStatus(sync.sefStatus)}
             </p>
           )}
         </div>
@@ -126,7 +126,7 @@ export function AdminPlutosSyncPanel({
                 onClick={() => runAction("request", requestAction)}
               >
                 <Send className="h-3.5 w-3.5" />
-                {pendingAction === "request" ? "Sending..." : requestLabel}
+                {pendingAction === "request" ? "Envoi en cours…" : requestLabel}
               </Button>
             )}
             {refreshAction && canRefresh && (
@@ -143,8 +143,8 @@ export function AdminPlutosSyncPanel({
                   }`}
                 />
                 {pendingAction === "refresh"
-                  ? "Refreshing..."
-                  : "Refresh status"}
+                  ? "Actualisation…"
+                  : "Actualiser le statut"}
               </Button>
             )}
           </div>
@@ -172,42 +172,45 @@ function syncState(sync: PlutosSyncSnapshot): {
 } {
   if (sync.queueStatus === "pending" || sync.queueStatus === "running") {
     return {
-      label: sync.queueStatus === "running" ? "Syncing" : "Queued",
+      label:
+        sync.queueStatus === "running"
+          ? "Synchronisation en cours"
+          : "En file d’attente",
       tone: "bg-accent/15 text-accent",
     };
   }
   if (sync.queueStatus === "failed" || sync.lastError) {
     return {
-      label: "Sync failed",
+      label: "Échec de la synchronisation",
       tone: "bg-destructive/15 text-destructive",
     };
   }
   if (sync.syncedAt || sync.invoiceId) {
     return {
-      label: "Synced",
+      label: "Synchronisé",
       tone: "bg-accent/15 text-foreground",
     };
   }
   return {
-    label: "Not sent",
+    label: "Non envoyé",
     tone: "bg-muted text-muted-foreground",
   };
 }
 
 function statusDetail(sync: PlutosSyncSnapshot): string {
   if (sync.syncedAt) {
-    return `Last synced ${formatDate(sync.syncedAt)}.`;
+    return `Dernière synchronisation le ${formatDate(sync.syncedAt)}.`;
   }
   if (sync.lastAttemptAt) {
-    return `Last attempt ${formatDate(sync.lastAttemptAt)}.`;
+    return `Dernière tentative le ${formatDate(sync.lastAttemptAt)}.`;
   }
   if (sync.queueStatus === "pending") {
-    return "The invoice is waiting in the outbox.";
+    return "La facture est en attente dans l’outbox.";
   }
   if (sync.queueStatus === "running") {
-    return "The outbox processor is sending the invoice.";
+    return "Le processeur d’outbox envoie la facture.";
   }
-  return "This invoice has not been sent to the accounting system.";
+  return "Cette facture n’a pas été transmise au système comptable.";
 }
 
 function formatDate(value: string): string {
@@ -224,16 +227,16 @@ function humanStatus(value: string): string {
 }
 
 function humanReason(reason: string): string {
-  if (reason === "not_admin") return "You do not have permission.";
+  if (reason === "not_admin") return "Vous n’avez pas les droits nécessaires.";
   if (reason === "integration_disabled")
-    return "Plutos sync is currently disabled.";
-  if (reason === "order_not_found") return "Order was not found.";
-  if (reason === "charge_not_found") return "Additional charge was not found.";
+    return "La synchronisation Plutos est actuellement désactivée.";
+  if (reason === "order_not_found") return "Commande introuvable.";
+  if (reason === "charge_not_found") return "Frais supplémentaires introuvables.";
   if (reason === "invoice_not_issued")
-    return "The invoice must be issued before it can be sent.";
+    return "La facture doit être émise avant de pouvoir être envoyée.";
   if (reason === "before_sync_cutoff")
-    return "This invoice is earlier than the configured sync start date.";
+    return "Cette facture est antérieure à la date de début de synchronisation configurée.";
   if (reason === "invalid_config")
-    return "Plutos configuration is incomplete.";
-  return `Plutos sync failed: ${reason}`;
+    return "La configuration Plutos est incomplète.";
+  return `Échec de la synchronisation Plutos : ${reason}`;
 }

@@ -40,11 +40,11 @@ export function AdminGrantCreditsPanel({
     setError("");
     const parsedCredits = Math.floor(Number(credits));
     if (!Number.isFinite(parsedCredits) || parsedCredits <= 0) {
-      setError("Enter a valid credit count.");
+      setError("Saisissez un nombre de crédits valide.");
       return;
     }
     if (!note.trim()) {
-      setError("Reason for adding credits is required.");
+      setError("Le motif de l’ajout de crédits est obligatoire.");
       return;
     }
     setPending(true);
@@ -70,24 +70,24 @@ export function AdminGrantCreditsPanel({
         <div>
           <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
             <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
-            AI credits - {userName ?? userEmail}
+            Crédits AI — {userName ?? userEmail}
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Current balance:{" "}
+            Solde actuel :{" "}
             <strong className="text-foreground">
               {formatCreditsFromUnits(balanceUnits)}
             </strong>
             {expiresAt && (
               <>
-                {" · expires "}
-                {expiresAt.toLocaleDateString("en-GB")}
+                {" · expirent le "}
+                {expiresAt.toLocaleDateString("fr-FR")}
               </>
             )}
           </p>
         </div>
         {!open && (
           <Button size="sm" onClick={() => setOpen(true)}>
-            Add credits
+            Ajouter des crédits
           </Button>
         )}
       </div>
@@ -95,7 +95,7 @@ export function AdminGrantCreditsPanel({
       {open && (
         <form onSubmit={handleSubmit} className="mt-4 space-y-3">
           <div>
-            <Label className="text-xs">Credit count</Label>
+            <Label className="text-xs">Nombre de crédits</Label>
             <Input
               type="number"
               min="1"
@@ -104,15 +104,15 @@ export function AdminGrantCreditsPanel({
               className="mt-1"
             />
             <p className="mt-1 text-[0.68rem] text-muted-foreground">
-              1 credit = {AI_CREDIT_UNITS_PER_CREDIT} units · credits are valid for 12 months
+              1 crédit = {AI_CREDIT_UNITS_PER_CREDIT} unités · les crédits sont valables 12 mois
             </p>
           </div>
           <div>
-            <Label className="text-xs">Reason (visible in history)</Label>
+            <Label className="text-xs">Motif (visible dans l’historique)</Label>
             <Textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="e.g. Compensation for failed processing, marketing gift..."
+              placeholder="Ex. : dédommagement après un traitement échoué, geste commercial…"
               rows={2}
               className="mt-1 resize-none"
             />
@@ -120,7 +120,7 @@ export function AdminGrantCreditsPanel({
           {error && <p className="text-xs text-destructive">{error}</p>}
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={pending}>
-              {pending ? "Adding..." : "Add credits"}
+              {pending ? "Ajout en cours…" : "Ajouter les crédits"}
             </Button>
             <Button
               type="button"
@@ -132,7 +132,7 @@ export function AdminGrantCreditsPanel({
               }}
               disabled={pending}
             >
-              Cancel
+              Annuler
             </Button>
           </div>
         </form>

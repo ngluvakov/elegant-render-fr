@@ -46,10 +46,10 @@ export function AdminProformaButton({ orderId, alreadyIssued }: Props) {
         className="inline-flex items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-[0.78rem] font-medium text-background transition hover:opacity-90 disabled:opacity-50"
       >
         {pending
-          ? "Issuing…"
+          ? "Émission en cours…"
           : issued
-            ? "Reissue proforma"
-            : "Issue proforma"}
+            ? "Réémettre la facture proforma"
+            : "Émettre la facture proforma"}
       </button>
       {error && (
         <p className="text-[0.78rem] text-destructive">{error}</p>
@@ -59,8 +59,8 @@ export function AdminProformaButton({ orderId, alreadyIssued }: Props) {
 }
 
 function humanReason(reason: string): string {
-  if (reason === "not_admin") return "You are not an admin.";
-  if (reason === "order_not_found") return "Order was not found.";
-  if (reason === "no_billable_items") return "Order has no billable items.";
-  return `Error while issuing: ${reason}`;
+  if (reason === "not_admin") return "Vous n’avez pas les droits d’administrateur.";
+  if (reason === "order_not_found") return "Commande introuvable.";
+  if (reason === "no_billable_items") return "La commande ne contient aucun article facturable.";
+  return `Erreur lors de l’émission : ${reason}`;
 }

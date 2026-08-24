@@ -16,7 +16,7 @@ import {
   type TimelineEntry,
 } from "@/lib/order/activity-timeline";
 
-const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
   day: "2-digit",
   month: "2-digit",
   year: "numeric",
@@ -47,9 +47,9 @@ export async function AdminActivityTimeline({
   if (entries.length === 0) {
     return (
       <div className="rounded-lg border border-border/40 bg-card/60 p-5">
-        <h3 className="text-sm font-semibold text-foreground">Timeline</h3>
+        <h3 className="text-sm font-semibold text-foreground">Historique</h3>
         <p className="mt-2 text-xs text-muted-foreground">
-          There are no recorded events for this order yet.
+          Aucun événement enregistré pour cette commande pour le moment.
         </p>
       </div>
     );
@@ -58,7 +58,7 @@ export async function AdminActivityTimeline({
   return (
     <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <h3 className="text-sm font-semibold text-foreground">
-        Timeline ({entries.length})
+        Historique ({entries.length})
       </h3>
       <ol className="mt-4 space-y-3">
         {entries.map((entry, idx) => {

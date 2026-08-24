@@ -46,20 +46,20 @@ export function AdminVerifyVatButton({ orderId }: Props) {
         case "invalid":
           setFeedback({
             kind: "invalid",
-            text: "VIES says: VAT ID is invalid.",
+            text: "Réponse VIES : le numéro de TVA est invalide.",
           });
           router.refresh();
           break;
         case "error":
           setFeedback({
             kind: "neutral",
-            text: `VIES error: ${result.result.reason}. Try again in a few minutes.`,
+            text: `Erreur VIES : ${result.result.reason}. Réessayez dans quelques minutes.`,
           });
           break;
         case "unsupported_country":
           setFeedback({
             kind: "neutral",
-            text: "Country is not in the EU — VIES verification does not apply.",
+            text: "Le pays n’est pas membre de l’UE — la vérification VIES ne s’applique pas.",
           });
           break;
       }
@@ -74,7 +74,7 @@ export function AdminVerifyVatButton({ orderId }: Props) {
         disabled={pending}
         className="inline-flex items-center gap-1.5 rounded-md border border-foreground bg-card px-3 py-1.5 text-[0.78rem] font-medium text-foreground transition hover:bg-foreground hover:text-background disabled:opacity-50"
       >
-        {pending ? "Checking…" : "Verify VAT (VIES)"}
+        {pending ? "Vérification…" : "Vérifier la TVA (VIES)"}
       </button>
       {feedback && (
         <p
@@ -92,13 +92,13 @@ export function AdminVerifyVatButton({ orderId }: Props) {
 }
 
 function humanReason(reason: string): string {
-  if (reason === "not_admin") return "You are not an admin.";
-  if (reason === "order_not_found") return "Order was not found.";
+  if (reason === "not_admin") return "Vous n’avez pas les droits d’administrateur.";
+  if (reason === "order_not_found") return "Commande introuvable.";
   if (reason === "not_foreign_company")
-    return "Verification is only for foreign companies.";
+    return "La vérification ne concerne que les entreprises étrangères.";
   if (reason === "missing_vat_data")
-    return "VAT ID or country is missing from the order.";
+    return "Le numéro de TVA ou le pays est absent de la commande.";
   if (reason === "non_eu_country")
-    return "Country is not in the EU — VIES does not apply.";
-  return `Error: ${reason}`;
+    return "Le pays n’est pas membre de l’UE — VIES ne s’applique pas.";
+  return `Erreur : ${reason}`;
 }

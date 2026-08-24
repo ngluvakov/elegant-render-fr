@@ -80,9 +80,9 @@ function blankRow(): RowState {
 }
 
 function statusLabel(status: ChargeView["status"]): string {
-  if (status === "pending") return "Awaiting payment";
-  if (status === "paid") return "Paid";
-  return "Cancelled";
+  if (status === "pending") return "En attente de paiement";
+  if (status === "paid") return "Payé";
+  return "Annulé";
 }
 
 function statusAccent(status: ChargeView["status"]): string {
@@ -161,11 +161,11 @@ export function AdminChargesPanel({
 
     for (const item of items) {
       if (!item.label) {
-        setError("Each item must have a name.");
+        setError("Chaque article doit avoir une désignation.");
         return;
       }
       if (!Number.isFinite(item.amountCents) || item.amountCents <= 0) {
-        setError(`Price for "${item.label}" must be greater than zero.`);
+        setError(`Le prix de « ${item.label} » doit être supérieur à zéro.`);
         return;
       }
     }
@@ -204,15 +204,15 @@ export function AdminChargesPanel({
         <div>
           <h3 className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
             <Receipt className="h-3.5 w-3.5 text-accent" />
-            Additional charges
+            Frais supplémentaires
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Additional services, changes, or custom work outside the original scope.
+            Prestations supplémentaires, modifications ou travaux sur mesure hors du périmètre initial.
           </p>
         </div>
         {!open && (
           <Button size="sm" onClick={() => setOpen(true)}>
-            Request additional charge
+            Demander un supplément
           </Button>
         )}
       </div>
@@ -231,7 +231,7 @@ export function AdminChargesPanel({
                       {statusLabel(charge.status)}
                     </Badge>
                     <span className="text-[0.68rem] text-muted-foreground">
-                      {charge.createdAt.toLocaleDateString("en-GB")}
+                      {charge.createdAt.toLocaleDateString("fr-FR")}
                     </span>
                     {charge.paymentProvider && (
                       <span className="text-[0.68rem] text-muted-foreground">
@@ -265,14 +265,14 @@ export function AdminChargesPanel({
               {charge.invoiceNumber && (
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/40 pt-3 text-[0.72rem]">
                   <div>
-                    <span className="text-muted-foreground">Invoice </span>
+                    <span className="text-muted-foreground">Facture </span>
                     <span className="font-mono text-foreground">
                       {charge.invoiceNumber}
                     </span>
                     {charge.invoiceIssuedAt && (
                       <span className="text-muted-foreground">
                         {" "}
-                        · {charge.invoiceIssuedAt.toLocaleDateString("en-GB")}
+                        · {charge.invoiceIssuedAt.toLocaleDateString("fr-FR")}
                       </span>
                     )}
                   </div>
@@ -282,7 +282,7 @@ export function AdminChargesPanel({
                     rel="noreferrer"
                     className="font-medium text-foreground underline-offset-4 hover:underline"
                   >
-                    Download invoice
+                    Télécharger la facture
                   </a>
                 </div>
               )}
@@ -305,7 +305,7 @@ export function AdminChargesPanel({
                     onClick={() => handleCancel(charge.id)}
                     disabled={cancellingId === charge.id}
                   >
-                    {cancellingId === charge.id ? "Cancelling..." : "Cancel"}
+                    {cancellingId === charge.id ? "Annulation…" : "Annuler"}
                   </Button>
                 </div>
               )}
@@ -324,7 +324,7 @@ export function AdminChargesPanel({
               >
                 <div className="flex items-center justify-between">
                   <p className="text-[0.68rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Item {index + 1}
+                    Article {index + 1}
                   </p>
                   {rows.length > 1 && (
                     <Button
@@ -339,7 +339,7 @@ export function AdminChargesPanel({
                 </div>
                 <div className="mt-2 grid gap-2">
                   <div>
-                    <Label className="text-[0.68rem]">From catalog (optional)</Label>
+                    <Label className="text-[0.68rem]">Depuis le catalogue (facultatif)</Label>
                     <select
                       value={row.productId ?? ""}
                       onChange={(e) => {
@@ -354,28 +354,28 @@ export function AdminChargesPanel({
                       }}
                       className="mt-1 h-8 w-full rounded-lg border border-input bg-transparent px-2 text-xs"
                     >
-                      <option value="">— Custom —</option>
+                      <option value="">— Sur mesure —</option>
                       {CATALOG_OPTIONS.map((opt) => (
                         <option key={opt.productId} value={opt.productId}>
-                          {opt.categoryLabel} — {opt.label} (from {formatEur(opt.basePriceEur)})
+                          {opt.categoryLabel} — {opt.label} (à partir de {formatEur(opt.basePriceEur)})
                         </option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <Label className="text-[0.68rem]">Item name</Label>
+                    <Label className="text-[0.68rem]">Désignation</Label>
                     <Input
                       value={row.label}
                       onChange={(e) =>
                         updateRow(row.rid, { label: e.target.value })
                       }
-                      placeholder="e.g. Additional room - kitchen"
+                      placeholder="Ex. : pièce supplémentaire — cuisine"
                       className="mt-1"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label className="text-[0.68rem]">Price (EUR)</Label>
+                      <Label className="text-[0.68rem]">Prix unitaire (EUR)</Label>
                       <Input
                         type="number"
                         step="1"
@@ -388,7 +388,7 @@ export function AdminChargesPanel({
                       />
                     </div>
                     <div>
-                      <Label className="text-[0.68rem]">Quantity</Label>
+                      <Label className="text-[0.68rem]">Quantité</Label>
                       <Input
                         type="number"
                         min="1"
@@ -407,22 +407,22 @@ export function AdminChargesPanel({
 
           <Button type="button" variant="outline" size="sm" onClick={addRow}>
             <Plus className="h-3 w-3" />
-            Add another item
+            Ajouter un article
           </Button>
 
           <div>
-            <Label className="text-xs">Reason (client sees this in the email)</Label>
+            <Label className="text-xs">Motif (le client le verra dans l’e-mail)</Label>
             <Textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              placeholder="e.g. Additional agreed changes after the presentation."
+              placeholder="Ex. : modifications supplémentaires convenues après la présentation."
               rows={2}
               className="mt-1 resize-none"
             />
           </div>
 
           <div className="flex items-center justify-between rounded-xl bg-muted/40 px-3 py-2">
-            <span className="text-xs text-muted-foreground">Total to charge</span>
+            <span className="text-xs text-muted-foreground">Total à facturer</span>
             <span className="text-base font-bold text-foreground">
               {formatEur(totalCents / 100)}
             </span>
@@ -432,7 +432,7 @@ export function AdminChargesPanel({
 
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={pending || totalCents <= 0}>
-              {pending ? "Sending..." : "Send to client for payment"}
+              {pending ? "Envoi en cours…" : "Envoyer au client pour paiement"}
             </Button>
             <Button
               type="button"
@@ -444,7 +444,7 @@ export function AdminChargesPanel({
               }}
               disabled={pending}
             >
-              Cancel
+              Annuler
             </Button>
           </div>
         </form>

@@ -213,15 +213,21 @@ const styles = StyleSheet.create({
 function formatMoney(cents: number, _currency: "EUR"): string {
   void _currency;
   const value = cents / 100;
-  return new Intl.NumberFormat("en-GB", {
+  // French money style: "1 234,56 €". Intl uses U+202F (narrow no-break
+  // space) as the group separator, and neither the registered Noto subset
+  // nor react-pdf's Helvetica fallback has a glyph for it — it would print
+  // as a blank box. Swap it for U+00A0, which both cover.
+  return new Intl.NumberFormat("fr-FR", {
     style: "currency",
     currency: "EUR",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(value);
+  })
+    .format(value)
+    .replace(/ /g, " ");
 }
 
-function formatDate(date: Date, locale: "sr-Latn-RS" | "en-GB"): string {
+function formatDate(date: Date, locale: "sr-Latn-RS" | "fr-FR"): string {
   // Serbian tax point: render in Europe/Belgrade so the printed proforma date
   // matches the accounting (Plutos) date regardless of the server timezone.
   return date.toLocaleDateString(locale, {
@@ -272,7 +278,7 @@ export async function renderProformaPdf(data: ProformaData): Promise<Buffer> {
 function ProformaDocument({ data }: { data: ProformaData }) {
   const layoutKey = data.buyerType;
   const t = STRINGS[layoutKey];
-  const locale = "en-GB";
+  const locale = "fr-FR";
 
   const subtotalCents = data.items.reduce(
     (sum, it) => sum + it.quantity * it.unitPriceNetCents,

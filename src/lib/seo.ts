@@ -95,6 +95,19 @@ export const NO_INDEX_ROBOTS: Metadata["robots"] = {
   },
 };
 
+/**
+ * Preview deployments run with USE_STATIC_PRICING=1 (no database) on a
+ * *.vercel.app URL. They must never be indexed: the same copy would compete
+ * with the real domain and the canonical URLs point at vercel.app. Dropping
+ * USE_STATIC_PRICING at go-live flips the whole site back to indexable.
+ */
+export const IS_PREVIEW_DEPLOYMENT = process.env.USE_STATIC_PRICING === "1";
+
+/** Site-wide robots directive — no-index while this is a preview build. */
+export const PAGE_ROBOTS: Metadata["robots"] = IS_PREVIEW_DEPLOYMENT
+  ? NO_INDEX_ROBOTS
+  : INDEXABLE_ROBOTS;
+
 type PublicMetadataOptions = {
   title: string;
   description: string;

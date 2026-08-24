@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/lib/content/site";
+import { IS_PREVIEW_DEPLOYMENT } from "@/lib/seo";
 
 // Keep crawlers on public, citeable material. Index exclusion for HTML pages
 // should still use noindex/auth; robots.txt is a crawl preference.
@@ -51,6 +52,11 @@ const AI_BOTS = [
 ];
 
 export default function robots(): MetadataRoute.Robots {
+  // Preview build: keep every crawler out entirely. robots.txt is only a
+  // crawl preference, so the pages also carry noindex via PAGE_ROBOTS.
+  if (IS_PREVIEW_DEPLOYMENT) {
+    return { rules: [{ userAgent: "*", disallow: "/" }] };
+  }
   return {
     rules: [
       {

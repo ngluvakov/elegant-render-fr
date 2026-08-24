@@ -11,7 +11,7 @@ import { SITE } from "@/lib/content/site";
 import {
   absoluteUrl,
   buildLanguageAlternates,
-  INDEXABLE_ROBOTS,
+  PAGE_ROBOTS,
   SEO,
 } from "@/lib/seo";
 
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     canonical: SITE.url,
     languages: buildLanguageAlternates("/"),
   },
-  robots: INDEXABLE_ROBOTS,
+  robots: PAGE_ROBOTS,
   openGraph: {
     title: SEO.defaultTitle,
     description: SEO.defaultDescription,

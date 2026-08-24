@@ -70,3 +70,33 @@ Run `git log --oneline main..fr-translation` for the authoritative list.
 - [ ] `hreflang` alternates between `.com`, `.de` and `.fr`
 - [ ] Submit the sitemap in Search Console for the new property
 - [ ] Verify the TÜV Rheinland Certipedia link resolves with `?locale=fr`
+
+---
+
+## Open decisions surfaced during translation
+
+1. **Plutos accounting source id.** `src/server/plutos/ids.ts` has
+   `PLUTOS_SOURCE = "elegantrender.com"`, and it prefixes every external id
+   sent to the accounting system (`${PLUTOS_SOURCE}:${target}:${targetId}`).
+   Left unchanged because it is a **matched identifier**, not copy — changing
+   it decides how `.fr` invoices are keyed in the books. Settle this with the
+   accountant before the first real invoice is issued; changing it later
+   splits the history.
+
+2. **PDF font subset.** `src/lib/pdf-fonts.ts` registers only the
+   `noto-sans-latin-ext-*` files. Verified with fontkit: that subset has **no
+   basic Latin, no French accents, no `’ « » €`** — those characters have
+   always rendered through react-pdf's built-in Helvetica fallback, which is
+   why the English `.com` invoices look fine. Neither the subset nor Helvetica
+   has **U+202F** (narrow no-break space), so the PDF templates deliberately
+   use U+00A0 instead, and `formatMoney` normalises `1 234,56 €` accordingly.
+   Cleaner fix, if the mixed-typeface rendering ever shows: register the
+   `noto-sans-latin-*` files as well (they cover everything French needs) and
+   keep `latin-ext` as the fallback family for Serbian characters in the
+   company address.
+
+3. **Bitrix24 / Plutos payloads stay English.** Deal and lead titles, timeline
+   comments, stage names and payload keys were left as-is — they render inside
+   the CRM/accounting system, and some back CRM filters. One Serbian leftover
+   (`"Kupac"` → `Client`) was fixed in `plutos/source.ts` so the books match
+   the PDF; `"Klijent"` in `bitrix/sync-contact.ts` was left alone.

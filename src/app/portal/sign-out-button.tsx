@@ -7,7 +7,7 @@ export function SignOutButton() {
   return (
     <form action={signOutAction}>
       <Button type="submit" variant="outline" size="sm">
-        Odjavite se
+        Se déconnecter
       </Button>
     </form>
   );

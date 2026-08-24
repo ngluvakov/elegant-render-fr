@@ -3,9 +3,9 @@ import { getAiStudioState } from "@/server/actions/ai-studio";
 import { AiStudioWorkspace } from "./workspace";
 
 export const metadata: Metadata = {
-  title: "AI Studio — Portal",
+  title: "AI Studio — Espace client",
   description:
-    "Workspace for AI photo edits, masks, prompts, and generating new variants.",
+    "Espace de travail pour retoucher des photos par IA, créer des masques, rédiger des prompts et générer de nouvelles variantes.",
   robots: { index: false, follow: false },
 };
 

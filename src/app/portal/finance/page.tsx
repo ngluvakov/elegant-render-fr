@@ -17,9 +17,9 @@ import { buildInvoiceList, type InvoiceDoc } from "@/lib/invoice-list";
 import { FinanceInvoicesCell } from "@/components/portal/finance-invoices-cell";
 
 export const metadata: Metadata = {
-  title: "Finance",
+  title: "Finances",
   description:
-    "Overview of payments, invoices, refunds, and financial status for your projects.",
+    "Vue d’ensemble des paiements, factures, remboursements et de la situation financière de vos projets.",
   robots: { index: false, follow: false },
 };
 
@@ -158,7 +158,7 @@ export default async function FinancePage() {
     const projectName =
       order.projectName ??
       order.items[0]?.productLabel ??
-      "Order";
+      "Commande";
 
     return {
       orderId: order.id,
@@ -201,10 +201,10 @@ export default async function FinancePage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl text-foreground md:text-3xl">
-            Finance
+            Finances
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Overview of projects, payments, and issued invoices.
+            Vue d’ensemble des projets, des paiements et des factures émises.
           </p>
         </div>
       </div>
@@ -212,18 +212,18 @@ export default async function FinancePage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard
           icon={CheckCircle2}
-          label="Paid"
+          label="Payé"
           value={formatCurrencyTotals(paidTotal)}
           tone="sage"
         />
         <StatCard
           icon={Clock}
-          label="Awaiting payment"
+          label="En attente de paiement"
           value={formatCurrencyTotals(pendingTotal)}
         />
         <StatCard
           icon={AlertCircle}
-          label="Invoice in preparation"
+          label="Factures en préparation"
           value={missingInvoiceCount.toString()}
           tone={missingInvoiceCount > 0 ? "accent" : "neutral"}
         />
@@ -233,7 +233,7 @@ export default async function FinancePage() {
         <div className="rounded-lg border border-dashed border-border/60 bg-card/40 p-12 text-center">
           <ReceiptText className="mx-auto h-8 w-8 text-muted-foreground/60" />
           <p className="mt-3 text-sm font-medium text-foreground">
-            There are no financial transactions yet.
+            Aucune transaction financière pour le moment.
           </p>
         </div>
       ) : (
@@ -243,11 +243,11 @@ export default async function FinancePage() {
             <div className="space-y-1">
               {/* Header */}
               <div className="grid grid-cols-[2fr_8rem_6.5rem_8rem_10rem] items-center gap-4 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                <span>Project</span>
-                <span className="text-center">Status</span>
+                <span>Projet</span>
+                <span className="text-center">Statut</span>
                 <span>Date</span>
-                <span className="text-right">Amount</span>
-                <span className="text-right">Invoices</span>
+                <span className="text-right">Montant</span>
+                <span className="text-right">Factures</span>
               </div>
 
               {rows.map((row, idx) => (
@@ -261,7 +261,7 @@ export default async function FinancePage() {
                   <Link
                     href={`/portal/orders/${row.orderId}`}
                     className="absolute inset-0 rounded-lg"
-                    aria-label={`Open ${row.orderNumber}`}
+                    aria-label={`Ouvrir ${row.orderNumber}`}
                   />
                   <div className="relative pointer-events-none min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">
@@ -285,7 +285,7 @@ export default async function FinancePage() {
                     </p>
                     {totalsValue(row.pending) > 0 && row.status !== "pending" && (
                       <p className="mt-0.5 text-[0.62rem] text-accent">
-                        {formatCurrencyTotals(row.pending)} pending
+                        {formatCurrencyTotals(row.pending)} en attente
                       </p>
                     )}
                   </div>
@@ -310,7 +310,7 @@ export default async function FinancePage() {
                 <Link
                   href={`/portal/orders/${row.orderId}`}
                   className="absolute inset-0 rounded-lg"
-                  aria-label={`Open ${row.orderNumber}`}
+                  aria-label={`Ouvrir ${row.orderNumber}`}
                 />
                 <div className="relative pointer-events-none flex items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -335,7 +335,7 @@ export default async function FinancePage() {
                     </p>
                     {totalsValue(row.pending) > 0 && row.status !== "pending" && (
                       <p className="mt-0.5 text-[0.62rem] text-accent">
-                        {formatCurrencyTotals(row.pending)} pending
+                        {formatCurrencyTotals(row.pending)} en attente
                       </p>
                     )}
                   </div>
@@ -393,11 +393,11 @@ function StatCard({
 }
 
 function statusLabel(status: RowStatus): string {
-  if (status === "completed") return "Paid";
-  if (status === "partial") return "Additional payment pending";
-  if (status === "failed") return "Failed";
-  if (status === "refunded") return "Refunded";
-  return "Awaiting payment";
+  if (status === "completed") return "Payé";
+  if (status === "partial") return "Complément en attente";
+  if (status === "failed") return "Échec";
+  if (status === "refunded") return "Remboursé";
+  return "En attente de paiement";
 }
 
 function statusAccent(status: RowStatus): string {
@@ -411,7 +411,7 @@ function statusAccent(status: RowStatus): string {
 }
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString("en-GB", {
+  return date.toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

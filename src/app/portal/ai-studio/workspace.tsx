@@ -310,15 +310,15 @@ export function AiStudioWorkspace({
     activeGeneration?.status === "queued" ||
     activeGeneration?.status === "processing";
   const processingLabel = pending
-    ? "Starting generation..."
+    ? "Lancement de la génération…"
     : activeGeneration?.status === "queued"
-      ? "Generation is queued..."
+      ? "Génération en file d’attente…"
       : activeGenerationProcessing
-        ? "Processing…"
+        ? "Traitement en cours…"
         : null;
   const processingError =
     activeGeneration?.status === "failed"
-      ? activeGeneration.errorMessage ?? "AI generation failed."
+      ? activeGeneration.errorMessage ?? "La génération IA a échoué."
       : null;
   const readiness = useMemo(
     () =>
@@ -409,7 +409,7 @@ export function AiStudioWorkspace({
     const response = await fetch("/api/ai-studio/state", { cache: "no-store" });
     const nextState = (await response.json()) as AiStudioState;
     if ("error" in nextState) {
-      setError(nextState.error ?? "AI Studio status is not available.");
+      setError(nextState.error ?? "L’état de l’AI Studio n’est pas disponible.");
       return;
     }
     setBalanceUnits(nextState.balanceUnits);
@@ -511,11 +511,11 @@ export function AiStudioWorkspace({
       setParentGenerationId(data.generation.id);
       setActiveGenerationId(data.generation.id);
       resultSuppressedForInputPathRef.current = null;
-      setNotice("AI generation is complete.");
+      setNotice("La génération IA est terminée.");
     }
     if (data.generation.status === "failed") {
       setActiveGenerationId(data.generation.id);
-      setError(data.generation.errorMessage ?? "AI generation failed.");
+      setError(data.generation.errorMessage ?? "La génération IA a échoué.");
     }
   }, [trackGenerationOutcome]);
 
@@ -574,7 +574,7 @@ export function AiStudioWorkspace({
   }, [editType, objectMode]);
 
   // Wipes the workspace back to defaults — working image, result,
-  // promptovi, kontrole, modal. Ne dira history ni balance. Sets the
+  // prompts, controls, modal. Doesn't touch history or balance. Sets the
   // dismissed flag so a focus-fired or interval-fired refresh doesn't
   // immediately re-populate the cleared workspace.
   const handleClearAll = useCallback(() => {
@@ -595,7 +595,7 @@ export function AiStudioWorkspace({
     setEditorResetToken((value) => value + 1);
     setOpenGenerationId(null);
     setError("");
-    setNotice("Working image and settings were cleared.");
+    setNotice("L’image de travail et les réglages ont été réinitialisés.");
     workspaceDismissedRef.current = true;
     resultSuppressedForInputPathRef.current = null;
   }, []);
@@ -627,7 +627,7 @@ export function AiStudioWorkspace({
       setActiveGenerationId(null);
       setEditorResetToken((value) => value + 1);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed.");
+      setError(err instanceof Error ? err.message : "Échec de l’import.");
     }
   };
 
@@ -638,17 +638,17 @@ export function AiStudioWorkspace({
     if (files.length === 0) return;
     const invalid = files.find((file) => validateAiImageFile(file));
     if (invalid) {
-      setError(validateAiImageFile(invalid) ?? "File is not supported.");
+      setError(validateAiImageFile(invalid) ?? "Ce fichier n’est pas pris en charge.");
       return;
     }
     const remaining = MAX_OBJECT_REFERENCE_IMAGES - referenceInputs.length;
     if (remaining <= 0) {
-      setError("You can add up to 5 item images per generation.");
+      setError("Vous pouvez ajouter jusqu’à 5 images de l’objet par génération.");
       return;
     }
     const selected = files.slice(0, remaining);
     if (files.length > remaining) {
-      setNotice(`Added ${remaining} image${remaining === 1 ? "" : "s"}. The maximum is 5 angles of the same item.`);
+      setNotice(`${remaining} image${remaining === 1 ? "" : "s"} ajoutée${remaining === 1 ? "" : "s"}. Le maximum est de 5 angles du même objet.`);
     }
     try {
       const uploads = await Promise.all(
@@ -665,11 +665,11 @@ export function AiStudioWorkspace({
       setReferenceInputs((prev) => [...prev, ...uploads]);
       if (referenceInputs.length + uploads.length > 1) {
         setNotice(
-          "The first image is the main reference. Additional angles must show the same item, model, color, and material. If they differ, the AI follows the first image.",
+          "La première image est la référence principale. Les angles supplémentaires doivent montrer le même objet, le même modèle, la même couleur et la même matière. En cas de différence, l’IA suit la première image.",
         );
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Item image upload failed.");
+      setError(err instanceof Error ? err.message : "Échec de l’import de l’image de l’objet.");
     }
   };
 
@@ -684,7 +684,7 @@ export function AiStudioWorkspace({
       return [selected, ...prev.filter((_, itemIndex) => itemIndex !== index)];
     });
     setNotice(
-      "The selected image is now the main reference. Other images are used only as supporting angles.",
+      "L’image sélectionnée est désormais la référence principale. Les autres images ne servent que d’angles complémentaires.",
     );
   }, []);
 
@@ -696,7 +696,7 @@ export function AiStudioWorkspace({
     setActiveGenerationId(null);
     setMaskDirty(false);
     setEditorResetToken((value) => value + 1);
-    setNotice("The result was set as the new image to edit.");
+    setNotice("Le résultat a été défini comme nouvelle image à retoucher.");
   }, [markWorkspaceActive]);
 
   useEffect(() => {
@@ -728,7 +728,7 @@ export function AiStudioWorkspace({
           !generation.resultStoragePath ||
           generation.filesExpired
         ) {
-          setError("The selected AI creation is not available as a working image.");
+          setError("La création IA sélectionnée n’est pas disponible comme image de travail.");
           return;
         }
         setHistory((prev) =>
@@ -747,10 +747,10 @@ export function AiStudioWorkspace({
         setResultAsBaseInput(nextInput);
         setParentGenerationId(generation.id);
         setResultUrl(generation.resultUrl);
-        setNotice("The AI creation has been set as the new working image.");
+        setNotice("La création IA a été définie comme nouvelle image de travail.");
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return;
-        setError("The AI creation is currently unavailable.");
+        setError("La création IA est momentanément indisponible.");
       }
     };
 
@@ -917,7 +917,7 @@ export function AiStudioWorkspace({
       setMaskDirty(false);
       setEditorResetToken((value) => value + 1);
       setOpenGenerationId(null);
-      setNotice("Settings have loaded. Start the generation when you are ready.");
+      setNotice("Les réglages ont été chargés. Lancez la génération quand vous êtes prêt.");
     },
     [history, markWorkspaceActive],
   );
@@ -925,11 +925,11 @@ export function AiStudioWorkspace({
   const handleDeleteGeneration = useCallback(
     async (item: GenerationHistoryItem | GenerationDetail) => {
       if (item.status === "queued" || item.status === "processing") {
-        setError("The generation is still running. Wait for it to finish before deleting it.");
+        setError("La génération est toujours en cours. Attendez qu’elle se termine avant de la supprimer.");
         return;
       }
       const confirmed = window.confirm(
-        "Permanently delete this AI creation and its files? This action cannot be undone.",
+        "Supprimer définitivement cette création IA et ses fichiers ? Cette action est irréversible.",
       );
       if (!confirmed) return;
 
@@ -960,17 +960,17 @@ export function AiStudioWorkspace({
           setResultUrl(previousResultUrl);
           setActiveGenerationId(previousActiveGenerationId);
           setParentGenerationId(previousParentGenerationId);
-          setError(data.error ?? "Delete failed.");
+          setError(data.error ?? "Échec de la suppression.");
           return;
         }
-        setNotice("The AI creation was permanently deleted.");
+        setNotice("La création IA a été définitivement supprimée.");
       } catch {
         setHistory(previousHistory);
         setCurrentResult(previousCurrentResult);
         setResultUrl(previousResultUrl);
         setActiveGenerationId(previousActiveGenerationId);
         setParentGenerationId(previousParentGenerationId);
-        setError("Delete failed. Try again.");
+        setError("Échec de la suppression. Réessayez.");
       } finally {
         setDeletingGenerationId(null);
       }
@@ -980,15 +980,15 @@ export function AiStudioWorkspace({
 
   const handleGenerate = async (maskBlob: Blob | null) => {
     if (!readiness.canGenerate) {
-      setError(readiness.primaryMessage ?? "Check what is missing before generating.");
+      setError(readiness.primaryMessage ?? "Vérifiez ce qui manque avant de générer.");
       return;
     }
     if (!activeInput) {
-      setError("Upload a photo first.");
+      setError("Importez d’abord une photo.");
       return;
     }
     if (needsReferenceImage && referenceInputs.length === 0) {
-      setError("Add an image of the furniture/decor you want to place in the interior.");
+      setError("Ajoutez une image du mobilier ou de la décoration à placer dans l’intérieur.");
       return;
     }
     if (
@@ -997,7 +997,7 @@ export function AiStudioWorkspace({
       (!maskBlob || mode !== "advanced" || !maskDirty)
     ) {
       setError(
-        "For replacement, mark the existing item to replace. The mask does not need to be perfect; the system will expand the local area for the new item, shadow, and contact.",
+        "Pour un remplacement, marquez l’objet existant à remplacer. Le masque n’a pas besoin d’être parfait ; le système élargit la zone locale pour le nouvel objet, l’ombre et le contact.",
       );
       return;
     }
@@ -1005,11 +1005,11 @@ export function AiStudioWorkspace({
       activeEdit.multiSelect &&
       parseSelectedOptions(selectedOption).length === 0
     ) {
-      setError(`Select at least one category in "${activeEdit.optionsLabel ?? "options"}".`);
+      setError(`Sélectionnez au moins une catégorie dans « ${activeEdit.optionsLabel ?? "options"} ».`);
       return;
     }
     if (!linkedParentGenerationId && balanceUnits < activeEdit.units) {
-      setError("You do not have enough AI credits. Top up your balance before generating.");
+      setError("Vous n’avez pas assez de crédits IA. Rechargez votre solde avant de générer.");
       return;
     }
 
@@ -1022,7 +1022,7 @@ export function AiStudioWorkspace({
       editType === "object_insertion" && objectMode === "insert" && !maskDirty;
     setNotice(
       objectInsertWithoutMask
-        ? "Generating without a mask: the AI chooses the item position, so the result may be less predictable."
+        ? "Génération sans masque : l’IA choisit la position de l’objet, le résultat peut donc être moins prévisible."
         : "",
     );
     markWorkspaceActive();
@@ -1085,7 +1085,7 @@ export function AiStudioWorkspace({
         return;
       }
       if (!result.generationId) {
-        setError("AI generation was not started.");
+        setError("La génération IA n’a pas démarré.");
         return;
       }
       setActiveGenerationId(result.generationId);
@@ -1183,7 +1183,7 @@ export function AiStudioWorkspace({
       setPrompt("");
       setMaskDirty(false);
       setEditorResetToken((value) => value + 1);
-      setNotice("AI generation has started. You can stay here or come back later.");
+      setNotice("La génération IA a démarré. Vous pouvez rester ici ou revenir plus tard.");
       void refreshGeneration(result.generationId);
     } finally {
       setPending(false);
@@ -1208,20 +1208,21 @@ export function AiStudioWorkspace({
           aria-hidden="true"
         >
           <Sparkles className="h-4 w-4" />
-          <span>AI generation</span>
+          <span>Génération IA</span>
         </div>
       )}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-            AI Studio · Beta
+            AI Studio · Bêta
           </p>
           <h1 className="mt-1 font-heading text-3xl text-foreground md:text-4xl">
-            Fast photo editing
+            Retouche photo rapide
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Fast simple mode, precise advanced mode with masks, selections, and
-            drawing on the image. Credits are valid for 12 months from the last top-up.
+            Mode simple rapide, mode avancé précis avec masques, sélections et
+            dessin sur l’image. Les crédits sont valables 12 mois à compter de
+            la dernière recharge.
           </p>
         </div>
         <BalanceCard
@@ -1370,7 +1371,7 @@ function StudioControls({
     <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <div className="grid gap-5 lg:grid-cols-3">
         <div>
-          <ControlLabel>Processing</ControlLabel>
+          <ControlLabel>Retouche</ControlLabel>
           <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
             {AI_EDIT_TYPES.map((item) => (
               <SelectableTile
@@ -1407,7 +1408,7 @@ function StudioControls({
                           : "text-muted-foreground hover:text-foreground",
                       )}
                     >
-                      {item === "simple" ? "Simple" : "Advanced"}
+                      {item === "simple" ? "Simple" : "Avancé"}
                     </button>
                   );
                 })}
@@ -1415,9 +1416,9 @@ function StudioControls({
               <p className="mt-1 text-[0.68rem] text-muted-foreground">
                 {edit.requiresReferenceImage
                   ? objectMode === "replace"
-                    ? "Mark the existing item to replace; the system will expand the local area for the new item, shadow, and contact."
-                    : "The mask is a position guide; the AI may slightly expand the area for shadow, contact, and natural blending."
-                  : "Advanced unlocks the mask for precise marking."}
+                    ? "Marquez l’objet existant à remplacer ; le système élargit la zone locale pour le nouvel objet, l’ombre et le contact."
+                    : "Le masque sert de guide de position ; l’IA peut légèrement élargir la zone pour l’ombre, le contact et un fondu naturel."
+                  : "Le mode avancé débloque le masque pour un marquage précis."}
               </p>
             </div>
           )}
@@ -1453,7 +1454,7 @@ function StudioControls({
                   })}
                 </div>
                 <p className="mt-1 text-[0.68rem] text-muted-foreground">
-                  Select one or more categories.
+                  Sélectionnez une ou plusieurs catégories.
                 </p>
               </div>
             ) : (
@@ -1493,7 +1494,7 @@ function StudioControls({
                       {item.image && (
                         <Image
                           src={item.image}
-                          alt={`Style example: ${item.label}`}
+                          alt={`Exemple de style : ${item.label}`}
                           width={160}
                           height={90}
                           className="h-16 w-full object-cover"
@@ -1518,7 +1519,7 @@ function StudioControls({
 
           {edit.supportsColor && (
             <div>
-              <ControlLabel>Color</ControlLabel>
+              <ControlLabel>Couleur</ControlLabel>
               <div className="mt-2 flex items-center gap-2">
                 <Input
                   type="color"
@@ -1543,7 +1544,7 @@ function StudioControls({
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
           placeholder={
-            edit.promptPlaceholder ?? "Additional instructions (optional)"
+            edit.promptPlaceholder ?? "Instructions complémentaires (facultatif)"
           }
           className="mt-2 min-h-24"
         />
@@ -1830,11 +1831,11 @@ function AiImageEditor({
     <div className="rounded-lg border border-border/40 bg-card/60 p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="font-heading text-lg text-foreground">Working image</h2>
+          <h2 className="font-heading text-lg text-foreground">Image de travail</h2>
           <p className="text-sm text-muted-foreground">
             {needsReferenceImage
-              ? "Add an interior photo and 1-5 angles of the same furniture/decor item. The mask is a guide for placement or the item to replace."
-              : "One image per generation. Advanced mask is optional."}
+              ? "Ajoutez une photo de l’intérieur et 1 à 5 angles du même objet de mobilier ou de décoration. Le masque sert de guide pour le placement ou pour l’objet à remplacer."
+              : "Une image par génération. Le masque avancé est facultatif."}
           </p>
         </div>
         {currentResult && (
@@ -1848,7 +1849,7 @@ function AiImageEditor({
             size="sm"
             onClick={() => onUseCurrentResult(currentResult)}
           >
-            Use result as image to edit
+            Utiliser le résultat comme image à retoucher
           </Button>
         )}
         <input
@@ -1880,8 +1881,8 @@ function AiImageEditor({
           <div className="grid grid-cols-2 rounded-lg bg-card/50 p-1">
             {(
               [
-                ["insert", "Add item"],
-                ["replace", "Replace existing"],
+                ["insert", "Ajouter un objet"],
+                ["replace", "Remplacer l’existant"],
               ] as const
             ).map(([modeId, label]) => (
               <button
@@ -1901,8 +1902,8 @@ function AiImageEditor({
           </div>
           <p className="min-w-[220px] flex-1 text-xs text-muted-foreground">
             {objectMode === "replace"
-              ? "Advanced mask is required: mark the existing item to replace. The mask does not need to be perfect."
-              : "A mask is recommended for precise placement. Without a mask, the AI chooses the spot and the result may be less predictable."}
+              ? "Le masque avancé est requis : marquez l’objet existant à remplacer. Le masque n’a pas besoin d’être parfait."
+              : "Un masque est recommandé pour un placement précis. Sans masque, l’IA choisit l’emplacement et le résultat peut être moins prévisible."}
           </p>
         </div>
       )}
@@ -1916,7 +1917,7 @@ function AiImageEditor({
               setRectPreview(null);
             }}
             icon={Brush}
-            label="Brush"
+            label="Pinceau"
           />
           <ToolButton
             active={tool === "rect"}
@@ -1929,7 +1930,7 @@ function AiImageEditor({
             label="Rectangle"
           />
           <label className="flex items-center gap-2 text-xs text-muted-foreground">
-            Brush
+            Pinceau
             <input
               type="range"
               min={8}
@@ -1939,7 +1940,7 @@ function AiImageEditor({
             />
           </label>
           <label className="flex items-center gap-2 text-xs text-muted-foreground">
-            Opacity
+            Opacité
             <input
               type="range"
               min={0.15}
@@ -1974,7 +1975,7 @@ function AiImageEditor({
             }}
           >
             <RotateCcw className="h-3.5 w-3.5" />
-            Undo
+            Annuler
           </Button>
           <Button
             type="button"
@@ -1990,7 +1991,7 @@ function AiImageEditor({
             }}
           >
             <RotateCw className="h-3.5 w-3.5" />
-            Redo
+            Rétablir
           </Button>
           <Button
             type="button"
@@ -1999,7 +2000,7 @@ function AiImageEditor({
             onClick={resetCanvas}
           >
             <Trash2 className="h-3.5 w-3.5" />
-            Clear
+            Effacer
           </Button>
           <Button
             type="button"
@@ -2023,7 +2024,7 @@ function AiImageEditor({
             }}
           >
             <CircleDashed className="h-3.5 w-3.5" />
-            Invert
+            Inverser
           </Button>
         </div>
       )}
@@ -2051,7 +2052,7 @@ function AiImageEditor({
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-xs font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-                Image to edit
+                Image à retoucher
               </p>
               {baseInput?.fileName && (
                 <p className="mt-0.5 truncate font-mono text-[0.68rem] text-foreground/60">
@@ -2062,7 +2063,7 @@ function AiImageEditor({
             <div className="flex items-center gap-2">
               {baseInput?.generationId && parentGenerationId && (
                 <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-foreground">
-                  From previous
+                  Depuis la précédente
                 </span>
               )}
               {activeImage && (
@@ -2073,7 +2074,7 @@ function AiImageEditor({
                   onClick={() => fileRef.current?.click()}
                 >
                   <Upload className="h-3 w-3" />
-                  Change
+                  Changer
                 </Button>
               )}
             </div>
@@ -2091,7 +2092,7 @@ function AiImageEditor({
               <img
                 ref={imageRef}
                 src={activeImage.url}
-                alt="Working image"
+                alt="Image de travail"
                 className="block h-auto w-full select-none"
                 onLoad={(event) => {
                   setImageFrame({
@@ -2148,15 +2149,16 @@ function AiImageEditor({
               </span>
               <span className="px-6">
                 <span className="block text-base font-semibold text-foreground">
-                  Add a photo
+                  Ajoutez une photo
                 </span>
                 <span className="mt-1 block max-w-xs text-sm text-muted-foreground">
-                  Drag a file here or choose a JPG, PNG, or WebP up to 50 MB.
+                  Glissez un fichier ici ou choisissez un JPG, PNG ou WebP
+                  jusqu’à 50 Mo.
                 </span>
               </span>
               <span className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground">
                 <Upload className="h-3.5 w-3.5" />
-                Choose file
+                Choisir un fichier
               </span>
             </button>
           )}
@@ -2183,7 +2185,7 @@ function AiImageEditor({
           <div className="mb-3 flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-xs font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-                Result
+                Résultat
               </p>
               {currentResult?.fileName && resultUrl && !processingLabel && (
                 <p className="mt-0.5 truncate font-mono text-[0.68rem] text-foreground/60">
@@ -2198,7 +2200,7 @@ function AiImageEditor({
                 className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.72rem] font-semibold text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
               >
                 <Download className="h-3 w-3" />
-                Download
+                Télécharger
               </a>
             )}
           </div>
@@ -2215,7 +2217,7 @@ function AiImageEditor({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={resultUrl}
-                alt="AI result"
+                alt="Résultat IA"
                 className="block h-full w-full object-contain"
               />
             </div>
@@ -2226,7 +2228,7 @@ function AiImageEditor({
               </span>
               <span className="px-6">
                 <span className="block text-sm font-semibold text-destructive">
-                  Processing failed
+                  Échec du traitement
                 </span>
                 <span className="mt-1 block text-xs text-destructive/80">
                   {processingError}
@@ -2240,10 +2242,11 @@ function AiImageEditor({
               </span>
               <span className="px-6">
                 <span className="block text-sm font-semibold text-foreground">
-                  The result will appear here
+                  Le résultat apparaîtra ici
                 </span>
                 <span className="mt-1 block max-w-xs text-xs text-muted-foreground">
-                  When you start a generation, the status appears here immediately.
+                  Dès que vous lancez une génération, le statut s’affiche ici
+                  immédiatement.
                 </span>
               </span>
             </div>
@@ -2255,7 +2258,7 @@ function AiImageEditor({
         {confirmingClear ? (
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="text-muted-foreground">
-              Clear the working image, result, and settings?
+              Effacer l’image de travail, le résultat et les réglages ?
             </span>
             <Button
               type="button"
@@ -2266,7 +2269,7 @@ function AiImageEditor({
                 setConfirmingClear(false);
               }}
             >
-              Yes, clear
+              Oui, effacer
             </Button>
             <Button
               type="button"
@@ -2274,7 +2277,7 @@ function AiImageEditor({
               size="sm"
               onClick={() => setConfirmingClear(false)}
             >
-              Cancel
+              Annuler
             </Button>
           </div>
         ) : (
@@ -2286,7 +2289,7 @@ function AiImageEditor({
             disabled={pending}
           >
             <Trash2 className="h-3.5 w-3.5" />
-            Reset all
+            Tout réinitialiser
           </Button>
         )}
         <div className="flex items-center gap-3">
@@ -2304,17 +2307,17 @@ function AiImageEditor({
             {pending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Starting...
+                Lancement…
               </>
             ) : processingLabel ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Processing…
+                Traitement…
               </>
             ) : (
               <>
                 <Sparkles className="h-4 w-4" />
-                Generate
+                Générer
               </>
             )}
           </Button>
@@ -2361,8 +2364,8 @@ function ProcessingResultPreview({
             {label}
           </span>
           <span className="mt-1 block max-w-xs text-sm text-muted-foreground">
-            The original frame remains the base; the result will appear as soon
-            as the AI generation finishes.
+            L’image d’origine reste la base ; le résultat apparaîtra dès que
+            la génération IA sera terminée.
           </span>
         </span>
       </div>
@@ -2418,7 +2421,7 @@ function ReferenceImagesPanel({
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="min-w-0">
           <p className="text-xs font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-            Furniture/decor / angles
+            Mobilier/déco / angles
           </p>
           <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
             {references.length}/{MAX_OBJECT_REFERENCE_IMAGES} image
@@ -2433,7 +2436,7 @@ function ReferenceImagesPanel({
             disabled={busy}
           >
             <Plus className="h-3 w-3" />
-            Add angle
+            Ajouter un angle
           </Button>
         )}
       </div>
@@ -2449,15 +2452,15 @@ function ReferenceImagesPanel({
         >
           <p className="font-semibold">
             {hasMultipleReferences
-              ? "Multiple angles must show the exact same item"
+              ? "Plusieurs angles doivent montrer exactement le même objet"
               : objectMode === "replace"
-                ? "The reference goes directly into the replacement"
-                : "The reference goes directly into the insertion"}
+                ? "La référence est utilisée directement pour le remplacement"
+                : "La référence est utilisée directement pour l’insertion"}
           </p>
           <p className="mt-0.5 leading-relaxed">
             {hasMultipleReferences
-              ? "Additional images must show the same model, color, and material. Different items harm the result, and the AI should follow the first image as primary."
-              : "If the image has a background or multiple objects, the AI tries to use the largest, most central, or sharpest furniture/decor item and ignore the rest."}
+              ? "Les images supplémentaires doivent montrer le même modèle, la même couleur et la même matière. Des objets différents nuisent au résultat, et l’IA suit la première image comme référence principale."
+              : "Si l’image contient un arrière-plan ou plusieurs objets, l’IA essaie d’utiliser l’objet de mobilier ou de décoration le plus grand, le plus central ou le plus net et d’ignorer le reste."}
           </p>
         </div>
       )}
@@ -2471,19 +2474,19 @@ function ReferenceImagesPanel({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={reference.url}
-              alt={index === 0 ? "Primary item image" : `Item angle ${index + 1}`}
+              alt={index === 0 ? "Image principale de l’objet" : `Angle de l’objet ${index + 1}`}
               className="aspect-square w-full object-contain"
               draggable={false}
             />
             <div className="absolute left-1.5 top-1.5 rounded-full bg-card/90 px-2 py-0.5 text-[0.62rem] font-semibold text-foreground shadow-sm">
-              {index === 0 ? "Primary" : `Angle ${index + 1}`}
+              {index === 0 ? "Principale" : `Angle ${index + 1}`}
             </div>
             <button
               type="button"
               onClick={() => onRemove(index)}
               disabled={busy}
               className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-foreground/75 text-background transition-colors hover:bg-destructive disabled:opacity-50"
-              aria-label={`Remove item image ${index + 1}`}
+              aria-label={`Retirer l’image de l’objet ${index + 1}`}
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -2499,7 +2502,7 @@ function ReferenceImagesPanel({
                   className="inline-flex h-7 w-full items-center justify-center gap-1 rounded-md border border-border/40 bg-background/70 px-2 text-[0.62rem] font-semibold text-foreground transition-colors hover:border-accent/40 disabled:opacity-50"
                 >
                   <Star className="h-3 w-3" />
-                  Set as primary
+                  Définir comme principale
                 </button>
               </div>
             )}
@@ -2517,16 +2520,17 @@ function ReferenceImagesPanel({
               <Upload className="h-4 w-4" />
             </span>
             <span className="text-xs font-semibold text-foreground">
-              {references.length === 0 ? "Add item" : "Add angle"}
+              {references.length === 0 ? "Ajouter un objet" : "Ajouter un angle"}
             </span>
           </button>
         )}
       </div>
 
       <p className="mt-3 text-[0.68rem] leading-relaxed text-muted-foreground">
-        Supported inputs include furniture, decor, lighting, appliances, plants,
-        and art. Bags, clothing, hands, people, and small personal items are not
-        intended for this flow.
+        Les entrées prises en charge comprennent le mobilier, la décoration,
+        les luminaires, l’électroménager, les plantes et les œuvres d’art. Les
+        sacs, vêtements, mains, personnes et petits objets personnels ne sont
+        pas prévus pour ce flux.
       </p>
     </div>
   );
@@ -2583,22 +2587,23 @@ function HistoryPanel({
   return (
     <aside className="rounded-lg border border-border/40 bg-card/60 p-4 xl:sticky xl:top-8 xl:flex xl:h-[calc(100vh-7rem)] xl:min-h-[calc(100vh-7rem)] xl:flex-col">
       <div className="mb-4" data-ai-history-dropzone>
-        <h2 className="font-heading text-lg text-foreground">History</h2>
+        <h2 className="font-heading text-lg text-foreground">Historique</h2>
         <p className="mt-1 text-xs text-muted-foreground">
-          Click a generation for details. Files are available for 30 days.
+          Cliquez sur une génération pour voir les détails. Les fichiers sont
+          disponibles pendant 30 jours.
         </p>
         <Link
           href="/portal/ai-creations"
           className="mt-2 inline-flex text-xs font-semibold text-accent hover:underline"
         >
-          View all AI creations
+          Voir toutes les créations IA
         </Link>
       </div>
       {history.length === 0 ? (
         <EmptyState
           icon={Wand2}
-          heading="No generations"
-          description="Your AI generations will appear here."
+          heading="Aucune génération"
+          description="Vos générations IA apparaîtront ici."
         />
       ) : (
         <div ref={listRef} className="scrollbar-warm min-h-0 space-y-3 overflow-y-auto pr-1 xl:flex-1">
@@ -2619,7 +2624,7 @@ function HistoryPanel({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={item.resultUrl}
-                    alt={`AI result: ${getAiEditType(item.editType).label}`}
+                    alt={`Résultat IA : ${getAiEditType(item.editType).label}`}
                     className="h-16 w-16 shrink-0 rounded-xl object-cover"
                   />
                 ) : (
@@ -2632,7 +2637,7 @@ function HistoryPanel({
                     {getAiEditType(item.editType).label}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {new Date(item.createdAt).toLocaleDateString("en-GB")} ·{" "}
+                    {new Date(item.createdAt).toLocaleDateString("fr-FR")} ·{" "}
                     {getAiEngineLabelForGeneration(item.provider, item.model)}
                   </p>
                   {(() => {
@@ -2651,17 +2656,17 @@ function HistoryPanel({
                   {(item.status === "queued" || item.status === "processing") && (
                     <p className="mt-1 inline-flex items-center gap-1 text-xs text-accent">
                       <Loader2 className="h-3 w-3 animate-spin" />
-                      {item.status === "queued" ? "Queued" : "Processing"}
+                      {item.status === "queued" ? "En file d’attente" : "En cours"}
                     </p>
                   )}
                   {item.status === "failed" && (
                     <p className="mt-1 text-xs text-destructive">
-                      {item.errorMessage ?? "The generation failed."}
+                      {item.errorMessage ?? "La génération a échoué."}
                     </p>
                   )}
                   {item.filesExpired && (
                     <p className="mt-1 text-xs text-muted-foreground">
-                      File expired.
+                      Fichier expiré.
                     </p>
                   )}
                 </div>
@@ -2681,7 +2686,7 @@ function HistoryPanel({
                           onUseResult(item);
                         }}
                       >
-                        Use as image
+                        Utiliser comme image
                       </Button>
                       <a
                         href={item.downloadUrl ?? `/api/ai-studio/generations/${item.id}/download`}
@@ -2690,7 +2695,7 @@ function HistoryPanel({
                         className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.8rem] font-medium text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
                       >
                         <Download className="h-3 w-3" />
-                        Download
+                        Télécharger
                       </a>
                     </>
                   )}
@@ -2710,7 +2715,7 @@ function HistoryPanel({
                       ) : (
                         <Trash2 className="h-3.5 w-3.5" />
                       )}
-                      Delete
+                      Supprimer
                     </Button>
                   )}
                 </div>
@@ -2808,8 +2813,8 @@ function BalanceCard({
       </div>
       <p className="mt-1 text-xs text-muted-foreground">
         {expiresAt
-          ? `Available do ${expiresAt.toLocaleDateString("en-GB")}`
-          : "Credits are not active"}
+          ? `Disponibles jusqu’au ${expiresAt.toLocaleDateString("fr-FR")}`
+          : "Aucun crédit actif"}
       </p>
       <Link
         href="/portal/ai-studio/credits"
@@ -2818,7 +2823,7 @@ function BalanceCard({
           lowBalance ? "text-amber-700" : "text-muted-foreground",
         )}
       >
-        Top up credits
+        Recharger les crédits
       </Link>
     </div>
   );
@@ -2854,7 +2859,7 @@ function CostPreviewLabel({
   if (!preview) {
     return (
       <span className="text-xs text-muted-foreground">
-        Billing:{" "}
+        Facturation :{" "}
         <strong className="text-foreground">
           {formatCreditsFromUnits(editUnits)}
         </strong>
@@ -2864,24 +2869,24 @@ function CostPreviewLabel({
   if (preview.unitsCharged === 0) {
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-foreground">
-        Free attempt #{preview.freeAttemptIndex} od {AI_FREE_REGENERATIONS}
+        Essai gratuit n° {preview.freeAttemptIndex} sur {AI_FREE_REGENERATIONS}
       </span>
     );
   }
   if (preview.freeAttemptIndex !== null) {
     return (
       <span className="text-xs text-muted-foreground">
-        Additional charge{" "}
+        Supplément{" "}
         <strong className="text-foreground">
           {formatCreditsFromUnits(preview.unitsCharged)}
         </strong>{" "}
-        · free #{preview.freeAttemptIndex}
+        · gratuit n° {preview.freeAttemptIndex}
       </span>
     );
   }
   return (
     <span className="text-xs text-muted-foreground">
-      Billing:{" "}
+      Facturation :{" "}
       <strong className="text-foreground">
         {formatCreditsFromUnits(preview.unitsCharged)}
       </strong>
@@ -2919,27 +2924,27 @@ function RetryStatusBanner({
     return (
       <div className="flex items-start gap-3 rounded-lg border border-border bg-secondary/50 px-4 py-3 text-sm">
         <span className="mt-0.5 inline-flex h-5 items-center rounded-full bg-accent/15 px-2 text-[0.62rem] font-semibold uppercase tracking-wider text-foreground">
-          Free
+          Gratuit
         </span>
         <div className="flex-1 text-foreground/85">
-          {`A free retry is active for "${parentLabel}". The image, prompt, and all other settings can change. Changing the `}
-          <strong className="px-0.5">edit type</strong>
-          {" removes the free retry."}
+          {`Une relance gratuite est active pour « ${parentLabel} ». L’image, le prompt et tous les autres réglages peuvent changer. Changer le `}
+          <strong className="px-0.5">type de retouche</strong>
+          {" supprime la relance gratuite."}
         </div>
         <button
           type="button"
           onClick={onCancel}
           className="shrink-0 text-xs font-semibold text-muted-foreground hover:text-foreground"
         >
-          Cancel
+          Annuler
         </button>
       </div>
     );
   }
 
   const message = editTypeChanged
-    ? `You changed the edit type. The free retry only applies to "${parentLabel}", so this generation will be charged.`
-    : `The free retry for "${parentLabel}" has been used. The next generation will be charged.`;
+    ? `Vous avez changé le type de retouche. La relance gratuite ne s’applique qu’à « ${parentLabel} », cette génération sera donc facturée.`
+    : `La relance gratuite pour « ${parentLabel} » a été utilisée. La prochaine génération sera facturée.`;
 
   return (
     <div className="flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-50/60 px-4 py-3 text-sm dark:bg-amber-950/30">
@@ -2950,7 +2955,7 @@ function RetryStatusBanner({
         onClick={onCancel}
         className="shrink-0 text-xs font-semibold text-muted-foreground hover:text-foreground"
       >
-        Cancel
+        Annuler
       </button>
     </div>
   );
@@ -2987,22 +2992,22 @@ function buildAiStudioReadiness({
   const warnings: string[] = [];
 
   if (!activeInput) {
-    blockers.push("Add a photo to edit.");
+    blockers.push("Ajoutez une photo à retoucher.");
   }
   if (needsReferenceImage && referenceCount === 0) {
-    blockers.push("Add at least one furniture/decor image.");
+    blockers.push("Ajoutez au moins une image de mobilier ou de décoration.");
   }
   if (editType === "object_insertion" && objectMode === "replace" && !maskDirty) {
-    blockers.push("Use the mask to mark the existing item to replace.");
+    blockers.push("Utilisez le masque pour marquer l’objet existant à remplacer.");
   }
   if (
     activeEdit.multiSelect &&
     parseSelectedOptions(selectedOption).length === 0
   ) {
-    blockers.push(`Select at least one category in "${activeEdit.optionsLabel ?? "options"}".`);
+    blockers.push(`Sélectionnez au moins une catégorie dans « ${activeEdit.optionsLabel ?? "options"} ».`);
   }
   if (!linkedParentGenerationId && balanceUnits < activeEdit.units) {
-    blockers.push("Top up AI credits before generating.");
+    blockers.push("Rechargez vos crédits IA avant de générer.");
   }
 
   if (
@@ -3013,12 +3018,12 @@ function buildAiStudioReadiness({
     !maskDirty
   ) {
     warnings.push(
-      "A mask is optional, but without it the AI chooses the position and the result may be less predictable.",
+      "Le masque est facultatif, mais sans lui l’IA choisit la position et le résultat peut être moins prévisible.",
     );
   }
   if (editType === "object_insertion" && referenceCount > 1) {
     warnings.push(
-      "Additional angles must show the same model, color, and material; different items harm the result, and the AI follows the first image.",
+      "Les angles supplémentaires doivent montrer le même modèle, la même couleur et la même matière ; des objets différents nuisent au résultat, et l’IA suit la première image.",
     );
   }
 
@@ -3030,9 +3035,9 @@ function buildAiStudioReadiness({
         ? "warning"
         : "ready";
   const primaryMessage = pending
-    ? "Starting generation..."
+    ? "Lancement de la génération…"
     : processing
-      ? "Processing is in progress…"
+      ? "Traitement en cours…"
       : blockers[0] ?? warnings[0] ?? null;
 
   return {
@@ -3040,10 +3045,10 @@ function buildAiStudioReadiness({
     blockers,
     warnings,
     buttonLabel: pending
-      ? "Starting..."
+      ? "Lancement…"
       : processing
-        ? "Processing…"
-        : "Generate",
+        ? "Traitement…"
+        : "Générer",
     primaryMessage,
     tone,
   };
@@ -3108,7 +3113,7 @@ async function uploadAiFile(file: File, purpose: "input" | "mask" | "reference")
 
   if (!urlRes.ok) {
     const { error } = await urlRes.json();
-    throw new Error(error || "Upload link was not generated.");
+    throw new Error(error || "Le lien d’import n’a pas été généré.");
   }
 
   const { signedUrl, storagePath } = await urlRes.json();
@@ -3121,17 +3126,17 @@ async function uploadAiFile(file: File, purpose: "input" | "mask" | "reference")
     body: file,
   });
 
-  if (!uploadRes.ok) throw new Error("Upload failed.");
+  if (!uploadRes.ok) throw new Error("Échec de l’import.");
 
   return { storagePath };
 }
 
 function validateAiImageFile(file: File): string | null {
   if (!AI_UPLOAD_MIME_TYPES.includes(file.type)) {
-    return "Only JPG, PNG, and WebP files are allowed.";
+    return "Seuls les fichiers JPG, PNG et WebP sont acceptés.";
   }
   if (file.size > MAX_AI_UPLOAD_BYTES) {
-    return "File is too large (max 50 MB).";
+    return "Le fichier est trop volumineux (50 Mo max).";
   }
   return null;
 }

@@ -63,14 +63,14 @@ export function ProfileForm({
       )}
       {state.success && (
         <div className="rounded-lg border border-border bg-accent/10 px-4 py-3 text-sm text-foreground">
-          Your details have been updated.
+          Vos informations ont été mises à jour.
         </div>
       )}
 
       <div className="space-y-2">
         <Label htmlFor="name">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Full name
+          Nom complet
         </Label>
         <Input
           id="name"
@@ -82,7 +82,7 @@ export function ProfileForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">E-mail</Label>
         <Input
           id="email"
           value={defaultEmail}
@@ -90,14 +90,14 @@ export function ProfileForm({
           className="opacity-60"
         />
         <p className="text-xs text-muted-foreground">
-          The email address cannot be changed.
+          L’adresse e-mail ne peut pas être modifiée.
         </p>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="phone">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Phone
+          Téléphone
         </Label>
         <Input
           id="phone"
@@ -111,7 +111,7 @@ export function ProfileForm({
       <div id="password" className="space-y-2 scroll-mt-24">
         <Label htmlFor="newPassword">
           <Pencil className="h-3 w-3 text-accent/60" />
-          {hasPassword ? "New password (optional)" : "Set a password"}
+          {hasPassword ? "Nouveau mot de passe (facultatif)" : "Définir un mot de passe"}
         </Label>
         <Input
           id="newPassword"
@@ -120,13 +120,13 @@ export function ProfileForm({
           autoComplete="new-password"
           minLength={8}
           placeholder={
-            hasPassword ? "Leave blank if unchanged" : "At least 8 characters"
+            hasPassword ? "Laissez vide pour ne pas le changer" : "Au moins 8 caractères"
           }
         />
         {!hasPassword && (
           <p className="text-xs text-muted-foreground">
-            Once set, you will be able to sign in directly without waiting for
-            an email link.
+            Une fois défini, vous pourrez vous connecter directement sans
+            attendre un lien par e-mail.
           </p>
         )}
       </div>
@@ -134,11 +134,11 @@ export function ProfileForm({
       <section className="space-y-5 rounded-lg border border-border/50 bg-card/60 p-5">
         <div>
           <h2 className="text-sm font-semibold text-foreground">
-            Billing details
+            Coordonnées de facturation
           </h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            Used as the default for future orders and additional charges.
-            Already issued invoices will not change.
+            Utilisées par défaut pour les prochaines commandes et les frais
+            complémentaires. Les factures déjà émises ne changeront pas.
           </p>
         </div>
 
@@ -163,10 +163,10 @@ export function ProfileForm({
             <UserRound className="mt-0.5 h-4 w-4 text-accent" />
             <span>
               <span className="block text-sm font-semibold text-foreground">
-                Individual
+                Particulier
               </span>
               <span className="mt-1 block text-xs text-muted-foreground">
-                The invoice is issued to the account name.
+                La facture est émise au nom du compte.
               </span>
             </span>
           </button>
@@ -183,10 +183,10 @@ export function ProfileForm({
             <Building2 className="mt-0.5 h-4 w-4 text-accent" />
             <span>
               <span className="block text-sm font-semibold text-foreground">
-                Company
+                Entreprise
               </span>
               <span className="mt-1 block text-xs text-muted-foreground">
-                We save the details for invoices.
+                Nous enregistrons les informations pour les factures.
               </span>
             </span>
           </button>
@@ -195,7 +195,7 @@ export function ProfileForm({
         <div className="grid gap-4 md:grid-cols-2">
           <label className="flex flex-col gap-1.5">
             <span className="text-xs font-medium text-foreground">
-              Billing country <span className="ml-1 text-destructive">*</span>
+              Pays de facturation <span className="ml-1 text-destructive">*</span>
             </span>
             <select
               name="billingCountryCode"
@@ -204,7 +204,7 @@ export function ProfileForm({
               className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-accent"
               required
             >
-              <option value="RS">Serbia (RS)</option>
+              <option value="RS">Serbie (RS)</option>
               <option disabled>──────────</option>
               {COUNTRIES.map((country) =>
                 country.code === "" ? (
@@ -221,14 +221,14 @@ export function ProfileForm({
           </label>
           <div className="flex items-center gap-2 rounded-xl border border-border/40 bg-background/60 px-3 py-2 text-sm text-foreground">
             <Globe2 className="h-4 w-4 text-accent" />
-            <span>Future invoices: EUR</span>
+            <span>Prochaines factures : EUR</span>
           </div>
         </div>
 
         {isCompany && (
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="billingCompanyName">Company name</Label>
+              <Label htmlFor="billingCompanyName">Nom de l’entreprise</Label>
               <Input
                 id="billingCompanyName"
                 name="billingCompanyName"
@@ -237,7 +237,7 @@ export function ProfileForm({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="billingCompanyAddress">Company address</Label>
+              <Label htmlFor="billingCompanyAddress">Adresse de l’entreprise</Label>
               <Input
                 id="billingCompanyAddress"
                 name="billingCompanyAddress"
@@ -247,7 +247,7 @@ export function ProfileForm({
             </div>
             <div className="space-y-2">
               <Label htmlFor="billingCompanyTaxId">
-                {isSerbia ? "PIB" : "VAT ID / Tax ID (optional)"}
+                {isSerbia ? "PIB" : "Numéro de TVA / identifiant fiscal (facultatif)"}
               </Label>
               <Input
                 id="billingCompanyTaxId"
@@ -258,7 +258,7 @@ export function ProfileForm({
                 required={isCompany && isSerbia}
               />
               <p className="text-xs text-muted-foreground">
-                {isSerbia ? "PIB must have 9 digits." : "If available, enter it with the country prefix."}
+                {isSerbia ? "Le PIB doit comporter 9 chiffres." : "Si disponible, saisissez-le avec le préfixe du pays."}
               </p>
             </div>
           </div>
@@ -266,7 +266,7 @@ export function ProfileForm({
       </section>
 
       <Button type="submit" variant="accent" size="lg" disabled={pending}>
-        {pending ? "Saving..." : "Save changes"}
+        {pending ? "Enregistrement…" : "Enregistrer les modifications"}
       </Button>
     </form>
   );

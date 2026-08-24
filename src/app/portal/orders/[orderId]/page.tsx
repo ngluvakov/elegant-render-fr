@@ -25,9 +25,9 @@ import { displayCurrencyForOrderSnapshot } from "@/lib/billing";
 import { OrderFileUpload } from "@/components/portal/order-file-upload";
 
 export const metadata: Metadata = {
-  title: "Order details",
+  title: "Détails de la commande",
   description:
-    "Details for the selected order, project status, items, messages, and deliverables.",
+    "Détails de la commande sélectionnée : statut du projet, articles, messages et livrables.",
   robots: { index: false, follow: false },
 };
 
@@ -180,11 +180,12 @@ export default async function OrderDetailPage({
           {canEditItems && (
             <section>
               <h2 className="mb-4 text-sm font-semibold text-foreground">
-                Item setup ({serviceItems.length})
+                Configuration des articles ({serviceItems.length})
               </h2>
               <p className="mb-4 text-xs text-muted-foreground">
-                For each item, add a description, plans, and style references.
-                Use advanced setup for more detailed options.
+                Pour chaque article, ajoutez une description, des plans et des
+                références de style. Utilisez la configuration avancée pour des
+                options plus détaillées.
               </p>
 
               {unconfiguredCount > 0 && (
@@ -196,16 +197,17 @@ export default async function OrderDetailPage({
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-bold text-amber-700">
                       {unconfiguredCount === 1
-                        ? "1 item needs your details"
-                        : `${unconfiguredCount} items need your details`}
+                        ? "1 article attend vos informations"
+                        : `${unconfiguredCount} articles attendent vos informations`}
                     </p>
                     <p className="mt-1 text-xs text-foreground/70">
-                      Add a description or upload files (plans, photos,
-                      sketches) so we can start the project. Items marked{" "}
+                      Ajoutez une description ou importez des fichiers (plans,
+                      photos, croquis) pour que nous puissions démarrer le
+                      projet. Les articles marqués{" "}
                       <span className="inline-flex translate-y-[1px] items-center gap-1 rounded bg-amber-100 px-1.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-wider text-amber-700">
-                        Details needed
+                        Infos requises
                       </span>{" "}
-                      need attention.
+                      demandent votre attention.
                     </p>
                   </div>
                 </div>
@@ -263,8 +265,8 @@ export default async function OrderDetailPage({
             ) && (
               <OrderFileUpload
                 orderId={order.id}
-                title="Upload your plans"
-                description="We need your floor plans, photos or references to start the project. Files upload straight into this order."
+                title="Importez vos plans"
+                description="Nous avons besoin de vos plans, photos ou références pour démarrer le projet. Les fichiers sont importés directement dans cette commande."
               />
             )}
 

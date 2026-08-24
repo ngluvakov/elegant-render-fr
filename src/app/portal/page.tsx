@@ -19,9 +19,9 @@ import { EmptyState } from "@/components/portal/empty-state";
 import { statusLabel } from "@/components/portal/status-utils";
 
 export const metadata: Metadata = {
-  title: "Portal",
+  title: "Espace client",
   description:
-    "Overview of active projects, orders, activity, and deliverables in the customer portal.",
+    "Vue d’ensemble des projets actifs, des commandes, de l’activité et des livrables dans l’espace client.",
   robots: { index: false, follow: false },
 };
 
@@ -70,7 +70,7 @@ export default async function PortalPage() {
     id: e.id,
     orderNumber: e.order.orderNumber,
     orderId: e.order.id,
-    description: `Status changed to ${statusLabel(e.toStatus)}`,
+    description: `Statut modifié : ${statusLabel(e.toStatus)}`,
     createdAt: e.createdAt,
   }));
 
@@ -80,12 +80,12 @@ export default async function PortalPage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-3xl text-foreground md:text-4xl">
-            Welcome, {user?.name?.split(" ")[0] || "there"}
+            Bienvenue{user?.name ? `, ${user.name.split(" ")[0]}` : ""}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {activeCount > 0
-              ? `${activeCount} active project${activeCount === 1 ? "" : "s"}`
-              : "You have no active projects"}
+              ? `${activeCount} projet${activeCount === 1 ? "" : "s"} actif${activeCount === 1 ? "" : "s"}`
+              : "Vous n’avez aucun projet actif"}
           </p>
         </div>
         <Link
@@ -96,7 +96,7 @@ export default async function PortalPage() {
           )}
         >
           <Plus className="h-4 w-4" />
-          New order
+          Nouvelle commande
         </Link>
       </div>
 
@@ -104,23 +104,23 @@ export default async function PortalPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <SummaryStatCard
           icon={Briefcase}
-          label="Active projects"
+          label="Projets actifs"
           value={activeCount}
         />
         <SummaryStatCard
           icon={AlertCircle}
-          label="Needs attention"
+          label="Action requise"
           value={needsAttentionCount}
           accent="clay"
         />
         <SummaryStatCard
           icon={MessageSquare}
-          label="New messages"
+          label="Nouveaux messages"
           value={0}
         />
         <SummaryStatCard
           icon={Download}
-          label="Ready to download"
+          label="Prêts à télécharger"
           value={deliveredCount}
           accent="sage"
         />
@@ -129,14 +129,14 @@ export default async function PortalPage() {
       {/* Active orders */}
       <section>
         <h2 className="mb-4 text-lg font-semibold text-foreground">
-          Active projects
+          Projets actifs
         </h2>
         {activeOrders.length === 0 ? (
           <EmptyState
             icon={ShoppingBag}
-            heading="You have no active projects"
-            description="Visit pricing to create your first order."
-            action={{ label: "View pricing", href: "/pricing" }}
+            heading="Vous n’avez aucun projet actif"
+            description="Consultez les tarifs pour créer votre première commande."
+            action={{ label: "Voir les tarifs", href: "/pricing" }}
           />
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
@@ -150,7 +150,7 @@ export default async function PortalPage() {
       {/* Recent activity */}
       <section>
         <h2 className="mb-4 text-lg font-semibold text-foreground">
-          Recent activity
+          Activité récente
         </h2>
         <ActivityFeed events={activityEvents} />
       </section>

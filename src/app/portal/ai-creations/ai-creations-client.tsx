@@ -34,11 +34,11 @@ type Props = {
 const PAGE_SIZE = 24;
 
 const STATUS_LABELS: Record<AiGenerationStatusValue | "all", string> = {
-  all: "All statuses",
-  queued: "Queued",
-  processing: "Processing",
-  completed: "Completed",
-  failed: "Failed",
+  all: "Tous les statuts",
+  queued: "En file d’attente",
+  processing: "En cours",
+  completed: "Terminée",
+  failed: "Échouée",
 };
 
 export function AiCreationsClient({ initialState }: Props) {
@@ -94,7 +94,7 @@ export function AiCreationsClient({ initialState }: Props) {
       setNextCursor(data.nextCursor ?? null);
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return;
-      setError("AI creations are currently unavailable.");
+      setError("Les créations IA sont momentanément indisponibles.");
     } finally {
       setLoading(false);
     }
@@ -113,11 +113,11 @@ export function AiCreationsClient({ initialState }: Props) {
 
   const handleDelete = async (generation: SignedAiGeneration) => {
     if (generation.status === "queued" || generation.status === "processing") {
-      setError("The generation is still running. Wait for it to finish before deleting it.");
+      setError("La génération est toujours en cours. Attendez qu’elle se termine avant de la supprimer.");
       return;
     }
     const confirmed = window.confirm(
-      "Permanently delete this AI creation and its files? This action cannot be undone.",
+      "Supprimer définitivement cette création IA et ses fichiers ? Cette action est irréversible.",
     );
     if (!confirmed) return;
 
@@ -134,11 +134,11 @@ export function AiCreationsClient({ initialState }: Props) {
       const data = (await response.json()) as { error?: string };
       if (!response.ok || data.error) {
         setItems(previous);
-        setError(data.error ?? "Delete failed.");
+        setError(data.error ?? "Échec de la suppression.");
       }
     } catch {
       setItems(previous);
-      setError("Delete failed. Try again.");
+      setError("Échec de la suppression. Réessayez.");
     } finally {
       setDeletingId(null);
     }
@@ -149,14 +149,14 @@ export function AiCreationsClient({ initialState }: Props) {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-            Portal
+            Espace client
           </p>
           <h1 className="mt-1 font-heading text-3xl text-foreground md:text-4xl">
-            AI creations
+            Créations IA
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Review all AI generations, download results, and reuse a completed
-            image in AI Studio.
+            Passez en revue toutes vos générations IA, téléchargez les
+            résultats et réutilisez une image terminée dans l’AI Studio.
           </p>
         </div>
         <Link
@@ -164,19 +164,19 @@ export function AiCreationsClient({ initialState }: Props) {
           className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
         >
           <Sparkles className="h-4 w-4" />
-          New generation
+          Nouvelle génération
         </Link>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <StatPill label="In list" value={items.length} />
-        <StatPill label="Completed" value={completedCount} />
-        <StatPill label="Status" value={hasFilters ? "Filter" : "All"} />
+        <StatPill label="Dans la liste" value={items.length} />
+        <StatPill label="Terminées" value={completedCount} />
+        <StatPill label="Statut" value={hasFilters ? "Filtre" : "Tous"} />
       </div>
 
       <div className="flex flex-wrap gap-3 rounded-lg border border-border/40 bg-card/60 p-3">
         <label className="min-w-[180px] flex-1 text-xs font-semibold text-muted-foreground">
-          Status
+          Statut
           <select
             value={statusFilter}
             onChange={(event) =>
@@ -192,7 +192,7 @@ export function AiCreationsClient({ initialState }: Props) {
           </select>
         </label>
         <label className="min-w-[220px] flex-1 text-xs font-semibold text-muted-foreground">
-          Edit type
+          Type de retouche
           <select
             value={editTypeFilter}
             onChange={(event) =>
@@ -200,7 +200,7 @@ export function AiCreationsClient({ initialState }: Props) {
             }
             className="mt-1 h-9 w-full rounded-lg border border-border/40 bg-background px-3 text-sm font-medium text-foreground outline-none focus-visible:border-accent focus-visible:ring-3 focus-visible:ring-ring/50"
           >
-            <option value="all">All edit types</option>
+            <option value="all">Tous les types de retouche</option>
             {AI_EDIT_TYPES.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.label}
@@ -219,13 +219,13 @@ export function AiCreationsClient({ initialState }: Props) {
       {items.length === 0 && !loading ? (
         <EmptyState
           icon={Wand2}
-          heading={hasFilters ? "No creations match the selected filter" : "No AI creations yet"}
+          heading={hasFilters ? "Aucune création ne correspond au filtre sélectionné" : "Aucune création IA pour le moment"}
           description={
             hasFilters
-              ? "Change the filters or start a new generation."
-              : "When you start an AI generation, the result will appear here."
+              ? "Modifiez les filtres ou lancez une nouvelle génération."
+              : "Lorsque vous lancez une génération IA, le résultat apparaît ici."
           }
-          action={{ label: "Open AI Studio", href: "/portal/ai-studio" }}
+          action={{ label: "Ouvrir l’AI Studio", href: "/portal/ai-studio" }}
         />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -251,16 +251,16 @@ export function AiCreationsClient({ initialState }: Props) {
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Loading...
+                Chargement…
               </>
             ) : (
-              "Load more"
+              "Afficher plus"
             )}
           </Button>
         ) : loading ? (
           <p className="inline-flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            Loading...
+            Chargement…
           </p>
         ) : null}
       </div>
@@ -314,7 +314,7 @@ function AiCreationCard({
               <ImageIcon className="h-7 w-7" />
             )}
             <span className="text-sm">
-              {item.filesExpired ? "File expired" : STATUS_LABELS[item.status]}
+              {item.filesExpired ? "Fichier expiré" : STATUS_LABELS[item.status]}
             </span>
           </div>
         )}
@@ -338,7 +338,7 @@ function AiCreationCard({
             {edit.label}
           </h2>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {new Date(item.createdAt).toLocaleDateString("en-GB")} ·{" "}
+            {new Date(item.createdAt).toLocaleDateString("fr-FR")} ·{" "}
             {getAiEngineLabelForGeneration(item.provider, item.model)}
           </p>
           <p className="mt-0.5 text-xs text-muted-foreground">
@@ -365,7 +365,7 @@ function AiCreationCard({
               className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.8rem] font-medium text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
             >
               <Wand2 className="h-3.5 w-3.5" />
-              Use
+              Utiliser
             </Link>
           )}
           {item.downloadUrl && !item.filesExpired && (
@@ -375,7 +375,7 @@ function AiCreationCard({
               className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-border/40 bg-card/60 px-3 text-[0.8rem] font-medium text-foreground transition-colors hover:border-accent/40 hover:bg-card/80"
             >
               <Download className="h-3.5 w-3.5" />
-              Download
+              Télécharger
             </a>
           )}
           <Button
@@ -390,7 +390,7 @@ function AiCreationCard({
             ) : (
               <Trash2 className="h-3.5 w-3.5" />
             )}
-            Delete
+            Supprimer
           </Button>
         </div>
       </div>

@@ -7,9 +7,9 @@ import { getPublicCountryCode } from "@/lib/catalog/public-currency-server";
 import { getDisplayCurrencyForCountry } from "@/lib/catalog/display-currency";
 
 export const metadata: Metadata = {
-  title: "AI credits",
+  title: "Crédits IA",
   description:
-    "Buy AI credits for photo editing and track your available balance.",
+    "Achetez des crédits IA pour la retouche photo et suivez votre solde disponible.",
   robots: { index: false, follow: false },
 };
 

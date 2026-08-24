@@ -32,7 +32,7 @@ export function PrivacyActions({
       const res = await fetch("/api/account/export");
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setError(body.error ?? `Download failed (HTTP ${res.status}).`);
+        setError(body.error ?? `Échec du téléchargement (HTTP ${res.status}).`);
         return;
       }
       const blob = await res.blob();
@@ -48,7 +48,7 @@ export function PrivacyActions({
       a.remove();
       URL.revokeObjectURL(url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Download failed.");
+      setError(err instanceof Error ? err.message : "Échec du téléchargement.");
     } finally {
       setExportPending(false);
     }
@@ -74,10 +74,10 @@ export function PrivacyActions({
   return (
     <section className="mt-12 space-y-5 rounded-lg border border-border/60 bg-card/80 p-6 md:p-8">
       <div>
-        <h2 className="text-xl font-semibold text-foreground">Privacy</h2>
+        <h2 className="text-xl font-semibold text-foreground">Confidentialité</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Your rights under GDPR Articles 20 and 17: download a copy of your
-          data or request account deletion.
+          Vos droits au titre des articles 20 et 17 du RGPD : télécharger une
+          copie de vos données ou demander la suppression de votre compte.
         </p>
       </div>
 
@@ -92,12 +92,13 @@ export function PrivacyActions({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <h3 className="text-base font-medium text-foreground">
-              Download a copy of your data
+              Télécharger une copie de vos données
             </h3>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              A JSON file with your profile, orders, comments, AI generations,
-              and credit transactions. Binary file contents are downloaded
-              separately from the portal.
+              Un fichier JSON contenant votre profil, vos commandes, vos
+              commentaires, vos générations IA et vos transactions de crédits.
+              Les fichiers binaires se téléchargent séparément depuis
+              l’espace client.
             </p>
           </div>
           <button
@@ -107,7 +108,7 @@ export function PrivacyActions({
             className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary disabled:opacity-50"
           >
             <Download className="h-3.5 w-3.5" />
-            {exportPending ? "Preparing..." : "Download (.json)"}
+            {exportPending ? "Préparation…" : "Télécharger (.json)"}
           </button>
         </div>
       </div>
@@ -119,20 +120,20 @@ export function PrivacyActions({
             <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700" />
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-foreground">
-                Account deletion request is in progress
+                Demande de suppression du compte en cours
               </p>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                The request was registered on{" "}
+                La demande a été enregistrée le{" "}
                 <strong className="text-foreground">
-                  {new Date(deletionRequestedAt).toLocaleDateString("en-GB", {
+                  {new Date(deletionRequestedAt).toLocaleDateString("fr-FR", {
                     day: "2-digit",
                     month: "2-digit",
                     year: "numeric",
                   })}
                 </strong>
-                . The team will process it within 30 days. We anonymize
-                personal data while retaining accounting records for orders
-                as legally required.
+                . L’équipe la traitera sous 30 jours. Nous anonymisons les
+                données personnelles tout en conservant les pièces comptables
+                des commandes, conformément aux obligations légales.
               </p>
               <div className="mt-4">
                 <button
@@ -141,7 +142,7 @@ export function PrivacyActions({
                   disabled={pending}
                   className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary disabled:opacity-50"
                 >
-                  {pending ? "Processing..." : "Cancel request"}
+                  {pending ? "Traitement…" : "Annuler la demande"}
                 </button>
               </div>
             </div>
@@ -152,12 +153,13 @@ export function PrivacyActions({
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <h3 className="text-base font-medium text-foreground">
-                Request account deletion
+                Demander la suppression du compte
               </h3>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                We anonymize your personal data within 30 days. Invoices and
-                orders are retained for accounting compliance, but without
-                identifying personal data.
+                Nous anonymisons vos données personnelles sous 30 jours. Les
+                factures et les commandes sont conservées à des fins de
+                conformité comptable, mais sans données personnelles
+                identifiantes.
               </p>
             </div>
             {confirming ? (
@@ -168,7 +170,7 @@ export function PrivacyActions({
                   disabled={pending}
                   className="inline-flex items-center gap-2 rounded-full bg-destructive px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
                 >
-                  {pending ? "Processing..." : "Confirm"}
+                  {pending ? "Traitement…" : "Confirmer"}
                 </button>
                 <button
                   type="button"
@@ -176,7 +178,7 @@ export function PrivacyActions({
                   disabled={pending}
                   className="text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
                 >
-                  Cancel
+                  Annuler
                 </button>
               </div>
             ) : (
@@ -186,7 +188,7 @@ export function PrivacyActions({
                 className="inline-flex items-center gap-2 rounded-full border border-destructive/40 bg-destructive/5 px-4 py-2 text-sm font-medium text-destructive transition hover:bg-destructive/10"
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                Delete account
+                Supprimer le compte
               </button>
             )}
           </div>

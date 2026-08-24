@@ -102,15 +102,15 @@ type Props = {
 };
 
 const STATUS_LABEL: Record<GenerationDetail["status"], string> = {
-  queued: "Queued",
-  processing: "Processing",
-  completed: "Completed",
-  failed: "Failed",
+  queued: "En file d’attente",
+  processing: "En cours",
+  completed: "Terminée",
+  failed: "Échouée",
 };
 
 function formatDateTime(value: string | null): string {
   if (!value) return "—";
-  return new Date(value).toLocaleString("en-GB", {
+  return new Date(value).toLocaleString("fr-FR", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -217,7 +217,7 @@ export function GenerationDetailModal({
               {formatDateTime(generation.completedAt ?? generation.createdAt)}
             </p>
           </div>
-          <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Close">
+          <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Fermer">
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -226,8 +226,8 @@ export function GenerationDetailModal({
           {generation.filesExpired && (
             <div className="flex items-start gap-2 rounded-xl border border-border/40 bg-muted/40 p-3 text-xs text-muted-foreground">
               <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              Files for this generation have expired (they are kept for 30
-              days). The text record of the settings was saved.
+              Les fichiers de cette génération ont expiré (ils sont conservés
+              30 jours). L’enregistrement textuel des réglages a été conservé.
             </div>
           )}
 
@@ -239,11 +239,11 @@ export function GenerationDetailModal({
             }
           >
             <ImagePane
-              title="Image to edit"
+              title="Image à retoucher"
               fileName={generation.inputFileName}
               url={generation.inputUrl}
               downloadUrl={canDownloadInput ? generation.inputDownloadUrl : null}
-              emptyHint="Original upload"
+              emptyHint="Image d’origine"
               fileExpired={generation.filesExpired}
             />
             {referenceImages.length > 0 && (
@@ -253,39 +253,39 @@ export function GenerationDetailModal({
               />
             )}
             <ImagePane
-              title="Result"
+              title="Résultat"
               fileName={generation.resultFileName}
               url={generation.status === "completed" ? generation.resultUrl : null}
               downloadUrl={canDownloadResult ? generation.downloadUrl : null}
               emptyHint={
                 generation.status === "failed"
-                  ? generation.errorMessage ?? "The generation failed."
+                  ? generation.errorMessage ?? "La génération a échoué."
                   : generation.status === "queued"
-                    ? "Queued…"
+                    ? "En file d’attente…"
                     : generation.status === "processing"
-                      ? "Processing…"
-                      : "The result is not available."
+                      ? "Traitement en cours…"
+                      : "Le résultat n’est pas disponible."
               }
               fileExpired={generation.filesExpired}
             />
           </div>
 
           <div className="rounded-lg border border-border/40 bg-card/60 p-4">
-            <h3 className="text-sm font-semibold text-foreground">Settings</h3>
+            <h3 className="text-sm font-semibold text-foreground">Réglages</h3>
             <dl className="mt-3 grid gap-3 text-xs sm:grid-cols-2">
-              <SettingRow label="Edit type" value={editDef.label} />
+              <SettingRow label="Type de retouche" value={editDef.label} />
               <SettingRow
-                label="Billing"
+                label="Facturation"
                 value={
                   generation.unitsCharged === 0 ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[0.7rem] font-semibold text-foreground">
-                      Free attempt #{generation.freeAttemptIndex ?? 1}
+                      Essai gratuit n° {generation.freeAttemptIndex ?? 1}
                     </span>
                   ) : generation.freeAttemptIndex !== null ? (
                     <span className="text-foreground">
-                      Additional charge {formatCreditsFromUnits(generation.unitsCharged)}{" "}
+                      Supplément {formatCreditsFromUnits(generation.unitsCharged)}{" "}
                       <span className="text-muted-foreground">
-                        · free #{generation.freeAttemptIndex}
+                        · gratuit n° {generation.freeAttemptIndex}
                       </span>
                     </span>
                   ) : (
@@ -293,20 +293,20 @@ export function GenerationDetailModal({
                   )
                 }
               />
-              <SettingRow label="Engine" value={`${providerLabel} · ${generation.model}`} />
+              <SettingRow label="Moteur" value={`${providerLabel} · ${generation.model}`} />
               {generation.editType === "object_insertion" && (
                 <SettingRow
-                  label="Furniture/decor"
+                  label="Mobilier/déco"
                   value={
                     generation.objectMode === "replace"
-                      ? "Replace existing item"
-                      : "Add item"
+                      ? "Remplacer un objet existant"
+                      : "Ajouter un objet"
                   }
                 />
               )}
               <SettingRow
                 label="Mode"
-                value={generation.hasMask ? "Advanced (with mask)" : "Simple"}
+                value={generation.hasMask ? "Avancé (avec masque)" : "Simple"}
               />
               {styleLabel && <SettingRow label="Style" value={styleLabel} />}
               {optionLabel && (
@@ -317,7 +317,7 @@ export function GenerationDetailModal({
               )}
               {generation.colorHex && (
                 <SettingRow
-                  label="Color"
+                  label="Couleur"
                   value={
                     <span className="inline-flex items-center gap-1.5">
                       <span
@@ -331,7 +331,7 @@ export function GenerationDetailModal({
               )}
               {isDerivative && parentResultFileName && (
                 <SettingRow
-                  label="Based on"
+                  label="À partir de"
                   value={
                     <span className="font-mono text-[0.7rem] text-muted-foreground">
                       {parentResultFileName}
@@ -340,16 +340,16 @@ export function GenerationDetailModal({
                 />
               )}
               <SettingRow
-                label="Free retry"
+                label="Relance gratuite"
                 value={
                   generation.status !== "completed" ? (
                     <span className="text-muted-foreground">—</span>
                   ) : freeRetriesRemaining > 0 ? (
                     <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[0.7rem] font-semibold text-foreground">
-                      Available ({freeRetriesRemaining}/{AI_FREE_REGENERATIONS}) · same type
+                      Disponible ({freeRetriesRemaining}/{AI_FREE_REGENERATIONS}) · même type
                     </span>
                   ) : (
-                    <span className="text-muted-foreground">Used</span>
+                    <span className="text-muted-foreground">Utilisée</span>
                   )
                 }
               />
@@ -375,8 +375,8 @@ export function GenerationDetailModal({
             >
               <RefreshCw className="h-4 w-4" />
               {freeRetriesRemaining > 0
-                ? "Repeat (free, same type)"
-                : "Repeat (charged)"}
+                ? "Relancer (gratuit, même type)"
+                : "Relancer (facturé)"}
             </Button>
             <Button
               type="button"
@@ -385,7 +385,7 @@ export function GenerationDetailModal({
               disabled={!canUseResult}
             >
               <Wand2 className="h-4 w-4" />
-              Continue from result (new charge)
+              Continuer à partir du résultat (nouvelle facturation)
             </Button>
             <Button
               type="button"
@@ -398,7 +398,7 @@ export function GenerationDetailModal({
               ) : (
                 <Trash2 className="h-4 w-4" />
               )}
-              Delete creation
+              Supprimer la création
             </Button>
           </div>
         </div>
@@ -442,7 +442,7 @@ function ImagePane({
             className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-foreground px-3 text-[0.72rem] font-semibold text-background"
           >
             <Download className="h-3 w-3" />
-            Download
+            Télécharger
           </a>
         )}
       </div>
@@ -483,7 +483,7 @@ function ReferenceImagesPane({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="text-[0.62rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-            Furniture/decor / angles
+            Mobilier/déco / angles
           </p>
           <p className="mt-0.5 text-[0.68rem] text-foreground/70">
             {references.length} image{references.length === 1 ? "" : "s"}
@@ -501,7 +501,7 @@ function ReferenceImagesPane({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={reference.url}
-                alt={index === 0 ? "Primary item image" : `Item angle ${index + 1}`}
+                alt={index === 0 ? "Image principale de l’objet" : `Angle de l’objet ${index + 1}`}
                 className="block aspect-square w-full object-contain"
                 draggable={false}
               />
@@ -517,11 +517,11 @@ function ReferenceImagesPane({
             <div className="flex items-center justify-between gap-2 px-2 py-1.5">
               <div className="min-w-0">
                 <p className="text-[0.62rem] font-semibold text-foreground">
-                  {index === 0 ? "Primary" : `Angle ${index + 1}`}
+                  {index === 0 ? "Principale" : `Angle ${index + 1}`}
                 </p>
                 {reference.isLegacyPreparedReference && (
                   <p className="mt-0.5 text-[0.56rem] font-semibold uppercase tracking-[0.12em] text-amber-600">
-                    Old prepared reference
+                    Ancienne référence préparée
                   </p>
                 )}
                 {reference.fileName && (
@@ -535,7 +535,7 @@ function ReferenceImagesPane({
                   href={reference.downloadUrl}
                   download
                   className="inline-flex h-7 shrink-0 items-center justify-center rounded-md bg-foreground px-2 text-background"
-                  aria-label={`Download item image ${index + 1}`}
+                  aria-label={`Télécharger l’image de l’objet ${index + 1}`}
                 >
                   <Download className="h-3 w-3" />
                 </a>

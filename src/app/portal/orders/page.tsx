@@ -17,9 +17,9 @@ import { DeleteOrderButton } from "@/components/portal/delete-order-button";
 import { NewDraftButton } from "@/components/portal/new-draft-button";
 
 export const metadata: Metadata = {
-  title: "Orders",
+  title: "Commandes",
   description:
-    "List of your Elegant Render orders with statuses, search, and key details.",
+    "Liste de vos commandes Elegant Render avec statuts, recherche et informations clés.",
   robots: { index: false, follow: false },
 };
 
@@ -91,10 +91,10 @@ export default async function OrdersPage({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl text-foreground md:text-3xl">
-            Orders
+            Commandes
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {orders.length} order{orders.length === 1 ? "" : "s"}
+            {orders.length} commande{orders.length === 1 ? "" : "s"}
           </p>
         </div>
         <NewDraftButton />
@@ -105,8 +105,8 @@ export default async function OrdersPage({
       {orders.length === 0 ? (
         <EmptyState
           icon={Search}
-          heading="No results"
-          description="Try different filters or search terms."
+          heading="Aucun résultat"
+          description="Essayez d’autres filtres ou termes de recherche."
         />
       ) : (
         <>
@@ -115,11 +115,11 @@ export default async function OrdersPage({
             <div className="space-y-1.5">
               {/* Header row */}
               <div className="grid grid-cols-[2fr_1fr_1fr_auto_auto_auto] gap-4 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                <span>Project</span>
+                <span>Projet</span>
                 <span>Service</span>
-                <span>Activity</span>
-                <span className="w-28 text-center">Status</span>
-                <span className="w-20 text-right">Amount</span>
+                <span>Activité</span>
+                <span className="w-28 text-center">Statut</span>
+                <span className="w-20 text-right">Montant</span>
                 <span className="w-[120px]" />
               </div>
 
@@ -131,7 +131,7 @@ export default async function OrdersPage({
                 const displayName =
                   order.projectName ??
                   firstItem?.productLabel ??
-                  "Order";
+                  "Commande";
                 const savingsEur = order.items.reduce(
                   (s, i) =>
                     s + Math.max(0, (i.originalTotalEur ?? i.totalEur) - i.totalEur),
@@ -145,7 +145,7 @@ export default async function OrdersPage({
                     <Link
                       href={`/portal/orders/${order.id}`}
                       className="absolute inset-0 rounded-xl"
-                      aria-label={`Open ${order.orderNumber}`}
+                      aria-label={`Ouvrir ${order.orderNumber}`}
                     />
                     <div className="relative pointer-events-none">
                       <p className="text-sm font-medium text-foreground">
@@ -159,7 +159,7 @@ export default async function OrdersPage({
                       {firstItem?.categoryLabel ?? "—"}
                     </p>
                     <p className="relative pointer-events-none text-xs text-muted-foreground">
-                      {order.updatedAt.toLocaleDateString("en-GB", {
+                      {order.updatedAt.toLocaleDateString("fr-FR", {
                         day: "numeric",
                         month: "short",
                       })}
@@ -175,7 +175,7 @@ export default async function OrdersPage({
                       </p>
                       {savingsEur > 0 && (
                         <p className="mt-0.5 text-[0.62rem] font-semibold text-muted-foreground">
-                          −{formatOrderEurAmount(order, savingsEur)} saved
+                          −{formatOrderEurAmount(order, savingsEur)} économisés
                         </p>
                       )}
                     </div>
@@ -202,7 +202,7 @@ export default async function OrdersPage({
               const displayName =
                 order.projectName ??
                 firstItem?.productLabel ??
-                "Order";
+                "Commande";
               const savingsEur = order.items.reduce(
                 (s, i) =>
                   s + Math.max(0, (i.originalTotalEur ?? i.totalEur) - i.totalEur),
@@ -216,7 +216,7 @@ export default async function OrdersPage({
                   <Link
                     href={`/portal/orders/${order.id}`}
                     className="absolute inset-0 rounded-lg"
-                    aria-label={`Open ${order.orderNumber}`}
+                    aria-label={`Ouvrir ${order.orderNumber}`}
                   />
                   <div className="relative pointer-events-none flex items-start justify-between gap-3">
                     <div>
@@ -233,7 +233,7 @@ export default async function OrdersPage({
                   </div>
                   <div className="relative pointer-events-none mt-3 flex items-center justify-between">
                     <p className="text-xs text-muted-foreground">
-                      {order.updatedAt.toLocaleDateString("en-GB", {
+                      {order.updatedAt.toLocaleDateString("fr-FR", {
                         day: "numeric",
                         month: "short",
                       })}

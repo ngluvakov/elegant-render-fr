@@ -41,7 +41,7 @@ export default async function PortalLayout({
 
   return (
     <PortalLayoutShell
-      userName={session.user.name ?? "User"}
+      userName={session.user.name ?? "Utilisateur"}
       userEmail={session.user.email ?? ""}
       adminPermissions={adminPermissions}
       hasPassword={Boolean(user?.passwordHash)}

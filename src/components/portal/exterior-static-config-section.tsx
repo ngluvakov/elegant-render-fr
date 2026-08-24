@@ -384,7 +384,7 @@ export function ExtStaticConfigSection({
         </select>
         {config.renderingMode === "photomontage" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
-            + Photomontage : {formatPrice(50)} (analyse de la perspective,
+            + Photomontage : {formatPrice(50)} (analyse de la perspective,
             calage de la caméra et de la lumière, compositing)
           </p>
         )}

@@ -294,7 +294,7 @@ export function ItemConfigPanel({
               </button>
             ) : (
               <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in slide-in-from-right-1 duration-150">
-                <span className="px-1.5 text-[0.72rem] font-semibold">Retirer ?</span>
+                <span className="px-1.5 text-[0.72rem] font-semibold">Retirer ?</span>
                 <button
                   type="button"
                   disabled={deletePending}
@@ -672,7 +672,7 @@ function NonInteriorBody({
                   id={`rooms-${item.id}`}
                   value={roomDetails}
                   onChange={(e) => setRoomDetails(e.target.value)}
-                  placeholder="Séjour : tons clairs, parquet&#10;Chambre : murs sombres, couleurs chaudes&#10;Cuisine : moderne, façades blanches"
+                  placeholder="Séjour : tons clairs, parquet&#10;Chambre : murs sombres, couleurs chaudes&#10;Cuisine : moderne, façades blanches"
                   rows={4}
                   className="resize-none text-sm"
                 />

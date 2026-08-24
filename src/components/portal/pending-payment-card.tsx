@@ -90,7 +90,7 @@ export function PendingPaymentCard({
         </h3>
       </div>
       <p className="mt-2 text-xs text-muted-foreground">
-        Cette commande n’a pas encore été réglée. Total :{" "}
+        Cette commande n’a pas encore été réglée. Total :{" "}
         <strong className="text-foreground">{amountLabel}</strong>
         {currency !== "EUR" && (
           <span> — débité en {currency} ; facture émise en EUR.</span>

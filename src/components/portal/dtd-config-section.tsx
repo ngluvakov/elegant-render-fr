@@ -614,7 +614,7 @@ export function DtdConfigSection({
           <div className="flex items-center gap-2">
             {config.rushDelivery && (
               <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                +{DTD_RUSH_PERCENT}%
+                +{DTD_RUSH_PERCENT} %
               </span>
             )}
             <Switch

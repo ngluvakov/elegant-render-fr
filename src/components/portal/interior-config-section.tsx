@@ -73,8 +73,8 @@ function floorPricingRows(calc: InteriorFloorCalc) {
   const rows: { label: string; value: number; sub?: string }[] = [
     {
       label: calc.isFirstFloor
-        ? "First floor price (includes 10 rooms + 10 renders)"
-        : "Additional floor price (-30%)",
+        ? "Prix du premier niveau (10 pièces + 10 rendus inclus)"
+        : "Prix par niveau supplémentaire (-30 %)",
       value: calc.baseCost,
     },
   ];
@@ -82,27 +82,27 @@ function floorPricingRows(calc: InteriorFloorCalc) {
     rows.push({
       label:
         calc.extraRooms === 1
-          ? "+1 extra room"
-          : `+${calc.extraRooms} extra rooms`,
+          ? "+1 pièce supplémentaire"
+          : `+${calc.extraRooms} pièces supplémentaires`,
       value: calc.extraRoomsCost,
-      sub: `€${INT_STATIC_EXTRA_ROOM_EUR} each`,
+      sub: `€${INT_STATIC_EXTRA_ROOM_EUR} chacune`,
     });
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
       label:
         calc.extraCameras === 1
-          ? "+1 extra frame"
-          : `+${calc.extraCameras} extra frames`,
+          ? "+1 vue supplémentaire"
+          : `+${calc.extraCameras} vues supplémentaires`,
       value: calc.extraCamerasCost,
-      sub: `€${INT_STATIC_EXTRA_CAMERA_EUR} each`,
+      sub: `€${INT_STATIC_EXTRA_CAMERA_EUR} chacune`,
     });
   }
   return rows;
 }
 
 export function cameraNoun(n: number): string {
-  return n === 1 ? "camera" : "cameras";
+  return n === 1 ? "caméra" : "caméras";
 }
 
 type FloorFile = {
@@ -181,7 +181,7 @@ function FloorPanel({
       rooms: [
         ...floor.rooms,
         {
-          name: `Room ${floor.rooms.length + 1}`,
+          name: `Pièce ${floor.rooms.length + 1}`,
           cameras: 1,
           ...(floor.globalStyleId ? { styleId: floor.globalStyleId } : {}),
         },
@@ -262,12 +262,12 @@ function FloorPanel({
               </h5>
               {!calc.isFirstFloor && (
                 <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold text-foreground">
-                  −30%
+                  −30 %
                 </span>
               )}
             </div>
             <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
-              {calc.totalRooms} room{calc.totalRooms === 1 ? "ija" : "ija"} ·{" "}
+              {calc.totalRooms} pièce{calc.totalRooms === 1 ? "" : "s"} ·{" "}
               {calc.totalCameras} {cameraNoun(calc.totalCameras)} ·{" "}
               {formatPrice(calc.floorTotal)}
             </p>
@@ -285,7 +285,7 @@ function FloorPanel({
             {!confirmDelete ? (
               <button
                 type="button"
-                aria-label={`Remove ${floor.name}`}
+                aria-label={`Supprimer ${floor.name}`}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -297,7 +297,7 @@ function FloorPanel({
               </button>
             ) : (
               <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in duration-150">
-                <span className="px-1 text-[0.62rem] font-semibold">Remove?</span>
+                <span className="px-1 text-[0.62rem] font-semibold">Supprimer ?</span>
                 <button
                   type="button"
                   onClick={onRemove}
@@ -328,7 +328,7 @@ function FloorPanel({
               className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
             >
               <Pencil className="h-3 w-3 text-accent/60" />
-              Floor name
+              Nom du niveau
             </Label>
             <input
               id={`floor-name-${floor.id}`}
@@ -344,7 +344,7 @@ function FloorPanel({
           {/* Advanced toggle — switch stays at top; body renders at bottom. */}
           <p className="flex items-center gap-1.5 text-[0.7rem] text-muted-foreground">
             <Check className="h-3 w-3" />
-            This floor is ready to order. Fine-tuning is below.
+            Ce niveau est prêt à commander. Les réglages fins sont ci-dessous.
           </p>
           <label
             htmlFor={`adv-${floor.id}`}
@@ -353,11 +353,11 @@ function FloorPanel({
             <div className="flex items-center gap-2">
               <Settings2 className="h-3 w-3 text-accent" />
               <span className="text-[0.7rem] font-medium text-foreground">
-                Advanced settings{" "}
-                <span className="text-muted-foreground">(optional)</span>
+                Paramètres avancés{" "}
+                <span className="text-muted-foreground">(facultatif)</span>
               </span>
               <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-                · time of day, season, window view
+                · moment de la journée, saison, vue depuis la fenêtre
               </span>
             </div>
             <Switch
@@ -373,10 +373,10 @@ function FloorPanel({
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h6 className="text-xs font-semibold text-foreground">
-                  Rooms and cameras
+                  Pièces et caméras
                 </h6>
                 <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
-                  10 rooms + 10 renders included per floor
+                  10 pièces + 10 rendus inclus par niveau
                 </p>
               </div>
               <button
@@ -385,24 +385,24 @@ function FloorPanel({
                 className="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-[0.72rem] font-semibold text-foreground transition-all hover:border-accent hover:bg-accent/15"
               >
                 <Palette className="h-3.5 w-3.5" />
-                Style guide
+                Guide des styles
               </button>
             </div>
 
             <div className="flex items-start gap-2 rounded-md bg-secondary/30 px-2.5 py-1.5 text-[0.72rem] text-muted-foreground">
               <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-accent/70" />
               <p>
-                The number beside each room is the camera/render count for that room. Above
-                10 renders per floor = {formatPrice(INT_STATIC_EXTRA_CAMERA_EUR)} per camera.
+                Le nombre à côté de chaque pièce indique le nombre de caméras/rendus pour
+                cette pièce. Au-delà de 10 rendus par niveau = {formatPrice(INT_STATIC_EXTRA_CAMERA_EUR)} par caméra.
               </p>
             </div>
 
             {/* Counters */}
             <div className="grid grid-cols-3 gap-2">
-              <CounterPill icon={<Home className="h-3 w-3" />} label="Rooms" value={calc.totalRooms} extra={calc.extraRooms} />
-              <CounterPill icon={<Camera className="h-3 w-3" />} label="Renders" value={calc.totalCameras} slash={INT_STATIC_INCLUDED_CAMERAS} />
+              <CounterPill icon={<Home className="h-3 w-3" />} label="Pièces" value={calc.totalRooms} extra={calc.extraRooms} />
+              <CounterPill icon={<Camera className="h-3 w-3" />} label="Rendus" value={calc.totalCameras} slash={INT_STATIC_INCLUDED_CAMERAS} />
               <CounterPill
-                label="Remaining"
+                label="Restants"
                 value={calc.remainingRenders >= 0 ? calc.remainingRenders : `+${Math.abs(calc.remainingRenders)}`}
                 variant={
                   calc.remainingRenders >= 3 ? "good" : calc.remainingRenders >= 0 ? "warn" : "bad"
@@ -419,12 +419,12 @@ function FloorPanel({
                 <div className="flex items-center gap-2">
                   <Palette className="h-3 w-3 text-accent" />
                   <span className="text-[0.7rem] font-medium text-foreground">
-                    Style per room
+                    Style par pièce
                   </span>
                   <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
                     · {styleMode === "per-room"
-                      ? "each room chooses separately"
-                      : "same style for all rooms"}
+                      ? "chaque pièce choisit séparément"
+                      : "même style pour toutes les pièces"}
                   </span>
                 </div>
                 <Switch
@@ -443,7 +443,7 @@ function FloorPanel({
                     htmlFor={`global-style-${floor.id}`}
                     className="text-[0.7rem]"
                   >
-                    Style for all rooms
+                    Style pour toutes les pièces
                   </Label>
                   <select
                     id={`global-style-${floor.id}`}
@@ -474,7 +474,7 @@ function FloorPanel({
             {floor.rooms.length === 0 ? (
               <div className="rounded-md border border-dashed border-border/40 px-3 py-4 text-center">
                 <p className="text-[0.72rem] text-muted-foreground">
-                  No rooms yet. Add the first one below.
+                  Aucune pièce pour l’instant. Ajoutez la première ci-dessous.
                 </p>
               </div>
             ) : (
@@ -497,7 +497,7 @@ function FloorPanel({
                           disabled={!editable}
                           maxLength={80}
                           className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground/50"
-                          placeholder="Room name"
+                          placeholder="Nom de la pièce"
                         />
                         {styleMode === "per-room" && (
                           <select
@@ -508,10 +508,10 @@ function FloorPanel({
                               })
                             }
                             disabled={!editable}
-                            aria-label="Interior style"
+                            aria-label="Style d’intérieur"
                             className="rounded bg-secondary/60 px-2 py-1 text-[0.72rem] text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
                           >
-                            <option value="">Style - select</option>
+                            <option value="">Style - sélectionner</option>
                             {ROOM_STYLES.map((s) => (
                               <option key={s.id} value={s.id}>
                                 {s.label}
@@ -529,7 +529,7 @@ function FloorPanel({
                             type="button"
                             disabled={!editable || room.cameras <= 1}
                             onClick={() => decCamera(rIdx)}
-                            aria-label="Decrease cameras in this room"
+                            aria-label="Diminuer le nombre de caméras dans cette pièce"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Minus className="h-3 w-3" />
@@ -541,7 +541,7 @@ function FloorPanel({
                             type="button"
                             disabled={!editable || room.cameras >= 10}
                             onClick={() => incCamera(rIdx)}
-                            aria-label="Increase cameras in this room"
+                            aria-label="Augmenter le nombre de caméras dans cette pièce"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Plus className="h-3 w-3" />
@@ -554,7 +554,7 @@ function FloorPanel({
                           <button
                             type="button"
                             onClick={() => removeRoom(rIdx)}
-                            aria-label="Remove room"
+                            aria-label="Supprimer la pièce"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                           >
                             <Trash2 className="h-3 w-3" />
@@ -565,7 +565,7 @@ function FloorPanel({
                         value={room.notes ?? ""}
                         onChange={(e) => updateRoom(rIdx, { notes: e.target.value })}
                         disabled={!editable}
-                        placeholder="Details for this room - camera position, atmosphere, special requirements..."
+                        placeholder="Détails pour cette pièce - position de caméra, ambiance, exigences particulières…"
                         rows={2}
                         className="resize-none text-[0.78rem]"
                       />
@@ -582,7 +582,7 @@ function FloorPanel({
                 className="inline-flex items-center gap-1.5 self-start rounded-lg border border-accent/50 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-accent hover:bg-accent/15 hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
               >
                 <Plus className="h-3.5 w-3.5" />
-                Add room
+                Ajouter une pièce
                 {calc.totalRooms >= 10 && (
                   <span className="text-[0.62rem] text-accent/80">
                     (+{formatPrice(INT_STATIC_EXTRA_ROOM_EUR)})
@@ -596,14 +596,14 @@ function FloorPanel({
           <div className="space-y-1.5">
             <Label htmlFor={`desc-${floor.id}`} className="text-xs">
               <Pencil className="h-3 w-3 text-accent/60" />
-              Project description for this floor
+              Description du projet pour ce niveau
             </Label>
             <Textarea
               id={`desc-${floor.id}`}
               value={floor.description ?? ""}
               onChange={(e) => onPatch({ description: e.target.value })}
               disabled={!editable}
-              placeholder="Style, atmosphere, special requirements for this floor..."
+              placeholder="Style, ambiance, exigences particulières pour ce niveau…"
               rows={3}
               className="resize-none text-sm"
             />
@@ -611,7 +611,7 @@ function FloorPanel({
 
           {/* Files */}
           <div className="space-y-1.5">
-            <Label className="text-xs">Plans and photos (this floor)</Label>
+            <Label className="text-xs">Plans et photos (ce niveau)</Label>
             <div
               onClick={() => editable && inputRef.current?.click()}
               className={cn(
@@ -623,7 +623,7 @@ function FloorPanel({
             >
               <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
               <span className="text-[0.7rem] text-muted-foreground">
-                Drag or click - floor plans, photos, sketches
+                Glissez ou cliquez - plans, photos, croquis
               </span>
               <input
                 ref={inputRef}
@@ -686,13 +686,13 @@ function FloorPanel({
           <Collapsible open={advanced}>
             <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
               <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                Advanced
+                Avancé
               </p>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1">
                   <Label htmlFor={`tod-${floor.id}`} className="text-[0.7rem]">
-                    Time of day
+                    Moment de la journée
                   </Label>
                   <select
                     id={`tod-${floor.id}`}
@@ -717,7 +717,7 @@ function FloorPanel({
 
                 <div className="space-y-1">
                   <Label htmlFor={`season-${floor.id}`} className="text-[0.7rem]">
-                    Season
+                    Saison
                   </Label>
                   <select
                     id={`season-${floor.id}`}
@@ -743,7 +743,7 @@ function FloorPanel({
 
               <div className="space-y-1.5">
                 <Label className="text-[0.7rem]">
-                  Window view (reference)
+                  Vue depuis la fenêtre (référence)
                 </Label>
                 <div
                   onClick={() => editable && viewInputRef.current?.click()}
@@ -756,7 +756,7 @@ function FloorPanel({
                 >
                   <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
                   <span className="text-[0.7rem] text-muted-foreground">
-                    Window-view photos for this floor
+                    Photos de la vue depuis la fenêtre pour ce niveau
                   </span>
                   <input
                     ref={viewInputRef}
@@ -807,7 +807,7 @@ function FloorPanel({
               </div>
 
               <PricingBreakdown
-                title="Price breakdown for this floor"
+                title="Détail du prix pour ce niveau"
                 rows={floorPricingRows(calc)}
                 total={calc.floorTotal}
               />
@@ -867,18 +867,18 @@ export function StyleGuideModal({
         <div className="flex items-start justify-between gap-3 border-b border-border/40 p-5">
           <div>
             <h3 className="font-heading text-xl text-foreground">
-              Style guide
+              Guide des styles
             </h3>
             <p className="mt-1 text-[0.78rem] text-muted-foreground">
-              Click "Apply to all rooms" to quickly set the same
-              style for all rooms on this floor. You can always
-              change individual rooms manually later.
+              Cliquez sur « Appliquer à toutes les pièces » pour définir rapidement
+              le même style pour toutes les pièces de ce niveau. Vous pourrez
+              toujours modifier chaque pièce manuellement plus tard.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label="Fermer"
             className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <X className="h-4 w-4" />
@@ -894,7 +894,7 @@ export function StyleGuideModal({
               <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                 <Image
                   src={style.image}
-                  alt={`Interior example: ${style.label}`}
+                  alt={`Exemple d’intérieur : ${style.label}`}
                   fill
                   sizes="(min-width: 640px) 40vw, 90vw"
                   className="object-cover"
@@ -916,7 +916,7 @@ export function StyleGuideModal({
                     className="inline-flex w-full items-center justify-center gap-1.5 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1.5 text-[0.72rem] font-semibold text-foreground transition-all hover:border-accent hover:bg-accent/15"
                   >
                     <Check className="h-3 w-3" />
-                    Apply to all rooms
+                    Appliquer à toutes les pièces
                   </button>
                 )}
               </div>
@@ -930,7 +930,7 @@ export function StyleGuideModal({
             onClick={onClose}
             className="rounded-lg px-4 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
-            Close
+            Fermer
           </button>
         </div>
       </div>
@@ -1064,11 +1064,11 @@ export function InteriorConfigSection({
           <Layers className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {calc.floorCount} floor{calc.floorCount === 1 ? "" : "a"}
+              {calc.floorCount} niveau{calc.floorCount === 1 ? "" : "x"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {calc.floors.reduce((s, f) => s + f.totalRooms, 0)} rooms ·{" "}
-              {calc.floors.reduce((s, f) => s + f.totalCameras, 0)} renders total
+              {calc.floors.reduce((s, f) => s + f.totalRooms, 0)} pièces ·{" "}
+              {calc.floors.reduce((s, f) => s + f.totalCameras, 0)} rendus au total
             </p>
           </div>
         </div>
@@ -1087,7 +1087,7 @@ export function InteriorConfigSection({
 
       {/* Style guide CTA — surfaced at section level so customers can
           browse the gallery before configuring any floors. Per-floor
-          panels also have their own "Style guide" button that
+          panels also have their own "Guide des styles" button that
           can apply the picked style to that floor's rooms. */}
       <button
         type="button"
@@ -1100,15 +1100,15 @@ export function InteriorConfigSection({
           </span>
           <div>
             <p className="text-sm font-semibold text-foreground">
-              View style gallery
+              Voir la galerie de styles
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              Scandi, modern, classic, industrial - choose what you like before setting up floors.
+              Scandinave, moderne, classique, industriel - choisissez ce qui vous plaît avant de configurer les niveaux.
             </p>
           </div>
         </div>
         <span className="hidden flex-shrink-0 text-[0.72rem] font-semibold text-accent sm:inline">
-          Open →
+          Ouvrir →
         </span>
       </button>
 
@@ -1117,7 +1117,7 @@ export function InteriorConfigSection({
         <div className="rounded-xl border border-dashed border-border/40 bg-card/40 px-4 py-8 text-center">
           <Layers className="mx-auto h-6 w-6 text-muted-foreground/40" />
           <p className="mt-2 text-xs text-muted-foreground">
-            No floor has been added yet. Add the first one below.
+            Aucun niveau ajouté pour l’instant. Ajoutez le premier ci-dessous.
           </p>
         </div>
       ) : (
@@ -1153,23 +1153,23 @@ export function InteriorConfigSection({
             </span>
             <div>
               <p className="text-sm font-semibold text-foreground">
-                {floors.length === 0 ? "Add first floor" : "Add another floor"}
+                {floors.length === 0 ? "Ajouter le premier niveau" : "Ajouter un autre niveau"}
               </p>
               <p className="text-[0.72rem] text-muted-foreground">
-                Each floor has its own rooms, photos, and settings.
+                Chaque niveau a ses propres pièces, photos et paramètres.
               </p>
             </div>
           </div>
           {floors.length > 0 && (
             <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-1 text-[0.72rem] font-bold uppercase tracking-wider text-foreground">
-              −30% · {formatPrice(INT_STATIC_EXTRA_FLOOR_EUR)}
+              −30 % · {formatPrice(INT_STATIC_EXTRA_FLOOR_EUR)}
             </span>
           )}
         </button>
       )}
 
       {/* Section-level style guide modal — browse-only (editable=false
-          so there's no "Apply to all" button). Customers apply styles
+          so there's no "Appliquer à toutes les pièces" button). Customers apply styles
           per-floor via each FloorPanel's own style picker. */}
       {styleGuideOpen && (
         <StyleGuideModal

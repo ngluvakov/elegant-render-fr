@@ -81,7 +81,7 @@ export function ChargePaymentCard({
       )}
 
       <p className="mb-3 text-xs text-muted-foreground">
-        Montant à régler :{" "}
+        Montant à régler :{" "}
         <strong className="text-foreground">{amountLabel}</strong>
       </p>
 

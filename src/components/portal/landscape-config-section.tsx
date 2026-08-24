@@ -323,11 +323,11 @@ export function LandscapeConfigSection({
           <Trees className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.projectName || "Landscape"}
+              {config.projectName || "Aménagement paysager"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {config.cameraCount} camera{config.cameraCount === 1 ? "" : "s"}
-              {config.aerialEnabled ? " · aerial" : ""}
+              {config.cameraCount} vue{config.cameraCount === 1 ? "" : "s"}
+              {config.aerialEnabled ? " · vue aérienne" : ""}
             </p>
           </div>
         </div>
@@ -351,7 +351,7 @@ export function LandscapeConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Project / location name
+          Nom du projet / du site
         </Label>
         <input
           id={`name-${itemId}`}
@@ -369,14 +369,14 @@ export function LandscapeConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Camera className="h-3 w-3 text-accent/60" />
-            Number of frames
+            Nombre de vues
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.cameraCount <= 1}
               onClick={decCameras}
-              aria-label="Decrease number of frames"
+              aria-label="Diminuer le nombre de vues"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -388,13 +388,13 @@ export function LandscapeConfigSection({
               type="button"
               disabled={!editable || config.cameraCount >= 30}
               onClick={incCameras}
-              aria-label="Increase number of frames"
+              aria-label="Augmenter le nombre de vues"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 included, +{formatPrice(45)} each additional
+              1 incluse, +{formatPrice(45)} par vue supplémentaire
             </span>
           </div>
         </div>
@@ -404,7 +404,7 @@ export function LandscapeConfigSection({
             htmlFor={`style-${itemId}`}
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
-            Landscape design style
+            Style d’aménagement paysager
           </Label>
           <select
             id={`style-${itemId}`}
@@ -440,7 +440,7 @@ export function LandscapeConfigSection({
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Terrain description, desired plants, paths, fences, pool, or water features..."
+          placeholder="Description du terrain, plantes souhaitées, allées, clôtures, piscine ou plans d’eau…"
           rows={3}
           className="resize-none text-sm"
         />
@@ -448,10 +448,10 @@ export function LandscapeConfigSection({
 
       {/* Source files */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Site plan and drawings</Label>
+        <Label className="text-xs">Plan de masse et dessins</Label>
         {renderUploadZone(
           sourceInputRef,
-          "Drag or click - PDF, DWG, CAD, sketches",
+          "Glissez ou cliquez - PDF, DWG, CAD, croquis",
           "image/*,application/pdf,.dwg,.dxf",
           "source",
         )}
@@ -460,10 +460,10 @@ export function LandscapeConfigSection({
 
       {/* Site photos */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Photos of the current condition</Label>
+        <Label className="text-xs">Photos de l’état actuel</Label>
         {renderUploadZone(
           sitePhotoInputRef,
-          "Location images from several angles",
+          "Images du site sous plusieurs angles",
           "image/*",
           "site-photo",
         )}
@@ -492,10 +492,10 @@ export function LandscapeConfigSection({
         <div className="flex items-start justify-between gap-3">
           <div>
             <h5 className="text-sm font-semibold text-foreground">
-              Aerial landscape view
+              Vue aérienne de l’aménagement
             </h5>
             <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-              Add a bird's-eye view of the full solution.
+              Ajoutez une vue à vol d’oiseau de l’ensemble du projet.
             </p>
           </div>
           {config.aerialEnabled && (
@@ -512,7 +512,7 @@ export function LandscapeConfigSection({
           <div className="flex items-center gap-2">
             <MountainSnow className="h-3.5 w-3.5 text-accent" />
             <span className="text-[0.78rem] font-medium text-foreground">
-              I want an aerial view
+              Je souhaite une vue aérienne
             </span>
           </div>
           <Switch
@@ -532,7 +532,7 @@ export function LandscapeConfigSection({
           <div className="space-y-2 rounded-md border border-border/30 bg-background/40 p-3">
             <div className="space-y-1">
               <Label htmlFor={`aer-env-${itemId}`} className="text-[0.7rem]">
-                Wider surroundings view
+                Représentation des environs
               </Label>
               <select
                 id={`aer-env-${itemId}`}
@@ -560,11 +560,11 @@ export function LandscapeConfigSection({
               <div className="space-y-1.5 rounded-md bg-card/60 p-2.5">
                 <Label className="text-[0.7rem]">
                   <ImageIcon className="h-3 w-3 text-accent/60" />
-                  Drone photos (for photomontage)
+                  Photos de drone (pour photomontage)
                 </Label>
                 {renderUploadZone(
                   droneInputRef,
-                  "Existing drone photos of the location",
+                  "Photos de drone existantes du site",
                   "image/*",
                   "drone-photo",
                 )}
@@ -578,7 +578,7 @@ export function LandscapeConfigSection({
       {/* Advanced toggle */}
       <p className="flex items-center gap-1.5 text-[0.7rem] text-muted-foreground">
         <Check className="h-3 w-3" />
-        This item is ready to order. Fine-tuning is below.
+        Cet élément est prêt à commander. Les réglages fins sont ci-dessous.
       </p>
       <label
         htmlFor={`adv-${itemId}`}
@@ -587,11 +587,11 @@ export function LandscapeConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Advanced settings{" "}
-            <span className="text-muted-foreground">(optional)</span>
+            Paramètres avancés{" "}
+            <span className="text-muted-foreground">(facultatif)</span>
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · terrain, vegetation, lighting, atmosphere
+            · terrain, végétation, éclairage, ambiance
           </span>
         </div>
         <Switch
@@ -608,12 +608,12 @@ export function LandscapeConfigSection({
           {/* 2.1 Atmosphere */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Atmosphere and surroundings
+              Ambiance et environnement
             </p>
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor={`tod-${itemId}`} className="text-[0.7rem]">
-                  Time of day
+                  Moment de la journée
                 </Label>
                 <select
                   id={`tod-${itemId}`}
@@ -639,7 +639,7 @@ export function LandscapeConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`season-${itemId}`} className="text-[0.7rem]">
-                  Season
+                  Saison
                 </Label>
                 <select
                   id={`season-${itemId}`}
@@ -665,7 +665,7 @@ export function LandscapeConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`vegage-${itemId}`} className="text-[0.7rem]">
-                  Vegetation age
+                  Âge de la végétation
                 </Label>
                 <select
                   id={`vegage-${itemId}`}
@@ -694,17 +694,18 @@ export function LandscapeConfigSection({
           {/* 2.2 Terrain & hardscape */}
           <div className="space-y-2">
             <p className="flex items-center gap-1.5 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Terrain and hardscape
+              Terrain et hardscape
               <HelpTip>
-                <strong>Hardscape</strong> - non-living landscape elements:
-                paths, paved areas, low walls, stairs, fences,
-                wooden decks. The opposite of “softscape” (plants, grass).
+                <strong>Hardscape</strong> - les éléments non végétaux de
+                l’aménagement : allées, surfaces pavées, murets, escaliers,
+                clôtures, terrasses en bois. Le contraire du « softscape »
+                (plantes, gazon).
               </HelpTip>
             </p>
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor={`topo-${itemId}`} className="text-[0.7rem]">
-                  Terrain topography
+                  Topographie du terrain
                 </Label>
                 <select
                   id={`topo-${itemId}`}
@@ -730,7 +731,7 @@ export function LandscapeConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`paths-${itemId}`} className="text-[0.7rem]">
-                  Path materials
+                  Matériaux des allées
                 </Label>
                 <select
                   id={`paths-${itemId}`}
@@ -756,7 +757,7 @@ export function LandscapeConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`fence-${itemId}`} className="text-[0.7rem]">
-                  Fences and boundaries
+                  Clôtures et limites
                 </Label>
                 <select
                   id={`fence-${itemId}`}
@@ -785,11 +786,11 @@ export function LandscapeConfigSection({
           {/* 2.3 Optional elements */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Specific elements
+              Éléments spécifiques
             </p>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Water features</Label>
+              <Label className="text-[0.7rem]">Plans d’eau</Label>
               <CheckboxRow<keyof WaterFeatures>
                 options={WATER_FEATURE_OPTIONS}
                 state={config.waterFeatures}
@@ -802,7 +803,7 @@ export function LandscapeConfigSection({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Additional objects in the space</Label>
+              <Label className="text-[0.7rem]">Objets supplémentaires dans l’espace</Label>
               <CheckboxRow<keyof Structures>
                 options={STRUCTURE_OPTIONS}
                 state={config.structures}
@@ -815,7 +816,7 @@ export function LandscapeConfigSection({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Outdoor lighting</Label>
+              <Label className="text-[0.7rem]">Éclairage extérieur</Label>
               <CheckboxRow<keyof ExteriorLighting>
                 options={EXTERIOR_LIGHTING_OPTIONS}
                 state={config.exteriorLighting}
@@ -834,14 +835,14 @@ export function LandscapeConfigSection({
           {/* 2.4 Reference uploads */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Reference
+              Références
             </p>
 
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Plant and material references</Label>
+              <Label className="text-[0.7rem]">Références de plantes et de matériaux</Label>
               {renderUploadZone(
                 referenceInputRef,
-                "Images of desired plants, textures, furniture",
+                "Images des plantes, textures et mobilier souhaités",
                 "image/*",
                 "reference",
               )}
@@ -849,10 +850,10 @@ export function LandscapeConfigSection({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Planting plan</Label>
+              <Label className="text-[0.7rem]">Plan de plantation</Label>
               {renderUploadZone(
                 plantingInputRef,
-                "PDF, tables with a plant list",
+                "PDF, tableaux avec la liste des plantes",
                 "image/*,application/pdf",
                 "planting-plan",
               )}

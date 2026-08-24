@@ -314,7 +314,7 @@ export function Floorplan2dConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Layers className="h-3 w-3 text-accent/60" />
-            Nombre de niveaux (étages)
+            Nombre de niveaux
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
@@ -393,7 +393,7 @@ export function Floorplan2dConfigSection({
         </select>
         {config.displayType === "furnished" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
-            + Mobilier en surimpression : {formatPrice(6)}
+            + Mobilier en surimpression : {formatPrice(6)}
           </p>
         )}
       </div>

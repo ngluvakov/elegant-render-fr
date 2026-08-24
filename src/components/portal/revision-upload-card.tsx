@@ -138,7 +138,7 @@ export function RevisionUploadCard({ orderId }: { orderId: string }) {
                     aria-valuenow={u.progress}
                     aria-valuemin={0}
                     aria-valuemax={100}
-                    aria-label={`Import en cours : ${u.file.name}`}
+                    aria-label={`Import en cours : ${u.file.name}`}
                     className="block h-1 w-16 overflow-hidden rounded-full bg-muted"
                   >
                     <span

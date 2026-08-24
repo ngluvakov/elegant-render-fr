@@ -266,15 +266,15 @@ export function FloorplanConfigSection({
           <Grid2x2 className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.projectName || "Floor plan"}
+              {config.projectName || "Plan"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {config.levels} level{config.levels === 1 ? "" : "s"} ·{" "}
+              {config.levels} niveau{config.levels === 1 ? "" : "x"} ·{" "}
               {config.displayType === "unfurnished"
-                ? "empty"
+                ? "vide"
                 : config.displayType === "furnished"
-                  ? "furnished"
-                  : "both variants"}
+                  ? "meublé"
+                  : "les deux variantes"}
             </p>
           </div>
         </div>
@@ -298,7 +298,7 @@ export function FloorplanConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Plan / floor name
+          Nom du plan / niveau
         </Label>
         <input
           id={`name-${itemId}`}
@@ -316,14 +316,14 @@ export function FloorplanConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Layers className="h-3 w-3 text-accent/60" />
-            Number of levels (floors)
+            Nombre de niveaux
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.levels <= 1}
               onClick={decLevels}
-              aria-label="Decrease number of levels"
+              aria-label="Diminuer le nombre de niveaux"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -335,13 +335,13 @@ export function FloorplanConfigSection({
               type="button"
               disabled={!editable || config.levels >= 30}
               onClick={incLevels}
-              aria-label="Increase number of levels"
+              aria-label="Augmenter le nombre de niveaux"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              {formatPriceText("1 included, +€17 for the second, then +€15 each additional")}
+              {formatPriceText("1 inclus, +€17 pour le deuxième, puis +€15 par niveau supplémentaire")}
             </span>
           </div>
         </div>
@@ -351,7 +351,7 @@ export function FloorplanConfigSection({
             htmlFor={`display-${itemId}`}
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
-            Display type (furniture)
+            Type d’affichage (mobilier)
           </Label>
           <select
             id={`display-${itemId}`}
@@ -375,7 +375,7 @@ export function FloorplanConfigSection({
           </select>
           {isFurnished && (
             <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
-              + Overlay furniture: {formatPrice(8)}
+              + Mobilier en surimpression : {formatPrice(8)}
             </p>
           )}
         </div>
@@ -389,7 +389,7 @@ export function FloorplanConfigSection({
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
             <Sofa className="h-3 w-3 text-accent/60" />
-            Furniture style
+            Style de mobilier
           </Label>
           <select
             id={`fstyle-${itemId}`}
@@ -418,14 +418,14 @@ export function FloorplanConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Description and notes
+          Description et remarques
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Special requirements for layout, room purpose, or colors..."
+          placeholder="Exigences particulières pour l’agencement, l’usage des pièces ou les couleurs…"
           rows={3}
           className="resize-none text-sm"
         />
@@ -433,10 +433,10 @@ export function FloorplanConfigSection({
 
       {/* Source files */}
       <div className="space-y-1.5">
-        <Label className="text-xs">2D plans and drawings</Label>
+        <Label className="text-xs">Plans 2D et dessins</Label>
         {renderUploadZone(
           sourceInputRef,
-          "Drag or click - PDF, DWG, CAD, measured sketches",
+          "Glissez ou cliquez - PDF, DWG, CAD, croquis avec cotes",
           "image/*,application/pdf,.dwg,.dxf",
           "source",
         )}
@@ -469,7 +469,7 @@ export function FloorplanConfigSection({
             Paramètres avancés
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · viewing angle, labels, materials
+            · angle de vue, annotations, matériaux
           </span>
         </div>
         <Switch
@@ -485,12 +485,12 @@ export function FloorplanConfigSection({
           {/* 2.1 Viewing & presentation */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Viewing angle and presentation
+              Angle de vue et présentation
             </p>
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor={`cam-${itemId}`} className="text-[0.7rem]">
-                  Camera angle
+                  Angle de caméra
                 </Label>
                 <select
                   id={`cam-${itemId}`}
@@ -516,7 +516,7 @@ export function FloorplanConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`walls-${itemId}`} className="text-[0.7rem]">
-                  Wall display
+                  Affichage des murs
                 </Label>
                 <select
                   id={`walls-${itemId}`}
@@ -542,7 +542,7 @@ export function FloorplanConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`bg-${itemId}`} className="text-[0.7rem]">
-                  Background color
+                  Couleur de fond
                 </Label>
                 <select
                   id={`bg-${itemId}`}
@@ -571,7 +571,7 @@ export function FloorplanConfigSection({
           {/* 2.2 Labels & technical */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Labels and technical details
+              Annotations et détails techniques
             </p>
             <div className="space-y-1.5">
               <label
@@ -579,7 +579,7 @@ export function FloorplanConfigSection({
                 className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-card/60 px-3 py-2"
               >
                 <span className="text-[0.78rem] text-foreground">
-                  Show room names on the render
+                  Afficher le nom des pièces sur le rendu
                 </span>
                 <Switch
                   id={`labels-${itemId}`}
@@ -593,7 +593,7 @@ export function FloorplanConfigSection({
                 className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-card/60 px-3 py-2"
               >
                 <span className="text-[0.78rem] text-foreground">
-                  Show area (m²) and dimensions
+                  Afficher la surface (m²) et les cotes
                 </span>
                 <Switch
                   id={`dims-${itemId}`}
@@ -608,7 +608,7 @@ export function FloorplanConfigSection({
               >
                 <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                   <Compass className="h-3.5 w-3.5 text-accent" />
-                  Add orientation marker (north)
+                  Ajouter un repère d’orientation (nord)
                 </span>
                 <Switch
                   id={`compass-${itemId}`}
@@ -623,14 +623,14 @@ export function FloorplanConfigSection({
           {/* 2.3 Materials & references */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Materials and references
+              Matériaux et références
             </p>
 
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Material specification</Label>
+              <Label className="text-[0.7rem]">Spécification des matériaux</Label>
               {renderUploadZone(
                 materialInputRef,
-                "Tables / documents with flooring, tiles, wall colours",
+                "Tableaux / documents avec sols, carrelages, couleurs des murs",
                 "image/*,application/pdf,.xlsx,.xls",
                 "material-spec",
               )}
@@ -638,10 +638,10 @@ export function FloorplanConfigSection({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Style references</Label>
+              <Label className="text-[0.7rem]">Références de style</Label>
               {renderUploadZone(
                 refInputRef,
-                "Images of desired furniture or atmosphere",
+                "Images du mobilier ou de l’ambiance souhaités",
                 "image/*",
                 "reference",
               )}
@@ -655,11 +655,11 @@ export function FloorplanConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Additional variants
+            Variantes supplémentaires
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Order the same layout with another style or an identical floor plan with
-            different room names.
+            Commandez le même agencement dans un autre style, ou un plan identique
+            avec d’autres noms de pièces.
           </p>
         </div>
 
@@ -672,10 +672,10 @@ export function FloorplanConfigSection({
             <Palette className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                Additional design variant
+                Variante de design supplémentaire
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Same layout, completely different furniture style
+                Même agencement, style de mobilier complètement différent
               </span>
             </div>
           </div>
@@ -705,7 +705,7 @@ export function FloorplanConfigSection({
               htmlFor={`vstyle-${itemId}`}
               className="text-[0.7rem]"
             >
-              Style for the second variant
+              Style de la deuxième variante
             </Label>
             <select
               id={`vstyle-${itemId}`}
@@ -739,10 +739,10 @@ export function FloorplanConfigSection({
             <Copy className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                Duplikat plans
+                Plan dupliqué
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Identical plan with different room names
+                Plan identique avec d’autres noms de pièces
               </span>
             </div>
           </div>

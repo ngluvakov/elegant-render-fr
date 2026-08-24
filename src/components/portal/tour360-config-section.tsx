@@ -88,8 +88,8 @@ function floorPricingRows(calc: Tour360FloorCalc) {
   const rows: { label: string; value: number; sub?: string }[] = [
     {
       label: calc.isFirstFloor
-        ? "First floor price (includes 10 hotspots + 10 static cameras)"
-        : "Additional floor price (-30%)",
+        ? "Prix du premier niveau (10 hotspots + 10 caméras statiques inclus)"
+        : "Prix par niveau supplémentaire (-30 %)",
       value: calc.baseCost,
     },
   ];
@@ -97,20 +97,20 @@ function floorPricingRows(calc: Tour360FloorCalc) {
     rows.push({
       label:
         calc.extraHotspots === 1
-          ? "+1 extra hotspot"
-          : `+${calc.extraHotspots} extra hotspots`,
+          ? "+1 hotspot supplémentaire"
+          : `+${calc.extraHotspots} hotspots supplémentaires`,
       value: calc.extraHotspotsCost,
-      sub: `€${TOUR360_EXTRA_HOTSPOT_EUR} each`,
+      sub: `€${TOUR360_EXTRA_HOTSPOT_EUR} chacun`,
     });
   }
   if (calc.extraCamerasCost > 0) {
     rows.push({
       label:
         calc.extraCameras === 1
-          ? "+1 extra static camera"
-          : `+${calc.extraCameras} extra static cameras`,
+          ? "+1 caméra statique supplémentaire"
+          : `+${calc.extraCameras} caméras statiques supplémentaires`,
       value: calc.extraCamerasCost,
-      sub: `€${TOUR360_EXTRA_CAMERA_EUR} each`,
+      sub: `€${TOUR360_EXTRA_CAMERA_EUR} chacune`,
     });
   }
   return rows;
@@ -202,7 +202,7 @@ function Tour360FloorPanel({
       rooms: [
         ...floor.rooms,
         {
-          name: `Room ${floor.rooms.length + 1}`,
+          name: `Pièce ${floor.rooms.length + 1}`,
           hotspots: 1,
           staticCameras: 0,
           ...(floor.globalStyleId ? { styleId: floor.globalStyleId } : {}),
@@ -260,7 +260,7 @@ function Tour360FloorPanel({
   const floorIsConfigured =
     (floor.description?.trim().length ?? 0) > 0 || files.length > 0;
 
-  const roomsSummary = `${calc.totalRooms} room${calc.totalRooms === 1 ? "" : "s"} · ${calc.totalHotspots} hotspot${calc.totalHotspots === 1 ? "" : "s"} · ${calc.totalCameras} static camera${calc.totalCameras === 1 ? "" : "s"}`;
+  const roomsSummary = `${calc.totalRooms} pièce${calc.totalRooms === 1 ? "" : "s"} · ${calc.totalHotspots} hotspot${calc.totalHotspots === 1 ? "" : "s"} · ${calc.totalCameras} caméra${calc.totalCameras === 1 ? "" : "s"} statique${calc.totalCameras === 1 ? "" : "s"}`;
 
   return (
     <div
@@ -286,7 +286,7 @@ function Tour360FloorPanel({
               </h5>
               {!calc.isFirstFloor && (
                 <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold text-foreground">
-                  −30%
+                  −30 %
                 </span>
               )}
             </div>
@@ -307,7 +307,7 @@ function Tour360FloorPanel({
             {!confirmDelete ? (
               <button
                 type="button"
-                aria-label={`Remove ${floor.name}`}
+                aria-label={`Supprimer ${floor.name}`}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -319,7 +319,7 @@ function Tour360FloorPanel({
               </button>
             ) : (
               <div className="inline-flex items-center gap-0.5 rounded-md bg-destructive/10 p-0.5 text-destructive animate-in fade-in duration-150">
-                <span className="px-1 text-[0.62rem] font-semibold">Remove?</span>
+                <span className="px-1 text-[0.62rem] font-semibold">Supprimer ?</span>
                 <button
                   type="button"
                   onClick={onRemove}
@@ -350,7 +350,7 @@ function Tour360FloorPanel({
               className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
             >
               <Pencil className="h-3 w-3 text-accent/60" />
-              Floor name
+              Nom du niveau
             </Label>
             <input
               id={`floor-name-${floor.id}`}
@@ -366,7 +366,7 @@ function Tour360FloorPanel({
           {/* Advanced toggle */}
           <p className="flex items-center gap-1.5 text-[0.7rem] text-muted-foreground">
             <Check className="h-3 w-3" />
-            This floor is ready to order. Fine-tuning is below.
+            Ce niveau est prêt à commander. Les réglages fins sont ci-dessous.
           </p>
           <label
             htmlFor={`adv-${floor.id}`}
@@ -375,11 +375,11 @@ function Tour360FloorPanel({
             <div className="flex items-center gap-2">
               <Settings2 className="h-3 w-3 text-accent" />
               <span className="text-[0.7rem] font-medium text-foreground">
-                Advanced settings{" "}
-                <span className="text-muted-foreground">(optional)</span>
+                Paramètres avancés{" "}
+                <span className="text-muted-foreground">(facultatif)</span>
               </span>
               <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-                · time of day, season, window view
+                · moment de la journée, saison, vue depuis la fenêtre
               </span>
             </div>
             <Switch
@@ -395,10 +395,10 @@ function Tour360FloorPanel({
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h6 className="text-xs font-semibold text-foreground">
-                  Rooms and cameras
+                  Pièces et caméras
                 </h6>
                 <p className="mt-0.5 text-[0.72rem] text-muted-foreground">
-                  10 rooms with hotspots + 10 static cameras included per floor
+                  10 pièces avec hotspots + 10 caméras statiques incluses par niveau
                 </p>
               </div>
               <button
@@ -407,17 +407,17 @@ function Tour360FloorPanel({
                 className="inline-flex items-center gap-1.5 rounded-lg border border-accent/40 bg-accent/10 px-3 py-1.5 text-[0.72rem] font-semibold text-foreground transition-all hover:border-accent hover:bg-accent/15"
               >
                 <Palette className="h-3.5 w-3.5" />
-                Style guide
+                Guide des styles
               </button>
             </div>
 
             <div className="flex items-start gap-2 rounded-md bg-secondary/30 px-2.5 py-1.5 text-[0.72rem] text-muted-foreground">
               <Info className="mt-0.5 h-3 w-3 flex-shrink-0 text-accent/70" />
               <p>
-                Per floor, this includes {TOUR360_INCLUDED_HOTSPOTS} hotspots
-                + {TOUR360_INCLUDED_CAMERAS} static cameras. Above that:
-                {formatPrice(TOUR360_EXTRA_HOTSPOT_EUR)} per extra hotspot and
-                {formatPrice(TOUR360_EXTRA_CAMERA_EUR)} per extra static camera.
+                Chaque niveau comprend {TOUR360_INCLUDED_HOTSPOTS} hotspots
+                + {TOUR360_INCLUDED_CAMERAS} caméras statiques. Au-delà :{" "}
+                {formatPrice(TOUR360_EXTRA_HOTSPOT_EUR)} par hotspot supplémentaire et{" "}
+                {formatPrice(TOUR360_EXTRA_CAMERA_EUR)} par caméra statique supplémentaire.
               </p>
             </div>
 
@@ -425,7 +425,7 @@ function Tour360FloorPanel({
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               <CounterPill
                 icon={<Home className="h-3 w-3" />}
-                label="Rooms"
+                label="Pièces"
                 value={calc.totalRooms}
               />
               <CounterPill
@@ -437,13 +437,13 @@ function Tour360FloorPanel({
               />
               <CounterPill
                 icon={<Camera className="h-3 w-3" />}
-                label="Static cameras"
+                label="Caméras statiques"
                 value={calc.totalCameras}
                 slash={TOUR360_INCLUDED_CAMERAS}
                 extra={calc.extraCameras}
               />
               <CounterPill
-                label="Remaining"
+                label="Restants"
                 value={
                   calc.remainingHotspots >= 0 && calc.remainingCameras >= 0
                     ? Math.min(calc.remainingHotspots, calc.remainingCameras)
@@ -468,12 +468,12 @@ function Tour360FloorPanel({
                 <div className="flex items-center gap-2">
                   <Palette className="h-3 w-3 text-accent" />
                   <span className="text-[0.7rem] font-medium text-foreground">
-                    Style per room
+                    Style par pièce
                   </span>
                   <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
                     · {styleMode === "per-room"
-                      ? "each room chooses separately"
-                      : "same style for all rooms"}
+                      ? "chaque pièce choisit séparément"
+                      : "même style pour toutes les pièces"}
                   </span>
                 </div>
                 <Switch
@@ -492,7 +492,7 @@ function Tour360FloorPanel({
                     htmlFor={`global-style-${floor.id}`}
                     className="text-[0.7rem]"
                   >
-                    Style for all rooms
+                    Style pour toutes les pièces
                   </Label>
                   <select
                     id={`global-style-${floor.id}`}
@@ -523,7 +523,7 @@ function Tour360FloorPanel({
             {floor.rooms.length === 0 ? (
               <div className="rounded-md border border-dashed border-border/40 px-3 py-4 text-center">
                 <p className="text-[0.72rem] text-muted-foreground">
-                  No rooms yet. Add the first one below.
+                  Aucune pièce pour l’instant. Ajoutez la première ci-dessous.
                 </p>
               </div>
             ) : (
@@ -542,7 +542,7 @@ function Tour360FloorPanel({
                           disabled={!editable}
                           maxLength={80}
                           className="min-w-0 flex-1 bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground/50"
-                          placeholder="Room name"
+                          placeholder="Nom de la pièce"
                         />
                         {styleMode === "per-room" && (
                           <select
@@ -553,10 +553,10 @@ function Tour360FloorPanel({
                               })
                             }
                             disabled={!editable}
-                            aria-label="Interior style"
+                            aria-label="Style d’intérieur"
                             className="rounded bg-secondary/60 px-2 py-1 text-[0.72rem] text-foreground outline-none focus:ring-1 focus:ring-accent/50 disabled:opacity-60"
                           >
-                            <option value="">Style - select</option>
+                            <option value="">Style - sélectionner</option>
                             {ROOM_STYLES.map((s) => (
                               <option key={s.id} value={s.id}>
                                 {s.label}
@@ -567,14 +567,14 @@ function Tour360FloorPanel({
                         {/* Hotspots stepper */}
                         <div
                           className="inline-flex items-center rounded bg-secondary/60"
-                          aria-label="360 hotspots"
+                          aria-label="Hotspots 360"
                         >
                           <Wand2 className="ml-1 h-3 w-3 text-accent/70" />
                           <button
                             type="button"
                             disabled={!editable || room.hotspots <= 0}
                             onClick={() => decHotspots(rIdx)}
-                            aria-label="Decrease number of hotspots"
+                            aria-label="Diminuer le nombre de hotspots"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Minus className="h-3 w-3" />
@@ -586,7 +586,7 @@ function Tour360FloorPanel({
                             type="button"
                             disabled={!editable || room.hotspots >= 20}
                             onClick={() => incHotspots(rIdx)}
-                            aria-label="Increase number of hotspots"
+                            aria-label="Augmenter le nombre de hotspots"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Plus className="h-3 w-3" />
@@ -595,14 +595,14 @@ function Tour360FloorPanel({
                         {/* Static cameras stepper */}
                         <div
                           className="inline-flex items-center rounded bg-secondary/60"
-                          aria-label="Static cameras"
+                          aria-label="Caméras statiques"
                         >
                           <Camera className="ml-1 h-3 w-3 text-accent/70" />
                           <button
                             type="button"
                             disabled={!editable || room.staticCameras <= 0}
                             onClick={() => decCameras(rIdx)}
-                            aria-label="Decrease number of static cameras"
+                            aria-label="Diminuer le nombre de caméras statiques"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Minus className="h-3 w-3" />
@@ -614,7 +614,7 @@ function Tour360FloorPanel({
                             type="button"
                             disabled={!editable || room.staticCameras >= 20}
                             onClick={() => incCameras(rIdx)}
-                            aria-label="Increase number of static cameras"
+                            aria-label="Augmenter le nombre de caméras statiques"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
                           >
                             <Plus className="h-3 w-3" />
@@ -624,7 +624,7 @@ function Tour360FloorPanel({
                           <button
                             type="button"
                             onClick={() => removeRoom(rIdx)}
-                            aria-label="Remove room"
+                            aria-label="Supprimer la pièce"
                             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                           >
                             <Trash2 className="h-3 w-3" />
@@ -635,7 +635,7 @@ function Tour360FloorPanel({
                         value={room.notes ?? ""}
                         onChange={(e) => updateRoom(rIdx, { notes: e.target.value })}
                         disabled={!editable}
-                        placeholder="Details for this room - hotspot positions, atmosphere, special requirements..."
+                        placeholder="Détails pour cette pièce - position des hotspots, ambiance, exigences particulières…"
                         rows={2}
                         className="resize-none text-[0.78rem]"
                       />
@@ -652,7 +652,7 @@ function Tour360FloorPanel({
                 className="inline-flex items-center gap-1.5 self-start rounded-lg border border-accent/50 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold text-foreground transition-all hover:border-accent hover:bg-accent/15 hover:shadow-[0_1px_3px_rgba(17,17,17,0.06)]"
               >
                 <Plus className="h-3.5 w-3.5" />
-                Add room
+                Ajouter une pièce
               </button>
             )}
           </div>
@@ -661,14 +661,14 @@ function Tour360FloorPanel({
           <div className="space-y-1.5">
             <Label htmlFor={`desc-${floor.id}`} className="text-xs">
               <Pencil className="h-3 w-3 text-accent/60" />
-              Project description for this floor
+              Description du projet pour ce niveau
             </Label>
             <Textarea
               id={`desc-${floor.id}`}
               value={floor.description ?? ""}
               onChange={(e) => onPatch({ description: e.target.value })}
               disabled={!editable}
-              placeholder="Style, atmosphere, special requirements for this floor..."
+              placeholder="Style, ambiance, exigences particulières pour ce niveau…"
               rows={3}
               className="resize-none text-sm"
             />
@@ -676,7 +676,7 @@ function Tour360FloorPanel({
 
           {/* Files */}
           <div className="space-y-1.5">
-            <Label className="text-xs">Plans and photos (this floor)</Label>
+            <Label className="text-xs">Plans et photos (ce niveau)</Label>
             <div
               onClick={() => editable && inputRef.current?.click()}
               className={cn(
@@ -688,7 +688,7 @@ function Tour360FloorPanel({
             >
               <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
               <span className="text-[0.7rem] text-muted-foreground">
-                Drag or click - floor plans, photos, sketches
+                Glissez ou cliquez - plans, photos, croquis
               </span>
               <input
                 ref={inputRef}
@@ -750,13 +750,13 @@ function Tour360FloorPanel({
           <Collapsible open={advanced}>
             <div className="space-y-3 rounded-md border border-border/30 bg-secondary/20 p-3">
               <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                Advanced
+                Avancé
               </p>
 
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1">
                   <Label htmlFor={`tod-${floor.id}`} className="text-[0.7rem]">
-                    Time of day
+                    Moment de la journée
                   </Label>
                   <select
                     id={`tod-${floor.id}`}
@@ -781,7 +781,7 @@ function Tour360FloorPanel({
 
                 <div className="space-y-1">
                   <Label htmlFor={`season-${floor.id}`} className="text-[0.7rem]">
-                    Season
+                    Saison
                   </Label>
                   <select
                     id={`season-${floor.id}`}
@@ -807,7 +807,7 @@ function Tour360FloorPanel({
 
               <div className="space-y-1.5">
                 <Label className="text-[0.7rem]">
-                  Window view (reference)
+                  Vue depuis la fenêtre (référence)
                 </Label>
                 <div
                   onClick={() => editable && viewInputRef.current?.click()}
@@ -820,7 +820,7 @@ function Tour360FloorPanel({
                 >
                   <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
                   <span className="text-[0.7rem] text-muted-foreground">
-                    Window-view photos for this floor
+                    Photos de la vue depuis la fenêtre pour ce niveau
                   </span>
                   <input
                     ref={viewInputRef}
@@ -871,7 +871,7 @@ function Tour360FloorPanel({
               </div>
 
               <PricingBreakdown
-                title="Price breakdown for this floor"
+                title="Détail du prix pour ce niveau"
                 rows={floorPricingRows(calc)}
                 total={calc.floorTotal}
               />
@@ -979,11 +979,11 @@ export function TourAssemblyCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Tour add-ons
+            Options de la visite
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Combine 360 renders into an interactive web tour with navigation between
-            rooms.
+            Combinez les rendus 360 en une visite web interactive avec navigation
+            entre les pièces.
           </p>
         </div>
         {assemblyCalc.enabled && (
@@ -1001,20 +1001,20 @@ export function TourAssemblyCard({
           <Compass className="h-3.5 w-3.5 text-accent" />
           <div>
             <span className="block text-[0.78rem] font-medium text-foreground">
-              I want an interactive web tour
+              Je souhaite une visite web interactive
             </span>
             <span className="block text-[0.7rem] text-muted-foreground">
               {totalHotspots >= TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD ? (
                 <>
-                  Free - this order has {totalHotspots} hotspots (≥{" "}
+                  Inclus - cette commande compte {totalHotspots} hotspots (≥{" "}
                   {TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD})
                 </>
               ) : (
                 <>
-                  {formatPrice(TOUR360_ASSEMBLY_BASE_EUR)} (free from{" "}
+                  {formatPrice(TOUR360_ASSEMBLY_BASE_EUR)} (inclus à partir de{" "}
                   {TOUR360_ASSEMBLY_FREE_HOTSPOT_THRESHOLD} hotspots
                   {hotspotsShortBy > 0
-                    ? ` — missing ${hotspotsShortBy}`
+                    ? ` — il en manque ${hotspotsShortBy}`
                     : ""}
                   )
                 </>
@@ -1056,10 +1056,10 @@ export function TourAssemblyCard({
             <div className="flex flex-1 items-start justify-between gap-2">
               <div>
                 <p className="text-[0.78rem] font-medium text-foreground">
-                  Interactive floor plan navigation
+                  Navigation interactive sur plan
                 </p>
                 <p className="text-[0.72rem] text-muted-foreground">
-                  Clickable floor plan for navigation between rooms
+                  Plan cliquable pour naviguer entre les pièces
                 </p>
               </div>
               <span className="flex-shrink-0 text-[0.72rem] font-semibold text-accent tabular-nums">
@@ -1085,16 +1085,16 @@ export function TourAssemblyCard({
             <div className="flex flex-1 items-start justify-between gap-2">
               <div>
                 <p className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
-                  Branded tour (white-label)
+                  Visite personnalisée (white-label)
                   <HelpTip>
-                    A <strong>white-label</strong> tour has no Elegant Render
-                    logo or ads. Your client sees only your branding
-                    (logo, colours, name), which is useful for agencies
-                    offering the tour as part of their own service.
+                    Une visite <strong>white-label</strong> ne comporte ni logo ni
+                    publicité Elegant Render. Votre client ne voit que votre
+                    image de marque (logo, couleurs, nom) - utile pour les
+                    agences qui proposent la visite dans leur propre offre.
                   </HelpTip>
                 </p>
                 <p className="text-[0.72rem] text-muted-foreground">
-                  Custom interface with your logo and colours
+                  Interface personnalisée avec votre logo et vos couleurs
                 </p>
               </div>
               <span className="flex-shrink-0 text-[0.72rem] font-semibold text-accent tabular-nums">
@@ -1117,7 +1117,7 @@ export function TourAssemblyCard({
               >
                 <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
                 <span className="text-[0.7rem] text-muted-foreground">
-                  Upload a logo for the branded tour
+                  Importez un logo pour la visite personnalisée
                 </span>
                 <input
                   ref={inputRef}
@@ -1152,7 +1152,7 @@ export function TourAssemblyCard({
                       {editable && (
                         <button
                           type="button"
-                          aria-label="Remove logo"
+                          aria-label="Supprimer le logo"
                           onClick={() => handleLogoDelete(f.id)}
                           className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground/50 hover:bg-destructive/10 hover:text-destructive"
                         >
@@ -1184,7 +1184,7 @@ export function TourAssemblyCard({
 
           <div className="rounded bg-secondary/30 px-2.5 py-1.5 text-[0.7rem]">
             <div className="flex items-center justify-between gap-2 text-muted-foreground">
-              <span>Tour assembly</span>
+              <span>Assemblage de la visite</span>
               <span
                 className={cn(
                   "font-semibold tabular-nums",
@@ -1194,13 +1194,13 @@ export function TourAssemblyCard({
                 )}
               >
                 {assemblyCalc.freeByHotspotThreshold
-                  ? "FREE"
+                  ? "INCLUS"
                   : formatPrice(assemblyCalc.baseCost)}
               </span>
             </div>
             {assembly.floorPlanNavEnabled && (
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <span>+ Floor plan navigation</span>
+                <span>+ Navigation sur plan</span>
                 <span className="font-semibold tabular-nums text-foreground">
                   {formatPrice(assemblyCalc.floorPlanNavCost)}
                 </span>
@@ -1208,14 +1208,14 @@ export function TourAssemblyCard({
             )}
             {assembly.whiteLabelEnabled && (
               <div className="flex items-center justify-between gap-2 text-muted-foreground">
-                <span>+ Branded tour</span>
+                <span>+ Visite personnalisée</span>
                 <span className="font-semibold tabular-nums text-foreground">
                   {formatPrice(assemblyCalc.whiteLabelCost)}
                 </span>
               </div>
             )}
             <div className="mt-1 flex items-center justify-between gap-2 border-t border-border/30 pt-1 text-foreground">
-              <span className="font-medium">Tour total</span>
+              <span className="font-medium">Total visite</span>
               <span className="text-sm font-bold tabular-nums">
                 +{formatPrice(assemblyCalc.totalCost)}
               </span>
@@ -1320,12 +1320,12 @@ export function Tour360ConfigSection({
           <Layers className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {calc.floorCount} floor{calc.floorCount === 1 ? "" : "s"}
+              {calc.floorCount} niveau{calc.floorCount === 1 ? "" : "x"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {totalRooms} room{totalRooms === 1 ? "" : "s"} · {totalHotspots}{" "}
-              hotspot{totalHotspots === 1 ? "" : "s"} · {totalCameras} static{" "}
-              camera{totalCameras === 1 ? "" : "s"}
+              {totalRooms} pièce{totalRooms === 1 ? "" : "s"} · {totalHotspots}{" "}
+              hotspot{totalHotspots === 1 ? "" : "s"} · {totalCameras} caméra
+              {totalCameras === 1 ? "" : "s"} statique{totalCameras === 1 ? "" : "s"}
             </p>
           </div>
         </div>
@@ -1369,15 +1369,15 @@ export function Tour360ConfigSection({
           </span>
           <div>
             <p className="text-sm font-semibold text-foreground">
-              View style gallery
+              Voir la galerie de styles
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              Scandi, modern, classic, industrial - choose what you like before setting up floors.
+              Scandinave, moderne, classique, industriel - choisissez ce qui vous plaît avant de configurer les niveaux.
             </p>
           </div>
         </div>
         <span className="hidden flex-shrink-0 text-[0.72rem] font-semibold text-accent sm:inline">
-          Open →
+          Ouvrir →
         </span>
       </button>
 
@@ -1386,7 +1386,7 @@ export function Tour360ConfigSection({
         <div className="rounded-xl border border-dashed border-border/40 bg-card/40 px-4 py-8 text-center">
           <Layers className="mx-auto h-6 w-6 text-muted-foreground/40" />
           <p className="mt-2 text-xs text-muted-foreground">
-            No floor has been added yet. Add the first one below.
+            Aucun niveau ajouté pour l’instant. Ajoutez le premier ci-dessous.
           </p>
         </div>
       ) : (
@@ -1422,16 +1422,16 @@ export function Tour360ConfigSection({
             </span>
             <div>
               <p className="text-sm font-semibold text-foreground">
-                {floors.length === 0 ? "Add first floor" : "Add another floor"}
+                {floors.length === 0 ? "Ajouter le premier niveau" : "Ajouter un autre niveau"}
               </p>
               <p className="text-[0.72rem] text-muted-foreground">
-                Each floor has its own rooms, photos, and settings.
+                Chaque niveau a ses propres pièces, photos et paramètres.
               </p>
             </div>
           </div>
           {floors.length > 0 && (
             <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-1 text-[0.72rem] font-bold uppercase tracking-wider text-foreground">
-              −30% · {formatPrice(TOUR360_EXTRA_FLOOR_EUR)}
+              −30 % · {formatPrice(TOUR360_EXTRA_FLOOR_EUR)}
             </span>
           )}
         </button>

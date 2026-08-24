@@ -414,7 +414,7 @@ export function Ext360ConfigSection({
         </select>
         {config.renderingMode === "photomontage" && (
           <p className="mt-0.5 text-[0.7rem] text-muted-foreground">
-            + Photomontage : {formatPrice(50)} (intégration du modèle 3D dans
+            + Photomontage : {formatPrice(50)} (intégration du modèle 3D dans
             la photo panoramique 360° du site)
           </p>
         )}

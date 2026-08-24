@@ -120,13 +120,13 @@ export function StagingConfigSection({
   // Per-product copy
   const angleAddOnLabel = is360 ? "hotspot" : "angle";
   const angleStepperLabel = is360
-    ? "Additional hotspot of the same room"
-    : "Additional angle of the same room";
+    ? "Hotspot supplémentaire de la même pièce"
+    : "Angle supplémentaire de la même pièce";
   const angleAddOnPriceEur = is360 ? 24 : 12;
   const restylePriceEur = is360 ? 22 : 12;
   const sourceAcceptHint = is360
-    ? "Spherical (equirectangular) panoramas"
-    : "Standard photos of the empty space";
+    ? "Panoramas sphériques (équirectangulaires)"
+    : "Photos standard de l’espace vide";
 
   const totalEur = useMemo(() => {
     const calc = calculateQuote([
@@ -300,7 +300,7 @@ export function StagingConfigSection({
           <Sparkles className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.roomName || "Room"}
+              {config.roomName || "Pièce"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
               <span className="inline-flex items-center gap-1 rounded bg-accent/15 px-1.5 py-0.5 text-[0.62rem] font-semibold uppercase tracking-wider text-foreground">
@@ -321,19 +321,19 @@ export function StagingConfigSection({
                   className="ml-2 inline-flex items-center gap-1 text-[0.62rem] font-medium text-muted-foreground/80 underline-offset-2 hover:text-foreground hover:underline disabled:pointer-events-none disabled:opacity-60"
                 >
                   <ArrowLeftRight className="h-3 w-3" />
-                  Change type
+                  Changer de type
                 </button>
               )}
               {config.extraAnglesCount > 0 && (
                 <span className="ml-2">
-                  +{config.extraAnglesCount} extra{" "}
+                  +{config.extraAnglesCount}{" "}
                   {is360
                     ? config.extraAnglesCount === 1
-                      ? "hotspot"
-                      : "hotspots"
+                      ? "hotspot supplémentaire"
+                      : "hotspots supplémentaires"
                     : config.extraAnglesCount === 1
-                      ? "angle"
-                      : "angles"}
+                      ? "angle supplémentaire"
+                      : "angles supplémentaires"}
                 </span>
               )}
             </p>
@@ -356,12 +356,13 @@ export function StagingConfigSection({
       {swapState.kind === "confirm" && (
         <div className="flex flex-col gap-2 rounded-lg border border-destructive/30 bg-destructive/[0.06] p-3 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[0.78rem] leading-relaxed text-foreground">
-            Switch to{" "}
+            Passer au{" "}
             <strong>
-              {is360 ? "Static staging" : "360 staging"}
+              {is360 ? "home staging statique" : "home staging 360°"}
             </strong>
-            ? Current settings are cleared (except the room name), files
-            stay attached - check that they are in the correct format.
+             ? Les réglages actuels seront effacés (sauf le nom de la
+            pièce), les fichiers restent joints - vérifiez qu’ils sont au bon
+            format.
           </p>
           <div className="flex flex-shrink-0 gap-2">
             <button
@@ -369,7 +370,7 @@ export function StagingConfigSection({
               onClick={() => setSwapState({ kind: "idle" })}
               className="inline-flex items-center justify-center rounded-lg bg-secondary px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80"
             >
-              Cancel
+              Annuler
             </button>
             <button
               type="button"
@@ -377,7 +378,7 @@ export function StagingConfigSection({
               className="inline-flex items-center justify-center gap-1 rounded-lg bg-destructive px-3 py-1.5 text-xs font-semibold text-white hover:bg-destructive/90"
             >
               <ArrowLeftRight className="h-3 w-3" />
-              Switch
+              Changer
             </button>
           </div>
         </div>
@@ -385,7 +386,7 @@ export function StagingConfigSection({
       {swapState.kind === "swapping" && (
         <div className="flex items-center gap-2 rounded-lg border border-border/40 bg-card/60 p-3 text-[0.78rem] text-muted-foreground">
           <Loader2 className="h-3.5 w-3.5 animate-spin text-accent" />
-          Switching type...
+          Changement de type…
         </div>
       )}
       {swapState.kind === "error" && (
@@ -408,7 +409,7 @@ export function StagingConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Room name
+          Nom de la pièce
         </Label>
         <input
           id={`room-name-${itemId}`}
@@ -429,7 +430,7 @@ export function StagingConfigSection({
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
             <Sofa className="h-3 w-3 text-accent/60" />
-            Furniture style
+            Style de mobilier
           </Label>
           <select
             id={`fstyle-${itemId}`}
@@ -453,7 +454,7 @@ export function StagingConfigSection({
             htmlFor={`purpose-${itemId}`}
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
-            Room purpose
+            Usage de la pièce
           </Label>
           <select
             id={`purpose-${itemId}`}
@@ -477,14 +478,14 @@ export function StagingConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Description and notes
+          Description et remarques
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="What is most important to highlight in this room? Is there a piece of furniture you definitely want?"
+          placeholder="Qu’est-ce qui compte le plus à mettre en valeur dans cette pièce ? Y a-t-il un meuble que vous voulez absolument ?"
           rows={3}
           className="resize-none text-sm"
         />
@@ -492,7 +493,7 @@ export function StagingConfigSection({
 
       {/* Source files */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Photos of the empty room</Label>
+        <Label className="text-xs">Photos de la pièce vide</Label>
         {renderUploadZone(
           sourceInputRef,
           sourceAcceptHint,
@@ -528,7 +529,7 @@ export function StagingConfigSection({
             Paramètres avancés
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · lighting, details, item removal
+            · éclairage, détails, suppression d’objets
           </span>
         </div>
         <Switch
@@ -544,11 +545,11 @@ export function StagingConfigSection({
           {/* 2.1 Mood & lighting */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Atmosphere and lighting
+              Atmosphère et éclairage
             </p>
             <div className="space-y-1">
               <Label htmlFor={`mood-${itemId}`} className="text-[0.7rem]">
-                Mood
+                Ambiance
               </Label>
               <select
                 id={`mood-${itemId}`}
@@ -579,7 +580,7 @@ export function StagingConfigSection({
               >
                 <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                   <Sun className="h-3.5 w-3.5 text-accent" />
-                  Brighten and correct colors in the photo
+                  Éclaircir et corriger les couleurs de la photo
                 </span>
                 <Switch
                   id={`light-corr-${itemId}`}
@@ -594,7 +595,7 @@ export function StagingConfigSection({
               >
                 <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                   <Lightbulb className="h-3.5 w-3.5 text-accent" />
-                  Include lamps and ambient lighting
+                  Inclure des lampes et un éclairage d’ambiance
                 </span>
                 <Switch
                   id={`art-light-${itemId}`}
@@ -609,7 +610,7 @@ export function StagingConfigSection({
           {/* 2.2 Item removal */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Room corrections
+              Corrections de la pièce
             </p>
             <label
               htmlFor={`removal-${itemId}`}
@@ -617,7 +618,7 @@ export function StagingConfigSection({
             >
               <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                 <Eraser className="h-3.5 w-3.5 text-accent" />
-                Remove old furniture or clutter from the photo
+                Supprimer les vieux meubles ou le désordre de la photo
               </span>
               <Switch
                 id={`removal-${itemId}`}
@@ -638,14 +639,14 @@ export function StagingConfigSection({
                   htmlFor={`remove-${itemId}`}
                   className="text-[0.7rem]"
                 >
-                  What should be removed?
+                  Que faut-il supprimer ?
                 </Label>
                 <Textarea
                   id={`remove-${itemId}`}
                   value={config.itemsToRemove ?? ""}
                   onChange={(e) => patch({ itemsToRemove: e.target.value })}
                   disabled={!editable}
-                  placeholder="Old sofa, boxes in the corner, pictures on the wall..."
+                  placeholder="Vieux canapé, cartons dans le coin, cadres au mur…"
                   rows={2}
                   className="resize-none text-[0.78rem]"
                 />
@@ -654,14 +655,14 @@ export function StagingConfigSection({
 
             <div className="space-y-1">
               <Label htmlFor={`keep-${itemId}`} className="text-[0.7rem]">
-                What must stay?
+                Que faut-il conserver ?
               </Label>
               <Textarea
                 id={`keep-${itemId}`}
                 value={config.itemsToKeep ?? ""}
                 onChange={(e) => patch({ itemsToKeep: e.target.value })}
                 disabled={!editable}
-                placeholder="Built-in wardrobe, fireplace, existing woodwork..."
+                placeholder="Placard encastré, cheminée, boiseries existantes…"
                 rows={2}
                 className="resize-none text-[0.78rem]"
               />
@@ -671,14 +672,14 @@ export function StagingConfigSection({
           {/* 2.3 References & target audience */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              References and specific requirements
+              Références et exigences particulières
             </p>
 
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Style references</Label>
+              <Label className="text-[0.7rem]">Références de style</Label>
               {renderUploadZone(
                 refInputRef,
-                "Pinterest, magazines, images of desired furniture",
+                "Pinterest, magazines, images du mobilier souhaité",
                 "image/*",
                 "reference",
               )}
@@ -691,7 +692,7 @@ export function StagingConfigSection({
                 className="text-[0.7rem]"
               >
                 <Users className="h-3 w-3 text-accent/60" />
-                Target buyer group
+                Groupe d’acheteurs cible
               </Label>
               <select
                 id={`audience-${itemId}`}
@@ -722,12 +723,12 @@ export function StagingConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Additional options
+            Options supplémentaires
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
             {is360
-              ? "More hotspots of the same room or restyle another style variant."
-              : "More angles of the same room or restyle another style variant."}
+              ? "Plus de hotspots de la même pièce, ou un restyle dans une autre variante de style."
+              : "Plus d’angles de la même pièce, ou un restyle dans une autre variante de style."}
           </p>
         </div>
 
@@ -741,7 +742,7 @@ export function StagingConfigSection({
                   {angleStepperLabel}
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  Have multiple photos of the same room? Add them with a discount.
+                  Vous avez plusieurs photos de la même pièce ? Ajoutez-les à prix réduit.
                 </span>
               </div>
             </div>
@@ -750,7 +751,7 @@ export function StagingConfigSection({
                 type="button"
                 disabled={!editable || config.extraAnglesCount <= 0}
                 onClick={decExtra}
-                aria-label={`Decrease number of extra ${angleAddOnLabel}s`}
+                aria-label={`Diminuer le nombre de ${angleAddOnLabel}s supplémentaires`}
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Minus className="h-3 w-3" />
@@ -762,7 +763,7 @@ export function StagingConfigSection({
                 type="button"
                 disabled={!editable || config.extraAnglesCount >= 30}
                 onClick={incExtra}
-                aria-label={`Increase number of extra ${angleAddOnLabel}s`}
+                aria-label={`Augmenter le nombre de ${angleAddOnLabel}s supplémentaires`}
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Plus className="h-3 w-3" />
@@ -770,7 +771,7 @@ export function StagingConfigSection({
             </div>
           </div>
           <p className="text-[0.7rem] text-muted-foreground">
-            +{formatPrice(angleAddOnPriceEur)} per extra {angleAddOnLabel}
+            +{formatPrice(angleAddOnPriceEur)} par {angleAddOnLabel} supplémentaire
             {config.extraAnglesCount > 0 && (
               <span className="ml-1 font-semibold text-accent">
                 · total +{formatPrice(config.extraAnglesCount * angleAddOnPriceEur)}
@@ -781,13 +782,13 @@ export function StagingConfigSection({
           <Collapsible open={config.extraAnglesCount > 0}>
             <div className="space-y-1.5">
               <Label className="text-[0.7rem]">
-                Upload extra {angleAddOnLabel}s
+                Importer les {angleAddOnLabel}s supplémentaires
               </Label>
               {renderUploadZone(
                 extraInputRef,
                 is360
-                  ? "Additional 360 panoramas of the same room"
-                  : "Additional photos of the same room",
+                  ? "Panoramas 360 supplémentaires de la même pièce"
+                  : "Photos supplémentaires de la même pièce",
                 "image/*",
                 "extra-angle",
               )}
@@ -805,10 +806,10 @@ export function StagingConfigSection({
             <Palette className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="block text-[0.78rem] font-medium text-foreground">
-                Restaging (re-style)
+                Restaging (nouveau style)
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Same photo in a completely different style
+                La même photo dans un style complètement différent
               </span>
             </div>
           </div>
@@ -838,7 +839,7 @@ export function StagingConfigSection({
               htmlFor={`restyle-style-${itemId}`}
               className="text-[0.7rem]"
             >
-              Style for the restyle variant
+              Style de la variante restylée
             </Label>
             <select
               id={`restyle-style-${itemId}`}

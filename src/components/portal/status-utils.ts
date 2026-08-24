@@ -89,13 +89,13 @@ export const STATUS_GUIDANCE: Record<
   in_review: {
     title: "À vous de valider",
     description:
-      "Notre équipe a envoyé les premiers rendus. Examinez les fichiers et répondez : approuvez-les ou demandez des révisions. Vous disposez de 5 jours ouvrés.",
+      "Notre équipe a envoyé les premiers rendus. Examinez les fichiers et répondez : approuvez-les ou demandez des révisions. Vous disposez de 5 jours ouvrés.",
     tone: "action",
   },
   revision_requested: {
     title: "L’équipe travaille sur les révisions",
     description:
-      "Votre demande de révision a bien été reçue. Délai estimé pour la nouvelle version : 2 à 3 jours ouvrés. Nous vous préviendrons dès qu’elle sera prête.",
+      "Votre demande de révision a bien été reçue. Délai estimé pour la nouvelle version : 2 à 3 jours ouvrés. Nous vous préviendrons dès qu’elle sera prête.",
     tone: "info",
   },
   delivered: {

@@ -70,21 +70,21 @@ export function ProformaCard({
 
       <dl className="mt-4 space-y-1.5 text-xs leading-relaxed">
         <div className="flex flex-wrap gap-x-2">
-          <dt className="w-28 text-muted-foreground">N° de proforma :</dt>
+          <dt className="w-28 text-muted-foreground">N° de proforma :</dt>
           <dd className="font-mono text-foreground">{proformaNumber}</dd>
         </div>
         <div className="flex flex-wrap gap-x-2">
-          <dt className="w-28 text-muted-foreground">Émise le :</dt>
+          <dt className="w-28 text-muted-foreground">Émise le :</dt>
           <dd className="text-foreground">
             {dateFormatter.format(proformaIssuedAt)}
           </dd>
         </div>
         <div className="flex flex-wrap gap-x-2">
-          <dt className="w-28 text-muted-foreground">À régler avant :</dt>
+          <dt className="w-28 text-muted-foreground">À régler avant :</dt>
           <dd className="text-foreground">{dateFormatter.format(dueDate)}</dd>
         </div>
         <div className="flex flex-wrap gap-x-2">
-          <dt className="w-28 text-muted-foreground">Montant :</dt>
+          <dt className="w-28 text-muted-foreground">Montant :</dt>
           <dd className="font-semibold text-foreground">{amountFormatted}</dd>
         </div>
       </dl>
@@ -98,29 +98,29 @@ export function ProformaCard({
         </div>
         <dl className="mt-3 space-y-1.5 text-[0.72rem] leading-relaxed">
           <div className="flex flex-wrap gap-x-2">
-            <dt className="w-24 text-muted-foreground">Bénéficiaire :</dt>
+            <dt className="w-24 text-muted-foreground">Bénéficiaire :</dt>
             <dd className="text-foreground">{IMPRINT.shortName}</dd>
           </div>
           <div className="flex flex-wrap gap-x-2">
-            <dt className="w-24 text-muted-foreground">Banque :</dt>
+            <dt className="w-24 text-muted-foreground">Banque :</dt>
             <dd className="text-foreground">{IMPRINT.bank.name}</dd>
           </div>
           <div className="flex flex-wrap gap-x-2">
-            <dt className="w-24 text-muted-foreground">Compte (EUR) :</dt>
+            <dt className="w-24 text-muted-foreground">Compte (EUR) :</dt>
             <dd className="font-mono text-foreground">
               {IMPRINT.bank.accountNumber}
             </dd>
           </div>
           <div className="flex flex-wrap gap-x-2">
-            <dt className="w-24 text-muted-foreground">IBAN :</dt>
+            <dt className="w-24 text-muted-foreground">IBAN :</dt>
             <dd className="font-mono text-foreground">{IMPRINT.bank.iban}</dd>
           </div>
           <div className="flex flex-wrap gap-x-2">
-            <dt className="w-24 text-muted-foreground">SWIFT/BIC :</dt>
+            <dt className="w-24 text-muted-foreground">SWIFT/BIC :</dt>
             <dd className="font-mono text-foreground">{IMPRINT.bank.swift}</dd>
           </div>
           <div className="flex flex-wrap gap-x-2">
-            <dt className="w-24 text-muted-foreground">Référence :</dt>
+            <dt className="w-24 text-muted-foreground">Référence :</dt>
             <dd className="font-mono text-foreground">{orderNumber}</dd>
           </div>
         </dl>

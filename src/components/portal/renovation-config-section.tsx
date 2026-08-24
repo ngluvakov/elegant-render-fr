@@ -268,7 +268,7 @@ export function RenovationConfigSection({
           <Hammer className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.roomName || "Renovation"}
+              {config.roomName || "Rénovation"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
               {RENO_ROOM_TYPES.find((r) => r.id === config.roomType)?.label} ·{" "}
@@ -296,7 +296,7 @@ export function RenovationConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Room name
+          Nom de la pièce
         </Label>
         <input
           id={`name-${itemId}`}
@@ -317,7 +317,7 @@ export function RenovationConfigSection({
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
             <Home className="h-3 w-3 text-accent/60" />
-            Room type
+            Type de pièce
           </Label>
           <select
             id={`rtype-${itemId}`}
@@ -341,7 +341,7 @@ export function RenovationConfigSection({
             htmlFor={`scope-${itemId}`}
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
-            Renovation scope
+            Périmètre de la rénovation
           </Label>
           <select
             id={`scope-${itemId}`}
@@ -365,14 +365,14 @@ export function RenovationConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Description of requested changes
+          Description des modifications souhaitées
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Dark floor tiles, white handleless kitchen, remove the wall toward the dining room..."
+          placeholder="Carrelage sombre au sol, cuisine blanche sans poignées, supprimer le mur vers la salle à manger…"
           rows={3}
           className="resize-none text-sm"
         />
@@ -380,10 +380,10 @@ export function RenovationConfigSection({
 
       {/* Source photos (existing state) */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Photos of the current condition</Label>
+        <Label className="text-xs">Photos de l’état actuel</Label>
         {renderUploadZone(
           sourceInputRef,
-          "Photos of the room being renovated",
+          "Photos de la pièce à rénover",
           "image/*",
           "source",
         )}
@@ -392,10 +392,10 @@ export function RenovationConfigSection({
 
       {/* Reference photos (inspiration) */}
       <div className="space-y-1.5">
-        <Label className="text-xs">References (inspiration)</Label>
+        <Label className="text-xs">Références (inspiration)</Label>
         {renderUploadZone(
           refInputRef,
-          "Pinterest, material examples, or style references",
+          "Pinterest, exemples de matériaux ou références de style",
           "image/*",
           "reference",
         )}
@@ -428,7 +428,7 @@ export function RenovationConfigSection({
             Paramètres avancés
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · materials, structure, details
+            · matériaux, structure, détails
           </span>
         </div>
         <Switch
@@ -444,7 +444,7 @@ export function RenovationConfigSection({
           {/* 2.1 Structural changes */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Structural changes
+              Modifications structurelles
             </p>
             <label
               htmlFor={`walls-${itemId}`}
@@ -452,7 +452,7 @@ export function RenovationConfigSection({
             >
               <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                 <Building2 className="h-3.5 w-3.5 text-accent" />
-                Changes to walls and partitions
+                Modifications des murs et cloisons
               </span>
               <Switch
                 id={`walls-${itemId}`}
@@ -472,7 +472,7 @@ export function RenovationConfigSection({
                   htmlFor={`walls-desc-${itemId}`}
                   className="text-[0.7rem]"
                 >
-                  Structural change description
+                  Description des modifications structurelles
                 </Label>
                 <Textarea
                   id={`walls-desc-${itemId}`}
@@ -481,7 +481,7 @@ export function RenovationConfigSection({
                     patch({ wallChangesDescription: e.target.value })
                   }
                   disabled={!editable}
-                  placeholder="Which wall is removed, where a partition is added..."
+                  placeholder="Quel mur est supprimé, où une cloison est ajoutée…"
                   rows={2}
                   className="resize-none text-[0.78rem]"
                 />
@@ -494,7 +494,7 @@ export function RenovationConfigSection({
             >
               <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                 <DoorOpen className="h-3.5 w-3.5 text-accent" />
-                Window and door changes
+                Modifications des fenêtres et portes
               </span>
               <Switch
                 id={`doors-${itemId}`}
@@ -508,7 +508,7 @@ export function RenovationConfigSection({
           {/* 2.2 Materials */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Materials and finishes
+              Matériaux et finitions
             </p>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1">
@@ -517,7 +517,7 @@ export function RenovationConfigSection({
                   className="text-[0.7rem]"
                 >
                   <Layers className="h-3 w-3 text-accent/60" />
-                  New flooring
+                  Nouveau sol
                 </Label>
                 <select
                   id={`floor-${itemId}`}
@@ -547,7 +547,7 @@ export function RenovationConfigSection({
                   className="text-[0.7rem]"
                 >
                   <Paintbrush className="h-3 w-3 text-accent/60" />
-                  New walls
+                  Nouveaux murs
                 </Label>
                 <select
                   id={`wall-mat-${itemId}`}
@@ -573,10 +573,10 @@ export function RenovationConfigSection({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Specific materials</Label>
+              <Label className="text-[0.7rem]">Matériaux spécifiques</Label>
               {renderUploadZone(
                 materialInputRef,
-                "Tile, flooring, or paint textures",
+                "Textures de carrelage, de sol ou de peinture",
                 "image/*,application/pdf",
                 "material-spec",
               )}
@@ -587,7 +587,7 @@ export function RenovationConfigSection({
           {/* 2.3 Furniture & retention */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Furniture and styling
+              Mobilier et style
             </p>
             <div className="space-y-1">
               <Label
@@ -595,7 +595,7 @@ export function RenovationConfigSection({
                 className="text-[0.7rem]"
               >
                 <Sofa className="h-3 w-3 text-accent/60" />
-                Furniture style
+                Style de mobilier
               </Label>
               <select
                 id={`fstyle-${itemId}`}
@@ -621,14 +621,14 @@ export function RenovationConfigSection({
 
             <div className="space-y-1">
               <Label htmlFor={`keep-${itemId}`} className="text-[0.7rem]">
-                What must stay?
+                Que faut-il conserver ?
               </Label>
               <Textarea
                 id={`keep-${itemId}`}
                 value={config.itemsToKeep ?? ""}
                 onChange={(e) => patch({ itemsToKeep: e.target.value })}
                 disabled={!editable}
-                placeholder="Existing fireplace, same window, built-in wardrobe..."
+                placeholder="Cheminée existante, même fenêtre, placard encastré…"
                 rows={2}
                 className="resize-none text-[0.78rem]"
               />
@@ -641,11 +641,11 @@ export function RenovationConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Additional options
+            Options supplémentaires
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Additional angles of the same room or another design variant of the same
-            rooms.
+            Angles supplémentaires de la même pièce, ou une autre variante de design
+            de la même pièce.
           </p>
         </div>
 
@@ -656,10 +656,10 @@ export function RenovationConfigSection({
               <Camera className="h-3.5 w-3.5 text-accent" />
               <div>
                 <span className="block text-[0.78rem] font-medium text-foreground">
-                  Additional angle of the same room
+                  Angle supplémentaire de la même pièce
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  Renovated room from another angle
+                  La pièce rénovée sous un autre angle
                 </span>
               </div>
             </div>
@@ -668,7 +668,7 @@ export function RenovationConfigSection({
                 type="button"
                 disabled={!editable || config.extraAnglesCount <= 0}
                 onClick={decExtra}
-                aria-label="Decrease number of angles"
+                aria-label="Diminuer le nombre d’angles"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Minus className="h-3 w-3" />
@@ -680,7 +680,7 @@ export function RenovationConfigSection({
                 type="button"
                 disabled={!editable || config.extraAnglesCount >= 30}
                 onClick={incExtra}
-                aria-label="Increase number of angles"
+                aria-label="Augmenter le nombre d’angles"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Plus className="h-3 w-3" />
@@ -689,16 +689,16 @@ export function RenovationConfigSection({
           </div>
           <p className="text-[0.7rem] text-muted-foreground">
             {formatPriceText(
-              `+€${RENO_ANGLE_EUR} per extra angle (€53 from the 4th angle onward)`,
+              `+€${RENO_ANGLE_EUR} par angle supplémentaire (€53 à partir du 4e angle)`,
             )}
           </p>
 
           <Collapsible open={config.extraAnglesCount > 0}>
             <div className="space-y-1.5">
-              <Label className="text-[0.7rem]">Upload extra angles</Label>
+              <Label className="text-[0.7rem]">Importer les angles supplémentaires</Label>
               {renderUploadZone(
                 extraInputRef,
-                "Additional photos of the same room",
+                "Photos supplémentaires de la même pièce",
                 "image/*",
                 "extra-angle",
               )}
@@ -716,17 +716,17 @@ export function RenovationConfigSection({
             <Palette className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
-                Design variant
+                Variante de design
                 <HelpTip>
-                  <strong>Second design proposal</strong> for the same room,
-                  for example modern minimalism first and warm Scandi second.
-                  The room geometry stays the same; only the material and
-                  furniture palette changes, so it is cheaper than a new render
-                  from scratch.
+                  <strong>Seconde proposition de design</strong> pour la même pièce,
+                  par exemple minimalisme moderne d’abord, puis scandinave
+                  chaleureux. La géométrie de la pièce reste identique ; seule
+                  la palette de matériaux et de mobilier change, c’est donc
+                  moins cher qu’un nouveau rendu à partir de zéro.
                 </HelpTip>
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Same room in another style or with different materials
+                La même pièce dans un autre style ou avec d’autres matériaux
               </span>
             </div>
           </div>
@@ -756,7 +756,7 @@ export function RenovationConfigSection({
               htmlFor={`variant-desc-${itemId}`}
               className="text-[0.7rem]"
             >
-              Variant description
+              Description de la variante
             </Label>
             <Textarea
               id={`variant-desc-${itemId}`}
@@ -765,7 +765,7 @@ export function RenovationConfigSection({
                 patch({ variantDescription: e.target.value })
               }
               disabled={!editable}
-              placeholder="How this variant differs from the first version..."
+              placeholder="En quoi cette variante diffère de la première version…"
               rows={2}
               className="resize-none text-[0.78rem]"
             />

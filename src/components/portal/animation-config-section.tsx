@@ -282,7 +282,7 @@ export function AnimationConfigSection({
                 {config.durationSeconds}s
                 {tierDiscountPct > 0 && (
                   <span className="ml-1 text-muted-foreground">
-                    (−{tierDiscountPct}%)
+                    (−{tierDiscountPct} %)
                   </span>
                 )}
               </span>
@@ -307,7 +307,7 @@ export function AnimationConfigSection({
           flags via sanitizeAnimationConfig on save. */}
       <div className="space-y-2 rounded-xl border border-border/40 bg-card/60 p-3">
         <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
-          What already exists?
+          Qu’est-ce qui existe déjà ?
         </Label>
         <div className="grid gap-2 sm:grid-cols-3">
           {ANIM_SOURCE_MODES.map((m) => {
@@ -356,7 +356,7 @@ export function AnimationConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Animation name
+          Nom de l’animation
         </Label>
         <input
           id={`name-${itemId}`}
@@ -377,7 +377,7 @@ export function AnimationConfigSection({
             className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
           >
             <Clapperboard className="h-3 w-3 text-accent/60" />
-            Animation type
+            Type d’animation
           </Label>
           <select
             id={`atype-${itemId}`}
@@ -399,14 +399,14 @@ export function AnimationConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Clock className="h-3 w-3 text-accent/60" />
-            Animation length
+            Durée de l’animation
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.durationSeconds <= ANIM_DURATION_MIN}
               onClick={decDuration}
-              aria-label={`Decrease by ${ANIM_DURATION_STEP}s`}
+              aria-label={`Diminuer de ${ANIM_DURATION_STEP}s`}
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -418,7 +418,7 @@ export function AnimationConfigSection({
               type="button"
               disabled={!editable || config.durationSeconds >= ANIM_DURATION_MAX}
               onClick={incDuration}
-              aria-label={`Increase by ${ANIM_DURATION_STEP}s`}
+              aria-label={`Augmenter de ${ANIM_DURATION_STEP}s`}
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
@@ -427,13 +427,13 @@ export function AnimationConfigSection({
               {formatPrice(perSecondEur)}/s
               {tierDiscountPct > 0 && (
                 <span className="ml-1 font-semibold text-muted-foreground">
-                  · −{tierDiscountPct}% tier
+                  · −{tierDiscountPct} % (palier)
                 </span>
               )}
             </span>
           </div>
           <p className="mt-0.5 text-[0.62rem] text-muted-foreground">
-            Tier discounts: 31-60s = -10% | 61-120s = -20% | 121s+ = -25%
+            Remises par palier : 31-60s = -10 % | 61-120s = -20 % | 121s+ = -25 %
           </p>
         </div>
       </div>
@@ -442,14 +442,14 @@ export function AnimationConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Camera path description
+          Description du parcours de caméra
         </Label>
         <Textarea
           id={`desc-${itemId}`}
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Starts in front of the house, enters through the front door, moves through the living room to the terrace..."
+          placeholder="Commence devant la maison, entre par la porte d’entrée, traverse le séjour jusqu’à la terrasse…"
           rows={3}
           className="resize-none text-sm"
         />
@@ -457,7 +457,7 @@ export function AnimationConfigSection({
 
       {/* Source upload */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Plans and references</Label>
+        <Label className="text-xs">Plans et références</Label>
         <div
           onClick={() => editable && sourceInputRef.current?.click()}
           className={cn(
@@ -467,7 +467,7 @@ export function AnimationConfigSection({
         >
           <Upload className="mr-2 h-3.5 w-3.5 text-muted-foreground/50" />
           <span className="text-[0.7rem] text-muted-foreground">
-            Plans, path sketches, reference video clips
+            Plans, croquis de parcours, clips vidéo de référence
           </span>
           <input
             ref={sourceInputRef}
@@ -515,7 +515,7 @@ export function AnimationConfigSection({
             Paramètres avancés
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · atmosphere, style, extra paths
+            · ambiance, style, parcours supplémentaires
           </span>
         </div>
         <Switch
@@ -531,12 +531,12 @@ export function AnimationConfigSection({
           {/* 2.1 Atmosphere */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Atmosphere and surroundings
+              Ambiance et environnement
             </p>
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="space-y-1">
                 <Label htmlFor={`tod-${itemId}`} className="text-[0.7rem]">
-                  Time of day
+                  Moment de la journée
                 </Label>
                 <select
                   id={`tod-${itemId}`}
@@ -565,7 +565,7 @@ export function AnimationConfigSection({
                   htmlFor={`season-${itemId}`}
                   className="text-[0.7rem]"
                 >
-                  Season
+                  Saison
                 </Label>
                 <select
                   id={`season-${itemId}`}
@@ -592,7 +592,7 @@ export function AnimationConfigSection({
               <div className="space-y-1">
                 <Label htmlFor={`speed-${itemId}`} className="text-[0.7rem]">
                   <Gauge className="h-3 w-3 text-accent/60" />
-                  Camera speed
+                  Vitesse de la caméra
                 </Label>
                 <select
                   id={`speed-${itemId}`}
@@ -621,11 +621,11 @@ export function AnimationConfigSection({
           {/* 2.2 Direction & detail */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Direction and details
+              Réalisation et détails
             </p>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Animation focus</Label>
+              <Label className="text-[0.7rem]">Priorités de l’animation</Label>
               <div className="grid gap-1.5 sm:grid-cols-2">
                 {ANIM_FOCUS_AREA_OPTIONS.map((o) => (
                   <label
@@ -659,7 +659,7 @@ export function AnimationConfigSection({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Additional scene elements</Label>
+              <Label className="text-[0.7rem]">Éléments de scène supplémentaires</Label>
               <div className="grid gap-1.5 sm:grid-cols-2">
                 {ANIM_SCENE_ELEMENT_OPTIONS.map((o) => (
                   <label
@@ -695,7 +695,7 @@ export function AnimationConfigSection({
             <div className="space-y-1">
               <Label htmlFor={`music-${itemId}`} className="text-[0.7rem]">
                 <Music className="h-3 w-3 text-accent/60" />
-                Muzika i zvuk
+                Musique et son
               </Label>
               <select
                 id={`music-${itemId}`}
@@ -726,11 +726,11 @@ export function AnimationConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Additional options
+            Options supplémentaires
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Additional camera paths or seasonal / day-to-dusk
-            variations of the same animation.
+            Parcours de caméra supplémentaires, ou variantes saisonnières /
+            jour au crépuscule de la même animation.
           </p>
         </div>
 
@@ -741,10 +741,10 @@ export function AnimationConfigSection({
               <Camera className="h-3.5 w-3.5 text-accent" />
               <div>
                 <span className="block text-[0.78rem] font-medium text-foreground">
-                  Additional camera path
+                  Parcours de caméra supplémentaire
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  {formatPriceText("Another video from the same model - €5/sec per path")}
+                  {formatPriceText("Une autre vidéo du même modèle - €5/s par parcours")}
                 </span>
               </div>
             </div>
@@ -753,7 +753,7 @@ export function AnimationConfigSection({
                 type="button"
                 disabled={!editable || config.extraPathsCount <= 0}
                 onClick={decPaths}
-                aria-label="Decrease number of camera paths"
+                aria-label="Diminuer le nombre de parcours de caméra"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Minus className="h-3 w-3" />
@@ -765,7 +765,7 @@ export function AnimationConfigSection({
                 type="button"
                 disabled={!editable || config.extraPathsCount >= 10}
                 onClick={incPaths}
-                aria-label="Increase number of camera paths"
+                aria-label="Augmenter le nombre de parcours de caméra"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               >
                 <Plus className="h-3 w-3" />
@@ -793,17 +793,17 @@ export function AnimationConfigSection({
               <CloudMoon className="h-3.5 w-3.5 text-accent" />
               <div>
                 <span className="block text-[0.78rem] font-medium text-foreground">
-                  Day / night version
+                  Version jour / nuit
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  Same animation in day and night versions
+                  La même animation en versions jour et nuit
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {config.dayNightVariant && (
                 <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                  +30%
+                  +30 %
                 </span>
               )}
               <Switch
@@ -826,17 +826,17 @@ export function AnimationConfigSection({
               <Leaf className="h-3.5 w-3.5 text-accent" />
               <div>
                 <span className="block text-[0.78rem] font-medium text-foreground">
-                  Season variation
+                  Variante saisonnière
                 </span>
                 <span className="block text-[0.7rem] text-muted-foreground">
-                  Same animation in another season
+                  La même animation dans une autre saison
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {config.seasonalVariant && (
                 <span className="text-[0.72rem] font-semibold text-accent tabular-nums">
-                  +40%
+                  +40 %
                 </span>
               )}
               <Switch

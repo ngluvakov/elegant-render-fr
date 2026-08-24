@@ -347,7 +347,7 @@ export function ItemRemovalConfigSection({
       <div className="space-y-1">
         <Label htmlFor={`desc-${itemId}`} className="text-xs">
           <Pencil className="h-3 w-3 text-accent/60" />
-          Que faut-il supprimer ?
+          Que faut-il supprimer ?
         </Label>
         <Textarea
           id={`desc-${itemId}`}
@@ -433,7 +433,7 @@ export function ItemRemovalConfigSection({
 
             <div className="space-y-1">
               <Label htmlFor={`keep-${itemId}`} className="text-[0.7rem]">
-                Que faut-il conserver ?
+                Que faut-il conserver ?
               </Label>
               <Textarea
                 id={`keep-${itemId}`}
@@ -459,7 +459,7 @@ export function ItemRemovalConfigSection({
                   htmlFor={`bg-desc-${itemId}`}
                   className="text-[0.7rem]"
                 >
-                  Qu’y a-t-il derrière l’objet ?
+                  Qu’y a-t-il derrière l’objet ?
                 </Label>
                 <Textarea
                   id={`bg-desc-${itemId}`}
@@ -468,7 +468,7 @@ export function ItemRemovalConfigSection({
                     patch({ backgroundDescription: e.target.value })
                   }
                   disabled={!editable}
-                  placeholder="Le parquet et le mur blanc se prolongent ; une fenêtre derrière le canapé ; de la pierre sous l’horloge…"
+                  placeholder="Le parquet et le mur blanc se prolongent ; une fenêtre derrière le canapé ; de la pierre sous l’horloge…"
                   rows={2}
                   className="resize-none text-[0.78rem]"
                 />

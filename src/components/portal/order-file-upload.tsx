@@ -36,7 +36,7 @@ type UploadingFile = {
 export function OrderFileUpload({
   orderId,
   title = "Fichiers du projet",
-  description = "Importez plans, photos et références de style. Formats pris en charge : JPG, PNG, WebP, TIFF, PDF.",
+  description = "Importez plans, photos et références de style. Formats pris en charge : JPG, PNG, WebP, TIFF, PDF.",
 }: {
   orderId: string;
   title?: string;
@@ -207,7 +207,7 @@ export function OrderFileUpload({
                       aria-valuenow={u.progress}
                       aria-valuemin={0}
                       aria-valuemax={100}
-                      aria-label={`Import en cours : ${u.file.name}`}
+                      aria-label={`Import en cours : ${u.file.name}`}
                       className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted"
                     >
                       <div

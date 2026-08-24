@@ -309,11 +309,11 @@ export function SiteplanConfigSection({
           <MapPin className="h-4 w-4 text-accent" />
           <div>
             <p className="text-xs font-semibold text-foreground">
-              {config.projectName || "Site plan"}
+              {config.projectName || "Plan de masse"}
             </p>
             <p className="text-[0.72rem] text-muted-foreground">
-              {config.buildingCount} objek{config.buildingCount === 1 ? "at" : "ata"} ·{" "}
-              {config.angleCount} ugl{config.angleCount === 1 ? "" : "ova"}
+              {config.buildingCount} bâtiment{config.buildingCount === 1 ? "" : "s"} ·{" "}
+              {config.angleCount} angle{config.angleCount === 1 ? "" : "s"}
             </p>
           </div>
         </div>
@@ -337,7 +337,7 @@ export function SiteplanConfigSection({
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
           <Pencil className="h-3 w-3 text-accent/60" />
-          Complex / location name
+          Nom du complexe / du site
         </Label>
         <input
           id={`name-${itemId}`}
@@ -355,14 +355,14 @@ export function SiteplanConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Building2 className="h-3 w-3 text-accent/60" />
-            Number of main buildings
+            Nombre de bâtiments principaux
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.buildingCount <= 1}
               onClick={decBuildings}
-              aria-label="Decrease number of buildings"
+              aria-label="Diminuer le nombre de bâtiments"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -374,13 +374,13 @@ export function SiteplanConfigSection({
               type="button"
               disabled={!editable || config.buildingCount >= 100}
               onClick={incBuildings}
-              aria-label="Increase number of buildings"
+              aria-label="Augmenter le nombre de bâtiments"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              how many buildings/houses
+              combien de bâtiments/maisons
             </span>
           </div>
         </div>
@@ -388,14 +388,14 @@ export function SiteplanConfigSection({
         <div className="space-y-1">
           <Label className="text-[0.72rem] uppercase tracking-wider text-muted-foreground">
             <Camera className="h-3 w-3 text-accent/60" />
-            Number of angles (frames)
+            Nombre d’angles (vues)
           </Label>
           <div className="inline-flex items-center rounded-md bg-secondary/40">
             <button
               type="button"
               disabled={!editable || config.angleCount <= 1}
               onClick={decAngles}
-              aria-label="Decrease number of angles"
+              aria-label="Diminuer le nombre d’angles"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Minus className="h-3.5 w-3.5" />
@@ -407,13 +407,13 @@ export function SiteplanConfigSection({
               type="button"
               disabled={!editable || config.angleCount >= 30}
               onClick={incAngles}
-              aria-label="Increase number of angles"
+              aria-label="Augmenter le nombre d’angles"
               className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
             >
               <Plus className="h-3.5 w-3.5" />
             </button>
             <span className="ml-2 text-[0.7rem] text-muted-foreground">
-              1 included, +{formatPrice(65)} each additional
+              1 inclus, +{formatPrice(65)} par angle supplémentaire
             </span>
           </div>
         </div>
@@ -425,7 +425,7 @@ export function SiteplanConfigSection({
           htmlFor={`angle-type-${itemId}`}
           className="text-[0.72rem] uppercase tracking-wider text-muted-foreground"
         >
-          View type (angle)
+          Type de vue (angle)
         </Label>
         <select
           id={`angle-type-${itemId}`}
@@ -453,7 +453,7 @@ export function SiteplanConfigSection({
           value={config.description ?? ""}
           onChange={(e) => patch({ description: e.target.value })}
           disabled={!editable}
-          placeholder="Describe building uses, main roads, green areas..."
+          placeholder="Décrivez l’usage des bâtiments, les axes principaux, les espaces verts…"
           rows={3}
           className="resize-none text-sm"
         />
@@ -461,10 +461,10 @@ export function SiteplanConfigSection({
 
       {/* Master plan upload */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Site plan (master plan)</Label>
+        <Label className="text-xs">Plan de masse (master plan)</Label>
         {renderUploadZone(
           sourceInputRef,
-          "PDF, DWG, CAD with plot boundaries and building positions",
+          "PDF, DWG, CAD avec les limites de parcelle et la position des bâtiments",
           "image/*,application/pdf,.dwg,.dxf",
           "source",
         )}
@@ -473,10 +473,10 @@ export function SiteplanConfigSection({
 
       {/* Architecture upload */}
       <div className="space-y-1.5">
-        <Label className="text-xs">Building architecture</Label>
+        <Label className="text-xs">Architecture des bâtiments</Label>
         {renderUploadZone(
           archInputRef,
-          "Facades, plans, or 3D models of buildings on the plot",
+          "Façades, plans ou modèles 3D des bâtiments de la parcelle",
           "image/*,application/pdf,.dwg,.dxf,.skp,.3ds,.fbx,.obj",
           "architecture",
         )}
@@ -501,7 +501,7 @@ export function SiteplanConfigSection({
       {/* Advanced toggle */}
       <p className="flex items-center gap-1.5 text-[0.7rem] text-muted-foreground">
         <Check className="h-3 w-3" />
-        This item is ready to order. Fine-tuning is below.
+        Cet élément est prêt à commander. Les réglages fins sont ci-dessous.
       </p>
       <label
         htmlFor={`adv-${itemId}`}
@@ -510,11 +510,11 @@ export function SiteplanConfigSection({
         <div className="flex items-center gap-2">
           <Settings2 className="h-3 w-3 text-accent" />
           <span className="text-[0.7rem] font-medium text-foreground">
-            Advanced settings{" "}
-            <span className="text-muted-foreground">(optional)</span>
+            Paramètres avancés{" "}
+            <span className="text-muted-foreground">(facultatif)</span>
           </span>
           <span className="hidden text-[0.72rem] text-muted-foreground sm:inline">
-            · surroundings, infrastructure, labels
+            · environnement, infrastructures, annotations
           </span>
         </div>
         <Switch
@@ -530,11 +530,11 @@ export function SiteplanConfigSection({
           {/* 2.1 Context & atmosphere */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Context and surroundings
+              Contexte et environnement
             </p>
             <div className="space-y-1">
               <Label htmlFor={`env-${itemId}`} className="text-[0.7rem]">
-                Wider surroundings view
+                Représentation des environs
               </Label>
               <select
                 id={`env-${itemId}`}
@@ -561,7 +561,7 @@ export function SiteplanConfigSection({
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1">
                 <Label htmlFor={`tod-${itemId}`} className="text-[0.7rem]">
-                  Time of day
+                  Moment de la journée
                 </Label>
                 <select
                   id={`tod-${itemId}`}
@@ -587,7 +587,7 @@ export function SiteplanConfigSection({
 
               <div className="space-y-1">
                 <Label htmlFor={`season-${itemId}`} className="text-[0.7rem]">
-                  Season
+                  Saison
                 </Label>
                 <select
                   id={`season-${itemId}`}
@@ -616,11 +616,11 @@ export function SiteplanConfigSection({
             <Collapsible open={showDroneUpload}>
               <div className="space-y-1.5 rounded-md bg-card/60 p-2.5">
                 <Label className="text-[0.7rem]">
-                  Drone photos (for photomontage)
+                  Photos de drone (pour photomontage)
                 </Label>
                 {renderUploadZone(
                   droneInputRef,
-                  "Existing drone photos of the location",
+                  "Photos de drone existantes du site",
                   "image/*",
                   "drone-photo",
                 )}
@@ -632,11 +632,11 @@ export function SiteplanConfigSection({
           {/* 2.2 Infrastructure & landscape */}
           <div className="space-y-3">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Infrastructure and landscape
+              Infrastructures et paysage
             </p>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Traffic and parking</Label>
+              <Label className="text-[0.7rem]">Circulation et stationnement</Label>
               {renderCheckboxGroup<keyof SpTraffic>(
                 SP_TRAFFIC_OPTIONS,
                 config.traffic,
@@ -651,7 +651,7 @@ export function SiteplanConfigSection({
                 className="text-[0.7rem]"
               >
                 <Trees className="h-3 w-3 text-accent/60" />
-                Landscape design style
+                Style d’aménagement paysager
               </Label>
               <select
                 id={`landscape-${itemId}`}
@@ -676,7 +676,7 @@ export function SiteplanConfigSection({
             </div>
 
             <div className="space-y-1">
-              <Label className="text-[0.7rem]">Shared amenities</Label>
+              <Label className="text-[0.7rem]">Équipements communs</Label>
               {renderCheckboxGroup<keyof SpAmenities>(
                 SP_AMENITY_OPTIONS,
                 config.amenities,
@@ -691,7 +691,7 @@ export function SiteplanConfigSection({
           {/* 2.3 Labels & graphics */}
           <div className="space-y-2">
             <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground">
-              Labels and graphics
+              Annotations et graphismes
             </p>
             <div className="space-y-1.5">
               <label
@@ -699,7 +699,7 @@ export function SiteplanConfigSection({
                 className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-card/60 px-3 py-2"
               >
                 <span className="text-[0.78rem] text-foreground">
-                  Text labels for buildings and streets
+                  Libellés texte pour les bâtiments et les rues
                 </span>
                 <Switch
                   id={`labels-${itemId}`}
@@ -713,7 +713,7 @@ export function SiteplanConfigSection({
                 className="flex cursor-pointer items-center justify-between gap-3 rounded-md bg-card/60 px-3 py-2"
               >
                 <span className="text-[0.78rem] text-foreground">
-                  Highlight plot boundaries
+                  Mettre en évidence les limites de parcelle
                 </span>
                 <Switch
                   id={`boundary-${itemId}`}
@@ -728,7 +728,7 @@ export function SiteplanConfigSection({
               >
                 <span className="flex items-center gap-2 text-[0.78rem] text-foreground">
                   <Compass className="h-3.5 w-3.5 text-accent" />
-                  North marker (compass)
+                  Repère du nord (boussole)
                 </span>
                 <Switch
                   id={`compass-${itemId}`}
@@ -748,11 +748,11 @@ export function SiteplanConfigSection({
       <div className="space-y-3 rounded-xl border border-border/40 bg-card/80 p-4">
         <div>
           <h5 className="text-sm font-semibold text-foreground">
-            Additional options
+            Options supplémentaires
           </h5>
           <p className="mt-1 text-[0.78rem] leading-relaxed text-muted-foreground">
-            Seasonal and phasing variants of the same view for urban planning
-            presentations.
+            Variantes saisonnières et de phasage de la même vue pour les
+            présentations d’urbanisme.
           </p>
         </div>
 
@@ -765,16 +765,15 @@ export function SiteplanConfigSection({
             <CalendarClock className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
-                Season variant
+                Variante saisonnière
                 <HelpTip>
-                  The same rendering generated again with different
-                  weather conditions (for example, winter day + summer night).
-                  Useful for marketing - one presentation covers multiple
-                  seasons.
+                  Le même rendu généré à nouveau avec d’autres conditions météo
+                  (par exemple jour d’hiver + nuit d’été). Utile pour le
+                  marketing - une présentation couvre plusieurs saisons.
                 </HelpTip>
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Same view in another time of day or season
+                La même vue à un autre moment de la journée ou dans une autre saison
               </span>
             </div>
           </div>
@@ -810,7 +809,7 @@ export function SiteplanConfigSection({
                 htmlFor={`svar-tod-${itemId}`}
                 className="text-[0.7rem]"
               >
-                Time of day for the variant
+                Moment de la journée pour la variante
               </Label>
               <select
                 id={`svar-tod-${itemId}`}
@@ -825,7 +824,7 @@ export function SiteplanConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— no change —</option>
+                <option value="">— sans changement —</option>
                 {TIMES_OF_DAY.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.label}
@@ -838,7 +837,7 @@ export function SiteplanConfigSection({
                 htmlFor={`svar-season-${itemId}`}
                 className="text-[0.7rem]"
               >
-                Season for the variant
+                Saison pour la variante
               </Label>
               <select
                 id={`svar-season-${itemId}`}
@@ -853,7 +852,7 @@ export function SiteplanConfigSection({
                 disabled={!editable}
                 className="w-full rounded-md bg-card/80 px-2.5 py-1.5 text-xs text-foreground outline-none ring-1 ring-border/40 focus:ring-accent/50 disabled:opacity-60"
               >
-                <option value="">— no change —</option>
+                <option value="">— sans changement —</option>
                 {SEASONS.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.label}
@@ -873,16 +872,16 @@ export function SiteplanConfigSection({
             <Layers className="h-3.5 w-3.5 text-accent" />
             <div>
               <span className="flex items-center gap-1.5 text-[0.78rem] font-medium text-foreground">
-                Phase variant (phasing)
+                Variante par phases (phasing)
                 <HelpTip>
-                  <strong>Phasing</strong> shows construction in stages —
-                  currently built structures are solid, the planned phase is
-                  shown as transparent or outlined blocks. Standard in
-                  urban-planning presentations for large complexes.
+                  Le <strong>phasing</strong> montre la construction par étapes —
+                  les structures déjà bâties sont pleines, la phase prévue
+                  apparaît en blocs transparents ou esquissés. Un standard des
+                  présentations d’urbanisme pour les grands ensembles.
                 </HelpTip>
               </span>
               <span className="block text-[0.7rem] text-muted-foreground">
-                Phase 1 built, Phase 2 as transparent blocks
+                Phase 1 construite, phase 2 en blocs transparents
               </span>
             </div>
           </div>
@@ -909,14 +908,14 @@ export function SiteplanConfigSection({
         <Collapsible open={config.phaseVariantEnabled}>
           <div className="space-y-1 rounded-md border border-border/30 bg-background/40 p-3">
             <Label htmlFor={`pdesc-${itemId}`} className="text-[0.7rem]">
-              Phase description
+              Description des phases
             </Label>
             <Textarea
               id={`pdesc-${itemId}`}
               value={config.phaseDescription ?? ""}
               onChange={(e) => patch({ phaseDescription: e.target.value })}
               disabled={!editable}
-              placeholder="Describe what belongs to each phase..."
+              placeholder="Décrivez ce qui appartient à chaque phase…"
               rows={3}
               className="resize-none text-sm"
             />

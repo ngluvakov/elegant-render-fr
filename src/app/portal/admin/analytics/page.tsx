@@ -14,9 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { requirePagePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "Analytics — Admin",
+  title: "Statistiques — Admin",
   description:
-    "Admin hub for Google, LinkedIn, Vercel, PostHog, Sentry, and SEO dashboard links.",
+    "Hub admin des liens vers les tableaux de bord Google, LinkedIn, Vercel, PostHog, Sentry et SEO.",
   robots: { index: false, follow: false },
 };
 
@@ -41,91 +41,91 @@ function dashboardUrl(envName: string): string | null {
 const dashboardLinks: DashboardLink[] = [
   {
     title: "PostHog",
-    description: "Funnels, configurator behavior, inquiries, checkout, and AI Studio events.",
+    description: "Entonnoirs, comportement dans le configurateur, demandes, paiement et événements AI Studio.",
     envName: "POSTHOG_DASHBOARD_URL",
     href: dashboardUrl("POSTHOG_DASHBOARD_URL"),
     icon: BarChart3,
-    note: "Best place for product analytics and conversions.",
+    note: "Le meilleur endroit pour l’analytique produit et les conversions.",
   },
   {
     title: "Sentry",
-    description: "Errors, performance, stack traces, and session replay when the user has consented.",
+    description: "Erreurs, performances, stack traces et replay de session lorsque l’utilisateur a donné son consentement.",
     envName: "SENTRY_DASHBOARD_URL",
     href: dashboardUrl("SENTRY_DASHBOARD_URL"),
     icon: ShieldAlert,
-    note: "Check this first when a user reports a problem.",
+    note: "À consulter en premier lorsqu’un utilisateur signale un problème.",
   },
   {
     title: "Vercel Web Analytics",
-    description: "Pageviews, referrers, devices, countries, and public traffic without a separate internal dashboard.",
+    description: "Pages vues, référents, appareils, pays et trafic public sans tableau de bord interne séparé.",
     envName: "VERCEL_WEB_ANALYTICS_URL",
     href: dashboardUrl("VERCEL_WEB_ANALYTICS_URL"),
     icon: LineChart,
-    note: "Quick overview of where visits come from.",
+    note: "Aperçu rapide de la provenance des visites.",
   },
   {
     title: "Vercel Speed Insights",
-    description: "Core Web Vitals by route: LCP, INP, CLS, FCP, and TTFB from real visits.",
+    description: "Core Web Vitals par route : LCP, INP, CLS, FCP et TTFB issus de visites réelles.",
     envName: "VERCEL_SPEED_INSIGHTS_URL",
     href: dashboardUrl("VERCEL_SPEED_INSIGHTS_URL"),
     icon: Gauge,
-    note: "Use before larger UX and SEO changes.",
+    note: "À utiliser avant des évolutions UX et SEO importantes.",
   },
   {
     title: "Vercel Project",
-    description: "Deployments, runtime logs, build logs, and overall production health.",
+    description: "Déploiements, logs d’exécution, logs de build et état général de la production.",
     envName: "VERCEL_PROJECT_DASHBOARD_URL",
     href: dashboardUrl("VERCEL_PROJECT_DASHBOARD_URL"),
     icon: Server,
-    note: "For checking deploys and runtime logs.",
+    note: "Pour vérifier les déploiements et les logs d’exécution.",
   },
   {
     title: "Google Analytics 4",
-    description: "GA4 dashboard for post-launch organic and campaign traffic measurement.",
+    description: "Tableau de bord GA4 pour mesurer le trafic organique et les campagnes après le lancement.",
     envName: "GOOGLE_ANALYTICS_DASHBOARD_URL",
     href: dashboardUrl("GOOGLE_ANALYTICS_DASHBOARD_URL"),
     icon: BarChart3,
     note:
       process.env.NEXT_PUBLIC_GA4_ENABLED === "true"
-        ? "The tag is active only after analytics consent."
+        ? "Le tag n’est actif qu’après le consentement analytique."
         : process.env.NEXT_PUBLIC_GTM_ENABLED === "true"
-          ? "GA4 runs through GTM; the direct tag is disabled."
-        : "Prepared; the tag is disabled until launch.",
+          ? "GA4 passe par GTM ; le tag direct est désactivé."
+        : "Préparé ; le tag est désactivé jusqu’au lancement.",
   },
   {
     title: "Google Tag Manager",
-    description: "GTM container for tags, dataLayer events, and future marketing integrations.",
+    description: "Conteneur GTM pour les tags, les événements dataLayer et les futures intégrations marketing.",
     envName: "GOOGLE_TAG_MANAGER_DASHBOARD_URL",
     href: dashboardUrl("GOOGLE_TAG_MANAGER_DASHBOARD_URL"),
     icon: BarChart3,
     note:
       process.env.NEXT_PUBLIC_GTM_ENABLED === "true"
-        ? "The container is active only after analytics consent."
-        : "Prepared; the container is disabled until launch.",
+        ? "Le conteneur n’est actif qu’après le consentement analytique."
+        : "Préparé ; le conteneur est désactivé jusqu’au lancement.",
   },
   {
     title: "LinkedIn Campaign Manager",
-    description: "Insight Tag, LinkedIn campaigns, audiences, and conversion tracking status.",
+    description: "Insight Tag, campagnes LinkedIn, audiences et état du suivi des conversions.",
     envName: "LINKEDIN_CAMPAIGN_MANAGER_URL",
     href: dashboardUrl("LINKEDIN_CAMPAIGN_MANAGER_URL"),
     icon: BarChart3,
-    note: "Insight Tag partner ID 9178042 loads only after marketing consent.",
+    note: "L’Insight Tag (partner ID 9178042) ne se charge qu’après le consentement marketing.",
   },
   {
     title: "Google Search Console",
-    description: "Indexing, search queries, positions, sitemap, and technical SEO signals.",
+    description: "Indexation, requêtes de recherche, positions, sitemap et signaux SEO techniques.",
     envName: "GOOGLE_SEARCH_CONSOLE_URL",
     href: dashboardUrl("GOOGLE_SEARCH_CONSOLE_URL"),
     icon: Search,
-    note: "Set this up as soon as the domain is connected.",
+    note: "À configurer dès que le domaine est connecté.",
   },
   {
     title: "Bing Webmaster",
-    description: "Bing indexing, sitemap, and additional SEO signals for the AI/search ecosystem.",
+    description: "Indexation Bing, sitemap et signaux SEO supplémentaires pour l’écosystème IA/recherche.",
     envName: "BING_WEBMASTER_URL",
     href: dashboardUrl("BING_WEBMASTER_URL"),
     icon: Search,
-    note: "Optional channel, but useful for broader discovery.",
+    note: "Canal facultatif, mais utile pour une visibilité plus large.",
   },
 ];
 
@@ -146,40 +146,38 @@ export default async function AdminAnalyticsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="font-heading text-3xl text-foreground md:text-4xl">
-            Analytics and site tracking
+            Statistiques et suivi du site
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            One place for external dashboards: product funnel, errors,
-            performance, SEO, and deploy logs. Links are admin-only and read from
-            server environment variables.
+            Un seul endroit pour les tableaux de bord externes : entonnoir produit, erreurs, performances, SEO et logs de déploiement. Les liens sont réservés aux admins et lus depuis les variables d’environnement du serveur.
           </p>
         </div>
         <Badge className="w-fit bg-secondary text-foreground">
-          {configuredCount}/{dashboardLinks.length} links configured
+          {configuredCount}/{dashboardLinks.length} liens configurés
         </Badge>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <SignalCard
           icon={BarChart3}
-          title="PostHog funnel"
-          body="Configurator, inquiries, checkout, payment, and AI Studio events without PII."
+          title="Entonnoir PostHog"
+          body="Événements du configurateur, des demandes, de la commande, du paiement et d’AI Studio, sans données personnelles."
         />
         <SignalCard
           icon={ShieldAlert}
-          title="Sentry errors"
-          body="Client and server errors, tracing, and replay when user consent exists."
+          title="Erreurs Sentry"
+          body="Erreurs client et serveur, tracing et replay lorsque le consentement utilisateur existe."
         />
         <SignalCard
           icon={Activity}
-          title="Vercel metrics"
-          body="Pageviews and Core Web Vitals as aggregate signals of the production experience."
+          title="Métriques Vercel"
+          body="Pages vues et Core Web Vitals comme signaux agrégés de l’expérience en production."
         />
       </div>
 
       <section>
         <h2 className="text-sm font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-          Dashboard links
+          Liens vers les tableaux de bord
         </h2>
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           {dashboardLinks.map((item) => (
@@ -190,25 +188,20 @@ export default async function AdminAnalyticsPage() {
 
       <section className="rounded-lg border border-border/40 bg-card/80 p-5">
         <h2 className="text-lg font-semibold text-foreground">
-          How to use it
+          Comment l’utiliser
         </h2>
         <div className="mt-4 grid gap-4 text-sm text-muted-foreground md:grid-cols-2">
           <p>
-            For marketing decisions, open Vercel Web Analytics first: the most visited
-            pages, traffic sources, and visitor countries show where to
-            strengthen content.
+            Pour les décisions marketing, ouvrez d’abord Vercel Web Analytics : les pages les plus visitées, les sources de trafic et les pays des visiteurs montrent où renforcer le contenu.
           </p>
           <p>
-            For conversions, open PostHog: review the path from visit to
-            configurator, quick inquiry, checkout, and payment.
+            Pour les conversions, ouvrez PostHog : suivez le parcours de la visite au configurateur, à la demande rapide, à la commande et au paiement.
           </p>
           <p>
-            For outages and reported problems, open Sentry first, then Vercel
-            logs if the server-side flow needs checking.
+            En cas de panne ou de problème signalé, ouvrez d’abord Sentry, puis les logs Vercel si le flux côté serveur doit être vérifié.
           </p>
           <p>
-            For SEO and UX priorities, use Speed Insights: slow public routes
-            directly affect conversion and organic reach.
+            Pour les priorités SEO et UX, utilisez Speed Insights : des routes publiques lentes affectent directement la conversion et la portée organique.
           </p>
         </div>
       </section>
@@ -217,11 +210,10 @@ export default async function AdminAnalyticsPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">
-              GA4 measurement mode
+              Mode de mesure GA4
             </h2>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Google Analytics 4 is configured through Google Tag Manager. The direct
-              GA4 tag stays disabled to avoid duplicate pageview events.
+              Google Analytics 4 est configuré via Google Tag Manager. Le tag GA4 direct reste désactivé pour éviter les pages vues en double.
             </p>
           </div>
           <Badge
@@ -232,43 +224,43 @@ export default async function AdminAnalyticsPage() {
             }
           >
             {ga4Enabled
-              ? "Direct GA4 enabled"
+              ? "GA4 direct activé"
               : gtmEnabled
                 ? "GA4 via GTM"
-                : "GA4 direct disabled"}
+                : "GA4 direct désactivé"}
           </Badge>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
           <ReadinessItem
             ready={ga4MeasurementReady}
-            title="Measurement ID"
+            title="ID de mesure"
             detail={
               ga4MeasurementReady
-                ? "NEXT_PUBLIC_GA4_MEASUREMENT_ID is set."
-                : "Add the GA4 web data stream ID, format G-XXXXXXXXXX."
+                ? "NEXT_PUBLIC_GA4_MEASUREMENT_ID est défini."
+                : "Ajoutez l’ID du flux de données web GA4, au format G-XXXXXXXXXX."
             }
           />
           <ReadinessItem
             ready={ga4DashboardReady}
-            title="Dashboard link"
+            title="Lien du tableau de bord"
             detail={
               ga4DashboardReady
-                ? "GOOGLE_ANALYTICS_DASHBOARD_URL is set."
-                : "Add the GA4 dashboard URL for quick admin access."
+                ? "GOOGLE_ANALYTICS_DASHBOARD_URL est définie."
+                : "Ajoutez l’URL du tableau de bord GA4 pour un accès admin rapide."
             }
           />
           <ReadinessItem
             ready
-            title="Consent gating"
-            detail="GTM container and GA4 measurement load only after analytics consent."
+            title="Conditionné au consentement"
+            detail="Le conteneur GTM et la mesure GA4 ne se chargent qu’après le consentement analytique."
           />
           <ReadinessItem
             ready={!ga4Enabled}
-            title="Direct GA4 tag"
+            title="Tag GA4 direct"
             detail={
               ga4Enabled
-                ? "Direct GA4 tag is enabled; check that GTM does not send the same pageview."
-                : "Correct: the direct tag is disabled because GA4 runs through GTM."
+                ? "Le tag GA4 direct est activé ; vérifiez que GTM n’envoie pas la même page vue."
+                : "Correct : le tag direct est désactivé car GA4 passe par GTM."
             }
           />
         </div>
@@ -278,11 +270,10 @@ export default async function AdminAnalyticsPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-foreground">
-              GTM launch readiness
+              Préparation GTM au lancement
             </h2>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Google Tag Manager is ready in code. The container loads only
-              when the env switch is enabled and the visitor accepts analytics.
+              Google Tag Manager est prêt dans le code. Le conteneur ne se charge que si la variable d’environnement est activée et que le visiteur accepte l’analytique.
             </p>
           </div>
           <Badge
@@ -292,40 +283,40 @@ export default async function AdminAnalyticsPage() {
                 : "bg-secondary text-muted-foreground"
             }
           >
-            {gtmEnabled ? "GTM enabled" : "GTM disabled until launch"}
+            {gtmEnabled ? "GTM activé" : "GTM désactivé jusqu’au lancement"}
           </Badge>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-2">
           <ReadinessItem
             ready={gtmContainerReady}
-            title="Container ID"
+            title="ID du conteneur"
             detail={
               gtmContainerReady
-                ? "NEXT_PUBLIC_GTM_CONTAINER_ID is set."
-                : "Add the GTM web container ID, format GTM-XXXXXXX."
+                ? "NEXT_PUBLIC_GTM_CONTAINER_ID est défini."
+                : "Ajoutez l’ID du conteneur web GTM, au format GTM-XXXXXXX."
             }
           />
           <ReadinessItem
             ready={gtmDashboardReady}
-            title="Dashboard link"
+            title="Lien du tableau de bord"
             detail={
               gtmDashboardReady
-                ? "GOOGLE_TAG_MANAGER_DASHBOARD_URL is set."
-                : "Add the GTM dashboard URL for quick admin access."
+                ? "GOOGLE_TAG_MANAGER_DASHBOARD_URL est définie."
+                : "Ajoutez l’URL du tableau de bord GTM pour un accès admin rapide."
             }
           />
           <ReadinessItem
             ready
-            title="Consent gating"
-            detail="GTM container loads only after analytics consent."
+            title="Conditionné au consentement"
+            detail="Le conteneur GTM ne se charge qu’après le consentement analytique."
           />
           <ReadinessItem
             ready={!gtmEnabled}
-            title="Pre-live status"
+            title="Statut avant mise en ligne"
             detail={
               gtmEnabled
-                ? "It is currently enabled; check that the container is ready."
-                : "Correct: the container is prepared, but it does not measure test visits."
+                ? "Actuellement activé ; vérifiez que le conteneur est prêt."
+                : "Correct : le conteneur est préparé, mais il ne mesure pas les visites de test."
             }
           />
         </div>
@@ -388,7 +379,7 @@ function DashboardCard({ item }: { item: DashboardLink }) {
               : "bg-secondary text-muted-foreground"
           }
         >
-          {item.href ? "Configured" : `Missing ${item.envName}`}
+          {item.href ? "Configuré" : `${item.envName} manquante`}
         </Badge>
         <span className="text-xs text-muted-foreground">{item.note}</span>
       </div>
@@ -440,7 +431,7 @@ function ReadinessItem({
               : "bg-secondary text-muted-foreground"
           }
         >
-          {ready ? "OK" : "Pending"}
+          {ready ? "OK" : "En attente"}
         </Badge>
       </div>
     </div>

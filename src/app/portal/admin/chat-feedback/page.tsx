@@ -5,9 +5,9 @@ import { chatFeedbackCategoryLabel } from "@/lib/chat/feedback";
 import { requirePagePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "AI assistant - client requests",
+  title: "Assistant IA — demandes des clients",
   description:
-    "Admin overview of requests, complaints, and suggestions users send through the AI assistant.",
+    "Vue d’ensemble admin des demandes, réclamations et suggestions que les utilisateurs envoient via l’assistant IA.",
   robots: { index: false, follow: false },
 };
 
@@ -37,11 +37,10 @@ export default async function AdminChatFeedbackPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-3xl text-foreground md:text-4xl">
-          AI assistant - client requests
+          Assistant IA — demandes des clients
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          A place for complaints, missing options, unclear points, and user suggestions
-          captured through chat.
+          Un endroit pour les réclamations, les options manquantes, les points d’incompréhension et les suggestions des utilisateurs recueillis via le chat.
         </p>
       </div>
 
@@ -97,14 +96,14 @@ export default async function AdminChatFeedbackPage() {
               </div>
               <div className="text-right text-xs text-muted-foreground">
                 <p>
-                  {item.createdAt.toLocaleDateString("en-GB", {
+                  {item.createdAt.toLocaleDateString("fr-FR", {
                     day: "numeric",
                     month: "short",
                     year: "numeric",
                   })}
                 </p>
                 <p>
-                  {item.createdAt.toLocaleTimeString("en-GB", {
+                  {item.createdAt.toLocaleTimeString("fr-FR", {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
@@ -114,7 +113,7 @@ export default async function AdminChatFeedbackPage() {
 
             <div className="mt-3 border-t border-border/40 pt-3 text-xs text-muted-foreground">
               <span className="font-medium text-foreground">
-                {item.user?.name ?? "Anonymous visitor"}
+                {item.user?.name ?? "Visiteur anonyme"}
               </span>
               {item.user?.email && <span> · {item.user.email}</span>}
               {item.sessionId && <span> · session {item.sessionId.slice(0, 8)}</span>}
@@ -124,7 +123,7 @@ export default async function AdminChatFeedbackPage() {
 
         {feedback.length === 0 && (
           <div className="rounded-lg border border-border/40 bg-card/80 px-6 py-10 text-center text-sm text-muted-foreground">
-            There are no recorded complaints or requests from AI chat yet.
+            Aucune réclamation ni demande enregistrée depuis le chat IA pour l’instant.
           </div>
         )}
       </div>

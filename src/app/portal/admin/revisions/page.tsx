@@ -14,9 +14,9 @@ import { requirePagePermission } from "@/lib/admin-auth";
 import { normalizeAdminPermissions } from "@/lib/admin-permissions";
 
 export const metadata: Metadata = {
-  title: "Audit log — Admin",
+  title: "Journal d’audit — Admin",
   description:
-    "Admin audit trail of changes, actions, and activity across the platform.",
+    "Piste d’audit admin des modifications, actions et activités sur la plateforme.",
   robots: { index: false, follow: false },
 };
 
@@ -59,15 +59,15 @@ export default async function AdminAuditLogPage({
     <div className="mx-auto w-full max-w-[min(96vw,1400px)] px-6 py-12">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-semibold text-foreground">Audit log</h1>
+          <h1 className="text-3xl font-semibold text-foreground">Journal d’audit</h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Forensic record of admin actions. ISO 27001 A.8.15 and GDPR Art. 32.
-            Showing the latest 200 events{" "}
-            {action || entity ? "po filteru" : "u sistemu"}.
+            Trace forensique des actions admin. ISO 27001 A.8.15 et RGPD art. 32.
+            Affichage des 200 derniers événements{" "}
+            {action || entity ? "selon le filtre" : "dans le système"}.
           </p>
         </div>
         <p className="text-[0.78rem] text-muted-foreground">
-          Total in set (filter applied): <strong>{totalCount}</strong>
+          Total de la sélection (filtre appliqué) : <strong>{totalCount}</strong>
         </p>
       </div>
 
@@ -77,7 +77,7 @@ export default async function AdminAuditLogPage({
           href="/portal/admin/revisions"
           className={filterChip(!action && !entity)}
         >
-          All
+          Tous
         </Link>
         {distinctActions.map((a) => (
           <Link
@@ -94,17 +94,17 @@ export default async function AdminAuditLogPage({
       <div className="mt-6 -mx-2 overflow-x-auto sm:mx-0">
         {logs.length === 0 ? (
           <p className="rounded-xl border border-dashed border-border/60 bg-card/40 p-12 text-center text-sm text-muted-foreground">
-            No records match the current filter.
+            Aucun enregistrement ne correspond au filtre actuel.
           </p>
         ) : (
           <table className="min-w-full text-sm">
             <thead className="text-left text-[0.72rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
               <tr className="border-b border-border/60">
-                <th className="px-2 py-3">Time</th>
-                <th className="px-2 py-3">Actor</th>
+                <th className="px-2 py-3">Heure</th>
+                <th className="px-2 py-3">Acteur</th>
                 <th className="px-2 py-3">Action</th>
-                <th className="px-2 py-3">Entity</th>
-                <th className="px-2 py-3">Details</th>
+                <th className="px-2 py-3">Entité</th>
+                <th className="px-2 py-3">Détails</th>
                 <th className="px-2 py-3">IP</th>
               </tr>
             </thead>
@@ -117,7 +117,7 @@ export default async function AdminAuditLogPage({
                 return (
                   <tr key={log.id} className="align-top">
                     <td className="whitespace-nowrap px-2 py-3 font-mono text-[0.78rem] text-muted-foreground">
-                      {new Date(log.createdAt).toLocaleString("en-GB", {
+                      {new Date(log.createdAt).toLocaleString("fr-FR", {
                         year: "2-digit",
                         month: "2-digit",
                         day: "2-digit",
@@ -130,7 +130,7 @@ export default async function AdminAuditLogPage({
                       <div className="flex flex-col">
                         <span className="text-[0.85rem] text-foreground">
                           {log.actorEmail ?? log.actor?.email ?? (
-                            <em className="text-muted-foreground">— sistem —</em>
+                            <em className="text-muted-foreground">— système —</em>
                           )}
                         </span>
                         {log.actor &&

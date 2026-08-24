@@ -22,7 +22,7 @@ import { requirePagePermission } from "@/lib/admin-auth";
 export const metadata: Metadata = {
   title: "Outbox — Admin",
   description:
-    "Admin outbox for email messages, integration requests, and retry statuses.",
+    "Outbox admin des e-mails, des requêtes d’intégration et des statuts de relance.",
   robots: { index: false, follow: false },
 };
 
@@ -42,28 +42,28 @@ const STATUS_META: Record<
   { label: string; tone: string; icon: typeof Clock }
 > = {
   pending: {
-    label: "Pending",
+    label: "En attente",
     tone: "bg-muted-foreground/15 text-muted-foreground",
     icon: Clock,
   },
   running: {
-    label: "Running",
+    label: "En cours",
     tone: "bg-accent/15 text-accent",
     icon: Loader2,
   },
   succeeded: {
-    label: "Successful",
+    label: "Réussi",
     tone: "bg-accent/15 text-foreground",
     icon: CheckCircle2,
   },
   failed: {
-    label: "Failed",
+    label: "Échoué",
     tone: "bg-destructive/15 text-destructive",
     icon: AlertCircle,
   },
 };
 
-const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
   day: "2-digit",
   month: "2-digit",
   year: "2-digit",
@@ -108,9 +108,8 @@ export default async function AdminOutboxPage({
       <div>
         <h1 className="text-3xl font-semibold text-foreground">Outbox</h1>
         <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-          The cron processor handles transactional emails and external
-          integrations. If a provider is unavailable, rows appear as{" "}
-          <strong>Failed</strong>. Fix the cause, then send them again.
+          Le processeur cron gère les e-mails transactionnels et les intégrations externes. Si un fournisseur est indisponible, les lignes apparaissent comme{" "}
+          <strong>Échoué</strong>. Corrigez la cause, puis renvoyez-les.
         </p>
       </div>
 
@@ -153,7 +152,7 @@ export default async function AdminOutboxPage({
           href="/portal/admin/outbox"
           className={filterChip(!filter)}
         >
-          All · {totalCount}
+          Toutes · {totalCount}
         </a>
         {(["pending", "running", "succeeded", "failed"] as const).map(
           (s) => (
@@ -172,18 +171,18 @@ export default async function AdminOutboxPage({
       <div className="mt-6 -mx-2 overflow-x-auto sm:mx-0">
         {events.length === 0 ? (
           <p className="rounded-xl border border-dashed border-border/60 bg-card/40 p-12 text-center text-sm text-muted-foreground">
-            No rows in this set.
+            Aucune ligne dans cette sélection.
           </p>
         ) : (
           <table className="min-w-full text-sm">
             <thead className="text-left text-[0.72rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
               <tr className="border-b border-border/60">
-                <th className="px-2 py-3">Time</th>
+                <th className="px-2 py-3">Heure</th>
                 <th className="px-2 py-3">Type</th>
-                <th className="px-2 py-3">Status</th>
-                <th className="px-2 py-3">Attempts</th>
-                <th className="px-2 py-3">Next attempt</th>
-                <th className="px-2 py-3">Error</th>
+                <th className="px-2 py-3">Statut</th>
+                <th className="px-2 py-3">Tentatives</th>
+                <th className="px-2 py-3">Prochaine tentative</th>
+                <th className="px-2 py-3">Erreur</th>
                 <th className="px-2 py-3 text-right">Action</th>
               </tr>
             </thead>

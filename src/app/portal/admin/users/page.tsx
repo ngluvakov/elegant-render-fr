@@ -12,9 +12,9 @@ import {
 } from "@/lib/admin-permissions";
 
 export const metadata: Metadata = {
-  title: "Admin — Users",
+  title: "Admin — Utilisateurs",
   description:
-    "Admin user overview, account search, roles, and basic activity data.",
+    "Vue d’ensemble admin des utilisateurs, recherche de comptes, rôles et données d’activité de base.",
   robots: { index: false, follow: false },
 };
 
@@ -59,9 +59,9 @@ export default async function AdminUsersPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-3xl text-foreground">Users</h1>
+        <h1 className="font-heading text-3xl text-foreground">Utilisateurs</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Search, view AI credit balance, and client history.
+          Recherche, solde de crédits IA et historique client.
         </p>
       </div>
 
@@ -71,29 +71,29 @@ export default async function AdminUsersPage({
           type="search"
           name="q"
           defaultValue={q}
-          placeholder="Search by name or email..."
+          placeholder="Rechercher par nom ou e-mail…"
           className="h-9 w-full rounded-lg border border-input bg-card/80 pl-8 pr-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
       </form>
 
       <p className="text-xs text-muted-foreground">
-        {users.length} {users.length === 1 ? "user" : "users"}
-        {q && " for the selected query"}
+        {users.length} {users.length === 1 ? "utilisateur" : "utilisateurs"}
+        {q && " pour la recherche sélectionnée"}
       </p>
 
       <div className="space-y-1.5">
         <div className="hidden grid-cols-[2fr_1.4fr_1fr_0.6fr_0.8fr_auto] gap-3 px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-wider text-muted-foreground lg:grid">
-          <span>User</span>
-          <span>Email</span>
-          <span>AI credits</span>
-          <span className="text-center">Orders</span>
-          <span>Registered</span>
+          <span>Utilisateur</span>
+          <span>E-mail</span>
+          <span>Crédits IA</span>
+          <span className="text-center">Commandes</span>
+          <span>Inscription</span>
           <span className="w-16">Action</span>
         </div>
 
         {users.length === 0 && (
           <div className="rounded-xl border border-border/30 bg-card/60 px-6 py-8 text-center text-sm text-muted-foreground">
-            No results.
+            Aucun résultat.
           </div>
         )}
 
@@ -129,7 +129,7 @@ export default async function AdminUsersPage({
                 </span>
                 {user.aiCreditsExpireAt && user.aiCreditBalanceUnits > 0 && (
                   <span className="text-muted-foreground">
-                    · do {user.aiCreditsExpireAt.toLocaleDateString("en-GB")}
+                    · jusqu’au {user.aiCreditsExpireAt.toLocaleDateString("fr-FR")}
                   </span>
                 )}
               </div>
@@ -138,7 +138,7 @@ export default async function AdminUsersPage({
               </p>
               <p className="mt-1 text-xs text-muted-foreground lg:mt-0">
                 {user.lastActiveAt
-                  ? `Aktivan ${user.lastActiveAt.toLocaleDateString("en-GB", {
+                  ? `Actif le ${user.lastActiveAt.toLocaleDateString("fr-FR", {
                       day: "numeric",
                       month: "short",
                     })}`
@@ -149,7 +149,7 @@ export default async function AdminUsersPage({
                     })}
               </p>
               <span className="hidden w-16 text-xs font-medium text-accent lg:block">
-                Open →
+                Ouvrir →
               </span>
             </Link>
           );

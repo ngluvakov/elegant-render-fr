@@ -22,20 +22,20 @@ import {
 } from "@/lib/admin-permissions";
 
 export const metadata: Metadata = {
-  title: "Admin — User",
+  title: "Admin — Utilisateur",
   description:
-    "Admin user details, orders, credits, transactions, and account settings.",
+    "Détails admin de l’utilisateur, commandes, crédits, transactions et paramètres du compte.",
   robots: { index: false, follow: false },
 };
 
 type Params = Promise<{ userId: string }>;
 
 const TX_TYPE_LABEL: Record<string, string> = {
-  purchase: "Purchase",
-  spend: "Spend",
-  refund: "Refund",
-  expiry: "Expiry",
-  adjustment: "Admin grant",
+  purchase: "Achat",
+  spend: "Dépense",
+  refund: "Remboursement",
+  expiry: "Expiration",
+  adjustment: "Attribution admin",
 };
 
 export default async function AdminUserDetailPage({
@@ -107,7 +107,7 @@ export default async function AdminUserDetailPage({
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
-        Users
+        Utilisateurs
       </Link>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -128,14 +128,14 @@ export default async function AdminUserDetailPage({
             {user.phone && ` · ${user.phone}`}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Registered{" "}
+            Inscrit le{" "}
             {user.createdAt.toLocaleDateString("en-GB", {
               day: "numeric",
               month: "long",
               year: "numeric",
             })}
             {user.lastActiveAt &&
-              ` · last active ${user.lastActiveAt.toLocaleDateString(
+              ` · dernière activité le ${user.lastActiveAt.toLocaleDateString(
                 "en-GB",
                 {
                   day: "numeric",
@@ -166,11 +166,10 @@ export default async function AdminUserDetailPage({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h3 className="text-sm font-semibold text-foreground">
-                Admin access
+                Accès admin
               </h3>
               <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted-foreground">
-                Preset is a shortcut, and checked permissions are the source of truth for
-                backend checks on pages, actions, and API routes.
+                Le préréglage est un raccourci ; les permissions cochées font foi pour les contrôles backend sur les pages, les actions et les routes API.
               </p>
             </div>
             <div className="flex flex-col gap-3 lg:items-end">
@@ -208,7 +207,7 @@ export default async function AdminUserDetailPage({
                 type="submit"
                 className="w-fit rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-accent-foreground transition-colors hover:bg-[var(--color-green-hover)]"
               >
-                Save access
+                Enregistrer l’accès
               </button>
             </div>
           </div>
@@ -218,21 +217,21 @@ export default async function AdminUserDetailPage({
       {canViewUsage && (
         <div className="rounded-lg border border-border/40 bg-card/60 p-5">
           <h3 className="text-sm font-semibold text-foreground">
-            Activity in the last 30 days
+            Activité des 30 derniers jours
           </h3>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            <UsageStat label="Portal visits" value={usageTotals.portalVisits} />
-            <UsageStat label="Orders" value={usageTotals.ordersCreated} />
+            <UsageStat label="Visites du portail" value={usageTotals.portalVisits} />
+            <UsageStat label="Commandes" value={usageTotals.ordersCreated} />
             <UsageStat
-              label="AI jobs"
+              label="Tâches IA"
               value={usageTotals.aiGenerationsStarted}
             />
             <UsageStat
-              label="Credits spent"
+              label="Crédits dépensés"
               value={formatCreditsFromUnits(usageTotals.aiCreditsSpentUnits)}
             />
             <UsageStat
-              label="Granted credits"
+              label="Crédits attribués"
               value={formatCreditsFromUnits(usageTotals.aiCreditsGrantedUnits)}
             />
           </div>
@@ -241,12 +240,12 @@ export default async function AdminUserDetailPage({
               <table className="min-w-full text-xs">
                 <thead className="text-left text-muted-foreground">
                   <tr className="border-b border-border/40">
-                    <th className="py-2 pr-3">Day</th>
-                    <th className="py-2 pr-3">Visits</th>
-                    <th className="py-2 pr-3">Orders</th>
-                    <th className="py-2 pr-3">AI jobs</th>
-                    <th className="py-2 pr-3">Credits</th>
-                    <th className="py-2 pr-3">Latest</th>
+                    <th className="py-2 pr-3">Jour</th>
+                    <th className="py-2 pr-3">Visites</th>
+                    <th className="py-2 pr-3">Commandes</th>
+                    <th className="py-2 pr-3">Tâches IA</th>
+                    <th className="py-2 pr-3">Crédits</th>
+                    <th className="py-2 pr-3">Dernier accès</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/30">
@@ -287,10 +286,10 @@ export default async function AdminUserDetailPage({
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-lg border border-border/40 bg-card/60 p-5">
           <h3 className="text-sm font-semibold text-foreground">
-            AI credit history ({user.aiCreditTransactions.length})
+            Historique des crédits IA ({user.aiCreditTransactions.length})
           </h3>
           {user.aiCreditTransactions.length === 0 ? (
-            <p className="mt-3 text-xs text-muted-foreground">No transactions.</p>
+            <p className="mt-3 text-xs text-muted-foreground">Aucune transaction.</p>
           ) : (
             <div className="mt-3 space-y-2">
               {user.aiCreditTransactions.map((tx) => (
@@ -334,7 +333,7 @@ export default async function AdminUserDetailPage({
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
-                    {" · balance after: "}
+                    {" · solde après : "}
                     {formatCreditsFromUnits(tx.balanceAfterUnits)}
                   </p>
                 </div>
@@ -345,10 +344,10 @@ export default async function AdminUserDetailPage({
 
         <div className="rounded-lg border border-border/40 bg-card/60 p-5">
           <h3 className="text-sm font-semibold text-foreground">
-            Orders ({user.orders.length})
+            Commandes ({user.orders.length})
           </h3>
           {user.orders.length === 0 ? (
-            <p className="mt-3 text-xs text-muted-foreground">No orders.</p>
+            <p className="mt-3 text-xs text-muted-foreground">Aucune commande.</p>
           ) : (
             <div className="mt-3 space-y-2">
               {user.orders.map((order) => {

@@ -15,19 +15,19 @@ import { VrInquiryConvertForm } from "./convert-form";
 import { adminHas, requirePagePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "VR inquiries — Admin",
+  title: "Demandes VR — Admin",
   description:
-    "Admin overview of VR consultations, request statuses, and basic client details.",
+    "Vue d’ensemble admin des consultations VR, des statuts des demandes et des informations client de base.",
   robots: { index: false, follow: false },
 };
 
 type SearchParams = Promise<{ status?: string }>;
 
 const STATUS_LABELS: Record<string, string> = {
-  pending: "Pending review",
-  in_progress: "In conversation",
-  converted: "Converted",
-  closed: "Closed",
+  pending: "En attente de traitement",
+  in_progress: "En discussion",
+  converted: "Convertie",
+  closed: "Fermée",
 };
 
 const STATUS_VARIANTS: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -51,7 +51,7 @@ function formatRelative(date: Date): string {
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}h`;
   const days = Math.floor(hours / 24);
-  return `${days}d`;
+  return `${days}j`;
 }
 
 export default async function VrInquiriesPage({
@@ -98,11 +98,9 @@ export default async function VrInquiriesPage({
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="font-heading text-3xl text-foreground">VR inquiries</h1>
+        <h1 className="font-heading text-3xl text-foreground">Demandes VR</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Consultation intake for VR projects. The client fills out the form at
-          /services/vr/consultation; the team reviews it and manually creates an order
-          once terms are agreed.
+          Réception des consultations pour les projets VR. Le client remplit le formulaire sur /services/vr/consultation ; l’équipe l’examine et crée manuellement une commande une fois les conditions convenues.
         </p>
       </div>
 
@@ -122,7 +120,7 @@ export default async function VrInquiriesPage({
                     : "border-border bg-background/60 text-muted-foreground hover:border-accent/40 hover:text-foreground"
                 }`}
               >
-                {s ? STATUS_LABELS[s] : "All"}
+                {s ? STATUS_LABELS[s] : "Toutes"}
                 <span className="rounded bg-foreground/10 px-1.5 py-0.5 text-[0.62rem] tabular-nums">
                   {count}
                 </span>
@@ -138,8 +136,8 @@ export default async function VrInquiriesPage({
           <Headphones className="mx-auto h-8 w-8 text-muted-foreground/40" />
           <p className="mt-3 text-sm text-muted-foreground">
             {status
-              ? `No inquiries sa statusom "${STATUS_LABELS[status] ?? status}".`
-              : "There are no VR inquiries yet."}
+              ? `Aucune demande avec le statut « ${STATUS_LABELS[status] ?? status} ».`
+              : "Aucune demande VR pour l’instant."}
           </p>
         </div>
       ) : (
@@ -161,7 +159,7 @@ export default async function VrInquiriesPage({
                         {STATUS_LABELS[inq.status] ?? inq.status}
                       </Badge>
                       <span className="text-[0.72rem] text-muted-foreground">
-                        {formatRelative(inq.createdAt)} ago
+                        il y a {formatRelative(inq.createdAt)}
                       </span>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
@@ -178,7 +176,7 @@ export default async function VrInquiriesPage({
                 <div className="mt-4 grid gap-4 text-xs sm:grid-cols-2">
                   <div className="space-y-1.5">
                     <p className="font-semibold uppercase tracking-wider text-muted-foreground">
-                      Kontakt
+                      Contact
                     </p>
                     <p className="flex items-center gap-1.5 text-foreground">
                       <User className="h-3 w-3 text-muted-foreground" />
@@ -205,27 +203,27 @@ export default async function VrInquiriesPage({
                       Configuration
                     </p>
                     <p className="text-foreground">
-                      <strong>Name:</strong> {cfg.projectName}
+                      <strong>Nom :</strong> {cfg.projectName}
                     </p>
                     {cfg.locomotion && (
                       <p className="text-foreground">
-                        <strong>Locomotion:</strong> {cfg.locomotion}
+                        <strong>Locomotion :</strong> {cfg.locomotion}
                       </p>
                     )}
                     {cfg.dayNightMode && (
                       <p className="text-foreground">
-                        <strong>Day/Night:</strong> {cfg.dayNightMode}
+                        <strong>Jour/Nuit :</strong> {cfg.dayNightMode}
                       </p>
                     )}
                     {(cfg.doorInteraction ||
                       cfg.lightsInteraction ||
                       cfg.materialsInteraction) && (
                       <p className="text-foreground">
-                        <strong>Interactions:</strong>{" "}
+                        <strong>Interactions :</strong>{" "}
                         {[
-                          cfg.doorInteraction && "doors",
-                          cfg.lightsInteraction && "lights",
-                          cfg.materialsInteraction && "materials",
+                          cfg.doorInteraction && "portes",
+                          cfg.lightsInteraction && "lumières",
+                          cfg.materialsInteraction && "matériaux",
                         ]
                           .filter(Boolean)
                           .join(", ")}
@@ -239,7 +237,7 @@ export default async function VrInquiriesPage({
                     {cfg.description && (
                       <div className="rounded-md bg-secondary/40 px-3 py-2">
                         <p className="mb-1 text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                          Project description
+                          Description du projet
                         </p>
                         <p className="whitespace-pre-wrap text-xs text-foreground">
                           {cfg.description}
@@ -249,7 +247,7 @@ export default async function VrInquiriesPage({
                     {inq.message && (
                       <div className="rounded-md bg-secondary/40 px-3 py-2">
                         <p className="mb-1 text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                          Additional message
+                          Message complémentaire
                         </p>
                         <p className="whitespace-pre-wrap text-xs text-foreground">
                           {inq.message}

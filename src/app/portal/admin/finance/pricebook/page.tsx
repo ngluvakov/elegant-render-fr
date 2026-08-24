@@ -9,9 +9,9 @@ import {
 } from "@/server/pricing/catalog";
 
 export const metadata: Metadata = {
-  title: "Admin - Pricebook and finance",
+  title: "Admin — Grille tarifaire et finance",
   description:
-    "Admin management of the pricebook, financial rules, and price publishing.",
+    "Gestion admin de la grille tarifaire, des règles financières et de la publication des prix.",
   robots: { index: false, follow: false },
 };
 

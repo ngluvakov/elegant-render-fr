@@ -15,9 +15,9 @@ import { prisma } from "@/lib/db";
 import { requirePagePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "Invoice export — Admin",
+  title: "Export de factures — Admin",
   description:
-    "Admin export of invoices and financial data for the selected period.",
+    "Export admin des factures et des données financières pour la période sélectionnée.",
   robots: { index: false, follow: false },
 };
 
@@ -94,18 +94,17 @@ export default async function InvoiceExportPage({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-3xl font-semibold text-foreground">
-            Invoice export
+            Export de factures
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Monthly overview of issued invoices for accounting. By default,
-            it shows the current month; change the range below and download CSV.
+            Aperçu mensuel des factures émises pour la comptabilité. Par défaut, le mois en cours est affiché ; modifiez la période ci-dessous et téléchargez le CSV.
           </p>
         </div>
         <Link
           href="/portal/admin/revisions?action=invoice.export"
           className="text-[0.78rem] text-muted-foreground underline-offset-4 hover:underline"
         >
-          Export history →
+          Historique des exports →
         </Link>
       </div>
 
@@ -117,7 +116,7 @@ export default async function InvoiceExportPage({
         className="mt-6 flex flex-wrap items-end gap-3 rounded-lg border border-border/40 bg-card/80 p-5"
       >
         <label className="flex flex-col gap-1.5">
-          <span className="text-[0.78rem] font-medium text-foreground">From</span>
+          <span className="text-[0.78rem] font-medium text-foreground">Du</span>
           <input
             type="date"
             name="from"
@@ -126,7 +125,7 @@ export default async function InvoiceExportPage({
           />
         </label>
         <label className="flex flex-col gap-1.5">
-          <span className="text-[0.78rem] font-medium text-foreground">To</span>
+          <span className="text-[0.78rem] font-medium text-foreground">Au</span>
           <input
             type="date"
             name="to"
@@ -138,25 +137,25 @@ export default async function InvoiceExportPage({
           type="submit"
           className="inline-flex items-center rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition hover:bg-secondary"
         >
-          Apply filter
+          Appliquer le filtre
         </button>
         <a
           href={downloadHref}
           className="inline-flex items-center rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background transition hover:opacity-90"
         >
-          Download CSV
+          Télécharger le CSV
         </a>
       </form>
 
       {/* Stats */}
       <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        <Stat label="Invoice count" value={totals.count.toString()} />
+        <Stat label="Nombre de factures" value={totals.count.toString()} />
         <Stat
-          label="Gross total (EUR)"
+          label="Total TTC (EUR)"
           value={formatEur(totals.gross)}
         />
         <Stat
-          label="Range"
+          label="Période"
           value={`${formatHumanDate(fromDate)} – ${formatHumanDate(toDate)}`}
         />
       </div>
@@ -165,25 +164,23 @@ export default async function InvoiceExportPage({
       <div className="mt-6 -mx-2 overflow-x-auto sm:mx-0">
         {orders.length === 0 ? (
           <p className="rounded-xl border border-dashed border-border/60 bg-card/40 p-12 text-center text-sm text-muted-foreground">
-            No invoices were issued in the selected range. Invoices created
-            before automatic issuance was introduced (before Phase A.2) are not
-            included in the export.
+            Aucune facture émise sur la période sélectionnée. Les factures créées avant l’introduction de l’émission automatique (avant la phase A.2) ne sont pas incluses dans l’export.
           </p>
         ) : (
           <>
             <p className="mb-3 text-[0.78rem] text-muted-foreground">
-              Preview of the top 20 rows. The downloaded CSV contains everything.
+              Aperçu des 20 premières lignes. Le CSV téléchargé contient l’intégralité des données.
             </p>
             <table className="min-w-full text-sm">
               <thead className="text-left text-[0.72rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
                 <tr className="border-b border-border/60">
-                  <th className="px-2 py-3">Invoice number</th>
+                  <th className="px-2 py-3">Numéro de facture</th>
                   <th className="px-2 py-3">Date</th>
-                  <th className="px-2 py-3">Order</th>
-                  <th className="px-2 py-3">Buyer</th>
-                  <th className="px-2 py-3">PIB / VAT</th>
-                  <th className="px-2 py-3 text-right">Gross (EUR)</th>
-                  <th className="px-2 py-3">Status</th>
+                  <th className="px-2 py-3">Commande</th>
+                  <th className="px-2 py-3">Client</th>
+                  <th className="px-2 py-3">N° TVA</th>
+                  <th className="px-2 py-3 text-right">TTC (EUR)</th>
+                  <th className="px-2 py-3">Statut</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/40 text-foreground/85">
@@ -246,7 +243,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 function formatEur(amount: number): string {
-  return new Intl.NumberFormat("en-GB", {
+  return new Intl.NumberFormat("fr-FR", {
     style: "currency",
     currency: "EUR",
     minimumFractionDigits: 0,
@@ -255,7 +252,7 @@ function formatEur(amount: number): string {
 }
 
 function formatHumanDate(d: Date): string {
-  return d.toLocaleDateString("en-GB", {
+  return d.toLocaleDateString("fr-FR", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",

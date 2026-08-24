@@ -39,7 +39,7 @@ export function VrInquiryConvertForm({
         className="inline-flex items-center gap-1.5 rounded-md bg-accent/15 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent/25"
       >
         <Check className="h-3 w-3" />
-        Open order {convertedOrderNumber ?? ""}
+        Ouvrir la commande {convertedOrderNumber ?? ""}
         <ArrowRight className="h-3 w-3" />
       </Link>
     );
@@ -52,7 +52,7 @@ export function VrInquiryConvertForm({
         onClick={() => setOpen(true)}
         className="rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-accent-foreground hover:bg-[var(--color-green-hover)]"
       >
-        Convert to order →
+        Convertir en commande →
       </button>
     );
   }
@@ -81,12 +81,12 @@ export function VrInquiryConvertForm({
   return (
     <div className="w-full space-y-3 rounded-lg border border-accent/30 bg-accent/[0.05] p-3">
       <p className="text-[0.72rem] font-semibold uppercase tracking-wider text-accent">
-        Convert to order
+        Convertir en commande
       </p>
       <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
         <div className="space-y-1.5">
           <Label htmlFor={`pname-${inquiryId}`} className="text-[0.72rem]">
-            Project name
+            Nom du projet
           </Label>
           <Input
             id={`pname-${inquiryId}`}
@@ -98,7 +98,7 @@ export function VrInquiryConvertForm({
         </div>
         <div className="space-y-1.5">
           <Label htmlFor={`price-${inquiryId}`} className="text-[0.72rem]">
-            Price (EUR)
+            Prix (EUR)
           </Label>
           <Input
             id={`price-${inquiryId}`}
@@ -113,8 +113,7 @@ export function VrInquiryConvertForm({
         </div>
       </div>
       <p className="text-[0.7rem] text-muted-foreground">
-        The order moves to <strong>awaiting_payment</strong> with this price. The client
-        receives an email with a magic link and can pay.
+        La commande passe en <strong>awaiting_payment</strong> avec ce prix. Le client reçoit un e-mail avec un lien magique et peut payer.
       </p>
       {error && (
         <p className="text-[0.72rem] text-destructive">{error}</p>
@@ -130,7 +129,7 @@ export function VrInquiryConvertForm({
           }}
           disabled={pending}
         >
-          Cancel
+          Annuler
         </Button>
         <Button
           type="button"
@@ -141,10 +140,10 @@ export function VrInquiryConvertForm({
         >
           {pending ? (
             <>
-              <Loader2 className="h-3 w-3 animate-spin" /> Converting…
+              <Loader2 className="h-3 w-3 animate-spin" /> Conversion…
             </>
           ) : (
-            "Confirm and send email"
+            "Confirmer et envoyer l’e-mail"
           )}
         </Button>
       </div>

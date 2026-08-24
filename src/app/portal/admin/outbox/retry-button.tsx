@@ -34,7 +34,7 @@ export function RetryOutboxButton({ eventId }: { eventId: string }) {
         disabled={pending}
         className="inline-flex items-center gap-1 rounded-md border border-foreground bg-card px-2.5 py-1 text-[0.72rem] font-medium text-foreground transition hover:bg-foreground hover:text-background disabled:opacity-50"
       >
-        {pending ? "Sending..." : "Send again"}
+        {pending ? "Envoi…" : "Renvoyer"}
       </button>
       {error && (
         <p className="text-[0.7rem] text-destructive">{error}</p>
@@ -44,9 +44,9 @@ export function RetryOutboxButton({ eventId }: { eventId: string }) {
 }
 
 function humanReason(reason: string): string {
-  if (reason === "not_admin") return "You are not an admin.";
-  if (reason === "event_not_found") return "Event was not found.";
+  if (reason === "not_admin") return "Vous n’êtes pas administrateur.";
+  if (reason === "event_not_found") return "L’événement est introuvable.";
   if (reason.startsWith("cannot_retry_"))
-    return `Cannot retry - status is ${reason.replace("cannot_retry_", "")}.`;
-  return `Error: ${reason}`;
+    return `Relance impossible — le statut est ${reason.replace("cannot_retry_", "")}.`;
+  return `Erreur : ${reason}`;
 }

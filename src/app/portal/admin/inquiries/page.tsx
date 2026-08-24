@@ -17,20 +17,20 @@ import { ProjectInquiryActions } from "./inquiry-actions";
 import { adminHas, requirePagePermission } from "@/lib/admin-auth";
 
 export const metadata: Metadata = {
-  title: "Inquiries — Admin",
+  title: "Demandes — Admin",
   description:
-    "Admin overview of project inquiries, processing status, and follow-up priorities.",
+    "Vue d’ensemble admin des demandes de projet, de leur statut de traitement et des priorités de relance.",
   robots: { index: false, follow: false },
 };
 
 type SearchParams = Promise<{ status?: string; highlight?: string }>;
 
 const STATUS_LABELS: Record<ProjectInquiryStatus, string> = {
-  pending: "Pending review",
-  in_progress: "In conversation",
-  proposal_sent: "Estimate sent",
-  converted: "Converted",
-  closed: "Closed",
+  pending: "En attente de traitement",
+  in_progress: "En discussion",
+  proposal_sent: "Devis envoyé",
+  converted: "Convertie",
+  closed: "Fermée",
 };
 
 const STATUS_VARIANTS: Record<
@@ -59,7 +59,7 @@ function formatRelative(date: Date): string {
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}h`;
   const days = Math.floor(hours / 24);
-  return `${days}d`;
+  return `${days}j`;
 }
 
 function stringifySnapshot(snapshot: unknown): string | null {
@@ -116,10 +116,9 @@ export default async function ProjectInquiriesPage({
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="font-heading text-3xl text-foreground">Inquiries</h1>
+        <h1 className="font-heading text-3xl text-foreground">Demandes</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Quick and contact inquiries from the marketing site. These are pre-sales leads;
-          the estimate is sent manually from email or Bitrix.
+          Demandes rapides et demandes de contact du site marketing. Ce sont des prospects avant-vente ; le devis est envoyé manuellement par e-mail ou depuis Bitrix.
         </p>
       </div>
 
@@ -137,7 +136,7 @@ export default async function ProjectInquiriesPage({
                   : "border-border bg-background/60 text-muted-foreground hover:border-accent/40 hover:text-foreground"
               }`}
             >
-              {item ? STATUS_LABELS[item] : "All"}
+              {item ? STATUS_LABELS[item] : "Toutes"}
               <span className="rounded bg-foreground/10 px-1.5 py-0.5 text-[0.62rem] tabular-nums">
                 {count}
               </span>
@@ -150,7 +149,7 @@ export default async function ProjectInquiriesPage({
         <div className="rounded-xl border border-dashed border-border/40 bg-card/40 px-6 py-16 text-center">
           <Inbox className="mx-auto h-8 w-8 text-muted-foreground/40" />
           <p className="mt-3 text-sm text-muted-foreground">
-            There are no inquiries for the selected filter yet.
+            Aucune demande pour le filtre sélectionné pour l’instant.
           </p>
         </div>
       ) : (
@@ -177,11 +176,11 @@ export default async function ProjectInquiriesPage({
                         {STATUS_LABELS[inquiry.status]}
                       </Badge>
                       <span className="text-[0.72rem] text-muted-foreground">
-                        {formatRelative(inquiry.createdAt)} ago
+                        il y a {formatRelative(inquiry.createdAt)}
                       </span>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {inquiry.serviceType ?? "Service type not provided"}
+                      {inquiry.serviceType ?? "Type de service non renseigné"}
                       {inquiry.sourceLabel ? ` · ${inquiry.sourceLabel}` : ""}
                     </p>
                   </div>
@@ -221,21 +220,21 @@ export default async function ProjectInquiriesPage({
 
                   <div className="space-y-1.5">
                     <p className="font-semibold uppercase tracking-wider text-muted-foreground">
-                      Estimate
+                      Devis
                     </p>
                     {inquiry.budget && (
                       <p className="text-foreground">
-                        <strong>Budget:</strong> {inquiry.budget}
+                        <strong>Budget :</strong> {inquiry.budget}
                       </p>
                     )}
                     {inquiry.deadline && (
                       <p className="text-foreground">
-                        <strong>Deadline:</strong> {inquiry.deadline}
+                        <strong>Échéance :</strong> {inquiry.deadline}
                       </p>
                     )}
                     <p className="text-foreground">
-                      <strong>Source:</strong>{" "}
-                      {inquiry.sourceLabel ?? inquiry.source ?? "Not provided"}
+                      <strong>Source :</strong>{" "}
+                      {inquiry.sourceLabel ?? inquiry.source ?? "Non renseignée"}
                       {inquiry.sourcePath ? ` (${inquiry.sourcePath})` : ""}
                     </p>
                   </div>
@@ -243,7 +242,7 @@ export default async function ProjectInquiriesPage({
 
                 <div className="mt-4 rounded-md bg-secondary/40 px-3 py-2">
                   <p className="mb-1 text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                    Project description
+                    Description du projet
                   </p>
                   <p className="whitespace-pre-wrap text-xs leading-relaxed text-foreground">
                     {inquiry.message}
@@ -253,7 +252,7 @@ export default async function ProjectInquiriesPage({
                 {inquiry.files.length > 0 && (
                   <div className="mt-4">
                     <p className="mb-2 text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                      Files ({inquiry.files.length})
+                      Fichiers ({inquiry.files.length})
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {inquiry.files.map((file) => {
@@ -264,7 +263,7 @@ export default async function ProjectInquiriesPage({
                             href={`/api/admin/inquiries/download?fileId=${file.id}`}
                             title={
                               unscanned
-                                ? "This file was NOT antivirus-scanned (the scanner was unavailable when it was sent). Download it carefully."
+                                ? "Ce fichier n’a PAS été analysé par l’antivirus (le scanner était indisponible au moment de l’envoi). Téléchargez-le avec prudence."
                                 : undefined
                             }
                             className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs transition-colors ${
@@ -287,7 +286,7 @@ export default async function ProjectInquiriesPage({
                               }
                             >
                               {unscanned
-                                ? "not scanned"
+                                ? "non analysé"
                                 : formatInquiryFileSize(file.fileSize)}
                             </span>
                           </a>
@@ -300,7 +299,7 @@ export default async function ProjectInquiriesPage({
                 {snapshot && (
                   <details className="mt-4 rounded-md border border-border/40 bg-background/50 px-3 py-2">
                     <summary className="cursor-pointer text-xs font-semibold text-muted-foreground">
-                      Configurator snapshot
+                      Instantané du configurateur
                     </summary>
                     <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap text-[0.7rem] leading-relaxed text-foreground/80">
                       {snapshot}
@@ -311,7 +310,7 @@ export default async function ProjectInquiriesPage({
                 {inquiry.convertedOrders.length > 0 && (
                   <div className="mt-4 rounded-md border border-border bg-secondary/50 px-3 py-2">
                     <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                      Converted to order
+                      Convertie en commande
                     </p>
                     <a
                       href={`/portal/admin/orders/${inquiry.convertedOrders[0].id}`}
@@ -329,20 +328,20 @@ export default async function ProjectInquiriesPage({
                   {inquiry.bitrixLeadId ? (
                     <span className="inline-flex items-center gap-1.5 rounded-md bg-accent/10 px-2.5 py-1 text-foreground">
                       <CheckCircle2 className="h-3.5 w-3.5" />
-                      Bitrix Lead #{inquiry.bitrixLeadId}
+                      Lead Bitrix #{inquiry.bitrixLeadId}
                     </span>
                   ) : inquiry.bitrixSyncError ? (
                     <span className="inline-flex items-center gap-1.5 rounded-md bg-destructive/10 px-2.5 py-1 text-destructive">
                       <AlertTriangle className="h-3.5 w-3.5" />
-                      Bitrix error: {inquiry.bitrixSyncError}
+                      Erreur Bitrix : {inquiry.bitrixSyncError}
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-2.5 py-1 text-muted-foreground">
                       <ExternalLink className="h-3.5 w-3.5" />
-                      Bitrix sync started
+                      Synchronisation Bitrix lancée
                     </span>
                   )}
-                  <span className="text-muted-foreground">ID: {inquiry.id}</span>
+                  <span className="text-muted-foreground">ID : {inquiry.id}</span>
                 </div>
               </article>
             );

@@ -6,16 +6,16 @@ import { updateVrInquiryStatus } from "@/server/actions/vr-inquiry";
 
 const NEXT_STATUS: Record<string, Array<{ to: string; label: string }>> = {
   pending: [
-    { to: "in_progress", label: "Start conversation" },
-    { to: "closed", label: "Close" },
+    { to: "in_progress", label: "Démarrer la discussion" },
+    { to: "closed", label: "Fermer" },
   ],
   in_progress: [
-    { to: "converted", label: "Converted to order" },
-    { to: "closed", label: "Close" },
-    { to: "pending", label: "Move back to pending" },
+    { to: "converted", label: "Convertie en commande" },
+    { to: "closed", label: "Fermer" },
+    { to: "pending", label: "Repasser en attente" },
   ],
-  converted: [{ to: "closed", label: "Close" }],
-  closed: [{ to: "pending", label: "Move back to pending" }],
+  converted: [{ to: "closed", label: "Fermer" }],
+  closed: [{ to: "pending", label: "Repasser en attente" }],
 };
 
 export function VrInquiryStatusActions({

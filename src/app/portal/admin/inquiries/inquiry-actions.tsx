@@ -10,21 +10,21 @@ import { convertInquiryToOrder } from "@/server/actions/convert-inquiry-to-order
 
 const NEXT_STATUS: Record<string, Array<{ to: string; label: string }>> = {
   pending: [
-    { to: "in_progress", label: "Start" },
-    { to: "closed", label: "Close" },
+    { to: "in_progress", label: "Démarrer" },
+    { to: "closed", label: "Fermer" },
   ],
   in_progress: [
-    { to: "proposal_sent", label: "Estimate sent" },
-    { to: "converted", label: "Converted" },
-    { to: "closed", label: "Close" },
+    { to: "proposal_sent", label: "Devis envoyé" },
+    { to: "converted", label: "Convertie" },
+    { to: "closed", label: "Fermer" },
   ],
   proposal_sent: [
-    { to: "converted", label: "Converted" },
-    { to: "closed", label: "Close" },
-    { to: "in_progress", label: "Back to conversation" },
+    { to: "converted", label: "Convertie" },
+    { to: "closed", label: "Fermer" },
+    { to: "in_progress", label: "Revenir à la discussion" },
   ],
-  converted: [{ to: "closed", label: "Close" }],
-  closed: [{ to: "pending", label: "Move back to pending" }],
+  converted: [{ to: "closed", label: "Fermer" }],
+  closed: [{ to: "pending", label: "Repasser en attente" }],
 };
 
 export function ProjectInquiryActions({
@@ -99,7 +99,7 @@ export function ProjectInquiryActions({
                 onClick={convertToOrder}
                 className="rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background transition hover:opacity-90 disabled:opacity-50"
               >
-                {pending ? "Converting…" : "Confirm conversion"}
+                {pending ? "Conversion…" : "Confirmer la conversion"}
               </button>
               <button
                 type="button"
@@ -107,7 +107,7 @@ export function ProjectInquiryActions({
                 onClick={() => setConfirmingConvert(false)}
                 className="rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-secondary disabled:opacity-50"
               >
-                Cancel
+                Annuler
               </button>
             </>
           ) : (
@@ -117,7 +117,7 @@ export function ProjectInquiryActions({
               onClick={() => setConfirmingConvert(true)}
               className="rounded-md border border-foreground bg-card px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-foreground hover:text-background disabled:opacity-50"
             >
-              Convert to order
+              Convertir en commande
             </button>
           ))}
         {transitions.map((transition) => (
@@ -138,7 +138,7 @@ export function ProjectInquiryActions({
             onClick={retryBitrix}
             className="rounded-md border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent transition-colors hover:bg-accent/15 disabled:opacity-50"
           >
-            Retry Bitrix
+            Relancer Bitrix
           </button>
         )}
       </div>
@@ -148,9 +148,9 @@ export function ProjectInquiryActions({
 }
 
 function humanConvertReason(reason: string): string {
-  if (reason === "not_admin") return "You are not an admin.";
-  if (reason === "inquiry_not_found") return "Inquiry was not found.";
+  if (reason === "not_admin") return "Vous n’êtes pas administrateur.";
+  if (reason === "inquiry_not_found") return "La demande est introuvable.";
   if (reason === "already_converted")
-    return "Inquiry has already been converted to an order.";
-  return `Error: ${reason}`;
+    return "La demande a déjà été convertie en commande.";
+  return `Erreur : ${reason}`;
 }

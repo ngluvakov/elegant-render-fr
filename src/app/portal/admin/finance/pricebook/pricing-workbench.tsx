@@ -137,7 +137,7 @@ export function PricingWorkbench({
     } catch (error) {
       setNotice({
         kind: "error",
-        text: error instanceof Error ? error.message : "Change was not saved.",
+        text: error instanceof Error ? error.message : "La modification n’a pas été enregistrée.",
       });
     } finally {
       setSavingKey(null);
@@ -171,7 +171,7 @@ export function PricingWorkbench({
     startTransition(async () => {
       try {
         await publishPricingBook();
-        setNotice({ kind: "success", text: "Draft was published as the live pricebook." });
+        setNotice({ kind: "success", text: "Le brouillon a été publié comme grille tarifaire active." });
         router.refresh();
       } catch (error) {
         setNotice({
@@ -179,7 +179,7 @@ export function PricingWorkbench({
           text:
             error instanceof Error
               ? error.message
-              : "Pricebook was not published.",
+              : "La grille tarifaire n’a pas été publiée.",
         });
       }
     });
@@ -192,7 +192,7 @@ export function PricingWorkbench({
         await clonePublishedPricingToDraft();
         setNotice({
           kind: "success",
-          text: "Draft was reset from the currently published pricebook.",
+          text: "Le brouillon a été réinitialisé depuis la grille tarifaire actuellement publiée.",
         });
         router.refresh();
       } catch (error) {
@@ -201,7 +201,7 @@ export function PricingWorkbench({
           text:
             error instanceof Error
               ? error.message
-              : "Draft was not reset.",
+              : "Le brouillon n’a pas été réinitialisé.",
         });
       }
     });
@@ -214,11 +214,11 @@ export function PricingWorkbench({
           <div className="flex items-center gap-2">
             <CircleDollarSign className="h-6 w-6 text-accent" />
             <h1 className="font-heading text-3xl text-foreground">
-              Pricebook and financial rules
+              Grille tarifaire et règles financières
             </h1>
           </div>
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            Visual workbench for the draft pricebook. Changes appear immediately in the preview, but are saved only when you click Save.
+            Atelier visuel pour le brouillon de la grille tarifaire. Les modifications apparaissent immédiatement dans l’aperçu, mais ne sont enregistrées qu’au clic sur Enregistrer.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -229,7 +229,7 @@ export function PricingWorkbench({
             disabled={isPending || Boolean(savingKey)}
           >
             <Copy className="h-4 w-4" />
-            Reset draft
+            Réinitialiser le brouillon
           </Button>
           <Button
             type="button"
@@ -238,7 +238,7 @@ export function PricingWorkbench({
             disabled={isPending || Boolean(savingKey)}
           >
             <CheckCircle2 className="h-4 w-4" />
-            Publish
+            Publier
           </Button>
         </div>
       </div>
@@ -263,28 +263,28 @@ export function PricingWorkbench({
 
       <div className="grid gap-4 lg:grid-cols-4">
         <StatusCard
-          label="Draft"
+          label="Brouillon"
           value={draft.name}
-          meta={`Updated ${formatDateTime(draft.updatedAt)}`}
-          badge="Preview"
+          meta={`Mis à jour le ${formatDateTime(draft.updatedAt)}`}
+          badge="Aperçu"
         />
         <StatusCard
-          label="Live"
-          value={published.status === "static" ? "Fallback TS pricebook" : published.name}
+          label="En ligne"
+          value={published.status === "static" ? "Grille tarifaire TS de secours" : published.name}
           meta={
             published.publishedAt
-              ? `Published ${formatDateTime(published.publishedAt)}`
-              : "No DB publish yet"
+              ? `Publié le ${formatDateTime(published.publishedAt)}`
+              : "Aucune publication en base pour l’instant"
           }
-          badge={published.status === "static" ? "Fallback" : "Published"}
+          badge={published.status === "static" ? "Secours" : "Publié"}
         />
         <PreviewCard
-          label="Draft test calculation"
+          label="Calcul test du brouillon"
           total={draftPreview.total}
           original={draftPreview.originalTotal}
         />
         <PreviewCard
-          label="Live test calculation"
+          label="Calcul test en ligne"
           total={livePreview.total}
           original={livePreview.originalTotal}
         />
@@ -304,9 +304,9 @@ export function PricingWorkbench({
           >
             <span className="inline-flex items-center gap-2">
               <SlidersHorizontal className="h-4 w-4" />
-              Global rules
+              Règles globales
             </span>
-            <Badge variant="secondary">AI + rate + VAT</Badge>
+            <Badge variant="secondary">IA + taux + TVA</Badge>
           </button>
           {draft.categories.map((category) => (
             <button
@@ -341,7 +341,7 @@ export function PricingWorkbench({
                 savePatch(
                   "settings",
                   { kind: "settings", settings: draft.settings },
-                  "Global financial settings were saved to draft.",
+                  "Les paramètres financiers globaux ont été enregistrés dans le brouillon.",
                 )
               }
             />
@@ -405,7 +405,7 @@ function PreviewCard({
         </CardDescription>
         <CardTitle className="text-2xl tabular-nums">{formatEur(total)}</CardTitle>
         <CardDescription>
-          {savings > 0 ? `Test savings: ${formatEur(savings)}` : "No discount in test"}
+          {savings > 0 ? `Économie test : ${formatEur(savings)}` : "Aucune remise dans le test"}
         </CardDescription>
       </CardHeader>
     </Card>
@@ -440,7 +440,7 @@ function CategoryWorkbench({
             {category.label}
           </h2>
         </div>
-        <Badge variant="outline">{category.products.length} products</Badge>
+        <Badge variant="outline">{category.products.length} produits</Badge>
       </div>
 
       <div className="space-y-4">
@@ -517,7 +517,7 @@ function ProductWorkbenchCard({
         includes: product.includes,
         inquiryOnly: product.inquiryOnly ?? false,
       },
-      `${product.label} was saved to draft.`,
+      `Le forfait « ${product.label} » a été enregistré dans le brouillon.`,
     );
 
   return (
@@ -527,12 +527,12 @@ function ProductWorkbenchCard({
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">{category.label}</Badge>
-              {product.inquiryOnly && <Badge variant="outline">Inquiry only</Badge>}
-              {product.durationConfig && <Badge variant="outline">Duration</Badge>}
+              {product.inquiryOnly && <Badge variant="outline">Sur demande uniquement</Badge>}
+              {product.durationConfig && <Badge variant="outline">Durée</Badge>}
             </div>
             <div className="mt-3 grid gap-3 lg:grid-cols-[1.2fr_1fr_180px]">
               <TextInput
-                label="Package name"
+                label="Nom du forfait"
                 value={product.label}
                 onChange={(label) =>
                   onProductChange(product.id, (current) => ({
@@ -542,7 +542,7 @@ function ProductWorkbenchCard({
                 }
               />
               <TextInput
-                label="Billing model"
+                label="Modèle de facturation"
                 value={product.unitLabel}
                 onChange={(unitLabel) =>
                   onProductChange(product.id, (current) => ({
@@ -552,7 +552,7 @@ function ProductWorkbenchCard({
                 }
               />
               <NumberInput
-                label={product.durationConfig ? "Fallback base EUR" : "Base price EUR"}
+                label={product.durationConfig ? "EUR de base (secours)" : "Prix de base EUR"}
                 value={product.basePriceEur}
                 min={0}
                 onChange={(basePriceEur) =>
@@ -567,7 +567,7 @@ function ProductWorkbenchCard({
           <MiniProductPreview
             total={preview?.totalEur ?? 0}
             original={preview?.originalTotalEur ?? 0}
-            label="Mini calculation"
+            label="Mini calcul"
           />
         </div>
 
@@ -583,7 +583,7 @@ function ProductWorkbenchCard({
           />
           <div className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-background/45 px-4 py-3 lg:flex-col lg:items-start lg:justify-center">
             <Label htmlFor={`inquiry-${product.id}`} className="text-xs">
-              Inquiry only
+              Sur demande uniquement
             </Label>
             <Switch
               id={`inquiry-${product.id}`}
@@ -609,7 +609,7 @@ function ProductWorkbenchCard({
             <ChevronDown
               className={cn("h-4 w-4 transition-transform", expanded && "rotate-180")}
             />
-            Price details
+            Détail des prix
           </Button>
           <Button
             type="button"
@@ -619,7 +619,7 @@ function ProductWorkbenchCard({
             disabled={savingKey === `product:${product.id}`}
           >
             <Save className="h-4 w-4" />
-            Save package
+            Enregistrer le forfait
           </Button>
         </div>
       </CardHeader>
@@ -641,8 +641,8 @@ function ProductWorkbenchCard({
             <div className="space-y-3">
               <SectionTitle
                 icon={PackageCheck}
-                title="Add-on prices"
-                description="Set what is included, add-ons, and quantity thresholds."
+                title="Prix des options"
+                description="Définissez ce qui est inclus, les options et les seuils de quantité."
               />
               {product.addOns.map((addOn) => (
                 <AddOnWorkbench
@@ -679,7 +679,7 @@ function ProductWorkbenchCard({
                         maxQty: Number.isFinite(addOn.maxQty) ? addOn.maxQty : null,
                         volumeRules: addOn.volumeRules,
                       },
-                      `${addOn.label} was saved to draft.`,
+                      `L’option « ${addOn.label} » a été enregistrée dans le brouillon.`,
                     )
                   }
                 />
@@ -742,7 +742,7 @@ function DurationWorkbench({
         perSecondEur,
         discountTiers: config.discountTiers,
       },
-      `Duration for ${product.label} je saved to draft.`,
+      `La durée pour « ${product.label} » a été enregistrée dans le brouillon.`,
     );
   };
 
@@ -750,14 +750,14 @@ function DurationWorkbench({
     <div className="rounded-xl border border-border/50 bg-background/45 p-4">
       <SectionTitle
         icon={SlidersHorizontal}
-        title="Duration and price per second"
-        description="The slider shows how seconds and duration discounts change the calculation."
+        title="Durée et prix par seconde"
+        description="Le curseur montre comment les secondes et les remises de durée modifient le calcul."
       />
       <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_240px]">
         <div className="space-y-4">
           <div className="grid gap-3 md:grid-cols-4">
             <NumberInput
-              label="Minimum seconds"
+              label="Secondes minimum"
               value={config.minSeconds}
               step={1}
               min={1}
@@ -772,7 +772,7 @@ function DurationWorkbench({
               }
             />
             <NumberInput
-              label="Default seconds"
+              label="Secondes par défaut"
               value={config.defaultSeconds}
               step={1}
               min={1}
@@ -787,7 +787,7 @@ function DurationWorkbench({
               }
             />
             <NumberInput
-              label="Maximum seconds"
+              label="Secondes maximum"
               value={Number.isFinite(config.maxSeconds) ? config.maxSeconds : 240}
               step={1}
               min={1}
@@ -819,7 +819,7 @@ function DurationWorkbench({
 
           <div className="rounded-xl border border-border/40 bg-card/60 p-3">
             <div className="flex items-center justify-between gap-3">
-              <Label className="text-xs">Duration preview</Label>
+              <Label className="text-xs">Aperçu de la durée</Label>
               <span className="text-sm font-semibold tabular-nums">
                 {previewSeconds}s
               </span>
@@ -834,7 +834,7 @@ function DurationWorkbench({
             />
             <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
               <span>{config.minSeconds}s</span>
-              <span>{Number.isFinite(config.maxSeconds) ? `${config.maxSeconds}s` : "no limit"}</span>
+              <span>{Number.isFinite(config.maxSeconds) ? `${config.maxSeconds}s` : "sans limite"}</span>
             </div>
           </div>
 
@@ -854,11 +854,11 @@ function DurationWorkbench({
 
         <div className="rounded-xl border border-accent/25 bg-accent/10 p-4">
           <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-            Live calculation
+            Calcul en direct
           </p>
           <div className="mt-3 space-y-2 text-sm">
             <PriceRow label={`${previewSeconds}s × ${formatEur(config.perSecondEur)}`} value={formatEur(subtotal)} />
-            <PriceRow label="Duration discount" value={discountPct > 0 ? `−${discountPct}%` : "0%"} />
+            <PriceRow label="Remise de durée" value={discountPct > 0 ? `−${discountPct}%` : "0%"} />
             <PriceRow label="Total" value={formatEur(total)} strong />
           </div>
           <Button
@@ -870,7 +870,7 @@ function DurationWorkbench({
             disabled={savingKey === `duration:${product.id}:base`}
           >
             <Save className="h-4 w-4" />
-            Save duration
+            Enregistrer la durée
           </Button>
         </div>
       </div>
@@ -884,7 +884,7 @@ function DurationWorkbench({
             >
               <p className="text-xs font-semibold text-foreground">{sourceMode}</p>
               <NumberInput
-                label="EUR/sec for mode"
+                label="EUR/sec pour le mode"
                 value={rule.perSecondEur ?? config.perSecondEur}
                 min={0}
                 onChange={(perSecondEur) =>
@@ -909,7 +909,7 @@ function DurationWorkbench({
                 disabled={savingKey === `duration:${product.id}:${sourceMode}`}
               >
                 <Save className="h-4 w-4" />
-                Save mode
+                Enregistrer le mode
               </Button>
             </div>
           ))}
@@ -950,25 +950,25 @@ function AddOnWorkbench({
         <div className="space-y-3">
           <div className="grid gap-3 md:grid-cols-[1fr_1.4fr]">
             <TextInput
-              label="Add-on name"
+              label="Nom de l’option"
               value={addOn.label}
               onChange={(label) => onChange({ ...addOn, label })}
             />
             <TextInput
-              label="Customer description"
+              label="Description client"
               value={addOn.description}
               onChange={(description) => onChange({ ...addOn, description })}
             />
           </div>
           <div className="grid gap-3 md:grid-cols-4">
             <NumberInput
-              label={addOn.priceType === "percent" ? "Percentage" : "Price EUR"}
+              label={addOn.priceType === "percent" ? "Pourcentage" : "Prix EUR"}
               value={addOn.priceEur}
               min={0}
               onChange={(priceEur) => onChange({ ...addOn, priceEur })}
             />
             <NumberInput
-              label="Included"
+              label="Inclus"
               value={addOn.includedQty}
               step={1}
               min={0}
@@ -990,10 +990,10 @@ function AddOnWorkbench({
             />
             <div>
               <Label className="text-[0.7rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
-                Price type
+                Type de prix
               </Label>
               <div className="mt-2 rounded-lg border border-border/50 bg-background/50 px-3 py-2 text-sm font-medium">
-                {addOn.priceType === "percent" ? "Percentage" : "Fixed"}
+                {addOn.priceType === "percent" ? "Pourcentage" : "Fixe"}
               </div>
             </div>
           </div>
@@ -1006,7 +1006,7 @@ function AddOnWorkbench({
 
         <div className="rounded-xl border border-accent/25 bg-accent/10 p-4">
           <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-            Test quantities
+            Quantités de test
           </p>
           <div className="mt-3 flex items-center justify-between gap-2">
             <Stepper
@@ -1021,10 +1021,10 @@ function AddOnWorkbench({
             </span>
           </div>
           <div className="mt-3 space-y-1 text-xs text-muted-foreground">
-            <PriceRow label="Included" value={`${addOn.includedQty}`} />
-            <PriceRow label="Naplativo" value={`${billableQty}`} />
+            <PriceRow label="Inclus" value={`${addOn.includedQty}`} />
+            <PriceRow label="Facturable" value={`${billableQty}`} />
             <PriceRow
-              label="Effective unit price"
+              label="Prix unitaire effectif"
               value={addOn.priceType === "percent" ? `${addOn.priceEur}%` : formatEur(unitPrice)}
             />
           </div>
@@ -1037,7 +1037,7 @@ function AddOnWorkbench({
             disabled={saving}
           >
             <Save className="h-4 w-4" />
-            Save add-on
+            Enregistrer l’option
           </Button>
         </div>
       </div>
@@ -1066,10 +1066,10 @@ function VolumeRulesEditor({
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold text-foreground">
-            Quantity thresholds
+            Seuils de quantité
           </p>
           <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
-            Example: from the 5th unit, the price becomes lower per unit.
+            Exemple : à partir de la 5e unité, le prix unitaire diminue.
           </p>
         </div>
         <Button
@@ -1089,14 +1089,14 @@ function VolumeRulesEditor({
           }
         >
           <Plus className="h-3 w-3" />
-          Threshold
+          Seuil
         </Button>
       </div>
 
       <div className="mt-3 space-y-2">
         {addOn.volumeRules.length === 0 && (
           <p className="rounded-lg bg-card/50 px-3 py-2 text-xs text-muted-foreground">
-            No quantity rules; every additional unit uses the base price.
+            Aucune règle de quantité ; chaque unité supplémentaire utilise le prix de base.
           </p>
         )}
         {addOn.volumeRules.map((rule, index) => (
@@ -1105,7 +1105,7 @@ function VolumeRulesEditor({
             className="grid items-end gap-2 rounded-lg bg-card/60 p-2 md:grid-cols-[1fr_1fr_auto]"
           >
             <NumberInput
-              label="After quantity"
+              label="Après quantité"
               value={rule.afterQty}
               step={1}
               min={0}
@@ -1114,7 +1114,7 @@ function VolumeRulesEditor({
               }
             />
             <NumberInput
-              label="Price EUR"
+              label="Prix EUR"
               value={rule.priceEur}
               min={0}
               onChange={(priceEur) => updateRule(index, { priceEur })}
@@ -1126,7 +1126,7 @@ function VolumeRulesEditor({
               onClick={() =>
                 onChange(addOn.volumeRules.filter((_, i) => i !== index))
               }
-              aria-label="Remove threshold"
+              aria-label="Supprimer le seuil"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -1157,8 +1157,8 @@ function DiscountRulesWorkbench({
     <div className="space-y-3">
       <SectionTitle
         icon={Layers3}
-        title="Cross-service discounts"
-        description="Visual rule: if a source model/service exists, this item receives a discount."
+        title="Remises inter-services"
+        description="Règle visuelle : si un modèle/service source existe, cet élément bénéficie d’une remise."
       />
       <div className="grid gap-3 lg:grid-cols-2">
         {rules.map((rule, index) => (
@@ -1186,7 +1186,7 @@ function DiscountRulesWorkbench({
                   discountPct: rule.discountPct,
                   reason: rule.reason,
                 },
-                `Discount for ${product.label} was saved to draft.`,
+                `La remise pour « ${product.label} » a été enregistrée dans le brouillon.`,
               )
             }
           />
@@ -1217,7 +1217,7 @@ function DiscountRuleCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-            If present
+            Si présent
           </p>
           <p className="mt-1 text-sm font-semibold text-foreground">
             {rule.sourceProducts?.join(", ") ?? rule.requires}
@@ -1226,7 +1226,7 @@ function DiscountRuleCard({
         <ArrowRight className="mt-5 h-4 w-4 text-muted-foreground" />
         <div className="text-right">
           <p className="text-xs font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-            Then
+            Alors
           </p>
           <p className="mt-1 text-sm font-semibold text-muted-foreground">
             −{rule.discountPct}%
@@ -1235,7 +1235,7 @@ function DiscountRuleCard({
       </div>
       <div className="mt-4 grid gap-3 md:grid-cols-[120px_1fr]">
         <NumberInput
-          label="Discount %"
+          label="Remise %"
           value={rule.discountPct}
           step={1}
           min={0}
@@ -1245,14 +1245,14 @@ function DiscountRuleCard({
           }
         />
         <TextInput
-          label="Reason shown in calculation"
+          label="Motif affiché dans le calcul"
           value={rule.reason}
           onChange={(reason) => onChange({ ...rule, reason })}
         />
       </div>
       <div className="mt-3 rounded-lg bg-background/50 px-3 py-2 text-xs">
-        <PriceRow label="Base example" value={formatEur(product.basePriceEur)} />
-        <PriceRow label="After discount" value={formatEur(discounted)} strong />
+        <PriceRow label="Exemple de base" value={formatEur(product.basePriceEur)} />
+        <PriceRow label="Après remise" value={formatEur(discounted)} strong />
       </div>
       <Button
         type="button"
@@ -1263,7 +1263,7 @@ function DiscountRuleCard({
         disabled={saving}
       >
         <Save className="h-4 w-4" />
-        Save discount #{index + 1}
+        Enregistrer la remise n° {index + 1}
       </Button>
     </div>
   );
@@ -1292,7 +1292,7 @@ function SettingsWorkbench({
       onSettingsChange(() => parsed);
       setAdvancedError(null);
     } catch {
-      setAdvancedError("JSON is invalid.");
+      setAdvancedError("Le JSON n’est pas valide.");
     }
   };
 
@@ -1301,32 +1301,32 @@ function SettingsWorkbench({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[0.72rem] font-semibold font-mono uppercase tracking-[0.08em] text-muted-foreground">
-            Finance settings
+            Paramètres financiers
           </p>
           <h2 className="mt-1 font-heading text-2xl text-foreground">
-            Global rules, AI packages, and special pricing
+            Règles globales, forfaits IA et tarification spéciale
           </h2>
         </div>
         <Button type="button" variant="accent" onClick={onSave} disabled={saving}>
           <Save className="h-4 w-4" />
-          Save settings
+          Enregistrer les paramètres
         </Button>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <MetricEditor
-          label="VAT rate"
+          label="Taux de TVA"
           value={settings.serbiaVatRate}
-          suffix="decimal"
+          suffix="décimal"
           step={0.01}
           onChange={(serbiaVatRate) =>
             onSettingsChange((current) => ({ ...current, serbiaVatRate }))
           }
         />
         <MetricEditor
-          label="AI credits are valid for"
+          label="Validité des crédits IA"
           value={settings.aiCreditExpiresAfterMonths}
-          suffix="months"
+          suffix="mois"
           step={1}
           onChange={(aiCreditExpiresAfterMonths) =>
             onSettingsChange((current) => ({
@@ -1354,10 +1354,9 @@ function SettingsWorkbench({
             <div className="flex items-center gap-2">
               <FileJson className="h-4 w-4 text-muted-foreground" />
               <div>
-                <CardTitle>Advanced fallback JSON</CardTitle>
+                <CardTitle>JSON avancé de secours</CardTitle>
                 <CardDescription>
-                  Hidden technical output for rare rules that do not yet have
-                  a dedicated visual control.
+                  Sortie technique masquée pour les règles rares qui n’ont pas encore de contrôle visuel dédié.
                 </CardDescription>
               </div>
             </div>
@@ -1380,11 +1379,11 @@ function SettingsWorkbench({
             <div className="flex flex-wrap gap-2">
               <Button type="button" variant="outline" onClick={applyAdvanced}>
                 <Eye className="h-4 w-4" />
-                Apply in preview
+                Appliquer dans l’aperçu
               </Button>
               <Button type="button" variant="accent" onClick={onSave} disabled={saving}>
                 <Save className="h-4 w-4" />
-                Save settings
+                Enregistrer les paramètres
               </Button>
             </div>
           </CardContent>
@@ -1409,10 +1408,10 @@ function AiTiersEditor({
           <div>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-accent" />
-              AI credit packages
+              Forfaits de crédits IA
             </CardTitle>
             <CardDescription>
-              Each card shows the threshold and an example purchase for that tier.
+              Chaque carte montre le seuil et un exemple d’achat pour ce palier.
             </CardDescription>
           </div>
           <Button
@@ -1430,7 +1429,7 @@ function AiTiersEditor({
             }
           >
             <Plus className="h-4 w-4" />
-            Add package
+            Ajouter un forfait
           </Button>
         </div>
       </CardHeader>
@@ -1443,7 +1442,7 @@ function AiTiersEditor({
               className="rounded-xl border border-border/45 bg-background/45 p-4"
             >
               <div className="flex items-start justify-between gap-2">
-                <Badge variant="secondary">{tier.minCredits}+ credits</Badge>
+                <Badge variant="secondary">{tier.minCredits}+ crédits</Badge>
                 <Button
                   type="button"
                   variant="destructive"
@@ -1454,14 +1453,14 @@ function AiTiersEditor({
                       aiCreditTiers: current.aiCreditTiers.filter((_, i) => i !== index),
                     }))
                   }
-                  aria-label="Remove AI tier"
+                  aria-label="Supprimer le palier IA"
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
               </div>
               <div className="mt-3 grid gap-2">
                 <NumberInput
-                  label="Minimum credits"
+                  label="Crédits minimum"
                   value={tier.minCredits}
                   step={1}
                   min={1}
@@ -1477,7 +1476,7 @@ function AiTiersEditor({
                   }
                 />
                 <NumberInput
-                  label="Cents per credit"
+                  label="Centimes par crédit"
                   value={tier.centsPerCredit}
                   step={1}
                   min={1}
@@ -1497,8 +1496,8 @@ function AiTiersEditor({
                 />
               </div>
               <div className="mt-3 rounded-lg bg-card/70 px-3 py-2 text-xs">
-                <PriceRow label="Example total" value={formatEur(example.totalCents / 100)} />
-                <PriceRow label="Price/credit" value={formatEur(example.centsPerCredit / 100)} />
+                <PriceRow label="Total de l’exemple" value={formatEur(example.totalCents / 100)} />
+                <PriceRow label="Prix/crédit" value={formatEur(example.centsPerCredit / 100)} />
               </div>
             </div>
           );
@@ -1524,12 +1523,12 @@ function SpecialPricingEditor({
     <div className="grid gap-4 xl:grid-cols-3">
       <Card>
         <CardHeader>
-          <CardTitle>Interior by floor</CardTitle>
-          <CardDescription>First floor, additional floor, and thresholds included in the price.</CardDescription>
+          <CardTitle>Intérieur par étage</CardTitle>
+          <CardDescription>Premier étage, étage supplémentaire et seuils inclus dans le prix.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">
           <SpecialNumber
-            label="First floor EUR"
+            label="Premier étage EUR"
             value={special.interior.firstFloorEur}
             onChange={(firstFloorEur) =>
               setSpecial((current) => ({
@@ -1539,7 +1538,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Additional floor EUR"
+            label="Étage supplémentaire EUR"
             value={special.interior.extraFloorEur}
             onChange={(extraFloorEur) =>
               setSpecial((current) => ({
@@ -1549,7 +1548,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Included rooms"
+            label="Pièces incluses"
             value={special.interior.includedRooms}
             step={1}
             onChange={(includedRooms) =>
@@ -1563,7 +1562,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Included frames"
+            label="Vues incluses"
             value={special.interior.includedCameras}
             step={1}
             onChange={(includedCameras) =>
@@ -1577,7 +1576,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Additional room EUR"
+            label="Pièce supplémentaire EUR"
             value={special.interior.extraRoomEur}
             onChange={(extraRoomEur) =>
               setSpecial((current) => ({
@@ -1587,7 +1586,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Additional frame EUR"
+            label="Vue supplémentaire EUR"
             value={special.interior.extraCameraEur}
             onChange={(extraCameraEur) =>
               setSpecial((current) => ({
@@ -1601,12 +1600,12 @@ function SpecialPricingEditor({
 
       <Card>
         <CardHeader>
-          <CardTitle>360 interior</CardTitle>
-          <CardDescription>Floors, hotspots, static cameras, and tour assembly.</CardDescription>
+          <CardTitle>Intérieur 360</CardTitle>
+          <CardDescription>Étages, hotspots, caméras statiques et assemblage de la visite.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">
           <SpecialNumber
-            label="First floor EUR"
+            label="Premier étage EUR"
             value={special.tour360.firstFloorEur}
             onChange={(firstFloorEur) =>
               setSpecial((current) => ({
@@ -1616,7 +1615,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Additional floor EUR"
+            label="Étage supplémentaire EUR"
             value={special.tour360.extraFloorEur}
             onChange={(extraFloorEur) =>
               setSpecial((current) => ({
@@ -1626,7 +1625,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Included hotspots"
+            label="Hotspots inclus"
             value={special.tour360.includedHotspots}
             step={1}
             onChange={(includedHotspots) =>
@@ -1640,7 +1639,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Included frames"
+            label="Vues incluses"
             value={special.tour360.includedCameras}
             step={1}
             onChange={(includedCameras) =>
@@ -1654,7 +1653,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Additional hotspot EUR"
+            label="Hotspot supplémentaire EUR"
             value={special.tour360.extraHotspotEur}
             onChange={(extraHotspotEur) =>
               setSpecial((current) => ({
@@ -1664,7 +1663,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Additional frame EUR"
+            label="Vue supplémentaire EUR"
             value={special.tour360.extraCameraEur}
             onChange={(extraCameraEur) =>
               setSpecial((current) => ({
@@ -1678,12 +1677,12 @@ function SpecialPricingEditor({
 
       <Card>
         <CardHeader>
-          <CardTitle>Tour assembly</CardTitle>
-          <CardDescription>Web tour fee, free hotspot threshold, and navigation/branding options.</CardDescription>
+          <CardTitle>Assemblage de la visite</CardTitle>
+          <CardDescription>Frais de visite web, seuil de hotspots gratuits et options de navigation/marque blanche.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3">
           <SpecialNumber
-            label="Base assembly EUR"
+            label="Assemblage de base EUR"
             value={special.tourAssembly.baseEur}
             onChange={(baseEur) =>
               setSpecial((current) => ({
@@ -1697,7 +1696,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Free hotspot threshold"
+            label="Seuil de hotspots gratuits"
             value={special.tourAssembly.freeHotspotThreshold}
             step={1}
             onChange={(freeHotspotThreshold) =>
@@ -1718,7 +1717,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="Floorplan nav EUR"
+            label="Navigation par plan EUR"
             value={special.tourAssembly.floorPlanNavEur}
             onChange={(floorPlanNavEur) =>
               setSpecial((current) => ({
@@ -1732,7 +1731,7 @@ function SpecialPricingEditor({
             }
           />
           <SpecialNumber
-            label="White-label EUR"
+            label="Marque blanche EUR"
             value={special.tourAssembly.whiteLabelEur}
             onChange={(whiteLabelEur) =>
               setSpecial((current) => ({
@@ -1761,7 +1760,7 @@ function IncludesEditor({
   return (
     <div>
       <Label className="text-[0.7rem] font-mono uppercase tracking-[0.08em] text-muted-foreground">
-        What is included
+        Ce qui est inclus
       </Label>
       <Textarea
         value={includes.join("\n")}
@@ -1802,10 +1801,10 @@ function DurationTiersEditor({
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-xs font-semibold text-foreground">
-            Duration discounts
+            Remises de durée
           </p>
           <p className="mt-0.5 text-[0.68rem] text-muted-foreground">
-            Rules are read in order: minimum seconds, maximum seconds, percentage.
+            Les règles sont lues dans l’ordre : secondes minimum, secondes maximum, pourcentage.
           </p>
         </div>
         <Button
@@ -1820,7 +1819,7 @@ function DurationTiersEditor({
           }
         >
           <Plus className="h-3 w-3" />
-          Discount
+          Remise
         </Button>
       </div>
       <div className="mt-3 space-y-2">
@@ -1830,7 +1829,7 @@ function DurationTiersEditor({
             className="grid items-end gap-2 rounded-lg bg-background/50 p-2 md:grid-cols-[1fr_1fr_1fr_auto]"
           >
             <NumberInput
-              label="Min sec"
+              label="Sec min"
               value={tier.minSec}
               step={1}
               min={1}
@@ -1843,7 +1842,7 @@ function DurationTiersEditor({
               }
             />
             <NumberInput
-              label="Max sec"
+              label="Sec max"
               value={normalizedMax(tier.maxSec)}
               step={1}
               min={1}
@@ -1856,7 +1855,7 @@ function DurationTiersEditor({
               }
             />
             <NumberInput
-              label="Discount %"
+              label="Remise %"
               value={tier.discountPct}
               step={1}
               min={0}
@@ -1876,7 +1875,7 @@ function DurationTiersEditor({
               variant="destructive"
               size="icon-sm"
               onClick={() => onChange(tiers.filter((_, i) => i !== index))}
-              aria-label="Remove duration discount"
+              aria-label="Supprimer la remise de durée"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -2013,7 +2012,7 @@ function Stepper({
         type="button"
         onClick={() => onChange(clamped(value - 1))}
         disabled={value <= min}
-        aria-label={`Decrease ${label}`}
+        aria-label={`Diminuer ${label}`}
         className="flex h-8 w-8 items-center justify-center rounded-l-lg transition-colors hover:bg-muted disabled:opacity-30"
       >
         <Minus className="h-3.5 w-3.5" />
@@ -2025,7 +2024,7 @@ function Stepper({
         type="button"
         onClick={() => onChange(clamped(value + 1))}
         disabled={value >= max}
-        aria-label={`Increase ${label}`}
+        aria-label={`Augmenter ${label}`}
         className="flex h-8 w-8 items-center justify-center rounded-r-lg transition-colors hover:bg-muted disabled:opacity-30"
       >
         <Plus className="h-3.5 w-3.5" />
@@ -2180,7 +2179,7 @@ function numberFromInput(value: string) {
 
 function formatDateTime(value: string | null) {
   if (!value) return "—";
-  return new Date(value).toLocaleString("en-GB", {
+  return new Date(value).toLocaleString("fr-FR", {
     day: "numeric",
     month: "short",
     year: "numeric",

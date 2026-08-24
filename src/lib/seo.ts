@@ -209,7 +209,7 @@ export function createPublicMetadata({
       canonical,
       languages: buildLanguageAlternates(path),
     },
-    robots: noIndex ? NO_INDEX_ROBOTS : INDEXABLE_ROBOTS,
+    robots: noIndex ? NO_INDEX_ROBOTS : PAGE_ROBOTS,
     openGraph: {
       title: socialTitle,
       description: socialDescription,

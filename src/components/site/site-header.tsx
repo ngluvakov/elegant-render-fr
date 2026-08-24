@@ -1,10 +1,10 @@
 /**
  * SiteHeader — sticky marketing header per the White Rook design handoff:
  * 72px tall, rgba(255,255,255,0.85) + 12px backdrop blur, 1px bottom
- * border. Left: ER logo (48px) + wordmark; center: nav links with a
- * hover mega-menu on "Services"; right: "Sign in" (secondary) +
- * "Start a project" (primary green). The old "powered by White Rook"
- * badge is removed — White Rook attribution lives in the footer only.
+ * border. Left: ER logo (48px) + a "powered by White Rook" badge;
+ * center: nav links with a hover mega-menu on "Services"; right:
+ * "Sign in" (secondary) + "Start a project" (primary green). The badge
+ * matches the .rs header; the footer carries the fuller attribution.
  *
  * Used on: marketing layout (all public pages).
  */
@@ -12,7 +12,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Manrope } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -70,14 +69,6 @@ const MENU_COLUMNS = [
   MENU_CATEGORIES.slice(Math.ceil(MENU_CATEGORIES.length / 2)),
 ];
 
-// The wordmark next to the logo matches the .rs header exactly: Manrope
-// (the .rs body font), text-lg font-medium tracking-tight. Scoped to this
-// one span — the rest of the site stays on Inter Tight.
-const manrope = Manrope({
-  subsets: ["latin", "latin-ext"],
-  display: "swap",
-});
-
 const SIGN_IN_CLASSES =
   "inline-flex h-9 items-center rounded-[4px] border border-[#111111] bg-white px-4 text-sm font-medium text-foreground transition-colors duration-200 hover:bg-secondary";
 const START_PROJECT_CLASSES =
@@ -115,30 +106,36 @@ export function SiteHeader() {
           the rest of the site (max-w-[min(96vw,1720px)] px-6), so the
           logo's left edge lines up with where page content begins. */}
       <div className="mx-auto flex h-20 w-full max-w-[min(96vw,1720px)] items-center justify-between gap-8 px-6">
-        <Link
-          href="/"
-          className="flex h-20 items-center gap-3 text-foreground"
-          aria-label="Elegant Render — accueil"
-        >
-          <Image
-            src="/branding/er-logo-black.png"
-            alt="Elegant Render"
-            width={2011}
-            height={3186}
-            priority
-            className="h-[4.5rem] w-auto"
-          />
+        {/* The logo links home; the powered-by badge sits beside it as a
+            plain, non-interactive image — it is attribution, not
+            navigation, so it stays outside the link. Same treatment as
+            the .rs header. Hidden below sm to keep the bar uncluttered. */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="flex h-20 items-center text-foreground"
+            aria-label="Elegant Render — accueil"
+          >
+            <Image
+              src="/branding/er-logo-black.png"
+              alt="Elegant Render"
+              width={2011}
+              height={3186}
+              priority
+              className="h-[4.5rem] w-auto"
+            />
+          </Link>
           <span className="hidden items-center sm:inline-flex">
-            <span
-              className={cn(
-                manrope.className,
-                "text-lg font-medium tracking-tight text-foreground",
-              )}
-            >
-              Elegant Render
-            </span>
+            <Image
+              src="/branding/powered-by-whiterook.webp"
+              alt="Powered by White Rook"
+              width={480}
+              height={188}
+              priority
+              className="h-11 w-auto"
+            />
           </span>
-        </Link>
+        </div>
 
         {/* Desktop nav */}
         <NavigationMenu

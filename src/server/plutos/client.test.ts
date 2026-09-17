@@ -11,8 +11,8 @@ const CONFIG: PlutosConfig = {
 
 function payload(): PlutosInvoicePayload {
   return {
-    order_id: "elegantrender.com:order:o1",
-    source: "elegantrender.com",
+    order_id: "elegantrender.fr:order:o1",
+    source: "elegantrender.fr",
     invoice_number: "2026-0001",
     buyer: {
       type: "individual_foreign",
@@ -163,11 +163,11 @@ describe("getPlutosInvoiceStatus", () => {
     fetchMock.mockResolvedValue(
       response(200, { plutos_invoice_id: 42, number: "2026-0001", status: "PRIHVACENA", sef_status: "prihvacena" }),
     );
-    const result = await getPlutosInvoiceStatus(CONFIG, "elegantrender.com:order:o1");
+    const result = await getPlutosInvoiceStatus(CONFIG, "elegantrender.fr:order:o1");
     expect(result.status).toBe("PRIHVACENA");
     const [url] = fetchMock.mock.calls[0];
     expect(url).toBe(
-      "https://plutos.example/api/v1/invoices/elegantrender.com%3Aorder%3Ao1",
+      "https://plutos.example/api/v1/invoices/elegantrender.fr%3Aorder%3Ao1",
     );
   });
 });

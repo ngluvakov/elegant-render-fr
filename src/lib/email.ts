@@ -15,6 +15,10 @@ import { IMPRINT, formatAddress } from "@/lib/content/site";
 const FROM = process.env.EMAIL_FROM ?? "Elegant Render <noreply@elegantrender.com>";
 const ADMIN_NOTIFY_EMAIL =
   process.env.ADMIN_NOTIFY_EMAIL ?? "info@elegantrender.com";
+// Customers reply to the shared inbox, not to the noreply sender. Decision
+// 2026-09-15: .fr/.de send from the verified .com domain and receive on the
+// .com inbox — no per-country mailboxes.
+const REPLY_TO = process.env.EMAIL_REPLY_TO ?? "info@elegantrender.com";
 
 // Pick the host to embed in transactional links. Vercel preview deploys
 // share AUTH_URL with production, so a magic link emitted from a preview
@@ -50,6 +54,7 @@ async function send(args: {
   const { error } = await getResend().emails.send({
     from: FROM,
     to: args.to,
+    replyTo: REPLY_TO,
     subject: args.subject,
     html: args.html,
     ...(args.attachments?.length
@@ -85,7 +90,7 @@ export async function sendVerificationEmail(
   to: string,
   token: string,
 ) {
-  const url = `${getAuthUrl()}/verify-email?token=${token}`;
+  const url = `${getAuthUrl()}/verification-email?token=${token}`;
 
   await send({
     to,
@@ -113,7 +118,7 @@ export async function sendPasswordResetEmail(
   to: string,
   token: string,
 ) {
-  const url = `${getAuthUrl()}/reset-password?token=${token}`;
+  const url = `${getAuthUrl()}/nouveau-mot-de-passe?token=${token}`;
 
   await send({
     to,
@@ -145,7 +150,7 @@ export async function sendPortalAccessEmail(
   orderNumber: string,
   orderId: string,
 ) {
-  const url = `${getAuthUrl()}/portal-access?token=${token}&next=${encodeURIComponent(
+  const url = `${getAuthUrl()}/acces-portail?token=${token}&next=${encodeURIComponent(
     `/portal/orders/${orderId}`,
   )}`;
 
@@ -875,7 +880,7 @@ export async function sendVrProjectReadyEmail(args: {
   orderId: string;
   token: string;
 }) {
-  const url = `${getAuthUrl()}/portal-access?token=${args.token}&next=${encodeURIComponent(
+  const url = `${getAuthUrl()}/acces-portail?token=${args.token}&next=${encodeURIComponent(
     `/portal/orders/${args.orderId}`,
   )}`;
   await send({

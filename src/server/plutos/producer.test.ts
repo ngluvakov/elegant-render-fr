@@ -55,7 +55,7 @@ describe("enqueuePlutosSyncIfEligible", () => {
     expect(enqueueOutboxEvent).toHaveBeenCalledWith({
       type: "plutos_invoice_requested",
       payload: { target: "order", targetId: "o1" },
-      idempotencyKey: "plutos_invoice_requested:elegantrender.com:order:o1",
+      idempotencyKey: "plutos_invoice_requested:elegantrender.fr:order:o1",
     });
   });
 

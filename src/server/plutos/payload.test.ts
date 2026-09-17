@@ -33,8 +33,8 @@ function source(overrides: Partial<PlutosInvoiceSource> = {}): PlutosInvoiceSour
 describe("buildPlutosInvoicePayload", () => {
   it("maps a foreign individual order to individual_foreign, 0% VAT, no SEF", () => {
     const payload = buildPlutosInvoicePayload(source());
-    expect(payload.order_id).toBe("elegantrender.com:order:o1");
-    expect(payload.source).toBe("elegantrender.com");
+    expect(payload.order_id).toBe("elegantrender.fr:order:o1");
+    expect(payload.source).toBe("elegantrender.fr");
     expect(payload.invoice_number).toBe("2026-0001");
     expect(payload.buyer.type).toBe("individual_foreign");
     expect(payload.buyer.vat_number).toBe("");
@@ -88,7 +88,7 @@ describe("buildPlutosInvoicePayload", () => {
         totalCents: 36000,
       }),
     );
-    expect(payload.order_id).toBe("elegantrender.com:charge:c9");
+    expect(payload.order_id).toBe("elegantrender.fr:charge:c9");
     expect(payload.lines[0].quantity).toBe("3");
     expect(payload.lines[0].price).toBe("120.00");
   });

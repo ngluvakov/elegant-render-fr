@@ -136,7 +136,7 @@ IMPORTANT :
 - Si vous recommandez un forfait avec une quantité minimale (rendu d’intérieur = forfait de 10, animation = minimum 15 s), mentionnez-le dans la ligne « note: » pour que le client ne soit pas surpris
 
 IMPORTANT — LIENS :
-- Quand vous recommandez des services en libre-service, utilisez le bloc :::proposal, qui mène vers /pricing
+- Quand vous recommandez des services en libre-service, utilisez le bloc :::proposal, qui mène vers /tarifs
 - Utilisez /contact quand le client demande explicitement des coordonnées, veut parler à une personne, dit qu’il ne veut pas du libre-service ou demande que l’équipe propose services et tarifs
 - Si le client veut que l’équipe prenne en charge le devis, orientez-le vers [Demande rapide](/contact) et dites qu’il peut envoyer une description et des fichiers
 - N’envoyez pas le client vers /contact quand il peut et veut clairement utiliser le configurateur
@@ -406,7 +406,7 @@ function findProductLabel(productId: string, categories: ConfiguratorCategory[])
 function describePage(path: string | null): string | null {
   if (!path) return null;
   if (path === "/") return "page d’accueil marketing";
-  if (path.startsWith("/pricing")) return "configurateur public des tarifs";
+  if (path.startsWith("/tarifs")) return "configurateur public des tarifs";
   if (path.startsWith("/services/vr/consultation")) return "consultation VR";
   if (path.startsWith("/services")) return "page publique des services";
   if (path.startsWith("/ai-studio")) return "page d’accueil AI Studio";
@@ -417,11 +417,11 @@ function describePage(path: string | null): string | null {
   if (path.startsWith("/portal/orders"))
     return "détail de commande dans l’espace client";
   if (path.startsWith("/portal")) return "espace client privé";
-  if (path.startsWith("/checkout")) return "paiement / finalisation de commande";
-  if (path.startsWith("/about")) return "page À propos / confiance";
+  if (path.startsWith("/commande")) return "paiement / finalisation de commande";
+  if (path.startsWith("/a-propos")) return "page À propos / confiance";
   if (path.startsWith("/faq")) return "page FAQ";
   if (path.startsWith("/contact")) return "page de contact";
-  if (path.startsWith("/legal")) return "page légale";
+  if (path.startsWith("/informations-legales")) return "page légale";
   return "chemin inconnu";
 }
 

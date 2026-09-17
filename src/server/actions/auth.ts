@@ -204,7 +204,7 @@ export async function resetPasswordAction(
     },
   });
 
-  redirect("/login");
+  redirect("/connexion");
 }
 
 // ─── Portal Access (post-checkout magic link) ──────────
@@ -262,7 +262,7 @@ export async function magicLinkSignInAction(
   const next = (formData.get("next") as string) || "/portal";
 
   if (!token) {
-    redirect("/login?error=link_invalid");
+    redirect("/connexion?error=link_invalid");
   }
 
   try {
@@ -271,7 +271,7 @@ export async function magicLinkSignInAction(
       redirect: false,
     });
   } catch {
-    redirect("/login?error=link_expired");
+    redirect("/connexion?error=link_expired");
   }
 
   redirect(next);

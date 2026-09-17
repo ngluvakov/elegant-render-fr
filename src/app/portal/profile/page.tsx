@@ -115,10 +115,10 @@ export default async function ProfilePage() {
           (par exemple, une adresse e-mail différente de celle de votre compte
           Google), contactez-nous à{" "}
           <a
-            href="mailto:info@elegantrender.fr"
+            href="mailto:info@elegantrender.com"
             className="text-foreground underline-offset-2 hover:underline"
           >
-            info@elegantrender.fr
+            info@elegantrender.com
           </a>
           .
         </p>

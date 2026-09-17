@@ -10,7 +10,7 @@
  * model / active project). All three feed the same `anim` catalog
  * product; the picked mode is passed to addProduct as `sourceMode`.
  *
- * Used on: PricingConfigurator (main column, /pricing page).
+ * Used on: PricingConfigurator (main column, /tarifs page).
  */
 "use client";
 
@@ -63,7 +63,7 @@ export function ServiceAdder() {
   const categories = pricingCatalog?.categories ?? CONFIGURATOR_CATEGORIES;
 
   // Sync state when navigation changes the ?group= param (e.g. user clicks a
-  // preview card while already on /pricing). State is otherwise local — clicking
+  // preview card while already on /tarifs). State is otherwise local — clicking
   // a tab here does not push to the URL, so the user's flow isn't dotted with
   // history entries.
   useEffect(() => {

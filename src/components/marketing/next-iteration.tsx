@@ -32,7 +32,7 @@ export function NextIteration() {
               repartir de zéro.
             </p>
             <div className="mt-7">
-              <ButtonLink href="/pricing#configurator" variant="accent" size="lg">
+              <ButtonLink href="/tarifs#configurator" variant="accent" size="lg">
                 Obtenir votre devis
               </ButtonLink>
             </div>

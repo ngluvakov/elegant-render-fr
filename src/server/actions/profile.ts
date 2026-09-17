@@ -108,7 +108,7 @@ export async function updateProfileAction(
   });
 
   revalidatePath("/portal/profile");
-  revalidatePath("/checkout");
+  revalidatePath("/commande");
 
   return { success: true };
 }

@@ -22,8 +22,8 @@ export default function PortalError({
         Une erreur s’est produite lors du chargement de cette page. Vos données
         et vos commandes sont en sécurité. Réessayez, et si le problème
         persiste, écrivez-nous à{" "}
-        <a className="underline" href="mailto:info@elegantrender.fr">
-          info@elegantrender.fr
+        <a className="underline" href="mailto:info@elegantrender.com">
+          info@elegantrender.com
         </a>
         .
       </p>

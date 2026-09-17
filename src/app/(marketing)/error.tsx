@@ -22,8 +22,8 @@ export default function MarketingError({
       <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
         Le chargement de cette page a échoué. Réessayez — et si l’erreur
         persiste, écrivez-nous à{" "}
-        <a className="underline" href="mailto:info@elegantrender.fr">
-          info@elegantrender.fr
+        <a className="underline" href="mailto:info@elegantrender.com">
+          info@elegantrender.com
         </a>
         .
       </p>

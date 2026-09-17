@@ -1,5 +1,5 @@
 /**
- * customer-groups.ts — Public-facing groupings for the /pricing preview cards
+ * customer-groups.ts — Public-facing groupings for the /tarifs preview cards
  * and the configurator's category picker. Internal section labels
  * ("1.1 — Rendering", "1.2 — Planovi") read like a SAP catalog; customers
  * shop by job-to-be-done. This module collapses the 10+ catalog categories

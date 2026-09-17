@@ -43,12 +43,12 @@ export const SITE = {
   description:
     "Des rendus réalisés à la main, du home staging virtuel et des transformations visuelles pour maisons et biens immobiliers — avec des prix affichés dès le départ. Une belle image, un prix clair, une décision plus simple.",
   url: RESOLVED_SITE_URL,
-  email: "info@elegantrender.fr",
+  email: "info@elegantrender.com",
   instagram: "https://www.instagram.com/elegantrender",
 } as const;
 
 /**
- * Legal identity of the operating company — used on /legal/imprint, in
+ * Legal identity of the operating company — used on /informations-legales/mentions-legales, in
  * the footer and in the JSON-LD Organization schema. Values come from the
  * Serbian business registry (APR, https://pretraga.apr.gov.rs). Phone and
  * legal-representative name are optional — the e-commerce disclosure rules
@@ -73,8 +73,8 @@ export const IMPRINT = {
   activityCode: "7410", // Specialized design activities
   foundedAt: "2017-11-22",
   size: "Petite entreprise",
-  email: "info@elegantrender.fr",
-  privacyEmail: "info@elegantrender.fr",
+  email: "info@elegantrender.com",
+  privacyEmail: "info@elegantrender.com",
   euRepresentative: null as null | {
     name: string;
     address: string;
@@ -117,8 +117,8 @@ export const CERTIFIER = {
     "TÜV Rheinland est l’un des organismes de certification les plus anciens et les plus respectés au monde, dont le siège est à Cologne et qui est présent dans plus de 50 pays. Ses certificats font référence dans le secteur et exigent des audits indépendants réguliers — non pas une déclaration ponctuelle, mais un système entretenu en continu.",
   // Combined Testmark badge issued for all three standards under a single ID.
   badgeAsset: {
-    src: "/legal/tuv-rheinland-certified.webp",
-    pdfSrc: "/legal/tuv-rheinland-certified.pdf",
+    src: "/informations-legales/tuv-rheinland-certified.webp",
+    pdfSrc: "/informations-legales/tuv-rheinland-certified.pdf",
     width: 1600,
     height: 590,
     alt: "TÜV Rheinland CERTIFIED — ISO 9001:2015, ISO/IEC 27001:2022, ISO 50001:2018, ID 9000025319",
@@ -187,11 +187,11 @@ export type NavItem = { href: string; label: string };
 export const NAV_MAIN: NavItem[] = [
   { href: "/ai-studio", label: "AI Studio" },
   { href: "/services", label: "Services" },
-  { href: "/pricing", label: "Tarifs" },
+  { href: "/tarifs", label: "Tarifs" },
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Portfolio" }]
     : []),
-  { href: "/about", label: "À propos" },
+  { href: "/a-propos", label: "À propos" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
 ];
@@ -200,16 +200,16 @@ const STRUCTURED_DATA_DESCRIPTION =
   "Visualisation architecturale professionnelle — rendus 3D d’intérieur et d’extérieur, home staging virtuel et rénovation virtuelle.";
 
 export const NAV_LEGAL: NavItem[] = [
-  { href: "/legal", label: "Informations légales" },
-  { href: "/legal/imprint", label: "Mentions légales" },
-  { href: "/legal/terms", label: "CGV" },
-  { href: "/legal/privacy", label: "Politique de confidentialité" },
-  { href: "/legal/cookies", label: "Politique relative aux cookies" },
-  { href: "/legal/withdrawal#online-withdrawal", label: "Droit de rétractation" },
-  { href: "/legal/refunds", label: "Remboursements" },
-  { href: "/legal/complaints", label: "Procédure de réclamation" },
-  { href: "/legal/delivery", label: "Livraison numérique" },
-  { href: "/legal/certificates", label: "Certificats et normes" },
+  { href: "/informations-legales", label: "Informations légales" },
+  { href: "/informations-legales/mentions-legales", label: "Mentions légales" },
+  { href: "/informations-legales/cgv", label: "CGV" },
+  { href: "/informations-legales/confidentialite", label: "Politique de confidentialité" },
+  { href: "/informations-legales/cookies", label: "Politique relative aux cookies" },
+  { href: "/informations-legales/retractation#online-withdrawal", label: "Droit de rétractation" },
+  { href: "/informations-legales/remboursements", label: "Remboursements" },
+  { href: "/informations-legales/reclamations", label: "Procédure de réclamation" },
+  { href: "/informations-legales/livraison", label: "Livraison numérique" },
+  { href: "/informations-legales/certificats", label: "Certificats et normes" },
 ];
 
 // Four concrete model-first savings examples — rendered as the 2×2 card grid

@@ -4,6 +4,30 @@ Lightweight decision and change log for key characteristics of the Elegant Rende
 
 The pre-fork Serbian platform history is preserved as a brief archive in `docs/platform-decisions-rs-archive.md`.
 
+## 2026-09-17 - French public route names
+
+- **Area:** conversion | architecture | SEO
+- **What changed:** Every public route segment that has a French word is French: `/tarifs`, `/commande` (+ `/succes`, `/echec`), `/a-propos`, `/carrieres`, `/informations-legales/{mentions-legales,cgv,confidentialite,cookies,retractation,remboursements,reclamations,livraison,certificats}`, auth `/connexion`, `/inscription`, `/mot-de-passe-oublie`, `/nouveau-mot-de-passe`, `/verification-email`, `/acces-portail`. Unchanged: `/`, `/services` (+ `/services/vr/consultation`), `/contact`, `/portal`, `/blog`, `/faq`, `/ai-studio`, `/portfolio`, all `/api/*` — these are already French or brand. 26 permanent redirects in `next.config.ts` map the English paths (including `:path+` wildcards, exact rules for the bare paths so `/legal` does not become `/informations-legales/`) to the new ones; `/jobs` now lands on `/carrieres`. Service and blog slugs stay English (frozen machine keys). The TÜV badge assets moved from `public/legal/` to `public/informations-legales/` because the `/legal/:path+` redirect runs before the public folder.
+- **Why:** A French site with `/pricing` and `/legal/imprint` in the address bar reads as a translated foreign site; .de (`/preise`, `/rechtliches`) and .rs (`/cene`, `/pravno`) already use localized routes. Mentions légales / CGV / confidentialité URLs are also what French users and lawyers look for.
+- **Impact on conversion:** None functionally — every internal link, sitemap entry, JSON-LD path, email link, auth page, chat page-context match and robots rule was rewritten. Old bookmarks land on the new page via 301.
+- **Impact on design:** None.
+- **Impact on code:** Directory renames under `src/app/(marketing)` and `src/app/(auth)`; `proxy.ts`, `auth.ts` pages, `robots.ts`, `sitemap.ts`, `llms.ts`, chat page-context matching updated. Analytics page-path values change accordingly (no historical data yet).
+- **Impact on docs:** `CLAUDE.md` route rule, `docs/fr-translation-guide.md` §4, `docs/fr-launch-checklist.md`, `docs/fr-legal-review.md`.
+- **Related files:** `next.config.ts`, `src/app/(marketing)/**`, `src/app/(auth)/**`, `src/lib/content/site.ts`, `src/app/sitemap.ts`, `src/app/robots.ts`, `src/lib/llms.ts`
+- **References:** .de commit `c3bb993` + `f195758` (same change, German names); .rs route vocabulary in that repo's `CLAUDE.md`.
+
+## 2026-09-17 - Go-live wiring: shared .com mailbox, apex canonical host, per-country integrations
+
+- **Area:** payments | CRM sync | architecture | legal | docs
+- **What changed:** (1) Mail: .fr sends from the verified .com domain (`EMAIL_FROM=Elegant Render <noreply@elegantrender.com>`) with `Reply-To: info@elegantrender.com` (`EMAIL_REPLY_TO`, default in `src/lib/email.ts`), and every contact address on the site — mentions légales, politique de confidentialité, withdrawal flow, error pages, portal profile, file-scan message, blog — is `info@elegantrender.com`. No Resend domain, MX or mailbox for `elegantrender.fr`. (2) Canonical host is the apex `https://elegantrender.fr`; `www.elegantrender.fr` 308-redirects to it in `next.config.ts`. PayPal webhooks must be created against `https://elegantrender.fr/api/paypal/webhook` — PayPal does not follow redirects, so the apex choice keeps them valid. (3) Own integrations per country, still to be opened for .fr: Supabase project, Bitrix24 pipeline "Elegant Render FR" with its `BITRIX24_STAGE_*` ids, Turnstile widget with the .fr hostname, Sentry project `elegant-render-fr` (slug pinned in `next.config.ts`), PostHog EU project, GA4 property + GTM container (both switches **off** until consent mode is verified in tag preview). (4) `PLUTOS_SOURCE` and the Plutos idempotency prefix are `elegantrender.fr` so .fr invoices never collide with .com or .de order ids — this settles open decision 1 in `docs/fr-launch-checklist.md`.
+- **Why:** Same decision as .de on 2026-09-15: one inbox and one verified sending domain for all four sites is less to operate and legally sufficient (the LCEN mentions légales require a contact address, not a same-domain one). Separate DB/CRM/analytics per country keep customers, invoices and reporting apart.
+- **Impact on conversion:** None on flow. Customer replies land in the shared inbox the team already watches.
+- **Impact on design:** None.
+- **Impact on code:** `src/lib/email.ts` (Reply-To), `src/server/plutos/ids.ts` (+ its tests), `next.config.ts` (host redirect, Sentry project), 8 files with the contact address. Bitrix inquiry sync creates **leads** (`crm.lead.add`); a lead converted in Bitrix lands in the Default pipeline unless the portal's conversion settings target the FR pipeline — that is Bitrix configuration, not code.
+- **Impact on docs:** This entry; `DEPLOY-PREVIEW-NOTES.md` lists what is set on Vercel and which secrets are still missing; `docs/go-live-fr.md` is the runbook.
+- **Related files:** `src/lib/email.ts`, `src/lib/content/site.ts`, `src/server/plutos/ids.ts`, `next.config.ts`, `.env.example`
+- **References:** .de commits `5f2cf73` + `0b6dbfe` (same decision, German values); `docs/fr-launch-checklist.md`.
+
 ## 2026-08-05 - Global privacy notice and online consumer-withdrawal function
 
 - **Area:** order lifecycle | architecture | legal

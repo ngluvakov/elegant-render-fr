@@ -135,7 +135,7 @@ export function ConsentBanner() {
             session ne sont activés qu’avec votre consentement, pour nous
             aider à améliorer l’expérience.{" "}
             <Link
-              href="/legal/cookies"
+              href="/informations-legales/cookies"
               className="text-foreground underline-offset-4 hover:underline"
             >
               En savoir plus sur les cookies

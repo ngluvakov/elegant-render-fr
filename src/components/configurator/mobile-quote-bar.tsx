@@ -4,7 +4,7 @@
  * users would otherwise have to scroll the full configurator to see the total,
  * so this bar shows live total + a jump-to-summary CTA.
  *
- * Used on: PricingConfigurator (mounted once, /pricing page).
+ * Used on: PricingConfigurator (mounted once, /tarifs page).
  */
 "use client";
 

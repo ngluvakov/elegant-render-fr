@@ -169,7 +169,7 @@ function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
   const pathname = usePathname();
   const displayCurrency = usePublicCurrency();
   const pricingSettings = usePublicPricingSettings();
-  const isOnCene = pathname === "/pricing";
+  const isOnCene = pathname === "/tarifs";
 
   const primary = proposal.primary
     .map((e) => ({ ...e, product: getConfiguratorProduct(e.id) }))
@@ -195,7 +195,7 @@ function ProposalCard({ proposal }: { proposal: ParsedProposal }) {
     if (isOnCene) {
       window.dispatchEvent(new CustomEvent("er-chat-proposal"));
     } else {
-      router.push("/pricing");
+      router.push("/tarifs");
     }
   };
 

@@ -134,7 +134,7 @@ export async function GET() {
 
   const payload = {
     exportedAt: new Date().toISOString(),
-    note: "Ce fichier contient une copie des données personnelles qu’Elegant Render traite pour votre compte. Vous trouverez plus d’informations dans la Politique de confidentialité (/legal/privacy).",
+    note: "Ce fichier contient une copie des données personnelles qu’Elegant Render traite pour votre compte. Vous trouverez plus d’informations dans la Politique de confidentialité (/informations-legales/confidentialite).",
     profile: user,
     orders,
     comments,

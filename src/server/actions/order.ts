@@ -114,7 +114,7 @@ export async function createOrder(
   if (buyerError) return { error: buyerError };
 
   // Rate-limit before any DB writes. createOrder is reachable from
-  // /checkout by anyone (guest or logged-in), so a tampered client could
+  // /commande by anyone (guest or logged-in), so a tampered client could
   // spam Order rows. Identifier prefers user:<id> when authenticated.
   const identifier = await getServerActionIdentifier();
   const limit = await checkRateLimit("checkout", identifier);
@@ -123,7 +123,7 @@ export async function createOrder(
   }
 
   // Defensive: inquiry-only products (VR) must never enter the order /
-  // payment flow. They route to /services/vr/consultation from /pricing; if
+  // payment flow. They route to /services/vr/consultation from /tarifs; if
   // one slips through (tampered cart, stale URL), refuse the order.
   const pricingCatalog = await getPublishedPricingCatalog();
   for (const qi of quoteItems) {
@@ -141,7 +141,7 @@ export async function createOrder(
   // Server-side price verification. priceItems is the orchestrator that
   // routes int-static / int-360 items through their per-floor helpers
   // (calcInteriorTotal / calcTour360Total) so the order total matches
-  // what the customer saw on /pricing exactly.
+  // what the customer saw on /tarifs exactly.
   const calculation = priceItems(quoteItems, [], pricingCatalog);
 
   if (calculation.total <= 0) {
@@ -209,7 +209,7 @@ export async function createOrder(
           );
           // Carry the per-floor config straight onto OrderItem.configJson
           // so repriceOrder + the portal editor see the same shape the
-          // customer just configured on /pricing. Without this, /pricing-
+          // customer just configured on /tarifs. Without this, /pricing-
           // originated int-static / int-360 orders booted with empty
           // configJson and the portal would seed defaults that didn't
           // match the customer's plan.

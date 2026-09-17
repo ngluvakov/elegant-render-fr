@@ -27,7 +27,7 @@ export function FinalCta() {
               Envoyer votre projet
             </QuickInquiryLink>
             <ButtonLink
-              href="/pricing"
+              href="/tarifs"
               size="xl"
               variant="outline"
               className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"

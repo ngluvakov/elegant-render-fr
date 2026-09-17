@@ -48,13 +48,13 @@ import { cn } from "@/lib/utils";
 
 const MAIN_NAV: Array<{ href: string; label: string; pattern: string }> = [
   { href: "/ai-studio", label: "AI Studio", pattern: "/ai-studio" },
-  { href: "/pricing", label: "Tarifs", pattern: "/pricing" },
+  { href: "/tarifs", label: "Tarifs", pattern: "/tarifs" },
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Portfolio", pattern: "/portfolio" }]
     : []),
   { href: "/blog", label: "Blog", pattern: "/blog" },
   { href: "/faq", label: "FAQ", pattern: "/faq" },
-  { href: "/career", label: "Carrières", pattern: "/career" },
+  { href: "/carrieres", label: "Carrières", pattern: "/carrieres" },
   { href: "/contact", label: "Contact", pattern: "/contact" },
 ];
 
@@ -262,7 +262,7 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-3 md:flex">
           <Link
-            href={isLoggedIn ? "/portal" : "/login"}
+            href={isLoggedIn ? "/portal" : "/connexion"}
             className={SIGN_IN_CLASSES}
           >
             {isLoggedIn ? "Espace client" : "Se connecter"}
@@ -372,7 +372,7 @@ export function SiteHeader() {
 
             <div className="mt-auto flex flex-col gap-2">
               <Link
-                href={isLoggedIn ? "/portal" : "/login"}
+                href={isLoggedIn ? "/portal" : "/connexion"}
                 onClick={() => setMobileOpen(false)}
                 className={cn(SIGN_IN_CLASSES, "h-11 justify-center")}
               >

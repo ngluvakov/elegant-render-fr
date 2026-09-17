@@ -1,6 +1,6 @@
 /**
  * QuickOrderHero — Home page hero with a focused expert-service quick estimate.
- * The selected service/variant is carried into /pricing so the configurator can
+ * The selected service/variant is carried into /tarifs so the configurator can
  * open with the matching quote item already added.
  *
  * Used on: / (home page).

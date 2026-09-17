@@ -69,17 +69,17 @@ const INTENT_COLUMNS = [
   {
     title: "Visualisation architecturale",
     text: "Des rendus d’intérieur et d’extérieur réalistes. Le prix de base couvre la construction du modèle 3D — chaque angle ou pièce supplémentaire coûte nettement moins.",
-    href: "/pricing?group=interior#configurator",
+    href: "/tarifs?group=interior#configurator",
   },
   {
     title: "Home staging virtuel & rénovation",
     text: "Transformez des espaces vides ou datés à partir de photos. La première image couvre la conception ; chaque image suivante de la même pièce vous fait économiser jusqu’à 33 %.",
-    href: "/pricing?group=staging-renovation#configurator",
+    href: "/tarifs?group=staging-renovation#configurator",
   },
   {
     title: "Plans & visites interactifs",
     text: "Des plans 2D/3D lisibles aux visites 360° immersives. Commandez plusieurs livrables à partir du même modèle — les remises s’appliquent à l’ensemble du projet.",
-    href: "/pricing?group=plans#configurator",
+    href: "/tarifs?group=plans#configurator",
   },
 ] as const;
 

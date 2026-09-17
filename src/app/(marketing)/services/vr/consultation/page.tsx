@@ -122,7 +122,7 @@ export default async function VrConsultationPage({
       />
       <div className="mx-auto w-full max-w-[min(96vw,1200px)] px-6 pb-24 pt-20 md:pt-28">
         <Link
-          href="/pricing"
+          href="/tarifs"
           className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-3 w-3" />

@@ -1,5 +1,5 @@
 /**
- * ServiceTablica — Full-width product card for the /pricing browse grid.
+ * ServiceTablica — Full-width product card for the /tarifs browse grid.
  *
  * 3-zone layout: hero image / content / price-strip band.
  * Mobile: collapsed by default behind a "Details" toggle.
@@ -57,7 +57,7 @@ type Props = {
   pricingCatalog?: ResolvedPricingCatalog;
   /**
    * When true, the card renders as a marketing showcase on the homepage:
-   * primary CTA links to /pricing?cat=<category>#usluge instead of adding to
+   * primary CTA links to /tarifs?cat=<category>#usluge instead of adding to
    * cart. Used by MarketingServicesShowcase since cart state does not
    * persist between routes.
    */
@@ -135,7 +135,7 @@ export function ServiceTablica({ product, category, cartItems, pricingCatalog, m
     </div>
   ) : marketingMode ? (
     <Link
-      href={`/pricing?cat=${category.id}#usluge`}
+      href={`/tarifs?cat=${category.id}#usluge`}
       onClick={() =>
         track("service_tablica_click_dodaj", {
           product_id: product.id,

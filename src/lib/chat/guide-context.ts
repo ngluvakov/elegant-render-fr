@@ -37,7 +37,7 @@ export type AssistantGuideContext = {
   missingItems?: string[];
   readinessWarnings?: string[];
   canGenerate?: boolean;
-  // Pricing (/pricing) cart awareness — set by PricingAssistantGuideContext so
+  // Pricing (/tarifs) cart awareness — set by PricingAssistantGuideContext so
   // the assistant (bubble tips + AI) can recognize what the user is building.
   cartItemCount?: number;
   cartTotalEur?: number;

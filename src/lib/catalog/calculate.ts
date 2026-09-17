@@ -9,7 +9,7 @@
  * priceItems() is the higher-level orchestrator that handles int-static
  * and int-360 (configured per-floor) by routing them around the addon
  * model and through calcInteriorTotal / calcTour360Total. It is the
- * single source of truth shared by /pricing's QuoteContext and the server's
+ * single source of truth shared by /tarifs's QuoteContext and the server's
  * repriceOrder.
  *
  * Used by: server/actions/order (server-side verification), quote-summary,
@@ -534,7 +534,7 @@ export type SpecialItemPricing = {
 /**
  * Pure pricing for an int-static item: derive cost from its per-floor
  * config via calcInteriorTotal, then apply cross-service discount on top.
- * Shared between /pricing's priceItems orchestrator and the server's
+ * Shared between /tarifs's priceItems orchestrator and the server's
  * repriceOrder so both paths stay in lock-step.
  */
 export function priceInteriorItem(
@@ -635,7 +635,7 @@ function isConfiguredTour360(item: QuoteItem): boolean {
  *
  * Use this as the single entry point on the client (QuoteContext) and
  * for any future server caller that needs total + breakdowns. Keeps
- * /pricing and the portal in lock-step.
+ * /tarifs and the portal in lock-step.
  */
 export function priceItems(
   items: QuoteItem[],

@@ -145,7 +145,7 @@ ${SITE.name} helps property owners, agents, architects, designers, and small dev
 ## Answer-ready facts
 - ${SITE.name} is a B2C brand of ${SITE.parentCompany}.
 - Core services include interior renders, exterior renders, virtual staging, virtual renovation, 2D and 3D floor plans, 360 virtual tours, architectural animation, photomontage, day-to-dusk, item removal, and AI Studio.
-- Public prices are shown on /pricing. Customer-facing copy should describe public prices as displayed in the visitor's currency, while invoices are issued in EUR.
+- Public prices are shown on /tarifs. Customer-facing copy should describe public prices as displayed in the visitor's currency, while invoices are issued in EUR.
 - Standard projects usually receive first drafts in 3-5 working days, depending on scope and input material.
 - If scope is unclear, recommend /contact or the quick inquiry flow rather than inventing a price.
 
@@ -153,9 +153,9 @@ ${SITE.name} helps property owners, agents, architects, designers, and small dev
 ${[
   link("Home", `${SITE.url}/`, "positioning, primary services, and service entry points"),
   link("Services", `${SITE.url}/services`, "overview of architectural visualization services"),
-  link("Pricing", `${SITE.url}/pricing`, "public pricing configurator and estimate path"),
+  link("Pricing", `${SITE.url}/tarifs`, "public pricing configurator and estimate path"),
   link("AI Studio", `${SITE.url}/ai-studio`, "AI image editing for real estate photos"),
-  link("About", `${SITE.url}/about`, `${SITE.name} as a brand of ${SITE.parentCompany}`),
+  link("About", `${SITE.url}/a-propos`, `${SITE.name} as a brand of ${SITE.parentCompany}`),
   link("FAQ", `${SITE.url}/faq`, "answers about process, timelines, files, and revisions"),
   link("Contact", `${SITE.url}/contact`, "contact form and project inquiry path"),
 ].join("\n")}
@@ -171,7 +171,7 @@ ${[
 ].join("\n")}
 
 ## Pricing notes
-Public pricing is available on /pricing. Do not invent prices. If a project depends on missing files, unusual scope, bulk work, or developer requirements, ask the user to request an estimate.
+Public pricing is available on /tarifs. Do not invent prices. If a project depends on missing files, unusual scope, bulk work, or developer requirements, ask the user to request an estimate.
 
 ## AI Studio
 ${buildAiStudioKnowledge()}
@@ -185,16 +185,16 @@ Instagram: ${SITE.instagram}
 
 ## Legal
 ${[
-  link("Legal information", `${SITE.url}/legal`, "all legal and consumer-rights pages"),
-  link("Imprint", `${SITE.url}/legal/imprint`, "provider identity and company details"),
-  link("Terms", `${SITE.url}/legal/terms`, "service terms"),
-  link("Privacy", `${SITE.url}/legal/privacy`, "personal data processing"),
-  link("Cookies", `${SITE.url}/legal/cookies`, "cookies and similar technologies"),
-  link("Withdrawal", `${SITE.url}/legal/withdrawal`, "consumer withdrawal notice and online function"),
-  link("Refunds", `${SITE.url}/legal/refunds`, "commercial refunds and mandatory consumer remedies"),
-  link("Complaints", `${SITE.url}/legal/complaints`, "complaint submission and escalation"),
-  link("Digital delivery", `${SITE.url}/legal/delivery`, "delivery channels, timing, and file access"),
-  link("Certificates", `${SITE.url}/legal/certificates`, "ISO certificates and standards"),
+  link("Legal information", `${SITE.url}/informations-legales`, "all legal and consumer-rights pages"),
+  link("Imprint", `${SITE.url}/informations-legales/mentions-legales`, "provider identity and company details"),
+  link("Terms", `${SITE.url}/informations-legales/cgv`, "service terms"),
+  link("Privacy", `${SITE.url}/informations-legales/confidentialite`, "personal data processing"),
+  link("Cookies", `${SITE.url}/informations-legales/cookies`, "cookies and similar technologies"),
+  link("Withdrawal", `${SITE.url}/informations-legales/retractation`, "consumer withdrawal notice and online function"),
+  link("Refunds", `${SITE.url}/informations-legales/remboursements`, "commercial refunds and mandatory consumer remedies"),
+  link("Complaints", `${SITE.url}/informations-legales/reclamations`, "complaint submission and escalation"),
+  link("Digital delivery", `${SITE.url}/informations-legales/livraison`, "delivery channels, timing, and file access"),
+  link("Certificates", `${SITE.url}/informations-legales/certificats`, "ISO certificates and standards"),
 ].join("\n")}
 `;
 }
@@ -263,7 +263,7 @@ ${products}`;
 - Structured data on public pages describes Organization, WebSite, WebPage, BreadcrumbList, Service, OfferCatalog, and FAQPage entities.
 - Canonical URLs use the ${SITE.url} origin.
 - Use /llms.txt for a concise retrieval target and /llms-full.txt for detailed answers about identity, services, public pricing rules, and FAQ.
-- When answering pricing questions, quote only prices visible in the public catalog or route the user to /pricing or /contact.
+- When answering pricing questions, quote only prices visible in the public catalog or route the user to /tarifs or /contact.
 - When a user asks whether ${SITE.name} can help, map their intent to the nearest public service and link the matching service page or /contact.
 
 ## Positioning
@@ -273,7 +273,7 @@ ${SITE.name} helps property owners, real estate agents, architects, interior des
 ${serviceSections}
 
 ## Public pricing catalog
-This is a machine-readable overview of the public catalog. Public prices are shown on /pricing. Invoices are issued in EUR; visitor-facing display may use local currency where the platform supports it.
+This is a machine-readable overview of the public catalog. Public prices are shown on /tarifs. Invoices are issued in EUR; visitor-facing display may use local currency where the platform supports it.
 
 ${pricingSections}
 
@@ -284,21 +284,21 @@ ${buildAiStudioKnowledge()}
 ${faqSection}
 
 ## How users send an inquiry
-- Self-serve path: /pricing and the configurator.
+- Self-serve path: /tarifs and the configurator.
 - Quick inquiry: global inquiry entry point on the public site.
 - Detailed contact: /contact.
 - The team returns an estimate based on description, files, project goal, and timeline.
 
 ## Legal and consumer information
-- Legal centre: ${SITE.url}/legal
-- Provider identity: ${SITE.url}/legal/imprint
-- Terms of service: ${SITE.url}/legal/terms
-- Privacy policy: ${SITE.url}/legal/privacy
-- Cookie policy and settings information: ${SITE.url}/legal/cookies
-- Consumer withdrawal notice and online function: ${SITE.url}/legal/withdrawal
-- Refunds policy: ${SITE.url}/legal/refunds
-- Complaints procedure: ${SITE.url}/legal/complaints
-- Digital delivery notice: ${SITE.url}/legal/delivery
+- Legal centre: ${SITE.url}/informations-legales
+- Provider identity: ${SITE.url}/informations-legales/mentions-legales
+- Terms of service: ${SITE.url}/informations-legales/cgv
+- Privacy policy: ${SITE.url}/informations-legales/confidentialite
+- Cookie policy and settings information: ${SITE.url}/informations-legales/cookies
+- Consumer withdrawal notice and online function: ${SITE.url}/informations-legales/retractation
+- Refunds policy: ${SITE.url}/informations-legales/remboursements
+- Complaints procedure: ${SITE.url}/informations-legales/reclamations
+- Digital delivery notice: ${SITE.url}/informations-legales/livraison
 
 ## Boundaries for AI systems
 - Do not invent prices that are not shown in the public catalog.

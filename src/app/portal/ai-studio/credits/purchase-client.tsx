@@ -67,12 +67,12 @@ function PortalCreditSummary() {
 
   const handleOrder = () => {
     if (!hasCredits) return;
-    // Don't pre-stash the withdrawal waiver here — /checkout step-details
+    // Don't pre-stash the withdrawal waiver here — /commande step-details
     // is the canonical place that surfaces it alongside the final total
     // in the buyer's currency. Pre-stashing would auto-submit and skip
     // that review.
     stashCheckoutQuote(items);
-    router.push("/checkout");
+    router.push("/commande");
   };
 
   return (

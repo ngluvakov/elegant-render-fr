@@ -572,7 +572,7 @@ function LandingTemplate({ ctx }: { ctx: RenderCtx }) {
               Envoyer votre projet
             </QuickInquiryLink>
             <ButtonLink
-              href="/pricing"
+              href="/tarifs"
               size="xl"
               variant="outline"
               className="border-background/40 bg-transparent text-background hover:bg-background/10 hover:text-background"
@@ -1118,7 +1118,7 @@ function EditorialTemplate({ ctx }: { ctx: RenderCtx }) {
         >
           Envoyer votre projet
         </QuickInquiryLink>
-        <ButtonLink href="/pricing" size="xl" variant="outline">
+        <ButtonLink href="/tarifs" size="xl" variant="outline">
           Voir les tarifs
         </ButtonLink>
       </div>

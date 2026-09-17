@@ -1,6 +1,6 @@
 /**
  * StandaloneAiCredits — Compact AI-credits picker that lives near the top of
- * /pricing. Lets a customer who came only for AI photo edits add credits in one
+ * /tarifs. Lets a customer who came only for AI photo edits add credits in one
  * click without first configuring an architectural service.
  *
  * Reads/writes the same QuoteContext as the configurator below, so the
@@ -8,7 +8,7 @@
  * in sync — no event plumbing or sessionStorage handoff needed.
  *
  * Mounted inside the same <QuoteProvider> as the configurator (see
- * src/app/(marketing)/pricing/page.tsx).
+ * src/app/(marketing)/tarifs/page.tsx).
  */
 "use client";
 

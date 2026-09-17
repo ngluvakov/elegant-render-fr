@@ -1,5 +1,5 @@
 /**
- * Tour360QuoteEditor — Per-room configurator for int-360 items on /pricing.
+ * Tour360QuoteEditor — Per-room configurator for int-360 items on /tarifs.
  * Mirrors the data shape of the portal's tour360-config-section
  * (Tour360Floor[] + TourAssembly) so math runs through calcTour360Total
  * and pricing matches the portal by construction.
@@ -14,7 +14,7 @@
  * portal-only — they don't change the price. The white-label option still
  * needs its logo uploaded later in the portal; here we just bill the fee.
  *
- * Used on: QuoteItemCard for int-360 items (/pricing page).
+ * Used on: QuoteItemCard for int-360 items (/tarifs page).
  */
 "use client";
 

@@ -742,7 +742,7 @@ export function ServicesShowcase() {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </QuickInquiryLink>
               <ButtonLink
-                href="/pricing"
+                href="/tarifs"
                 variant="outline"
                 size="lg"
                 className="rounded-[4px] border-white/20 text-white hover:bg-white/10"

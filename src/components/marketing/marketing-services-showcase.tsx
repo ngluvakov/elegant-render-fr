@@ -29,7 +29,7 @@ export async function MarketingServicesShowcase() {
             </p>
           </div>
           <Link
-            href="/pricing"
+            href="/tarifs"
             className="self-start font-mono text-xs uppercase tracking-[0.08em] text-foreground hover:underline md:self-end"
           >
             Ouvrir les tarifs

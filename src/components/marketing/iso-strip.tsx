@@ -19,7 +19,7 @@ export function IsoStrip() {
           {badges.map((badge) => (
             <Link
               key={badge}
-              href="/legal/certificates"
+              href="/informations-legales/certificats"
               className="rounded-full border border-[#d4d4d4] px-3.5 py-1.5 font-mono text-xs tracking-[0.04em] text-foreground transition-colors duration-200 hover:border-[#111111]"
             >
               {badge}

@@ -1,7 +1,7 @@
 /**
  * NewDraftButton — Create an empty draft order and jump into its detail page.
  * Used on /portal/orders so the client can start configuring directly in
- * the portal instead of being bounced to /pricing.
+ * the portal instead of being bounced to /tarifs.
  */
 "use client";
 

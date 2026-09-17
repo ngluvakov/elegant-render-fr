@@ -20,7 +20,7 @@ const PROOF_ITEMS = [
     price: "dès €170",
     timing: "premières ébauches sous 3-5 jours ouvrés",
     body: "Une seule commande couvre tout l’étage : 10 rendus d’intérieur statiques + le plan.",
-    href: "/pricing?group=interior&add=int-static&from=home-proof#configurator",
+    href: "/tarifs?group=interior&add=int-static&from=home-proof#configurator",
     image: "/artwork/expert-interior-renders.webp",
     imageAlt:
       "Rendus d’intérieur - un intérieur meublé qui se vend dès la brochure",
@@ -31,7 +31,7 @@ const PROOF_ITEMS = [
     price: "dès €18",
     timing: "une valorisation photo rapide",
     body: "Une photo d’un espace vide reçoit mobilier, style et atmosphère — sans meubler physiquement le bien.",
-    href: "/pricing?group=staging-renovation&add=vs-static&from=home-proof#configurator",
+    href: "/tarifs?group=staging-renovation&add=vs-static&from=home-proof#configurator",
     before: "/artwork/expert-virtual-staging-hero-before.webp",
     after: "/artwork/expert-virtual-staging-hero-after.webp",
     beforeAlt:
@@ -45,7 +45,7 @@ const PROOF_ITEMS = [
     price: "dès €250",
     timing: "angle suivant dès €48",
     body: "La première vue couvre la construction du modèle 3D du bien ; chaque caméra supplémentaire issue du même modèle coûte nettement moins.",
-    href: "/pricing?group=exterior-renders&add=ext-static&from=home-proof#configurator",
+    href: "/tarifs?group=exterior-renders&add=ext-static&from=home-proof#configurator",
     image: "/artwork/expert-exterior-renders.webp",
     imageAlt:
       "Rendus d’extérieur - une vue extérieure photoréaliste d’un bâtiment",
@@ -73,7 +73,7 @@ export async function ResultsProof() {
             </h2>
           </div>
           <Link
-            href="/pricing#configurator"
+            href="/tarifs#configurator"
             className={cn(
               buttonVariants({ variant: "outline", size: "lg" }),
               "w-fit rounded-[4px]",

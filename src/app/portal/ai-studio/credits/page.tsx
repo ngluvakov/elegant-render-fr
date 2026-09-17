@@ -25,7 +25,7 @@ export default async function AiStudioCreditsPage() {
         select: { billingCountryCode: true },
       })
     : null;
-  // Match /checkout's resolution order: stored profile country first, then
+  // Match /commande's resolution order: stored profile country first, then
   // IP geo, then RSD default. Lets logged-in users see the RSD-only pricing even when
   // the IP header is missing (e.g. local dev) and vice versa.
   const countryCode = user?.billingCountryCode ?? publicCountryCode ?? "";

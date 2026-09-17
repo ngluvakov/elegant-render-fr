@@ -367,7 +367,7 @@ const CONTEXT_TIPS: ChatGuideRule[] = [
     priority: 70,
     when: (context) => context.hasFiles === false,
   },
-  // ── Pricing (/pricing) — cart-aware purchase advice ──────────
+  // ── Pricing (/tarifs) — cart-aware purchase advice ──────────
   {
     id: "pricing-empty-cart",
     label: "Partez de l’objectif",
@@ -468,7 +468,7 @@ function getRouteTips(pathname: string): ChatGuideTip[] {
     return [...ORDER_ROUTE_TIPS, ...PRICING_TIPS];
   }
 
-  if (pathname === "/pricing" || pathname.startsWith("/checkout")) {
+  if (pathname === "/tarifs" || pathname.startsWith("/commande")) {
     return [...PRICING_TIPS, ...ORDER_ROUTE_TIPS];
   }
 
@@ -484,7 +484,7 @@ function getRouteTips(pathname: string): ChatGuideTip[] {
     return [...PORTFOLIO_TIPS, ...SERVICE_ROUTE_TIPS];
   }
 
-  if (pathname.startsWith("/about") || pathname.startsWith("/legal/certificates")) {
+  if (pathname.startsWith("/a-propos") || pathname.startsWith("/informations-legales/certificats")) {
     return ABOUT_TIPS;
   }
 

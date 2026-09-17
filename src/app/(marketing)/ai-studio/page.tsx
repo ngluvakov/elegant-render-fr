@@ -492,7 +492,7 @@ function HeroContent({
 
 /**
  * Primary entry into the buying flow. Mirrors the `CategoryPreview` pattern
- * from /pricing: each card shows the tool's starting public price and links straight
+ * from /tarifs: each card shows the tool's starting public price and links straight
  * into the portal with the tool pre-selected so the customer can start
  * working in one click.
  */

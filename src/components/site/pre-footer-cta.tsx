@@ -29,7 +29,7 @@ export function PreFooterCta({
   heading = "Ouvrez le calculateur et obtenez votre prix en quelques minutes.",
   body = "Choisissez un type de visualisation, définissez les paramètres et voyez immédiatement le prix exact — sans forfaits, sans conditions cachées.",
   ctaLabel = "Ouvrir le calculateur",
-  ctaHref = "/pricing#configurator",
+  ctaHref = "/tarifs#configurator",
   secondaryLabel = "Ou envoyez une demande rapide",
   inquirySource = {
     source: "pre-footer-cta",

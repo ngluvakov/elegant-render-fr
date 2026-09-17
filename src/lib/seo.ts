@@ -451,11 +451,11 @@ export function buildOfferCatalogJsonLd(
   return {
     "@context": "https://schema.org",
     "@type": "OfferCatalog",
-    "@id": `${absoluteUrl("/pricing")}#offer-catalog`,
+    "@id": `${absoluteUrl("/tarifs")}#offer-catalog`,
     name: "Grille tarifaire Elegant Render",
     description:
       "Les prix de base de la visualisation architecturale sont en euros.",
-    url: absoluteUrl("/pricing"),
+    url: absoluteUrl("/tarifs"),
     provider: {
       "@id": SEO.organizationId,
     },
@@ -469,7 +469,7 @@ export function buildOfferCatalogJsonLd(
         description: product.includes.join(", "),
         price: product.basePriceEur,
         priceCurrency: "EUR",
-        url: absoluteUrl("/pricing"),
+        url: absoluteUrl("/tarifs"),
         availability: product.inquiryOnly
           ? "https://schema.org/PreOrder"
           : "https://schema.org/InStock",

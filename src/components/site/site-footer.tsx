@@ -40,14 +40,14 @@ const FOOTER_SERVICES: NavItem[] = [
 ];
 
 const COMPANY_LINKS: NavItem[] = [
-  { href: "/about", label: "À propos" },
-  { href: "/pricing", label: "Tarifs" },
+  { href: "/a-propos", label: "À propos" },
+  { href: "/tarifs", label: "Tarifs" },
   { href: "/ai-studio", label: "AI Studio" },
   ...(SITE_FEATURES.portfolio
     ? [{ href: "/portfolio", label: "Portfolio" }]
     : []),
   { href: "/blog", label: "Blog" },
-  { href: "/career", label: "Carrières" },
+  { href: "/carrieres", label: "Carrières" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
 ];
@@ -138,7 +138,7 @@ export function SiteFooter() {
             {/* Badge has silver bevel + TÜV blue — wrap in a tight white
                 card so it reads cleanly on the dark surface. */}
             <Link
-              href="/legal/certificates"
+              href="/informations-legales/certificats"
               aria-label={`Certificat ${CERTIFIER.name} — certificats et normes`}
               className="inline-flex shrink-0 rounded-[4px] bg-white p-1.5 transition-opacity duration-200 hover:opacity-90"
             >
@@ -157,7 +157,7 @@ export function SiteFooter() {
               </span>
             ))}
             <Link
-              href="/legal/certificates"
+              href="/informations-legales/certificats"
               className="ml-auto text-white/65 transition-colors duration-200 hover:text-white hover:underline"
             >
               À propos des certificats →
@@ -167,7 +167,7 @@ export function SiteFooter() {
 
         {/* Imprint — e-commerce disclosure rules require the registered
             name, registry numbers and address on every page;
-            /legal/imprint surfaces the full legal identity. */}
+            /informations-legales/mentions-legales surfaces the full legal identity. */}
         <div className="border-t border-white/12 py-5 text-xs leading-relaxed text-white/55">
           <p>
             <strong className="text-white/75">{IMPRINT.shortName}</strong>

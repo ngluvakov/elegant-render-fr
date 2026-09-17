@@ -1,12 +1,12 @@
 /**
  * PricingAssistantGuideContext — injects the live pricing cart into the
  * assistant guide store so both the contextual tip bubble and the AI can
- * recognize what the user is configuring on /pricing and advise on the purchase.
+ * recognize what the user is configuring on /tarifs and advise on the purchase.
  *
  * Null-render; must be mounted inside <QuoteProvider> so useQuote() works.
  * Mirrors the OrderAssistantGuideContext pattern.
  *
- * Used on: (marketing)/pricing/page.tsx
+ * Used on: (marketing)/tarifs/page.tsx
  */
 "use client";
 

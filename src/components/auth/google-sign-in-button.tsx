@@ -1,7 +1,7 @@
 /**
  * GoogleSignInButton — Renders a Google OAuth sign-in button via NextAuth.
  *
- * Used on: /login (sign-in) and /register (sign-up) pages.
+ * Used on: /connexion (sign-in) and /inscription (sign-up) pages.
  */
 "use client";
 

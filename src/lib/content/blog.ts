@@ -165,7 +165,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: "cta",
         label: "Calculez le prix de votre projet",
-        href: "/pricing",
+        href: "/tarifs",
       },
     ],
   },
@@ -324,7 +324,7 @@ export const BLOG_POSTS: BlogPost[] = [
         type: "list",
         items: [
           "Le **formulaire de contact** de notre site",
-          "**E-mail** à info@elegantrender.fr",
+          "**E-mail** à info@elegantrender.com",
           "Message direct sur **Instagram**",
         ],
       },
@@ -355,7 +355,7 @@ export const BLOG_POSTS: BlogPost[] = [
       },
       {
         type: "paragraph",
-        text: "Tous nos prix sont **transparents et connus à l’avance** — vous pouvez aussi les consulter directement sur la [page des tarifs](/pricing).",
+        text: "Tous nos prix sont **transparents et connus à l’avance** — vous pouvez aussi les consulter directement sur la [page des tarifs](/tarifs).",
       },
       { type: "heading", level: 2, text: "Étape 3 : préparer le brief" },
       {
@@ -439,7 +439,7 @@ export const BLOG_POSTS: BlogPost[] = [
       { type: "heading", level: 2, text: "Questions fréquentes" },
       {
         type: "paragraph",
-        text: "**Combien coûte un rendu 3D ?** Le prix dépend de la complexité. Les rendus d’intérieur commencent à **170 €** pour une formule de 10 pièces. Consultez la [grille tarifaire complète](/pricing).",
+        text: "**Combien coûte un rendu 3D ?** Le prix dépend de la complexité. Les rendus d’intérieur commencent à **170 €** pour une formule de 10 pièces. Consultez la [grille tarifaire complète](/tarifs).",
       },
       {
         type: "paragraph",
@@ -795,7 +795,7 @@ export const BLOG_POSTS: BlogPost[] = [
       {
         type: "cta",
         label: "Calculez le prix d’une visite 360°",
-        href: "/pricing",
+        href: "/tarifs",
       },
     ],
   },

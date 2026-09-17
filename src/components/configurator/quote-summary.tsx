@@ -2,7 +2,7 @@
  * QuoteSummary — Sticky dark sidebar showing line items, estimated total,
  * and the order CTA that saves the quote to sessionStorage.
  *
- * Used on: PricingConfigurator (sidebar column, /pricing page).
+ * Used on: PricingConfigurator (sidebar column, /tarifs page).
  */
 "use client";
 
@@ -69,7 +69,7 @@ export function QuoteSummary() {
       cart_size: calculation.items.length,
       total_eur: calculation.total,
     });
-    router.push("/checkout");
+    router.push("/commande");
   };
 
   const handleInquiryFromQuote = () => {
@@ -112,7 +112,7 @@ export function QuoteSummary() {
       setShareState({ kind: "error", message: result.error });
       return;
     }
-    const url = `${window.location.origin}/pricing?q=${result.token}`;
+    const url = `${window.location.origin}/tarifs?q=${result.token}`;
     setShareState({ kind: "saved", url, copied: false });
     track("quote_saved", {
       cart_size: calculation.items.length,

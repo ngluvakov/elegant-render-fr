@@ -34,7 +34,7 @@ Run `git log --oneline main..fr-translation` for the authoritative list.
       the services catalogue and the checkout flow.
 - [ ] **Legal review by a French lawyer** — the legal pages are faithful
       translations of the English text, *not* French legal drafting. Every
-      `TODO(legal-review)` comment in `src/app/(marketing)/legal/**` marks a
+      `TODO(legal-review)` comment in `src/app/(marketing)/informations-legales/**` marks a
       point where French law (mentions légales, Code de la consommation,
       RGPD/CNIL, médiateur de la consommation) likely requires something
       different or additional. Do not launch before this is cleared.
@@ -52,9 +52,11 @@ Run `git log --oneline main..fr-translation` for the authoritative list.
 - [ ] Upstash Redis (`UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`)
 
 ### Payments, email, auth
-- [ ] PayPal: webhook for the new domain → `PAYPAL_WEBHOOK_ID`
-- [ ] Resend: verify the sending domain (DNS) → `RESEND_API_KEY`,
-      `EMAIL_FROM`, `ADMIN_NOTIFY_EMAIL`
+- [ ] PayPal: webhook on the apex host `https://elegantrender.fr/api/paypal/webhook`
+      (www 308-redirects to the apex and PayPal does not follow redirects) → `PAYPAL_WEBHOOK_ID`
+- [x] Resend: **no `.fr` sending domain** (decision 2026-09-15, mirrored from .de) —
+      mail goes out from the verified `.com` domain with `Reply-To: info@elegantrender.com`;
+      reuse the .com `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_REPLY_TO`, `ADMIN_NOTIFY_EMAIL`
 - [ ] Google OAuth: add the `elegantrender.fr` redirect URIs
 - [ ] Cloudflare Turnstile: add the hostname (keys live in the
       *Whiterook.kovacica* Cloudflare account) → `NEXT_PUBLIC_TURNSTILE_SITE_KEY`,
@@ -75,13 +77,13 @@ Run `git log --oneline main..fr-translation` for the authoritative list.
 
 ## Open decisions surfaced during translation
 
-1. **Plutos accounting source id.** `src/server/plutos/ids.ts` has
-   `PLUTOS_SOURCE = "elegantrender.com"`, and it prefixes every external id
-   sent to the accounting system (`${PLUTOS_SOURCE}:${target}:${targetId}`).
-   Left unchanged because it is a **matched identifier**, not copy — changing
-   it decides how `.fr` invoices are keyed in the books. Settle this with the
-   accountant before the first real invoice is issued; changing it later
-   splits the history.
+1. **Plutos accounting source id — settled 2026-09-17.** `src/server/plutos/ids.ts`
+   now has `PLUTOS_SOURCE = "elegantrender.fr"`, which prefixes every external
+   id sent to the accounting system (`${PLUTOS_SOURCE}:${target}:${targetId}`),
+   so `.fr` invoices never collide with `.com` or `.de` order ids (same
+   decision as the DE clone). The Plutos ingest endpoint must accept
+   `source: "elegantrender.fr"` before `PLUTOS_SYNC_ENABLED` is flipped on;
+   see `docs/platform-decisions.md` (2026-09-17 go-live wiring).
 
 2. **PDF font subset.** `src/lib/pdf-fonts.ts` registers only the
    `noto-sans-latin-ext-*` files. Verified with fontkit: that subset has **no

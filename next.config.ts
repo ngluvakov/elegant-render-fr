@@ -58,6 +58,43 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // Canonical host is the apex (https://elegantrender.fr). The .fr PayPal
+      // webhooks, NEXT_PUBLIC_SITE_URL and the sitemap all use it; www only
+      // exists so typed-in URLs still land. PayPal does not follow redirects,
+      // so the webhook path must never sit behind this rule — it lives on apex.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.elegantrender.fr" }],
+        destination: "https://elegantrender.fr/:path*",
+        permanent: true,
+      },
+      // English route names from the .com fork → French (2026-09-17).
+      // Nothing was indexed under the old paths; these keep bookmarks,
+      // PayPal return URLs and old emails working.
+      { source: "/legal/certificates", destination: "/informations-legales/certificats", permanent: true },
+      { source: "/legal/complaints", destination: "/informations-legales/reclamations", permanent: true },
+      { source: "/legal/cookies", destination: "/informations-legales/cookies", permanent: true },
+      { source: "/legal/delivery", destination: "/informations-legales/livraison", permanent: true },
+      { source: "/legal/imprint", destination: "/informations-legales/mentions-legales", permanent: true },
+      { source: "/legal/privacy", destination: "/informations-legales/confidentialite", permanent: true },
+      { source: "/legal/refunds", destination: "/informations-legales/remboursements", permanent: true },
+      { source: "/legal/terms", destination: "/informations-legales/cgv", permanent: true },
+      { source: "/legal/withdrawal", destination: "/informations-legales/retractation", permanent: true },
+      { source: "/checkout/success", destination: "/commande/succes", permanent: true },
+      { source: "/checkout/failure", destination: "/commande/echec", permanent: true },
+      { source: "/checkout/:path+", destination: "/commande/:path+", permanent: true },
+      { source: "/checkout", destination: "/commande", permanent: true },
+      { source: "/legal/:path+", destination: "/informations-legales/:path+", permanent: true },
+      { source: "/legal", destination: "/informations-legales", permanent: true },
+      { source: "/pricing", destination: "/tarifs", permanent: true },
+      { source: "/about", destination: "/a-propos", permanent: true },
+      { source: "/career", destination: "/carrieres", permanent: true },
+      { source: "/login", destination: "/connexion", permanent: true },
+      { source: "/register", destination: "/inscription", permanent: true },
+      { source: "/forgot-password", destination: "/mot-de-passe-oublie", permanent: true },
+      { source: "/reset-password", destination: "/nouveau-mot-de-passe", permanent: true },
+      { source: "/verify-email", destination: "/verification-email", permanent: true },
+      { source: "/portal-access", destination: "/acces-portail", permanent: true },
       {
         source: "/home",
         destination: "/",
@@ -65,7 +102,7 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/jobs",
-        destination: "/career",
+        destination: "/carrieres",
         permanent: true,
       },
     ];
@@ -74,7 +111,10 @@ const nextConfig: NextConfig = {
 
 export default withSentryConfig(nextConfig, {
   org: "white-rook",
-  project: "javascript-nextjs",
+  // Sentry project for elegantrender.fr (org white-rook; create it under this
+  // slug before go-live — see docs/go-live-fr.md). The .rs project kept the
+  // wizard default name "javascript-nextjs" — do not reuse it.
+  project: "elegant-render-fr",
 
   // Source map upload auth token. Set in Vercel env (Production +
   // Preview), locally in .env.sentry-build-plugin which is gitignored.

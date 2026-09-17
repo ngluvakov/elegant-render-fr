@@ -2,7 +2,7 @@
  * OrderCurrencyContext — Per-order display currency for the portal.
  *
  * The portal stores EUR amounts in the DB (integer cents on OrderItem)
- * and renders every order in EUR to match /pricing and /checkout.
+ * and renders every order in EUR to match /tarifs and /commande.
  * pricingSettings carries the VAT rate available for display breakdowns.
  *
  * Wrap the order detail subtree in <OrderCurrencyProvider> and read with

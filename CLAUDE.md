@@ -2,7 +2,7 @@
 
 # Elegant Render International (elegantrender.com)
 
-B2C architectural visualization service (Elegant Render, sub-brand of White Rook DOO, Serbia) for the international/English market. Forked from the Serbian platform (`elegantrender.rs`, repo `elegant-render-platform`) at commit `641d34c`. English routes and copy, **PayPal** payments (no card gateway), **EUR** canonical pricing displayed in the buyer's PayPal-supported currency, Bitrix24 CRM (same portal as .rs, separate EN pipeline).
+B2C architectural visualization service (Elegant Render, sub-brand of White Rook DOO, Serbia) for the international/English market. Forked from the Serbian platform (`elegantrender.rs`, repo `elegant-render-platform`) at commit `641d34c`. French routes and copy (see `docs/fr-translation-guide.md`), **PayPal** payments (no card gateway), **EUR** canonical pricing displayed in the buyer's PayPal-supported currency, Bitrix24 CRM (same portal as .rs, separate EN pipeline).
 
 > Migration status lives in `docs/plan/00-master-plan.md` (master plan, Phase 0
 > dependency checklist, track split). Detailed designs: `docs/plan/design-*.md`.
@@ -43,6 +43,7 @@ The baseline `00000000000000_init` was regenerated offline for this fork (fresh 
 - Catalog: `src/lib/catalog/configurator.ts`. Calculation: `src/lib/catalog/calculate.ts` — always call `calculateQuote`, never duplicate the math.
 - Display/charge currency is chosen per visitor (geo via `x-vercel-ip-country`) from PayPal-supported currencies with **round-UP-then-minus-one marketable rounding** (€169, $189); seams: `src/lib/catalog/display-currency.ts` + `src/lib/billing.ts` (+ `src/lib/currency/` once Track A lands).
 - Machine-readable IDs (config IDs, slugs, categories, enum-ish strings) are English and FROZEN. Labels/descriptions are translated separately — never derive labels from IDs.
+- **Public route segments are French** (`/tarifs`, `/commande`, `/a-propos`, `/carrieres`, `/informations-legales/mentions-legales`, `/connexion`, …) — like `/preise`, `/bestellen`, `/rechtliches` on .de and `/cene`, `/usluge`, `/pravno` on .rs. The old English paths 301-redirect in `next.config.ts`; add a redirect whenever a route is renamed. `/services`, `/contact`, `/portal`, `/blog`, `/faq`, `/ai-studio`, `/portfolio` and every `/api/*` path stay as they are. Service and blog **slugs** (`/services/interior-renders`) remain English and frozen.
 
 ## Payments (PayPal)
 

@@ -89,7 +89,7 @@ export default async function PortalPage() {
           </p>
         </div>
         <Link
-          href="/pricing"
+          href="/tarifs"
           className={cn(
             buttonVariants({ variant: "accent", size: "default" }),
             "shrink-0",
@@ -136,7 +136,7 @@ export default async function PortalPage() {
             icon={ShoppingBag}
             heading="Vous n’avez aucun projet actif"
             description="Consultez les tarifs pour créer votre première commande."
-            action={{ label: "Voir les tarifs", href: "/pricing" }}
+            action={{ label: "Voir les tarifs", href: "/tarifs" }}
           />
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">

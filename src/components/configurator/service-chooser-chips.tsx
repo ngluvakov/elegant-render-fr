@@ -1,5 +1,5 @@
 /**
- * ServiceChooserChips — Sticky horizontal chip filter bar for /pricing.
+ * ServiceChooserChips — Sticky horizontal chip filter bar for /tarifs.
  *
  * 7 filter chips + a CartChip slot at the right end (separated by a divider).
  * URL-synced via useSearchParams / router.replace. Default filter = "exterior".
@@ -33,7 +33,7 @@ export const CHIP_DEFS: ChipDef[] = [
 export const DEFAULT_FILTER = "exterior";
 
 export function ServiceChooserChips({
-  basePath = "/pricing",
+  basePath = "/tarifs",
   showCartChip = true,
 }: {
   basePath?: string;

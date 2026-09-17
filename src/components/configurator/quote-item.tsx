@@ -2,7 +2,7 @@
  * QuoteItemCard — Expandable card for a product in the quote, showing included
  * add-ons, duration slider, add-on steppers, and disclaimers.
  *
- * Used on: PricingConfigurator (main column, /pricing page).
+ * Used on: PricingConfigurator (main column, /tarifs page).
  */
 "use client";
 

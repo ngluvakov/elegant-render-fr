@@ -8,13 +8,13 @@ const PRIVATE_PATHS = [
   "/api",
   "/monitoring",
   "/portal",
-  "/checkout",
-  "/login",
-  "/register",
-  "/forgot-password",
-  "/reset-password",
-  "/verify-email",
-  "/portal-access",
+  "/commande",
+  "/connexion",
+  "/inscription",
+  "/mot-de-passe-oublie",
+  "/nouveau-mot-de-passe",
+  "/verification-email",
+  "/acces-portail",
 ];
 
 const PUBLIC_ALLOW = [

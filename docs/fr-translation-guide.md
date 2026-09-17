@@ -46,7 +46,7 @@ only the language.
 | `areaServed: ["EU", "GB", "US", "Worldwide"]` | `areaServed: ["FR", "EU", "Worldwide"]` |
 | `htmlLang: "en"` / `locale: "en_US"` | `htmlLang: "fr-FR"` / `locale: "fr_FR"` |
 
-Site identity: `https://elegantrender.fr`, `info@elegantrender.fr`.
+Site identity: `https://elegantrender.fr`. Contact address stays `info@elegantrender.com` (no per-country mailbox — decision 2026-09-15).
 
 The operating company does **not** change: White Rook DOO, seat in Serbia. In
 the imprint/legal identity block the country name is localized (`Serbie`), the
@@ -54,9 +54,14 @@ registered company name, registry numbers and address are not.
 
 ## 4. What must NOT be translated
 
-- **Route paths and slugs** — `/services`, `/pricing`, `/legal/imprint`,
-  `interior-renders`, `day-to-dusk`, blog post slugs. Only the visible label
-  changes. (Same rule as the DE clone.)
+- **Service and blog slugs** — `interior-renders`, `day-to-dusk`, blog post
+  slugs. They are frozen machine keys; only the visible label changes. (Same
+  rule as the DE clone.)
+  Public route *segments*, on the other hand, are French since 2026-09-17
+  (`/tarifs`, `/commande`, `/a-propos`, `/carrieres`, `/informations-legales/…`,
+  `/connexion`, `/inscription`, …; `/services` and `/contact` are already
+  French). The route map and the 301s from the English paths live in
+  `next.config.ts` — add a redirect whenever a route is renamed.
 - **Code comments** — they are developer-facing and stay in English. Rewrite a
   comment only when it describes copy that no longer matches (e.g. a note about
   how long the headline is).

@@ -278,8 +278,8 @@ export async function previewPricingQuote(items: QuoteItem[]) {
 
 function revalidateFinancePaths() {
   revalidatePath("/portal/admin/finance/pricebook");
-  revalidatePath("/pricing");
-  revalidatePath("/checkout");
+  revalidatePath("/tarifs");
+  revalidatePath("/commande");
   revalidatePath("/portal/new-order");
 }
 

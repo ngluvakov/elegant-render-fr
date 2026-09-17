@@ -8,7 +8,7 @@
  * in that same currency via PayPal (WYSIWYG: the checkout snapshot uses
  * the identical conversion). Invoices stay EUR.
  *
- * Used by: /pricing configurator, checkout, portal order views, chat
+ * Used by: /tarifs configurator, checkout, portal order views, chat
  * price post-processing, marketing price mentions.
  */
 

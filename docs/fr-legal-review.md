@@ -12,7 +12,7 @@ Each item below corresponds to a `TODO(legal-review)` comment left in the code
 at the exact spot it concerns — grep for it:
 
 ```
-grep -rn "TODO(legal-review)" "src/app/(marketing)/legal"
+grep -rn "TODO(legal-review)" "src/app/(marketing)/informations-legales"
 ```
 
 ---
@@ -96,8 +96,9 @@ grep -rn "TODO(legal-review)" "src/app/(marketing)/legal"
 
 ## Operational notes (not legal, but needed before launch)
 
-- Hardcoded support addresses were switched from `info@elegantrender.com` to
-  `info@elegantrender.fr` — **the `.fr` mailbox must exist.**
+- Support addresses on the site are `info@elegantrender.com` (decision
+  2026-09-15, shared with `.de`): no per-country mailbox, outgoing mail carries
+  `Reply-To: info@elegantrender.com`.
 - The withdrawal/complaint instructions now tell users to write with the
   subject « Réclamation » — the team inbox filters should expect the French
   subject.

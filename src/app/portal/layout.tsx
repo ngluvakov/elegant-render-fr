@@ -20,7 +20,7 @@ export default async function PortalLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+  if (!session?.user?.id) redirect("/connexion");
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },

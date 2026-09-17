@@ -27,63 +27,63 @@ type PublicServiceSummary = {
 const SERVICE_SUMMARIES: PublicServiceSummary[] = [
   {
     slug: "interior-renders",
-    name: "Interior renders",
-    note: "Photoreal interior renders for sales, listings, and design decisions.",
+    name: "Rendus d’intérieur",
+    note: "Rendus d’intérieur photoréalistes pour la vente, les annonces et les décisions de conception.",
   },
   {
     slug: "exterior-renders",
-    name: "Exterior renders",
-    note: "Facade, building, and development renders from plans or models.",
+    name: "Rendus d’extérieur",
+    note: "Rendus de façades, de bâtiments et de programmes immobiliers à partir de plans ou de modèles.",
   },
   {
     slug: "exterior-360",
-    name: "Exterior 360 virtual tours",
-    note: "Panoramic exterior scenes for immersive project presentation.",
+    name: "Visites virtuelles 360 en extérieur",
+    note: "Scènes extérieures panoramiques pour une présentation immersive du projet.",
   },
   {
     slug: "virtual-staging",
-    name: "Virtual staging",
-    note: "Furniture and styling added to empty rooms for real estate marketing.",
+    name: "Home staging virtuel",
+    note: "Mobilier et décoration ajoutés aux pièces vides pour le marketing immobilier.",
   },
   {
     slug: "virtual-renovation",
-    name: "Virtual renovation",
-    note: "Digital renovation concepts for existing spaces.",
+    name: "Rénovation virtuelle",
+    note: "Concepts de rénovation numérique pour des espaces existants.",
   },
   {
     slug: "day-to-dusk",
-    name: "Day-to-dusk",
-    note: "Exterior photos transformed into evening marketing images.",
+    name: "Jour au crépuscule",
+    note: "Photos d’extérieur transformées en images de soirée pour le marketing.",
   },
   {
     slug: "photomontage",
     name: "Photomontage",
-    note: "A render matched into a real location photo.",
+    note: "Un rendu intégré dans une photo réelle du site.",
   },
   {
     slug: "2d-3d-floor-plans",
-    name: "2D and 3D floor plans",
-    note: "Clear floor plan visuals for listings, brochures, and sales decks.",
+    name: "Plans 2D et 3D",
+    note: "Plans clairs et lisibles pour les annonces, les brochures et les supports de vente.",
   },
   {
     slug: "site-plans",
-    name: "Site plans",
-    note: "3D site plan views for development context and layout clarity.",
+    name: "Plans de masse",
+    note: "Vues 3D de plans de masse pour situer le projet et clarifier l’implantation.",
   },
   {
     slug: "architectural-animation",
-    name: "Architectural animation",
-    note: "Short motion pieces for development, investor, and campaign use.",
+    name: "Animation architecturale",
+    note: "Courtes séquences animées pour les programmes immobiliers, les investisseurs et les campagnes.",
   },
   {
     slug: "landscape-design",
-    name: "Landscape renders",
-    note: "Yard, garden, access, and surroundings visuals.",
+    name: "Rendus paysagers",
+    note: "Visuels de cour, de jardin, d’accès et d’environnement.",
   },
   {
     slug: "item-removal",
-    name: "Item removal",
-    note: "Unwanted objects removed from real estate photos.",
+    name: "Suppression d’objets",
+    note: "Objets indésirables retirés des photos immobilières.",
   },
 ];
 
@@ -94,35 +94,35 @@ function link(title: string, url: string, note?: string): string {
 function productLine(product: ConfiguratorProduct): string {
   const includes =
     product.includes.length > 0
-      ? ` Includes: ${product.includes.join(", ")}.`
+      ? ` Comprend : ${product.includes.join(", ")}.`
       : "";
   const inquiryOnly = product.inquiryOnly
-    ? " This service requires an estimate before ordering."
+    ? " Cette prestation nécessite un devis avant commande."
     : "";
-  return `  - ${product.label}: ${product.unitLabel}.${includes}${inquiryOnly}`;
+  return `  - ${product.label} : ${product.unitLabel}.${includes}${inquiryOnly}`;
 }
 
 function creditCount(units: number): string {
   const credits = units / AI_CREDIT_UNITS_PER_CREDIT;
   return Number.isInteger(credits)
-    ? `${credits.toFixed(0)} credit${credits === 1 ? "" : "s"}`
-    : `${credits.toFixed(1)} credits`;
+    ? `${credits.toFixed(0)} crédit${credits === 1 ? "" : "s"}`
+    : `${credits.toFixed(1)} crédits`;
 }
 
 function buildAiStudioKnowledge(): string {
   const tools = AI_EDIT_TYPES.map((tool) => {
     const features = [
       tool.complexity,
-      tool.supportsMask === false ? "no mask" : "mask supported",
-      tool.supportsStyles ? "style options" : null,
-      tool.supportsColor ? "colour selection" : null,
-      tool.requiresReferenceImage ? "requires a reference image" : null,
+      tool.supportsMask === false ? "sans masque" : "masque disponible",
+      tool.supportsStyles ? "options de style" : null,
+      tool.supportsColor ? "choix de couleur" : null,
+      tool.requiresReferenceImage ? "nécessite une image de référence" : null,
     ].filter(Boolean);
 
-    return `- ${tool.label} (${tool.id}): ${tool.description} Uses ${creditCount(tool.units)}. ${features.join(", ")}.`;
+    return `- ${tool.label} (${tool.id}) : ${tool.description} Utilise ${creditCount(tool.units)}. ${features.join(", ")}.`;
   }).join("\n");
 
-  return `AI credits: 1 credit = ${AI_CREDIT_UNITS_PER_CREDIT} units. Files are retained for ${AI_FILE_RETENTION_DAYS} days. The first generation always uses credits; after a completed generation, the user receives ${AI_FREE_REGENERATIONS} free repeat generation${AI_FREE_REGENERATIONS === 1 ? "" : "s"} while the edit type stays the same.
+  return `Crédits IA : 1 crédit = ${AI_CREDIT_UNITS_PER_CREDIT} unités. Les fichiers sont conservés ${AI_FILE_RETENTION_DAYS} jours. La première génération consomme toujours des crédits ; après une génération terminée, l’utilisateur dispose de ${AI_FREE_REGENERATIONS} régénération${AI_FREE_REGENERATIONS === 1 ? "" : "s"} sans frais tant que le type de retouche reste le même.
 ${tools}`;
 }
 
@@ -138,40 +138,40 @@ function serviceLinks(): string {
 export function buildLlmsTxt(): string {
   return `# ${SITE.name}
 
-> English architectural rendering, virtual staging, floor plan, 360 virtual tour, and AI real estate image services by ${SITE.parentCompany}.
+> Rendus d’architecture, home staging virtuel, plans, visites virtuelles 360 et images immobilières par IA — un service en français, disponible partout en France, proposé par ${SITE.parentCompany}.
 
-${SITE.name} helps property owners, agents, architects, designers, and small developers turn plans and photos into clear visual material for sales, leasing, approvals, and design decisions.
+${SITE.name} aide les propriétaires, les agents immobiliers, les architectes, les designers et les petits promoteurs à transformer plans et photos en supports visuels clairs pour la vente, la location, les autorisations et les décisions de conception.
 
-## Answer-ready facts
-- ${SITE.name} is a B2C brand of ${SITE.parentCompany}.
-- Core services include interior renders, exterior renders, virtual staging, virtual renovation, 2D and 3D floor plans, 360 virtual tours, architectural animation, photomontage, day-to-dusk, item removal, and AI Studio.
-- Public prices are shown on /tarifs. Customer-facing copy should describe public prices as displayed in the visitor's currency, while invoices are issued in EUR.
-- Standard projects usually receive first drafts in 3-5 working days, depending on scope and input material.
-- If scope is unclear, recommend /contact or the quick inquiry flow rather than inventing a price.
+## Faits clés
+- ${SITE.name} est une marque B2C de ${SITE.parentCompany}.
+- Prestations principales : rendus d’intérieur, rendus d’extérieur, home staging virtuel, rénovation virtuelle, plans 2D et 3D, visites virtuelles 360, animation architecturale, photomontage, jour au crépuscule, suppression d’objets et AI Studio.
+- Les prix publics sont affichés sur /tarifs. Les prix sont présentés dans la devise du visiteur ; les factures sont émises en EUR.
+- Les projets standards reçoivent généralement une première version sous 3 à 5 jours ouvrés, selon l’ampleur du projet et le matériel fourni.
+- Si le périmètre n’est pas clair, orienter vers /contact ou la demande rapide plutôt que d’inventer un prix.
 
-## Core public pages
+## Pages publiques principales
 ${[
-  link("Home", `${SITE.url}/`, "positioning, primary services, and service entry points"),
-  link("Services", `${SITE.url}/services`, "overview of architectural visualization services"),
-  link("Pricing", `${SITE.url}/tarifs`, "public pricing configurator and estimate path"),
-  link("AI Studio", `${SITE.url}/ai-studio`, "AI image editing for real estate photos"),
-  link("About", `${SITE.url}/a-propos`, `${SITE.name} as a brand of ${SITE.parentCompany}`),
-  link("FAQ", `${SITE.url}/faq`, "answers about process, timelines, files, and revisions"),
-  link("Contact", `${SITE.url}/contact`, "contact form and project inquiry path"),
+  link("Accueil", `${SITE.url}/`, "positionnement, prestations principales et points d’entrée vers les services"),
+  link("Services", `${SITE.url}/services`, "aperçu des services de visualisation architecturale"),
+  link("Tarifs", `${SITE.url}/tarifs`, "configurateur de prix public et parcours de demande de devis"),
+  link("AI Studio", `${SITE.url}/ai-studio`, "retouche d’images par IA pour les photos immobilières"),
+  link("À propos", `${SITE.url}/a-propos`, `${SITE.name}, marque de ${SITE.parentCompany}`),
+  link("FAQ", `${SITE.url}/faq`, "réponses sur le processus, les délais, les fichiers et les révisions"),
+  link("Contact", `${SITE.url}/contact`, "formulaire de contact et parcours de demande de projet"),
 ].join("\n")}
 
 ## Services
 ${serviceLinks()}
 
-## Machine-readable files
+## Fichiers lisibles par machine
 ${[
-  link("Full AI-readable public profile", `${SITE.url}/llms-full.txt`, "detailed profile for AI systems"),
-  link("XML sitemap", `${SITE.url}/sitemap.xml`, "canonical public URL list"),
-  link("Robots policy", `${SITE.url}/robots.txt`, "crawler rules for public and private paths"),
+  link("Profil public complet lisible par les IA", `${SITE.url}/llms-full.txt`, "profil détaillé pour les systèmes d’IA"),
+  link("Sitemap XML", `${SITE.url}/sitemap.xml`, "liste canonique des URL publiques"),
+  link("Règles robots", `${SITE.url}/robots.txt`, "règles pour les robots d’indexation sur les chemins publics et privés"),
 ].join("\n")}
 
-## Pricing notes
-Public pricing is available on /tarifs. Do not invent prices. If a project depends on missing files, unusual scope, bulk work, or developer requirements, ask the user to request an estimate.
+## Remarques sur les prix
+Les prix publics sont disponibles sur /tarifs. Ne pas inventer de prix. Si un projet dépend de fichiers manquants, d’un périmètre inhabituel, de volumes importants ou d’exigences de promoteur, inviter l’utilisateur à demander un devis.
 
 ## AI Studio
 ${buildAiStudioKnowledge()}
@@ -180,21 +180,21 @@ ${buildAiStudioKnowledge()}
 ${FAQ_ITEMS.map((item) => `- **${item.question}** ${item.answer}`).join("\n")}
 
 ## Contact
-Email: ${SITE.email}
-Instagram: ${SITE.instagram}
+E-mail : ${SITE.email}
+Instagram : ${SITE.instagram}
 
-## Legal
+## Informations légales
 ${[
-  link("Legal information", `${SITE.url}/informations-legales`, "all legal and consumer-rights pages"),
-  link("Imprint", `${SITE.url}/informations-legales/mentions-legales`, "provider identity and company details"),
-  link("Terms", `${SITE.url}/informations-legales/cgv`, "service terms"),
-  link("Privacy", `${SITE.url}/informations-legales/confidentialite`, "personal data processing"),
-  link("Cookies", `${SITE.url}/informations-legales/cookies`, "cookies and similar technologies"),
-  link("Withdrawal", `${SITE.url}/informations-legales/retractation`, "consumer withdrawal notice and online function"),
-  link("Refunds", `${SITE.url}/informations-legales/remboursements`, "commercial refunds and mandatory consumer remedies"),
-  link("Complaints", `${SITE.url}/informations-legales/reclamations`, "complaint submission and escalation"),
-  link("Digital delivery", `${SITE.url}/informations-legales/livraison`, "delivery channels, timing, and file access"),
-  link("Certificates", `${SITE.url}/informations-legales/certificats`, "ISO certificates and standards"),
+  link("Informations légales", `${SITE.url}/informations-legales`, "toutes les pages juridiques et relatives aux droits des consommateurs"),
+  link("Mentions légales", `${SITE.url}/informations-legales/mentions-legales`, "identité du prestataire et coordonnées de l’entreprise"),
+  link("CGV", `${SITE.url}/informations-legales/cgv`, "conditions générales de vente"),
+  link("Confidentialité", `${SITE.url}/informations-legales/confidentialite`, "traitement des données personnelles"),
+  link("Cookies", `${SITE.url}/informations-legales/cookies`, "cookies et technologies similaires"),
+  link("Rétractation", `${SITE.url}/informations-legales/retractation`, "information sur le droit de rétractation et fonction de rétractation en ligne"),
+  link("Remboursements", `${SITE.url}/informations-legales/remboursements`, "remboursements commerciaux et garanties légales des consommateurs"),
+  link("Réclamations", `${SITE.url}/informations-legales/reclamations`, "dépôt et escalade d’une réclamation"),
+  link("Livraison numérique", `${SITE.url}/informations-legales/livraison`, "canaux de livraison, délais et accès aux fichiers"),
+  link("Certificats", `${SITE.url}/informations-legales/certificats`, "certificats ISO et normes"),
 ].join("\n")}
 `;
 }
@@ -204,26 +204,26 @@ export function buildLlmsFullTxt(
 ): string {
   const serviceSections = SERVICE_SUMMARIES.map(
     (service) => `### ${service.name}
-- URL: ${SITE.url}/services/${service.slug}
-- Summary: ${service.note}`,
+- URL : ${SITE.url}/services/${service.slug}
+- Résumé : ${service.note}`,
   ).join("\n\n");
 
   const pricingSections = categories.map((category) => {
     const products = category.products.map(productLine).join("\n");
 
     return `### ${category.label}
-- Description: ${category.description}
-- Products:
+- Description : ${category.description}
+- Produits :
 ${products}`;
   }).join("\n\n");
 
   const faqSection = [
     {
-      heading: "General questions",
+      heading: "Questions générales",
       items: FAQ_ITEMS,
     },
     {
-      heading: "Services and pricing",
+      heading: "Services et tarifs",
       items: SERVICES_PAGE_FAQS,
     },
     {
@@ -239,71 +239,71 @@ ${products}`;
     )
     .join("\n\n");
 
-  return `# ${SITE.name} - AI-readable public profile
+  return `# ${SITE.name} - Profil public lisible par les IA
 
-## Identity
-- Brand: ${SITE.name}
-- Legal entity: ${IMPRINT.legalName}
-- Company number: ${IMPRINT.registryNumber}
-- Tax ID: ${IMPRINT.taxId}
-- Email: ${SITE.email}
-- Instagram: ${SITE.instagram}
-- Website: ${SITE.url}
-- Public language: English
+## Identité
+- Marque : ${SITE.name}
+- Entité juridique : ${IMPRINT.legalName}
+- Numéro d’immatriculation : ${IMPRINT.registryNumber}
+- Numéro fiscal : ${IMPRINT.taxId}
+- E-mail : ${SITE.email}
+- Instagram : ${SITE.instagram}
+- Site web : ${SITE.url}
+- Langue publique : français
 
-## Discovery files
-- Canonical llms.txt: ${SITE.url}/llms.txt
-- Full AI-readable profile: ${SITE.url}/llms-full.txt
-- XML sitemap: ${SITE.url}/sitemap.xml
-- Robots policy: ${SITE.url}/robots.txt
+## Fichiers de découverte
+- llms.txt canonique : ${SITE.url}/llms.txt
+- Profil complet lisible par les IA : ${SITE.url}/llms-full.txt
+- Sitemap XML : ${SITE.url}/sitemap.xml
+- Règles robots : ${SITE.url}/robots.txt
 
-## Search and AI interpretation
-- Public marketing pages are intended to be crawlable and indexable.
-- Private portal, admin, API, authentication, and checkout paths are not public source material.
-- Structured data on public pages describes Organization, WebSite, WebPage, BreadcrumbList, Service, OfferCatalog, and FAQPage entities.
-- Canonical URLs use the ${SITE.url} origin.
-- Use /llms.txt for a concise retrieval target and /llms-full.txt for detailed answers about identity, services, public pricing rules, and FAQ.
-- When answering pricing questions, quote only prices visible in the public catalog or route the user to /tarifs or /contact.
-- When a user asks whether ${SITE.name} can help, map their intent to the nearest public service and link the matching service page or /contact.
+## Recherche et interprétation par les IA
+- Les pages marketing publiques sont conçues pour être explorées et indexées.
+- Les chemins de l’espace client, de l’administration, de l’API, de l’authentification et du paiement ne sont pas des sources publiques.
+- Les données structurées des pages publiques décrivent les entités Organization, WebSite, WebPage, BreadcrumbList, Service, OfferCatalog et FAQPage.
+- Les URL canoniques utilisent l’origine ${SITE.url}.
+- Utiliser /llms.txt comme source concise et /llms-full.txt pour des réponses détaillées sur l’identité, les services, les règles de prix publiques et la FAQ.
+- Pour les questions de prix, ne citer que les prix visibles dans le catalogue public ou orienter l’utilisateur vers /tarifs ou /contact.
+- Lorsqu’un utilisateur demande si ${SITE.name} peut l’aider, rapprocher sa demande du service public le plus proche et renvoyer vers la page de ce service ou vers /contact.
 
-## Positioning
-${SITE.name} helps property owners, real estate agents, architects, interior designers, and small developers get clear visual material without a sales-call-first process. The public experience prioritises visible pricing, model-first savings, and a short path to an estimate when scope is unclear.
+## Positionnement
+${SITE.name} fournit aux propriétaires, agents immobiliers, architectes, architectes d’intérieur et petits promoteurs, partout en France, des supports visuels clairs sans passer d’abord par un appel commercial. L’expérience publique privilégie des prix visibles, les économies « modèle d’abord » et un accès rapide à un devis lorsque le périmètre n’est pas clair.
 
-## Public services
+## Services publics
 ${serviceSections}
 
-## Public pricing catalog
-This is a machine-readable overview of the public catalog. Public prices are shown on /tarifs. Invoices are issued in EUR; visitor-facing display may use local currency where the platform supports it.
+## Catalogue de prix public
+Aperçu lisible par machine du catalogue public. Les prix publics sont affichés sur /tarifs. Les factures sont émises en EUR ; l’affichage pour le visiteur peut utiliser la devise locale lorsque la plateforme le permet.
 
 ${pricingSections}
 
-## AI Studio tools and credits
+## Outils AI Studio et crédits
 ${buildAiStudioKnowledge()}
 
-## Frequently asked questions
+## Questions fréquentes
 ${faqSection}
 
-## How users send an inquiry
-- Self-serve path: /tarifs and the configurator.
-- Quick inquiry: global inquiry entry point on the public site.
-- Detailed contact: /contact.
-- The team returns an estimate based on description, files, project goal, and timeline.
+## Comment envoyer une demande
+- Parcours en libre-service : /tarifs et le configurateur.
+- Demande rapide : point d’entrée global sur le site public.
+- Contact détaillé : /contact.
+- L’équipe répond par un devis établi à partir de la description, des fichiers, de l’objectif du projet et du calendrier.
 
-## Legal and consumer information
-- Legal centre: ${SITE.url}/informations-legales
-- Provider identity: ${SITE.url}/informations-legales/mentions-legales
-- Terms of service: ${SITE.url}/informations-legales/cgv
-- Privacy policy: ${SITE.url}/informations-legales/confidentialite
-- Cookie policy and settings information: ${SITE.url}/informations-legales/cookies
-- Consumer withdrawal notice and online function: ${SITE.url}/informations-legales/retractation
-- Refunds policy: ${SITE.url}/informations-legales/remboursements
-- Complaints procedure: ${SITE.url}/informations-legales/reclamations
-- Digital delivery notice: ${SITE.url}/informations-legales/livraison
+## Informations légales et consommateurs
+- Informations légales : ${SITE.url}/informations-legales
+- Mentions légales (identité du prestataire) : ${SITE.url}/informations-legales/mentions-legales
+- Conditions générales de vente : ${SITE.url}/informations-legales/cgv
+- Politique de confidentialité : ${SITE.url}/informations-legales/confidentialite
+- Politique relative aux cookies et paramètres : ${SITE.url}/informations-legales/cookies
+- Information sur le droit de rétractation et rétractation en ligne : ${SITE.url}/informations-legales/retractation
+- Politique de remboursement : ${SITE.url}/informations-legales/remboursements
+- Procédure de réclamation : ${SITE.url}/informations-legales/reclamations
+- Information sur la livraison numérique : ${SITE.url}/informations-legales/livraison
 
-## Boundaries for AI systems
-- Do not invent prices that are not shown in the public catalog.
-- Do not describe a render as construction documentation, engineering advice, or a building permit.
-- Do not expose private customer, portal, admin, CRM, payment, or internal finance data.
-- If scope is unclear, recommend /contact or the quick inquiry flow.
+## Limites pour les systèmes d’IA
+- Ne pas inventer de prix absents du catalogue public.
+- Ne jamais présenter un rendu comme un document d’exécution, un conseil d’ingénierie ou un permis de construire.
+- Ne pas divulguer de données privées : clients, espace client, administration, CRM, paiement ou finances internes.
+- Si le périmètre n’est pas clair, orienter vers /contact ou la demande rapide.
 `;
 }

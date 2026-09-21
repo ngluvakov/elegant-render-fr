@@ -17,6 +17,8 @@ import { transitionOrder } from "@/lib/order/status-machine";
 import type { OrderStatus } from "@/generated/prisma/client";
 import { syncCommentToDeal } from "@/server/bitrix/sync-comment";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
+import { irisAfter } from "@/server/iris/client";
+import { irisComment, irisFile } from "@/server/iris/sync";
 import { enqueueOutboxEvent } from "@/lib/outbox";
 import { recordAuditLog } from "@/lib/audit";
 import { requireAnyAdminPermission, requirePermission } from "@/lib/admin-auth";
@@ -51,6 +53,7 @@ export async function adminCreateComment(orderId: string, body: string) {
       extra: { commentId: comment.id, orderId: comment.orderId },
     });
   });
+  irisAfter("comment-team", { commentId: comment.id, orderId: comment.orderId }, () => irisComment(comment.id));
 
   await recordAuditLog({
     action: "order.comment_create",
@@ -122,6 +125,7 @@ export async function adminUploadDeliverable(
       extra: { fileId: file.id, orderId },
     });
   });
+  irisAfter("file-team", { fileId: file.id, orderId }, () => irisFile(file.id, "tim"));
 
   await recordAuditLog({
     action: "order.deliverable_upload",

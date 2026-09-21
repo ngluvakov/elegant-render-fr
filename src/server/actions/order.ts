@@ -25,6 +25,8 @@ import { repriceOrder } from "@/server/order/reprice";
 import { syncNewDeal } from "@/server/bitrix/sync-deal";
 import { enforceCleanScan } from "@/lib/file-scan";
 import { syncFileToDeal } from "@/server/bitrix/sync-file";
+import { irisAfter } from "@/server/iris/client";
+import { irisFile, irisNewOrder } from "@/server/iris/sync";
 import { getPublishedPricingCatalog } from "@/server/pricing/catalog";
 import { recordAuditLog } from "@/lib/audit";
 import { getPublicCountryCode } from "@/lib/catalog/public-currency-server";
@@ -259,6 +261,7 @@ export async function createOrder(
         extra: { orderId: order.id, orderNumber: order.orderNumber },
       });
     });
+    irisAfter("new-order", { orderId: order.id, orderNumber: order.orderNumber }, () => irisNewOrder(order.id));
   }
 
   // Forensic trail of who chose which buyer identity. Helpful when SEF
@@ -485,6 +488,7 @@ export async function confirmFileUpload(
       extra: { fileId: file.id, orderId: file.orderId ?? null },
     });
   });
+  irisAfter("file-client", { fileId: file.id, orderId: file.orderId ?? null }, () => irisFile(file.id, "klijent"));
 
   return { success: true };
 }

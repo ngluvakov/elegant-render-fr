@@ -11,6 +11,8 @@ import type { OrderStatus } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { canTransition } from "@/lib/order/status-transitions";
 import { syncDealStatus } from "@/server/bitrix/sync-status";
+import { irisAfter } from "@/server/iris/client";
+import { irisOrderStatus } from "@/server/iris/sync";
 
 // The transition table lives in status-transitions.ts (a pure module,
 // testable without the DB) — only the DB-bound transitionOrder stays here.
@@ -56,6 +58,9 @@ export async function transitionOrder(
       });
     });
   }
+  // Iris hears every transition, including ones Bitrix24 initiated —
+  // there is no Iris → platform path, so no loop.
+  irisAfter("order-status", { orderId, toStatus, fromStatus: order.status }, () => irisOrderStatus(orderId, toStatus));
 
   return updated;
 }

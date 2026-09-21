@@ -12,6 +12,8 @@ import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { syncCommentToDeal } from "@/server/bitrix/sync-comment";
+import { irisAfter } from "@/server/iris/client";
+import { irisComment } from "@/server/iris/sync";
 
 export type CommentResult = {
   error?: string;
@@ -48,6 +50,7 @@ export async function createCommentAction(
       extra: { commentId: comment.id, orderId: comment.orderId },
     });
   });
+  irisAfter("comment", { commentId: comment.id, orderId: comment.orderId }, () => irisComment(comment.id));
 
   return { success: true };
 }

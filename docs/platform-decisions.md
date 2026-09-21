@@ -4,6 +4,18 @@ Lightweight decision and change log for key characteristics of the Elegant Rende
 
 The pre-fork Serbian platform history is preserved as a brief archive in `docs/platform-decisions-rs-archive.md`.
 
+## 2026-09-21 - Iris CRM alongside Bitrix24 (dual send) — preparing to retire Bitrix
+
+- **Area of change:** CRM sync | architecture
+- **What changed:** Every event that goes to Bitrix24 (inquiry → lead, order → deal, status change → stage, comment and file → timeline note) now also goes to Iris (White Rook's internal chat, "Prodaja"/Sales section) through a signed webhook `POST {IRIS_URL}/api/crm/dogadjaj`. New module `src/server/iris/` (HMAC-signed client + `sync.ts` mirroring `server/bitrix/*`); calls sit next to the existing Bitrix calls and run in `after()`, so they never delay the user's response.
+- **Why:** Bitrix24 is being retired; the CRM for all four sites (.rs/.com/.de/.fr) lives in Iris, where the "Prodaja" bot announces new inquiries and orders to sales. Dual send lasts until Iris has proven it receives everything; then `server/bitrix/*` is removed.
+- **Impact on conversion:** None — all behind the scenes; inquiry and order submission never depend on Iris (off unless `IRIS_URL`/`IRIS_WEBHOOK_SECRET` are set; failures go to Sentry `area: iris`).
+- **Impact on design:** None.
+- **Impact on code:** `src/server/iris/client.ts` (`irisEvent`, `irisAfter`, `IRIS_BRAND = "fr"`), `src/server/iris/sync.ts` (`irisInquiry`, `irisNewOrder`, `irisOrderStatus`, `irisComment`, `irisFile`; stage/comment/file for an order Iris has not seen send the order first). Status reaches Iris even when the change came from Bitrix (there is no Iris → platform path, so no loop). Iris dedupes on the event id (`inquiry:<id>`, `order:<id>`, `status:<id>:<status>`, `comment:<id>`, `file:<id>`).
+- **Impact on docs:** `.env.example` (IRIS_URL, IRIS_WEBHOOK_SECRET); the event shape is documented in the Iris repo (`docs/crm-most.md`).
+- **Related files:** `src/server/iris/client.ts`, `src/server/iris/sync.ts`, `src/server/actions/project-inquiry.ts`, `src/server/actions/order.ts`, `src/server/actions/admin-manual-order.ts`, `src/server/actions/admin.ts`, `src/server/actions/comment.ts`, `src/lib/order/status-machine.ts`, `.env.example`
+- **Reference:** Owner decision 2026-09-21 (Iris CRM instead of Bitrix); switched on once Iris has a public address (iris.thewhiterook.com).
+
 ## 2026-09-17 - French public route names
 
 - **Area:** conversion | architecture | SEO

@@ -36,6 +36,8 @@ import {
   sendProjectInquiryCustomerEmail,
 } from "@/lib/email";
 import { syncProjectInquiryLead } from "@/server/bitrix/sync-project-inquiry";
+import { irisAfter } from "@/server/iris/client";
+import { irisInquiry } from "@/server/iris/sync";
 
 export type SubmitProjectInquiryInput = {
   draftId: string;
@@ -295,6 +297,7 @@ export async function submitProjectInquiry(
       extra: { inquiryId: inquiry.id },
     });
   });
+  irisAfter("inquiry", { inquiryId: inquiry.id }, () => irisInquiry(inquiry.id));
 
   // Visible alarm when a lead came in with unscanned files — previously the
   // whole inquiry would silently vanish. Goes to Sentry (message, not

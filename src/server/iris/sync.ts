@@ -26,7 +26,7 @@ function baseUrl(): string {
 export async function irisInquiry(inquiryId: string) {
   const inquiry = await prisma.projectInquiry.findUniqueOrThrow({
     where: { id: inquiryId },
-    include: { files: { select: { fileName: true, fileSize: true } } },
+    include: { files: { select: { id: true, fileName: true, fileSize: true } } },
   });
   const spam = scoreInquiry({
     contactName: inquiry.contactName,
@@ -53,7 +53,8 @@ export async function irisInquiry(inquiryId: string) {
       izvor: inquiry.source ?? undefined,
       putanja: inquiry.sourcePath ?? undefined,
       cta: inquiry.sourceLabel ?? undefined,
-      fajlovi: inquiry.files.map((f) => ({ ime: f.fileName, velicina: f.fileSize })),
+      // download goes through the admin route (needs an admin session on the site), so the link never expires
+      fajlovi: inquiry.files.map((f) => ({ ime: f.fileName, velicina: f.fileSize, url: `${baseUrl()}/api/admin/inquiries/download?fileId=${f.id}` })),
       spam: spam.level === "likely_spam",
       razlozi: spam.level === "likely_spam" ? spam.reasons : undefined,
       url: `${baseUrl()}/portal/admin/inquiries`,

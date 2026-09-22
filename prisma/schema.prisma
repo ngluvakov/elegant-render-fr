@@ -782,6 +782,10 @@ model ProjectInquiry {
   email             String
   phone             String?
   company           String?
+  // Where the visitor was when submitting (Vercel geo headers) — the form has no
+  // address field, so this is the only hint of the prospect's country. ISO alpha-2.
+  countryCode       String?
+  city              String?
   serviceType       String?
   budget            String?
   deadline          String?

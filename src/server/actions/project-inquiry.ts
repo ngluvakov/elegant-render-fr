@@ -251,8 +251,21 @@ export async function submitProjectInquiry(
   const quoteSnapshot = sanitizeQuoteSnapshot(input.quoteSnapshot);
   const scannedAt = new Date();
 
+  // Visitor geo from Vercel (absent locally). City arrives URL-encoded.
+  const geo = await headers();
+  const countryCode = geo.get("x-vercel-ip-country")?.trim().toUpperCase() ?? null;
+  const cityRaw = geo.get("x-vercel-ip-city");
+  let city: string | null = null;
+  try {
+    city = cityRaw ? decodeURIComponent(cityRaw).slice(0, 120) : null;
+  } catch {
+    city = cityRaw?.slice(0, 120) ?? null;
+  }
+
   const inquiry = await prisma.projectInquiry.create({
     data: {
+      countryCode: countryCode && /^[A-Z]{2}$/.test(countryCode) ? countryCode : null,
+      city,
       source: cleanOptional(input.source, 80) ?? null,
       sourcePath: cleanOptional(input.sourcePath, 240) ?? null,
       sourceLabel: cleanOptional(input.sourceLabel, 160) ?? null,

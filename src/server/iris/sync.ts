@@ -44,6 +44,8 @@ export async function irisInquiry(inquiryId: string) {
       email: inquiry.email,
       telefon: inquiry.phone ?? undefined,
       firma: inquiry.company ?? undefined,
+      drzava: inquiry.countryCode ?? undefined,
+      grad: inquiry.city ?? undefined,
       poruka: inquiry.message,
       usluga: inquiry.serviceType ?? undefined,
       budzet: inquiry.budget ?? undefined,
@@ -64,7 +66,7 @@ export async function irisNewOrder(orderId: string) {
   const order = await prisma.order.findUniqueOrThrow({
     where: { id: orderId },
     include: {
-      user: { select: { id: true, name: true, email: true, phone: true, billingCompanyName: true } },
+      user: { select: { id: true, name: true, email: true, phone: true, billingCompanyName: true, billingCountryCode: true } },
       items: {
         where: { kind: "service" },
         select: { productLabel: true, categoryLabel: true, totalEur: true },
@@ -93,6 +95,9 @@ export async function irisNewOrder(orderId: string) {
       email: order.user.email,
       telefon: order.user.phone ?? undefined,
       firma: order.user.billingCompanyName ?? undefined,
+      // country from the invoice (buyer or company), else the account's billing country
+      drzava: order.buyerCountryCode ?? order.companyCountryCode ?? order.user.billingCountryCode ?? undefined,
+      grad: order.buyerCity ?? undefined,
     },
   });
 }

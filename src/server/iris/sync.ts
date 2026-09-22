@@ -57,7 +57,7 @@ export async function irisInquiry(inquiryId: string) {
       fajlovi: inquiry.files.map((f) => ({ ime: f.fileName, velicina: f.fileSize, url: `${baseUrl()}/api/admin/inquiries/download?fileId=${f.id}` })),
       spam: spam.level === "likely_spam",
       razlozi: spam.level === "likely_spam" ? spam.reasons : undefined,
-      url: `${baseUrl()}/portal/admin/inquiries`,
+      url: `${baseUrl()}/portal/admin/inquiries?highlight=${inquiry.id}`,
     },
   });
 }

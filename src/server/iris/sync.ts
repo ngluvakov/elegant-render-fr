@@ -11,6 +11,7 @@
  * comment; lib/order/status-machine.
  */
 import { prisma } from "@/lib/db";
+import { getSupabaseAdmin } from "@/lib/supabase";
 import { scoreInquiry } from "@/lib/spam-detection";
 import type { OrderStatus } from "@/generated/prisma/client";
 import { IrisError, irisEvent } from "./client";
@@ -22,11 +23,23 @@ function baseUrl(): string {
   return process.env.AUTH_URL ?? "http://localhost:3000";
 }
 
+const FILES_BUCKET = "order-files";
+
+/**
+ * Short-lived signed URL so Iris can copy the file into its own storage
+ * right away (it keeps a preview; the original stays here). Null when
+ * signing fails — Iris then only links to the admin page.
+ */
+async function signedDownload(storagePath: string): Promise<string | undefined> {
+  const { data } = await getSupabaseAdmin().storage.from(FILES_BUCKET).createSignedUrl(storagePath, 3600);
+  return data?.signedUrl ?? undefined;
+}
+
 /** Public pre-sales inquiry → Iris lead (+ contact by e-mail). */
 export async function irisInquiry(inquiryId: string) {
   const inquiry = await prisma.projectInquiry.findUniqueOrThrow({
     where: { id: inquiryId },
-    include: { files: { select: { id: true, fileName: true, fileSize: true } } },
+    include: { files: { select: { id: true, fileName: true, fileSize: true, storagePath: true } } },
   });
   const spam = scoreInquiry({
     contactName: inquiry.contactName,
@@ -53,8 +66,17 @@ export async function irisInquiry(inquiryId: string) {
       izvor: inquiry.source ?? undefined,
       putanja: inquiry.sourcePath ?? undefined,
       cta: inquiry.sourceLabel ?? undefined,
-      // download goes through the admin route (needs an admin session on the site), so the link never expires
-      fajlovi: inquiry.files.map((f) => ({ ime: f.fileName, velicina: f.fileSize, url: `${baseUrl()}/api/admin/inquiries/download?fileId=${f.id}` })),
+      // `url` goes through the admin route (needs an admin session on the site) and never expires;
+      // `preuzmi` is a 1h signed link Iris uses immediately to copy the file
+      fajlovi: await Promise.all(
+        inquiry.files.map(async (f) => ({
+          id: f.id,
+          ime: f.fileName,
+          velicina: f.fileSize,
+          url: `${baseUrl()}/api/admin/inquiries/download?fileId=${f.id}`,
+          preuzmi: await signedDownload(f.storagePath),
+        })),
+      ),
       spam: spam.level === "likely_spam",
       razlozi: spam.level === "likely_spam" ? spam.reasons : undefined,
       url: `${baseUrl()}/portal/admin/inquiries?highlight=${inquiry.id}`,
@@ -162,6 +184,7 @@ export async function irisFile(fileId: string, strana: "tim" | "klijent") {
       vrsta: file.kind,
       strana,
       url: `${baseUrl()}/api/portal/download?path=${encodeURIComponent(file.storagePath)}&orderId=${file.order.id}`,
+      preuzmi: await signedDownload(file.storagePath),
     },
   });
 }
